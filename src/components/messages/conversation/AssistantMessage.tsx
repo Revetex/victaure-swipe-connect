@@ -16,7 +16,7 @@ export function AssistantMessage({ chatMessages, onSelectConversation }: Assista
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2 }}
       onClick={() => onSelectConversation("assistant")}
-      className="group relative p-4 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] bg-card hover:bg-card/80 border shadow-sm hover:shadow-md"
+      className="mt-0 group relative p-4 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] bg-card hover:bg-card/80 border shadow-sm hover:shadow-md"
     >
       <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
       <div className="relative flex gap-4">
