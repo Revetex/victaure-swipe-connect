@@ -2,7 +2,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
-import Dashboard from "@/pages/dashboard";
 import { TermsPage } from "@/components/legal/TermsPage";
 import { PrivacyPage } from "@/components/legal/PrivacyPage";
 import { CookiesPage } from "@/components/legal/CookiesPage";
@@ -18,6 +17,7 @@ import { ChessPage } from "@/components/tools/ChessPage";
 import { Feed } from "@/components/feed/Feed";
 import { Settings } from "@/components/Settings";
 import { Messages } from "@/components/messages/Messages";
+import DashboardPage from "@/pages/dashboard";
 
 export function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -53,10 +53,10 @@ export function AppRoutes() {
       
       {/* Routes protégées */}
       <Route
-        path="/dashboard/*"
+        path="/dashboard"
         element={
           <ProtectedRoute>
-            <Dashboard />
+            <DashboardPage />
           </ProtectedRoute>
         }
       />
