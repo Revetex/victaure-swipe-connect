@@ -47,11 +47,11 @@ export function MainLayout({
   }, []);
 
   return (
-    <div className="min-h-screen h-screen flex bg-background overflow-hidden">
+    <div className="min-h-screen h-screen flex bg-background">
       {/* Desktop Sidebar Navigation */}
       {!isMobile && (
         <div className="w-[280px] lg:w-[320px] shrink-0">
-          <aside className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur">
+          <aside className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <Navigation />
           </aside>
         </div>
@@ -60,36 +60,38 @@ export function MainLayout({
       {/* Main Content Area */}
       <main 
         ref={mainRef}
-        className="flex-1 flex flex-col h-screen overflow-hidden"
+        className="flex-1 flex flex-col relative"
       >
         {/* Main Header */}
-        <header className="h-12 min-h-[48px] border-b bg-background/95 backdrop-blur sticky top-0 z-40 flex items-center justify-between px-4">
-          <div className="flex items-center gap-4">
-            {isMobile && (
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Menu className="h-5 w-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="p-0 w-80">
-                  <Navigation />
-                </SheetContent>
-              </Sheet>
-            )}
-            <h1 className="font-semibold">VICTAURE technologies inc.</h1>
-          </div>
-          <AppHeader 
-            title={title}
-            showFriendsList={showFriendsList}
-            onToggleFriendsList={onToggleFriendsList}
-            isEditing={isEditing}
-            onToolReturn={onToolReturn}
-          />
-        </header>
+        <div className="sticky top-0 z-40">
+          <header className="h-12 min-h-[48px] border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-4">
+            <div className="flex items-center gap-4">
+              {isMobile && (
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Menu className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="p-0 w-80">
+                    <Navigation />
+                  </SheetContent>
+                </Sheet>
+              )}
+              <h1 className="font-semibold">VICTAURE technologies inc.</h1>
+            </div>
+            <AppHeader 
+              title={title}
+              showFriendsList={showFriendsList}
+              onToggleFriendsList={onToggleFriendsList}
+              isEditing={isEditing}
+              onToolReturn={onToolReturn}
+            />
+          </header>
+        </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto h-[calc(100vh-48px)]">
           {children}
         </div>
 
