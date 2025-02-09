@@ -33,18 +33,22 @@ export function DashboardAuthCheck({ children }: DashboardAuthCheckProps) {
         // Log session for debugging
         console.log("Active session found:", session.user.id);
 
-        // Record session activity
+        // Record session activity with unique constraint handling
         const { error: updateError } = await supabase
           .from('auth_sessions')
           .upsert({
+            id: crypto.randomUUID(), // Generate unique ID for new sessions
             user_id: session.user.id,
             last_seen_at: new Date().toISOString(),
+            metadata: { lastRoute: 'dashboard' }
           }, {
-            onConflict: 'user_id'
+            onConflict: 'user_id',
+            ignoreDuplicates: false
           });
 
         if (updateError) {
           console.error("Error updating session activity:", updateError);
+          // Continue execution as this is not critical
         }
 
         setIsLoading(false);
