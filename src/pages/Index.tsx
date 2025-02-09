@@ -1,5 +1,6 @@
 
 import { HeroSection } from "@/components/landing/HeroSection";
+import { Stats } from "@/components/Stats";
 import { Features } from "@/components/Features";
 import { Footer } from "@/components/landing/Footer";
 import { motion } from "framer-motion";
@@ -25,6 +26,8 @@ export default function Index() {
       >
         <Suspense fallback={<LoadingFallback />}>
           <HeroSection />
+          <Stats />
+          <Features />
         </Suspense>
       </motion.div>
     </div>
