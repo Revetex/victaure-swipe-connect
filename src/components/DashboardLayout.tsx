@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
-  const [currentPage, setCurrentPage] = useState(4); // Set to 4 (Actualité) by default
+  const [currentPage, setCurrentPage] = useState(4);
   const [isEditing, setIsEditing] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { profile } = useProfile();
@@ -24,24 +24,19 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className={cn(
-      "flex min-h-screen bg-background relative overflow-hidden",
-      "before:absolute before:inset-0 before:bg-grid-white/10 before:bg-[size:10px_10px] before:[mask-image:radial-gradient(white,transparent_85%)]"
-    )}>
+    <div className="flex min-h-screen bg-background relative">
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: [0.2, 0.4, 0.2] }}
+        animate={{ opacity: [0.1, 0.2, 0.1] }}
         transition={{ duration: 5, repeat: Infinity }}
         className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#8B5CF6,transparent)]"
       />
 
-      {/* Desktop Sidebar - Fixed Position */}
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
       />
 
-      {/* Mobile Header - Fixed Position */}
       <DashboardMobileNav
         currentPage={currentPage}
         showMobileMenu={showMobileMenu}
@@ -49,10 +44,9 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         onPageChange={handlePageChange}
       />
 
-      {/* Main Content - Scrollable Area */}
       <main className={cn(
-        "flex-1 lg:ml-64 h-screen relative",
-        "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        "flex-1 lg:ml-64 min-h-screen relative",
+        "glass-panel"
       )}>
         <div className="h-full flex flex-col pt-14 lg:pt-2">
           {children || (
