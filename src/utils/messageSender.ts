@@ -55,7 +55,7 @@ export const sendMessage = async (
       timestamp: messageData.created_at,
       status: 'sent',
       message_type: messageData.is_assistant ? 'ai' : 'user',
-      metadata: messageData.metadata || {},
+      metadata: typeof messageData.metadata === 'object' ? messageData.metadata : {} as Record<string, any>,
       sender: messageData.sender || {
         id: profile.id,
         full_name: profile.full_name,
@@ -69,4 +69,3 @@ export const sendMessage = async (
 
   return null;
 };
-
