@@ -1,3 +1,4 @@
+
 import { UserProfile } from "@/types/profile";
 import { VCard } from "./VCard";
 import { Dialog, DialogContent } from "./ui/dialog";
@@ -10,7 +11,7 @@ interface VProfileProps {
 }
 
 export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
-  if (!profile || profile.privacy_enabled) {
+  if (!profile) {
     return null;
   }
 
@@ -25,7 +26,7 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.2 }}
             >
-              <VCard />
+              <VCard profile={profile} />
             </motion.div>
           )}
         </AnimatePresence>

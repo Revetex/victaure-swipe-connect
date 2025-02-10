@@ -1,4 +1,3 @@
-
 import { ChessPiece } from "@/types/chess";
 import { isValidPosition } from "./boardUtils";
 
@@ -45,25 +44,30 @@ export function calculatePossibleMoves(
       const startRow = piece.isWhite ? 6 : 1;
 
       // Forward movement
-      const nextRow = fromRow + direction;
-      if (isValidPosition(nextRow, fromCol) && !board[nextRow][fromCol]) {
-        addMove(nextRow, fromCol);
+      if (isValidPosition(fromRow + direction, fromCol) && !board[fromRow + direction][fromCol]) {
+        addMove(fromRow + direction, fromCol);
         
         // Double move from starting position
-        if (fromRow === startRow && !board[fromRow + 2 * direction]?.[fromCol]) {
-          addMove(fromRow + 2 * direction, fromCol);
+        if (fromRow === startRow && !board[fromRow + direction][fromCol]) {
+          const doubleRow = fromRow + 2 * direction;
+          if (isValidPosition(doubleRow, fromCol) && !board[doubleRow][fromCol]) {
+            addMove(doubleRow, fromCol);
+          }
         }
       }
 
       // Captures
-      for (const captureCol of [fromCol - 1, fromCol + 1]) {
-        if (isValidPosition(nextRow, captureCol)) {
-          const target = board[nextRow][captureCol];
-          if (target && target.isWhite !== piece.isWhite) {
-            addMove(nextRow, captureCol);
+      [-1, 1].forEach(offset => {
+        const newCol = fromCol + offset;
+        const newRow = fromRow + direction;
+        
+        if (isValidPosition(newRow, newCol)) {
+          const targetPiece = board[newRow][newCol];
+          if (targetPiece && targetPiece.isWhite !== piece.isWhite) {
+            addMove(newRow, newCol);
           }
         }
-      }
+      });
       break;
     }
 
