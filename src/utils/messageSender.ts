@@ -14,7 +14,6 @@ export const sendMessage = async (
     receiver_id: receiver.id,
     message_type: receiver.id === 'assistant' ? 'ai' : 'user',
     is_assistant: receiver.id === 'assistant',
-    read: false,
     status: 'sent',
     metadata: {
       device: 'web',
@@ -34,6 +33,8 @@ export const sendMessage = async (
 
   if (messageError) throw messageError;
 
+  // Message delivery will be created automatically via trigger
+
   const notification = {
     user_id: receiver.id,
     title: "Nouveau message",
@@ -41,13 +42,10 @@ export const sendMessage = async (
     type: 'message'
   };
 
-  const { error: notificationError } = await supabase
+  await supabase
     .from('notifications')
-    .insert(notification);
-
-  if (notificationError) {
-    console.error('Erreur notification:', notificationError);
-  }
+    .insert(notification)
+    .throwOnError();
 
   if (messageData) {
     return {

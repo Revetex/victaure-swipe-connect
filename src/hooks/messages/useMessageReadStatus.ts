@@ -13,39 +13,28 @@ export const useMessageReadStatus = (showConversation: boolean, receiver: Receiv
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        // Start a transaction to update both messages and deliveries
+        // First update the messages table
         const { error: messagesError } = await supabase
           .from('messages')
           .update({ 
-            read: true,
             status: 'read',
             updated_at: new Date().toISOString()
           })
           .eq('sender_id', receiver.id)
           .eq('receiver_id', user.id)
-          .eq('read', false);
+          .neq('status', 'read');
 
         if (messagesError) {
           console.error('Error marking messages as read:', messagesError);
           return;
         }
 
-        // Update message deliveries
-        const { error: deliveriesError } = await supabase
-          .from('message_deliveries')
-          .update({
-            status: 'read',
-            read_at: new Date().toISOString()
-          })
-          .eq('recipient_id', user.id)
-          .is('read_at', null);
-
-        if (deliveriesError) {
-          console.error('Error updating message deliveries:', deliveriesError);
-        }
+        // Message deliveries will be automatically updated via trigger
+        console.log('Messages marked as read for receiver:', receiver.id);
 
       } catch (error) {
         console.error('Error in markMessagesAsRead:', error);
+        toast.error("Erreur lors de la mise à jour des messages");
       }
     };
 

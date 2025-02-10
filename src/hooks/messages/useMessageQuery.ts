@@ -24,7 +24,11 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
             online_status,
             last_seen
           ),
-          message_deliveries(*)
+          message_deliveries!inner(
+            status,
+            delivered_at,
+            read_at
+          )
         `)
         .order('created_at', { ascending: false })
         .limit(MESSAGES_PER_PAGE);
@@ -57,11 +61,7 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
       return messages?.map(msg => ({
         ...msg,
         timestamp: msg.created_at,
-        status: msg.message_deliveries?.length > 0 
-          ? msg.message_deliveries[0].status
-          : msg.read 
-            ? 'read' 
-            : 'delivered',
+        status: msg.message_deliveries[0]?.status || msg.status || 'sent',
         message_type: msg.is_assistant ? 'ai' : 'user',
         metadata: msg.metadata || {}
       })) as Message[] || [];
