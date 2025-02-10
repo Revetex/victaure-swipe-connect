@@ -9,7 +9,6 @@ import { useAIChat } from "@/hooks/useAIChat";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMessageReadStatus } from "@/hooks/useMessageReadStatus";
-import { Shield } from "lucide-react";
 
 export function MessagesContainer() {
   const { receiver, setReceiver } = useReceiver();
@@ -32,6 +31,7 @@ export function MessagesContainer() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { handleDeleteConversation } = useConversationDelete();
 
+  // Use the hook to automatically mark messages as read
   useMessageReadStatus(showConversation, receiver);
 
   const handleSelectConversation = (selectedReceiver: any) => {
@@ -59,25 +59,29 @@ export function MessagesContainer() {
     setInputMessage('');
   };
 
+  // Auto-scroll to latest messages
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [userMessages, aiMessages]);
+
   if (isLoadingMessages) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-12rem)]">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-muted-foreground flex items-center gap-2"
+          className="text-muted-foreground"
         >
-          <Shield className="w-4 h-4 text-emerald-500" />
-          <span>Chargement sécurisé des messages...</span>
+          Chargement des messages...
         </motion.div>
       </div>
     );
   }
 
   return (
-    <Card className="h-[calc(100vh-4rem)] sm:h-[calc(100vh-8rem)] max-h-[calc(100vh-4rem)] sm:max-h-[calc(100vh-8rem)] flex flex-col overflow-hidden relative bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="absolute inset-0 bg-gradient-to-b from-background/5 via-background/10 to-background/5 pointer-events-none" />
-      
+    <Card className="h-[calc(100vh-12rem)] max-h-[calc(100vh-12rem)] flex flex-col overflow-hidden">
       <AnimatePresence mode="wait">
         {showConversation && receiver ? (
           <motion.div
@@ -85,7 +89,7 @@ export function MessagesContainer() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="flex-1 overflow-hidden relative"
+            className="flex-1 overflow-hidden"
           >
             <ConversationView
               receiver={receiver}
@@ -107,7 +111,7 @@ export function MessagesContainer() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className="flex-1 overflow-hidden relative"
+            className="flex-1 overflow-hidden"
           >
             <ConversationList
               messages={userMessages}

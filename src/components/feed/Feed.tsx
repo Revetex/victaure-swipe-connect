@@ -8,9 +8,6 @@ import { cn } from "@/lib/utils";
 import { ChevronUp } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRef, useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FriendRequestsSection } from "@/components/feed/friends/FriendRequestsSection";
-import { ProfileSearch } from "@/components/feed/ProfileSearch";
 
 export function Feed() {
   const queryClient = useQueryClient();
@@ -42,48 +39,19 @@ export function Feed() {
     });
   };
 
-  const handleProfileSelect = (profile: any) => {
-    // Handle profile selection if needed
-  };
-
   return (
     <ScrollArea 
       ref={scrollRef} 
-      className="h-[calc(100vh-3rem)] w-full"
+      className="h-[calc(100vh-8rem)] w-full"
       onScroll={handleScroll}
     >
-      <main className="max-w-3xl mx-auto px-4 py-4 space-y-4">
-        <Tabs defaultValue="feed" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-4">
-            <TabsTrigger value="feed">Actualités</TabsTrigger>
-            <TabsTrigger value="requests">Demandes</TabsTrigger>
-            <TabsTrigger value="search">Rechercher</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="feed" className="space-y-4">
-            <CreatePost onPostCreated={handlePostCreated} />
-            <PostList 
-              onPostDeleted={handlePostDeleted}
-              onPostUpdated={handlePostUpdated}
-            />
-          </TabsContent>
-
-          <TabsContent value="requests">
-            <FriendRequestsSection />
-          </TabsContent>
-
-          <TabsContent value="search">
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold">Rechercher des profils</h2>
-              <ProfileSearch 
-                onSelect={handleProfileSelect}
-                placeholder="Rechercher un utilisateur..."
-                className="w-full"
-              />
-            </div>
-          </TabsContent>
-        </Tabs>
-      </main>
+      <div className="max-w-3xl mx-auto px-4 py-4 space-y-4">
+        <CreatePost onPostCreated={handlePostCreated} />
+        <PostList 
+          onPostDeleted={handlePostDeleted}
+          onPostUpdated={handlePostUpdated}
+        />
+      </div>
 
       <AnimatePresence>
         {showScrollTop && (

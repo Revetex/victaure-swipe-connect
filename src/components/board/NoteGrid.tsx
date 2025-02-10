@@ -11,7 +11,7 @@ interface NoteGridProps {
 
 export function NoteGrid({ notes, onDeleteNote }: NoteGridProps) {
   return (
-    <div className="w-full p-2">
+    <div className="w-full p-4">
       <AnimatePresence mode="popLayout">
         {notes && notes.length > 0 ? (
           <NoteGridContainer notes={notes} onDeleteNote={onDeleteNote} />

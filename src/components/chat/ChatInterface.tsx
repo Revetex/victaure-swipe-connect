@@ -69,7 +69,7 @@ export function ChatInterface() {
         animate={{ 
           borderColor: isThinking ? "hsl(var(--primary))" : "transparent" 
         }}
-        className="sm:p-4 p-2 border-b transition-colors duration-200 sticky top-0 bg-background/95 backdrop-blur z-50"
+        className="p-4 border-b transition-colors duration-200"
       >
         <h2 className="text-xl font-semibold">Chat avec M. Victaure</h2>
         <p className="text-sm text-muted-foreground">
@@ -93,7 +93,7 @@ export function ChatInterface() {
         )}
       </AnimatePresence>
 
-      <div className="sm:p-4 p-2 border-t bg-background/95 backdrop-blur-sm sticky bottom-0 z-50">
+      <div className="p-4 border-t bg-background/95 backdrop-blur-sm sticky bottom-0 z-50">
         <ChatInput
           value={input}
           onChange={setInput}
@@ -105,4 +105,3 @@ export function ChatInterface() {
     </ChatContainer>
   );
 }
-

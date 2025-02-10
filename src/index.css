@@ -3,13 +3,52 @@
 @tailwind components;
 @tailwind utilities;
 
-@import './styles/base.css';
-@import './styles/glass.css';
-@import './styles/themes.css';
-@import './styles/sticky-notes.css';
-@import './styles/utilities.css';
-@import './styles/mobile.css';
-@import './styles/tools.css';
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 10% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 10% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 10% 10%;
+    --primary: 240 10% 20%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 10% 95%;
+    --secondary-foreground: 240 10% 20%;
+    --muted: 240 10% 95%;
+    --muted-foreground: 240 10% 40%;
+    --accent: 240 10% 95%;
+    --accent-foreground: 240 10% 20%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 10% 90%;
+    --input: 240 10% 90%;
+    --ring: 240 10% 20%;
+    --radius: 0.75rem;
+  }
+ 
+  .dark {
+    --background: 220 10% 4%;
+    --foreground: 210 10% 98%;
+    --card: 220 10% 4%;
+    --card-foreground: 210 10% 98%;
+    --popover: 220 10% 4%;
+    --popover-foreground: 210 10% 98%;
+    --primary: 210 10% 98%;
+    --primary-foreground: 220 10% 4%;
+    --secondary: 220 10% 12%;
+    --secondary-foreground: 210 10% 98%;
+    --muted: 220 10% 12%;
+    --muted-foreground: 220 10% 70%;
+    --accent: 220 10% 12%;
+    --accent-foreground: 210 10% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 10% 98%;
+    --border: 220 10% 12%;
+    --input: 220 10% 12%;
+    --ring: 220 10% 80%;
+  }
+}
 
 @layer base {
   * {
@@ -18,5 +57,190 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
+  }
+}
+
+@layer components {
+  .tool-button {
+    @apply relative flex items-center justify-center p-3
+           transition-all duration-300 ease-in-out
+           hover:scale-105 active:scale-95
+           rounded-lg shadow-sm hover:shadow-md
+           bg-background/80 hover:bg-background
+           border border-border/50;
+  }
+
+  .tool-button[data-state="active"] {
+    @apply bg-primary text-primary-foreground
+           scale-105 shadow-lg;
+  }
+
+  .tool-icon {
+    @apply w-6 h-6 transition-transform duration-300
+           group-hover:scale-110 group-active:scale-90;
+  }
+
+  /* Amélioration des cibles tactiles */
+  button, 
+  input, 
+  select, 
+  textarea {
+    @apply min-h-[44px] min-w-[44px] touch-manipulation;
+  }
+
+  /* Espacement pour les cibles tactiles */
+  .touch-friendly {
+    @apply space-y-6;
+  }
+
+  /* Empêcher le zoom sur focus iOS */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  textarea {
+    @apply text-base;
+  }
+
+  /* Amélioration du défilement */
+  .smooth-scroll {
+    @apply scroll-smooth;
+  }
+
+  /* Amélioration de l'accessibilité tactile */
+  .touch-target {
+    @apply p-2 my-1;
+  }
+
+  /* Optimisations mobiles */
+  @media (max-width: 640px) {
+    html {
+      @apply text-[14px];
+    }
+
+    h1 {
+      @apply text-2xl sm:text-3xl md:text-4xl;
+    }
+
+    h2 {
+      @apply text-xl sm:text-2xl md:text-3xl;
+    }
+
+    h3 {
+      @apply text-lg sm:text-xl md:text-2xl;
+    }
+
+    input, 
+    select, 
+    textarea {
+      @apply text-base p-3;
+    }
+
+    button {
+      @apply px-4 py-2;
+    }
+
+    .container {
+      @apply px-4;
+    }
+
+    /* Amélioration de la navigation */
+    nav {
+      @apply py-2;
+    }
+
+    /* Meilleur espacement des cartes */
+    .card {
+      @apply p-4 my-2;
+    }
+
+    /* Ajustement des grilles */
+    .grid {
+      @apply gap-4;
+    }
+  }
+
+  /* Fix pour les hauteurs de viewport sur mobile */
+  .min-h-screen {
+    min-height: 100vh; /* Fallback */
+    min-height: -webkit-fill-available;
+    min-height: 100dvh;
+  }
+
+  .h-screen {
+    height: 100vh; /* Fallback */
+    height: -webkit-fill-available;
+    height: 100dvh;
+  }
+}
+
+@layer components {
+  .sticky-note {
+    @apply p-6 rounded-lg shadow-lg transition-all duration-200 
+           hover:shadow-xl hover:-translate-y-1
+           backdrop-blur supports-[backdrop-filter]:bg-background/60 relative
+           sm:touch-none
+           active:shadow-lg
+           active:scale-[0.98]
+           w-full sm:w-[280px] min-h-[280px];
+  }
+
+  .sticky-note-yellow {
+    @apply bg-[#FEF7CD]/90 hover:bg-[#FEF7CD] border border-yellow-200/50;
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.1);
+  }
+
+  .sticky-note-blue {
+    @apply bg-[#D3E4FD]/90 hover:bg-[#D3E4FD] border border-blue-200/50;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+  }
+
+  .sticky-note-green {
+    @apply bg-[#F2FCE2]/90 hover:bg-[#F2FCE2] border border-green-200/50;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.1);
+  }
+
+  .sticky-note-red {
+    @apply bg-[#FFE5E5]/90 hover:bg-[#FFE5E5] border border-red-200/50;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
+  }
+
+  .sticky-note-purple {
+    @apply bg-[#E5DEFF]/90 hover:bg-[#E5DEFF] border border-purple-200/50;
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.1);
+  }
+
+  .mobile-friendly-input {
+    @apply min-h-[44px] px-4 py-2 text-base;
+    touch-action: manipulation;
+  }
+
+  .mobile-friendly-button {
+    @apply min-h-[44px] min-w-[44px] px-4;
+    touch-action: manipulation;
+  }
+}
+
+@layer utilities {
+  .touch-target {
+    @apply p-2;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .content-height {
+    height: calc(100vh - theme('spacing.32')); /* 8rem (4rem header + 4rem footer) */
+    overflow-y: auto;
   }
 }

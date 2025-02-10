@@ -1,15 +1,15 @@
 
+import { ExternalSearchSection } from "@/components/jobs/sections/ExternalSearchSection";
+import { useJobFilters } from "@/hooks/useJobFilters";
 import { motion } from "framer-motion";
 import { CheckCircle, Sparkles } from "lucide-react";
-import { JobFiltersPanel } from "./jobs/JobFiltersPanel";
-import { useJobFilters } from "@/hooks/useJobFilters";
 
 export function Marketplace() {
   const { filters, updateFilter } = useJobFilters();
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Animated background */}
+      {/* Animated background similar to landing page */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)]" />
         <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
@@ -57,7 +57,7 @@ export function Marketplace() {
             className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6"
           >
             <span className="bg-gradient-to-r from-purple-400 via-violet-500 to-purple-600 bg-clip-text text-transparent">
-              Trouvez votre prochaine mission
+              Trouvez votre prochaine opportunité
             </span>
           </motion.h1>
 
@@ -88,12 +88,10 @@ export function Marketplace() {
           </motion.div>
         </motion.div>
 
-        <div className="container mx-auto px-4">
-          <JobFiltersPanel 
-            filters={filters}
-            onFilterChange={updateFilter}
-          />
-        </div>
+        <ExternalSearchSection 
+          filters={filters}
+          onFilterChange={updateFilter}
+        />
       </div>
     </div>
   );

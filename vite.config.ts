@@ -1,4 +1,3 @@
-
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
@@ -18,9 +17,9 @@ export default defineConfig(({ mode }) => ({
     host: '0.0.0.0',
     port: 8080,
     hmr: {
-      protocol: 'wss',
+      protocol: 'ws',
       host: '052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
-      clientPort: 443
+      clientPort: 8080
     },
     watch: {
       usePolling: true,
@@ -32,8 +31,7 @@ export default defineConfig(({ mode }) => ({
         'https://mfjllillnpleasclqabb.supabase.co',
         'wss://mfjllillnpleasclqabb.supabase.co',
         'https://mfjllillnpleasclqabb.supabase.co/auth/v1/*',
-        'https://mfjllillnpleasclqabb.supabase.co/rest/v1/*',
-        'https://lovable.dev'
+        'https://mfjllillnpleasclqabb.supabase.co/rest/v1/*'
       ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: [

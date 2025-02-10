@@ -1,4 +1,3 @@
-
 import { Users, Briefcase, DollarSign, Star } from "lucide-react";
 
 const stats = [

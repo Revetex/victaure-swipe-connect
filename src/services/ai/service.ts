@@ -4,20 +4,15 @@ import { Message } from "@/types/chat/messageTypes";
 
 export const saveMessage = async (message: Message) => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("User not authenticated");
-
     const { error } = await supabase
-      .from('messages')
+      .from('ai_chat_messages')
       .insert({
+        id: message.id,
+        user_id: message.sender_id === 'assistant' ? message.receiver_id : message.sender_id,
         content: message.content,
-        sender_id: user.id,
-        receiver_id: user.id,
-        message_type: message.sender_id === 'assistant' ? 'ai' : 'user',
+        sender: message.sender_id === 'assistant' ? 'assistant' : 'user',
         created_at: message.created_at,
-        updated_at: message.updated_at,
-        read: false,
-        metadata: {}
+        updated_at: message.updated_at
       });
 
     if (error) throw error;
@@ -33,9 +28,9 @@ export const deleteAllMessages = async () => {
     if (!user) throw new Error("User not authenticated");
 
     const { error } = await supabase
-      .from('messages')
+      .from('ai_chat_messages')
       .delete()
-      .eq('sender_id', user.id);
+      .eq('user_id', user.id);
 
     if (error) throw error;
   } catch (error) {
@@ -50,9 +45,9 @@ export const loadMessages = async (): Promise<Message[]> => {
     if (!user) throw new Error("User not authenticated");
 
     const { data: messages, error } = await supabase
-      .from('messages')
+      .from('ai_chat_messages')
       .select('*')
-      .eq('sender_id', user.id)
+      .eq('user_id', user.id)
       .order('created_at', { ascending: true });
 
     if (error) throw error;
@@ -60,28 +55,38 @@ export const loadMessages = async (): Promise<Message[]> => {
     return messages.map(msg => ({
       id: msg.id,
       content: msg.content,
-      sender: msg.message_type === 'ai' ? {
-        id: 'assistant',
-        full_name: 'M. Victaure',
-        avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-        online_status: true,
-        last_seen: new Date().toISOString()
-      } : {
-        id: user.id,
-        full_name: user.user_metadata.full_name || 'User',
-        avatar_url: user.user_metadata.avatar_url,
-        online_status: true,
-        last_seen: new Date().toISOString()
-      },
+      sender: msg.sender,
       timestamp: msg.created_at,
       created_at: msg.created_at,
       updated_at: msg.updated_at,
-      sender_id: msg.message_type === 'ai' ? 'assistant' : user.id,
-      receiver_id: user.id,
+      sender_id: msg.sender === 'assistant' ? 'assistant' : user.id,
+      receiver_id: msg.sender === 'assistant' ? user.id : 'assistant',
       read: true
     }));
   } catch (error) {
     console.error("Error loading messages:", error);
+    throw error;
+  }
+};
+
+export const generateAIResponse = async (message: string): Promise<string> => {
+  try {
+    const response = await fetch('/api/ai-chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to generate AI response');
+    }
+
+    const data = await response.json();
+    return data.response;
+  } catch (error) {
+    console.error("Error generating AI response:", error);
     throw error;
   }
 };

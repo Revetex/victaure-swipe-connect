@@ -8,7 +8,6 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { useReceiver } from "@/hooks/useReceiver";
 
 interface FriendItemProps {
   friend: FriendPreview;
@@ -17,7 +16,6 @@ interface FriendItemProps {
 
 export function FriendItem({ friend, onMessage }: FriendItemProps) {
   const [showProfile, setShowProfile] = useState(false);
-  const { setReceiver, setShowConversation } = useReceiver();
 
   const handleRemoveFriend = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -66,18 +64,6 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
     }
   };
 
-  const handleMessageClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setReceiver({
-      id: friend.id,
-      full_name: friend.full_name || '',
-      avatar_url: friend.avatar_url || '',
-      online_status: friend.online_status || false,
-      last_seen: friend.last_seen || new Date().toISOString()
-    });
-    setShowConversation(true);
-  };
-
   return (
     <>
       <div 
@@ -111,7 +97,10 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            onClick={handleMessageClick}
+            onClick={(e) => {
+              e.stopPropagation();
+              onMessage(friend.id);
+            }}
           >
             <MessageCircle className="h-4 w-4" />
           </Button>
@@ -138,7 +127,6 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
         profile={friend}
         isOpen={showProfile}
         onClose={() => setShowProfile(false)}
-        onRequestChat={() => handleMessageClick({ stopPropagation: () => {} } as React.MouseEvent)}
       />
     </>
   );
