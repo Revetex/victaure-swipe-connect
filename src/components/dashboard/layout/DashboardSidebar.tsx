@@ -7,6 +7,8 @@ import { navigationItems } from "@/config/navigation";
 import { useProfile } from "@/hooks/useProfile";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { ProfilePreview } from "@/components/ProfilePreview";
 
 interface DashboardSidebarProps {
   currentPage: number;
@@ -15,6 +17,7 @@ interface DashboardSidebarProps {
 
 export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebarProps) {
   const { profile } = useProfile();
+  const [showProfilePreview, setShowProfilePreview] = useState(false);
 
   return (
     <aside className="hidden lg:block w-64 border-r fixed h-screen overflow-hidden">
@@ -51,31 +54,46 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
           <>
             <Separator />
             <div className="p-4">
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  {profile.avatar_url ? (
-                    <img
-                      src={profile.avatar_url}
-                      alt={profile.full_name}
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-sm font-medium">
-                      {profile.full_name?.[0]?.toUpperCase()}
-                    </span>
-                  )}
+              <button
+                onClick={() => setShowProfilePreview(true)}
+                className="w-full"
+              >
+                <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    {profile.avatar_url ? (
+                      <img
+                        src={profile.avatar_url}
+                        alt={profile.full_name || ""}
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-sm font-medium">
+                        {profile.full_name?.[0]?.toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="font-medium truncate text-sm">
+                      {profile.full_name || "Utilisateur"}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {profile.role}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate text-sm">{profile.full_name}</p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {profile.role}
-                  </p>
-                </div>
-              </div>
+              </button>
             </div>
           </>
         )}
       </div>
+
+      {profile && (
+        <ProfilePreview
+          profile={profile}
+          isOpen={showProfilePreview}
+          onClose={() => setShowProfilePreview(false)}
+        />
+      )}
     </aside>
   );
 }
