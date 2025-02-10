@@ -29,15 +29,8 @@ export function useNotes() {
 
       setNotes(data.map(note => ({
         id: note.id,
-        text: note.text,
-        color: note.color,
-        user_id: note.user_id,
-        category: note.category,
-        priority: note.priority,
-        title: note.title,
-        pinned: note.pinned,
-        created_at: note.created_at,
-        updated_at: note.updated_at
+        text: note.content,
+        color: note.color
       })));
     } catch (error) {
       console.error('Error fetching notes:', error);
@@ -60,7 +53,7 @@ export function useNotes() {
       const { data, error } = await supabase
         .from('notes')
         .insert({
-          text: newNote,
+          content: newNote,
           color: selectedColor,
           user_id: user.id
         })
@@ -71,15 +64,8 @@ export function useNotes() {
 
       setNotes(prev => [{
         id: data.id,
-        text: data.text,
-        color: data.color,
-        user_id: data.user_id,
-        category: data.category,
-        priority: data.priority,
-        title: data.title,
-        pinned: data.pinned,
-        created_at: data.created_at,
-        updated_at: data.updated_at
+        text: data.content,
+        color: data.color
       }, ...prev]);
 
       setNewNote("");

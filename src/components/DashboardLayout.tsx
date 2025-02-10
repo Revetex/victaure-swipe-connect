@@ -23,7 +23,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-background">
+    <div className="flex min-h-screen bg-background">
       {/* Desktop Sidebar */}
       <DashboardSidebar 
         currentPage={currentPage}
@@ -39,7 +39,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       />
 
       {/* Main Content */}
-      <main className="flex-1 h-screen lg:ml-64">
+      <main className="flex-1 lg:ml-64 h-screen">
         <div className="h-full flex flex-col pt-14 lg:pt-0">
           {children || (
             <DashboardContent
