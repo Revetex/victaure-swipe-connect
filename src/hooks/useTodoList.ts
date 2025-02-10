@@ -1,6 +1,8 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Todo } from "@/types/todo";
+import { supabase } from "@/integrations/supabase/client";
 
 export function useTodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -12,14 +14,27 @@ export function useTodoList() {
 
   const addTodo = async () => {
     if (newTodo.trim()) {
-      const todo = {
-        id: Date.now().toString(), // Convert to string
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour ajouter une tâche",
+        });
+        return;
+      }
+
+      const todo: Todo = {
+        id: Date.now().toString(),
         text: newTodo,
         completed: false,
         dueDate: selectedDate,
         dueTime: allDay ? undefined : selectedTime,
         allDay,
+        user_id: user.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       };
+      
       setTodos([...todos, todo]);
       setNewTodo("");
       setSelectedDate(undefined);
