@@ -32,15 +32,17 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
         query = query.lt('page_cursor', lastCursor);
       }
 
-      if (receiver?.id === 'assistant') {
-        query = query
-          .eq('receiver_id', user.id)
-          .eq('message_type', 'ai');
-      } else if (receiver) {
-        query = query.or(
-          `and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),` +
-          `and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`
-        ).eq('message_type', 'user');
+      if (receiver) {
+        if (receiver.id === 'assistant') {
+          query = query
+            .eq('receiver_id', user.id)
+            .eq('is_assistant', true);
+        } else {
+          query = query.or(
+            `and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),` +
+            `and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`
+          ).eq('is_assistant', false);
+        }
       }
 
       const { data: messages, error } = await query;
@@ -55,8 +57,8 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
         ...msg,
         timestamp: msg.created_at,
         status: msg.read ? 'read' : 'delivered',
-        message_type: (msg.message_type || 'user') as Message['message_type'],
-        metadata: (msg.metadata || {}) as Record<string, any>
+        message_type: msg.is_assistant ? 'ai' : 'user',
+        metadata: msg.metadata || {}
       })) as Message[] || [];
     },
     enabled: true

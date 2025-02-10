@@ -946,6 +946,7 @@ export type Database = {
           edited_at: string | null
           id: string
           is_ai_message: boolean | null
+          is_assistant: boolean | null
           is_deleted: boolean | null
           message_type: string | null
           metadata: Json | null
@@ -967,6 +968,7 @@ export type Database = {
           edited_at?: string | null
           id?: string
           is_ai_message?: boolean | null
+          is_assistant?: boolean | null
           is_deleted?: boolean | null
           message_type?: string | null
           metadata?: Json | null
@@ -988,6 +990,7 @@ export type Database = {
           edited_at?: string | null
           id?: string
           is_ai_message?: boolean | null
+          is_assistant?: boolean | null
           is_deleted?: boolean | null
           message_type?: string | null
           metadata?: Json | null
