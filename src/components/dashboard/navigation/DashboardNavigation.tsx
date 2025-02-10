@@ -7,17 +7,19 @@ interface DashboardNavigationProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   isEditing?: boolean;
+  className?: string;
 }
 
 export function DashboardNavigation({ 
   currentPage, 
   onPageChange,
-  isEditing 
+  isEditing,
+  className 
 }: DashboardNavigationProps) {
   if (isEditing) return null;
 
   return (
-    <div className="flex items-center justify-around w-full max-w-2xl mx-auto">
+    <div className={cn("flex items-center justify-around w-full max-w-2xl mx-auto", className)}>
       {navigationItems.map(({ id, icon: Icon, name }) => (
         <motion.button
           key={id}

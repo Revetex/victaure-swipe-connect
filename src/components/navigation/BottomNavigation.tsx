@@ -1,5 +1,5 @@
 
-import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
+import { DashboardNavigation } from "@/components/dashboard/navigation/DashboardNavigation";
 import { cn } from "@/lib/utils";
 
 interface BottomNavigationProps {
