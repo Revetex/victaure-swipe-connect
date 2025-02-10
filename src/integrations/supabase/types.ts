@@ -297,11 +297,57 @@ export type Database = {
           },
         ]
       }
+      conversation_participants: {
+        Row: {
+          conversation_id: string | null
+          id: string
+          joined_at: string | null
+          left_at: string | null
+          role: string | null
+          user_id: string | null
+        }
+        Insert: {
+          conversation_id?: string | null
+          id?: string
+          joined_at?: string | null
+          left_at?: string | null
+          role?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          conversation_id?: string | null
+          id?: string
+          joined_at?: string | null
+          left_at?: string | null
+          role?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_participants_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           created_at: string
+          group_avatar: string | null
+          group_name: string | null
           id: string
           is_deleted: boolean | null
+          is_group: boolean | null
+          last_activity: string | null
           last_message: string | null
           last_message_time: string | null
           metadata: Json | null
@@ -311,8 +357,12 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          group_avatar?: string | null
+          group_name?: string | null
           id?: string
           is_deleted?: boolean | null
+          is_group?: boolean | null
+          last_activity?: string | null
           last_message?: string | null
           last_message_time?: string | null
           metadata?: Json | null
@@ -322,8 +372,12 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          group_avatar?: string | null
+          group_name?: string | null
           id?: string
           is_deleted?: boolean | null
+          is_group?: boolean | null
+          last_activity?: string | null
           last_message?: string | null
           last_message_time?: string | null
           metadata?: Json | null
@@ -948,6 +1002,7 @@ export type Database = {
           is_ai_message: boolean | null
           is_assistant: boolean | null
           is_deleted: boolean | null
+          message_state: string | null
           message_type: string | null
           metadata: Json | null
           page_cursor: string | null
@@ -956,6 +1011,7 @@ export type Database = {
           receiver_id: string
           sender_id: string | null
           status: string | null
+          system_message: boolean | null
           timestamp: string | null
           updated_at: string | null
         }
@@ -970,6 +1026,7 @@ export type Database = {
           is_ai_message?: boolean | null
           is_assistant?: boolean | null
           is_deleted?: boolean | null
+          message_state?: string | null
           message_type?: string | null
           metadata?: Json | null
           page_cursor?: string | null
@@ -978,6 +1035,7 @@ export type Database = {
           receiver_id: string
           sender_id?: string | null
           status?: string | null
+          system_message?: boolean | null
           timestamp?: string | null
           updated_at?: string | null
         }
@@ -992,6 +1050,7 @@ export type Database = {
           is_ai_message?: boolean | null
           is_assistant?: boolean | null
           is_deleted?: boolean | null
+          message_state?: string | null
           message_type?: string | null
           metadata?: Json | null
           page_cursor?: string | null
@@ -1000,6 +1059,7 @@ export type Database = {
           receiver_id?: string
           sender_id?: string | null
           status?: string | null
+          system_message?: boolean | null
           timestamp?: string | null
           updated_at?: string | null
         }
