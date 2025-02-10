@@ -10,17 +10,12 @@ export function ChessSection() {
   return (
     <div className={cn(
       "flex flex-col h-full",
-      "max-h-[calc(100vh-8rem)]",
-      "sm:max-h-[calc(100vh-12rem)]",
-      isMobile && "pb-16" // Ajoute un padding en bas sur mobile pour éviter que le contenu soit caché par la navigation
+      "max-h-[calc(100vh-4rem)]",
+      "sm:max-h-[calc(100vh-8rem)]",
+      isMobile && "pb-16" // Add bottom padding on mobile to avoid navigation overlap
     )}>
-      <ScrollArea className="flex-1 px-4">
-        <div className={cn(
-          "container mx-auto py-4",
-          "max-w-3xl" // Limite la largeur maximale pour une meilleure lisibilité
-        )}>
-          <ChessPage />
-        </div>
+      <ScrollArea className="flex-1">
+        <ChessPage />
       </ScrollArea>
     </div>
   );

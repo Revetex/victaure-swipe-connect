@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RefreshCw, Crown, Brain } from "lucide-react";
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 interface ChessControlsProps {
   isThinking: boolean;
@@ -21,21 +23,29 @@ export function ChessControls({
   onDifficultyChange,
   onReset,
 }: ChessControlsProps) {
+  const isMobile = useIsMobile();
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-xl bg-[#1A1F2C]/40 backdrop-blur border border-white/5 shadow-xl"
+      className={cn(
+        "flex flex-col sm:flex-row items-center justify-between gap-4",
+        "p-4 sm:p-6 rounded-xl bg-[#1A1F2C]/40 backdrop-blur border border-white/5 shadow-xl"
+      )}
     >
       <div className="flex items-center gap-4 w-full sm:w-auto">
         <Select value={difficulty} onValueChange={onDifficultyChange}>
-          <SelectTrigger className="w-[180px] bg-white/5">
-            <SelectValue placeholder="Select difficulty" />
+          <SelectTrigger className={cn(
+            "bg-white/5 transition-colors",
+            isMobile ? "w-32" : "w-[180px]"
+          )}>
+            <SelectValue placeholder="Difficulté" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="easy">Easy</SelectItem>
-            <SelectItem value="medium">Medium</SelectItem>
-            <SelectItem value="hard">Hard</SelectItem>
+            <SelectItem value="easy">Facile</SelectItem>
+            <SelectItem value="medium">Moyen</SelectItem>
+            <SelectItem value="hard">Difficile</SelectItem>
           </SelectContent>
         </Select>
         
@@ -58,7 +68,7 @@ export function ChessControls({
           <div className="flex items-center gap-2 text-yellow-400">
             <Crown className="h-5 w-5" />
             <span className="font-semibold">
-              {isWhiteTurn ? "Black wins!" : "White wins!"}
+              {isWhiteTurn ? "Les noirs gagnent!" : "Les blancs gagnent!"}
             </span>
           </div>
         ) : (
@@ -66,11 +76,11 @@ export function ChessControls({
             {isThinking ? (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Brain className="h-5 w-5 animate-pulse" />
-                <span>AI is thinking...</span>
+                <span>L'IA réfléchit...</span>
               </div>
             ) : (
               <span className="font-semibold">
-                {isWhiteTurn ? "White" : "Black"}'s turn
+                Tour des {isWhiteTurn ? "blancs" : "noirs"}
               </span>
             )}
           </div>
@@ -79,4 +89,3 @@ export function ChessControls({
     </motion.div>
   );
 }
-

@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { ChessPiece } from "./types";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ChessBoardProps {
   board: (ChessPiece | null)[][];
@@ -22,6 +23,8 @@ export function ChessBoard({
   isWhiteTurn,
   onSquareClick,
 }: ChessBoardProps) {
+  const isMobile = useIsMobile();
+
   const getPieceSymbol = (piece: ChessPiece | null) => {
     if (!piece) return null;
     
@@ -41,10 +44,13 @@ export function ChessBoard({
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="w-full max-w-[min(90vh,600px)] mx-auto"
+      className={cn(
+        "w-full max-w-[min(90vh,600px)] mx-auto",
+        "transition-all duration-300"
+      )}
     >
       <div className={cn(
-        "relative grid grid-cols-8 gap-[2px] p-6 rounded-xl overflow-hidden",
+        "relative grid grid-cols-8 gap-[1px] p-2 sm:p-4 rounded-xl overflow-hidden",
         "bg-[#8E9196] shadow-[0_8px_32px_rgba(0,0,0,0.2)]",
         "before:absolute before:inset-0 before:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CiAgPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjMjIyIiBmaWxsLW9wYWNpdHk9IjAuMSIvPgogIDxjaXJjbGUgY3g9IjEwIiBjeT0iMTAiIHI9IjIiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8L3N2Zz4=')] before:opacity-30",
         "after:absolute after:inset-0 after:rounded-xl after:shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-2px_4px_rgba(0,0,0,0.2)]"
@@ -63,8 +69,9 @@ export function ChessBoard({
                 onClick={() => onSquareClick(rowIndex, colIndex)}
                 disabled={isThinking || (gameOver && !isWhiteTurn)}
                 className={cn(
-                  "aspect-square flex items-center justify-center text-4xl sm:text-5xl relative",
-                  "transition-all duration-300 ease-out",
+                  "aspect-square flex items-center justify-center relative",
+                  "transition-all duration-300 ease-out touch-manipulation",
+                  isMobile ? "text-3xl sm:text-4xl" : "text-4xl sm:text-5xl",
                   "border border-black/5",
                   isLight ? 'bg-[#eee]/90' : 'bg-[#403E43]/90',
                   isSelected && 'ring-2 ring-yellow-400/50 shadow-lg scale-[1.02] z-10',
@@ -96,4 +103,3 @@ export function ChessBoard({
     </motion.div>
   );
 }
-
