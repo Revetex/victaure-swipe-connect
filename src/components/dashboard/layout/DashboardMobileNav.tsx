@@ -25,7 +25,6 @@ export function DashboardMobileNav({
   const { user } = useAuth();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
 
-  // Convert User to UserProfile type for ProfilePreview
   const userProfile: UserProfile = {
     id: user?.id || '',
     email: user?.email || '',
@@ -47,7 +46,13 @@ export function DashboardMobileNav({
       <div className="flex h-14 items-center px-4">
         <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="lg:hidden">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="lg:hidden"
+              aria-label="Ouvrir le menu"
+              title="Ouvrir le menu"
+            >
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
