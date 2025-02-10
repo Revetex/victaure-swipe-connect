@@ -7,7 +7,6 @@ import { navigationItems } from "@/config/navigation";
 import { useProfile } from "@/hooks/useProfile";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Connections } from "@/components/Connections";
 
 interface DashboardSidebarProps {
   currentPage: number;
@@ -46,10 +45,6 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
               );
             })}
           </nav>
-
-          <div className="p-4">
-            <Connections />
-          </div>
         </ScrollArea>
 
         {profile && (
