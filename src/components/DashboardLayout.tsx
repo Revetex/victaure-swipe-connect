@@ -2,7 +2,6 @@
 import React, { useState, useCallback } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { DashboardContent } from "./dashboard/DashboardContent";
-import { Footer } from "./layout/Footer";
 import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
 import { motion } from "framer-motion";
@@ -52,7 +51,6 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
               />
             )}
           </div>
-          <Footer />
         </div>
       </main>
     </div>
