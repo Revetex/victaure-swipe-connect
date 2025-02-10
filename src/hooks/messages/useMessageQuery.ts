@@ -34,7 +34,7 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
 
       if (receiver) {
         if (receiver.id === 'assistant') {
-          // For AI assistant messages, only filter by receiver_id and is_assistant flag
+          // For AI assistant messages, filter by receiver_id and is_assistant flag
           query = query
             .eq('receiver_id', user.id)
             .eq('is_assistant', true);
