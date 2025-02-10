@@ -1,9 +1,13 @@
+
 import { useNotes } from "@/hooks/useNotes";
 import { NotesToolbar } from "@/components/notes/NotesToolbar";
 import { NoteGrid } from "@/components/board/NoteGrid";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 export function NotesSection() {
+  const isMobile = useIsMobile();
   const {
     notes,
     newNote,
@@ -24,7 +28,12 @@ export function NotesSection() {
   ];
 
   return (
-    <div className="flex flex-col h-full max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-12rem)]">
+    <div className={cn(
+      "flex flex-col h-full",
+      "max-h-[calc(100vh-8rem)]",
+      "sm:max-h-[calc(100vh-12rem)]",
+      isMobile && "pb-16" // Ajoute un padding en bas sur mobile pour éviter que le contenu soit caché par la navigation
+    )}>
       <NotesToolbar
         newNote={newNote}
         selectedColor={selectedColor}
@@ -33,7 +42,7 @@ export function NotesSection() {
         onColorChange={setSelectedColor}
         onAdd={addNote}
       />
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 px-4">
         <NoteGrid notes={notes} onDeleteNote={deleteNote} />
       </ScrollArea>
     </div>
