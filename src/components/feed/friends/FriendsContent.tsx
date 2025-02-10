@@ -18,11 +18,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 export function FriendsContent() {
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
-  const [showNotes, setShowNotes] = useState(false);
-  const [showCalculator, setShowCalculator] = useState(false);
-  const [showTasks, setShowTasks] = useState(false);
-  const [showTranslator, setShowTranslator] = useState(false);
-  const [showChess, setShowChess] = useState(false);
+  const [activeTool, setActiveTool] = useState<string | null>(null);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
@@ -30,46 +26,47 @@ export function FriendsContent() {
     {
       name: "Notes",
       icon: Plus,
-      action: () => setShowNotes(true),
-      color: "bg-amber-500/10 text-amber-500",
+      component: NotesPage,
       description: "Créez et gérez vos notes"
     },
     {
       name: "Tâches",
       icon: ListTodo,
-      action: () => setShowTasks(true),
-      color: "bg-blue-500/10 text-blue-500",
+      component: TasksPage,
       description: "Gérez vos tâches et listes"
     },
     {
       name: "Calculatrice",
       icon: Calculator,
-      action: () => setShowCalculator(true),
-      color: "bg-green-500/10 text-green-500",
+      component: CalculatorPage,
       description: "Calculatrice et convertisseur"
     },
     {
       name: "Traducteur",
       icon: Languages,
-      action: () => setShowTranslator(true),
-      color: "bg-indigo-500/10 text-indigo-500",
+      component: TranslatorPage,
       description: "Traduisez du texte"
     },
     {
       name: "Convertisseur",
       icon: Ruler,
-      action: () => navigate("/tools"),
-      color: "bg-orange-500/10 text-orange-500",
-      description: "Convertissez des unités"
+      description: "Convertissez des unités",
+      comingSoon: true
     },
     {
       name: "Échecs",
       icon: Sword,
-      action: () => setShowChess(true),
-      color: "bg-red-500/10 text-red-500",
+      component: ChessPage,
       description: "Jouez aux échecs"
     }
   ];
+
+  const handleToolClick = (tool: typeof tools[0]) => {
+    if (tool.comingSoon) {
+      return;
+    }
+    setActiveTool(tool.name);
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -113,14 +110,15 @@ export function FriendsContent() {
               className={cn(
                 "flex flex-col items-center gap-3 p-4 h-auto",
                 "hover:bg-accent/5 transition-all duration-200",
-                "group relative"
+                "group relative",
+                tool.comingSoon && "opacity-50 cursor-not-allowed"
               )}
-              onClick={tool.action}
+              onClick={() => handleToolClick(tool)}
+              disabled={tool.comingSoon}
             >
               <div className={cn(
                 "p-3 rounded-lg transition-all duration-200",
-                "group-hover:scale-110",
-                tool.color
+                "group-hover:scale-110"
               )}>
                 <tool.icon className="h-5 w-5" />
               </div>
@@ -129,6 +127,11 @@ export function FriendsContent() {
                 <p className="text-xs text-muted-foreground mt-1 hidden sm:block">
                   {tool.description}
                 </p>
+                {tool.comingSoon && (
+                  <span className="text-xs text-muted-foreground mt-1">
+                    Bientôt disponible
+                  </span>
+                )}
               </div>
             </Button>
           ))}
@@ -147,35 +150,20 @@ export function FriendsContent() {
         />
       )}
 
-      <Dialog open={showNotes} onOpenChange={setShowNotes}>
-        <DialogContent className="max-w-4xl h-[80vh] p-6">
-          <NotesPage />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={showCalculator} onOpenChange={setShowCalculator}>
-        <DialogContent className="max-w-4xl h-[80vh] p-6">
-          <CalculatorPage />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={showTranslator} onOpenChange={setShowTranslator}>
-        <DialogContent className="max-w-4xl h-[80vh] p-6">
-          <TranslatorPage />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={showChess} onOpenChange={setShowChess}>
-        <DialogContent className="max-w-5xl h-[90vh] p-6">
-          <ChessPage />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={showNotes} onOpenChange={setShowNotes}>
-        <DialogContent className="max-w-4xl h-[80vh] p-6">
-          <NotesPage />
-        </DialogContent>
-      </Dialog>
+      {activeTool && (
+        <Dialog open={!!activeTool} onOpenChange={() => setActiveTool(null)}>
+          <DialogContent className="max-w-4xl h-[80vh] p-6">
+            {(() => {
+              const tool = tools.find(t => t.name === activeTool);
+              if (tool?.component) {
+                const ToolComponent = tool.component;
+                return <ToolComponent />;
+              }
+              return null;
+            })()}
+          </DialogContent>
+        </Dialog>
+      )}
     </motion.div>
   );
 }

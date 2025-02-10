@@ -30,74 +30,72 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
     setIsEditing(state);
   }, []);
 
-  const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-background">
-      <div className="p-4">
-        <Logo />
-      </div>
-      <Separator />
-      <ScrollArea className="flex-1">
-        <nav className="p-4 space-y-2">
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Button
-                key={item.id}
-                variant={currentPage === item.id ? "default" : "ghost"}
-                className={cn(
-                  "w-full justify-start gap-2",
-                  currentPage === item.id && "bg-primary/10"
-                )}
-                onClick={() => handlePageChange(item.id)}
-              >
-                <Icon className="h-4 w-4" />
-                <span>{item.name}</span>
-              </Button>
-            );
-          })}
-        </nav>
-
-        <div className="p-4">
-          <Connections />
-        </div>
-      </ScrollArea>
-
-      {profile && (
-        <>
-          <Separator />
-          <div className="p-4">
-            <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                {profile.avatar_url ? (
-                  <img
-                    src={profile.avatar_url}
-                    alt={profile.full_name}
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  <span className="text-sm font-medium">
-                    {profile.full_name?.[0]?.toUpperCase()}
-                  </span>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate text-sm">{profile.full_name}</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {profile.role}
-                </p>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-    </div>
-  );
-
   return (
     <div className="flex min-h-screen bg-background">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block w-64 border-r fixed h-screen">
-        <SidebarContent />
+      <aside className="hidden lg:block w-64 border-r fixed h-screen overflow-hidden">
+        <div className="flex flex-col h-full">
+          <div className="p-4">
+            <Logo />
+          </div>
+          
+          <Separator />
+          
+          <ScrollArea className="flex-1">
+            <nav className="p-4 space-y-2">
+              {navigationItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Button
+                    key={item.id}
+                    variant={currentPage === item.id ? "default" : "ghost"}
+                    className={cn(
+                      "w-full justify-start gap-2",
+                      currentPage === item.id && "bg-primary/10"
+                    )}
+                    onClick={() => handlePageChange(item.id)}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span>{item.name}</span>
+                  </Button>
+                );
+              })}
+            </nav>
+
+            <div className="p-4">
+              <Connections />
+            </div>
+          </ScrollArea>
+
+          {profile && (
+            <>
+              <Separator />
+              <div className="p-4">
+                <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    {profile.avatar_url ? (
+                      <img
+                        src={profile.avatar_url}
+                        alt={profile.full_name}
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-sm font-medium">
+                        {profile.full_name?.[0]?.toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate text-sm">{profile.full_name}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {profile.role}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </aside>
 
       {/* Mobile Header */}
@@ -110,7 +108,69 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0">
-              <SidebarContent />
+              <div className="flex flex-col h-full bg-background">
+                <div className="p-4">
+                  <Logo />
+                </div>
+                <Separator />
+                <ScrollArea className="flex-1">
+                  <nav className="p-4 space-y-2">
+                    {navigationItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <Button
+                          key={item.id}
+                          variant={currentPage === item.id ? "default" : "ghost"}
+                          className={cn(
+                            "w-full justify-start gap-2",
+                            currentPage === item.id && "bg-primary/10"
+                          )}
+                          onClick={() => {
+                            handlePageChange(item.id);
+                            setShowMobileMenu(false);
+                          }}
+                        >
+                          <Icon className="h-4 w-4" />
+                          <span>{item.name}</span>
+                        </Button>
+                      );
+                    })}
+                  </nav>
+
+                  <div className="p-4">
+                    <Connections />
+                  </div>
+                </ScrollArea>
+
+                {profile && (
+                  <>
+                    <Separator />
+                    <div className="p-4">
+                      <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          {profile.avatar_url ? (
+                            <img
+                              src={profile.avatar_url}
+                              alt={profile.full_name}
+                              className="w-full h-full rounded-full object-cover"
+                            />
+                          ) : (
+                            <span className="text-sm font-medium">
+                              {profile.full_name?.[0]?.toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate text-sm">{profile.full_name}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {profile.role}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </SheetContent>
           </Sheet>
           <div className="flex-1 flex justify-center">
@@ -122,14 +182,17 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       {/* Main Content */}
       <main className="flex-1 lg:ml-64">
         <div className="pt-14 lg:pt-0 min-h-screen flex flex-col">
-          {children || (
-            <DashboardContent
-              currentPage={currentPage}
-              isEditing={isEditing}
-              onEditStateChange={handleEditStateChange}
-              onRequestChat={() => handlePageChange(2)}
-            />
-          )}
+          <div className="flex-1">
+            {children || (
+              <DashboardContent
+                currentPage={currentPage}
+                isEditing={isEditing}
+                onEditStateChange={handleEditStateChange}
+                onRequestChat={() => handlePageChange(2)}
+              />
+            )}
+          </div>
+          <Footer />
         </div>
       </main>
     </div>
