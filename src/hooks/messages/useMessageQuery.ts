@@ -23,7 +23,8 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
             avatar_url,
             online_status,
             last_seen
-          )
+          ),
+          message_deliveries(*)
         `)
         .order('created_at', { ascending: false })
         .limit(MESSAGES_PER_PAGE);
@@ -34,12 +35,10 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
 
       if (receiver) {
         if (receiver.id === 'assistant') {
-          // For AI messages, use is_assistant flag instead of sender_id
           query = query
             .eq('receiver_id', user.id)
             .eq('is_assistant', true);
         } else {
-          // For user messages
           query = query
             .eq('is_assistant', false)
             .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
@@ -58,7 +57,11 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
       return messages?.map(msg => ({
         ...msg,
         timestamp: msg.created_at,
-        status: msg.read ? 'read' : 'delivered',
+        status: msg.message_deliveries?.length > 0 
+          ? msg.message_deliveries[0].status
+          : msg.read 
+            ? 'read' 
+            : 'delivered',
         message_type: msg.is_assistant ? 'ai' : 'user',
         metadata: msg.metadata || {}
       })) as Message[] || [];

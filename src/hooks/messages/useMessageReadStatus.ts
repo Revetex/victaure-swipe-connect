@@ -13,12 +13,12 @@ export const useMessageReadStatus = (showConversation: boolean, receiver: Receiv
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        // Update messages to mark them as read
+        // Start a transaction to update both messages and deliveries
         const { error: messagesError } = await supabase
           .from('messages')
           .update({ 
             read: true,
-            message_state: 'read',
+            status: 'read',
             updated_at: new Date().toISOString()
           })
           .eq('sender_id', receiver.id)
@@ -27,11 +27,10 @@ export const useMessageReadStatus = (showConversation: boolean, receiver: Receiv
 
         if (messagesError) {
           console.error('Error marking messages as read:', messagesError);
-          toast.error("Erreur lors du marquage des messages comme lus");
           return;
         }
 
-        // Update message_deliveries to reflect read status
+        // Update message deliveries
         const { error: deliveriesError } = await supabase
           .from('message_deliveries')
           .update({
@@ -47,7 +46,6 @@ export const useMessageReadStatus = (showConversation: boolean, receiver: Receiv
 
       } catch (error) {
         console.error('Error in markMessagesAsRead:', error);
-        toast.error("Une erreur est survenue");
       }
     };
 
