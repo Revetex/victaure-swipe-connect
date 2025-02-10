@@ -14,13 +14,13 @@ export function MessagesContainer() {
   const { receiver, setReceiver } = useReceiver();
   const [showConversation, setShowConversation] = useState(false);
   const { 
-    messages: userMessages, 
+    messages = [], 
     isLoading: isLoadingMessages,
     handleSendMessage: handleUserSendMessage,
     markAsRead
   } = useMessages();
   const { 
-    messages: aiMessages, 
+    messages: aiMessages = [], 
     inputMessage, 
     isThinking, 
     isListening, 
@@ -62,7 +62,7 @@ export function MessagesContainer() {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [userMessages, aiMessages]);
+  }, [messages, aiMessages]);
 
   if (isLoadingMessages) {
     return (
@@ -91,7 +91,7 @@ export function MessagesContainer() {
           >
             <ConversationView
               receiver={receiver}
-              messages={receiver.id === 'assistant' ? aiMessages : userMessages}
+              messages={receiver.id === 'assistant' ? aiMessages : messages}
               inputMessage={inputMessage}
               isThinking={isThinking}
               isListening={isListening}
@@ -112,7 +112,7 @@ export function MessagesContainer() {
             className="flex-1 overflow-hidden"
           >
             <ConversationList
-              messages={userMessages}
+              messages={messages}
               chatMessages={aiMessages}
               onSelectConversation={handleSelectConversation}
             />
