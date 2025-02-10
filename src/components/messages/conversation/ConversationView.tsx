@@ -60,7 +60,7 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <section className="flex flex-col h-[calc(100vh-8rem)] overflow-hidden relative bg-background">
+    <section className="flex flex-col h-[calc(100vh-2rem)] overflow-hidden relative bg-background">
       <header className="flex-shrink-0 sticky top-0 left-0 right-0 bg-background/95 backdrop-blur z-[49] border-b">
         <ChatHeader
           title={receiver.full_name}
@@ -130,7 +130,7 @@ export function ConversationView({
         </motion.div>
       )}
 
-      <footer className="flex-shrink-0 bg-background/95 backdrop-blur border-t z-[48]">
+      <footer className="flex-shrink-0 bg-background/95 backdrop-blur border-t z-[48] mt-auto">
         <div className="p-4">
           <ChatInput
             value={inputMessage}

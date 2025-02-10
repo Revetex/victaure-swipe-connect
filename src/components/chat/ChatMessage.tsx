@@ -76,7 +76,7 @@ export function ChatMessage({
             "text-sm font-medium",
             isAssistant ? "text-primary" : "text-foreground"
           )}>
-            {isAssistant ? "M. Victaure" : "Vous"}
+            {isAssistant ? "M. Victaure" : profile?.full_name || "Vous"}
           </span>
           {timestamp && (
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">

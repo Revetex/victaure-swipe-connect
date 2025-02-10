@@ -87,7 +87,7 @@ export function MessagesContainer() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="flex-1 overflow-hidden"
+            className="flex-1 overflow-hidden h-[calc(100vh-2rem)]"
           >
             <ConversationView
               receiver={receiver}
