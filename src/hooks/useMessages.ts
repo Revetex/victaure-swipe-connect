@@ -132,30 +132,33 @@ export function useMessages() {
         metadata: {}
       };
 
-      const { data, error } = await supabase
+      const { data: messageData, error: messageError } = await supabase
         .from("messages")
         .insert(newMessage)
         .select(`
           *,
-          sender:profiles!messages_sender_id_fkey(
-            id,
-            full_name,
-            avatar_url,
-            online_status,
-            last_seen
-          )
+          sender:profiles!messages_sender_id_fkey(*),
+          receiver:profiles!messages_receiver_id_fkey(*)
         `)
         .single();
 
-      if (error) throw error;
+      if (messageError) throw messageError;
 
-      if (data) {
+      if (messageData) {
         const formattedMessage: Message = {
-          ...data,
-          timestamp: data.created_at,
+          ...messageData,
+          timestamp: messageData.created_at,
           status: 'sent',
           message_type: messageType,
-          metadata: (data.metadata || {}) as Record<string, any>
+          metadata: (messageData.metadata || {}) as Record<string, any>,
+          sender: messageData.sender || {
+            id: user.id,
+            full_name: user.user_metadata.full_name,
+            avatar_url: '',
+            online_status: true,
+            last_seen: new Date().toISOString()
+          },
+          receiver: messageData.receiver || receiver
         };
         addMessage(formattedMessage);
       }
