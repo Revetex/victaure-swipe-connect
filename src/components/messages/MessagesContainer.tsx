@@ -90,10 +90,10 @@ export function MessagesContainer() {
   }
 
   return (
-    <Card className="h-full flex flex-col overflow-hidden">
+    <Card className="h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
       <ScrollArea 
         ref={scrollAreaRef}
-        className="flex-1"
+        className="flex-1 h-full"
         onScrollCapture={handleScroll}
       >
         <AnimatePresence mode="wait">
