@@ -20,7 +20,9 @@ export function calculatePossibleMoves(
     let currentCol = startCol + colStep;
     
     while (currentRow !== endRow || currentCol !== endCol) {
-      if (board[currentRow][currentCol]) return false;
+      if (!isValidPosition(currentRow, currentCol) || board[currentRow][currentCol]) {
+        return false;
+      }
       currentRow += rowStep;
       currentCol += colStep;
     }
@@ -42,18 +44,23 @@ export function calculatePossibleMoves(
       const direction = piece.isWhite ? -1 : 1;
       const startRow = piece.isWhite ? 6 : 1;
 
-      if (!board[fromRow + direction]?.[fromCol]) {
-        addMove(fromRow + direction, fromCol);
+      // Forward movement
+      const nextRow = fromRow + direction;
+      if (isValidPosition(nextRow, fromCol) && !board[nextRow][fromCol]) {
+        addMove(nextRow, fromCol);
+        
+        // Double move from starting position
         if (fromRow === startRow && !board[fromRow + 2 * direction]?.[fromCol]) {
           addMove(fromRow + 2 * direction, fromCol);
         }
       }
 
+      // Captures
       for (const captureCol of [fromCol - 1, fromCol + 1]) {
-        if (isValidPosition(fromRow + direction, captureCol)) {
-          const target = board[fromRow + direction][captureCol];
+        if (isValidPosition(nextRow, captureCol)) {
+          const target = board[nextRow][captureCol];
           if (target && target.isWhite !== piece.isWhite) {
-            addMove(fromRow + direction, captureCol);
+            addMove(nextRow, captureCol);
           }
         }
       }
@@ -61,9 +68,17 @@ export function calculatePossibleMoves(
     }
 
     case 'rook': {
-      for (let i = 0; i < 8; i++) {
-        if (i !== fromCol && isPathClear(fromRow, fromCol, fromRow, i)) addMove(fromRow, i);
-        if (i !== fromRow && isPathClear(fromRow, fromCol, i, fromCol)) addMove(i, fromCol);
+      // Horizontal movements
+      for (let col = 0; col < 8; col++) {
+        if (col !== fromCol && isPathClear(fromRow, fromCol, fromRow, col)) {
+          addMove(fromRow, col);
+        }
+      }
+      // Vertical movements
+      for (let row = 0; row < 8; row++) {
+        if (row !== fromRow && isPathClear(fromRow, fromCol, row, fromCol)) {
+          addMove(row, fromCol);
+        }
       }
       break;
     }
@@ -74,7 +89,9 @@ export function calculatePossibleMoves(
         [1, -2], [1, 2], [2, -1], [2, 1]
       ];
       for (const [rowOffset, colOffset] of knightMoves) {
-        addMove(fromRow + rowOffset, fromCol + colOffset);
+        const newRow = fromRow + rowOffset;
+        const newCol = fromCol + colOffset;
+        addMove(newRow, newCol);
       }
       break;
     }
@@ -93,10 +110,16 @@ export function calculatePossibleMoves(
     }
 
     case 'queen': {
+      // Horizontal and vertical movements (like rook)
       for (let i = 0; i < 8; i++) {
-        if (i !== fromCol && isPathClear(fromRow, fromCol, fromRow, i)) addMove(fromRow, i);
-        if (i !== fromRow && isPathClear(fromRow, fromCol, i, fromCol)) addMove(i, fromCol);
+        if (i !== fromCol && isPathClear(fromRow, fromCol, fromRow, i)) {
+          addMove(fromRow, i);
+        }
+        if (i !== fromRow && isPathClear(fromRow, fromCol, i, fromCol)) {
+          addMove(i, fromCol);
+        }
       }
+      // Diagonal movements (like bishop)
       for (let i = 1; i < 8; i++) {
         for (const [rowDir, colDir] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
           const newRow = fromRow + i * rowDir;
@@ -113,7 +136,9 @@ export function calculatePossibleMoves(
       for (let rowOffset = -1; rowOffset <= 1; rowOffset++) {
         for (let colOffset = -1; colOffset <= 1; colOffset++) {
           if (rowOffset === 0 && colOffset === 0) continue;
-          addMove(fromRow + rowOffset, fromCol + colOffset);
+          const newRow = fromRow + rowOffset;
+          const newCol = fromCol + colOffset;
+          addMove(newRow, newCol);
         }
       }
       break;
