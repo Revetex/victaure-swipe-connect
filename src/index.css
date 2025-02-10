@@ -58,13 +58,6 @@
   body {
     @apply bg-background text-foreground antialiased overflow-x-hidden;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
-    text-transform: none;
-    letter-spacing: -0.2px;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-normal tracking-tight text-balance;
-    text-transform: none;
   }
 }
 
@@ -115,6 +108,10 @@
   .mobile-nav {
     @apply fixed bottom-0 inset-x-0 glass-panel border-t p-2 lg:hidden;
   }
+
+  .text-balance {
+    text-wrap: balance;
+  }
 }
 
 @layer utilities {
@@ -125,9 +122,5 @@
   
   .scrollbar-none::-webkit-scrollbar {
     display: none;
-  }
-
-  .text-balance {
-    text-wrap: balance;
   }
 }
