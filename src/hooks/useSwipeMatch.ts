@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { JobFilters } from "@/components/jobs/JobFilterUtils";
