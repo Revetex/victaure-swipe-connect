@@ -5,6 +5,7 @@ import { DashboardContent } from "./dashboard/DashboardContent";
 import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,7 +24,17 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className={cn(
+      "flex min-h-screen bg-background relative overflow-hidden",
+      "before:absolute before:inset-0 before:bg-grid-white/10 before:bg-[size:10px_10px] before:[mask-image:radial-gradient(white,transparent_85%)]"
+    )}>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0.2, 0.4, 0.2] }}
+        transition={{ duration: 5, repeat: Infinity }}
+        className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#8B5CF6,transparent)]"
+      />
+
       {/* Desktop Sidebar */}
       <DashboardSidebar 
         currentPage={currentPage}
@@ -39,7 +50,10 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       />
 
       {/* Main Content */}
-      <main className="flex-1 lg:ml-64 h-screen">
+      <main className={cn(
+        "flex-1 lg:ml-64 h-screen relative",
+        "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      )}>
         <div className="h-full flex flex-col pt-14 lg:pt-0">
           {children || (
             <DashboardContent
