@@ -1,6 +1,8 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Todo } from "@/types/todo";
+import { supabase } from "@/integrations/supabase/client";
 
 export function useTodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -12,24 +14,38 @@ export function useTodoList() {
 
   const addTodo = async () => {
     if (newTodo.trim()) {
-      const todo = {
-        id: Date.now().toString(), // Convert to string
-        text: newTodo,
-        completed: false,
-        dueDate: selectedDate,
-        dueTime: allDay ? undefined : selectedTime,
-        allDay,
-      };
-      setTodos([...todos, todo]);
-      setNewTodo("");
-      setSelectedDate(undefined);
-      setSelectedTime(undefined);
-      setAllDay(false);
-      
-      toast({
-        title: "Tâche ajoutée",
-        description: "Votre nouvelle tâche a été ajoutée avec succès.",
-      });
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Not authenticated');
+
+        const todo: Todo = {
+          id: Date.now().toString(),
+          text: newTodo,
+          completed: false,
+          dueDate: selectedDate,
+          dueTime: allDay ? undefined : selectedTime,
+          allDay,
+          user_id: user.id
+        };
+
+        setTodos([...todos, todo]);
+        setNewTodo("");
+        setSelectedDate(undefined);
+        setSelectedTime(undefined);
+        setAllDay(false);
+        
+        toast({
+          title: "Tâche ajoutée",
+          description: "Votre nouvelle tâche a été ajoutée avec succès.",
+        });
+      } catch (error) {
+        console.error('Error adding todo:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible d'ajouter la tâche.",
+          variant: "destructive"
+        });
+      }
     }
   };
 
