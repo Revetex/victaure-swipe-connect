@@ -43,7 +43,7 @@ export function ChatInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="min-h-[60px] pr-24 resize-none rounded-xl focus:ring-2 focus:ring-primary/20 bg-background/50"
+          className="min-h-[60px] pr-24 resize-none rounded-xl focus:ring-2 focus:ring-primary/20 bg-background/50 sticky bottom-0"
           onKeyDown={handleKeyDown}
           disabled={disabled || isThinking}
         />
