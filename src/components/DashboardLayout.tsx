@@ -54,7 +54,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "flex-1 lg:ml-64 h-screen relative",
         "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
       )}>
-        <div className="h-full flex flex-col pt-14 lg:pt-0">
+        <div className="h-full flex flex-col pt-16 lg:pt-4">
           {children || (
             <DashboardContent
               currentPage={currentPage}
