@@ -13,12 +13,12 @@ export function ProfileSearchPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Check if a friend request already exists
+    // Check if a friend request already exists - using maybeSingle() instead of single()
     const { data: existingRequest } = await supabase
       .from("friend_requests")
       .select("*")
       .or(`and(sender_id.eq.${user.id},receiver_id.eq.${profile.id}),and(sender_id.eq.${profile.id},receiver_id.eq.${user.id})`)
-      .single();
+      .maybeSingle();
 
     if (existingRequest) {
       toast.error("Une demande d'ami existe déjà avec ce profil");
