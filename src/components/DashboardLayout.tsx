@@ -39,18 +39,16 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       />
 
       {/* Main Content */}
-      <main className="flex-1 lg:ml-64">
-        <div className="pt-14 lg:pt-0 min-h-screen flex flex-col">
-          <div className="flex-1">
-            {children || (
-              <DashboardContent
-                currentPage={currentPage}
-                isEditing={isEditing}
-                onEditStateChange={handleEditStateChange}
-                onRequestChat={() => handlePageChange(2)}
-              />
-            )}
-          </div>
+      <main className="flex-1 lg:ml-64 h-screen">
+        <div className="h-full flex flex-col pt-14 lg:pt-0">
+          {children || (
+            <DashboardContent
+              currentPage={currentPage}
+              isEditing={isEditing}
+              onEditStateChange={handleEditStateChange}
+              onRequestChat={() => handlePageChange(2)}
+            />
+          )}
         </div>
       </main>
     </div>
