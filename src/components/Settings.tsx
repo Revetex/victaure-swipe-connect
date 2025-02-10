@@ -8,9 +8,6 @@ import { SecuritySection } from "./settings/SecuritySection";
 import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
 import { ScrollArea } from "./ui/scroll-area";
-import { useNavigate } from "react-router-dom";
-import { DashboardLayout } from "./DashboardLayout";
-import { Footer } from "./layout/Footer";
 
 const sectionVariants = {
   initial: { opacity: 0, y: 20 },
@@ -42,7 +39,6 @@ const settingsSections = [
 
 export function Settings() {
   const [mounted, setMounted] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     setMounted(true);
@@ -53,41 +49,36 @@ export function Settings() {
   }
 
   return (
-    <DashboardLayout>
-      <div className="flex min-h-screen flex-col">
-        <ScrollArea className="flex-1">
+    <ScrollArea className="flex-1">
+      <motion.div
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        variants={{
+          initial: { opacity: 0 },
+          animate: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1
+            }
+          },
+          exit: { opacity: 0 }
+        }}
+        className="container mx-auto px-4 py-6 space-y-8 max-w-2xl"
+      >
+        {settingsSections.map(({ id, Component }, index) => (
           <motion.div
+            key={id}
+            variants={sectionVariants}
             initial="initial"
             animate="animate"
             exit="exit"
-            variants={{
-              initial: { opacity: 0 },
-              animate: {
-                opacity: 1,
-                transition: {
-                  staggerChildren: 0.1
-                }
-              },
-              exit: { opacity: 0 }
-            }}
-            className="container mx-auto px-4 py-6 space-y-8 max-w-2xl"
+            transition={{ delay: index * 0.1 }}
           >
-            {settingsSections.map(({ id, Component }, index) => (
-              <motion.div
-                key={id}
-                variants={sectionVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ delay: index * 0.1 }}
-              >
-                <Component />
-              </motion.div>
-            ))}
+            <Component />
           </motion.div>
-        </ScrollArea>
-        <Footer />
-      </div>
-    </DashboardLayout>
+        ))}
+      </motion.div>
+    </ScrollArea>
   );
 }
