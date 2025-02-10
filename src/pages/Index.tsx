@@ -6,6 +6,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Suspense, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HeroDecorations } from "@/components/hero/HeroDecorations";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useEffect } from "react";
 
 const LoadingFallback = () => (
   <div className="space-y-8 p-4">
@@ -17,6 +20,14 @@ const LoadingFallback = () => (
 
 export default function Index() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="relative min-h-screen overflow-hidden">
