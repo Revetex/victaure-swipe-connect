@@ -52,7 +52,7 @@ export function MessagesContainer() {
     if (receiver.id === 'assistant') {
       handleAISendMessage(inputMessage);
     } else {
-      handleUserSendMessage(inputMessage, receiver);
+      handleUserSendMessage(inputMessage);
     }
     
     setInputMessage('');
@@ -122,3 +122,4 @@ export function MessagesContainer() {
     </Card>
   );
 }
+
