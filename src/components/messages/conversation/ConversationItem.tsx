@@ -36,14 +36,14 @@ export function ConversationItem({ user, lastMessage, onSelect }: ConversationIt
             {user.full_name?.slice(0, 2).toUpperCase() || '??'}
           </AvatarFallback>
         </Avatar>
-        <div className="flex-1">
-          <div className="flex justify-between items-center">
+        <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-center w-full">
             <h3 className="font-medium text-base">{user.full_name}</h3>
             <span className="text-xs text-muted-foreground">
               {format(new Date(lastMessage.created_at), 'PP', { locale: fr })}
             </span>
           </div>
-          <p className="text-sm text-muted-foreground truncate mt-1">
+          <p className="text-sm text-muted-foreground truncate text-left mt-1">
             {lastMessage.content}
           </p>
         </div>
@@ -51,3 +51,4 @@ export function ConversationItem({ user, lastMessage, onSelect }: ConversationIt
     </motion.div>
   );
 }
+
