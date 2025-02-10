@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { memo } from "react";
@@ -15,7 +16,6 @@ interface ConversationLayoutProps {
 export function ConversationLayout({
   currentPage,
   isEditing,
-  viewportHeight,
   onEditStateChange,
   onRequestChat
 }: ConversationLayoutProps) {
@@ -40,7 +40,6 @@ export function ConversationLayout({
       <MemoizedDashboardContent
         currentPage={currentPage}
         isEditing={isEditing}
-        viewportHeight={viewportHeight}
         onEditStateChange={onEditStateChange}
         onRequestChat={onRequestChat}
       />
