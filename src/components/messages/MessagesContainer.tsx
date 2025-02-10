@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
 import { useReceiver } from "@/hooks/useReceiver";
-import { Card } from "../ui/card";
+import { Card } from "@/components/ui/card";
 import { useMessages } from "@/hooks/useMessages";
 import { useAIChat } from "@/hooks/useAIChat";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
@@ -66,7 +66,7 @@ export function MessagesContainer() {
 
   if (isLoadingMessages) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+      <div className="flex items-center justify-center h-full">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -79,7 +79,7 @@ export function MessagesContainer() {
   }
 
   return (
-    <Card className="h-[calc(100vh-8rem)] flex flex-col overflow-hidden">
+    <Card className="h-full flex flex-col overflow-hidden">
       <AnimatePresence mode="wait">
         {showConversation && receiver ? (
           <motion.div

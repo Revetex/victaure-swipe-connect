@@ -1,11 +1,12 @@
 
-import { UserCircle, MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, UserSearch, Calculator, Languages, Settings, LayoutDashboard } from "lucide-react";
+import { UserCircle, MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, UserSearch, Calculator, Languages, Settings, LayoutDashboard, Newspaper } from "lucide-react";
 
 export const navigationItems = [
   // Section principale
   { id: 1, icon: LayoutDashboard, name: "Tableau de bord" },
   { id: 2, icon: MessageSquare, name: "Messages" },
   { id: 3, icon: BriefcaseIcon, name: "Emplois" },
+  { id: 4, icon: Newspaper, name: "Actualité" },
   
   // Section réseau
   { id: 9, icon: Bell, name: "Notifications" },
@@ -27,6 +28,8 @@ export const getPageTitle = (currentPage: number): string => {
       return "Messages";
     case 3:
       return "Emplois";
+    case 4:
+      return "Actualité";
     case 7:
       return "Tâches";
     case 8:
