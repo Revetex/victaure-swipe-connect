@@ -3,7 +3,7 @@ import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { ConnectionsSection } from "./ConnectionsSection";
-import { Calculator, Languages, ListTodo, Ruler, Sword } from "lucide-react";
+import { Calculator, Languages, ListTodo, Plus, Ruler, Sword } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { NotesPage } from "@/components/tools/NotesPage";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
+import { ChessPage } from "@/components/tools/ChessPage";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export function FriendsContent() {
@@ -21,10 +22,18 @@ export function FriendsContent() {
   const [showCalculator, setShowCalculator] = useState(false);
   const [showTasks, setShowTasks] = useState(false);
   const [showTranslator, setShowTranslator] = useState(false);
+  const [showChess, setShowChess] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
   const tools = [
+    {
+      name: "Notes",
+      icon: Plus,
+      action: () => setShowNotes(true),
+      color: "bg-amber-500/10 text-amber-500",
+      description: "Créez et gérez vos notes"
+    },
     {
       name: "Tâches",
       icon: ListTodo,
@@ -56,7 +65,7 @@ export function FriendsContent() {
     {
       name: "Échecs",
       icon: Sword,
-      action: () => navigate("/tools"),
+      action: () => setShowChess(true),
       color: "bg-red-500/10 text-red-500",
       description: "Jouez aux échecs"
     }
@@ -95,7 +104,7 @@ export function FriendsContent() {
       <motion.div variants={itemVariants}>
         <div className={cn(
           "grid gap-4",
-          isMobile ? "grid-cols-2" : "grid-cols-3"
+          isMobile ? "grid-cols-2" : "grid-cols-3 md:grid-cols-4"
         )}>
           {tools.map((tool) => (
             <Button
@@ -138,26 +147,32 @@ export function FriendsContent() {
         />
       )}
 
-      <Dialog open={showTasks} onOpenChange={setShowTasks}>
-        <DialogContent className="max-w-4xl h-[80vh]">
-          <TasksPage />
+      <Dialog open={showNotes} onOpenChange={setShowNotes}>
+        <DialogContent className="max-w-4xl h-[80vh] p-6">
+          <NotesPage />
         </DialogContent>
       </Dialog>
 
       <Dialog open={showCalculator} onOpenChange={setShowCalculator}>
-        <DialogContent className="max-w-4xl h-[80vh]">
+        <DialogContent className="max-w-4xl h-[80vh] p-6">
           <CalculatorPage />
         </DialogContent>
       </Dialog>
 
       <Dialog open={showTranslator} onOpenChange={setShowTranslator}>
-        <DialogContent className="max-w-4xl h-[80vh]">
+        <DialogContent className="max-w-4xl h-[80vh] p-6">
           <TranslatorPage />
         </DialogContent>
       </Dialog>
 
+      <Dialog open={showChess} onOpenChange={setShowChess}>
+        <DialogContent className="max-w-5xl h-[90vh] p-6">
+          <ChessPage />
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={showNotes} onOpenChange={setShowNotes}>
-        <DialogContent className="max-w-4xl h-[80vh]">
+        <DialogContent className="max-w-4xl h-[80vh] p-6">
           <NotesPage />
         </DialogContent>
       </Dialog>
