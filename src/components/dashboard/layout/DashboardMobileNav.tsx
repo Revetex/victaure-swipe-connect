@@ -4,6 +4,10 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { DashboardSidebar } from "./DashboardSidebar";
+import { useAuth } from "@/hooks/useAuth";
+import { ProfilePreview } from "@/components/ProfilePreview";
+import { useState } from "react";
+import { UserProfile } from "@/types/profile";
 
 interface DashboardMobileNavProps {
   currentPage: number;
@@ -18,6 +22,26 @@ export function DashboardMobileNav({
   setShowMobileMenu,
   onPageChange
 }: DashboardMobileNavProps) {
+  const { user } = useAuth();
+  const [showProfilePreview, setShowProfilePreview] = useState(false);
+
+  // Convert User to UserProfile type for ProfilePreview
+  const userProfile: UserProfile = {
+    id: user?.id || '',
+    email: user?.email || '',
+    full_name: user?.user_metadata?.full_name || null,
+    avatar_url: user?.user_metadata?.avatar_url || null,
+    role: 'professional',
+    bio: null,
+    phone: null,
+    city: null,
+    state: null,
+    country: 'Canada',
+    skills: [],
+    latitude: null,
+    longitude: null
+  };
+
   return (
     <header className="fixed top-0 z-40 w-full border-b bg-background/80 backdrop-blur lg:hidden">
       <div className="flex h-14 items-center px-4">
@@ -28,13 +52,27 @@ export function DashboardMobileNav({
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0">
-            <DashboardSidebar currentPage={currentPage} onPageChange={onPageChange} />
+            <DashboardSidebar 
+              currentPage={currentPage} 
+              onPageChange={(page) => {
+                onPageChange(page);
+                setShowMobileMenu(false);
+              }} 
+            />
           </SheetContent>
         </Sheet>
         <div className="flex-1 flex justify-center">
           <Logo />
         </div>
       </div>
+
+      {userProfile && (
+        <ProfilePreview
+          profile={userProfile}
+          isOpen={showProfilePreview}
+          onClose={() => setShowProfilePreview(false)}
+        />
+      )}
     </header>
   );
 }
