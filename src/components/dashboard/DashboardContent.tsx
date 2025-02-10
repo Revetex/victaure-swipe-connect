@@ -7,19 +7,16 @@ import { Feed } from "@/components/feed/Feed";
 import { Settings } from "@/components/Settings";
 import { NotesMap } from "@/components/notes/NotesMap";
 import { useEffect } from "react";
-import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
 import { NotificationsTab } from "@/components/notifications/NotificationsTab";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
-import { FriendsPage } from "@/components/friends/FriendsPage";
 import { FriendRequestsPage } from "@/components/friends/FriendRequestsPage";
 import { ProfileSearchPage } from "@/components/friends/ProfileSearchPage";
 
 interface DashboardContentProps {
   currentPage: number;
-  viewportHeight: number;
   isEditing?: boolean;
   onEditStateChange: (isEditing: boolean) => void;
   onRequestChat: () => void;
@@ -40,31 +37,18 @@ export function DashboardContent({
   }, [currentPage, onEditStateChange]);
 
   if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader className="w-8 h-8" />
-      </div>
-    );
+    return <Loader className="w-8 h-8" />;
   }
 
   const variants = {
-    initial: { 
-      opacity: 0,
-      y: 10
-    },
+    initial: { opacity: 0 },
     animate: { 
       opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.3
-      }
+      transition: { duration: 0.2 }
     },
     exit: { 
       opacity: 0,
-      y: -10,
-      transition: {
-        duration: 0.2
-      }
+      transition: { duration: 0.15 }
     }
   };
 
@@ -103,7 +87,7 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="w-full h-full"
+      className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6"
     >
       {content}
     </motion.div>
