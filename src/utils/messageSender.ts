@@ -19,7 +19,7 @@ export const sendMessage = async (
     metadata: {
       device: 'web',
       timestamp: new Date().toISOString()
-    }
+    } as Record<string, any>
   };
 
   const { data: messageData, error: messageError } = await supabase
@@ -69,3 +69,4 @@ export const sendMessage = async (
 
   return null;
 };
+
