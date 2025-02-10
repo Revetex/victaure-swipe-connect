@@ -23,61 +23,70 @@ export function useAIChat(): AIChat {
   const [isThinking, setIsThinking] = useState(false);
   const { profile } = useProfile();
 
-  const defaultSender: MessageSender = {
-    id: profile?.id || '',
-    full_name: profile?.full_name || 'User',
-    avatar_url: profile?.avatar_url || '',
-    online_status: true,
-    last_seen: new Date().toISOString()
-  };
+  const formatAIMessage = (aiMessage: any): Message => ({
+    id: aiMessage.id,
+    content: aiMessage.content,
+    sender_id: aiMessage.sender === 'assistant' ? 'assistant' : profile?.id || '',
+    receiver_id: aiMessage.sender === 'assistant' ? profile?.id || '' : 'assistant',
+    created_at: aiMessage.created_at,
+    updated_at: aiMessage.updated_at,
+    read: aiMessage.read,
+    sender: {
+      id: aiMessage.sender === 'assistant' ? 'assistant' : profile?.id || '',
+      full_name: aiMessage.sender === 'assistant' ? 'M. Victaure' : profile?.full_name || '',
+      avatar_url: aiMessage.sender === 'assistant' ? '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png' : profile?.avatar_url || '',
+      online_status: true,
+      last_seen: new Date().toISOString()
+    },
+    timestamp: aiMessage.created_at,
+    message_type: 'ai',
+    status: 'sent',
+    metadata: {}
+  });
 
-  const addMessage = useCallback((content: string, sender: MessageSender = defaultSender) => {
-    const newMessage: Message = {
-      id: crypto.randomUUID(),
-      content,
-      sender_id: sender.id,
-      receiver_id: 'assistant',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      read: false,
-      sender,
-      timestamp: new Date().toISOString(),
-      message_type: sender.id === 'assistant' ? 'ai' : 'user',
-      status: 'sent',
-      thinking: false,
-      metadata: {}
-    };
+  const loadMessages = useCallback(async () => {
+    try {
+      const { data: aiMessages, error } = await supabase
+        .from('ai_messages')
+        .select('*')
+        .order('created_at', { ascending: true });
 
-    setMessages(prev => [...prev, newMessage]);
-    return newMessage;
-  }, [defaultSender]);
+      if (error) throw error;
+
+      setMessages(aiMessages.map(formatAIMessage));
+    } catch (error) {
+      console.error('Error loading AI messages:', error);
+      toast.error("Erreur lors du chargement des messages");
+    }
+  }, [profile]);
 
   const handleSendMessage = useCallback(async (message: string) => {
     if (!message.trim()) return;
     
     setIsThinking(true);
     try {
-      const userMessage = addMessage(message);
-      setInputMessage('');
-
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      const { error: saveError } = await supabase
-        .from('ai_chat_messages')
+      // Add user message to AI messages
+      const { data: userMessage, error: userMessageError } = await supabase
+        .from('ai_messages')
         .insert({
-          id: userMessage.id,
-          user_id: user.id,
           content: message,
-          sender: 'user'
-        });
+          user_id: user.id,
+          sender: 'user',
+          read: true
+        })
+        .select()
+        .single();
 
-      if (saveError) throw saveError;
+      if (userMessageError) throw userMessageError;
 
-      console.log("Getting AI response...");
+      // Get AI response
       const { data, error } = await supabase.functions.invoke('ai-chat', {
         body: { 
           message,
+          userId: user.id,
           context: {
             previousMessages: messages.slice(-5),
             userProfile: profile,
@@ -87,26 +96,23 @@ export function useAIChat(): AIChat {
 
       if (error) throw error;
 
-      console.log("AI response received:", data);
-
-      const assistantMessage = addMessage(data.response, {
-        id: 'assistant',
-        full_name: 'M. Victaure',
-        avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-        online_status: true,
-        last_seen: new Date().toISOString()
-      });
-
-      const { error: saveAssistantError } = await supabase
-        .from('ai_chat_messages')
+      // Save AI response
+      const { data: aiMessage, error: aiMessageError } = await supabase
+        .from('ai_messages')
         .insert({
-          id: assistantMessage.id,
-          user_id: user.id,
           content: data.response,
-          sender: 'assistant'
-        });
+          user_id: user.id,
+          sender: 'assistant',
+          read: false
+        })
+        .select()
+        .single();
 
-      if (saveAssistantError) throw saveAssistantError;
+      if (aiMessageError) throw aiMessageError;
+
+      // Update messages state
+      setMessages(prev => [...prev, formatAIMessage(userMessage), formatAIMessage(aiMessage)]);
+      setInputMessage('');
 
     } catch (error) {
       console.error('Error sending message:', error);
@@ -114,7 +120,7 @@ export function useAIChat(): AIChat {
     } finally {
       setIsThinking(false);
     }
-  }, [addMessage, messages, profile]);
+  }, [messages, profile]);
 
   const handleVoiceInput = useCallback(() => {
     setIsListening(!isListening);
@@ -126,19 +132,24 @@ export function useAIChat(): AIChat {
       if (!user) throw new Error('User not authenticated');
 
       const { error } = await supabase
-        .from('ai_chat_messages')
+        .from('ai_messages')
         .delete()
         .eq('user_id', user.id);
 
       if (error) throw error;
 
       setMessages([]);
-      toast.success("Conversation effacée avec succès");
+      toast.success("Conversation effacée");
     } catch (error) {
       console.error('Error clearing chat:', error);
       toast.error("Erreur lors de l'effacement de la conversation");
     }
   }, []);
+
+  // Load initial messages
+  useEffect(() => {
+    loadMessages();
+  }, [loadMessages]);
 
   return {
     messages,
