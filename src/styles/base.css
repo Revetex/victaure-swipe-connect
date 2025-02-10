@@ -4,6 +4,10 @@
 
 :root {
   color-scheme: light dark;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
 
 body {
@@ -38,6 +42,7 @@ body {
 }
 
 @layer utilities {
+  /* Cross-browser scrollbar hiding */
   .scrollbar-none {
     -ms-overflow-style: none;
     -webkit-overflow-scrolling: touch;
@@ -51,6 +56,13 @@ body {
     .scrollbar-none {
       scrollbar-width: none;
     }
+  }
+
+  /* Use display: -webkit-box for line clamping instead of -webkit-line-clamp */
+  .line-clamp {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }
 
