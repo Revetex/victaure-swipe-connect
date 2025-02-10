@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(4); // Set to 4 (Actualité) by default
   const [isEditing, setIsEditing] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { profile } = useProfile();
