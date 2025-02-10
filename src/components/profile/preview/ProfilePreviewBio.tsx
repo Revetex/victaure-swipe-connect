@@ -16,22 +16,32 @@ export function ProfilePreviewBio({ profile }: ProfilePreviewBioProps) {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [bio, setBio] = useState(profile.bio || "");
+  const [isLoading, setIsLoading] = useState(false);
   const isOwnProfile = user?.id === profile.id;
 
   const handleSave = async () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
     try {
       const { error } = await supabase
         .from('profiles')
         .update({ bio })
-        .eq('id', profile.id);
+        .eq('id', profile.id)
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating bio:', error);
+        throw error;
+      }
 
       setIsEditing(false);
       toast.success("Bio mise à jour avec succès");
-    } catch (error) {
-      console.error('Error updating bio:', error);
-      toast.error("Erreur lors de la mise à jour de la bio");
+    } catch (error: any) {
+      console.error('Error in handleSave:', error);
+      toast.error(error.message || "Erreur lors de la mise à jour de la bio");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -63,6 +73,7 @@ export function ProfilePreviewBio({ profile }: ProfilePreviewBioProps) {
             onChange={(e) => setBio(e.target.value)}
             placeholder="Écrivez quelque chose à propos de vous..."
             className="min-h-[120px] resize-none"
+            disabled={isLoading}
           />
           <div className="flex justify-end gap-2">
             <Button
@@ -71,11 +82,15 @@ export function ProfilePreviewBio({ profile }: ProfilePreviewBioProps) {
                 setBio(profile.bio || "");
                 setIsEditing(false);
               }}
+              disabled={isLoading}
             >
               Annuler
             </Button>
-            <Button onClick={handleSave}>
-              Enregistrer
+            <Button 
+              onClick={handleSave}
+              disabled={isLoading}
+            >
+              {isLoading ? "Enregistrement..." : "Enregistrer"}
             </Button>
           </div>
         </div>
