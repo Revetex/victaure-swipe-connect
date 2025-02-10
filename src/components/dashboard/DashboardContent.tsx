@@ -1,5 +1,5 @@
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/Marketplace";
@@ -27,7 +27,6 @@ interface DashboardContentProps {
 
 export function DashboardContent({
   currentPage,
-  viewportHeight,
   isEditing,
   onEditStateChange,
   onRequestChat
@@ -40,26 +39,6 @@ export function DashboardContent({
     }
   }, [currentPage, onEditStateChange]);
 
-  useEffect(() => {
-    const handleError = (event: ErrorEvent) => {
-      console.error("Application error:", event.error);
-      toast.error("Une erreur s'est produite. Veuillez réessayer.");
-    };
-
-    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      console.error("Unhandled promise rejection:", event.reason);
-      toast.error("Une erreur réseau s'est produite. Veuillez vérifier votre connexion.");
-    };
-
-    window.addEventListener('error', handleError);
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    
-    return () => {
-      window.removeEventListener('error', handleError);
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-    };
-  }, []);
-
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
@@ -70,73 +49,51 @@ export function DashboardContent({
 
   const variants = {
     initial: { 
-      opacity: 0, 
-      y: 20,
-      filter: "blur(10px)"
+      opacity: 0,
+      y: 10
     },
     animate: { 
-      opacity: 1, 
+      opacity: 1,
       y: 0,
-      filter: "blur(0px)",
       transition: {
-        duration: 0.4,
-        ease: "easeOut"
+        duration: 0.3
       }
     },
     exit: { 
-      opacity: 0, 
-      y: -20,
-      filter: "blur(10px)",
+      opacity: 0,
+      y: -10,
       transition: {
-        duration: 0.3
+        duration: 0.2
       }
     }
   };
 
   const content = (() => {
-    try {
-      switch (currentPage) {
-        case 1:
-          return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
-        case 2:
-          return <Messages />;
-        case 3:
-          return <Marketplace />;
-        case 4:
-          return <Feed />;
-        case 5:
-          return <NotesMap />;
-        case 6:
-          return <ChessPage />;
-        case 7:
-          return <TasksPage />;
-        case 8:
-          return <CalculatorPage />;
-        case 9:
-          return <NotificationsTab />;
-        case 10:
-          return <Settings />;
-        case 12:
-          return <FriendRequestsPage />;
-        case 13:
-          return <ProfileSearchPage />;
-        default:
-          return null;
-      }
-    } catch (error) {
-      console.error("Error rendering content:", error);
-      toast.error("Erreur lors du chargement du contenu");
-      return (
-        <div className="p-4 text-center">
-          <p className="text-red-500">Une erreur s'est produite lors du chargement du contenu.</p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
-          >
-            Recharger la page
-          </button>
-        </div>
-      );
+    switch (currentPage) {
+      case 1:
+        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
+      case 2:
+        return <Messages />;
+      case 3:
+        return <Marketplace />;
+      case 4:
+        return <Feed />;
+      case 5:
+        return <NotesMap />;
+      case 7:
+        return <TasksPage />;
+      case 8:
+        return <CalculatorPage />;
+      case 9:
+        return <NotificationsTab />;
+      case 10:
+        return <Settings />;
+      case 12:
+        return <FriendRequestsPage />;
+      case 13:
+        return <ProfileSearchPage />;
+      default:
+        return null;
     }
   })();
 
@@ -146,14 +103,9 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="px-4 sm:px-6 lg:px-8 space-y-6"
+      className="w-full h-full"
     >
-      <motion.div 
-        variants={variants}
-        className="w-full backdrop-blur-sm bg-background/80 rounded-lg shadow-lg border border-border/50"
-      >
-        {content}
-      </motion.div>
+      {content}
     </motion.div>
   );
 }
