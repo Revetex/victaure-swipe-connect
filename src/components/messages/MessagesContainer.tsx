@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
 import { useReceiver } from "@/hooks/useReceiver";
@@ -74,12 +74,6 @@ export function MessagesContainer() {
       updatePagination(messages);
     }
   };
-
-  useEffect(() => {
-    if (messages.length > 0 || aiMessages.length > 0) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, aiMessages]);
 
   if (isLoadingMessages) {
     return (
