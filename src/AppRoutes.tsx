@@ -1,3 +1,4 @@
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
@@ -14,7 +15,6 @@ import { TasksPage } from "@/components/tools/TasksPage";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { ChessPage } from "@/components/tools/ChessPage";
-import { Feed } from "@/components/feed/Feed";
 
 export function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -46,14 +46,6 @@ export function AppRoutes() {
       <Route path="/legal/cookies" element={<CookiesPage />} />
       <Route path="/legal/mentions" element={<LegalNoticePage />} />
       <Route path="/profile/:id" element={<PublicProfile />} />
-      <Route
-        path="/feed"
-        element={
-          <ProtectedRoute>
-            <Feed />
-          </ProtectedRoute>
-        }
-      />
       <Route
         path="/dashboard"
         element={
