@@ -56,8 +56,17 @@
   }
   
   body {
-    @apply bg-background text-foreground antialiased overflow-x-hidden;
-    font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
+    @apply bg-background text-foreground antialiased overflow-x-hidden font-sans;
+    text-transform: none;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-normal;
+    text-transform: none;
+  }
+
+  button, a {
+    text-transform: none;
   }
 }
 
