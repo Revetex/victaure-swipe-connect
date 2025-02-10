@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Message, MessageSender } from '@/types/messages';
 import { useProfile } from './useProfile';
 import { toast } from 'sonner';
