@@ -35,13 +35,13 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#8B5CF6,transparent)]"
       />
 
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar - Fixed Position */}
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
       />
 
-      {/* Mobile Header */}
+      {/* Mobile Header - Fixed Position */}
       <DashboardMobileNav
         currentPage={currentPage}
         showMobileMenu={showMobileMenu}
@@ -49,7 +49,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         onPageChange={handlePageChange}
       />
 
-      {/* Main Content */}
+      {/* Main Content - Scrollable Area */}
       <main className={cn(
         "flex-1 lg:ml-64 h-screen relative",
         "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
