@@ -7,7 +7,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoginForm } from "./LoginForm";
 import { SignupForm } from "./SignupForm";
 import { motion, AnimatePresence } from "framer-motion";
-import { Footer } from "../layout/Footer";
 
 interface AuthFormProps {
   redirectTo?: string;
@@ -120,7 +119,6 @@ export function AuthForm({ redirectTo = '/dashboard' }: AuthFormProps) {
           </Tabs>
         </motion.div>
       </div>
-      <Footer />
     </div>
   );
 }
