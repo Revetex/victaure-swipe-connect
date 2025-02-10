@@ -4,11 +4,14 @@ import { Message } from "@/types/chat/messageTypes";
 
 export const saveMessage = async (message: Message) => {
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("User not authenticated");
+
     const { error } = await supabase
-      .from('ai_chat_messages')
+      .from('ai_messages')
       .insert({
         id: message.id,
-        user_id: message.sender_id === 'assistant' ? message.receiver_id : message.sender_id,
+        user_id: user.id,
         content: message.content,
         sender: message.sender_id === 'assistant' ? 'assistant' : 'user',
         created_at: message.created_at,
@@ -28,7 +31,7 @@ export const deleteAllMessages = async () => {
     if (!user) throw new Error("User not authenticated");
 
     const { error } = await supabase
-      .from('ai_chat_messages')
+      .from('ai_messages')
       .delete()
       .eq('user_id', user.id);
 
@@ -45,7 +48,7 @@ export const loadMessages = async (): Promise<Message[]> => {
     if (!user) throw new Error("User not authenticated");
 
     const { data: messages, error } = await supabase
-      .from('ai_chat_messages')
+      .from('ai_messages')
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: true });
@@ -61,7 +64,7 @@ export const loadMessages = async (): Promise<Message[]> => {
       updated_at: msg.updated_at,
       sender_id: msg.sender === 'assistant' ? 'assistant' : user.id,
       receiver_id: msg.sender === 'assistant' ? user.id : 'assistant',
-      read: true
+      read: msg.read
     }));
   } catch (error) {
     console.error("Error loading messages:", error);
