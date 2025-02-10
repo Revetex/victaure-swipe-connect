@@ -60,7 +60,7 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <section className="flex flex-col h-[calc(100vh-2rem)] overflow-hidden relative bg-background">
+    <div className="flex flex-col h-full bg-background">
       <header className="flex-shrink-0 sticky top-0 left-0 right-0 bg-background/95 backdrop-blur z-[49] border-b">
         <ChatHeader
           title={receiver.full_name}
@@ -77,7 +77,7 @@ export function ConversationView({
         className="flex-1 px-4"
         onScrollCapture={handleScroll}
       >
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 py-4 min-h-full">
           <AnimatePresence initial={false}>
             {messages.map((message) => (
               <motion.div
@@ -85,6 +85,7 @@ export function ConversationView({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
+                className="max-w-[85%] mx-auto"
               >
                 <ChatMessage
                   content={message.content}
@@ -130,19 +131,17 @@ export function ConversationView({
         </motion.div>
       )}
 
-      <footer className="flex-shrink-0 bg-background/95 backdrop-blur border-t z-[48] mt-auto">
-        <div className="p-4">
-          <ChatInput
-            value={inputMessage}
-            onChange={onInputChange}
-            onSend={onSendMessage}
-            isThinking={isThinking}
-            isListening={isListening}
-            onVoiceInput={onVoiceInput}
-            placeholder="Écrivez votre message..."
-          />
-        </div>
+      <footer className="flex-shrink-0 bg-background/95 backdrop-blur border-t z-[48] mt-auto p-4">
+        <ChatInput
+          value={inputMessage}
+          onChange={onInputChange}
+          onSend={onSendMessage}
+          isThinking={isThinking}
+          isListening={isListening}
+          onVoiceInput={onVoiceInput}
+          placeholder="Écrivez votre message..."
+        />
       </footer>
-    </section>
+    </div>
   );
 }
