@@ -1,6 +1,9 @@
 
 import { ChessPiece } from "@/types/chess";
-import { isValidPosition } from "./boardUtils";
+
+export function isValidPosition(row: number, col: number): boolean {
+  return row >= 0 && row < 8 && col >= 0 && col < 8;
+}
 
 type BoardState = (ChessPiece | null)[][];
 
@@ -45,43 +48,48 @@ export function calculatePossibleMoves(
       const startRow = piece.isWhite ? 6 : 1;
 
       // Forward movement
-      const newRow = fromRow + direction;
-      if (isValidPosition(newRow, fromCol) && !board[newRow][fromCol]) {
-        addMove(newRow, fromCol);
+      const oneStep = fromRow + direction;
+      if (isValidPosition(oneStep, fromCol) && !board[oneStep][fromCol]) {
+        addMove(oneStep, fromCol);
         
         // Double move from starting position
         if (fromRow === startRow) {
-          const doubleRow = fromRow + 2 * direction;
-          if (isValidPosition(doubleRow, fromCol) && !board[doubleRow][fromCol]) {
-            addMove(doubleRow, fromCol);
+          const twoSteps = fromRow + 2 * direction;
+          if (isValidPosition(twoSteps, fromCol) && !board[twoSteps][fromCol]) {
+            addMove(twoSteps, fromCol);
           }
         }
       }
 
       // Diagonal captures
-      [-1, 1].forEach(colOffset => {
-        const newCol = fromCol + colOffset;
-        if (isValidPosition(newRow, newCol)) {
-          const targetPiece = board[newRow][newCol];
-          if (targetPiece && targetPiece.isWhite !== piece.isWhite) {
-            addMove(newRow, newCol);
+      for (const colOffset of [-1, 1]) {
+        const captureRow = fromRow + direction;
+        const captureCol = fromCol + colOffset;
+        if (isValidPosition(captureRow, captureCol)) {
+          const target = board[captureRow][captureCol];
+          if (target && target.isWhite !== piece.isWhite) {
+            addMove(captureRow, captureCol);
           }
         }
-      });
+      }
       break;
     }
 
     case 'rook': {
-      // Horizontal movements
-      for (let col = 0; col < 8; col++) {
-        if (col !== fromCol && isPathClear(fromRow, fromCol, fromRow, col)) {
-          addMove(fromRow, col);
-        }
-      }
-      // Vertical movements
-      for (let row = 0; row < 8; row++) {
-        if (row !== fromRow && isPathClear(fromRow, fromCol, row, fromCol)) {
-          addMove(row, fromCol);
+      const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+      for (const [dRow, dCol] of directions) {
+        for (let i = 1; i < 8; i++) {
+          const newRow = fromRow + i * dRow;
+          const newCol = fromCol + i * dCol;
+          if (!isValidPosition(newRow, newCol)) break;
+          const target = board[newRow][newCol];
+          if (target) {
+            if (target.isWhite !== piece.isWhite) {
+              addMove(newRow, newCol);
+            }
+            break;
+          }
+          addMove(newRow, newCol);
         }
       }
       break;
@@ -101,49 +109,58 @@ export function calculatePossibleMoves(
     }
 
     case 'bishop': {
-      for (let i = 1; i < 8; i++) {
-        for (const [rowDir, colDir] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
-          const newRow = fromRow + i * rowDir;
-          const newCol = fromCol + i * colDir;
-          if (isValidPosition(newRow, newCol) && isPathClear(fromRow, fromCol, newRow, newCol)) {
-            addMove(newRow, newCol);
+      const directions = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
+      for (const [dRow, dCol] of directions) {
+        for (let i = 1; i < 8; i++) {
+          const newRow = fromRow + i * dRow;
+          const newCol = fromCol + i * dCol;
+          if (!isValidPosition(newRow, newCol)) break;
+          const target = board[newRow][newCol];
+          if (target) {
+            if (target.isWhite !== piece.isWhite) {
+              addMove(newRow, newCol);
+            }
+            break;
           }
+          addMove(newRow, newCol);
         }
       }
       break;
     }
 
     case 'queen': {
-      // Horizontal and vertical movements (like rook)
-      for (let i = 0; i < 8; i++) {
-        if (i !== fromCol && isPathClear(fromRow, fromCol, fromRow, i)) {
-          addMove(fromRow, i);
-        }
-        if (i !== fromRow && isPathClear(fromRow, fromCol, i, fromCol)) {
-          addMove(i, fromCol);
-        }
-      }
-      // Diagonal movements (like bishop)
-      for (let i = 1; i < 8; i++) {
-        for (const [rowDir, colDir] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
-          const newRow = fromRow + i * rowDir;
-          const newCol = fromCol + i * colDir;
-          if (isValidPosition(newRow, newCol) && isPathClear(fromRow, fromCol, newRow, newCol)) {
-            addMove(newRow, newCol);
+      const directions = [
+        [0, 1], [1, 0], [0, -1], [-1, 0],
+        [1, 1], [1, -1], [-1, 1], [-1, -1]
+      ];
+      for (const [dRow, dCol] of directions) {
+        for (let i = 1; i < 8; i++) {
+          const newRow = fromRow + i * dRow;
+          const newCol = fromCol + i * dCol;
+          if (!isValidPosition(newRow, newCol)) break;
+          const target = board[newRow][newCol];
+          if (target) {
+            if (target.isWhite !== piece.isWhite) {
+              addMove(newRow, newCol);
+            }
+            break;
           }
+          addMove(newRow, newCol);
         }
       }
       break;
     }
 
     case 'king': {
-      for (let rowOffset = -1; rowOffset <= 1; rowOffset++) {
-        for (let colOffset = -1; colOffset <= 1; colOffset++) {
-          if (rowOffset === 0 && colOffset === 0) continue;
-          const newRow = fromRow + rowOffset;
-          const newCol = fromCol + colOffset;
-          addMove(newRow, newCol);
-        }
+      const directions = [
+        [-1, -1], [-1, 0], [-1, 1],
+        [0, -1], [0, 1],
+        [1, -1], [1, 0], [1, 1]
+      ];
+      for (const [dRow, dCol] of directions) {
+        const newRow = fromRow + dRow;
+        const newCol = fromCol + dCol;
+        addMove(newRow, newCol);
       }
       break;
     }

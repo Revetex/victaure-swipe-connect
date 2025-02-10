@@ -4,6 +4,8 @@ import { ProfilePreviewDialog } from "./profile/preview/ProfilePreviewDialog";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { memo } from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { Dialog, DialogContent } from "./ui/dialog";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
@@ -21,6 +23,7 @@ export function ProfilePreview({
   onRequestChat,
 }: ProfilePreviewProps) {
   const navigate = useNavigate();
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const handleRequestChat = () => {
     if (onRequestChat) {
@@ -30,6 +33,21 @@ export function ProfilePreview({
     }
     onClose();
   };
+
+  if (isMobile) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-md w-full p-0">
+          <MemoizedProfilePreviewDialog
+            profile={profile}
+            isOpen={isOpen}
+            onClose={onClose}
+            onRequestChat={handleRequestChat}
+          />
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <AnimatePresence mode="wait">
