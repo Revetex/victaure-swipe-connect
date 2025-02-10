@@ -12,8 +12,9 @@ import { Separator } from "./ui/separator";
 import { motion } from "framer-motion";
 import { Connections } from "./Connections";
 import { ScrollArea } from "./ui/scroll-area";
+import { Footer } from "./layout/Footer";
 
-export function DashboardLayout() {
+export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -120,13 +121,15 @@ export function DashboardLayout() {
 
       {/* Main Content */}
       <main className="flex-1 lg:ml-64">
-        <div className="pt-14 lg:pt-0">
-          <DashboardContent
-            currentPage={currentPage}
-            isEditing={isEditing}
-            onEditStateChange={handleEditStateChange}
-            onRequestChat={() => handlePageChange(2)}
-          />
+        <div className="pt-14 lg:pt-0 min-h-screen flex flex-col">
+          {children || (
+            <DashboardContent
+              currentPage={currentPage}
+              isEditing={isEditing}
+              onEditStateChange={handleEditStateChange}
+              onRequestChat={() => handlePageChange(2)}
+            />
+          )}
         </div>
       </main>
     </div>

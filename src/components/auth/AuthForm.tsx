@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoginForm } from "./LoginForm";
 import { SignupForm } from "./SignupForm";
 import { motion, AnimatePresence } from "framer-motion";
+import { Footer } from "../layout/Footer";
 
 interface AuthFormProps {
   redirectTo?: string;
@@ -62,7 +64,6 @@ export function AuthForm({ redirectTo = '/dashboard' }: AuthFormProps) {
         toast.success("Inscription réussie! Veuillez vérifier votre email");
       } else {
         toast.success("Connexion réussie!");
-        // Use the redirectTo prop if provided, otherwise default to dashboard
         navigate(redirectTo);
       }
 
@@ -75,56 +76,51 @@ export function AuthForm({ redirectTo = '/dashboard' }: AuthFormProps) {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="w-full space-y-6"
-    >
-      <Tabs defaultValue="login" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-6">
-          <TabsTrigger 
-            value="login"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
-          >
-            Connexion
-          </TabsTrigger>
-          <TabsTrigger 
-            value="signup"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
-          >
-            Inscription
-          </TabsTrigger>
-        </TabsList>
+    <div className="flex min-h-screen flex-col">
+      <div className="flex-1">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="container mx-auto px-4 py-8 max-w-md"
+        >
+          <Tabs defaultValue="login" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="login">Connexion</TabsTrigger>
+              <TabsTrigger value="signup">Inscription</TabsTrigger>
+            </TabsList>
 
-        <AnimatePresence mode="wait">
-          <TabsContent value="login">
-            <LoginForm
-              email={email}
-              password={password}
-              loading={loading}
-              onEmailChange={setEmail}
-              onPasswordChange={setPassword}
-              onSubmit={() => handleAuth('login')}
-            />
-          </TabsContent>
+            <AnimatePresence mode="wait">
+              <TabsContent value="login">
+                <LoginForm
+                  email={email}
+                  password={password}
+                  loading={loading}
+                  onEmailChange={setEmail}
+                  onPasswordChange={setPassword}
+                  onSubmit={() => handleAuth('login')}
+                />
+              </TabsContent>
 
-          <TabsContent value="signup">
-            <SignupForm
-              email={email}
-              password={password}
-              fullName={fullName}
-              phone={phone}
-              loading={loading}
-              onEmailChange={setEmail}
-              onPasswordChange={setPassword}
-              onFullNameChange={setFullName}
-              onPhoneChange={setPhone}
-              onSubmit={() => handleAuth('signup')}
-            />
-          </TabsContent>
-        </AnimatePresence>
-      </Tabs>
-    </motion.div>
+              <TabsContent value="signup">
+                <SignupForm
+                  email={email}
+                  password={password}
+                  fullName={fullName}
+                  phone={phone}
+                  loading={loading}
+                  onEmailChange={setEmail}
+                  onPasswordChange={setPassword}
+                  onFullNameChange={setFullName}
+                  onPhoneChange={setPhone}
+                  onSubmit={() => handleAuth('signup')}
+                />
+              </TabsContent>
+            </AnimatePresence>
+          </Tabs>
+        </motion.div>
+      </div>
+      <Footer />
+    </div>
   );
 }
