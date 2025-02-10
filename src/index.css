@@ -24,7 +24,7 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 262 83.3% 57.8%;
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   }
 
   .dark {
@@ -48,9 +48,7 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 262 83.3% 57.8%;
   }
-}
 
-@layer base {
   * {
     @apply border-border selection:bg-primary/10;
   }
@@ -73,6 +71,11 @@
 @layer components {
   .glass-panel {
     @apply bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60;
+  }
+
+  .glass-card {
+    @apply bg-background/10 backdrop-blur-md supports-[backdrop-filter]:bg-background/5 
+           border border-white/10 shadow-xl;
   }
 
   .hover-card {
@@ -133,4 +136,3 @@
     display: none;
   }
 }
-

@@ -1,3 +1,4 @@
+
 import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
@@ -28,7 +29,7 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5">
+    <div className="min-h-screen flex flex-col relative overflow-hidden bg-gradient-to-br from-[#9b87f5]/5 via-[#D6BCFA]/5 to-[#403E43]/5">
       {/* Animated background elements */}
       <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
       
@@ -77,18 +78,18 @@ export default function Auth() {
       <ThemeSelector />
       
       <main className="flex-1 w-full py-12 px-4 relative z-10">
-        <div className="container max-w-xl mx-auto space-y-8">
+        <div className="container max-w-xl mx-auto space-y-12">
           <motion.div 
-            className="text-center space-y-6"
+            className="text-center space-y-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
             <Logo size="xl" className="mx-auto" />
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent font-playfair">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent font-playfair">
               Votre Assistant IA
             </h1>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto font-montserrat">
+            <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto font-montserrat">
               Découvrez la puissance de l'intelligence artificielle pour votre recherche d'emploi
             </p>
           </motion.div>

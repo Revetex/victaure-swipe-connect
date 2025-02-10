@@ -25,8 +25,10 @@ export default function Index() {
       >
         <Suspense fallback={<LoadingFallback />}>
           <HeroSection />
+          <Features />
         </Suspense>
       </motion.div>
+      <Footer />
     </div>
   );
 }
