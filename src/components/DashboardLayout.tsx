@@ -10,6 +10,8 @@ import { DashboardContent } from "./dashboard/DashboardContent";
 import { navigationItems } from "@/config/navigation";
 import { Separator } from "./ui/separator";
 import { motion } from "framer-motion";
+import { Connections } from "./Connections";
+import { ScrollArea } from "./ui/scroll-area";
 
 export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,25 +35,32 @@ export function DashboardLayout() {
         <Logo />
       </div>
       <Separator />
-      <nav className="flex-1 p-4 space-y-2">
-        {navigationItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <Button
-              key={item.id}
-              variant={currentPage === item.id ? "default" : "ghost"}
-              className={cn(
-                "w-full justify-start gap-2",
-                currentPage === item.id && "bg-primary/10"
-              )}
-              onClick={() => handlePageChange(item.id)}
-            >
-              <Icon className="h-4 w-4" />
-              <span>{item.name}</span>
-            </Button>
-          );
-        })}
-      </nav>
+      <ScrollArea className="flex-1">
+        <nav className="p-4 space-y-2">
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Button
+                key={item.id}
+                variant={currentPage === item.id ? "default" : "ghost"}
+                className={cn(
+                  "w-full justify-start gap-2",
+                  currentPage === item.id && "bg-primary/10"
+                )}
+                onClick={() => handlePageChange(item.id)}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{item.name}</span>
+              </Button>
+            );
+          })}
+        </nav>
+
+        <div className="p-4">
+          <Connections />
+        </div>
+      </ScrollArea>
+
       {profile && (
         <>
           <Separator />
@@ -86,7 +95,7 @@ export function DashboardLayout() {
   return (
     <div className="flex min-h-screen bg-background">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block w-64 border-r">
+      <aside className="hidden lg:block w-64 border-r fixed h-screen">
         <SidebarContent />
       </aside>
 

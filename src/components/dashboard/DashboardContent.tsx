@@ -12,6 +12,8 @@ import { Loader } from "@/components/ui/loader";
 import { NotificationsTab } from "@/components/notifications/NotificationsTab";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
+import { ChessPage } from "@/components/tools/ChessPage";
+import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendRequestsPage } from "@/components/friends/FriendRequestsPage";
 import { ProfileSearchPage } from "@/components/friends/ProfileSearchPage";
 
@@ -52,7 +54,7 @@ export function DashboardContent({
     }
   };
 
-  const content = (() => {
+  const renderContent = () => {
     switch (currentPage) {
       case 1:
         return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
@@ -72,14 +74,18 @@ export function DashboardContent({
         return <NotificationsTab />;
       case 10:
         return <Settings />;
+      case 11:
+        return <ChessPage />;
       case 12:
         return <FriendRequestsPage />;
       case 13:
         return <ProfileSearchPage />;
+      case 14:
+        return <TranslatorPage />;
       default:
         return null;
     }
-  })();
+  };
 
   return (
     <motion.div
@@ -87,9 +93,9 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6"
+      className="container mx-auto px-4 py-6"
     >
-      {content}
+      {renderContent()}
     </motion.div>
   );
 }
