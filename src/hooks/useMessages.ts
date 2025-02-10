@@ -4,13 +4,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Message, Receiver } from "@/types/messages";
 import { useReceiver } from "./useReceiver";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useMessagesStore } from "@/store/messagesStore";
+
+const MESSAGES_PER_PAGE = 20;
 
 export function useMessages() {
   const queryClient = useQueryClient();
   const { receiver } = useReceiver();
   const { addMessage, updateMessage, deleteMessage } = useMessagesStore();
+  const [lastCursor, setLastCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
 
   // Subscribe to real-time message updates
   useEffect(() => {
@@ -43,9 +47,9 @@ export function useMessages() {
     };
   }, [addMessage, updateMessage, deleteMessage]);
 
-  const { data: messages = [], isLoading } = useQuery({
-    queryKey: ["messages", receiver?.id],
-    queryFn: async () => {
+  const { data: messages = [], isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useQuery({
+    queryKey: ["messages", receiver?.id, lastCursor],
+    queryFn: async ({ pageParam = null }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
@@ -60,7 +64,13 @@ export function useMessages() {
             online_status,
             last_seen
           )
-        `);
+        `)
+        .order('created_at', { ascending: false })
+        .limit(MESSAGES_PER_PAGE);
+
+      if (pageParam) {
+        query = query.lt('page_cursor', pageParam);
+      }
 
       if (receiver?.id === 'assistant') {
         query = query
@@ -73,8 +83,7 @@ export function useMessages() {
         ).eq('message_type', 'user');
       }
 
-      const { data: messages, error } = await query
-        .order("created_at", { ascending: true });
+      const { data: messages, error } = await query;
 
       if (error) {
         console.error("Error fetching messages:", error);
@@ -82,15 +91,24 @@ export function useMessages() {
         throw error;
       }
 
-      return messages.map(msg => ({
+      const formattedMessages = messages.map(msg => ({
         ...msg,
-        timestamp: msg.created_at, // Use created_at as timestamp if timestamp is not available
+        timestamp: msg.created_at,
         status: msg.read ? 'read' : 'delivered',
         message_type: (msg.message_type || 'user') as Message['message_type'],
         metadata: (msg.metadata || {}) as Record<string, any>
       })) as Message[];
+
+      // Update pagination state
+      setHasMore(formattedMessages.length === MESSAGES_PER_PAGE);
+      if (formattedMessages.length > 0) {
+        setLastCursor(formattedMessages[formattedMessages.length - 1].created_at);
+      }
+
+      return formattedMessages;
     },
-    enabled: true
+    enabled: true,
+    getNextPageParam: () => hasMore ? lastCursor : undefined
   });
 
   const handleSendMessage = async (content: string, receiver: Receiver) => {
@@ -178,6 +196,9 @@ export function useMessages() {
     messages,
     isLoading,
     markAsRead,
-    handleSendMessage
+    handleSendMessage,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
   };
 }

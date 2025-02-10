@@ -7,19 +7,63 @@ import { Bot } from "lucide-react";
 import { FriendSelector } from "./FriendSelector";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useEffect, useRef, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface MessagesListProps {
   messages: Message[];
   chatMessages: Message[];
   onSelectConversation: (type: "assistant" | "user", receiver?: any) => void;
+  isLoading?: boolean;
 }
 
 export function MessagesList({
   messages,
   chatMessages,
-  onSelectConversation
+  onSelectConversation,
+  isLoading = false
 }: MessagesListProps) {
   const { profile } = useProfile();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isNearBottom, setIsNearBottom] = useState(true);
+  
+  const handleScroll = (event: any) => {
+    const target = event.target as HTMLDivElement;
+    if (!target) return;
+
+    // Check if we're near the top for infinite scroll
+    if (target.scrollTop === 0) {
+      // TODO: Load more messages
+    }
+
+    // Check if we're near bottom for auto-scroll
+    const isBottom = target.scrollHeight - target.scrollTop <= target.clientHeight + 100;
+    setIsNearBottom(isBottom);
+  };
+
+  useEffect(() => {
+    if (isNearBottom && scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, isNearBottom]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col h-[calc(100vh-4rem)] bg-background">
+        <div className="border-b p-4 flex items-center justify-between gap-4">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-10 w-40" />
+        </div>
+        <ScrollArea className="flex-1">
+          <div className="p-4 space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Skeleton key={i} className="h-20 w-full" />
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
+    );
+  }
   
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] bg-background">
@@ -28,7 +72,10 @@ export function MessagesList({
         <FriendSelector onSelectFriend={(friendId) => onSelectConversation("user", { id: friendId })} />
       </div>
 
-      <ScrollArea className="flex-1">
+      <ScrollArea 
+        className="flex-1"
+        onScrollCapture={handleScroll}
+      >
         <div className="p-4 space-y-4">
           {/* Assistant AI - M. Victaure épinglé en haut */}
           <div className="mb-4">
@@ -57,6 +104,7 @@ export function MessagesList({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
+              layout
             >
               <MessageItem
                 key={message.id}
@@ -77,11 +125,12 @@ export function MessagesList({
             </motion.div>
           ))}
 
-          {messages.length === 0 && (
+          {messages.length === 0 && !isLoading && (
             <p className="text-center text-sm text-muted-foreground py-4">
               Aucune conversation
             </p>
           )}
+          <div ref={scrollRef} />
         </div>
       </ScrollArea>
     </div>
