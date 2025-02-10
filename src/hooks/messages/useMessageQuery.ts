@@ -29,21 +29,21 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
         .limit(MESSAGES_PER_PAGE);
 
       if (lastCursor) {
-        query = query.lt('page_cursor', lastCursor);
+        query = query.lt('created_at', lastCursor);
       }
 
       if (receiver) {
         if (receiver.id === 'assistant') {
-          // For AI messages, only filter by is_assistant flag and receiver_id
+          // Pour les messages IA, filtrer uniquement par is_assistant
           query = query
             .eq('receiver_id', user.id)
             .eq('is_assistant', true);
         } else {
-          // For regular user messages, use sender_id and receiver_id
-          query = query.or(
-            `and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),` +
-            `and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`
-          ).eq('is_assistant', false);
+          // Pour les messages entre utilisateurs
+          query = query
+            .eq('is_assistant', false)
+            .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+            .eq(user.id === receiver.id ? 'sender_id' : 'receiver_id', receiver.id);
         }
       }
 
