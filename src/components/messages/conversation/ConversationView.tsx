@@ -74,10 +74,10 @@ export function ConversationView({
       </header>
 
       <ScrollArea 
-        className="flex-1 px-4 pb-24"
+        className="flex-1 px-4 pb-24 pt-16 w-full overflow-x-hidden"
         onScrollCapture={handleScroll}
       >
-        <div className="space-y-4 py-4 min-h-full">
+        <div className="space-y-4 py-4 min-h-full max-w-3xl mx-auto">
           <AnimatePresence initial={false}>
             {messages.map((message) => (
               <motion.div
@@ -145,4 +145,3 @@ export function ConversationView({
     </div>
   );
 }
-
