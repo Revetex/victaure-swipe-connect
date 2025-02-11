@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { Message, MessageSender } from '@/types/messages';
 import { useProfile } from './useProfile';
@@ -39,7 +38,7 @@ export function useAIChat(): AIChat {
       last_seen: new Date().toISOString()
     },
     timestamp: aiMessage.created_at,
-    message_type: 'ai',
+    message_type: 'assistant',
     status: 'sent',
     metadata: {}
   });

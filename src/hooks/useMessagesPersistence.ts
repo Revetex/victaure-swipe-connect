@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Message } from '@/types/messages';
@@ -46,7 +45,7 @@ export function useMessagesPersistence(receiverId: string | undefined) {
           receiver: msg.receiver,
           timestamp: msg.created_at,
           thinking: false,
-          message_type: msg.is_assistant ? 'ai' : 'user',
+          message_type: msg.is_assistant ? 'assistant' : 'user',
           status: (msg.status as "sent" | "delivered" | "read") || 'sent',
           metadata: typeof msg.metadata === 'object' ? msg.metadata as Record<string, any> : {}
         }));
@@ -94,7 +93,7 @@ export function useMessagesPersistence(receiverId: string | undefined) {
               receiver: newMessage.receiver,
               timestamp: newMessage.created_at,
               thinking: false,
-              message_type: newMessage.is_assistant ? 'ai' : 'user',
+              message_type: newMessage.is_assistant ? 'assistant' : 'user',
               status: 'sent' as const,
               metadata: typeof newMessage.metadata === 'object' ? newMessage.metadata as Record<string, any> : {}
             };
@@ -109,6 +108,29 @@ export function useMessagesPersistence(receiverId: string | undefined) {
     };
   }, [profile?.id, receiverId]);
 
+  const formatMessage = (msg: any): Message => ({
+    id: msg.id,
+    content: msg.content,
+    sender_id: msg.sender_id,
+    receiver_id: msg.receiver_id,
+    created_at: msg.created_at,
+    updated_at: msg.updated_at || msg.created_at,
+    read: msg.read || false,
+    sender: msg.sender || {
+      id: msg.sender_id,
+      full_name: 'Unknown User',
+      avatar_url: '',
+      online_status: false,
+      last_seen: new Date().toISOString()
+    },
+    receiver: msg.receiver,
+    timestamp: msg.created_at,
+    thinking: false,
+    message_type: msg.is_assistant ? 'assistant' : 'user',
+    status: msg.status || 'sent',
+    metadata: typeof msg.metadata === 'object' ? msg.metadata : {}
+  });
+
   const saveMessage = async (content: string, receiverId: string) => {
     if (!profile?.id) return null;
 
@@ -120,7 +142,7 @@ export function useMessagesPersistence(receiverId: string | undefined) {
           sender_id: profile.id,
           receiver_id: receiverId,
           status: 'sent',
-          message_type: receiverId === 'assistant' ? 'ai' : 'user'
+          message_type: receiverId === 'assistant' ? 'assistant' : 'user'
         })
         .select(`
           *,
@@ -131,31 +153,7 @@ export function useMessagesPersistence(receiverId: string | undefined) {
 
       if (error) throw error;
       
-      const formattedMessage: Message = {
-        id: data.id,
-        content: data.content,
-        sender_id: data.sender_id,
-        receiver_id: data.receiver_id,
-        created_at: data.created_at,
-        updated_at: data.updated_at || data.created_at,
-        read: false,
-        sender: data.sender || {
-          id: profile.id,
-          full_name: profile.full_name,
-          avatar_url: profile.avatar_url || '',
-          online_status: true,
-          last_seen: new Date().toISOString()
-        },
-        receiver: data.receiver,
-        timestamp: data.created_at,
-        thinking: false,
-        message_type: receiverId === 'assistant' ? 'ai' : 'user',
-        status: 'sent' as const,
-        metadata: typeof data.metadata === 'object' ? data.metadata as Record<string, any> : {}
-      };
-
-      setLocalMessages(prev => [...prev, formattedMessage]);
-      return formattedMessage;
+      return formatMessage(data);
     } catch (error) {
       console.error('Error saving message:', error);
       toast.error("Erreur lors de l'envoi du message");
