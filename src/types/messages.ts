@@ -26,6 +26,7 @@ export interface Message {
   status: 'sent' | 'delivered' | 'read';
   metadata: Record<string, any>;
   reaction?: string;
+  is_assistant?: boolean;
 }
 
 export interface MessageDelivery {
