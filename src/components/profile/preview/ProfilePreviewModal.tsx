@@ -32,9 +32,9 @@ export function ProfilePreviewModal({
       className="fixed inset-0 z-50 flex items-center justify-center"
     >
       <motion.div
-        initial={{ backdropFilter: "blur(0px)" }}
-        animate={{ backdropFilter: "blur(4px)" }}
-        exit={{ backdropFilter: "blur(0px)" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         className="absolute inset-0 bg-background/80"
         onClick={onClose}
       />
