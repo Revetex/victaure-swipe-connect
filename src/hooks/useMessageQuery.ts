@@ -23,6 +23,11 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
             avatar_url,
             online_status,
             last_seen
+          ),
+          message_deliveries!inner(
+            status,
+            delivered_at,
+            read_at
           )
         `)
         .order('created_at', { ascending: false })
@@ -32,18 +37,16 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
         query = query.lt('created_at', lastCursor);
       }
 
-      // Handle different message filtering scenarios
       if (receiver) {
         if (receiver.id === 'assistant') {
-          // For AI assistant messages, filter by is_assistant flag
           query = query
             .eq('receiver_id', user.id)
             .eq('is_assistant', true);
         } else {
-          // For regular user messages, ensure both sender and receiver are included
           query = query
             .eq('is_assistant', false)
-            .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
+            .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+            .eq(user.id === receiver.id ? 'sender_id' : 'receiver_id', receiver.id);
         }
       }
 
@@ -58,14 +61,14 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
       return messages?.map(msg => ({
         ...msg,
         timestamp: msg.created_at,
-        status: msg.status || 'sent',
+        status: msg.message_deliveries[0]?.status || msg.status || 'sent',
         message_type: msg.is_assistant ? 'ai' : 'user',
         metadata: msg.metadata || {}
       })) as Message[] || [];
     },
-    enabled: !!receiver,
-    retry: 2,
+    enabled: true,
     staleTime: 1000 * 60, // 1 minute
-    cacheTime: 1000 * 60 * 5 // 5 minutes
+    gcTime: 1000 * 60 * 5 // 5 minutes (replacing cacheTime)
   });
 }
+
