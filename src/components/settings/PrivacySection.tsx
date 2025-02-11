@@ -41,10 +41,17 @@ export function PrivacySection() {
 
       const newPrivacyState = !privacyEnabled;
 
+      // Utilisation de l'en-tête Prefer pour éviter les retours mutuels
       const { error } = await supabase
         .from('profiles')
-        .update({ privacy_enabled: newPrivacyState })
-        .eq('id', user.id);
+        .update({ 
+          privacy_enabled: newPrivacyState,
+          // Ajout d'un champ pour indiquer que c'est une mise à jour de confidentialité
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id)
+        .select()
+        .single();
 
       if (error) throw error;
 
