@@ -30,7 +30,8 @@ export function FriendItem({ friend }: FriendItemProps) {
         .select('*')
         .or('sender_id.eq.' + user.id + ',receiver_id.eq.' + friend.id + ',' +
             'sender_id.eq.' + friend.id + ',receiver_id.eq.' + user.id)
-        .limit(1);
+        .limit(1)
+        .is('is_assistant', false); // Make sure we only get non-assistant messages
 
       if (error) throw error;
       
