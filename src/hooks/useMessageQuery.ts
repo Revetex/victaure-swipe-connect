@@ -46,12 +46,12 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
 
       if (receiver) {
         if (receiver.id === 'assistant') {
-          // Pour les messages de l'assistant
+          // For AI messages - only get messages where user is receiver and message is from AI
           query = query
             .eq('receiver_id', user.id)
             .eq('is_assistant', true);
         } else {
-          // Pour les messages entre utilisateurs
+          // For user-to-user messages - exclude AI messages and get conversation between users
           query = query
             .eq('is_assistant', false)
             .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
@@ -66,19 +66,26 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
         throw error;
       }
 
+      // Map messages to correct format
       return messages?.map(msg => ({
         ...msg,
         timestamp: msg.created_at,
         status: msg.message_deliveries?.[0]?.status || msg.status || 'sent',
         message_type: msg.is_assistant ? 'assistant' : 'user',
         metadata: msg.metadata || {},
-        sender: msg.sender || {
+        sender: msg.is_assistant ? {
+          id: 'assistant',
+          full_name: 'M. Victaure',
+          avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+          online_status: true,
+          last_seen: new Date().toISOString()
+        } : (msg.sender || {
           id: msg.sender_id,
           full_name: 'Unknown User',
           avatar_url: '',
           online_status: false,
           last_seen: new Date().toISOString()
-        },
+        }),
         receiver: msg.receiver || {
           id: msg.receiver_id,
           full_name: 'Unknown User',
