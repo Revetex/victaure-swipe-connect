@@ -33,7 +33,7 @@ export function NotificationsTab() {
       }}
       initial="hidden"
       animate="visible"
-      className="p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      className="p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pt-16"
     >
       <NotificationsHeader 
         unreadCount={unreadCount}
