@@ -25,12 +25,14 @@ export function FriendItem({ friend }: FriendItemProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: existingConversation } = await supabase
+      const { data: existingConversation, error } = await supabase
         .from('messages')
         .select('*')
         .or(`and(sender_id.eq.${user.id},receiver_id.eq.${friend.id}),and(sender_id.eq.${friend.id},receiver_id.eq.${user.id})`)
         .limit(1);
 
+      if (error) throw error;
+      
       navigate(`/dashboard/messages?receiver=${friend.id}`);
       
       if (!existingConversation?.length) {
@@ -52,7 +54,7 @@ export function FriendItem({ friend }: FriendItemProps) {
         .from('friend_requests')
         .delete()
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .or(`sender_id.eq.${friend.id},receiver_id.eq.${friend.id}`);
+        .and(`sender_id.eq.${friend.id},receiver_id.eq.${friend.id}`);
 
       if (error) throw error;
       toast.success(`${friend.full_name} a été retiré de vos connections`);
@@ -72,7 +74,7 @@ export function FriendItem({ friend }: FriendItemProps) {
         .from('friend_requests')
         .delete()
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .or(`sender_id.eq.${friend.id},receiver_id.eq.${friend.id}`);
+        .and(`sender_id.eq.${friend.id},receiver_id.eq.${friend.id}`);
 
       const { error } = await supabase
         .from('blocked_users')
