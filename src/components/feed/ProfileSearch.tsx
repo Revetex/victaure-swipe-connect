@@ -18,7 +18,7 @@ interface ProfileSearchProps {
 export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisateur...", className }: ProfileSearchProps) {
   const [search, setSearch] = useState("");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [debouncedSearch] = useDebounce(search, 500); // Increased debounce time
+  const [debouncedSearch] = useDebounce(search, 500);
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
 
   const { data: profiles = [], isLoading } = useQuery({
@@ -31,7 +31,7 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisate
         .select("*")
         .order("full_name")
         .ilike("full_name", `%${debouncedSearch}%`)
-        .limit(10); // Limit results for better performance
+        .limit(10);
 
       const { data, error } = await query;
 
@@ -42,15 +42,15 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisate
 
       return data as UserProfile[];
     },
-    enabled: debouncedSearch.length >= 2, // Only fetch when search is at least 2 characters
-    staleTime: 30000, // Cache results for 30 seconds
-    cacheTime: 60000, // Keep cache for 1 minute
+    enabled: debouncedSearch.length >= 2,
+    staleTime: 30000,
+    gcTime: 60000
   });
 
   const handleProfileClick = (profile: UserProfile) => {
     setSelectedProfile(profile);
     onSelect(profile);
-    setSearch(""); // Clear search after selection
+    setSearch("");
   };
 
   const handleProfilePreviewClose = () => {
