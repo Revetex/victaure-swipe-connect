@@ -44,12 +44,12 @@ export function ProfileActions({
   };
 
   return (
-    <div className="flex flex-col w-full gap-2 relative z-[100]">
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/80 to-background/95 backdrop-blur-lg rounded-lg" />
+    <div className="fixed bottom-0 left-0 right-0 p-4 flex flex-col w-full gap-2 z-[9999]">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent backdrop-blur-sm" />
       
       <Button 
         variant={areFriends ? "default" : "secondary"}
-        className="w-full bg-background/80 hover:bg-background/90 backdrop-blur-sm transition-all duration-200 shadow-sm"
+        className="relative w-full bg-background/90 hover:bg-background/95 backdrop-blur-sm transition-all duration-200 shadow-lg"
         onClick={onViewProfile}
       >
         {areFriends ? (
@@ -68,7 +68,7 @@ export function ProfileActions({
       {!isFriendRequestSent && !areFriends && (
         <Button
           variant="outline"
-          className="w-full bg-background/80 hover:bg-background/90 backdrop-blur-sm transition-all duration-200 shadow-sm"
+          className="relative w-full bg-background/90 hover:bg-background/95 backdrop-blur-sm transition-all duration-200 shadow-lg"
           onClick={handleSendFriendRequest}
         >
           <UserPlus className="mr-2 h-4 w-4" />
@@ -78,7 +78,7 @@ export function ProfileActions({
       
       <Button
         variant="ghost"
-        className="w-full bg-background/80 hover:bg-background/90 backdrop-blur-sm transition-all duration-200"
+        className="relative w-full bg-background/90 hover:bg-background/95 backdrop-blur-sm transition-all duration-200 shadow-lg"
         onClick={onClose}
       >
         Fermer
