@@ -950,39 +950,54 @@ export type Database = {
           condition: string | null
           created_at: string | null
           description: string | null
+          favorites_count: number | null
           id: string
           images: string[] | null
+          location: Json | null
+          metadata: Json | null
           price: number
+          searchable_text: unknown | null
           seller_id: string
           status: string
           title: string
           updated_at: string | null
+          views_count: number | null
         }
         Insert: {
           category_id?: string | null
           condition?: string | null
           created_at?: string | null
           description?: string | null
+          favorites_count?: number | null
           id?: string
           images?: string[] | null
+          location?: Json | null
+          metadata?: Json | null
           price: number
+          searchable_text?: unknown | null
           seller_id: string
           status?: string
           title: string
           updated_at?: string | null
+          views_count?: number | null
         }
         Update: {
           category_id?: string | null
           condition?: string | null
           created_at?: string | null
           description?: string | null
+          favorites_count?: number | null
           id?: string
           images?: string[] | null
+          location?: Json | null
+          metadata?: Json | null
           price?: number
+          searchable_text?: unknown | null
           seller_id?: string
           status?: string
           title?: string
           updated_at?: string | null
+          views_count?: number | null
         }
         Relationships: [
           {
