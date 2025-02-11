@@ -42,10 +42,10 @@ export function Feed() {
   return (
     <ScrollArea 
       ref={scrollRef} 
-      className="h-[calc(100vh-4rem)] w-full"
+      className="h-full w-full"
       onScroll={handleScroll}
     >
-      <div className="max-w-3xl mx-auto py-4 px-4 space-y-4 pb-24">
+      <div className="max-w-3xl mx-auto py-4 px-4 space-y-4">
         <CreatePost onPostCreated={handlePostCreated} />
         <PostList 
           onPostDeleted={handlePostDeleted}
@@ -65,7 +65,7 @@ export function Feed() {
               "rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200",
               "hover:scale-105 active:scale-95",
               "min-h-[44px] min-w-[44px] z-20",
-              isMobile ? "bottom-24 right-4" : "bottom-8 right-4"
+              isMobile ? "bottom-4 right-4" : "bottom-8 right-4"
             )}
             aria-label="Retourner en haut"
           >

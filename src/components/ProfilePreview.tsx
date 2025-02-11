@@ -35,19 +35,21 @@ export function ProfilePreview({
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-md w-full p-0">
-          <MemoizedProfilePreviewDialog
-            profile={profile}
-            isOpen={isOpen}
-            onClose={onClose}
-            onRequestChat={onRequestChat}
-            canViewFullProfile={canViewFullProfile}
-          />
-          <ProfilePreviewButtons
-            profile={profile}
-            onRequestChat={onRequestChat}
-            onClose={onClose}
-            canViewFullProfile={canViewFullProfile}
-          />
+          <div className="flex flex-col h-full">
+            <MemoizedProfilePreviewDialog
+              profile={profile}
+              isOpen={isOpen}
+              onClose={onClose}
+              onRequestChat={onRequestChat}
+              canViewFullProfile={canViewFullProfile}
+            />
+            <ProfilePreviewButtons
+              profile={profile}
+              onRequestChat={onRequestChat}
+              onClose={onClose}
+              canViewFullProfile={canViewFullProfile}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     );
