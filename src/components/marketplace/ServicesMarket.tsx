@@ -11,14 +11,7 @@ import { Clock, Gavel, ImagePlus, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
-
-type Service = Database["public"]["Tables"]["marketplace_services"]["Row"];
-type Category = Database["public"]["Tables"]["marketplace_categories"]["Row"];
-type ServiceWithDetails = Service & {
-  provider: { full_name: string; avatar_url: string | null };
-  bids: { count: number }[];
-};
+import type { MarketplaceService, MarketplaceCategory } from "@/types/marketplace/types";
 
 export function ServicesMarket() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -44,7 +37,7 @@ export function ServicesMarket() {
         throw error;
       }
 
-      return data as ServiceWithDetails[];
+      return data as MarketplaceService[];
     }
   });
 
@@ -61,7 +54,7 @@ export function ServicesMarket() {
         throw error;
       }
 
-      return data as Category[];
+      return data as MarketplaceCategory[];
     }
   });
 

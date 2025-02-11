@@ -11,10 +11,7 @@ import { ImagePlus, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
-
-type Item = Database["public"]["Tables"]["marketplace_items"]["Row"];
-type Category = Database["public"]["Tables"]["marketplace_categories"]["Row"];
+import type { MarketplaceItem, MarketplaceCategory } from "@/types/marketplace/types";
 
 export function ItemsMarket() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -39,7 +36,7 @@ export function ItemsMarket() {
         throw error;
       }
 
-      return data as (Item & { seller: { full_name: string; avatar_url: string | null } })[];
+      return data as MarketplaceItem[];
     }
   });
 
@@ -56,7 +53,7 @@ export function ItemsMarket() {
         throw error;
       }
 
-      return data as Category[];
+      return data as MarketplaceCategory[];
     }
   });
 
