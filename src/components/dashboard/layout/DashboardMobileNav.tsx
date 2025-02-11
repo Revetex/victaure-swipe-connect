@@ -44,9 +44,10 @@ export function DashboardMobileNav({
   };
 
   return (
-    <header className="fixed top-0 z-50 w-full">
+    <header className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur shadow-sm">
       <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
-        <div className="flex h-16 items-center px-4 pt-safe-top bg-background border-b border-border">
+        {/* Add pt-safe-top to account for iOS safe area */}
+        <div className="flex h-16 items-center px-4 pt-safe-top">
           <SheetTrigger asChild>
             <Button 
               variant="ghost" 
@@ -63,8 +64,8 @@ export function DashboardMobileNav({
             <Logo />
           </div>
         </div>
-        <SheetContent side="left" className="w-72 p-0 bg-card">
-          <div className="p-4 border-b border-border">
+        <SheetContent side="left" className="w-64 p-0">
+          <div className="p-4">
             <Logo />
           </div>
           <nav className="space-y-1 p-4" role="navigation" aria-label="Menu principal">
@@ -109,3 +110,4 @@ export function DashboardMobileNav({
     </header>
   );
 }
+
