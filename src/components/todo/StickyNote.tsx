@@ -9,26 +9,25 @@ import { fr } from "date-fns/locale";
 
 interface StickyNoteProps {
   note: StickyNoteType;
-  colorClass: string;
   onDelete: (id: string) => void;
   layout?: 'grid' | 'masonry' | 'list';
 }
 
-export function StickyNote({ note, colorClass, onDelete, layout = 'grid' }: StickyNoteProps) {
-  const getNoteColorClass = (color: string) => {
+export function StickyNote({ note, onDelete, layout = 'grid' }: StickyNoteProps) {
+  const getColorClass = (color: string) => {
     switch (color) {
       case 'yellow':
-        return 'sticky-note-yellow';
+        return 'bg-[#FEF7CD]/90 hover:bg-[#FEF7CD] border-yellow-200/50';
       case 'blue':
-        return 'sticky-note-blue';
+        return 'bg-[#D3E4FD]/90 hover:bg-[#D3E4FD] border-blue-200/50';
       case 'green':
-        return 'sticky-note-green';
+        return 'bg-[#F2FCE2]/90 hover:bg-[#F2FCE2] border-green-200/50';
       case 'purple':
-        return 'sticky-note-purple';
+        return 'bg-[#E5DEFF]/90 hover:bg-[#E5DEFF] border-purple-200/50';
       case 'orange':
-        return 'sticky-note-orange';
+        return 'bg-[#FEC6A1]/90 hover:bg-[#FEC6A1] border-orange-200/50';
       default:
-        return 'sticky-note-yellow';
+        return 'bg-[#FEF7CD]/90 hover:bg-[#FEF7CD] border-yellow-200/50';
     }
   };
 
@@ -46,16 +45,16 @@ export function StickyNote({ note, colorClass, onDelete, layout = 'grid' }: Stic
         damping: 20
       }}
       className={cn(
-        "sticky-note group",
-        getNoteColorClass(note.color),
+        "border shadow-lg group",
+        getColorClass(note.color),
         "touch-manipulation relative overflow-hidden",
         "before:content-[''] before:absolute before:inset-0",
         "before:bg-gradient-to-br before:from-white/5 before:to-transparent",
         "after:content-[''] after:absolute after:bottom-0 after:right-0",
         "after:w-8 after:h-8 after:bg-gradient-to-br",
         "after:from-black/0 after:to-black/5 after:rounded-tl-2xl",
-        "shadow-lg hover:shadow-xl transition-shadow",
-        layout === 'list' && "flex items-start gap-4"
+        "hover:shadow-xl transition-all duration-300",
+        layout === 'list' ? "flex items-start gap-4 rounded-lg p-4" : "rounded-lg p-6 min-h-[280px]"
       )}
     >
       <Button
@@ -73,8 +72,8 @@ export function StickyNote({ note, colorClass, onDelete, layout = 'grid' }: Stic
       </Button>
 
       <div className={cn(
-        "pt-2 pb-8 px-4",
-        layout === 'list' && "flex-1 py-4"
+        "w-full",
+        layout === 'list' ? "flex-1" : ""
       )}>
         <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
           {note.text}

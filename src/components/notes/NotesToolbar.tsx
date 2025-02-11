@@ -32,6 +32,23 @@ export function NotesToolbar({
     onAdd();
   };
 
+  const getColorClass = (color: string) => {
+    switch (color) {
+      case 'yellow':
+        return 'bg-[#FEF7CD]';
+      case 'blue':
+        return 'bg-[#D3E4FD]';
+      case 'green':
+        return 'bg-[#F2FCE2]';
+      case 'purple':
+        return 'bg-[#E5DEFF]';
+      case 'orange':
+        return 'bg-[#FEC6A1]';
+      default:
+        return 'bg-[#FEF7CD]';
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
       <div className="flex gap-2">
@@ -45,7 +62,7 @@ export function NotesToolbar({
         <Select value={selectedColor} onValueChange={onColorChange}>
           <SelectTrigger className={cn(
             "w-[100px]",
-            `sticky-note-${selectedColor}`
+            getColorClass(selectedColor)
           )}>
             <SelectValue />
           </SelectTrigger>
@@ -56,13 +73,12 @@ export function NotesToolbar({
                 value={color.value}
                 className={cn(
                   "flex items-center gap-2 cursor-pointer",
-                  `sticky-note-${color.value}`,
-                  selectedColor === color.value && "bg-accent"
+                  getColorClass(color.value)
                 )}
               >
                 <div className={cn(
                   "w-4 h-4 rounded-full",
-                  `bg-${color.value}-200`
+                  getColorClass(color.value)
                 )} />
                 {color.label}
               </SelectItem>
