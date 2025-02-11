@@ -57,13 +57,15 @@ export function useChessGame() {
         .insert({
           white_player_id: user.id,
           ai_difficulty: difficulty,
-          game_state: serializeGameState(board, moveHistory, isWhiteTurn)
+          game_state: serializeGameState(board, moveHistory, isWhiteTurn),
+          status: 'in_progress'
         })
         .select()
         .single();
 
       if (error) throw error;
       setGameId(data.id);
+      toast.success("Nouvelle partie commencée");
     } catch (error) {
       console.error('Error creating game:', error);
       toast.error("Erreur lors de la création de la partie");
@@ -90,11 +92,13 @@ export function useChessGame() {
   };
 
   useEffect(() => {
-    createGame();
+    if (!gameId) {
+      createGame();
+    }
   }, []);
 
   useEffect(() => {
-    if (board && moveHistory.length > 0) {
+    if (gameId && board && moveHistory.length > 0) {
       saveGameState();
     }
   }, [board, moveHistory, isWhiteTurn, gameOver]);
@@ -111,28 +115,36 @@ export function useChessGame() {
 
         // AI's turn
         if (!gameOver && isWhiteTurn) {
-          await makeAIMove(
-            newBoard,
-            difficulty,
-            (from, to) => {
-              const aiBoard = makeMove(from.row, from.col, to.row, to.col);
-              const aiMove = `${getSquareName(from.row, from.col)} → ${getSquareName(to.row, to.col)}`;
-              setMoveHistory(prev => [...prev, aiMove]);
-              setBoard(aiBoard);
-              setIsWhiteTurn(true);
-            },
-            () => {
-              setGameOver(true);
-              toast.success("Échec et mat ! Partie terminée");
-            }
-          );
+          try {
+            await makeAIMove(
+              newBoard,
+              difficulty,
+              (from, to) => {
+                const aiBoard = makeMove(from.row, from.col, to.row, to.col);
+                const aiMove = `${getSquareName(from.row, from.col)} → ${getSquareName(to.row, to.col)}`;
+                setMoveHistory(prev => [...prev, aiMove]);
+                setBoard(aiBoard);
+                setIsWhiteTurn(true);
+              },
+              () => {
+                setGameOver(true);
+                toast.success("Échec et mat ! Partie terminée");
+              }
+            );
+          } catch (error) {
+            console.error("Error during AI move:", error);
+            toast.error("Erreur lors du coup de l'IA");
+          }
         }
       } else {
         setSelectedPiece(null);
         setPossibleMoves([]);
       }
     } else {
-      handlePieceSelect(row, col, isWhiteTurn);
+      const piece = board[row][col];
+      if (piece && piece.isWhite === isWhiteTurn) {
+        handlePieceSelect(row, col, isWhiteTurn);
+      }
     }
   };
 
@@ -141,8 +153,8 @@ export function useChessGame() {
     setIsWhiteTurn(true);
     setGameOver(false);
     setMoveHistory([]);
+    setGameId(null);
     createGame();
-    toast.success("Nouvelle partie commencée");
   };
 
   return {
