@@ -32,21 +32,21 @@ export function Feed() {
   }, []);
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-hidden mt-16">
+    <div className="h-[calc(100vh-3.5rem)] overflow-hidden">
       <ScrollArea 
         ref={scrollRef} 
         className="h-full w-full scrollbar-none"
         onScroll={handleScroll}
       >
         <div className={cn(
-          "max-w-3xl mx-auto space-y-6",
-          "px-4 sm:px-6 py-4 sm:py-6",
-          "pb-safe" // Ajout de padding pour la safe area iOS
+          "max-w-3xl mx-auto space-y-4",
+          "px-3 sm:px-4 py-3",
+          "pb-safe"
         )}>
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
           >
             <CreatePost onPostCreated={invalidatePosts} />
           </motion.div>
@@ -54,7 +54,7 @@ export function Feed() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
+            transition={{ duration: 0.2 }}
           >
             <PostList 
               onPostDeleted={invalidatePosts}
@@ -72,16 +72,15 @@ export function Feed() {
               onClick={scrollToTop}
               className={cn(
                 "fixed bg-primary/90 hover:bg-primary text-primary-foreground",
-                "rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200",
+                "rounded-full p-2.5 shadow-lg hover:shadow-xl transition-all duration-200",
                 "hover:scale-105 active:scale-95",
-                "backdrop-blur-sm",
-                "min-h-[44px] min-w-[44px] z-20",
+                "min-h-[40px] min-w-[40px] z-20",
                 "touch-manipulation",
-                isMobile ? "bottom-24 right-4" : "bottom-8 right-8"
+                isMobile ? "bottom-20 right-3" : "bottom-6 right-6"
               )}
               aria-label="Retourner en haut"
             >
-              <ChevronUp className="h-5 w-4" />
+              <ChevronUp className="h-4 w-4" />
             </motion.button>
           )}
         </AnimatePresence>
