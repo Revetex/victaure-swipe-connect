@@ -1,4 +1,3 @@
-
 import { ChessPiece } from "@/types/chess";
 
 export type GameStatus = {
@@ -155,7 +154,9 @@ export function calculatePossibleMoves(
 
 export function getGameStatus(
   board: (ChessPiece | null)[][],
-  isWhiteTurn: boolean
+  isWhiteTurn: boolean,
+  isGameOver: boolean,
+  currentWinner: 'white' | 'black' | null
 ): GameStatus {
   const isWhiteInCheck = isKingInCheck(board, true);
   const isBlackInCheck = isKingInCheck(board, false);
@@ -174,6 +175,17 @@ export function getGameStatus(
       }
     }
     if (hasLegalMoves) break;
+  }
+
+  // Si le jeu est déjà terminé, retourner le statut final
+  if (isGameOver && currentWinner) {
+    return {
+      isCheck: false,
+      isCheckmate: true,
+      isStalemate: false,
+      winner: currentWinner,
+      reason: `Les ${currentWinner === 'white' ? 'blancs' : 'noirs'} ont gagné !`,
+    };
   }
 
   // Déterminer le statut du jeu

@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Sword, Crown, Brain, History, AlertCircle } from "lucide-react";
 import { ChessBoard } from "./chess/ChessBoard";
@@ -6,6 +5,7 @@ import { ChessControls } from "./chess/ChessControls";
 import { useChessGame } from "@/hooks/chess/useChessGame";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 export function ChessPage() {
   const {
@@ -33,7 +33,6 @@ export function ChessPage() {
         className="max-w-7xl mx-auto rounded-2xl bg-gradient-to-br from-[#1e293b]/50 to-[#0f172a]/50 backdrop-blur-sm border border-white/10 overflow-hidden"
       >
         <div className="relative p-6 md:p-8">
-          {/* Header */}
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -78,7 +77,6 @@ export function ChessPage() {
             </motion.div>
           </motion.div>
 
-          {/* Game Area */}
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
             <div className="space-y-6">
               <ChessControls
@@ -139,7 +137,6 @@ export function ChessPage() {
               </div>
             </div>
 
-            {/* Move History */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}

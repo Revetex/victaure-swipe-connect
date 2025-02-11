@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useChessBoard } from "./useChessBoard";
@@ -28,10 +27,10 @@ export function useChessGame() {
   const [gameOver, setGameOver] = useState(false);
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState<string>("medium");
-  const [gameStatus, setGameStatus] = useState(getGameStatus(board, true));
+  const [gameStatus, setGameStatus] = useState(getGameStatus(board, true, false, null));
 
   useEffect(() => {
-    const status = getGameStatus(board, isWhiteTurn);
+    const status = getGameStatus(board, isWhiteTurn, gameOver, gameStatus?.winner);
     setGameStatus(status);
 
     if (status.isCheckmate || status.isStalemate) {
@@ -43,7 +42,7 @@ export function useChessGame() {
     } else if (status.isCheck) {
       toast.info("Échec !");
     }
-  }, [board, isWhiteTurn]);
+  }, [board, isWhiteTurn, gameOver, gameStatus?.winner]);
 
   const handleSquareClick = async (row: number, col: number) => {
     if (gameOver || (!isWhiteTurn && !selectedPiece)) return;
@@ -109,7 +108,7 @@ export function useChessGame() {
     setMoveHistory([]);
     setSelectedPiece(null);
     setPossibleMoves([]);
-    setGameStatus(getGameStatus(board, true));
+    setGameStatus(getGameStatus(board, true, false, null));
     toast.success("Nouvelle partie commencée");
   };
 
