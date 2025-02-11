@@ -59,7 +59,7 @@ export function DashboardContent({
       "min-h-[calc(100vh-4rem)]", // Full height minus header
       "w-full max-w-7xl mx-auto", // Max width and center
       "px-4 sm:px-6 lg:px-8", // Responsive padding
-      "pt-20 pb-8" // Top padding for header + bottom padding
+      "pt-4 pb-8" // Reduced top padding + bottom padding
     );
 
     switch (currentPage) {
@@ -98,7 +98,7 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="relative min-h-screen bg-background"
+      className="relative bg-background pt-16"
     >
       {getPageContent()}
     </motion.div>
