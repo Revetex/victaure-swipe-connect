@@ -104,12 +104,16 @@ export function ConversationView({
   const lastMessageTime = lastMessage ? format(new Date(lastMessage.created_at), 'HH:mm', { locale: fr }) : '';
 
   return (
-    <div className="flex flex-col h-screen max-h-screen bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex-shrink-0">
+    <div className="flex flex-col h-screen max-h-screen">
+      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <ChatHeader
-          title="Messages"
+          title={receiver.full_name}
+          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : undefined}
+          avatarUrl={receiver.avatar_url}
           onBack={onBack}
           onDelete={onDeleteConversation}
+          isOnline={receiver.online_status}
+          lastSeen={receiver.last_seen}
         />
       </div>
 
@@ -120,9 +124,9 @@ export function ConversationView({
         onTouchEnd={() => setIsScrolling(false)}
         onMouseDown={() => setIsScrolling(true)}
         onMouseUp={() => setIsScrolling(false)}
-        className="flex-1 overflow-y-auto px-4 pt-4 scroll-smooth"
+        className="flex-1 overflow-y-auto px-4 scroll-smooth"
       >
-        <div className="max-w-3xl mx-auto space-y-4 pb-4">
+        <div className="max-w-3xl mx-auto space-y-4 py-4">
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-32 text-muted-foreground">
               Commencez une nouvelle conversation
@@ -169,41 +173,40 @@ export function ConversationView({
         </div>
       </div>
 
-      <div className="flex-shrink-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="p-4 border-b">
-          <div className="flex items-center justify-between max-w-3xl mx-auto">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8 border-2 border-background">
-                <AvatarImage 
-                  src={receiver.avatar_url || ''} 
-                  alt={receiver.full_name} 
-                  className="object-cover"
-                />
-                <AvatarFallback className="bg-primary/10">
-                  {receiver.full_name?.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <span className="text-sm font-medium">{receiver.full_name}</span>
-                <span className={`text-xs ${receiver.online_status ? 'text-green-500' : 'text-muted-foreground'}`}>
-                  {receiver.online_status ? 'En ligne' : 'Hors ligne'}
-                </span>
+      <div className="sticky bottom-0 w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        {lastMessage && (
+          <div className="border-b px-4 py-2">
+            <div className="flex items-center justify-between max-w-3xl mx-auto">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-8 w-8 border-2 border-background">
+                  <AvatarImage 
+                    src={receiver.avatar_url || ''} 
+                    alt={receiver.full_name} 
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="bg-primary/10">
+                    {receiver.full_name?.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">{receiver.full_name}</span>
+                  <span className={`text-xs ${receiver.online_status ? 'text-green-500' : 'text-muted-foreground'}`}>
+                    {receiver.online_status ? 'En ligne' : 'Hors ligne'}
+                  </span>
+                </div>
               </div>
-            </div>
-            
-            {lastMessage && (
               <div className="text-sm text-muted-foreground">
                 Dernier message : {lastMessageTime}
               </div>
-            )}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="p-4">
           <ChatInput
             value={inputMessage}
             onChange={onInputChange}
-            onSend={onSendMessage}
+            onSend={handleSendMessage}
             isThinking={isThinking}
             isListening={isListening}
             onVoiceInput={onVoiceInput}
