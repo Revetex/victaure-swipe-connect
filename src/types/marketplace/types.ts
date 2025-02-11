@@ -14,6 +14,11 @@ export type DbMarketplaceItem = {
   created_at: string;
   updated_at: string;
   condition: string | null;
+  views_count: number | null;
+  favorites_count: number | null;
+  location: any | null;
+  metadata: any | null;
+  searchable_text?: any;
 };
 
 export type DbMarketplaceCategory = {
@@ -41,7 +46,17 @@ export type MarketplaceItem = DbMarketplaceItem & {
   category?: MarketplaceCategory | null;
 };
 
-// Type pour les emplois du marketplace
+// Ajout des types manquants pour les jobs
+export type JobCategory = {
+  id: string;
+  name: string;
+  parent_id: string | null;
+  icon: string | null;
+  description: string | null;
+  created_at: string;
+  subcategories?: JobCategory[];
+};
+
 export type MarketplaceJob = {
   id: string;
   title: string;
@@ -70,18 +85,7 @@ export type MarketplaceJob = {
   category?: JobCategory | null;
 };
 
-// Type pour les catégories d'emploi
-export type JobCategory = {
-  id: string;
-  name: string;
-  parent_id: string | null;
-  icon: string | null;
-  description: string | null;
-  created_at: string;
-  subcategories?: JobCategory[];
-};
-
-// Type pour les services avec gestion des enchères
+// Ajout du type pour les services marketplace
 export type MarketplaceService = {
   id: string;
   title: string;
@@ -109,3 +113,4 @@ export type MarketplaceService = {
     last_bid_at?: string;
   }[];
 };
+
