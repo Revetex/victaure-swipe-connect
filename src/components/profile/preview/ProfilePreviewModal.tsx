@@ -40,7 +40,7 @@ export function ProfilePreviewModal({
       />
       
       <motion.div 
-        className="relative z-[60] w-full max-w-lg mx-4"
+        className="relative z-[99] w-full max-w-lg mx-4"
         initial={{ y: 50 }}
         animate={{ y: 0 }}
         exit={{ y: 50 }}
@@ -55,7 +55,7 @@ export function ProfilePreviewModal({
               canViewFullProfile={canViewFullProfile}
             />
           </div>
-          <div className="border-t">
+          <div className="border-t bg-background">
             <ProfilePreviewButtons
               profile={profile}
               onRequestChat={onRequestChat}
