@@ -127,7 +127,7 @@ export function ConversationView({
                     <div className={`max-w-[70%] md:max-w-[60%] ${isAIMessage ? 'bg-primary/5 rounded-lg p-1' : ''}`}>
                       <ChatMessage
                         content={message.content}
-                        sender={isUserMessage ? "user" : isAIMessage ? "assistant" : "other"}
+                        sender={isUserMessage ? "user" : "assistant"}
                         timestamp={message.created_at}
                         isRead={message.read}
                         status={message.status}
