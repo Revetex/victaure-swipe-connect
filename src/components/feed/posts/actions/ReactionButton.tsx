@@ -34,13 +34,16 @@ export function ReactionButton({
           onClick();
         }}
         className={cn(
-          "flex gap-2 items-center transition-all duration-150 min-w-[80px] justify-center",
+          "flex gap-2 items-center transition-all duration-200 min-w-[90px] justify-center",
+          "hover:shadow-md hover:ring-2 hover:ring-offset-2 hover:ring-primary/20",
+          "active:shadow-inner",
+          !isActive && "hover:bg-primary/5",
           isActive && activeClassName
         )}
       >
         <Icon className={cn(
-          "h-4 w-4 transition-transform",
-          isActive && "scale-110"
+          "h-4 w-4 transition-all duration-200",
+          isActive && "scale-110 animate-pulse"
         )} />
         <span className="font-medium text-sm">{count}</span>
       </Button>
