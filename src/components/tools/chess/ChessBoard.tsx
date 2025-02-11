@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import { ChessPiece } from "./types";
+import { ChessPiece } from "@/types/chess";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -67,7 +67,8 @@ export function ChessBoard({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onSquareClick(rowIndex, colIndex)}
-                disabled={isThinking || (gameOver && !isWhiteTurn)}
+                disabled={(!isWhiteTurn && !piece?.isWhite) || isThinking || gameOver}
+                aria-label={`Square ${String.fromCharCode(97 + colIndex)}${8 - rowIndex}${piece ? ` with ${piece.type}` : ''}`}
                 className={cn(
                   "aspect-square flex items-center justify-center relative",
                   "transition-all duration-300 ease-out touch-manipulation",
