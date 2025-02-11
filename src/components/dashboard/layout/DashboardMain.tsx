@@ -28,7 +28,7 @@ export function DashboardMain({ children }: DashboardMainProps) {
   return (
     <motion.main 
       variants={mainVariants}
-      className="flex-1 w-full overflow-x-hidden bg-background/50 pt-16" // Added pt-16 for header spacing
+      className="flex-1 w-full overflow-x-hidden bg-background/50"
     >
       <div className="w-full max-w-7xl mx-auto">
         {children}
