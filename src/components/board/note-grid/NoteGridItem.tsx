@@ -30,7 +30,6 @@ export function NoteGridItem({ note, onDelete, layout }: NoteGridItemProps) {
     >
       <StickyNote
         note={note}
-        colorClass={`sticky-note-${note.color}`}
         onDelete={onDelete}
         layout={layout}
       />

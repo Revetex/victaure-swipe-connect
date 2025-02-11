@@ -1,3 +1,4 @@
+
 import { StickyNoteIcon } from "lucide-react";
 import { NotesInput } from "./NotesInput";
 import { StickyNote } from "./StickyNote";
@@ -47,7 +48,6 @@ export function NotesSection({
               <StickyNote
                 key={note.id}
                 note={note}
-                colorClass={`sticky-note-${note.color}`}
                 onDelete={onDelete}
               />
             ))}

@@ -17,17 +17,17 @@ export function StickyNote({ note, onDelete, layout = 'grid' }: StickyNoteProps)
   const getColorClass = (color: string) => {
     switch (color) {
       case 'yellow':
-        return 'bg-[#FEF7CD]/90 hover:bg-[#FEF7CD] border-yellow-200/50';
+        return 'bg-[#FEF7CD]/90 hover:bg-[#FEF7CD] border-yellow-200/50 text-zinc-800';
       case 'blue':
-        return 'bg-[#D3E4FD]/90 hover:bg-[#D3E4FD] border-blue-200/50';
+        return 'bg-[#D3E4FD]/90 hover:bg-[#D3E4FD] border-blue-200/50 text-zinc-800';
       case 'green':
-        return 'bg-[#F2FCE2]/90 hover:bg-[#F2FCE2] border-green-200/50';
+        return 'bg-[#F2FCE2]/90 hover:bg-[#F2FCE2] border-green-200/50 text-zinc-800';
       case 'purple':
-        return 'bg-[#E5DEFF]/90 hover:bg-[#E5DEFF] border-purple-200/50';
+        return 'bg-[#E5DEFF]/90 hover:bg-[#E5DEFF] border-purple-200/50 text-zinc-800';
       case 'orange':
-        return 'bg-[#FEC6A1]/90 hover:bg-[#FEC6A1] border-orange-200/50';
+        return 'bg-[#FEC6A1]/90 hover:bg-[#FEC6A1] border-orange-200/50 text-zinc-900';
       default:
-        return 'bg-[#FEF7CD]/90 hover:bg-[#FEF7CD] border-yellow-200/50';
+        return 'bg-[#FEF7CD]/90 hover:bg-[#FEF7CD] border-yellow-200/50 text-zinc-800';
     }
   };
 
