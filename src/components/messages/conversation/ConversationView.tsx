@@ -1,4 +1,3 @@
-
 import { Message, Receiver } from "@/types/messages"; 
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
@@ -9,6 +8,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
+import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 export interface ConversationViewProps {
   messages: Message[];
@@ -98,17 +100,16 @@ export function ConversationView({
 
   if (!receiver || !profile) return null;
 
+  const lastMessage = messages[messages.length - 1];
+  const lastMessageTime = lastMessage ? format(new Date(lastMessage.created_at), 'HH:mm', { locale: fr }) : '';
+
   return (
     <div className="flex flex-col h-screen max-h-screen bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex-shrink-0">
         <ChatHeader
-          title={receiver.full_name}
-          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : undefined}
-          avatarUrl={receiver.avatar_url}
+          title="Messages"
           onBack={onBack}
           onDelete={onDeleteConversation}
-          isOnline={receiver.online_status}
-          lastSeen={receiver.last_seen}
         />
       </div>
 
@@ -168,16 +169,47 @@ export function ConversationView({
         </div>
       </div>
 
-      <div className="flex-shrink-0 border-t p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <ChatInput
-          value={inputMessage}
-          onChange={onInputChange}
-          onSend={handleSendMessage}
-          isThinking={isThinking}
-          isListening={isListening}
-          onVoiceInput={onVoiceInput}
-          placeholder="Écrivez votre message..."
-        />
+      <div className="flex-shrink-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="p-4 border-b">
+          <div className="flex items-center justify-between max-w-3xl mx-auto">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-8 w-8 border-2 border-background">
+                <AvatarImage 
+                  src={receiver.avatar_url || ''} 
+                  alt={receiver.full_name} 
+                  className="object-cover"
+                />
+                <AvatarFallback className="bg-primary/10">
+                  {receiver.full_name?.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col">
+                <span className="text-sm font-medium">{receiver.full_name}</span>
+                <span className={`text-xs ${receiver.online_status ? 'text-green-500' : 'text-muted-foreground'}`}>
+                  {receiver.online_status ? 'En ligne' : 'Hors ligne'}
+                </span>
+              </div>
+            </div>
+            
+            {lastMessage && (
+              <div className="text-sm text-muted-foreground">
+                Dernier message : {lastMessageTime}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="p-4">
+          <ChatInput
+            value={inputMessage}
+            onChange={onInputChange}
+            onSend={onSendMessage}
+            isThinking={isThinking}
+            isListening={isListening}
+            onVoiceInput={onVoiceInput}
+            placeholder="Écrivez votre message..."
+          />
+        </div>
       </div>
     </div>
   );
