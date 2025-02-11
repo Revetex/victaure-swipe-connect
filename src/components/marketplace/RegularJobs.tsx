@@ -24,9 +24,31 @@ export function RegularJobs() {
       const { data, error } = await supabase
         .from('marketplace_jobs')
         .select(`
-          *,
-          employer:profiles(full_name, avatar_url),
-          category:marketplace_job_categories(name)
+          id,
+          title,
+          description,
+          company_name,
+          company_logo,
+          location,
+          remote_type,
+          salary_min,
+          salary_max,
+          salary_currency,
+          salary_period,
+          contract_type,
+          experience_level,
+          status,
+          category_id,
+          employer_id,
+          created_at,
+          updated_at,
+          employer:profiles (
+            full_name,
+            avatar_url
+          ),
+          category:marketplace_job_categories (
+            name
+          )
         `)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
@@ -38,7 +60,7 @@ export function RegularJobs() {
       }
 
       console.log('Jobs fetched:', data);
-      return data as MarketplaceJob[];
+      return data as unknown as MarketplaceJob[];
     }
   });
 
@@ -48,7 +70,14 @@ export function RegularJobs() {
       console.log('Fetching categories...');
       const { data, error } = await supabase
         .from('marketplace_job_categories')
-        .select('*')
+        .select(`
+          id,
+          name,
+          icon,
+          description,
+          parent_id,
+          created_at
+        `)
         .is('parent_id', null)
         .order('name');
 
@@ -59,7 +88,7 @@ export function RegularJobs() {
       }
 
       console.log('Categories fetched:', data);
-      return data as JobCategory[];
+      return data as unknown as JobCategory[];
     }
   });
 

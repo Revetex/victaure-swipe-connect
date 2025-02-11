@@ -3,6 +3,14 @@ import type { Database } from "@/integrations/supabase/types";
 
 type Tables = Database['public']['Tables'];
 
+// Type pour les catégories du marketplace
+export interface MarketplaceCategory {
+  id: string;
+  name: string;
+  type: string;
+  created_at: string;
+}
+
 // Type pour les éléments du marketplace
 export interface MarketplaceItem {
   id: string;
@@ -12,11 +20,13 @@ export interface MarketplaceItem {
   images: string[] | null;
   status: string;
   seller_id: string;
+  category_id: string | null;
   created_at: string;
   seller?: {
     full_name: string;
     avatar_url: string | null;
   };
+  category?: MarketplaceCategory | null;
 }
 
 // Type pour les services
@@ -30,12 +40,14 @@ export interface MarketplaceService {
   status: string;
   type: 'fixed_price' | 'auction';
   provider_id: string;
+  category_id: string | null;
   created_at: string;
   auction_end_date: string | null;
   provider?: {
     full_name: string;
     avatar_url: string | null;
   };
+  category?: MarketplaceCategory | null;
   bids?: { count: number }[];
 }
 
@@ -56,15 +68,14 @@ export interface MarketplaceJob {
   experience_level: string;
   status: string;
   category_id: string | null;
-  category: {
-    name: string;
-  } | null;
-  created_at: string;
   employer_id: string;
-  employer: {
+  created_at: string;
+  updated_at: string;
+  employer?: {
     full_name: string;
     avatar_url: string | null;
   } | null;
+  category?: JobCategory | null;
 }
 
 // Type pour les catégories d'emploi
