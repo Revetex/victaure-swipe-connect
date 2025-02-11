@@ -66,17 +66,19 @@ export function ConversationList({
 
   return (
     <div className="flex flex-col h-full pt-16">
-      <SearchBar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onSelectFriend={(friendId) => onSelectConversation({
-          id: friendId,
-          full_name: '',
-          avatar_url: '',
-          online_status: false,
-          last_seen: new Date().toISOString()
-        })}
-      />
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b p-4">
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onSelectFriend={(friendId) => onSelectConversation({
+            id: friendId,
+            full_name: '',
+            avatar_url: '',
+            online_status: false,
+            last_seen: new Date().toISOString()
+          })}
+        />
+      </div>
 
       <ScrollArea className="flex-1">
         <div className="px-4 space-y-4 py-4">
