@@ -1,7 +1,7 @@
 
 import { useState, useCallback } from "react";
 import { ChessPiece } from "@/types/chess";
-import { calculatePossibleMoves } from "./chessUtils";
+import { calculatePossibleMoves } from "./rules/chessRules";
 import { toast } from "sonner";
 
 export function useChessBoard() {
@@ -21,19 +21,17 @@ export function useChessBoard() {
   }, [board]);
 
   const makeMove = useCallback((fromRow: number, fromCol: number, toRow: number, toCol: number) => {
-    const piece = board[fromRow][fromCol];
-    if (!piece) {
-      toast.error("Aucune pièce sélectionnée");
-      return board;
+    try {
+      const newBoard = board.map(row => [...row]);
+      newBoard[toRow][toCol] = newBoard[fromRow][fromCol];
+      newBoard[fromRow][fromCol] = null;
+      setBoard(newBoard);
+      return newBoard;
+    } catch (error) {
+      console.error("Error making move:", error);
+      toast.error("Erreur lors du déplacement de la pièce");
+      return null;
     }
-
-    const newBoard = board.map(row => [...row]);
-    newBoard[toRow][toCol] = piece;
-    newBoard[fromRow][fromCol] = null;
-    setBoard(newBoard);
-    setSelectedPiece(null);
-    setPossibleMoves([]);
-    return newBoard;
   }, [board]);
 
   const resetBoard = useCallback(() => {

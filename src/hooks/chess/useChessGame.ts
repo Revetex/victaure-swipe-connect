@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useChessBoard } from "./useChessBoard";
@@ -50,18 +51,33 @@ export function useChessGame() {
     const piece = board[row][col];
 
     if (selectedPiece) {
-      if (possibleMoves.some(move => move.row === row && move.col === col)) {
+      const isPossibleMove = possibleMoves.some(move => move.row === row && move.col === col);
+      if (isPossibleMove) {
         const currentPiece = board[selectedPiece.row][selectedPiece.col];
         if (!currentPiece) return;
 
         const newBoard = makeMove(selectedPiece.row, selectedPiece.col, row, col);
+        if (!newBoard) return;
+
         const move = `${currentPiece.type} ${getSquareName(selectedPiece.row, selectedPiece.col)} → ${getSquareName(row, col)}`;
         setMoveHistory(prev => [...prev, move]);
         setSelectedPiece(null);
         setPossibleMoves([]);
         setIsWhiteTurn(false);
 
+        // Create game state for persistence
+        const gameState: GameState = {
+          board: newBoard,
+          isWhiteTurn: false,
+          gameOver: false,
+          moveHistory: [...moveHistory, move],
+          winner: null
+        };
+
         try {
+          await createGame(gameState);
+          
+          // AI's turn
           await makeAIMove(
             newBoard,
             difficulty,
