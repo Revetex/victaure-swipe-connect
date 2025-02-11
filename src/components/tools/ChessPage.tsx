@@ -25,7 +25,7 @@ export function ChessPage() {
   return (
     <div className={cn(
       "container mx-auto p-4",
-      "min-h-[calc(100vh-4rem)]",
+      "min-h-screen pt-20",
       "flex flex-col"
     )}>
       <motion.div 
