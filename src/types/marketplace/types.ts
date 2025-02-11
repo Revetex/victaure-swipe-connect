@@ -1,7 +1,25 @@
 
 import type { Database } from "@/integrations/supabase/types";
 
-type Tables = Database['public']['Tables'];
+// Déclaration pour étendre les types de Supabase
+declare module '@/integrations/supabase/types' {
+  export interface Database {
+    public: {
+      Tables: {
+        marketplace_jobs: {
+          Row: MarketplaceJob;
+          Insert: Omit<MarketplaceJob, 'id' | 'created_at' | 'updated_at' | 'employer' | 'category'>;
+          Update: Partial<Omit<MarketplaceJob, 'id' | 'created_at' | 'updated_at' | 'employer' | 'category'>>;
+        };
+        marketplace_job_categories: {
+          Row: JobCategory;
+          Insert: Omit<JobCategory, 'id' | 'created_at'>;
+          Update: Partial<Omit<JobCategory, 'id' | 'created_at'>>;
+        };
+      };
+    };
+  }
+}
 
 // Type pour les catégories du marketplace
 export interface MarketplaceCategory {
