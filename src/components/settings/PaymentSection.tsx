@@ -27,7 +27,6 @@ export function PaymentSection() {
 
       if (error) throw error;
       
-      // Convertir explicitement le payment_type en type attendu
       const typedMethods = methods?.map(method => ({
         ...method,
         payment_type: method.payment_type as 'credit_card' | 'interac'
@@ -53,7 +52,7 @@ export function PaymentSection() {
         .insert({
           payment_type: selectedType,
           user_id: user.id,
-          is_default: paymentMethods.length === 0 // Premier moyen de paiement = défaut
+          is_default: paymentMethods.length === 0
         });
 
       if (error) throw error;
@@ -87,13 +86,11 @@ export function PaymentSection() {
 
   const setDefaultPaymentMethod = async (id: string) => {
     try {
-      // D'abord, mettre tous les is_default à false
       await supabase
         .from('payment_methods')
         .update({ is_default: false })
         .neq('id', id);
 
-      // Ensuite, mettre le nouveau par défaut
       const { error } = await supabase
         .from('payment_methods')
         .update({ is_default: true })
@@ -110,14 +107,7 @@ export function PaymentSection() {
   };
 
   return (
-    <Card className="p-6 space-y-6">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight">Méthodes de paiement</h2>
-        <p className="text-sm text-muted-foreground">
-          Gérez vos méthodes de paiement pour les transactions sur la plateforme
-        </p>
-      </div>
-
+    <div className="space-y-6">
       {loading ? (
         <div className="flex items-center justify-center py-4">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -127,10 +117,13 @@ export function PaymentSection() {
           {paymentMethods.map((method) => (
             <div 
               key={method.id} 
-              className="flex items-center justify-between p-4 border rounded-lg"
+              className="flex items-center justify-between p-4 rounded-lg bg-white/5 backdrop-blur-sm border border-border/50
+                       hover:bg-white/10 transition-colors"
             >
-              <div className="flex items-center gap-3">
-                <CreditCard className="h-5 w-5 text-muted-foreground" />
+              <div className="flex items-center gap-4">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <CreditCard className="h-5 w-5 text-primary" />
+                </div>
                 <div>
                   <p className="font-medium">
                     {method.payment_type === 'credit_card' ? 'Carte de crédit' : 'Interac'}
@@ -160,7 +153,7 @@ export function PaymentSection() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-destructive"
+                  className="text-destructive hover:text-destructive/90"
                   onClick={() => deletePaymentMethod(method.id)}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -190,6 +183,6 @@ export function PaymentSection() {
           </div>
         </div>
       )}
-    </Card>
+    </div>
   );
 }
