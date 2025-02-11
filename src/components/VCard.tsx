@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
@@ -58,14 +59,23 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
 
   return (
     <VCardContainer isEditing={isEditing}>
-      {/* Circuit Pattern Background */}
+      {/* Circuit Pattern Background avec animation améliorée */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.1 }}
+          animate={{ opacity: 0.15 }}
           className="absolute inset-0"
         >
-          {/* Horizontal Lines */}
+          {/* Gradient de fond principal avec motif moderne */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-indigo-400/10 to-transparent backdrop-blur-[2px]" />
+          
+          {/* Pattern géométrique */}
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.3),rgba(255,255,255,0))]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(120,119,198,0.3),rgba(255,255,255,0))]" />
+          </div>
+
+          {/* Lignes Horizontales avec Animation */}
           {[...Array(20)].map((_, i) => (
             <motion.div
               key={`h-line-${i}`}
@@ -85,27 +95,7 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
             />
           ))}
           
-          {/* Vertical Lines */}
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={`v-line-${i}`}
-              className="absolute w-px bg-gradient-to-b from-purple-500/20 via-purple-500/40 to-purple-500/20"
-              style={{ left: `${i * 5}%`, top: 0, bottom: 0 }}
-              initial={{ scaleY: 0, opacity: 0 }}
-              animate={{ 
-                scaleY: 1, 
-                opacity: 1,
-                transition: { 
-                  delay: i * 0.1,
-                  duration: 1.5,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }
-              }}
-            />
-          ))}
-
-          {/* Circuit Nodes */}
+          {/* Points lumineux */}
           {[...Array(15)].map((_, i) => (
             <motion.div
               key={`node-${i}`}
@@ -136,8 +126,6 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
         className="max-w-3xl mx-auto bg-white/90 dark:bg-gray-900/90 rounded-xl shadow-xl overflow-hidden backdrop-blur-sm relative z-10"
       >
         <div className="relative p-6 sm:p-8">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#9b87f5]/10 to-transparent" />
-          
           <div className="relative">
             <VCardHeader 
               profile={activeProfile}
