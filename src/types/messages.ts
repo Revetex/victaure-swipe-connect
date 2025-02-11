@@ -22,7 +22,7 @@ export interface Message {
   receiver?: MessageSender;
   timestamp: string;
   thinking?: boolean;
-  message_type: 'user' | 'ai' | 'system';
+  message_type: 'user' | 'assistant' | 'system';
   status: 'sent' | 'delivered' | 'read';
   metadata: Record<string, any>;
   reaction?: string;
