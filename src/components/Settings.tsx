@@ -9,6 +9,7 @@ import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
 import { PaymentSection } from "./settings/PaymentSection";
 import { ScrollArea } from "./ui/scroll-area";
+import { Settings as SettingsIcon, Palette, Bell, Shield, Lock, Ban, CreditCard, LogOut } from "lucide-react";
 
 const sectionVariants = {
   initial: { opacity: 0, y: 20 },
@@ -30,13 +31,13 @@ const sectionVariants = {
 };
 
 const settingsSections = [
-  { id: 'appearance', Component: AppearanceSection },
-  { id: 'notifications', Component: NotificationsSection },
-  { id: 'privacy', Component: PrivacySection },
-  { id: 'security', Component: SecuritySection },
-  { id: 'payments', Component: PaymentSection },
-  { id: 'blocked', Component: BlockedUsersSection },
-  { id: 'logout', Component: LogoutSection }
+  { id: 'appearance', Component: AppearanceSection, icon: Palette, title: 'Apparence' },
+  { id: 'notifications', Component: NotificationsSection, icon: Bell, title: 'Notifications' },
+  { id: 'privacy', Component: PrivacySection, icon: Shield, title: 'Confidentialité' },
+  { id: 'security', Component: SecuritySection, icon: Lock, title: 'Sécurité' },
+  { id: 'payments', Component: PaymentSection, icon: CreditCard, title: 'Paiements' },
+  { id: 'blocked', Component: BlockedUsersSection, icon: Ban, title: 'Utilisateurs bloqués' },
+  { id: 'logout', Component: LogoutSection, icon: LogOut, title: 'Déconnexion' }
 ];
 
 export function Settings() {
@@ -51,36 +52,37 @@ export function Settings() {
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-3.5rem)]">
-      <motion.div
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        variants={{
-          initial: { opacity: 0 },
-          animate: {
-            opacity: 1,
-            transition: {
-              staggerChildren: 0.1
-            }
-          },
-          exit: { opacity: 0 }
-        }}
-        className="container mx-auto px-4 py-6 space-y-8 max-w-2xl"
-      >
-        {settingsSections.map(({ id, Component }, index) => (
-          <motion.div
-            key={id}
-            variants={sectionVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{ delay: index * 0.1 }}
-          >
-            <Component />
-          </motion.div>
-        ))}
-      </motion.div>
+    <ScrollArea className="h-[calc(100vh-4rem)]">
+      <div className="container mx-auto py-6">
+        <div className="flex items-center gap-3 mb-8">
+          <SettingsIcon className="h-6 w-6 text-primary" />
+          <h1 className="text-2xl font-semibold tracking-tight">Paramètres</h1>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {settingsSections.map(({ id, Component, icon: Icon, title }, index) => (
+            <motion.div
+              key={id}
+              variants={sectionVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ delay: index * 0.1 }}
+              className="bg-card hover:bg-accent/5 rounded-lg border border-border/50 backdrop-blur-sm transition-colors"
+            >
+              <div className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 rounded-md bg-primary/10">
+                    <Icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <h2 className="text-lg font-medium">{title}</h2>
+                </div>
+                <Component />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
     </ScrollArea>
   );
 }
