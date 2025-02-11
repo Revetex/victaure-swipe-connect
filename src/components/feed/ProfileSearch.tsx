@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { useDebounce } from "use-debounce";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
@@ -57,18 +57,23 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisate
   };
 
   return (
-    <div className={cn("relative", className)} role="search">
-      <Command className="rounded-lg border shadow-md" aria-label="Recherche de profils">
-        <CommandInput
-          placeholder={placeholder}
-          value={search}
-          onValueChange={setSearch}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          readOnly={!isFocused}
-          aria-label="Rechercher un utilisateur"
-          className="-webkit-user-select: none; user-select: none;"
-        />
+    <div className={cn(
+      "relative", 
+      "transition-all duration-200",
+      className
+    )} role="search">
+      <Command className="rounded-lg border shadow-md bg-background/95 backdrop-blur-sm" aria-label="Recherche de profils">
+        <div className="flex items-center px-3">
+          <Search className="w-4 h-4 text-muted-foreground/70" />
+          <CommandInput
+            placeholder={placeholder}
+            value={search}
+            onValueChange={setSearch}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            className="focus:ring-0 border-none"
+          />
+        </div>
         <CommandList>
           {debouncedSearch && (
             <CommandGroup heading="Résultats de recherche">
@@ -85,23 +90,35 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisate
 
               {profiles.map((profile) => (
                 <CommandItem
-                  key={`${profile.id}-${profile.full_name}`}
+                  key={profile.id}
                   onSelect={() => handleProfileClick(profile)}
                   onMouseEnter={() => setHoveredId(profile.id)}
                   onMouseLeave={() => setHoveredId(null)}
                   className={cn(
                     "cursor-pointer transition-colors",
+                    "flex items-center gap-3 py-2",
                     hoveredId === profile.id ? "bg-accent" : ""
                   )}
-                  role="option"
-                  aria-selected={hoveredId === profile.id}
                 >
-                  <span>{profile.full_name || profile.email}</span>
-                  {profile.id === hoveredId && (
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      Cliquer pour sélectionner
-                    </span>
-                  )}
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                    {profile.avatar_url ? (
+                      <img 
+                        src={profile.avatar_url} 
+                        alt={profile.full_name || ""}
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-sm text-muted-foreground">
+                        {(profile.full_name?.[0] || profile.email[0]).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{profile.full_name || profile.email}</span>
+                    {profile.full_name && (
+                      <span className="text-xs text-muted-foreground">{profile.email}</span>
+                    )}
+                  </div>
                 </CommandItem>
               ))}
             </CommandGroup>
