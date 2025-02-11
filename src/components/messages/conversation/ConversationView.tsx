@@ -8,6 +8,7 @@ import { ChatThinking } from "@/components/chat/ChatThinking";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { useProfile } from "@/hooks/useProfile";
+import { toast } from "sonner";
 
 export interface ConversationViewProps {
   messages: Message[];
@@ -39,6 +40,7 @@ export function ConversationView({
   const { profile } = useProfile();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   const handleScroll = () => {
     if (!scrollAreaRef.current) return;
@@ -50,31 +52,58 @@ export function ConversationView({
 
   const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
     if (!scrollAreaRef.current) return;
-    
-    scrollAreaRef.current.scrollTo({
-      top: scrollAreaRef.current.scrollHeight,
-      behavior
-    });
+    try {
+      scrollAreaRef.current.scrollTo({
+        top: scrollAreaRef.current.scrollHeight,
+        behavior
+      });
+    } catch (error) {
+      console.error("Erreur de défilement:", error);
+    }
+  };
+
+  const handleSendMessage = () => {
+    try {
+      onSendMessage();
+      scrollToBottom();
+    } catch (error) {
+      console.error("Erreur d'envoi:", error);
+      toast.error("Impossible d'envoyer le message");
+    }
   };
 
   useEffect(() => {
-    if (isAtBottom) {
+    if (isAtBottom && !isScrolling) {
       scrollToBottom('instant');
     }
-  }, [messages]);
+  }, [messages, isAtBottom, isScrolling]);
 
   useEffect(() => {
     scrollToBottom('instant');
+    
+    const observer = new ResizeObserver(() => {
+      if (isAtBottom) {
+        scrollToBottom('instant');
+      }
+    });
+
+    if (scrollAreaRef.current) {
+      observer.observe(scrollAreaRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
-  if (!receiver) return null;
+  if (!receiver || !profile) return null;
 
   return (
-    <div className="flex flex-col h-screen max-h-screen bg-background overflow-hidden">
-      <div className="flex-shrink-0 border-b">
+    <div className="flex flex-col h-screen max-h-screen bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex-shrink-0">
         <ChatHeader
           title={receiver.full_name}
-          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
+          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : undefined}
           avatarUrl={receiver.avatar_url}
           onBack={onBack}
           onDelete={onDeleteConversation}
@@ -86,31 +115,41 @@ export function ConversationView({
       <div 
         ref={scrollAreaRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-4 pt-4"
+        onTouchStart={() => setIsScrolling(true)}
+        onTouchEnd={() => setIsScrolling(false)}
+        onMouseDown={() => setIsScrolling(true)}
+        onMouseUp={() => setIsScrolling(false)}
+        className="flex-1 overflow-y-auto px-4 pt-4 scroll-smooth"
       >
         <div className="max-w-3xl mx-auto space-y-4 pb-4">
-          <AnimatePresence initial={false}>
-            {messages.map((message) => (
-              <motion.div
-                key={message.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className={`flex ${message.sender_id === profile?.id ? 'justify-end' : 'justify-start'}`}
-              >
-                <div className="max-w-[70%]">
-                  <ChatMessage
-                    content={message.content}
-                    sender={message.sender_id === profile?.id ? "user" : "assistant"}
-                    timestamp={message.created_at}
-                    isRead={message.read}
-                    status={message.status}
-                    reaction={message.reaction}
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          {messages.length === 0 ? (
+            <div className="flex items-center justify-center h-32 text-muted-foreground">
+              Commencez une nouvelle conversation
+            </div>
+          ) : (
+            <AnimatePresence initial={false}>
+              {messages.map((message) => (
+                <motion.div
+                  key={message.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className={`flex ${message.sender_id === profile.id ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className="max-w-[70%] md:max-w-[60%]">
+                    <ChatMessage
+                      content={message.content}
+                      sender={message.sender_id === profile.id ? "user" : "assistant"}
+                      timestamp={message.created_at}
+                      isRead={message.read}
+                      status={message.status}
+                      reaction={message.reaction}
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          )}
           
           {isThinking && (
             <motion.div
@@ -119,7 +158,7 @@ export function ConversationView({
               exit={{ opacity: 0 }}
               className="flex justify-start"
             >
-              <div className="max-w-[70%]">
+              <div className="max-w-[70%] md:max-w-[60%]">
                 <ChatThinking />
               </div>
             </motion.div>
@@ -129,11 +168,11 @@ export function ConversationView({
         </div>
       </div>
 
-      <div className="flex-shrink-0 border-t p-4 bg-background/95 backdrop-blur">
+      <div className="flex-shrink-0 border-t p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}
-          onSend={onSendMessage}
+          onSend={handleSendMessage}
           isThinking={isThinking}
           isListening={isListening}
           onVoiceInput={onVoiceInput}
