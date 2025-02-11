@@ -40,10 +40,39 @@ export interface MarketplaceService {
   bids?: { count: number }[];
 }
 
-// Type pour les catégories
-export interface MarketplaceCategory {
+// Type pour les emplois
+export interface MarketplaceJob {
+  id: string;
+  title: string;
+  description: string | null;
+  company_name: string | null;
+  company_logo: string | null;
+  location: string;
+  remote_type: 'on-site' | 'hybrid' | 'remote';
+  salary_min: number | null;
+  salary_max: number | null;
+  salary_currency: string;
+  salary_period: 'hourly' | 'monthly' | 'yearly';
+  contract_type: string;
+  experience_level: string;
+  status: string;
+  category_id: string | null;
+  category_name?: string;
+  created_at: string;
+  employer_id: string;
+  employer?: {
+    full_name: string;
+    avatar_url: string | null;
+  };
+}
+
+// Type pour les catégories d'emploi
+export interface JobCategory {
   id: string;
   name: string;
-  type: string;
+  icon: string | null;
+  description: string | null;
+  parent_id: string | null;
   created_at: string;
 }
+

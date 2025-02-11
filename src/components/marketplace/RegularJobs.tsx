@@ -12,25 +12,7 @@ import { Building2, Clock, ImagePlus, MapPin, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-
-interface MarketplaceJob {
-  id: string;
-  title: string;
-  description: string;
-  company_name: string;
-  location: string;
-  salary_min: number;
-  salary_max: number;
-  salary_currency: string;
-  salary_period: string;
-  remote_type: string;
-  category_name: string;
-  created_at: string;
-  employer: {
-    full_name: string;
-    avatar_url: string | null;
-  };
-}
+import type { MarketplaceJob, JobCategory } from "@/types/marketplace/types";
 
 export function RegularJobs() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -39,13 +21,11 @@ export function RegularJobs() {
     queryKey: ['marketplace-jobs'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('marketplace_jobs_with_categories')
+        .from('marketplace_jobs')
         .select(`
           *,
-          employer:profiles!marketplace_jobs_employer_id_fkey(
-            full_name,
-            avatar_url
-          )
+          employer:profiles(full_name, avatar_url),
+          category:marketplace_job_categories(name)
         `)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
@@ -55,7 +35,7 @@ export function RegularJobs() {
         throw error;
       }
 
-      return data as MarketplaceJob[];
+      return (data || []) as MarketplaceJob[];
     }
   });
 
@@ -73,7 +53,7 @@ export function RegularJobs() {
         throw error;
       }
 
-      return data;
+      return (data || []) as JobCategory[];
     }
   });
 
