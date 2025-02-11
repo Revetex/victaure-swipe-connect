@@ -95,7 +95,7 @@ export function MessagesContainer() {
   const currentMessages = receiver?.id === 'assistant' ? aiMessages : messages;
 
   return (
-    <Card className="h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
+    <Card className="h-[calc(100vh-5rem)] flex flex-col overflow-hidden mt-0">
       <ScrollArea 
         ref={scrollAreaRef}
         className="flex-1 h-full overflow-y-auto"
@@ -108,7 +108,7 @@ export function MessagesContainer() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="flex flex-col h-full min-h-[calc(100vh-4rem)]"
+              className="flex flex-col h-full"
             >
               <ConversationView
                 receiver={receiver}

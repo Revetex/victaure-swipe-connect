@@ -55,38 +55,31 @@ export function DashboardContent({
   };
 
   const getPageContent = () => {
-    const commonClasses = cn(
-      "min-h-[calc(100vh-4rem)]", // Full height minus header
-      "w-full max-w-7xl mx-auto", // Max width and center
-      "px-4 sm:px-6 lg:px-8", // Responsive padding
-      "pt-4 pb-8" // Reduced top padding + bottom padding
-    );
-
     switch (currentPage) {
       case 1:
-        return <div className={commonClasses}><VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} /></div>;
+        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
       case 2:
-        return <div className={commonClasses}><Messages /></div>;
+        return <Messages />;
       case 3:
-        return <div className={commonClasses}><Marketplace /></div>;
+        return <Marketplace />;
       case 4:
-        return <div className={commonClasses}><Feed /></div>;
+        return <Feed />;
       case 7:
-        return <div className={commonClasses}><TasksPage /></div>;
+        return <TasksPage />;
       case 8:
-        return <div className={commonClasses}><CalculatorPage /></div>;
+        return <CalculatorPage />;
       case 9:
-        return <div className={commonClasses}><NotificationsTab /></div>;
+        return <NotificationsTab />;
       case 10:
-        return <div className={commonClasses}><Settings /></div>;
+        return <Settings />;
       case 12:
-        return <div className={commonClasses}><FriendsList /></div>;
+        return <FriendsList />;
       case 14:
-        return <div className={commonClasses}><TranslatorPage /></div>;
+        return <TranslatorPage />;
       case 15:
-        return <div className={commonClasses}><ChessPage /></div>;
+        return <ChessPage />;
       case 16:
-        return <div className={commonClasses}><NotesSection /></div>;
+        return <NotesSection />;
       default:
         return null;
     }
@@ -98,9 +91,10 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="relative bg-background pt-16"
+      className="relative bg-background"
     >
       {getPageContent()}
     </motion.div>
   );
 }
+

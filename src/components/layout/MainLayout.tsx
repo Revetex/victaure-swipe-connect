@@ -47,10 +47,10 @@ export function MainLayout({
         !isMobile && "ml-[280px] lg:ml-[320px]"
       )}>
         {/* Fixed Header */}
-        <header className="fixed top-0 right-0 left-0 z-50 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+        <header className="fixed top-0 right-0 z-50 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
           <div className={cn(
             "flex items-center gap-4 h-full px-4",
-            !isMobile && "pl-[280px] lg:pl-[320px]"
+            !isMobile && "ml-[280px] lg:ml-[320px]"
           )}>
             {isMobile && (
               <Sheet>
@@ -74,14 +74,14 @@ export function MainLayout({
           </div>
         </header>
 
-        {/* Content area with header spacing */}
-        <div className="pt-16 min-h-screen">
+        {/* Content area with correct spacing */}
+        <div className="pt-16">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
         </div>
 
-        {/* Friends list overlay */}
+        {/* Friends list overlay - adjusted z-index */}
         <AnimatePresence mode="wait">
           {showFriendsList && (
             <DashboardFriendsList 
@@ -108,3 +108,4 @@ export function MainLayout({
     </div>
   );
 }
+
