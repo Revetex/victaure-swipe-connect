@@ -1,9 +1,10 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
@@ -11,22 +12,15 @@
 }
 
 body {
-  background-color: #f8fafc;
-  background-image: 
-    radial-gradient(at 47% 33%, hsla(262, 83%, 58%, 0.4) 0, transparent 59%), 
-    radial-gradient(at 82% 65%, hsla(218.00, 39.29%, 11.96%, 0.1) 0, transparent 55%);
-  background-attachment: fixed;
+  background-color: #1a1a1a;
   min-height: 100vh;
   height: 100%;
   overflow-y: auto;
-  color: #1a1a1a;
+  color: #ffffff;
 }
 
 .dark body {
-  background-color: #0f172a;
-  background-image: 
-    radial-gradient(at 47% 33%, hsla(262, 83%, 58%, 0.1) 0, transparent 59%), 
-    radial-gradient(at 82% 65%, hsla(262, 83%, 58%, 0.05) 0, transparent 55%);
+  background-color: #1a1a1a;
   color: #ffffff;
 }
 
@@ -41,8 +35,32 @@ body {
   background: rgba(17, 24, 39, 0.7);
 }
 
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --radius: 0.5rem;
+  }
+}
+
 @layer utilities {
-  /* Cross-browser scrollbar hiding */
   .scrollbar-none {
     -ms-overflow-style: none;
     -webkit-overflow-scrolling: touch;
@@ -52,63 +70,47 @@ body {
     display: none;
   }
 
-  @supports (scrollbar-width: none) {
-    .scrollbar-none {
-      scrollbar-width: none;
-    }
+  .glass-panel {
+    @apply bg-black/40 backdrop-blur-md border border-white/10;
   }
 
-  /* Use display: -webkit-box for line clamping instead of -webkit-line-clamp */
-  .line-clamp {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .input-dark {
+    @apply bg-black/40 border-white/10 text-white placeholder:text-white/50;
+  }
+
+  .button-dark {
+    @apply bg-white/10 hover:bg-white/20 text-white border border-white/10;
+  }
+
+  .nav-item {
+    @apply text-white/70 hover:text-white transition-colors;
+  }
+
+  .card-dark {
+    @apply bg-black/40 border-white/10 backdrop-blur-md;
   }
 }
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 262 83.3% 57.8%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 262 83.3% 57.8%;
-    --radius: 0.75rem;
-  }
+.input-wrapper {
+  @apply relative;
+}
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 262 83.3% 57.8%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 262 83.3% 57.8%;
-  }
+.input-wrapper input {
+  @apply input-dark;
+}
+
+.button {
+  @apply button-dark;
+}
+
+.card {
+  @apply card-dark;
+}
+
+.nav-link {
+  @apply nav-item;
 }
