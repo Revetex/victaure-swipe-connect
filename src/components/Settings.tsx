@@ -51,7 +51,7 @@ export function Settings() {
   }
 
   return (
-    <ScrollArea className="h-full">
+    <ScrollArea className="h-[calc(100vh-3.5rem)]">
       <motion.div
         initial="initial"
         animate="animate"
