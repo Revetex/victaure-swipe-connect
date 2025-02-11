@@ -1,3 +1,4 @@
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
@@ -29,9 +30,7 @@ export default defineConfig(({ mode }) => ({
       origin: [
         'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
         'https://mfjllillnpleasclqabb.supabase.co',
-        'wss://mfjllillnpleasclqabb.supabase.co',
-        'https://mfjllillnpleasclqabb.supabase.co/auth/v1/*',
-        'https://mfjllillnpleasclqabb.supabase.co/rest/v1/*'
+        'wss://mfjllillnpleasclqabb.supabase.co'
       ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: [
@@ -39,7 +38,7 @@ export default defineConfig(({ mode }) => ({
         'Authorization', 
         'X-Client-Info', 
         'apikey', 
-        'X-Supabase-Auth',
+        'Content-Range',
         'Range',
         'Prefer',
         'Accept',
