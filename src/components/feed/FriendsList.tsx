@@ -12,8 +12,9 @@ export function FriendsList() {
     <div className={cn(
       "container mx-auto max-w-4xl",
       "px-4 sm:px-6",
-      isMobile ? "pt-2 pb-20" : "pt-6",
-      "min-h-[calc(100vh-4rem)]"
+      isMobile ? "py-4" : "py-6",
+      "min-h-[calc(100vh-4rem)]",
+      "mt-16" // Add margin-top to account for the header height
     )}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}

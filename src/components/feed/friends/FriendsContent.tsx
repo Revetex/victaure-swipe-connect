@@ -45,9 +45,9 @@ export function FriendsContent() {
   };
 
   return (
-    <ScrollArea className="h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100vh-10rem)]"> {/* Adjusted height to account for header and padding */}
       <motion.div 
-        className="space-y-6 pb-safe max-w-3xl mx-auto px-4"
+        className="space-y-6 pb-6 max-w-3xl mx-auto px-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
