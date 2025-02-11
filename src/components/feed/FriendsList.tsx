@@ -12,14 +12,15 @@ export function FriendsList() {
     <div className={cn(
       "container mx-auto max-w-4xl",
       "px-4 sm:px-6",
-      isMobile ? "pt-2" : "pt-6"
+      isMobile ? "pt-2 pb-20" : "pt-6",
+      "min-h-[calc(100vh-4rem)]"
     )}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <Card className="backdrop-blur-sm bg-card/80">
+        <Card className="backdrop-blur-sm bg-card/80 shadow-lg">
           <FriendsContent />
         </Card>
       </motion.div>

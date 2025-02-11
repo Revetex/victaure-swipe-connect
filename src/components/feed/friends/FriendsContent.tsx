@@ -63,7 +63,7 @@ export function FriendsContent() {
 
   return (
     <motion.div 
-      className="space-y-4"
+      className="space-y-4 pb-safe"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
@@ -73,6 +73,7 @@ export function FriendsContent() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
+          className="touch-manipulation"
         >
           <ConnectionsSection />
         </motion.div>
@@ -81,6 +82,7 @@ export function FriendsContent() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
+          className="touch-manipulation"
         >
           <ToolsGrid tools={tools} onToolClick={handleToolClick} />
         </motion.div>

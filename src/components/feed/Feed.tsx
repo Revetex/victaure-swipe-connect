@@ -35,12 +35,13 @@ export function Feed() {
     <div className="h-[calc(100vh-4rem)] overflow-hidden">
       <ScrollArea 
         ref={scrollRef} 
-        className="h-full w-full"
+        className="h-full w-full scrollbar-none"
         onScroll={handleScroll}
       >
         <div className={cn(
           "max-w-3xl mx-auto space-y-6",
-          "px-4 sm:px-6 py-4 sm:py-6"
+          "px-4 sm:px-6 py-4 sm:py-6",
+          "pb-safe" // Ajout de padding pour la safe area iOS
         )}>
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -75,7 +76,8 @@ export function Feed() {
                 "hover:scale-105 active:scale-95",
                 "backdrop-blur-sm",
                 "min-h-[44px] min-w-[44px] z-20",
-                isMobile ? "bottom-20 right-4" : "bottom-8 right-8"
+                "touch-manipulation",
+                isMobile ? "bottom-24 right-4" : "bottom-8 right-8"
               )}
               aria-label="Retourner en haut"
             >
