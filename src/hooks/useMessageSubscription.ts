@@ -40,7 +40,6 @@ export const useMessageSubscription = (profile: UserProfile | null) => {
               status: 'delivered'
             });
 
-            // Notification pour les nouveaux messages
             if (newMessage.sender_id !== profile.id) {
               toast(`Nouveau message de ${newMessage.sender?.full_name || 'Quelqu\'un'}`, {
                 description: newMessage.content.substring(0, 50) + (newMessage.content.length > 50 ? '...' : '')
