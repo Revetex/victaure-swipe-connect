@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useChessBoard } from "./useChessBoard";
 import { useChessAI } from "./useChessAI";
 import { getSquareName } from "./chessUtils";
+import { ChessPiece } from "@/types/chess";
 
 export function useChessGame() {
   const {
@@ -26,6 +27,22 @@ export function useChessGame() {
   const [difficulty, setDifficulty] = useState<string>("medium");
   const [gameId, setGameId] = useState<string | null>(null);
 
+  const serializeGameState = (
+    board: (ChessPiece | null)[][], 
+    moveHistory: string[], 
+    isWhiteTurn: boolean
+  ) => {
+    return {
+      board: board.map(row => 
+        row.map(piece => 
+          piece ? { type: piece.type, isWhite: piece.isWhite } : null
+        )
+      ),
+      moveHistory,
+      isWhiteTurn
+    };
+  };
+
   const createGame = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -36,11 +53,7 @@ export function useChessGame() {
         .insert({
           white_player_id: user.id,
           ai_difficulty: difficulty,
-          game_state: {
-            board: board,
-            move_history: moveHistory,
-            is_white_turn: isWhiteTurn
-          }
+          game_state: serializeGameState(board, moveHistory, isWhiteTurn)
         })
         .select()
         .single();
@@ -60,11 +73,7 @@ export function useChessGame() {
       const { error } = await supabase
         .from('chess_games')
         .update({
-          game_state: {
-            board: board,
-            move_history: moveHistory,
-            is_white_turn: isWhiteTurn
-          },
+          game_state: serializeGameState(board, moveHistory, isWhiteTurn),
           status: gameOver ? 'completed' : 'in_progress'
         })
         .eq('id', gameId);
