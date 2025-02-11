@@ -15,6 +15,23 @@ interface StickyNoteProps {
 }
 
 export function StickyNote({ note, colorClass, onDelete, layout = 'grid' }: StickyNoteProps) {
+  const getNoteColorClass = (color: string) => {
+    switch (color) {
+      case 'yellow':
+        return 'sticky-note-yellow';
+      case 'blue':
+        return 'sticky-note-blue';
+      case 'green':
+        return 'sticky-note-green';
+      case 'purple':
+        return 'sticky-note-purple';
+      case 'orange':
+        return 'sticky-note-orange';
+      default:
+        return 'sticky-note-yellow';
+    }
+  };
+
   return (
     <motion.div
       layout
@@ -30,7 +47,7 @@ export function StickyNote({ note, colorClass, onDelete, layout = 'grid' }: Stic
       }}
       className={cn(
         "sticky-note group",
-        colorClass,
+        getNoteColorClass(note.color),
         "touch-manipulation relative overflow-hidden",
         "before:content-[''] before:absolute before:inset-0",
         "before:bg-gradient-to-br before:from-white/5 before:to-transparent",

@@ -30,7 +30,7 @@ export function useNotes() {
       setNotes(data.map(note => ({
         id: note.id,
         text: note.text,
-        color: note.color,
+        color: note.color || 'yellow',
         user_id: note.user_id,
         category: note.category,
         priority: note.priority,
