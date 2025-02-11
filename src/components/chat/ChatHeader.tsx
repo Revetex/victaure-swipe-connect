@@ -8,6 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 export interface ChatHeaderProps {
   title: string;
@@ -29,6 +31,9 @@ export function ChatHeader({
   isOnline,
   lastSeen
 }: ChatHeaderProps) {
+  const isAssistant = title === "M. Victaure";
+  const formattedLastSeen = lastSeen ? format(new Date(lastSeen), 'PPP à HH:mm', { locale: fr }) : null;
+  
   return (
     <div className="flex items-center gap-4 px-4 h-16">
       <Button
@@ -43,7 +48,7 @@ export function ChatHeader({
       </Button>
 
       <div className="relative flex-shrink-0">
-        <Avatar className="h-10 w-10">
+        <Avatar className="h-10 w-10 ring-2 ring-muted">
           <img
             src={avatarUrl || "/user-icon.svg"}
             alt={title}
@@ -57,9 +62,9 @@ export function ChatHeader({
 
       <div className="flex-1 min-w-0">
         <h2 className="font-medium truncate">{title}</h2>
-        {subtitle && (
-          <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
-        )}
+        <p className="text-sm text-muted-foreground truncate">
+          {isAssistant ? "Assistant virtuel" : isOnline ? "En ligne" : formattedLastSeen ? `Vu(e) le ${formattedLastSeen}` : subtitle}
+        </p>
       </div>
 
       {onDelete && (
