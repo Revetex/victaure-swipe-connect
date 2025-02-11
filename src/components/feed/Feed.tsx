@@ -46,7 +46,7 @@ export function Feed() {
         className="h-full w-full"
         onScroll={handleScroll}
       >
-        <div className="max-w-3xl mx-auto p-4 space-y-4">
+        <div className="max-w-3xl mx-auto p-4 space-y-6">
           <CreatePost onPostCreated={handlePostCreated} />
           <PostList 
             onPostDeleted={handlePostDeleted}
