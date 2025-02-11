@@ -40,7 +40,7 @@ export function ProfilePreviewModal({
       />
       
       <motion.div 
-        className="relative z-10 w-full max-w-lg mx-4"
+        className="relative z-[60] w-full max-w-lg mx-4"
         initial={{ y: 50 }}
         animate={{ y: 0 }}
         exit={{ y: 50 }}
@@ -68,4 +68,3 @@ export function ProfilePreviewModal({
     </motion.div>
   );
 }
-

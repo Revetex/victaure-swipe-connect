@@ -64,7 +64,7 @@ export function ProfilePreviewButtons({
   };
 
   return (
-    <div className="flex flex-col gap-2 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative">
+    <div className="flex flex-col gap-2 p-4 bg-background/95 relative isolate">
       <Button 
         onClick={handleViewProfile}
         variant={canViewFullProfile ? "default" : "secondary"}
