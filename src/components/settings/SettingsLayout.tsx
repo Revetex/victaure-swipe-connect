@@ -37,7 +37,6 @@ export function SettingsLayout({ children, className }: SettingsLayoutProps) {
       className={cn(
         "min-h-[calc(100vh-4rem)] w-full bg-background mt-16 pt-8",
         "bg-gradient-to-br from-background via-background/95 to-background/90",
-        "pb-40", // Augmenté le padding bottom pour la navigation
         className
       )}
     >
