@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export function PrivacySection() {
   const [privacyEnabled, setPrivacyEnabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchPrivacySettings();
@@ -32,23 +33,28 @@ export function PrivacySection() {
     }
   };
 
-  const handlePrivacyToggle = async (checked: boolean) => {
+  const handlePrivacyToggle = async () => {
     try {
+      setIsLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) throw new Error('Non authentifié');
+
+      const newPrivacyState = !privacyEnabled;
 
       const { error } = await supabase
         .from('profiles')
-        .update({ privacy_enabled: checked })
+        .update({ privacy_enabled: newPrivacyState })
         .eq('id', user.id);
 
       if (error) throw error;
 
-      setPrivacyEnabled(checked);
-      toast.success(`Profil ${checked ? 'privé' : 'public'}`);
+      setPrivacyEnabled(newPrivacyState);
+      toast.success(`Profil ${newPrivacyState ? 'privé' : 'public'}`);
     } catch (error) {
       console.error('Error updating privacy settings:', error);
       toast.error("Erreur lors de la mise à jour des paramètres de confidentialité");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -57,6 +63,8 @@ export function PrivacySection() {
       variant="ghost"
       size="sm"
       className="w-full justify-between px-2 h-9"
+      onClick={handlePrivacyToggle}
+      disabled={isLoading}
       asChild
     >
       <div className="flex items-center">
@@ -67,6 +75,7 @@ export function PrivacySection() {
         <Switch 
           checked={privacyEnabled}
           onCheckedChange={handlePrivacyToggle}
+          disabled={isLoading}
         />
       </div>
     </Button>
