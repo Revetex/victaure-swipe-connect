@@ -57,7 +57,9 @@ export interface MarketplaceJob {
   experience_level: string;
   status: string;
   category_id: string | null;
-  category_name?: string;
+  category?: {
+    name: string;
+  };
   created_at: string;
   employer_id: string;
   employer?: {
