@@ -1,5 +1,5 @@
 
-import { Message, Receiver } from "@/types/messages";
+import { Message } from "@/types/messages";
 import { MessageItem } from "../MessageItem";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useProfile } from "@/hooks/useProfile";
@@ -31,12 +31,6 @@ export function MessagesList({
     const target = event.target as HTMLDivElement;
     if (!target) return;
 
-    // Check if we're near the top for infinite scroll
-    if (target.scrollTop === 0) {
-      // TODO: Load more messages
-    }
-
-    // Check if we're near bottom for auto-scroll
     const isBottom = target.scrollHeight - target.scrollTop <= target.clientHeight + 100;
     setIsNearBottom(isBottom);
   };
@@ -49,7 +43,7 @@ export function MessagesList({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-[calc(100vh-4rem)] bg-background">
+      <div className="flex flex-col h-[100vh]">
         <div className="border-b p-4 flex items-center justify-between gap-4">
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-10 w-40" />
@@ -66,7 +60,7 @@ export function MessagesList({
   }
   
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] bg-background">
+    <div className="flex flex-col h-[100vh]">
       <div className="border-b p-4 flex items-center justify-between gap-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="text-lg font-semibold">Messages</div>
         <FriendSelector onSelectFriend={(friendId) => onSelectConversation("user", { id: friendId })} />
@@ -97,7 +91,6 @@ export function MessagesList({
             </Button>
           </div>
 
-          {/* Liste des conversations privées */}
           {messages.map((message) => (
             <motion.div
               key={message.id}

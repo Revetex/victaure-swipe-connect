@@ -27,19 +27,23 @@ export function ConversationItem({ user, lastMessage, onSelect }: ConversationIt
     >
       <Button
         variant="ghost"
-        className="w-full flex items-center gap-2 h-auto p-4 hover:bg-muted/50"
+        className="w-full flex items-center gap-4 h-auto p-4 hover:bg-muted/50"
         onClick={onSelect}
       >
-        <Avatar className="h-12 w-12 ring-2 ring-muted">
-          <AvatarImage src={user.avatar_url || undefined} alt={user.full_name} />
-          <AvatarFallback>
+        <Avatar className="h-12 w-12 ring-2 ring-muted/50">
+          <AvatarImage 
+            src={user.avatar_url || undefined} 
+            alt={user.full_name} 
+            className="object-cover"
+          />
+          <AvatarFallback className="bg-primary/5 text-primary">
             {user.full_name?.slice(0, 2).toUpperCase() || '??'}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-center w-full">
-            <h3 className="font-medium text-base">{user.full_name}</h3>
-            <span className="text-xs text-muted-foreground">
+            <h3 className="font-medium text-base truncate">{user.full_name}</h3>
+            <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
               {format(new Date(lastMessage.created_at), 'PP', { locale: fr })}
             </span>
           </div>
@@ -51,4 +55,3 @@ export function ConversationItem({ user, lastMessage, onSelect }: ConversationIt
     </motion.div>
   );
 }
-
