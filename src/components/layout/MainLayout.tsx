@@ -34,7 +34,7 @@ export function MainLayout({
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Navigation pour desktop */}
+      {/* Navigation desktop */}
       {!isMobile && (
         <nav className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <Navigation />
@@ -75,7 +75,7 @@ export function MainLayout({
         </header>
 
         {/* Zone de contenu */}
-        <div className="pt-24 px-4 pb-20">
+        <div className="pt-16">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
