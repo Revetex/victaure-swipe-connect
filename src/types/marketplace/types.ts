@@ -46,34 +46,6 @@ export type MarketplaceItem = DbMarketplaceItem & {
   category?: MarketplaceCategory | null;
 };
 
-export type MarketplaceService = {
-  id: string;
-  title: string;
-  description: string | null;
-  price: number | null;
-  current_price: number | null;
-  images: string[] | null;
-  status: string;
-  type: 'fixed_price' | 'auction';
-  provider_id: string;
-  category_id: string | null;
-  created_at: string;
-  updated_at: string;
-  auction_end_date: string | null;
-  provider?: {
-    id: string;
-    full_name: string;
-    avatar_url: string | null;
-    rating?: number;
-  } | null;
-  category?: MarketplaceCategory | null;
-  bids?: {
-    count: number;
-    highest?: number;
-    last_bid_at?: string;
-  }[];
-};
-
 // Type pour les catégories d'emploi
 export type JobCategory = {
   id: string;
@@ -112,4 +84,32 @@ export type MarketplaceJob = {
     email?: string;
   } | null;
   category?: JobCategory | null;
+};
+
+export type MarketplaceService = {
+  id: string;
+  title: string;
+  description: string | null;
+  price: number | null;
+  current_price: number | null;
+  images: string[] | null;
+  status: string;
+  type: 'fixed_price' | 'auction';
+  provider_id: string;
+  category_id: string | null;
+  created_at: string;
+  updated_at: string;
+  auction_end_date: string | null;
+  provider?: {
+    id: string;
+    full_name: string;
+    avatar_url: string | null;
+    rating?: number;
+  } | null;
+  category?: MarketplaceCategory | null;
+  bids?: {
+    count: number;
+    highest?: number;
+    last_bid_at?: string;
+  }[];
 };
