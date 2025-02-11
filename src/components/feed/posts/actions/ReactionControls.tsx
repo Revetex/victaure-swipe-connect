@@ -1,5 +1,5 @@
 
-import { Heart, HeartCrack } from "lucide-react";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { useReactions } from "./useReactions";
 import { ReactionButton } from "./ReactionButton";
 
@@ -38,17 +38,19 @@ export function ReactionControls({
   return (
     <div className="flex gap-2">
       <ReactionButton
-        icon={Heart}
+        icon={ThumbsUp}
         count={likes || 0}
         isActive={userReaction === 'like'}
         onClick={() => handleReaction('like')}
+        activeClassName="text-primary"
       />
 
       <ReactionButton
-        icon={HeartCrack}
+        icon={ThumbsDown}
         count={dislikes || 0}
         isActive={userReaction === 'dislike'}
         onClick={() => handleReaction('dislike')}
+        activeClassName="text-destructive"
       />
     </div>
   );

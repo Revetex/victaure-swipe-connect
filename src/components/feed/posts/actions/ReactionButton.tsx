@@ -30,17 +30,16 @@ export function ReactionButton({
           onClick();
         }}
         className={cn(
-          "flex gap-2 items-center transition-colors duration-200",
+          "flex gap-1.5 items-center transition-colors duration-200 h-8 px-2",
           "hover:bg-accent",
-          isActive && "text-primary font-medium",
-          activeClassName
+          isActive && activeClassName
         )}
       >
         <Icon className={cn(
-          "h-4 w-4",
+          "h-3.5 w-3.5",
           isActive && "fill-current"
         )} />
-        <span className="text-sm">{count}</span>
+        <span className="text-xs font-medium">{count}</span>
       </Button>
     </motion.div>
   );
