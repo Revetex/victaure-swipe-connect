@@ -1029,6 +1029,7 @@ export type Database = {
           is_ai_message: boolean | null
           is_assistant: boolean | null
           is_deleted: boolean | null
+          is_system_sender: boolean | null
           message_state: string | null
           message_type: string | null
           metadata: Json | null
@@ -1053,6 +1054,7 @@ export type Database = {
           is_ai_message?: boolean | null
           is_assistant?: boolean | null
           is_deleted?: boolean | null
+          is_system_sender?: boolean | null
           message_state?: string | null
           message_type?: string | null
           metadata?: Json | null
@@ -1077,6 +1079,7 @@ export type Database = {
           is_ai_message?: boolean | null
           is_assistant?: boolean | null
           is_deleted?: boolean | null
+          is_system_sender?: boolean | null
           message_state?: string | null
           message_type?: string | null
           metadata?: Json | null
