@@ -2,7 +2,7 @@ import { Job } from "@/types/job";
 import { Search, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { JobCard } from "@/components/JobCard";
+import { JobCard } from "@/components/jobs/JobCard";
 
 interface VictaureJobsSectionProps {
   jobs: Job[];

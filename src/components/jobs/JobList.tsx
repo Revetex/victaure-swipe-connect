@@ -1,4 +1,4 @@
-import { JobCard } from "@/components/JobCard";
+import { JobCard } from "@/components/jobs/JobCard";
 import { Job } from "@/types/job";
 import { JobActions } from "./JobActions";
 import { motion, AnimatePresence } from "framer-motion";
