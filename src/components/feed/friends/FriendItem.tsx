@@ -53,8 +53,10 @@ export function FriendItem({ friend }: FriendItemProps) {
       const { error } = await supabase
         .from('friend_requests')
         .delete()
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .and(`sender_id.eq.${friend.id},receiver_id.eq.${friend.id}`);
+        .or(
+          `sender_id.eq.${user.id},receiver_id.eq.${friend.id}`,
+          `sender_id.eq.${friend.id},receiver_id.eq.${user.id}`
+        );
 
       if (error) throw error;
       toast.success(`${friend.full_name} a été retiré de vos connections`);
@@ -70,12 +72,16 @@ export function FriendItem({ friend }: FriendItemProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // First delete any existing friend requests
       await supabase
         .from('friend_requests')
         .delete()
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .and(`sender_id.eq.${friend.id},receiver_id.eq.${friend.id}`);
+        .or(
+          `sender_id.eq.${user.id},receiver_id.eq.${friend.id}`,
+          `sender_id.eq.${friend.id},receiver_id.eq.${user.id}`
+        );
 
+      // Then block the user
       const { error } = await supabase
         .from('blocked_users')
         .insert({
