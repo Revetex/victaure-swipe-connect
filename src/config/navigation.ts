@@ -54,4 +54,3 @@ export const getPageTitle = (currentPage: number): string => {
       return "Actualité";
   }
 };
-
