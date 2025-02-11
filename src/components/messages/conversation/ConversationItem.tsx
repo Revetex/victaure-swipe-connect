@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 interface ConversationItemProps {
   user: {
@@ -28,6 +29,15 @@ export function ConversationItem({
   onDelete,
   canDelete 
 }: ConversationItemProps) {
+  const handleSelect = () => {
+    try {
+      onSelect();
+    } catch (error) {
+      console.error("Error selecting conversation:", error);
+      toast.error("Erreur lors de la sélection de la conversation");
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -37,7 +47,7 @@ export function ConversationItem({
       <Button
         variant="ghost"
         className="relative w-full flex items-center gap-4 h-auto p-4 hover:bg-muted/50"
-        onClick={onSelect}
+        onClick={handleSelect}
       >
         <Avatar className="h-12 w-12 ring-2 ring-muted/50">
           <AvatarImage 
@@ -69,7 +79,13 @@ export function ConversationItem({
             className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity"
             onClick={(e) => {
               e.stopPropagation();
-              onDelete();
+              try {
+                onDelete();
+                toast.success("Conversation supprimée");
+              } catch (error) {
+                console.error("Error deleting conversation:", error);
+                toast.error("Erreur lors de la suppression de la conversation");
+              }
             }}
           >
             Supprimer
