@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UploadApk } from "@/components/dashboard/UploadApk";
 import { DownloadApp } from "@/components/dashboard/DownloadApp";
+import { useAuth } from "@/hooks/useAuth";
 
 const LoadingFallback = () => (
   <div className="space-y-8 p-4">
@@ -17,6 +18,9 @@ const LoadingFallback = () => (
 );
 
 export default function Index() {
+  const { user } = useAuth();
+  const isAdmin = user?.email === "contact@victaure.com"; // Remplacez par l'email de l'administrateur
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-purple-900/5 to-background">
       <main className="flex-1">
@@ -30,7 +34,7 @@ export default function Index() {
             <HeroSection />
             <div className="container mx-auto p-4 space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <UploadApk />
+                {isAdmin && <UploadApk />}
                 <DownloadApp />
               </div>
             </div>
