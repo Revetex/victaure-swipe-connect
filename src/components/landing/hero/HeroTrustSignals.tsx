@@ -47,12 +47,12 @@ export function HeroTrustSignals() {
               loop
               muted
               playsInline
+              controls
               id="trustVideo"
               className="w-full h-full object-cover rounded-xl"
               onClick={(e) => {
                 const video = e.currentTarget;
                 if (video.paused) {
-                  video.muted = false;
                   video.play();
                 } else {
                   video.pause();
