@@ -1782,6 +1782,42 @@ export type Database = {
           },
         ]
       }
+      tasks: {
+        Row: {
+          all_day: boolean | null
+          completed: boolean | null
+          created_at: string | null
+          due_date: string | null
+          due_time: string | null
+          id: string
+          text: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          all_day?: boolean | null
+          completed?: boolean | null
+          created_at?: string | null
+          due_date?: string | null
+          due_time?: string | null
+          id?: string
+          text: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          all_day?: boolean | null
+          completed?: boolean | null
+          created_at?: string | null
+          due_date?: string | null
+          due_time?: string | null
+          id?: string
+          text?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       todos: {
         Row: {
           all_day: boolean | null
