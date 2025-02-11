@@ -65,16 +65,28 @@ export function useChessGame() {
         setPossibleMoves([]);
         setIsWhiteTurn(false);
 
-        const gameState = {
+        const gameState: GameState = {
           board: newBoard,
-          isWhiteTurn: false,
           moveHistory: [...moveHistory, move],
-          winner: null,
-          difficulty // Ajout du paramètre manquant
+          isWhiteTurn: false,
+          enPassantTarget: null,
+          castlingRights: {
+            white_kingside: true,
+            white_queenside: true,
+            black_kingside: true,
+            black_queenside: true
+          },
+          halfMoveClock: 0,
+          fullMoveNumber: Math.floor(moveHistory.length / 2) + 1,
+          isCheck: false,
+          isCheckmate: false,
+          isStalemate: false,
+          isDraw: false,
+          drawReason: null
         };
 
         try {
-          await createGame(gameState, difficulty); // Ajout du second argument requis
+          await createGame(gameState, difficulty);
           
           // AI's turn
           await makeAIMove(
@@ -93,7 +105,7 @@ export function useChessGame() {
               setBoard(aiBoard);
               setIsWhiteTurn(true);
             },
-            gameState // Ajout du quatrième argument requis
+            () => setGameOver(true) // Callback for game over
           );
         } catch (error) {
           console.error("Error during AI move:", error);
