@@ -7,8 +7,6 @@ import { ChatThinking } from "@/components/chat/ChatThinking";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { useProfile } from "@/hooks/useProfile";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 
 export interface ConversationViewProps {
   messages: Message[];
@@ -85,7 +83,7 @@ export function ConversationView({
   if (!receiver || !profile) return null;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
+    <div className="flex flex-col h-full">
       <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <ChatHeader
           title={receiver.full_name}
