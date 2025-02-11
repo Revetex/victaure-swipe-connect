@@ -1001,6 +1001,119 @@ export type Database = {
           },
         ]
       }
+      marketplace_job_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          parent_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          parent_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          parent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_job_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_job_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_jobs: {
+        Row: {
+          category_id: string | null
+          company_logo: string | null
+          company_name: string | null
+          contract_type: string
+          created_at: string
+          description: string | null
+          employer_id: string
+          experience_level: string
+          id: string
+          location: string
+          remote_type: string
+          salary_currency: string
+          salary_max: number | null
+          salary_min: number | null
+          salary_period: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category_id?: string | null
+          company_logo?: string | null
+          company_name?: string | null
+          contract_type: string
+          created_at?: string
+          description?: string | null
+          employer_id: string
+          experience_level: string
+          id?: string
+          location: string
+          remote_type: string
+          salary_currency?: string
+          salary_max?: number | null
+          salary_min?: number | null
+          salary_period: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string | null
+          company_logo?: string | null
+          company_name?: string | null
+          contract_type?: string
+          created_at?: string
+          description?: string | null
+          employer_id?: string
+          experience_level?: string
+          id?: string
+          location?: string
+          remote_type?: string
+          salary_currency?: string
+          salary_max?: number | null
+          salary_min?: number | null
+          salary_period?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_jobs_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_job_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_jobs_employer_id_fkey"
+            columns: ["employer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketplace_services: {
         Row: {
           auction_end_date: string | null
