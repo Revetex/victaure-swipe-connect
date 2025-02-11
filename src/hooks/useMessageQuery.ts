@@ -46,12 +46,12 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
 
       if (receiver) {
         if (receiver.id === 'assistant') {
-          // For AI messages - only get messages where user is receiver and message is from AI
+          // Messages AI uniquement
           query = query
             .eq('receiver_id', user.id)
             .eq('is_assistant', true);
         } else {
-          // For user-to-user messages - exclude AI messages and get conversation between users
+          // Messages entre utilisateurs uniquement, exclus les messages AI
           query = query
             .eq('is_assistant', false)
             .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
@@ -66,7 +66,6 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
         throw error;
       }
 
-      // Map messages to correct format
       return messages?.map(msg => ({
         ...msg,
         timestamp: msg.created_at,

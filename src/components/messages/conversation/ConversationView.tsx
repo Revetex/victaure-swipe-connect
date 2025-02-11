@@ -83,8 +83,8 @@ export function ConversationView({
   if (!receiver || !profile) return null;
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="flex flex-col h-full relative">
+      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <ChatHeader
           title={receiver.full_name}
           subtitle={receiver.online_status ? "En ligne" : "Hors ligne"}
@@ -112,26 +112,31 @@ export function ConversationView({
             </div>
           ) : (
             <AnimatePresence initial={false}>
-              {messages.map((message) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className={`flex ${message.sender_id === profile.id ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div className="max-w-[70%] md:max-w-[60%]">
-                    <ChatMessage
-                      content={message.content}
-                      sender={message.sender_id === profile.id ? "user" : "assistant"}
-                      timestamp={message.created_at}
-                      isRead={message.read}
-                      status={message.status}
-                      reaction={message.reaction}
-                    />
-                  </div>
-                </motion.div>
-              ))}
+              {messages.map((message) => {
+                const isUserMessage = message.sender_id === profile.id;
+                const isAIMessage = message.sender_id === 'assistant';
+                
+                return (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className={`flex ${isUserMessage ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div className={`max-w-[70%] md:max-w-[60%] ${isAIMessage ? 'bg-primary/5 rounded-lg p-1' : ''}`}>
+                      <ChatMessage
+                        content={message.content}
+                        sender={isUserMessage ? "user" : isAIMessage ? "assistant" : "other"}
+                        timestamp={message.created_at}
+                        isRead={message.read}
+                        status={message.status}
+                        reaction={message.reaction}
+                      />
+                    </div>
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
           )}
           
@@ -142,7 +147,7 @@ export function ConversationView({
               exit={{ opacity: 0 }}
               className="flex justify-start"
             >
-              <div className="max-w-[70%] md:max-w-[60%]">
+              <div className="max-w-[70%] md:max-w-[60%] bg-primary/5 rounded-lg p-1">
                 <ChatThinking />
               </div>
             </motion.div>
