@@ -32,7 +32,7 @@ export function Feed() {
   }, []);
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-hidden">
+    <div className="h-[calc(100vh-4rem)] overflow-hidden mt-16">
       <ScrollArea 
         ref={scrollRef} 
         className="h-full w-full scrollbar-none"
