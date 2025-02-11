@@ -54,17 +54,19 @@ export function Settings() {
 
   return (
     <ScrollArea className="h-[calc(100vh-4rem)]">
-      <div className="container mx-auto py-6">
+      <div className="container mx-auto py-8">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-3 mb-8 px-4"
+          className="flex items-center gap-4 mb-10 px-6"
         >
-          <SettingsIcon className="h-7 w-7 text-primary" />
-          <h1 className="text-2xl font-semibold tracking-tight">Paramètres</h1>
+          <div className="p-3 rounded-xl bg-primary/10">
+            <SettingsIcon className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-3xl font-semibold tracking-tight">Paramètres</h1>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 px-6">
           {settingsSections.map(({ id, Component, icon: Icon, title, color }, index) => (
             <motion.div
               key={id}
@@ -74,7 +76,7 @@ export function Settings() {
               exit="exit"
               transition={{ delay: index * 0.1 }}
               className={cn(
-                "group relative overflow-hidden rounded-xl border border-border/50",
+                "group relative overflow-hidden rounded-2xl border border-border/50",
                 "backdrop-blur-sm transition-all duration-300",
                 "hover:scale-[1.02] hover:shadow-lg"
               )}
@@ -84,13 +86,16 @@ export function Settings() {
                 color
               )} />
               
-              <div className="relative p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <Icon className="h-5 w-5 text-primary" />
-                  <h2 className="text-lg font-medium">{title}</h2>
+              <div className="relative p-8">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="p-3 rounded-xl bg-white/10 backdrop-blur-sm 
+                              group-hover:bg-white/20 transition-colors">
+                    <Icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <h2 className="text-xl font-medium">{title}</h2>
                 </div>
                 
-                <div className="bg-black/5 backdrop-blur-sm rounded-lg p-4">
+                <div className="bg-black/5 backdrop-blur-sm rounded-xl p-6">
                   <Component />
                 </div>
               </div>
