@@ -5,6 +5,8 @@ import { Footer } from "@/components/landing/Footer";
 import { motion } from "framer-motion";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UploadApk } from "@/components/dashboard/UploadApk";
+import { DownloadApp } from "@/components/dashboard/DownloadApp";
 
 const LoadingFallback = () => (
   <div className="space-y-8 p-4">
@@ -26,6 +28,12 @@ export default function Index() {
         >
           <Suspense fallback={<LoadingFallback />}>
             <HeroSection />
+            <div className="container mx-auto p-4 space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <UploadApk />
+                <DownloadApp />
+              </div>
+            </div>
             <Features />
           </Suspense>
         </motion.div>
