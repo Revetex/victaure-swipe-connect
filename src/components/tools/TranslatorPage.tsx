@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { TranslatorLanguageSelect } from "./translator/TranslatorLanguageSelect";
 import { TranslatorTextArea } from "./translator/TranslatorTextArea";
 import { useTranslator } from "./translator/useTranslator";
+import { useEffect } from "react";
 
 export function TranslatorPage() {
   const {
@@ -21,6 +22,36 @@ export function TranslatorPage() {
     speakText,
     swapLanguages
   } = useTranslator();
+
+  useEffect(() => {
+    const handleKeyboardShortcuts = (e: KeyboardEvent) => {
+      // Check if Ctrl (or Cmd on Mac) is pressed
+      const ctrlPressed = e.ctrlKey || e.metaKey;
+      
+      if (!ctrlPressed) return;
+
+      switch (e.key.toLowerCase()) {
+        case 'enter':
+          e.preventDefault();
+          handleTranslate();
+          break;
+        case 'c':
+          // Only trigger custom copy if there's translated text
+          if (translatedText && document.activeElement?.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            copyToClipboard(translatedText);
+          }
+          break;
+        case 's':
+          e.preventDefault();
+          swapLanguages();
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyboardShortcuts);
+    return () => window.removeEventListener('keydown', handleKeyboardShortcuts);
+  }, [handleTranslate, copyToClipboard, swapLanguages, translatedText]);
 
   return (
     <div className="container mx-auto p-4">
@@ -61,6 +92,7 @@ export function TranslatorPage() {
                 size="icon"
                 onClick={swapLanguages}
                 className="flex-shrink-0"
+                title="Swap languages (Ctrl+S)"
               >
                 <ArrowLeftRight className="h-4 w-4" />
               </Button>
@@ -77,7 +109,7 @@ export function TranslatorPage() {
         </div>
 
         <div className="mt-6 flex justify-end">
-          <Button onClick={handleTranslate} disabled={isLoading}>
+          <Button onClick={handleTranslate} disabled={isLoading} title="Translate (Ctrl+Enter)">
             {isLoading ? "Translating..." : "Translate"}
           </Button>
         </div>
