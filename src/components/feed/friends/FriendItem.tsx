@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CircleDot, MessageCircle, UserMinus, UserX } from "lucide-react";
@@ -8,6 +7,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface FriendItemProps {
   friend: FriendPreview;
@@ -16,6 +16,31 @@ interface FriendItemProps {
 
 export function FriendItem({ friend, onMessage }: FriendItemProps) {
   const [showProfile, setShowProfile] = useState(false);
+  const navigate = useNavigate();
+
+  const handleMessageClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: existingConversation } = await supabase
+        .from('messages')
+        .select('*')
+        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${friend.id}),and(sender_id.eq.${friend.id},receiver_id.eq.${user.id})`)
+        .limit(1);
+
+      navigate(`/dashboard/messages?receiver=${friend.id}`);
+      
+      if (!existingConversation?.length) {
+        toast.success(`Nouvelle conversation avec ${friend.full_name}`);
+      }
+    } catch (error) {
+      console.error('Error handling message click:', error);
+      toast.error("Erreur lors de l'ouverture de la conversation");
+    }
+  };
 
   const handleRemoveFriend = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -97,10 +122,7 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            onClick={(e) => {
-              e.stopPropagation();
-              onMessage(friend.id);
-            }}
+            onClick={handleMessageClick}
           >
             <MessageCircle className="h-4 w-4" />
           </Button>
