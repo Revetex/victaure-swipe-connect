@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -24,8 +25,8 @@ export function RegularJobs() {
         .from('marketplace_jobs')
         .select(`
           *,
-          employer:profiles!marketplace_jobs_employer_id_fkey(full_name, avatar_url),
-          category:marketplace_job_categories!marketplace_jobs_category_id_fkey(name)
+          employer:profiles(full_name, avatar_url),
+          category:marketplace_job_categories(name)
         `)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
