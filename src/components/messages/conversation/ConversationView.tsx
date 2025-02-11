@@ -1,14 +1,12 @@
+
 import { Message, Receiver } from "@/types/messages"; 
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatThinking } from "@/components/chat/ChatThinking";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { useProfile } from "@/hooks/useProfile";
-import { toast } from "sonner";
-import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -54,24 +52,10 @@ export function ConversationView({
 
   const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
     if (!scrollAreaRef.current) return;
-    try {
-      scrollAreaRef.current.scrollTo({
-        top: scrollAreaRef.current.scrollHeight,
-        behavior
-      });
-    } catch (error) {
-      console.error("Erreur de défilement:", error);
-    }
-  };
-
-  const handleSendMessage = () => {
-    try {
-      onSendMessage();
-      scrollToBottom();
-    } catch (error) {
-      console.error("Erreur d'envoi:", error);
-      toast.error("Impossible d'envoyer le message");
-    }
+    scrollAreaRef.current.scrollTo({
+      top: scrollAreaRef.current.scrollHeight,
+      behavior
+    });
   };
 
   useEffect(() => {
@@ -100,11 +84,8 @@ export function ConversationView({
 
   if (!receiver || !profile) return null;
 
-  const lastMessage = messages[messages.length - 1];
-  const lastMessageTime = lastMessage ? format(new Date(lastMessage.created_at), 'HH:mm', { locale: fr }) : '';
-
   return (
-    <div className="flex flex-col h-screen max-h-screen">
+    <div className="flex flex-col h-screen">
       <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <ChatHeader
           title={receiver.full_name}
@@ -124,7 +105,7 @@ export function ConversationView({
         onTouchEnd={() => setIsScrolling(false)}
         onMouseDown={() => setIsScrolling(true)}
         onMouseUp={() => setIsScrolling(false)}
-        className="flex-1 overflow-y-auto px-4 scroll-smooth"
+        className="flex-1 overflow-y-auto px-4"
       >
         <div className="max-w-3xl mx-auto space-y-4 py-4">
           {messages.length === 0 ? (
@@ -178,7 +159,7 @@ export function ConversationView({
           <ChatInput
             value={inputMessage}
             onChange={onInputChange}
-            onSend={handleSendMessage}
+            onSend={onSendMessage}
             isThinking={isThinking}
             isListening={isListening}
             onVoiceInput={onVoiceInput}
