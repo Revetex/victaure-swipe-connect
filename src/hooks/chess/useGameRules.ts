@@ -21,11 +21,11 @@ export function useGameRules() {
     }
 
     if (!blackKingFound) {
-      toast.success("Félicitations ! Vous avez gagné en capturant le roi noir !");
+      toast.success("Les blancs gagnent en capturant le roi noir !");
       return true;
     }
     if (!whiteKingFound) {
-      toast.success("L'IA a gagné en capturant votre roi !");
+      toast.success("Les noirs gagnent en capturant le roi blanc !");
       return true;
     }
 
