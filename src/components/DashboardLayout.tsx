@@ -45,7 +45,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       />
 
       <main className={cn(
-        "flex-1 lg:ml-64 min-h-screen relative pt-16 pb-8",
+        "flex-1 lg:ml-64 min-h-screen relative pt-16",
         "glass-panel"
       )}>
         <div className="h-full">

@@ -76,7 +76,7 @@ export function MainLayout({
 
         {/* Content area with correct spacing */}
         <div className="pt-16">
-          <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="max-w-7xl mx-auto px-4">
             {children}
           </div>
         </div>
