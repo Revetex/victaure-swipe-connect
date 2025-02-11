@@ -54,34 +54,36 @@ export function DashboardContent({
     }
   };
 
-  const renderContent = () => {
+  const getPageContent = () => {
+    const commonClasses = "min-h-screen pt-16 px-4";
+
     switch (currentPage) {
       case 1:
-        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
+        return <div className={commonClasses}><VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} /></div>;
       case 2:
-        return <Messages />;
+        return <div className={commonClasses}><Messages /></div>;
       case 3:
-        return <Marketplace />;
+        return <div className={commonClasses}><Marketplace /></div>;
       case 4:
-        return <Feed />;
+        return <div className={commonClasses}><Feed /></div>;
       case 5:
-        return <NotesMap />;
+        return <div className={commonClasses}><NotesMap /></div>;
       case 7:
-        return <TasksPage />;
+        return <div className={commonClasses}><TasksPage /></div>;
       case 8:
-        return <CalculatorPage />;
+        return <div className={commonClasses}><CalculatorPage /></div>;
       case 9:
-        return <NotificationsTab />;
+        return <div className={commonClasses}><NotificationsTab /></div>;
       case 10:
-        return <Settings />;
+        return <div className={commonClasses}><Settings /></div>;
       case 11:
-        return <ChessPage />;
+        return <div className={commonClasses}><ChessPage /></div>;
       case 12:
-        return <FriendRequestsPage />;
+        return <div className={commonClasses}><FriendRequestsPage /></div>;
       case 13:
-        return <ProfileSearchPage />;
+        return <div className={commonClasses}><ProfileSearchPage /></div>;
       case 14:
-        return <TranslatorPage />;
+        return <div className={commonClasses}><TranslatorPage /></div>;
       default:
         return null;
     }
@@ -93,9 +95,9 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="container mx-auto px-4 py-6"
+      className="container mx-auto"
     >
-      {renderContent()}
+      {getPageContent()}
     </motion.div>
   );
 }
