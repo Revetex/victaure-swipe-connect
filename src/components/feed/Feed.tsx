@@ -45,7 +45,7 @@ export function Feed() {
       className="h-[calc(100vh-4rem)] w-full"
       onScroll={handleScroll}
     >
-      <div className="max-w-3xl mx-auto py-4 px-4 space-y-4">
+      <div className="max-w-3xl mx-auto py-4 px-4 space-y-4 pb-24">
         <CreatePost onPostCreated={handlePostCreated} />
         <PostList 
           onPostDeleted={handlePostDeleted}
