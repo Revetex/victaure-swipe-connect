@@ -45,22 +45,27 @@ export function ProfilePreviewModal({
         animate={{ y: 0 }}
         exit={{ y: 50 }}
       >
-        <div className="bg-background rounded-lg shadow-lg overflow-hidden">
-          <ProfilePreviewDialog
-            profile={profile}
-            isOpen={isOpen}
-            onClose={onClose}
-            onRequestChat={onRequestChat}
-            canViewFullProfile={canViewFullProfile}
-          />
-          <ProfilePreviewButtons
-            profile={profile}
-            onRequestChat={onRequestChat}
-            onClose={onClose}
-            canViewFullProfile={!!canViewFullProfile}
-          />
+        <div className="bg-background rounded-lg shadow-lg overflow-hidden max-h-[85vh] flex flex-col">
+          <div className="flex-1 overflow-y-auto">
+            <ProfilePreviewDialog
+              profile={profile}
+              isOpen={isOpen}
+              onClose={onClose}
+              onRequestChat={onRequestChat}
+              canViewFullProfile={canViewFullProfile}
+            />
+          </div>
+          <div className="border-t">
+            <ProfilePreviewButtons
+              profile={profile}
+              onRequestChat={onRequestChat}
+              onClose={onClose}
+              canViewFullProfile={!!canViewFullProfile}
+            />
+          </div>
         </div>
       </motion.div>
     </motion.div>
   );
 }
+
