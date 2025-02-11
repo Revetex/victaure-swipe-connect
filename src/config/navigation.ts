@@ -1,8 +1,9 @@
 
-import { MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, UserSearch, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote } from "lucide-react";
+import { MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, UserSearch, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, User } from "lucide-react";
 
 export const navigationItems = [
   // Section principale
+  { id: 1, icon: User, name: "Mon profil" },
   { id: 4, icon: Newspaper, name: "Actualité" },
   { id: 2, icon: MessageSquare, name: "Messages" },
   { id: 3, icon: BriefcaseIcon, name: "Emplois" },
@@ -23,6 +24,8 @@ export const navigationItems = [
 
 export const getPageTitle = (currentPage: number): string => {
   switch (currentPage) {
+    case 1:
+      return "Mon profil";
     case 2:
       return "Messages";
     case 3:
@@ -51,3 +54,4 @@ export const getPageTitle = (currentPage: number): string => {
       return "Actualité";
   }
 };
+
