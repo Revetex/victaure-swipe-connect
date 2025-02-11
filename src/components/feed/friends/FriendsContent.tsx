@@ -45,13 +45,8 @@ export function FriendsContent() {
   };
 
   return (
-    <ScrollArea className="h-[calc(100vh-10rem)]"> {/* Adjusted height to account for header and padding */}
-      <motion.div 
-        className="space-y-6 pb-6 max-w-3xl mx-auto px-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
+    <ScrollArea className="h-[calc(100vh-4rem)]">
+      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -80,7 +75,7 @@ export function FriendsContent() {
         >
           <ConnectionsSection />
         </motion.div>
-      </motion.div>
+      </div>
     </ScrollArea>
   );
 }
