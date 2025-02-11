@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -126,8 +125,8 @@ export function useChessGame() {
             newBoard,
             difficulty,
             (from, to) => {
-              // Encore une fois, on fait une copie profonde pour le mouvement de l'IA
-              const aiBoard = board.map(row => [...row]);
+              // Important: on utilise newBoard ici, pas board
+              const aiBoard = newBoard.map(row => [...row]);
               aiBoard[to.row][to.col] = aiBoard[from.row][from.col];
               aiBoard[from.row][from.col] = null;
               
@@ -144,7 +143,7 @@ export function useChessGame() {
         } catch (error) {
           console.error("Error during AI move:", error);
           toast.error("Erreur lors du coup de l'IA");
-          setIsWhiteTurn(true); // On redonne la main au joueur en cas d'erreur
+          setIsWhiteTurn(true);
         }
       } else {
         // Si on clique sur une autre case, on désélectionne
