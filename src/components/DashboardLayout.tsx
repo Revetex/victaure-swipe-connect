@@ -48,7 +48,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "flex-1 lg:ml-64 min-h-screen relative",
         "glass-panel"
       )}>
-        <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b lg:left-64" />
+        <header className="fixed top-0 left-0 right-0 z-50 h-16 border-b lg:left-64" />
         {children || (
           <DashboardContent
             currentPage={currentPage}
