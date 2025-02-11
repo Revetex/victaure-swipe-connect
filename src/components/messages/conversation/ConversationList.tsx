@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Message, Receiver } from "@/types/messages";
@@ -64,7 +65,7 @@ export function ConversationList({
   );
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
+    <div className="flex flex-col h-screen pt-16">
       <SearchBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -77,7 +78,7 @@ export function ConversationList({
         })}
       />
 
-      <ScrollArea className="flex-1 pt-16">
+      <ScrollArea className="flex-1">
         <div className="px-4 space-y-4 py-4">
           {/* Section M. Victaure (Assistant IA) */}
           <div className="mb-6 border-b border-border pb-4">
