@@ -13,9 +13,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { MarketplaceItem, MarketplaceCategory } from "@/types/marketplace/types";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { cn } from "@/lib/utils";
 
 export function ItemsMarket() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ['marketplace-items'],
@@ -60,23 +63,26 @@ export function ItemsMarket() {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold">Articles à vendre ou louer</h2>
+    <div className="space-y-6 px-4 md:px-6 pt-4 pb-24 md:pb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h2 className="text-xl md:text-2xl font-semibold">Articles à vendre ou louer</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Publier une annonce
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className={cn(
+            "max-w-2xl",
+            isMobile && "w-[calc(100%-2rem)] top-[50%]"
+          )}>
             <DialogHeader>
               <DialogTitle>Publier une annonce</DialogTitle>
             </DialogHeader>
             <div className="space-y-6 py-4">
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="title">Titre</Label>
                     <Input id="title" placeholder="Nom de l'article" />
@@ -87,7 +93,7 @@ export function ItemsMarket() {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="category">Catégorie</Label>
                     <Select>
@@ -126,12 +132,13 @@ export function ItemsMarket() {
                     id="description"
                     placeholder="Décrivez votre article..."
                     rows={5}
+                    className="resize-none"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Photos</Label>
-                  <div className="grid grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     {[1, 2, 3, 4].map((index) => (
                       <div
                         key={index}
@@ -154,7 +161,7 @@ export function ItemsMarket() {
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-fr"
       >
         {isLoading ? (
           Array.from({ length: 6 }).map((_, index) => (
@@ -168,13 +175,14 @@ export function ItemsMarket() {
           ))
         ) : items.length > 0 ? (
           items.map((item) => (
-            <Card key={item.id} className="overflow-hidden">
+            <Card key={item.id} className="overflow-hidden flex flex-col">
               {item.images && item.images[0] ? (
                 <div className="aspect-video relative">
                   <img
                     src={item.images[0]}
                     alt={item.title}
                     className="object-cover w-full h-full"
+                    loading="lazy"
                   />
                 </div>
               ) : (
@@ -182,10 +190,17 @@ export function ItemsMarket() {
                   <ImagePlus className="h-8 w-8 text-muted-foreground" />
                 </div>
               )}
-              <div className="p-4 space-y-2">
+              <div className="p-4 space-y-2 flex-1 flex flex-col">
                 <h3 className="font-semibold truncate">{item.title}</h3>
-                <p className="text-lg font-bold text-primary">{item.price} $</p>
-                <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
+                <p className="text-lg font-bold text-primary">{item.price.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' })}</p>
+                <p className="text-sm text-muted-foreground line-clamp-2 flex-1">{item.description}</p>
+                {item.seller && (
+                  <div className="flex items-center gap-2 pt-2 border-t">
+                    <div className="text-sm text-muted-foreground">
+                      Vendeur: {item.seller.full_name}
+                    </div>
+                  </div>
+                )}
               </div>
             </Card>
           ))
