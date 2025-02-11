@@ -41,16 +41,16 @@ export function MainLayout({
         </nav>
       )}
 
-      {/* Contenu principal */}
+      {/* Main content */}
       <main className={cn(
         "flex-1 relative",
         !isMobile && "ml-[280px] lg:ml-[320px]"
       )}>
-        {/* Header */}
-        <header className="h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b fixed top-0 right-0 z-50 flex items-center px-4">
+        {/* Fixed Header */}
+        <header className="fixed top-0 right-0 left-0 z-50 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
           <div className={cn(
-            "flex items-center gap-4 w-full",
-            !isMobile && "pl-0"
+            "flex items-center gap-4 h-full px-4",
+            !isMobile && "pl-[280px] lg:pl-[320px]"
           )}>
             {isMobile && (
               <Sheet>
@@ -74,14 +74,14 @@ export function MainLayout({
           </div>
         </header>
 
-        {/* Zone de contenu */}
-        <div className="pt-16">
+        {/* Content area with header spacing */}
+        <div className="pt-16 min-h-screen">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
         </div>
 
-        {/* Liste d'amis (overlay) */}
+        {/* Friends list overlay */}
         <AnimatePresence mode="wait">
           {showFriendsList && (
             <DashboardFriendsList 
@@ -91,7 +91,7 @@ export function MainLayout({
           )}
         </AnimatePresence>
 
-        {/* Navigation mobile en bas */}
+        {/* Mobile navigation */}
         {!isFriendsPage && isMobile && (
           <nav 
             className="h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed bottom-0 left-0 right-0 z-50"
@@ -100,7 +100,7 @@ export function MainLayout({
             }}
           >
             <div className="h-full px-4">
-              {/* Contenu de la navigation */}
+              {/* Mobile navigation content */}
             </div>
           </nav>
         )}
