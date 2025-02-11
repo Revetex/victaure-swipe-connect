@@ -15,12 +15,12 @@ const LoadingFallback = () => (
 
 export default function Index() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-purple-900/10 to-background">
+    <div className="flex flex-col min-h-screen">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="w-full"
+        className="flex-1"
       >
         <Suspense fallback={<LoadingFallback />}>
           <HeroSection />
