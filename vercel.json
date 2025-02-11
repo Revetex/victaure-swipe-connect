@@ -53,5 +53,15 @@
         }
       ]
     }
-  ]
+  ],
+  "env": {
+    "VITE_NODE_ENV": "production"
+  },
+  "build": {
+    "env": {
+      "VITE_NODE_ENV": "production"
+    }
+  },
+  "regions": ["cdg1"],
+  "version": 2
 }
