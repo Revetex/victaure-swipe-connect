@@ -10,7 +10,7 @@ export interface ChessGame {
   black_player_id: string | null;
   ai_difficulty: string;
   game_state: any;
-  status: string;
+  status: 'active' | 'checkmate' | 'stalemate' | 'draw';
   winner_id: string | null;
   created_at: string;
   updated_at: string;
