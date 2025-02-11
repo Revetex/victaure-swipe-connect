@@ -32,11 +32,16 @@ export function JobCard({ job }: JobCardProps) {
             <h3 className="text-lg font-semibold truncate">{job.title}</h3>
             <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
               <Building2 className="h-4 w-4 shrink-0" />
-              <span className="truncate">{job.company}</span>
+              <span className="truncate">
+                {job.mission_type === 'individual' ? 'Mission particulier' : job.company}
+              </span>
             </div>
           </div>
-          <Badge variant={job.source === 'internal' ? 'default' : 'secondary'} className="shrink-0">
-            {job.source || 'internal'}
+          <Badge 
+            variant={job.mission_type === 'individual' ? 'secondary' : 'default'} 
+            className="shrink-0"
+          >
+            {job.mission_type === 'individual' ? 'Particulier' : 'Entreprise'}
           </Badge>
         </div>
 
@@ -46,10 +51,12 @@ export function JobCard({ job }: JobCardProps) {
             <span className="truncate">{job.location}</span>
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Calendar className="h-4 w-4 shrink-0" />
-            <span>{job.contract_type}</span>
-          </div>
+          {job.mission_type === 'company' && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Calendar className="h-4 w-4 shrink-0" />
+              <span>{job.contract_type}</span>
+            </div>
+          )}
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="h-4 w-4 shrink-0" />
