@@ -29,64 +29,37 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden bg-gradient-to-br from-[#9b87f5]/5 via-[#D6BCFA]/5 to-[#403E43]/5">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#9b87f5]/5 via-[#D6BCFA]/5 to-[#403E43]/5">
+      <div className="fixed inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
       
-      <div className="absolute inset-0">
-        <motion.div
-          className="absolute inset-0 opacity-20"
-          style={{
-            background: "radial-gradient(circle at center, var(--primary) 0%, transparent 70%)",
-          }}
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.2, 0.3, 0.2],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        
-        {/* AI-themed animated elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute h-px w-px bg-primary/30"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                scale: [0, 1, 0],
-                opacity: [0, 1, 0],
-              }}
-              transition={{
-                duration: 2 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-                ease: "easeInOut",
-              }}
-            />
-          ))}
-        </div>
-      </div>
+      <motion.div
+        className="fixed inset-0 opacity-20"
+        style={{
+          background: "radial-gradient(circle at center, var(--primary) 0%, transparent 70%)",
+        }}
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.2, 0.3, 0.2],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
       
       <ThemeSelector />
       
-      <main className="flex-1 w-full py-12 px-4 relative z-10">
-        <div className="container max-w-xl mx-auto space-y-12">
+      <main className="flex-1 flex flex-col items-center justify-center w-full p-4 relative z-10">
+        <div className="w-full max-w-xl mx-auto space-y-8">
           <motion.div 
-            className="text-center space-y-8"
+            className="text-center space-y-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
             <Logo size="xl" className="mx-auto" />
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent font-playfair">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent font-playfair">
               Votre Assistant IA
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto font-montserrat">
@@ -96,20 +69,13 @@ export default function Auth() {
 
           <AuthVideo />
 
-          <motion.div 
-            className="glass-card p-8 rounded-2xl shadow-lg backdrop-blur-md border border-white/20"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Suspense fallback={
-              <div className="flex items-center justify-center p-8">
-                <Loader className="w-6 h-6 text-primary" />
-              </div>
-            }>
-              <AuthForm redirectTo={location.state?.from?.pathname} />
-            </Suspense>
-          </motion.div>
+          <Suspense fallback={
+            <div className="flex items-center justify-center">
+              <Loader className="w-6 h-6 text-primary" />
+            </div>
+          }>
+            <AuthForm redirectTo={location.state?.from?.pathname} />
+          </Suspense>
         </div>
       </main>
 
