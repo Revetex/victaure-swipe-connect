@@ -10,6 +10,7 @@ import { LogoutSection } from "./settings/LogoutSection";
 import { PaymentSection } from "./settings/PaymentSection";
 import { ScrollArea } from "./ui/scroll-area";
 import { Settings as SettingsIcon, Palette, Bell, Shield, Lock, Ban, CreditCard, LogOut } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const sectionVariants = {
   initial: { opacity: 0, y: 20 },
@@ -31,13 +32,13 @@ const sectionVariants = {
 };
 
 const settingsSections = [
-  { id: 'appearance', Component: AppearanceSection, icon: Palette, title: 'Apparence' },
-  { id: 'notifications', Component: NotificationsSection, icon: Bell, title: 'Notifications' },
-  { id: 'privacy', Component: PrivacySection, icon: Shield, title: 'Confidentialité' },
-  { id: 'security', Component: SecuritySection, icon: Lock, title: 'Sécurité' },
-  { id: 'payments', Component: PaymentSection, icon: CreditCard, title: 'Paiements' },
-  { id: 'blocked', Component: BlockedUsersSection, icon: Ban, title: 'Utilisateurs bloqués' },
-  { id: 'logout', Component: LogoutSection, icon: LogOut, title: 'Déconnexion' }
+  { id: 'appearance', Component: AppearanceSection, icon: Palette, title: 'Apparence', color: 'from-purple-500/20 to-blue-500/20' },
+  { id: 'notifications', Component: NotificationsSection, icon: Bell, title: 'Notifications', color: 'from-blue-500/20 to-cyan-500/20' },
+  { id: 'privacy', Component: PrivacySection, icon: Shield, title: 'Confidentialité', color: 'from-green-500/20 to-emerald-500/20' },
+  { id: 'security', Component: SecuritySection, icon: Lock, title: 'Sécurité', color: 'from-yellow-500/20 to-orange-500/20' },
+  { id: 'payments', Component: PaymentSection, icon: CreditCard, title: 'Paiements', color: 'from-pink-500/20 to-rose-500/20' },
+  { id: 'blocked', Component: BlockedUsersSection, icon: Ban, title: 'Utilisateurs bloqués', color: 'from-red-500/20 to-pink-500/20' },
+  { id: 'logout', Component: LogoutSection, icon: LogOut, title: 'Déconnexion', color: 'from-gray-500/20 to-slate-500/20' }
 ];
 
 export function Settings() {
@@ -54,13 +55,19 @@ export function Settings() {
   return (
     <ScrollArea className="h-[calc(100vh-4rem)]">
       <div className="container mx-auto py-6">
-        <div className="flex items-center gap-3 mb-8">
-          <SettingsIcon className="h-6 w-6 text-primary" />
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3 mb-8"
+        >
+          <div className="p-3 rounded-xl bg-primary/10 backdrop-blur-sm">
+            <SettingsIcon className="h-6 w-6 text-primary" />
+          </div>
           <h1 className="text-2xl font-semibold tracking-tight">Paramètres</h1>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {settingsSections.map(({ id, Component, icon: Icon, title }, index) => (
+          {settingsSections.map(({ id, Component, icon: Icon, title, color }, index) => (
             <motion.div
               key={id}
               variants={sectionVariants}
@@ -68,16 +75,29 @@ export function Settings() {
               animate="animate"
               exit="exit"
               transition={{ delay: index * 0.1 }}
-              className="bg-card hover:bg-accent/5 rounded-lg border border-border/50 backdrop-blur-sm transition-colors"
+              className={cn(
+                "group relative overflow-hidden rounded-xl border border-border/50",
+                "backdrop-blur-sm transition-all duration-300",
+                "hover:scale-[1.02] hover:shadow-lg"
+              )}
             >
-              <div className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 rounded-md bg-primary/10">
+              <div className={cn(
+                "absolute inset-0 opacity-50 bg-gradient-to-br",
+                color
+              )} />
+              
+              <div className="relative p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2.5 rounded-lg bg-white/10 backdrop-blur-sm 
+                                group-hover:bg-white/20 transition-colors">
                     <Icon className="h-5 w-5 text-primary" />
                   </div>
                   <h2 className="text-lg font-medium">{title}</h2>
                 </div>
-                <Component />
+                
+                <div className="bg-black/5 backdrop-blur-sm rounded-lg p-4">
+                  <Component />
+                </div>
               </div>
             </motion.div>
           ))}
