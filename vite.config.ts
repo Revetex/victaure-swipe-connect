@@ -57,21 +57,24 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: [
+          // Framework and core dependencies
+          'vendor-core': [
             'react', 
             'react-dom',
-            'framer-motion',
+            'framer-motion'
+          ],
+          // Data management & queries
+          'vendor-data': [
             '@tanstack/react-query',
-            '@supabase/supabase-js'
+            '@supabase/supabase-js',
+            'zustand'
           ],
-          auth: [
-            '@supabase/auth-ui-react',
-            '@supabase/auth-helpers-react'
-          ],
-          ui: [
+          // UI Components
+          'vendor-ui': [
             '@radix-ui/react-alert-dialog',
             '@radix-ui/react-avatar',
             '@radix-ui/react-dialog',
@@ -84,6 +87,22 @@ export default defineConfig(({ mode }) => ({
             '@radix-ui/react-switch',
             '@radix-ui/react-tabs',
             '@radix-ui/react-toast'
+          ],
+          // Authentication
+          'vendor-auth': [
+            '@supabase/auth-ui-react',
+            '@supabase/auth-helpers-react'
+          ],
+          // Charts and data visualization
+          'vendor-charts': [
+            'recharts'
+          ],
+          // Tools and utilities
+          'vendor-utils': [
+            'date-fns',
+            'uuid',
+            'qrcode',
+            'use-debounce'
           ]
         },
       },
