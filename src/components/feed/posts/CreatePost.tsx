@@ -101,7 +101,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
     <Card className={cn(
       "shadow-lg border-primary/10 transition-all duration-200",
       isExpanded ? "p-4" : "p-2",
-      "mx-auto max-w-3xl w-full"
+      "mx-auto max-w-3xl w-full mt-[4.5rem]" // Added margin-top here
     )}>
       {!isExpanded ? (
         <Button
