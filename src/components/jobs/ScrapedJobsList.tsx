@@ -32,7 +32,8 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
     created_at: job.posted_at,
     company: job.company,
     source: job.source === 'Victaure' ? 'internal' : 'external',
-    url: job.url
+    url: job.url,
+    mission_type: 'company' // Default value for scraped jobs
   }));
 
   // Filtrer les offres selon les critères
