@@ -31,7 +31,7 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
             online_status,
             last_seen
           ),
-          message_deliveries(
+          message_deliveries!inner(
             status,
             delivered_at,
             read_at
@@ -60,6 +60,7 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
 
       if (error) {
         console.error("Error fetching messages:", error);
+        toast.error("Erreur lors du chargement des messages");
         throw error;
       }
 
