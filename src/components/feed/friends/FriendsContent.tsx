@@ -68,10 +68,24 @@ export function FriendsContent() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="p-4 space-y-4">
-        <ConnectionsSection />
-        <ToolsGrid tools={tools} onToolClick={handleToolClick} />
+      <div className="p-4 space-y-6">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <ConnectionsSection />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <ToolsGrid tools={tools} onToolClick={handleToolClick} />
+        </motion.div>
       </div>
+
       <ToolDialog 
         activeTool={activeTool} 
         onOpenChange={() => setActiveTool(null)} 
