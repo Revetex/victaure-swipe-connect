@@ -28,7 +28,7 @@ export function NotesSection() {
   ];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-3.5rem)]">
+    <div className="flex flex-col h-screen">
       <NotesToolbar
         newNote={newNote}
         selectedColor={selectedColor}
@@ -37,8 +37,10 @@ export function NotesSection() {
         onColorChange={setSelectedColor}
         onAdd={addNote}
       />
-      <ScrollArea className="flex-1 px-4">
-        <NoteGrid notes={notes} onDeleteNote={deleteNote} />
+      <ScrollArea className="flex-1">
+        <div className="px-4 py-6">
+          <NoteGrid notes={notes} onDeleteNote={deleteNote} />
+        </div>
       </ScrollArea>
     </div>
   );

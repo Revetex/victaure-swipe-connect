@@ -35,13 +35,14 @@ export function SettingsLayout({ children, className }: SettingsLayoutProps) {
       animate="visible"
       exit="exit"
       className={cn(
-        "min-h-screen bg-background relative overflow-hidden",
+        "h-screen w-full bg-background",
         "bg-gradient-to-br from-background via-background/95 to-background/90",
         className
       )}
     >
-      <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] z-0" />
-      {children}
+      <div className="h-full w-full max-w-4xl mx-auto px-4 py-6">
+        {children}
+      </div>
     </motion.div>
   );
 }
