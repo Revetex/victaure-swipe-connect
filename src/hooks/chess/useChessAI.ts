@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { ChessPiece } from "@/types/chess";
 
 export function useChessAI() {
@@ -16,6 +15,7 @@ export function useChessAI() {
     setIsThinking(true);
     
     try {
+      console.log("Requesting AI move...");
       const { data, error } = await supabase.functions.invoke('chess-ai-move', {
         body: { 
           board,
@@ -23,9 +23,11 @@ export function useChessAI() {
         }
       });
 
+      console.log("AI response:", data);
+
       if (error) {
         console.error('AI move error:', error);
-        return;
+        throw error;
       }
 
       if (data?.move) {
@@ -37,6 +39,7 @@ export function useChessAI() {
       }
     } catch (error) {
       console.error('AI move error:', error);
+      throw error;
     } finally {
       setIsThinking(false);
     }
