@@ -1,4 +1,3 @@
-
 import { Message } from "@/types/messages";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
@@ -24,10 +23,9 @@ export function UserMessage({ message, onDelete, onSelect }: UserMessageProps) {
     if (isOwnMessage) {
       if (message.read) {
         return <CheckCheck className="h-4 w-4 text-primary" />;
-      } else if (message.status === 'delivered') {
+      } else {
         return <Check className="h-4 w-4 text-muted-foreground" />;
       }
-      return <Check className="h-4 w-4 text-muted-foreground/50" />;
     }
     return null;
   };
@@ -50,7 +48,7 @@ export function UserMessage({ message, onDelete, onSelect }: UserMessageProps) {
       )}>
         <img
           src={message.sender.avatar_url || "/user-icon.svg"}
-          alt={message.sender.full_name || "User"}
+          alt="User avatar"
           className="h-full w-full object-cover rounded-full"
         />
       </Avatar>
@@ -60,7 +58,7 @@ export function UserMessage({ message, onDelete, onSelect }: UserMessageProps) {
         isOwnMessage ? "items-end" : "items-start"
       )}>
         <p className="text-sm font-medium text-muted-foreground">
-          {message.sender.full_name || 'Unknown User'}
+          {message.sender.full_name}
         </p>
         
         <div className="flex items-end gap-2">
@@ -70,9 +68,7 @@ export function UserMessage({ message, onDelete, onSelect }: UserMessageProps) {
               ? "bg-primary text-primary-foreground" 
               : "bg-muted"
           )}>
-            <p className="text-sm whitespace-pre-wrap break-words">
-              {message.content}
-            </p>
+            <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
             <div className="flex items-center gap-1 mt-1 text-xs opacity-70">
               <Clock className="h-3 w-3" />
               <span>{formattedTime}</span>

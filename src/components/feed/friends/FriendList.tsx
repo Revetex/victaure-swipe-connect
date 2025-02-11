@@ -39,6 +39,10 @@ export function FriendList({ friends, currentPage, itemsPerPage }: FriendListPro
                   online_status: friend.online_status || false,
                   last_seen: friend.last_seen || new Date().toISOString()
                 }}
+                onMessage={(friendId) => {
+                  // Navigate to messages with this friend
+                  window.location.href = `/dashboard/messages?receiver=${friendId}`;
+                }}
               />
             </motion.div>
           ))}

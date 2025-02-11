@@ -24,12 +24,12 @@ export function ChatMessagesList({
       className="flex-1 px-4"
       onScrollCapture={onScroll}
     >
-      <div className="space-y-4 py-2 max-w-3xl mx-auto">
+      <div className="space-y-4 py-4 max-w-3xl mx-auto">
         {messages.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center text-muted-foreground p-2"
+            className="text-center text-muted-foreground p-4"
           >
             Aucun message pour le moment. Commencez une conversation !
           </motion.div>

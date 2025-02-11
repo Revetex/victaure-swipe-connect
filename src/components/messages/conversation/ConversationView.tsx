@@ -1,3 +1,4 @@
+
 import { Message, Receiver } from "@/types/messages"; 
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
@@ -73,10 +74,10 @@ export function ConversationView({
       </header>
 
       <ScrollArea 
-        className="flex-1 px-4 pt-2 pb-20 w-full overflow-x-hidden"
+        className="flex-1 px-4 pb-24"
         onScrollCapture={handleScroll}
       >
-        <div className="space-y-4 py-2 min-h-full max-w-3xl mx-auto">
+        <div className="space-y-4 py-4 min-h-full">
           <AnimatePresence initial={false}>
             {messages.map((message) => (
               <motion.div
@@ -117,7 +118,7 @@ export function ConversationView({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
-          className="fixed bottom-20 right-4 z-10"
+          className="fixed bottom-24 right-4 z-10"
         >
           <Button
             size="icon"
@@ -144,3 +145,4 @@ export function ConversationView({
     </div>
   );
 }
+

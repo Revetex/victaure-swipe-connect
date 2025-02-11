@@ -2,14 +2,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { UserProfile } from "@/types/profile";
 import { Loader } from "@/components/ui/loader";
 import { FriendsList } from "@/components/feed/FriendsList";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
-import { useState } from "react";
 
 export function FriendsPage() {
-  const [searchQuery, setSearchQuery] = useState("");
   const { data: friends, isLoading } = useQuery({
     queryKey: ["friends"],
     queryFn: async () => {
@@ -49,21 +46,8 @@ export function FriendsPage() {
   return (
     <ScrollArea className="h-[calc(100vh-8rem)]">
       <div className="w-full p-4">
-        <div className="max-w-2xl mx-auto space-y-6">
-          <h1 className="text-2xl font-bold">Mes connexions</h1>
-          
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Rechercher une connexion..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
-          <FriendsList />
-        </div>
+        <h1 className="text-2xl font-bold mb-6">Mes amis</h1>
+        <FriendsList />
       </div>
     </ScrollArea>
   );

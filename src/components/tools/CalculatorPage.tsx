@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -34,7 +33,7 @@ export function CalculatorPage() {
   } = useConverter();
 
   return (
-    <div className="container mx-auto p-4 max-w-lg pt-16">
+    <div className="container mx-auto p-4 max-w-lg">
       <Card className="overflow-hidden shadow-lg">
         <Tabs defaultValue="calculator" className="w-full">
           <div className="border-b px-4 py-2 bg-muted/50">

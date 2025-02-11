@@ -1,121 +1,51 @@
 
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { getSquareName } from "./boardUtils";
 import { ChessPiece } from "@/types/chess";
-import { calculatePossibleMoves } from "./moveCalculator";
 
-// Simple evaluation function for the AI
-function evaluatePosition(board: (ChessPiece | null)[][]): number {
-  const pieceValues = {
-    pawn: 1,
-    knight: 3,
-    bishop: 3,
-    rook: 5,
-    queen: 9,
-    king: 100
-  };
-
-  let score = 0;
-  for (let row = 0; row < 8; row++) {
-    for (let col = 0; col < 8; col++) {
-      const piece = board[row][col];
-      if (piece) {
-        const value = pieceValues[piece.type];
-        score += piece.isWhite ? -value : value;
-      }
-    }
-  }
-  return score;
-}
-
-// Find all possible moves for the AI
-function findAllPossibleMoves(board: (ChessPiece | null)[][], isWhiteTurn: boolean) {
-  const moves: { from: { row: number; col: number }; to: { row: number; col: number } }[] = [];
-
-  for (let row = 0; row < 8; row++) {
-    for (let col = 0; col < 8; col++) {
-      const piece = board[row][col];
-      if (piece && piece.isWhite === isWhiteTurn) {
-        const possibleMoves = calculatePossibleMoves(row, col, piece, board);
-        possibleMoves.forEach(move => {
-          moves.push({
-            from: { row, col },
-            to: { row: move.row, col: move.col }
-          });
-        });
-      }
-    }
-  }
-
-  return moves;
-}
-
-// Make a move and return the new board state
-function makeMove(board: (ChessPiece | null)[][], from: { row: number; col: number }, to: { row: number; col: number }): (ChessPiece | null)[][] {
-  const newBoard = board.map(row => [...row]);
-  newBoard[to.row][to.col] = newBoard[from.row][from.col];
-  newBoard[from.row][from.col] = null;
-  return newBoard;
-}
+type BoardState = (ChessPiece | null)[][];
 
 export async function handleAIMove(
-  board: (ChessPiece | null)[][],
+  board: BoardState,
   difficulty: string,
-  setBoard: (board: (ChessPiece | null)[][]) => void,
-  setMoveHistory: (updater: (prev: string[]) => string[]) => void,
+  setBoard: (board: BoardState) => void,
+  setMoveHistory: (fn: (prev: string[]) => string[]) => void,
   setGameOver: (over: boolean) => void,
   setIsThinking: (thinking: boolean) => void,
-  setIsWhiteTurn: (isWhiteTurn: boolean) => void,
-): Promise<void> {
+  setIsWhiteTurn: (isWhite: boolean) => void
+) {
   setIsThinking(true);
-
-  // Simulate AI thinking time based on difficulty
-  const thinkingTime = {
-    easy: 500,
-    medium: 1000,
-    hard: 1500
-  }[difficulty] || 1000;
-
-  await new Promise(resolve => setTimeout(resolve, thinkingTime));
-
-  const possibleMoves = findAllPossibleMoves(board, false);
-  
-  if (possibleMoves.length === 0) {
-    setGameOver(true);
-    setIsThinking(false);
-    return;
-  }
-
-  // For medium and hard difficulties, evaluate positions
-  let selectedMove;
-  if (difficulty === 'easy') {
-    // Random move for easy difficulty
-    selectedMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-  } else {
-    // Evaluate each move and select the best one
-    let bestScore = -Infinity;
-    selectedMove = possibleMoves[0];
-
-    possibleMoves.forEach(move => {
-      const newBoard = makeMove(board, move.from, move.to);
-      const score = evaluatePosition(newBoard);
-      
-      // Add some randomness for medium difficulty
-      const randomFactor = difficulty === 'medium' ? Math.random() * 2 - 1 : 0;
-      
-      if (score + randomFactor > bestScore) {
-        bestScore = score + randomFactor;
-        selectedMove = move;
+  try {
+    const { data, error } = await supabase.functions.invoke('chess-ai-move', {
+      body: { 
+        board: board,
+        difficulty: difficulty
       }
     });
-  }
 
-  // Make the selected move
-  const newBoard = makeMove(board, selectedMove.from, selectedMove.to);
-  setBoard(newBoard);
-  
-  // Add move to history
-  const moveNotation = `${String.fromCharCode(97 + selectedMove.from.col)}${8 - selectedMove.from.row} → ${String.fromCharCode(97 + selectedMove.to.col)}${8 - selectedMove.to.row}`;
-  setMoveHistory(prev => [...prev, moveNotation]);
-  
-  setIsWhiteTurn(true);
-  setIsThinking(false);
+    if (error) throw error;
+
+    if (data.move) {
+      const { from, to } = data.move;
+      const aiMove = `${getSquareName(from.row, from.col)} → ${getSquareName(to.row, to.col)}`;
+      setMoveHistory(prev => [...prev, aiMove]);
+      
+      const aiBoard = [...board];
+      aiBoard[to.row][to.col] = aiBoard[from.row][from.col];
+      aiBoard[from.row][from.col] = null;
+      setBoard(aiBoard);
+    }
+
+    if (data.gameOver) {
+      setGameOver(true);
+      toast.success("Échec et mat ! Partie terminée");
+    }
+  } catch (error) {
+    console.error('AI move error:', error);
+    toast.error("Erreur lors du coup de l'IA");
+  } finally {
+    setIsThinking(false);
+    setIsWhiteTurn(true);
+  }
 }

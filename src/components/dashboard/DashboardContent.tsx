@@ -14,7 +14,8 @@ import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
 import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
-import { FriendsList } from "@/components/feed/FriendsList";
+import { FriendRequestsPage } from "@/components/friends/FriendRequestsPage";
+import { ProfileSearchPage } from "@/components/friends/ProfileSearchPage";
 import { NotesSection } from "@/components/notes/NotesSection";
 
 interface DashboardContentProps {
@@ -73,7 +74,9 @@ export function DashboardContent({
       case 10:
         return <Settings />;
       case 12:
-        return <FriendsList />;
+        return <FriendRequestsPage />;
+      case 13:
+        return <ProfileSearchPage />;
       case 14:
         return <TranslatorPage />;
       case 15:
@@ -91,7 +94,7 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="h-full"
+      className="container mx-auto px-4 py-6"
     >
       {renderContent()}
     </motion.div>

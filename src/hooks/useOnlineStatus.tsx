@@ -16,7 +16,7 @@ export function useOnlineStatus() {
         .from('profiles')
         .update({
           online_status: status,
-          last_seen: status ? null : new Date().toISOString()
+          last_seen: new Date().toISOString()
         })
         .eq('id', user.id);
     } catch (error) {
@@ -59,34 +59,25 @@ export function useOnlineStatus() {
 
     channelRef.current = channel;
 
-    // Update online status when tab visibility changes
     const handleVisibilityChange = () => {
-      updateOnlineStatus(!document.hidden);
+      if (document.hidden) {
+        updateOnlineStatus(false);
+      } else {
+        updateOnlineStatus(true);
+      }
     };
 
-    // Update online status when window is closing
     const handleBeforeUnload = () => {
       updateOnlineStatus(false);
     };
 
-    // Handle when device goes online/offline
-    const handleOnline = () => updateOnlineStatus(true);
-    const handleOffline = () => updateOnlineStatus(false);
-
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('beforeunload', handleBeforeUnload);
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    // Set initial online status
-    updateOnlineStatus(true);
 
     return () => {
       mounted = false;
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
       
       if (channelRef.current) {
         updateOnlineStatus(false);

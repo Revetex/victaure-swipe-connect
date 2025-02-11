@@ -40,41 +40,39 @@ export function Feed() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-hidden">
-      <ScrollArea 
-        ref={scrollRef} 
-        className="h-full w-full"
-        onScroll={handleScroll}
-      >
-        <div className="max-w-3xl mx-auto p-4 space-y-4">
-          <CreatePost onPostCreated={handlePostCreated} />
-          <PostList 
-            onPostDeleted={handlePostDeleted}
-            onPostUpdated={handlePostUpdated}
-          />
-        </div>
+    <ScrollArea 
+      ref={scrollRef} 
+      className="h-[calc(100vh-4rem)] w-full px-4"
+      onScroll={handleScroll}
+    >
+      <div className="max-w-3xl mx-auto py-4 space-y-4">
+        <CreatePost onPostCreated={handlePostCreated} />
+        <PostList 
+          onPostDeleted={handlePostDeleted}
+          onPostUpdated={handlePostUpdated}
+        />
+      </div>
 
-        <AnimatePresence>
-          {showScrollTop && (
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              onClick={scrollToTop}
-              className={cn(
-                "fixed bg-primary/90 hover:bg-primary text-primary-foreground",
-                "rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200",
-                "hover:scale-105 active:scale-95",
-                "min-h-[44px] min-w-[44px] z-20",
-                isMobile ? "bottom-4 right-4" : "bottom-8 right-4"
-              )}
-              aria-label="Retourner en haut"
-            >
-              <ChevronUp className="h-5 w-4" />
-            </motion.button>
-          )}
-        </AnimatePresence>
-      </ScrollArea>
-    </div>
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            onClick={scrollToTop}
+            className={cn(
+              "fixed bg-primary/90 hover:bg-primary text-primary-foreground",
+              "rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200",
+              "hover:scale-105 active:scale-95",
+              "min-h-[44px] min-w-[44px] z-20",
+              isMobile ? "bottom-24 right-4" : "bottom-8 right-4"
+            )}
+            aria-label="Retourner en haut"
+          >
+            <ChevronUp className="h-5 w-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+    </ScrollArea>
   );
 }

@@ -9,7 +9,6 @@ interface ProfilePreviewDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onRequestChat?: () => void;
-  canViewFullProfile?: boolean;
 }
 
 export function ProfilePreviewDialog({
@@ -17,7 +16,6 @@ export function ProfilePreviewDialog({
   isOpen,
   onClose,
   onRequestChat,
-  canViewFullProfile = false,
 }: ProfilePreviewDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -35,7 +33,6 @@ export function ProfilePreviewDialog({
           profile={profile}
           onRequestChat={onRequestChat}
           onClose={onClose}
-          canViewFullProfile={canViewFullProfile}
         />
       </DialogContent>
     </Dialog>

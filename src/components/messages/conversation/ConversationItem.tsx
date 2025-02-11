@@ -14,20 +14,11 @@ interface ConversationItemProps {
   lastMessage: {
     content: string;
     created_at: string;
-    sender_id: string;
   };
   onSelect: () => void;
-  onDelete?: () => void;
-  canDelete?: boolean;
 }
 
-export function ConversationItem({ 
-  user, 
-  lastMessage, 
-  onSelect,
-  onDelete,
-  canDelete 
-}: ConversationItemProps) {
+export function ConversationItem({ user, lastMessage, onSelect }: ConversationItemProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -36,13 +27,13 @@ export function ConversationItem({
     >
       <Button
         variant="ghost"
-        className="relative w-full flex items-center gap-4 h-auto p-4 hover:bg-muted/50"
+        className="w-full flex items-center gap-4 h-auto p-4 hover:bg-muted/50"
         onClick={onSelect}
       >
         <Avatar className="h-12 w-12 ring-2 ring-muted/50">
           <AvatarImage 
             src={user.avatar_url || undefined} 
-            alt={user.full_name || 'User'} 
+            alt={user.full_name} 
             className="object-cover"
           />
           <AvatarFallback className="bg-primary/5 text-primary">
@@ -51,9 +42,7 @@ export function ConversationItem({
         </Avatar>
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-center w-full">
-            <h3 className="font-medium text-base truncate">
-              {user.full_name || 'Unknown User'}
-            </h3>
+            <h3 className="font-medium text-base truncate">{user.full_name}</h3>
             <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
               {format(new Date(lastMessage.created_at), 'PP', { locale: fr })}
             </span>
@@ -62,19 +51,6 @@ export function ConversationItem({
             {lastMessage.content}
           </p>
         </div>
-        {canDelete && onDelete && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete();
-            }}
-          >
-            Supprimer
-          </Button>
-        )}
       </Button>
     </motion.div>
   );

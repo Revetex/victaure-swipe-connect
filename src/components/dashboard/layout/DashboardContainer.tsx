@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
 
@@ -28,7 +27,7 @@ export function DashboardContainer({ children }: DashboardContainerProps) {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="min-h-screen bg-background pt-16" // Added pt-16 for header spacing
+      className="min-h-screen bg-background"
     >
       {children}
     </motion.div>

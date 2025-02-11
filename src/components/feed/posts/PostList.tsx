@@ -107,7 +107,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   }
 
   return (
-    <>
+    <div className="w-full space-y-6">
       <AnimatePresence mode="popLayout">
         {posts.map((post) => (
           <motion.div
@@ -137,6 +137,6 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
         onClose={() => setPostToDelete(null)}
         onConfirm={() => postToDelete && handleDeletePost(postToDelete, user?.id)}
       />
-    </>
+    </div>
   );
 }

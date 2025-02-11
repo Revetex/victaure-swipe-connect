@@ -7,7 +7,6 @@ import { Loader2 } from "lucide-react";
 import { useDebounce } from "use-debounce";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
-import { cn } from "@/lib/utils";
 
 interface ProfileSearchProps {
   onSelect: (profile: UserProfile) => void;
@@ -15,7 +14,7 @@ interface ProfileSearchProps {
   className?: string;
 }
 
-export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisateur...", className }: ProfileSearchProps) {
+export function ProfileSearch({ onSelect, placeholder = "Search...", className }: ProfileSearchProps) {
   const [search, setSearch] = useState("");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [debouncedSearch] = useDebounce(search, 300);
@@ -57,8 +56,8 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisate
   };
 
   return (
-    <div className={cn("relative", className)} role="search">
-      <Command className="rounded-lg border shadow-md" aria-label="Recherche de profils">
+    <div className={`relative ${className}`}>
+      <Command className="rounded-lg border shadow-md">
         <CommandInput
           placeholder={placeholder}
           value={search}
@@ -66,16 +65,14 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisate
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           readOnly={!isFocused}
-          aria-label="Rechercher un utilisateur"
-          className="-webkit-user-select: none; user-select: none;"
         />
         <CommandList>
           {debouncedSearch && (
-            <CommandGroup heading="Résultats de recherche">
+            <CommandGroup>
               {isLoading && (
-                <CommandItem disabled aria-label="Chargement en cours">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                  <span>Recherche en cours...</span>
+                <CommandItem disabled>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Recherche en cours...
                 </CommandItem>
               )}
               
@@ -85,23 +82,15 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisate
 
               {profiles.map((profile) => (
                 <CommandItem
-                  key={`${profile.id}-${profile.full_name}`}
+                  key={profile.id}
                   onSelect={() => handleProfileClick(profile)}
                   onMouseEnter={() => setHoveredId(profile.id)}
                   onMouseLeave={() => setHoveredId(null)}
-                  className={cn(
-                    "cursor-pointer transition-colors",
+                  className={`cursor-pointer ${
                     hoveredId === profile.id ? "bg-accent" : ""
-                  )}
-                  role="option"
-                  aria-selected={hoveredId === profile.id}
+                  }`}
                 >
-                  <span>{profile.full_name || profile.email}</span>
-                  {profile.id === hoveredId && (
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      Cliquer pour sélectionner
-                    </span>
-                  )}
+                  {profile.full_name || profile.email}
                 </CommandItem>
               ))}
             </CommandGroup>
