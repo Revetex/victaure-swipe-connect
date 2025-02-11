@@ -42,10 +42,10 @@ export function Feed() {
   return (
     <ScrollArea 
       ref={scrollRef} 
-      className="h-[calc(100vh-4rem)] w-full px-4"
+      className="h-[calc(100vh-4rem)] w-full"
       onScroll={handleScroll}
     >
-      <div className="max-w-3xl mx-auto py-4 space-y-4">
+      <div className="max-w-3xl mx-auto py-4 px-4 space-y-4">
         <CreatePost onPostCreated={handlePostCreated} />
         <PostList 
           onPostDeleted={handlePostDeleted}
@@ -69,7 +69,7 @@ export function Feed() {
             )}
             aria-label="Retourner en haut"
           >
-            <ChevronUp className="h-5 w-5" />
+            <ChevronUp className="h-5 w-4" />
           </motion.button>
         )}
       </AnimatePresence>
