@@ -44,10 +44,12 @@ export function ProfileActions({
   };
 
   return (
-    <div className="flex flex-col w-full gap-2 relative z-50">
+    <div className="flex flex-col w-full gap-2 relative z-[100]">
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/80 to-background/95 backdrop-blur-lg rounded-lg" />
+      
       <Button 
         variant={areFriends ? "default" : "secondary"}
-        className="w-full bg-background hover:bg-muted"
+        className="w-full bg-background/80 hover:bg-background/90 backdrop-blur-sm transition-all duration-200 shadow-sm"
         onClick={onViewProfile}
       >
         {areFriends ? (
@@ -66,7 +68,7 @@ export function ProfileActions({
       {!isFriendRequestSent && !areFriends && (
         <Button
           variant="outline"
-          className="w-full bg-background hover:bg-muted"
+          className="w-full bg-background/80 hover:bg-background/90 backdrop-blur-sm transition-all duration-200 shadow-sm"
           onClick={handleSendFriendRequest}
         >
           <UserPlus className="mr-2 h-4 w-4" />
@@ -76,7 +78,7 @@ export function ProfileActions({
       
       <Button
         variant="ghost"
-        className="w-full bg-background/95 hover:bg-muted"
+        className="w-full bg-background/80 hover:bg-background/90 backdrop-blur-sm transition-all duration-200"
         onClick={onClose}
       >
         Fermer
