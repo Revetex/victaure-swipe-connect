@@ -24,10 +24,12 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
             online_status,
             last_seen
           ),
-          message_deliveries!inner(
-            status,
-            delivered_at,
-            read_at
+          receiver:profiles!messages_receiver_id_fkey(
+            id,
+            full_name,
+            avatar_url,
+            online_status,
+            last_seen
           )
         `)
         .order('created_at', { ascending: false })
@@ -39,12 +41,10 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
 
       if (receiver) {
         if (receiver.id === 'assistant') {
-          // For AI assistant messages, filter by is_assistant flag
           query = query
             .eq('receiver_id', user.id)
             .eq('is_assistant', true);
         } else {
-          // For regular user messages, exclude AI messages and filter by sender/receiver
           query = query
             .eq('is_assistant', false)
             .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
@@ -55,16 +55,29 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
 
       if (error) {
         console.error("Error fetching messages:", error);
-        toast.error("Erreur lors du chargement des messages");
         throw error;
       }
 
       return messages?.map(msg => ({
         ...msg,
         timestamp: msg.created_at,
-        status: msg.message_deliveries[0]?.status || msg.status || 'sent',
+        status: msg.message_deliveries?.[0]?.status || msg.status || 'sent',
         message_type: msg.is_assistant ? 'ai' : 'user',
-        metadata: msg.metadata || {}
+        metadata: msg.metadata || {},
+        sender: msg.sender || {
+          id: msg.sender_id,
+          full_name: 'Unknown User',
+          avatar_url: '',
+          online_status: false,
+          last_seen: new Date().toISOString()
+        },
+        receiver: msg.receiver || {
+          id: msg.receiver_id,
+          full_name: 'Unknown User',
+          avatar_url: '',
+          online_status: false,
+          last_seen: new Date().toISOString()
+        }
       })) as Message[] || [];
     },
     enabled: true,

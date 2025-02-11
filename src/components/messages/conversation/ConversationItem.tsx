@@ -14,6 +14,7 @@ interface ConversationItemProps {
   lastMessage: {
     content: string;
     created_at: string;
+    sender_id: string;
   };
   onSelect: () => void;
   onDelete?: () => void;
@@ -41,7 +42,7 @@ export function ConversationItem({
         <Avatar className="h-12 w-12 ring-2 ring-muted/50">
           <AvatarImage 
             src={user.avatar_url || undefined} 
-            alt={user.full_name} 
+            alt={user.full_name || 'User'} 
             className="object-cover"
           />
           <AvatarFallback className="bg-primary/5 text-primary">
@@ -50,7 +51,9 @@ export function ConversationItem({
         </Avatar>
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-center w-full">
-            <h3 className="font-medium text-base truncate">{user.full_name}</h3>
+            <h3 className="font-medium text-base truncate">
+              {user.full_name || 'Unknown User'}
+            </h3>
             <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
               {format(new Date(lastMessage.created_at), 'PP', { locale: fr })}
             </span>
