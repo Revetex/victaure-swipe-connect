@@ -22,7 +22,7 @@ export function calculatePossibleMoves(
 
   // Implement basic movement patterns for each piece type
   switch (piece.type) {
-    case 'pawn':
+    case 'pawn': {
       const direction = piece.isWhite ? -1 : 1;
       if (canMoveToPosition(row + direction, col) && !board[row + direction][col]) {
         moves.push({ row: row + direction, col });
@@ -43,8 +43,9 @@ export function calculatePossibleMoves(
         }
       }
       break;
+    }
 
-    case 'rook':
+    case 'rook': {
       // Horizontal and vertical movements
       for (const [rowDir, colDir] of [[0, 1], [0, -1], [1, 0], [-1, 0]]) {
         let r = row + rowDir;
@@ -57,8 +58,9 @@ export function calculatePossibleMoves(
         }
       }
       break;
+    }
 
-    case 'knight':
+    case 'knight': {
       // L-shaped movements
       const knightMoves = [
         [-2, -1], [-2, 1], [-1, -2], [-1, 2],
@@ -70,8 +72,9 @@ export function calculatePossibleMoves(
         }
       }
       break;
+    }
 
-    case 'bishop':
+    case 'bishop': {
       // Diagonal movements
       for (const [rowDir, colDir] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
         let r = row + rowDir;
@@ -84,8 +87,9 @@ export function calculatePossibleMoves(
         }
       }
       break;
+    }
 
-    case 'queen':
+    case 'queen': {
       // Combine rook and bishop movements
       for (const [rowDir, colDir] of [
         [0, 1], [0, -1], [1, 0], [-1, 0],
@@ -101,8 +105,9 @@ export function calculatePossibleMoves(
         }
       }
       break;
+    }
 
-    case 'king':
+    case 'king': {
       // One square in any direction
       for (const [rowOffset, colOffset] of [
         [-1, -1], [-1, 0], [-1, 1],
@@ -114,7 +119,8 @@ export function calculatePossibleMoves(
         }
       }
       break;
+    }
   }
-
+  
   return moves;
 }
