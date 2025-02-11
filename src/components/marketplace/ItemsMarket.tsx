@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -24,6 +25,7 @@ export function ItemsMarket() {
         .select(`
           *,
           seller:profiles!marketplace_items_seller_id_fkey(
+            id,
             full_name,
             avatar_url
           )
@@ -36,7 +38,7 @@ export function ItemsMarket() {
         throw error;
       }
 
-      return data as MarketplaceItem[];
+      return data as unknown as MarketplaceItem[];
     }
   });
 

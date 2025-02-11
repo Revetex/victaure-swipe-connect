@@ -37,16 +37,16 @@ export interface MarketplaceItem {
   description: string | null;
   price: number;
   images: string[] | null;
-  status: 'active' | 'pending' | 'sold' | 'archived';
+  status: string;  // Changed from union type to string to match DB
   seller_id: string;
   category_id: string | null;
   created_at: string;
   updated_at?: string;
+  condition?: string;
   seller?: {
     id: string;
     full_name: string;
     avatar_url: string | null;
-    rating?: number;
   };
   category?: MarketplaceCategory | null;
 }
