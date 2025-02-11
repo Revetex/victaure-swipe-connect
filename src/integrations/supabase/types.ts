@@ -1182,7 +1182,10 @@ export type Database = {
           color: string
           created_at: string | null
           id: string
+          layout_type: string | null
+          metadata: Json | null
           pinned: boolean | null
+          position: Json | null
           priority: string | null
           text: string
           title: string | null
@@ -1194,7 +1197,10 @@ export type Database = {
           color?: string
           created_at?: string | null
           id?: string
+          layout_type?: string | null
+          metadata?: Json | null
           pinned?: boolean | null
+          position?: Json | null
           priority?: string | null
           text: string
           title?: string | null
@@ -1206,7 +1212,10 @@ export type Database = {
           color?: string
           created_at?: string | null
           id?: string
+          layout_type?: string | null
+          metadata?: Json | null
           pinned?: boolean | null
+          position?: Json | null
           priority?: string | null
           text?: string
           title?: string | null
