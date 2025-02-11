@@ -37,9 +37,10 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
         query = query.lt('created_at', lastCursor);
       }
 
+      // Handle different message filtering scenarios
       if (receiver) {
         if (receiver.id === 'assistant') {
-          // For AI assistant messages
+          // For AI assistant messages, filter by is_assistant flag and current user as receiver
           query = query
             .eq('receiver_id', user.id)
             .eq('is_assistant', true);
@@ -47,8 +48,7 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
           // For regular user messages
           query = query
             .eq('is_assistant', false)
-            .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-            .eq(user.id === receiver.id ? 'sender_id' : 'receiver_id', receiver.id);
+            .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
         }
       }
 
@@ -68,6 +68,6 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
         metadata: msg.metadata || {}
       })) as Message[] || [];
     },
-    enabled: true
+    enabled: !!receiver
   });
 }
