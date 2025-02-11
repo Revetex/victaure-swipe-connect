@@ -1,6 +1,7 @@
 
 import { ReactionControls } from "./actions/ReactionControls";
 import { CommentButton } from "./actions/CommentButton";
+import { Separator } from "@/components/ui/separator";
 
 interface PostActionsProps {
   likes: number;
@@ -32,24 +33,27 @@ export function PostActions({
   onToggleComments,
 }: PostActionsProps) {
   return (
-    <div className="flex gap-2 items-center py-2">
-      <ReactionControls
-        likes={likes}
-        dislikes={dislikes}
-        userReaction={userReaction}
-        postId={postId}
-        postAuthorId={postAuthorId}
-        currentUserId={currentUserId}
-        userEmail={userEmail}
-        onLike={onLike}
-        onDislike={onDislike}
-      />
-      
-      <CommentButton
-        commentCount={commentCount}
-        isExpanded={isExpanded}
-        onToggleComments={onToggleComments}
-      />
+    <div>
+      <Separator className="my-4" />
+      <div className="flex gap-2 items-center py-2">
+        <ReactionControls
+          likes={likes}
+          dislikes={dislikes}
+          userReaction={userReaction}
+          postId={postId}
+          postAuthorId={postAuthorId}
+          currentUserId={currentUserId}
+          userEmail={userEmail}
+          onLike={onLike}
+          onDislike={onDislike}
+        />
+        
+        <CommentButton
+          commentCount={commentCount}
+          isExpanded={isExpanded}
+          onToggleComments={onToggleComments}
+        />
+      </div>
     </div>
   );
 }

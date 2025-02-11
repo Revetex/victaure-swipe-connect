@@ -36,13 +36,12 @@ export function ReactionControls({
   });
 
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-2">
       <ReactionButton
         icon={Heart}
         count={likes || 0}
         isActive={userReaction === 'like'}
         onClick={() => handleReaction('like')}
-        activeClassName="bg-gradient-to-tr from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-lg"
       />
 
       <ReactionButton
@@ -50,7 +49,6 @@ export function ReactionControls({
         count={dislikes || 0}
         isActive={userReaction === 'dislike'}
         onClick={() => handleReaction('dislike')}
-        activeClassName="bg-gradient-to-tr from-purple-500 to-violet-500 hover:from-purple-600 hover:to-violet-600 text-white shadow-lg"
       />
     </div>
   );

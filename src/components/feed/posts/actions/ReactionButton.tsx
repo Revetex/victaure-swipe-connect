@@ -20,13 +20,9 @@ export function ReactionButton({
   activeClassName
 }: ReactionButtonProps) {
   return (
-    <motion.div 
-      whileTap={{ scale: 0.95 }}
-      whileHover={{ scale: 1.05 }}
-      className="will-change-transform"
-    >
+    <motion.div whileTap={{ scale: 0.95 }} className="will-change-transform">
       <Button
-        variant={isActive ? 'default' : 'ghost'}
+        variant="ghost"
         size="sm"
         onClick={(e) => {
           e.preventDefault();
@@ -34,18 +30,17 @@ export function ReactionButton({
           onClick();
         }}
         className={cn(
-          "flex gap-2 items-center transition-all duration-200 min-w-[90px] justify-center",
-          "hover:shadow-md hover:ring-2 hover:ring-offset-2 hover:ring-primary/20",
-          "active:shadow-inner",
-          !isActive && "hover:bg-primary/5",
-          isActive && activeClassName
+          "flex gap-2 items-center transition-colors duration-200",
+          "hover:bg-accent",
+          isActive && "text-primary font-medium",
+          activeClassName
         )}
       >
         <Icon className={cn(
-          "h-4 w-4 transition-all duration-200",
-          isActive && "scale-110 animate-pulse"
+          "h-4 w-4",
+          isActive && "fill-current"
         )} />
-        <span className="font-medium text-sm">{count}</span>
+        <span className="text-sm">{count}</span>
       </Button>
     </motion.div>
   );
