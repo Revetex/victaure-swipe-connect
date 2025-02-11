@@ -52,7 +52,7 @@ export function ConversationMessages({
   }, [messages, shouldAutoScroll]);
 
   useEffect(() => {
-    // Initial scroll to bottom
+    // Scroll initial
     scrollToBottom('auto');
   }, []);
 
@@ -69,15 +69,21 @@ export function ConversationMessages({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-4 p-4">
+      <div className="flex flex-col gap-4 p-4 animate-in fade-in-0 duration-500">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="flex items-start gap-4">
+          <motion.div 
+            key={i} 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="flex items-start gap-4"
+          >
             <Skeleton className="h-10 w-10 rounded-full" />
-            <div className="space-y-2">
+            <div className="space-y-2 flex-1">
               <Skeleton className="h-4 w-[200px]" />
               <Skeleton className="h-4 w-[300px]" />
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     );
@@ -90,19 +96,30 @@ export function ConversationMessages({
         onScrollCapture={handleScroll}
       >
         <div className="flex flex-col gap-2 p-4">
-          {messages.length === 0 ? (
-            <div className="flex items-center justify-center h-32 text-muted-foreground">
-              Aucun message
-            </div>
-          ) : (
-            <AnimatePresence initial={false}>
-              {messages.map((message) => (
+          <AnimatePresence mode="popLayout">
+            {messages.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="flex items-center justify-center h-32 text-muted-foreground"
+              >
+                Aucun message
+              </motion.div>
+            ) : (
+              messages.map((message) => (
                 <motion.div
                   key={message.id}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ 
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 30,
+                    mass: 1
+                  }}
+                  className="will-change-transform"
                 >
                   {isAIChat ? (
                     <ChatMessage
@@ -118,23 +135,24 @@ export function ConversationMessages({
                     />
                   )}
                 </motion.div>
-              ))}
-            </AnimatePresence>
-          )}
+              ))
+            )}
+          </AnimatePresence>
+          
           {isThinking && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
               className="flex items-center justify-center p-4"
             >
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                En train de réfléchir...
+                <span className="text-sm">En train de réfléchir...</span>
               </div>
             </motion.div>
           )}
-          <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} className="h-px" />
         </div>
       </ScrollArea>
 
