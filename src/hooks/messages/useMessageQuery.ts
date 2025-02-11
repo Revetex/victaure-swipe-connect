@@ -68,7 +68,7 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
         ...msg,
         timestamp: msg.created_at,
         status: msg.message_deliveries?.[0]?.status || msg.status || 'sent',
-        message_type: msg.is_assistant ? 'ai' : 'user',
+        message_type: msg.is_assistant ? 'assistant' : 'user',
         metadata: msg.metadata || {},
         sender: msg.sender || {
           id: msg.sender_id,
