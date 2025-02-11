@@ -25,7 +25,7 @@ export function JobCard({ job }: JobCardProps) {
   };
 
   return (
-    <Card className="relative bg-card">
+    <Card className="relative p-6 hover:shadow-lg transition-shadow bg-card">
       <div className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
