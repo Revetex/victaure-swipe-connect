@@ -1,5 +1,5 @@
 
-import { ChessPage } from "../ChessPage";
+import { ChessPage } from "./ChessPage";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
