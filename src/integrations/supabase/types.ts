@@ -2234,6 +2234,7 @@ export type Database = {
       }
     }
     Enums: {
+      chess_game_status: "in_progress" | "completed" | "abandoned"
       conversation_status: "active" | "archived" | "blocked"
       job_category:
         | "technology"
