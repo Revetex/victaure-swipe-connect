@@ -13,11 +13,13 @@ import { FriendRequestsSection } from "./friends/FriendRequestsSection";
 import { UserProfile } from "@/types/profile";
 import { ScrollArea } from "../ui/scroll-area";
 import { Card } from "../ui/card";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function FriendsList() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
+  const isMobile = useIsMobile();
 
   const { data: friends, isLoading, isError } = useQuery({
     queryKey: ["friends"],
@@ -44,8 +46,8 @@ export function FriendsList() {
         return friend;
       }) || [];
     },
-    staleTime: 1000 * 60, // 1 minute
-    refetchInterval: 30000 // Refresh every 30 seconds
+    staleTime: 1000 * 60,
+    refetchInterval: 30000
   });
 
   const handleProfileSelect = async (profile: UserProfile) => {
@@ -111,7 +113,10 @@ export function FriendsList() {
   }
 
   return (
-    <div className="min-h-screen container mx-auto max-w-4xl pt-20 px-4">
+    <div className={cn(
+      "container mx-auto max-w-4xl px-4",
+      isMobile ? "pt-4" : "pt-20"
+    )}>
       <Card className="p-6 space-y-8">
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">Rechercher des profils</h2>
@@ -142,7 +147,10 @@ export function FriendsList() {
               Aucune connection pour le moment
             </p>
           ) : (
-            <ScrollArea className="h-[400px] pr-4">
+            <ScrollArea className={cn(
+              "pr-4",
+              isMobile ? "h-[calc(100vh-20rem)]" : "h-[400px]"
+            )}>
               <AnimatePresence>
                 <div className="space-y-3">
                   {friends?.map((friend) => (
@@ -179,7 +187,7 @@ export function FriendsList() {
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() => navigate(`/dashboard/messages?receiver=${friend.id}`)}
+                        onClick={() => navigate(`/messages?receiver=${friend.id}`)}
                         className="ml-auto"
                       >
                         <MessageCircle className="h-4 w-4 mr-2" />

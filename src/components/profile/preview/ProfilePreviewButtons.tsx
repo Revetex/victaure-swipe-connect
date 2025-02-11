@@ -5,20 +5,20 @@ import { UserProfile } from "@/types/profile";
 import { useConnectionStatus } from "./hooks/useConnectionStatus";
 import { useConnectionActions } from "./hooks/useConnectionActions";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface ProfilePreviewButtonsProps {
   profile: UserProfile;
-  onRequestChat?: () => void;
   onClose: () => void;
   canViewFullProfile: boolean;
 }
 
 export function ProfilePreviewButtons({
   profile,
-  onRequestChat,
   onClose,
   canViewFullProfile
 }: ProfilePreviewButtonsProps) {
+  const navigate = useNavigate();
   const {
     isFriend,
     isBlocked,
@@ -49,6 +49,11 @@ export function ProfilePreviewButtons({
       return;
     }
     window.location.href = `/profile/${profile.id}`;
+    onClose();
+  };
+
+  const handleMessageClick = () => {
+    navigate(`/messages?receiver=${profile.id}`);
     onClose();
   };
 
@@ -113,11 +118,11 @@ export function ProfilePreviewButtons({
         {isBlocked ? "Débloquer" : "Bloquer"}
       </Button>
 
-      {isFriend && !isBlocked && onRequestChat && (
+      {isFriend && !isBlocked && (
         <Button
           variant="outline"
           className="w-full flex items-center gap-2 relative z-10"
-          onClick={onRequestChat}
+          onClick={handleMessageClick}
         >
           <MessageCircle className="h-4 w-4" />
           Envoyer un message
