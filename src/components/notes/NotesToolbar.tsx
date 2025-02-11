@@ -1,9 +1,11 @@
+
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ColorOption } from "@/types/todo";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface NotesToolbarProps {
   newNote: string;
@@ -40,8 +42,11 @@ export function NotesToolbar({
           className="flex-1"
           onKeyPress={(e) => e.key === 'Enter' && handleAddNote()}
         />
-        <Select onValueChange={onColorChange} defaultValue={selectedColor}>
-          <SelectTrigger className="w-[100px]">
+        <Select value={selectedColor} onValueChange={onColorChange}>
+          <SelectTrigger className={cn(
+            "w-[100px]",
+            `sticky-note-${selectedColor}`
+          )}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -49,8 +54,16 @@ export function NotesToolbar({
               <SelectItem 
                 key={color.value} 
                 value={color.value}
-                className={`sticky-note-${color.value}`}
+                className={cn(
+                  "flex items-center gap-2 cursor-pointer",
+                  `sticky-note-${color.value}`,
+                  selectedColor === color.value && "bg-accent"
+                )}
               >
+                <div className={cn(
+                  "w-4 h-4 rounded-full",
+                  `bg-${color.value}-200`
+                )} />
                 {color.label}
               </SelectItem>
             ))}
