@@ -28,7 +28,7 @@ export function NotesSection() {
   ];
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-[calc(100vh-4rem)] pt-16">
       <NotesToolbar
         newNote={newNote}
         selectedColor={selectedColor}

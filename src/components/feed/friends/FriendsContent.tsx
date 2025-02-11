@@ -4,6 +4,7 @@ import { UserProfile } from "@/types/profile";
 import { ConnectionsSection } from "./ConnectionsSection";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { ProfileSearch } from "@/components/feed/ProfileSearch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -46,6 +47,26 @@ export function FriendsContent() {
   return (
     <ScrollArea className="h-[calc(100vh-4rem)]">
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className={cn(
+            "bg-card/50 backdrop-blur-sm",
+            "border rounded-xl shadow-lg",
+            "p-6 space-y-4"
+          )}
+        >
+          <h2 className="text-xl font-semibold bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent">
+            Trouver des connections
+          </h2>
+          <ProfileSearch 
+            onSelect={handleProfileSelect}
+            placeholder="Rechercher par nom ou email..."
+            className="w-full"
+          />
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
