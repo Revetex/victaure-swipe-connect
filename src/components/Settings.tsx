@@ -53,7 +53,7 @@ export function Settings() {
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-4rem)]">
+    <ScrollArea className="h-[calc(100vh-4rem)] pt-16">
       <div className="container mx-auto py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 px-6">
           {settingsSections.map(({ id, Component, icon: Icon, title, color }, index) => (
