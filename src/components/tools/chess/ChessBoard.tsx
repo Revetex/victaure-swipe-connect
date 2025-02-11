@@ -62,41 +62,36 @@ export function ChessBoard({
             const isLight = (rowIndex + colIndex) % 2 === 0;
             
             return (
-              <motion.button
+              <button
                 key={`${rowIndex}-${colIndex}`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
                 onClick={() => onSquareClick(rowIndex, colIndex)}
                 disabled={(!isWhiteTurn && !piece?.isWhite) || isThinking || gameOver}
                 aria-label={`Square ${String.fromCharCode(97 + colIndex)}${8 - rowIndex}${piece ? ` with ${piece.type}` : ''}`}
                 className={cn(
                   "aspect-square flex items-center justify-center relative",
-                  "transition-all duration-300 ease-out touch-manipulation",
+                  "transition-colors duration-300 ease-out touch-manipulation",
                   isMobile ? "text-3xl sm:text-4xl" : "text-4xl sm:text-5xl",
                   "border border-black/5",
                   isLight ? 'bg-[#eee]/90' : 'bg-[#403E43]/90',
-                  isSelected && 'ring-2 ring-yellow-400/50 shadow-lg scale-[1.02] z-10',
-                  isPossibleMove && 'after:absolute after:inset-3 after:rounded-full after:bg-yellow-400/20 after:animate-pulse',
+                  isSelected && 'ring-2 ring-yellow-400 shadow-lg z-10',
+                  isPossibleMove && 'after:absolute after:inset-3 after:rounded-full after:bg-yellow-400/20',
                   'hover:bg-opacity-80',
                   'disabled:opacity-50 disabled:cursor-not-allowed'
                 )}
               >
-                <motion.span
-                  initial={false}
-                  animate={{ 
-                    scale: piece ? 1 : 0.8,
-                    opacity: piece ? 1 : 0 
-                  }}
-                  className={cn(
-                    "relative z-10 drop-shadow-lg transition-transform",
-                    piece?.isWhite 
-                      ? "text-white filter drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]" 
-                      : "text-[#222] filter drop-shadow-[0_2px_2px_rgba(255,255,255,0.1)]"
-                  )}
-                >
-                  {getPieceSymbol(piece)}
-                </motion.span>
-              </motion.button>
+                {piece && (
+                  <span
+                    className={cn(
+                      "relative z-10 drop-shadow-lg",
+                      piece.isWhite 
+                        ? "text-white filter drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]" 
+                        : "text-[#222] filter drop-shadow-[0_2px_2px_rgba(255,255,255,0.1)]"
+                    )}
+                  >
+                    {getPieceSymbol(piece)}
+                  </span>
+                )}
+              </button>
             );
           })
         ))}
