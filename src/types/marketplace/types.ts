@@ -1,8 +1,12 @@
 
 import type { Database } from "@/integrations/supabase/types";
 
-// Type pour les emplois depuis la base de données
-export type MarketplaceJob = Database['public']['Tables']['marketplace_jobs']['Row'] & {
+// Types de base depuis la base de données
+type DbMarketplaceJob = Database['public']['Tables']['marketplace_jobs']['Row'];
+type DbJobCategory = Database['public']['Tables']['marketplace_job_categories']['Row'];
+
+// Type étendu pour les emplois avec les relations
+export type MarketplaceJob = DbMarketplaceJob & {
   employer?: {
     full_name: string;
     avatar_url: string | null;
@@ -11,7 +15,7 @@ export type MarketplaceJob = Database['public']['Tables']['marketplace_jobs']['R
 };
 
 // Type pour les catégories d'emploi
-export type JobCategory = Database['public']['Tables']['marketplace_job_categories']['Row'];
+export type JobCategory = DbJobCategory;
 
 // Type pour les catégories du marketplace
 export interface MarketplaceCategory {
