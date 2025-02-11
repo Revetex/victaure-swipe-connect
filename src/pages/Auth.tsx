@@ -49,8 +49,8 @@ export default function Auth() {
       
       <ThemeSelector />
       
-      <main className="flex-1 flex flex-col items-center justify-center w-full p-4 relative z-10">
-        <div className="w-full max-w-xl mx-auto space-y-8 glass-panel rounded-2xl p-8 border border-primary/10">
+      <main className="flex-1 flex flex-col items-center justify-center w-full p-4 sm:p-6 lg:p-8 relative z-10">
+        <div className="w-full max-w-xl mx-auto space-y-8 glass-panel rounded-2xl p-6 sm:p-8 border border-primary/10 backdrop-blur-sm">
           <motion.div 
             className="text-center space-y-6"
             initial={{ opacity: 0, y: 20 }}
@@ -58,7 +58,7 @@ export default function Auth() {
             transition={{ duration: 0.5 }}
           >
             <Logo size="xl" className="mx-auto" />
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent font-playfair">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent font-playfair">
               Votre Assistant IA
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto font-montserrat leading-relaxed">
