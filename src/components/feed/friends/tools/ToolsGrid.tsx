@@ -8,7 +8,15 @@ interface ToolsGridProps {
 export function ToolsGrid({ tools, onToolClick }: ToolsGridProps) {
   return (
     <div className={cn("w-full p-4 space-y-4")}>
-      {/* Search bar removed to avoid duplication */}
+      {tools.map((tool) => (
+        <button
+          key={tool.id}
+          onClick={() => onToolClick(tool)}
+          className="w-full p-4 bg-secondary rounded-md hover:bg-secondary/80 transition-colors"
+        >
+          {tool.name}
+        </button>
+      ))}
     </div>
   );
 }
