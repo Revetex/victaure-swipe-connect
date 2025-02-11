@@ -99,7 +99,9 @@ export function useGamePersistence() {
 
     if (data) {
       setGameId(data.id);
-      onLoadGame(data.game_state);
+      // Conversion explicite du game_state en GameState
+      const gameState = data.game_state as unknown as GameState;
+      onLoadGame(gameState);
     }
   };
 
