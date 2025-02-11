@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Message, Receiver } from "@/types/messages";
@@ -65,22 +64,20 @@ export function ConversationList({
   );
 
   return (
-    <div className="flex flex-col h-full pt-16">
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b p-4">
-        <SearchBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onSelectFriend={(friendId) => onSelectConversation({
-            id: friendId,
-            full_name: '',
-            avatar_url: '',
-            online_status: false,
-            last_seen: new Date().toISOString()
-          })}
-        />
-      </div>
+    <div className="flex flex-col h-[calc(100vh-4rem)]">
+      <SearchBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onSelectFriend={(friendId) => onSelectConversation({
+          id: friendId,
+          full_name: '',
+          avatar_url: '',
+          online_status: false,
+          last_seen: new Date().toISOString()
+        })}
+      />
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 pt-16">
         <div className="px-4 space-y-4 py-4">
           {/* Section M. Victaure (Assistant IA) */}
           <div className="mb-6 border-b border-border pb-4">
