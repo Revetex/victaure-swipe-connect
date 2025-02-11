@@ -16,7 +16,7 @@ const LoadingFallback = () => (
 
 export default function Index() {
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-background via-purple-900/5 to-background">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-purple-900/5 to-background">
       <main className="flex-1">
         <motion.div
           initial={{ opacity: 0 }}
