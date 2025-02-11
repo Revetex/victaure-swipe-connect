@@ -75,45 +75,55 @@ export function AuthForm({ redirectTo = '/dashboard' }: AuthFormProps) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-[100dvh] flex-col">
       <div className="flex-1">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="container mx-auto px-4 py-8 max-w-md"
+          className="container relative mx-auto px-4 py-8 sm:px-6 lg:px-8 max-w-md"
         >
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="login">Connexion</TabsTrigger>
-              <TabsTrigger value="signup">Inscription</TabsTrigger>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#9b87f5]/10 via-[#8B5CF6]/5 to-[#7E69AB]/10 rounded-3xl blur-3xl" />
+          
+          <Tabs defaultValue="login" className="w-full relative">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger value="login" className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
+                Connexion
+              </TabsTrigger>
+              <TabsTrigger value="signup" className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
+                Inscription
+              </TabsTrigger>
             </TabsList>
 
             <AnimatePresence mode="wait">
-              <TabsContent value="login">
-                <LoginForm
-                  email={email}
-                  password={password}
-                  loading={loading}
-                  onEmailChange={setEmail}
-                  onPasswordChange={setPassword}
-                  onSubmit={() => handleAuth('login')}
-                />
+              <TabsContent value="login" className="relative">
+                <div className="glass-card overflow-hidden border-[#9b87f5]/20">
+                  <LoginForm
+                    email={email}
+                    password={password}
+                    loading={loading}
+                    onEmailChange={setEmail}
+                    onPasswordChange={setPassword}
+                    onSubmit={() => handleAuth('login')}
+                  />
+                </div>
               </TabsContent>
 
-              <TabsContent value="signup">
-                <SignupForm
-                  email={email}
-                  password={password}
-                  fullName={fullName}
-                  phone={phone}
-                  loading={loading}
-                  onEmailChange={setEmail}
-                  onPasswordChange={setPassword}
-                  onFullNameChange={setFullName}
-                  onPhoneChange={setPhone}
-                  onSubmit={() => handleAuth('signup')}
-                />
+              <TabsContent value="signup" className="relative">
+                <div className="glass-card overflow-hidden border-[#9b87f5]/20">
+                  <SignupForm
+                    email={email}
+                    password={password}
+                    fullName={fullName}
+                    phone={phone}
+                    loading={loading}
+                    onEmailChange={setEmail}
+                    onPasswordChange={setPassword}
+                    onFullNameChange={setFullName}
+                    onPhoneChange={setPhone}
+                    onSubmit={() => handleAuth('signup')}
+                  />
+                </div>
               </TabsContent>
             </AnimatePresence>
           </Tabs>

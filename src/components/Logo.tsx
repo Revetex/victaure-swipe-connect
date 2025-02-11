@@ -49,11 +49,11 @@ export function Logo({ size = "md", className }: LogoProps) {
           alt="Victaure Logo" 
           className={cn(
             logoSizes[size],
-            "object-contain"
+            "object-contain drop-shadow-lg"
           )}
         />
-        <span className="bg-gradient-to-r from-[#9b87f5] via-[#8B5CF6] to-[#7E69AB] bg-clip-text text-transparent font-playfair tracking-wide">
-          Victaure
+        <span className="bg-gradient-to-br from-[#9b87f5] via-[#8B5CF6] to-[#7E69AB] bg-clip-text text-transparent font-playfair tracking-wide font-bold">
+          VICTAURE
         </span>
       </motion.div>
     </motion.div>
