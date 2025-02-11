@@ -65,7 +65,7 @@ export function ConversationList({
   );
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full pt-16">
       <SearchBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -78,8 +78,8 @@ export function ConversationList({
         })}
       />
 
-      <ScrollArea className="flex-1 pt-4">
-        <div className="px-4 space-y-4">
+      <ScrollArea className="flex-1">
+        <div className="px-4 space-y-4 py-4">
           {/* AI Assistant - M. Victaure */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -149,3 +149,4 @@ export function ConversationList({
     </div>
   );
 }
+
