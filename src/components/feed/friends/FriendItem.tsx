@@ -28,7 +28,8 @@ export function FriendItem({ friend }: FriendItemProps) {
       const { data: existingConversation, error } = await supabase
         .from('messages')
         .select('*')
-        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${friend.id}),and(sender_id.eq.${friend.id},receiver_id.eq.${user.id})`)
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${friend.id}`)
+        .or(`sender_id.eq.${friend.id},receiver_id.eq.${user.id}`)
         .limit(1);
 
       if (error) throw error;
