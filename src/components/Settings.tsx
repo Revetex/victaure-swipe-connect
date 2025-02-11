@@ -58,15 +58,13 @@ export function Settings() {
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-3 mb-8"
+          className="flex items-center gap-3 mb-8 px-4"
         >
-          <div className="p-3 rounded-xl bg-primary/10 backdrop-blur-sm">
-            <SettingsIcon className="h-6 w-6 text-primary" />
-          </div>
+          <SettingsIcon className="h-7 w-7 text-primary" />
           <h1 className="text-2xl font-semibold tracking-tight">Paramètres</h1>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
           {settingsSections.map(({ id, Component, icon: Icon, title, color }, index) => (
             <motion.div
               key={id}
@@ -88,10 +86,7 @@ export function Settings() {
               
               <div className="relative p-6">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2.5 rounded-lg bg-white/10 backdrop-blur-sm 
-                                group-hover:bg-white/20 transition-colors">
-                    <Icon className="h-5 w-5 text-primary" />
-                  </div>
+                  <Icon className="h-5 w-5 text-primary" />
                   <h2 className="text-lg font-medium">{title}</h2>
                 </div>
                 
