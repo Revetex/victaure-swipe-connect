@@ -12,16 +12,16 @@ interface MessagesState {
 
 export const useMessagesStore = create<MessagesState>((set) => ({
   messages: [],
-  setMessages: (messages) => set({ messages }),
+  setMessages: (messages) => set({ messages: messages || [] }),
   addMessage: (message) => set((state) => ({ 
-    messages: [...state.messages, message] 
+    messages: [...(state.messages || []), message] 
   })),
   updateMessage: (updatedMessage) => set((state) => ({
-    messages: state.messages.map(msg => 
+    messages: (state.messages || []).map(msg => 
       msg.id === updatedMessage.id ? updatedMessage : msg
     )
   })),
   deleteMessage: (messageId) => set((state) => ({
-    messages: state.messages.filter(msg => msg.id !== messageId)
+    messages: (state.messages || []).filter(msg => msg.id !== messageId)
   })),
 }));
