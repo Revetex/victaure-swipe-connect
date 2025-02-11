@@ -20,30 +20,7 @@ export function FriendItem({ friend }: FriendItemProps) {
 
   const handleMessageClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: existingConversation, error } = await supabase
-        .from('messages')
-        .select('*')
-        .or('sender_id.eq.' + user.id + ',receiver_id.eq.' + friend.id + ',' +
-            'sender_id.eq.' + friend.id + ',receiver_id.eq.' + user.id)
-        .limit(1)
-        .is('is_assistant', false); // Make sure we only get non-assistant messages
-
-      if (error) throw error;
-      
-      navigate(`/dashboard/messages?receiver=${friend.id}`);
-      
-      if (!existingConversation?.length) {
-        toast.success(`Nouvelle conversation avec ${friend.full_name}`);
-      }
-    } catch (error) {
-      console.error('Error handling message click:', error);
-      toast.error("Erreur lors de l'ouverture de la conversation");
-    }
+    navigate(`/dashboard/messages?receiver=${friend.id}`);
   };
 
   const handleRemoveFriend = async (e: React.MouseEvent) => {

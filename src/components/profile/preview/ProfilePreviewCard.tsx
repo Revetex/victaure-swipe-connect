@@ -5,6 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Lock } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 interface ProfilePreviewCardProps {
   profile: UserProfile;
@@ -15,9 +16,16 @@ interface ProfilePreviewCardProps {
 
 export function ProfilePreviewCard({
   profile,
-  onRequestChat,
+  onClose,
   canViewFullProfile = false
 }: ProfilePreviewCardProps) {
+  const navigate = useNavigate();
+
+  const handleRequestChat = () => {
+    navigate(`/dashboard/messages?receiver=${profile.id}`);
+    onClose();
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
@@ -50,16 +58,14 @@ export function ProfilePreviewCard({
                 </p>
               )}
 
-              {onRequestChat && (
-                <Button
-                  variant="outline"
-                  className="w-full flex items-center gap-2"
-                  onClick={onRequestChat}
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  Message
-                </Button>
-              )}
+              <Button
+                variant="outline"
+                className="w-full flex items-center gap-2"
+                onClick={handleRequestChat}
+              >
+                <MessageCircle className="h-4 w-4" />
+                Message
+              </Button>
             </>
           ) : (
             <div className="flex items-center gap-2 text-muted-foreground">
