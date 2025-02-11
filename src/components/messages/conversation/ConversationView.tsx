@@ -157,8 +157,8 @@ export function ConversationView({
         </div>
       </div>
 
-      <div className="sticky bottom-0 w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="p-4">
+      <div className="fixed bottom-0 left-0 right-0 w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="p-4 max-w-3xl mx-auto">
           <ChatInput
             value={inputMessage}
             onChange={onInputChange}
