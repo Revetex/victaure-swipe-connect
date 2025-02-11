@@ -74,7 +74,7 @@ export function ConversationView({
       </header>
 
       <ScrollArea 
-        className="flex-1 px-4"
+        className="flex-1 px-4 pb-24"
         onScrollCapture={handleScroll}
       >
         <div className="space-y-4 py-4 min-h-full">
@@ -118,7 +118,7 @@ export function ConversationView({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
-          className="absolute bottom-24 right-4 z-10"
+          className="fixed bottom-24 right-4 z-10"
         >
           <Button
             size="icon"
@@ -131,7 +131,7 @@ export function ConversationView({
         </motion.div>
       )}
 
-      <footer className="flex-shrink-0 bg-background/95 backdrop-blur border-t z-[48] mt-auto p-4">
+      <footer className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t z-[48] p-4">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}
@@ -145,3 +145,4 @@ export function ConversationView({
     </div>
   );
 }
+
