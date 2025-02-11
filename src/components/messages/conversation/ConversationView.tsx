@@ -80,99 +80,105 @@ export function ConversationView({
         />
       </header>
 
-      <ScrollArea 
-        className="flex-1 px-4 pt-2 pb-20 w-full overflow-x-hidden"
-        onScrollCapture={handleScroll}
-      >
-        <div className="space-y-4 py-2 min-h-full max-w-3xl mx-auto">
-          <AnimatePresence initial={false}>
-            {messages.map((message) => (
+      <div className="flex-1 relative">
+        <ScrollArea 
+          className="h-[calc(100vh-8rem)] px-4 pt-2 pb-24 w-full overflow-x-hidden"
+          onScrollCapture={handleScroll}
+        >
+          <div className="space-y-4 py-2 min-h-full max-w-3xl mx-auto">
+            <AnimatePresence initial={false}>
+              {messages.map((message) => (
+                <motion.div
+                  key={message.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="max-w-[85%] mx-auto"
+                >
+                  <ChatMessage
+                    content={message.content}
+                    sender={message.sender_id === profile?.id ? "user" : "assistant"}
+                    timestamp={message.created_at}
+                    isRead={message.read}
+                    status={message.status}
+                    reaction={message.reaction}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            
+            {isThinking && (
               <motion.div
-                key={message.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="max-w-[85%] mx-auto"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
               >
-                <ChatMessage
-                  content={message.content}
-                  sender={message.sender_id === profile?.id ? "user" : "assistant"}
-                  timestamp={message.created_at}
-                  isRead={message.read}
-                  status={message.status}
-                  reaction={message.reaction}
-                />
+                <ChatThinking />
+              </motion.div>
+            )}
+            
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
+
+        {showScrollButton && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="fixed bottom-20 right-4 z-10"
+          >
+            <Button
+              size="icon"
+              variant="secondary"
+              onClick={scrollToBottom}
+              className="rounded-full shadow-lg hover:shadow-xl transition-shadow"
+            >
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </motion.div>
+        )}
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 z-50">
+        {/* Chat Heads */}
+        <div className="relative max-w-3xl mx-auto">
+          <div className="absolute -top-10 left-4 flex -space-x-3">
+            {activeChatHeads.map((head, index) => (
+              <motion.div
+                key={`${head.id}-${index}`}
+                initial={{ scale: 0, x: -20 }}
+                animate={{ scale: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="relative"
+              >
+                <div className="h-10 w-10 rounded-full border-2 border-background overflow-hidden">
+                  <img 
+                    src={head.avatarUrl || '/user-icon.svg'} 
+                    alt={head.name}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                {head.isOnline && (
+                  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
+                )}
               </motion.div>
             ))}
-          </AnimatePresence>
-          
-          {isThinking && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <ChatThinking />
-            </motion.div>
-          )}
-          
-          <div ref={messagesEndRef} />
-        </div>
-      </ScrollArea>
-
-      {showScrollButton && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-          className="fixed bottom-20 right-4 z-10"
-        >
-          <Button
-            size="icon"
-            variant="secondary"
-            onClick={scrollToBottom}
-            className="rounded-full shadow-lg hover:shadow-xl transition-shadow"
-          >
-            <ChevronDown className="h-4 w-4" />
-          </Button>
-        </motion.div>
-      )}
-
-      <footer className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t z-[48] p-4">
-        {/* Chat Heads */}
-        <div className="absolute -top-12 left-4 flex -space-x-3">
-          {activeChatHeads.map((head, index) => (
-            <motion.div
-              key={`${head.id}-${index}`}
-              initial={{ scale: 0, x: -20 }}
-              animate={{ scale: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="relative"
-            >
-              <div className="h-10 w-10 rounded-full border-2 border-background overflow-hidden">
-                <img 
-                  src={head.avatarUrl || '/user-icon.svg'} 
-                  alt={head.name}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              {head.isOnline && (
-                <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
-              )}
-            </motion.div>
-          ))}
+          </div>
         </div>
 
-        <ChatInput
-          value={inputMessage}
-          onChange={onInputChange}
-          onSend={onSendMessage}
-          isThinking={isThinking}
-          isListening={isListening}
-          onVoiceInput={onVoiceInput}
-          placeholder="Écrivez votre message..."
-        />
-      </footer>
+        <div className="bg-background/95 backdrop-blur border-t p-4">
+          <ChatInput
+            value={inputMessage}
+            onChange={onInputChange}
+            onSend={onSendMessage}
+            isThinking={isThinking}
+            isListening={isListening}
+            onVoiceInput={onVoiceInput}
+            placeholder="Écrivez votre message..."
+          />
+        </div>
+      </div>
     </div>
   );
 }
