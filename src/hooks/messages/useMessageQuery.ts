@@ -30,6 +30,11 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
             avatar_url,
             online_status,
             last_seen
+          ),
+          message_deliveries(
+            status,
+            delivered_at,
+            read_at
           )
         `)
         .order('created_at', { ascending: false })
