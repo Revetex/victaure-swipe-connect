@@ -47,7 +47,7 @@ export function MainLayout({
         !isMobile && "md:pl-[280px] lg:pl-[320px]"
       )}>
         {/* Header */}
-        <header className="h-16 border-b bg-background/95 backdrop-blur fixed top-0 left-0 right-0 z-40">
+        <header className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed top-0 left-0 right-0 z-40">
           <div className="container h-full mx-auto px-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               {isMobile && (
@@ -74,7 +74,7 @@ export function MainLayout({
         </header>
 
         {/* Main Content with padding to avoid header overlap */}
-        <div className="flex-1 pt-[calc(4rem+1.5rem)] px-4">
+        <div className="flex-1 pt-20 px-4 pb-16">
           {children}
         </div>
 
@@ -92,7 +92,7 @@ export function MainLayout({
         {!isFriendsPage && (
           <nav 
             className={cn(
-              "h-16 border-t bg-background/95 backdrop-blur sticky bottom-0 z-40",
+              "h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed bottom-0 left-0 right-0 z-40",
               !isMobile && "md:ml-[280px] lg:ml-[320px]"
             )}
             style={{ 
