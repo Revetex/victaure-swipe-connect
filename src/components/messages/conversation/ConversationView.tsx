@@ -59,13 +59,6 @@ export function ConversationView({
 
   if (!receiver) return null;
 
-  const activeChatHeads = messages.slice(-3).map(message => ({
-    id: message.sender_id,
-    avatarUrl: message.sender_id === profile?.id ? profile?.avatar_url : receiver.avatar_url,
-    name: message.sender_id === profile?.id ? profile?.full_name : receiver.full_name,
-    isOnline: message.sender_id === profile?.id ? true : receiver.online_status,
-  }));
-
   return (
     <div className="flex flex-col h-full bg-background">
       <header className="flex-shrink-0 sticky top-0 left-0 right-0 bg-background/95 backdrop-blur z-[49] border-b">
@@ -141,32 +134,6 @@ export function ConversationView({
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 z-50">
-        {/* Chat Heads */}
-        <div className="relative max-w-3xl mx-auto">
-          <div className="absolute -top-10 left-4 flex -space-x-3">
-            {activeChatHeads.map((head, index) => (
-              <motion.div
-                key={`${head.id}-${index}`}
-                initial={{ scale: 0, x: -20 }}
-                animate={{ scale: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="relative"
-              >
-                <div className="h-10 w-10 rounded-full border-2 border-background overflow-hidden">
-                  <img 
-                    src={head.avatarUrl || '/user-icon.svg'} 
-                    alt={head.name}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                {head.isOnline && (
-                  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
         <div className="bg-background/95 backdrop-blur border-t p-4">
           <ChatInput
             value={inputMessage}
