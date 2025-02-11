@@ -246,7 +246,7 @@ export type Database = {
           created_at: string
           game_state: Json
           id: string
-          status: string | null
+          status: string
           updated_at: string
           white_player_id: string
           winner_id: string | null
@@ -257,7 +257,7 @@ export type Database = {
           created_at?: string
           game_state?: Json
           id?: string
-          status?: string | null
+          status?: string
           updated_at?: string
           white_player_id: string
           winner_id?: string | null
@@ -268,7 +268,7 @@ export type Database = {
           created_at?: string
           game_state?: Json
           id?: string
-          status?: string | null
+          status?: string
           updated_at?: string
           white_player_id?: string
           winner_id?: string | null

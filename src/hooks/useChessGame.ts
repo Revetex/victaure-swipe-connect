@@ -84,6 +84,10 @@ export function useChessGame() {
   };
 
   useEffect(() => {
+    createGame();
+  }, []);
+
+  useEffect(() => {
     if (board && moveHistory.length > 0) {
       saveGameState();
     }
@@ -226,12 +230,12 @@ export function useChessGame() {
 
     if (selectedPiece) {
       if (possibleMoves.some(move => move.row === row && move.col === col)) {
-        const newBoard = [...board];
+        const newBoard = JSON.parse(JSON.stringify(board));
         newBoard[row][col] = board[selectedPiece.row][selectedPiece.col];
         newBoard[selectedPiece.row][selectedPiece.col] = null;
         
         const move = `${getSquareName(selectedPiece.row, selectedPiece.col)} → ${getSquareName(row, col)}`;
-        setMoveHistory([...moveHistory, move]);
+        setMoveHistory(prev => [...prev, move]);
         
         setBoard(newBoard);
         setSelectedPiece(null);
@@ -256,7 +260,7 @@ export function useChessGame() {
               const aiMove = `${getSquareName(from.row, from.col)} → ${getSquareName(to.row, to.col)}`;
               setMoveHistory(prev => [...prev, aiMove]);
               
-              const aiBoard = [...newBoard];
+              const aiBoard = JSON.parse(JSON.stringify(newBoard));
               aiBoard[to.row][to.col] = aiBoard[from.row][from.col];
               aiBoard[from.row][from.col] = null;
               setBoard(aiBoard);
@@ -275,7 +279,6 @@ export function useChessGame() {
           }
         }
       } else {
-        toast.error("Coup invalide");
         setSelectedPiece(null);
         setPossibleMoves([]);
       }
@@ -296,10 +299,6 @@ export function useChessGame() {
     createGame();
     toast.success("Nouvelle partie commencée");
   };
-
-  useEffect(() => {
-    createGame();
-  }, []);
 
   return {
     board,
