@@ -36,60 +36,36 @@ export function ConversationView({
   messagesEndRef
 }: ConversationViewProps) {
   const { profile } = useProfile();
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const [isAtBottom, setIsAtBottom] = useState(true);
-  const [isScrolling, setIsScrolling] = useState(false);
+  const [autoScroll, setAutoScroll] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (autoScroll && containerRef.current) {
+      const scrollElement = containerRef.current;
+      scrollElement.scrollTop = scrollElement.scrollHeight;
+    }
+  }, [messages, autoScroll]);
+
+  useEffect(() => {
+    // Scroll to bottom on initial load
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  }, []);
 
   const handleScroll = () => {
-    if (!scrollAreaRef.current) return;
-    
-    const { scrollHeight, scrollTop, clientHeight } = scrollAreaRef.current;
-    const bottom = scrollHeight - scrollTop - clientHeight < 100;
-    setIsAtBottom(bottom);
-  };
-
-  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
-    if (!scrollAreaRef.current) return;
-    
-    const scrollHeight = scrollAreaRef.current.scrollHeight;
-    const height = scrollAreaRef.current.clientHeight;
-    const maxScrollTop = scrollHeight - height;
-    
-    scrollAreaRef.current.scrollTo({
-      top: maxScrollTop > 0 ? maxScrollTop : 0,
-      behavior
-    });
-  };
-
-  useEffect(() => {
-    if (isAtBottom && !isScrolling) {
-      scrollToBottom('instant');
+    if (containerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      setAutoScroll(isNearBottom);
     }
-  }, [messages, isAtBottom, isScrolling]);
-
-  useEffect(() => {
-    scrollToBottom('instant');
-    
-    const observer = new ResizeObserver(() => {
-      if (isAtBottom) {
-        scrollToBottom('instant');
-      }
-    });
-
-    if (scrollAreaRef.current) {
-      observer.observe(scrollAreaRef.current);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+  };
 
   if (!receiver || !profile) return null;
 
   return (
-    <div className="flex flex-col h-[100dvh]">
-      <div className="flex-none">
+    <div className="flex flex-col h-screen max-h-screen bg-background">
+      <div className="flex-none border-b">
         <ChatHeader
           title={receiver.full_name}
           subtitle={receiver.online_status ? "En ligne" : "Hors ligne"}
@@ -102,13 +78,9 @@ export function ConversationView({
       </div>
 
       <div 
-        ref={scrollAreaRef}
+        ref={containerRef}
         onScroll={handleScroll}
-        onTouchStart={() => setIsScrolling(true)}
-        onTouchEnd={() => setIsScrolling(false)}
-        onMouseDown={() => setIsScrolling(true)}
-        onMouseUp={() => setIsScrolling(false)}
-        className="flex-1 overflow-y-auto"
+        className="flex-1 overflow-y-auto scroll-smooth"
       >
         <div className="flex flex-col justify-end min-h-full">
           <div className="max-w-3xl mx-auto w-full px-4 py-4 space-y-4">
@@ -164,7 +136,7 @@ export function ConversationView({
         </div>
       </div>
 
-      <div className="flex-none border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex-none border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky bottom-0">
         <div className="p-4 max-w-3xl mx-auto">
           <ChatInput
             value={inputMessage}

@@ -28,15 +28,7 @@ export function useUserChat(): UserChat {
   usePresenceTracking(profile);
 
   const handleSendMessage = useCallback(async (message: string, receiver: Receiver) => {
-    if (!message.trim()) {
-      toast.error("Le message ne peut pas être vide");
-      return;
-    }
-    
-    if (!profile) {
-      toast.error("Vous devez être connecté pour envoyer des messages");
-      return;
-    }
+    if (!message.trim() || !profile) return;
     
     setIsLoading(true);
     try {
@@ -47,7 +39,6 @@ export function useUserChat(): UserChat {
       }
     } catch (error) {
       console.error('Erreur envoi message:', error);
-      toast.error("Erreur lors de l'envoi du message");
     } finally {
       setIsLoading(false);
     }
@@ -63,12 +54,9 @@ export function useUserChat(): UserChat {
         .or(`and(sender_id.eq.${profile.id},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${profile.id})`);
 
       if (error) throw error;
-
       setMessages([]);
-      toast.success("Conversation effacée");
     } catch (error) {
       console.error('Erreur effacement conversation:', error);
-      toast.error("Erreur lors de l'effacement");
     }
   }, [profile, setMessages]);
 
