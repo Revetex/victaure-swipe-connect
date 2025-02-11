@@ -6,6 +6,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { memo } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Dialog, DialogContent } from "./ui/dialog";
+import { useAuth } from "@/hooks/useAuth";
+import { ProfilePreviewModal } from "./profile/preview/ProfilePreviewModal";
+import { ProfilePreviewButtons } from "./profile/preview/ProfilePreviewButtons";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
@@ -24,26 +27,29 @@ export function ProfilePreview({
 }: ProfilePreviewProps) {
   const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width: 768px)");
-
-  const handleRequestChat = () => {
-    if (onRequestChat) {
-      onRequestChat();
-    } else {
-      navigate(`/dashboard/messages?receiver=${profile.id}`);
-    }
-    onClose();
-  };
+  const { user } = useAuth();
+  const isOwnProfile = user?.id === profile.id;
+  const canViewFullProfile = isOwnProfile || !profile.privacy_enabled;
 
   if (isMobile) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-md w-full p-0">
-          <MemoizedProfilePreviewDialog
-            profile={profile}
-            isOpen={isOpen}
-            onClose={onClose}
-            onRequestChat={handleRequestChat}
-          />
+          <div className="flex flex-col h-full">
+            <MemoizedProfilePreviewDialog
+              profile={profile}
+              isOpen={isOpen}
+              onClose={onClose}
+              onRequestChat={onRequestChat}
+              canViewFullProfile={canViewFullProfile}
+            />
+            <ProfilePreviewButtons
+              profile={profile}
+              onRequestChat={onRequestChat}
+              onClose={onClose}
+              canViewFullProfile={canViewFullProfile}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     );
@@ -52,39 +58,13 @@ export function ProfilePreview({
   return (
     <AnimatePresence mode="wait">
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ 
-            type: "spring",
-            stiffness: 300,
-            damping: 30 
-          }}
-          className="fixed inset-0 z-50 flex items-center justify-center"
-        >
-          <motion.div
-            initial={{ backdropFilter: "blur(0px)" }}
-            animate={{ backdropFilter: "blur(4px)" }}
-            exit={{ backdropFilter: "blur(0px)" }}
-            className="absolute inset-0 bg-background/80"
-            onClick={onClose}
-          />
-          
-          <motion.div 
-            className="relative z-10 w-full max-w-lg mx-4"
-            initial={{ y: 50 }}
-            animate={{ y: 0 }}
-            exit={{ y: 50 }}
-          >
-            <MemoizedProfilePreviewDialog
-              profile={profile}
-              isOpen={isOpen}
-              onClose={onClose}
-              onRequestChat={handleRequestChat}
-            />
-          </motion.div>
-        </motion.div>
+        <ProfilePreviewModal
+          profile={profile}
+          isOpen={isOpen}
+          onClose={onClose}
+          onRequestChat={onRequestChat}
+          canViewFullProfile={canViewFullProfile}
+        />
       )}
     </AnimatePresence>
   );

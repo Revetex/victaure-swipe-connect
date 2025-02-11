@@ -40,7 +40,7 @@ export function useChat() {
       read: false,
       sender,
       timestamp: new Date().toISOString(),
-      message_type: sender.id === 'assistant' ? 'ai' : 'user',
+      message_type: sender.id === 'assistant' ? 'assistant' : 'user',
       status: 'sent',
       thinking: false,
       metadata: {}

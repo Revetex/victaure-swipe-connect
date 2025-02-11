@@ -1,20 +1,25 @@
 
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { useUserChat } from "@/hooks/useUserChat";
 import { MessagesContainer } from "./messages/MessagesContainer";
-import { motion } from "framer-motion";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60, // 1 minute
+      gcTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: true,
+      retry: 1
+    },
+  },
+});
 
 export function Messages() {
   return (
     <QueryClientProvider client={queryClient}>
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="fixed inset-0 w-full h-full bg-background"
-      >
+      <div className="fixed inset-0 w-full h-full bg-background">
         <MessagesContainer />
-      </motion.div>
+      </div>
     </QueryClientProvider>
   );
 }

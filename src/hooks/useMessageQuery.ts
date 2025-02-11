@@ -39,12 +39,10 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
 
       if (receiver) {
         if (receiver.id === 'assistant') {
-          // For AI messages, we only need to check is_assistant flag and receiver_id
           query = query
             .eq('receiver_id', user.id)
             .eq('is_assistant', true);
         } else {
-          // For regular user messages
           query = query
             .eq('is_assistant', false)
             .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
@@ -64,7 +62,7 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
         ...msg,
         timestamp: msg.created_at,
         status: msg.message_deliveries[0]?.status || msg.status || 'sent',
-        message_type: msg.is_assistant ? 'ai' : 'user',
+        message_type: msg.is_assistant ? 'assistant' : 'user',
         metadata: msg.metadata || {}
       })) as Message[] || [];
     },

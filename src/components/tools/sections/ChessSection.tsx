@@ -9,7 +9,7 @@ export function ChessSection() {
 
   return (
     <div className={cn(
-      "fixed inset-0 w-full h-full bg-background",
+      "fixed inset-0 w-full h-full bg-background pt-16",
       "sm:relative sm:h-[calc(100vh-8rem)]",
       "flex flex-col",
       isMobile && "z-50" // Ensure it's above other content on mobile
@@ -22,4 +22,3 @@ export function ChessSection() {
     </div>
   );
 }
-

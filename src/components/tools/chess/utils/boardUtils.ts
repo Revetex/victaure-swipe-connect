@@ -2,7 +2,7 @@
 import { ChessPiece } from "@/types/chess";
 
 export function initializeBoard(): (ChessPiece | null)[][] {
-  const board = Array(8).fill(null).map(() => Array(8).fill(null));
+  const board: (ChessPiece | null)[][] = Array(8).fill(null).map(() => Array(8).fill(null));
   
   // Initialize pawns
   for (let i = 0; i < 8; i++) {
@@ -11,10 +11,12 @@ export function initializeBoard(): (ChessPiece | null)[][] {
   }
 
   // Initialize other pieces
-  const backRow = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'];
+  const backRowPieces: ('rook' | 'knight' | 'bishop' | 'queen' | 'king' | 'bishop' | 'knight' | 'rook')[] = 
+    ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'];
+
   for (let i = 0; i < 8; i++) {
-    board[0][i] = { type: backRow[i] as ChessPiece['type'], isWhite: false };
-    board[7][i] = { type: backRow[i] as ChessPiece['type'], isWhite: true };
+    board[0][i] = { type: backRowPieces[i], isWhite: false };
+    board[7][i] = { type: backRowPieces[i], isWhite: true };
   }
 
   return board;
@@ -22,10 +24,6 @@ export function initializeBoard(): (ChessPiece | null)[][] {
 
 export function getSquareName(row: number, col: number): string {
   const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-  return `${files[col]}${8 - row}`;
+  const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
+  return files[col] + ranks[row];
 }
-
-export function isValidPosition(row: number, col: number): boolean {
-  return row >= 0 && row < 8 && col >= 0 && col < 8;
-}
-

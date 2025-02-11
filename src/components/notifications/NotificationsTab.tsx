@@ -33,7 +33,7 @@ export function NotificationsTab() {
       }}
       initial="hidden"
       animate="visible"
-      className="p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      className="min-h-screen p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pt-20"
     >
       <NotificationsHeader 
         unreadCount={unreadCount}
@@ -49,3 +49,4 @@ export function NotificationsTab() {
     </motion.div>
   );
 }
+

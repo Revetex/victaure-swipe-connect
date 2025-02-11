@@ -5,7 +5,7 @@ import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/Marketplace";
 import { Feed } from "@/components/feed/Feed";
 import { Settings } from "@/components/Settings";
-import { NotesMap } from "@/components/notes/NotesMap";
+import { NotesSection } from "@/components/notes/NotesSection";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
@@ -14,8 +14,8 @@ import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
 import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
-import { FriendRequestsPage } from "@/components/friends/FriendRequestsPage";
-import { ProfileSearchPage } from "@/components/friends/ProfileSearchPage";
+import { FriendsList } from "@/components/feed/FriendsList";
+import { cn } from "@/lib/utils";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -54,7 +54,7 @@ export function DashboardContent({
     }
   };
 
-  const renderContent = () => {
+  const getPageContent = () => {
     switch (currentPage) {
       case 1:
         return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
@@ -64,8 +64,6 @@ export function DashboardContent({
         return <Marketplace />;
       case 4:
         return <Feed />;
-      case 5:
-        return <NotesMap />;
       case 7:
         return <TasksPage />;
       case 8:
@@ -74,14 +72,14 @@ export function DashboardContent({
         return <NotificationsTab />;
       case 10:
         return <Settings />;
-      case 11:
-        return <ChessPage />;
       case 12:
-        return <FriendRequestsPage />;
-      case 13:
-        return <ProfileSearchPage />;
+        return <FriendsList />;
       case 14:
         return <TranslatorPage />;
+      case 15:
+        return <ChessPage />;
+      case 16:
+        return <NotesSection />;
       default:
         return null;
     }
@@ -93,9 +91,10 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="container mx-auto px-4 py-6"
+      className="relative bg-background"
     >
-      {renderContent()}
+      {getPageContent()}
     </motion.div>
   );
 }
+

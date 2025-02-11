@@ -9,10 +9,9 @@ export function TranslatorSection() {
 
   return (
     <div className={cn(
-      "flex flex-col h-full",
+      "flex flex-col h-full pt-16",
       "max-h-[calc(100vh-8rem)]",
-      "sm:max-h-[calc(100vh-12rem)]",
-      isMobile && "pb-16" // Add bottom padding on mobile to prevent navigation overlap
+      "sm:max-h-[calc(100vh-12rem)]"
     )}>
       <ScrollArea className="flex-1 px-4">
         <div className={cn(

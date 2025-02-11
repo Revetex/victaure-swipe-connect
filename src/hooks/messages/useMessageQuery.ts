@@ -24,6 +24,13 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
             online_status,
             last_seen
           ),
+          receiver:profiles!messages_receiver_id_fkey(
+            id,
+            full_name,
+            avatar_url,
+            online_status,
+            last_seen
+          ),
           message_deliveries!inner(
             status,
             delivered_at,
@@ -45,8 +52,7 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
         } else {
           query = query
             .eq('is_assistant', false)
-            .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-            .eq(user.id === receiver.id ? 'sender_id' : 'receiver_id', receiver.id);
+            .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
         }
       }
 
@@ -61,11 +67,27 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
       return messages?.map(msg => ({
         ...msg,
         timestamp: msg.created_at,
-        status: msg.message_deliveries[0]?.status || msg.status || 'sent',
-        message_type: msg.is_assistant ? 'ai' : 'user',
-        metadata: msg.metadata || {}
+        status: msg.message_deliveries?.[0]?.status || msg.status || 'sent',
+        message_type: msg.is_assistant ? 'assistant' : 'user',
+        metadata: msg.metadata || {},
+        sender: msg.sender || {
+          id: msg.sender_id,
+          full_name: 'Unknown User',
+          avatar_url: '',
+          online_status: false,
+          last_seen: new Date().toISOString()
+        },
+        receiver: msg.receiver || {
+          id: msg.receiver_id,
+          full_name: 'Unknown User',
+          avatar_url: '',
+          online_status: false,
+          last_seen: new Date().toISOString()
+        }
       })) as Message[] || [];
     },
-    enabled: true
+    enabled: true,
+    staleTime: 1000 * 60, // 1 minute
+    gcTime: 1000 * 60 * 5 // 5 minutes
   });
 }

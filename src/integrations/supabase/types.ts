@@ -405,6 +405,24 @@ export type Database = {
         }
         Relationships: []
       }
+      deleted_ai_conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       deleted_conversations: {
         Row: {
           conversation_partner_id: string
@@ -1164,7 +1182,10 @@ export type Database = {
           color: string
           created_at: string | null
           id: string
+          layout_type: string | null
+          metadata: Json | null
           pinned: boolean | null
+          position: Json | null
           priority: string | null
           text: string
           title: string | null
@@ -1176,7 +1197,10 @@ export type Database = {
           color?: string
           created_at?: string | null
           id?: string
+          layout_type?: string | null
+          metadata?: Json | null
           pinned?: boolean | null
+          position?: Json | null
           priority?: string | null
           text: string
           title?: string | null
@@ -1188,7 +1212,10 @@ export type Database = {
           color?: string
           created_at?: string | null
           id?: string
+          layout_type?: string | null
+          metadata?: Json | null
           pinned?: boolean | null
+          position?: Json | null
           priority?: string | null
           text?: string
           title?: string | null
@@ -1289,6 +1316,50 @@ export type Database = {
           {
             foreignKeyName: "obsolete_features_profile_id_fkey"
             columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_methods: {
+        Row: {
+          card_brand: string | null
+          card_last_four: string | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          payment_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          card_brand?: string | null
+          card_last_four?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          payment_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          card_brand?: string | null
+          card_last_four?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          payment_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_methods_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -1764,6 +1835,42 @@ export type Database = {
           },
         ]
       }
+      tasks: {
+        Row: {
+          all_day: boolean | null
+          completed: boolean | null
+          created_at: string | null
+          due_date: string | null
+          due_time: string | null
+          id: string
+          text: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          all_day?: boolean | null
+          completed?: boolean | null
+          created_at?: string | null
+          due_date?: string | null
+          due_time?: string | null
+          id?: string
+          text: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          all_day?: boolean | null
+          completed?: boolean | null
+          created_at?: string | null
+          due_date?: string | null
+          due_time?: string | null
+          id?: string
+          text?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       todos: {
         Row: {
           all_day: boolean | null
@@ -2029,6 +2136,12 @@ export type Database = {
         }
         Returns: number
       }
+      delete_ai_conversation: {
+        Args: {
+          p_user_id: string
+        }
+        Returns: undefined
+      }
       earth: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -2108,6 +2221,7 @@ export type Database = {
         | "other"
       job_source: "linkedin" | "indeed" | "direct"
       message_delivery_status: "pending" | "delivered" | "read"
+      message_sender_type: "user" | "assistant" | "system"
       mission_type: "company" | "individual"
     }
     CompositeTypes: {

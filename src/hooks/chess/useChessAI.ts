@@ -1,9 +1,8 @@
 
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { getSquareName } from "./chessUtils";
 import { ChessPiece } from "@/types/chess";
+import { toast } from "sonner";
 
 export function useChessAI() {
   const [isThinking, setIsThinking] = useState(false);
@@ -15,27 +14,41 @@ export function useChessAI() {
     onGameOver: () => void
   ) => {
     setIsThinking(true);
+    
     try {
+      console.log("Requesting AI move with difficulty:", difficulty);
+      console.log("Current board state:", board);
+      
       const { data, error } = await supabase.functions.invoke('chess-ai-move', {
         body: { 
-          board: board,
-          difficulty: difficulty
+          board,
+          difficulty
         }
       });
 
-      if (error) throw error;
+      console.log("AI response:", data);
 
-      if (data.move) {
-        const { from, to } = data.move;
-        onMove(from, to);
+      if (error) {
+        console.error('AI move error:', error);
+        toast.error("Erreur lors du calcul du coup de l'IA");
+        throw error;
       }
 
-      if (data.gameOver) {
+      if (data?.gameOver) {
         onGameOver();
+        return;
+      }
+
+      if (data?.move) {
+        onMove(data.move.from, data.move.to);
+      } else {
+        console.error('Invalid AI response:', data);
+        toast.error("Réponse invalide de l'IA");
       }
     } catch (error) {
       console.error('AI move error:', error);
       toast.error("Erreur lors du coup de l'IA");
+      throw error;
     } finally {
       setIsThinking(false);
     }

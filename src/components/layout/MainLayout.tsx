@@ -33,52 +33,55 @@ export function MainLayout({
   const isFriendsPage = location.pathname.includes('/friends');
 
   return (
-    <div className="min-h-screen flex bg-background">
-      {/* Sidebar Navigation */}
+    <div className="flex min-h-screen bg-background">
+      {/* Navigation desktop */}
       {!isMobile && (
-        <aside className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur z-50">
+        <nav className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <Navigation />
-        </aside>
+        </nav>
       )}
 
-      {/* Main Content Area */}
+      {/* Main content */}
       <main className={cn(
-        "flex-1 min-h-screen flex flex-col",
-        !isMobile && "md:pl-[280px] lg:pl-[320px]"
+        "flex-1 relative",
+        !isMobile && "ml-[280px] lg:ml-[320px]"
       )}>
-        {/* Header */}
-        <header className="h-16 border-b bg-background/95 backdrop-blur sticky top-0 z-40">
-          <div className="container h-full mx-auto px-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {isMobile && (
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <Menu className="h-5 w-5" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="left" className="p-0 w-[280px]">
-                    <Navigation />
-                  </SheetContent>
-                </Sheet>
-              )}
-              <DashboardHeader 
-                title={title}
-                showFriendsList={showFriendsList}
-                onToggleFriendsList={onToggleFriendsList}
-                isEditing={isEditing}
-                onToolReturn={onToolReturn}
-              />
-            </div>
+        {/* Fixed Header */}
+        <header className="fixed top-0 right-0 z-50 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+          <div className={cn(
+            "flex items-center gap-4 h-full px-4",
+            !isMobile && "ml-[280px] lg:ml-[320px]"
+          )}>
+            {isMobile && (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-[280px]">
+                  <Navigation />
+                </SheetContent>
+              </Sheet>
+            )}
+            <DashboardHeader 
+              title={title}
+              showFriendsList={showFriendsList}
+              onToggleFriendsList={onToggleFriendsList}
+              isEditing={isEditing}
+              onToolReturn={onToolReturn}
+            />
           </div>
         </header>
 
-        {/* Main Content */}
-        <div className="flex-1">
-          {children}
+        {/* Content area with correct spacing */}
+        <div className="pt-16">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </div>
 
-        {/* Friends List Overlay */}
+        {/* Friends list overlay - adjusted z-index */}
         <AnimatePresence mode="wait">
           {showFriendsList && (
             <DashboardFriendsList 
@@ -88,19 +91,16 @@ export function MainLayout({
           )}
         </AnimatePresence>
 
-        {/* Bottom Navigation */}
-        {!isFriendsPage && (
+        {/* Mobile navigation */}
+        {!isFriendsPage && isMobile && (
           <nav 
-            className={cn(
-              "h-16 border-t bg-background/95 backdrop-blur sticky bottom-0 z-40",
-              !isMobile && "md:ml-[280px] lg:ml-[320px]"
-            )}
+            className="h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed bottom-0 left-0 right-0 z-50"
             style={{ 
               paddingBottom: 'env(safe-area-inset-bottom)'
             }}
           >
-            <div className="container mx-auto px-4 h-full">
-              {/* Navigation content */}
+            <div className="h-full px-4">
+              {/* Mobile navigation content */}
             </div>
           </nav>
         )}
@@ -108,3 +108,4 @@ export function MainLayout({
     </div>
   );
 }
+

@@ -8,14 +8,20 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface FriendItemProps {
   friend: FriendPreview;
-  onMessage: (friendId: string) => void;
 }
 
-export function FriendItem({ friend, onMessage }: FriendItemProps) {
+export function FriendItem({ friend }: FriendItemProps) {
   const [showProfile, setShowProfile] = useState(false);
+  const navigate = useNavigate();
+
+  const handleMessageClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/dashboard/messages?receiver=${friend.id}`);
+  };
 
   const handleRemoveFriend = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -26,8 +32,8 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
       const { error } = await supabase
         .from('friend_requests')
         .delete()
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .or(`sender_id.eq.${friend.id},receiver_id.eq.${friend.id}`);
+        .or('sender_id.eq.' + user.id + ',receiver_id.eq.' + friend.id + ',' +
+            'sender_id.eq.' + friend.id + ',receiver_id.eq.' + user.id);
 
       if (error) throw error;
       toast.success(`${friend.full_name} a été retiré de vos connections`);
@@ -43,12 +49,14 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // First delete any existing friend requests
       await supabase
         .from('friend_requests')
         .delete()
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .or(`sender_id.eq.${friend.id},receiver_id.eq.${friend.id}`);
+        .or('sender_id.eq.' + user.id + ',receiver_id.eq.' + friend.id + ',' +
+            'sender_id.eq.' + friend.id + ',receiver_id.eq.' + user.id);
 
+      // Then block the user
       const { error } = await supabase
         .from('blocked_users')
         .insert({
@@ -97,10 +105,7 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            onClick={(e) => {
-              e.stopPropagation();
-              onMessage(friend.id);
-            }}
+            onClick={handleMessageClick}
           >
             <MessageCircle className="h-4 w-4" />
           </Button>

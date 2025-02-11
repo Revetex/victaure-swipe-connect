@@ -118,7 +118,7 @@ export function Connections() {
   };
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="min-h-screen p-4 space-y-6 pt-20">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-2xl font-bold bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
           Outils

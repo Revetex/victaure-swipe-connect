@@ -14,7 +14,7 @@ export function useSendMessage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      const messageType = receiver.id === 'assistant' ? 'ai' as const : 'user' as const;
+      const messageType = receiver.id === 'assistant' ? 'assistant' as const : 'user' as const;
       const now = new Date().toISOString();
 
       const newMessage: Omit<Message, 'id' | 'sender'> = {

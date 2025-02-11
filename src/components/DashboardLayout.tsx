@@ -45,10 +45,10 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       />
 
       <main className={cn(
-        "flex-1 lg:ml-64 min-h-screen relative",
+        "flex-1 lg:ml-64 min-h-screen relative pt-16",
         "glass-panel"
       )}>
-        <div className="h-full flex flex-col pt-14 lg:pt-2">
+        <div className="h-full flex flex-col">
           {children || (
             <DashboardContent
               currentPage={currentPage}
@@ -62,3 +62,4 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
     </div>
   );
 }
+

@@ -33,25 +33,6 @@ export function NotesInput({
     }
   };
 
-  const getColorStyle = (color: string) => {
-    switch (color) {
-      case "yellow":
-        return "bg-[#FEF7CD]";
-      case "blue":
-        return "bg-[#D3E4FD]";
-      case "green":
-        return "bg-[#F2FCE2]";
-      case "pink":
-        return "bg-[#FFDEE2]";
-      case "purple":
-        return "bg-[#E5DEFF]";
-      case "orange":
-        return "bg-[#FEC6A1]";
-      default:
-        return "bg-[#FEF7CD]";
-    }
-  };
-
   return (
     <div className={cn(
       "flex gap-2 w-full",
@@ -77,7 +58,12 @@ export function NotesInput({
         <Select onValueChange={onColorChange} value={selectedColor}>
           <SelectTrigger className={cn(
             isMobile ? "w-[120px]" : "w-[100px]",
-            getColorStyle(selectedColor),
+            selectedColor === "yellow" && "bg-[#FEF7CD]",
+            selectedColor === "blue" && "bg-[#D3E4FD]",
+            selectedColor === "green" && "bg-[#F2FCE2]",
+            selectedColor === "pink" && "bg-[#FFDEE2]",
+            selectedColor === "purple" && "bg-[#E5DEFF]",
+            selectedColor === "orange" && "bg-[#FEC6A1]",
             "border border-border/10"
           )}>
             <SelectValue />
@@ -95,7 +81,12 @@ export function NotesInput({
               >
                 <div className={cn(
                   "w-4 h-4 rounded-full",
-                  getColorStyle(color.value)
+                  color.value === "yellow" && "bg-[#FEF7CD]",
+                  color.value === "blue" && "bg-[#D3E4FD]",
+                  color.value === "green" && "bg-[#F2FCE2]",
+                  color.value === "pink" && "bg-[#FFDEE2]",
+                  color.value === "purple" && "bg-[#E5DEFF]",
+                  color.value === "orange" && "bg-[#FEC6A1]",
                 )} />
                 {color.label}
               </SelectItem>

@@ -7,6 +7,7 @@ import { PrivacySection } from "./settings/PrivacySection";
 import { SecuritySection } from "./settings/SecuritySection";
 import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
+import { PaymentSection } from "./settings/PaymentSection";
 import { ScrollArea } from "./ui/scroll-area";
 
 const sectionVariants = {
@@ -33,6 +34,7 @@ const settingsSections = [
   { id: 'notifications', Component: NotificationsSection },
   { id: 'privacy', Component: PrivacySection },
   { id: 'security', Component: SecuritySection },
+  { id: 'payments', Component: PaymentSection },
   { id: 'blocked', Component: BlockedUsersSection },
   { id: 'logout', Component: LogoutSection }
 ];
@@ -49,7 +51,7 @@ export function Settings() {
   }
 
   return (
-    <ScrollArea className="flex-1">
+    <ScrollArea className="h-[calc(100vh-3.5rem)]">
       <motion.div
         initial="initial"
         animate="animate"

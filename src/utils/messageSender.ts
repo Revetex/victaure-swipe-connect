@@ -12,7 +12,7 @@ export const sendMessage = async (
     content: message,
     sender_id: profile.id,
     receiver_id: receiver.id,
-    message_type: receiver.id === 'assistant' ? 'ai' : 'user',
+    message_type: receiver.id === 'assistant' ? 'assistant' : 'user',
     is_assistant: receiver.id === 'assistant',
     status: 'sent',
     metadata: {
@@ -52,7 +52,7 @@ export const sendMessage = async (
       ...messageData,
       timestamp: messageData.created_at,
       status: 'sent',
-      message_type: messageData.is_assistant ? 'ai' : 'user',
+      message_type: messageData.is_assistant ? 'assistant' : 'user',
       metadata: typeof messageData.metadata === 'object' ? messageData.metadata : {} as Record<string, any>,
       sender: messageData.sender || {
         id: profile.id,

@@ -4,21 +4,24 @@ import { Trash2 } from "lucide-react";
 import { StickyNote as StickyNoteType } from "@/types/todo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface StickyNoteProps {
   note: StickyNoteType;
   colorClass: string;
   onDelete: (id: string) => void;
+  layout?: 'grid' | 'masonry' | 'list';
 }
 
-export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
+export function StickyNote({ note, colorClass, onDelete, layout = 'grid' }: StickyNoteProps) {
   return (
     <motion.div
       layout
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.8 }}
-      whileHover={{ scale: 1.02, rotate: 1 }}
+      whileHover={{ scale: layout === 'list' ? 1.01 : 1.02, rotate: layout === 'list' ? 0 : 1 }}
       whileTap={{ scale: 0.98 }}
       transition={{
         type: "spring",
@@ -26,7 +29,7 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
         damping: 20
       }}
       className={cn(
-        "sticky-note group h-full",
+        "sticky-note group",
         colorClass,
         "touch-manipulation relative overflow-hidden",
         "before:content-[''] before:absolute before:inset-0",
@@ -34,7 +37,8 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
         "after:content-[''] after:absolute after:bottom-0 after:right-0",
         "after:w-8 after:h-8 after:bg-gradient-to-br",
         "after:from-black/0 after:to-black/5 after:rounded-tl-2xl",
-        "shadow-lg hover:shadow-xl transition-shadow"
+        "shadow-lg hover:shadow-xl transition-shadow",
+        layout === 'list' && "flex items-start gap-4"
       )}
     >
       <Button
@@ -51,10 +55,21 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
         <span className="sr-only">Supprimer</span>
       </Button>
 
-      <div className="pt-2 pb-8 px-4">
+      <div className={cn(
+        "pt-2 pb-8 px-4",
+        layout === 'list' && "flex-1 py-4"
+      )}>
         <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
           {note.text}
         </p>
+        
+        <div className="mt-4 text-xs text-muted-foreground/70">
+          {note.created_at && (
+            <time dateTime={note.created_at}>
+              {format(new Date(note.created_at), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
+            </time>
+          )}
+        </div>
       </div>
     </motion.div>
   );

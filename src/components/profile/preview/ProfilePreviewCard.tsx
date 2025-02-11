@@ -3,20 +3,29 @@ import { UserProfile } from "@/types/profile";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Phone, Mail, Globe } from "lucide-react";
+import { MessageCircle, Lock } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 interface ProfilePreviewCardProps {
   profile: UserProfile;
   onRequestChat?: () => void;
   onClose: () => void;
+  canViewFullProfile?: boolean;
 }
 
 export function ProfilePreviewCard({
   profile,
-  onRequestChat,
   onClose,
+  canViewFullProfile = false
 }: ProfilePreviewCardProps) {
+  const navigate = useNavigate();
+
+  const handleRequestChat = () => {
+    navigate(`/dashboard/messages?receiver=${profile.id}`);
+    onClose();
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
@@ -41,56 +50,29 @@ export function ProfilePreviewCard({
             </p>
           </div>
 
-          {profile.company_name && (
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-              {profile.company_name}
-            </p>
-          )}
+          {canViewFullProfile ? (
+            <>
+              {profile.company_name && (
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                  {profile.company_name}
+                </p>
+              )}
 
-          <div className="w-full pt-4 grid grid-cols-2 gap-3">
-            {profile.email && (
-              <Button 
-                variant="outline" 
-                className="w-full flex items-center gap-2 bg-transparent"
-                onClick={() => window.location.href = `mailto:${profile.email}`}
-              >
-                <Mail className="w-4 h-4" />
-                Email
-              </Button>
-            )}
-            
-            {profile.phone && (
               <Button
                 variant="outline"
-                className="w-full flex items-center gap-2 bg-transparent"
-                onClick={() => window.location.href = `tel:${profile.phone}`}
+                className="w-full flex items-center gap-2"
+                onClick={handleRequestChat}
               >
-                <Phone className="w-4 h-4" />
-                Téléphone
-              </Button>
-            )}
-
-            {profile.website && (
-              <Button
-                variant="outline"
-                className="w-full flex items-center gap-2 bg-transparent"
-                onClick={() => window.open(profile.website, '_blank')}
-              >
-                <Globe className="w-4 h-4" />
-                Site Web
-              </Button>
-            )}
-
-            {onRequestChat && (
-              <Button
-                className="w-full flex items-center gap-2 bg-primary hover:bg-primary/90"
-                onClick={onRequestChat}
-              >
-                <MessageCircle className="w-4 h-4" />
+                <MessageCircle className="h-4 w-4" />
                 Message
               </Button>
-            )}
-          </div>
+            </>
+          ) : (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Lock className="h-4 w-4" />
+              <span className="text-sm">Profil privé</span>
+            </div>
+          )}
         </div>
       </Card>
     </motion.div>
