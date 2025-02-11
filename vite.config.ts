@@ -45,7 +45,8 @@ export default defineConfig(({ mode }) => ({
         'Access-Control-Allow-Origin',
         'Access-Control-Allow-Credentials',
         'Access-Control-Allow-Methods',
-        'Access-Control-Allow-Headers'
+        'Access-Control-Allow-Headers',
+        'X-Supabase-Auth'
       ],
       exposedHeaders: ['Content-Range', 'Range'],
       credentials: true,
