@@ -923,6 +923,147 @@ export type Database = {
           },
         ]
       }
+      marketplace_categories: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      marketplace_items: {
+        Row: {
+          category_id: string | null
+          condition: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          images: string[] | null
+          price: number
+          seller_id: string
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category_id?: string | null
+          condition?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          price: number
+          seller_id: string
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category_id?: string | null
+          condition?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          price?: number
+          seller_id?: string
+          status?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_items_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_services: {
+        Row: {
+          auction_end_date: string | null
+          category_id: string | null
+          created_at: string | null
+          current_price: number | null
+          description: string | null
+          id: string
+          images: string[] | null
+          price: number | null
+          provider_id: string
+          status: string
+          title: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          auction_end_date?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          current_price?: number | null
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          price?: number | null
+          provider_id: string
+          status?: string
+          title: string
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          auction_end_date?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          current_price?: number | null
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          price?: number | null
+          provider_id?: string
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_services_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       matches: {
         Row: {
           created_at: string | null
@@ -1796,6 +1937,48 @@ export type Database = {
           url?: string
         }
         Relationships: []
+      }
+      service_bids: {
+        Row: {
+          amount: number
+          bidder_id: string
+          created_at: string | null
+          id: string
+          service_id: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          bidder_id: string
+          created_at?: string | null
+          id?: string
+          service_id: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          bidder_id?: string
+          created_at?: string | null
+          id?: string
+          service_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_bids_bidder_id_fkey"
+            columns: ["bidder_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_bids_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_services"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       skills: {
         Row: {
