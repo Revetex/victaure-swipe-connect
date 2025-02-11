@@ -1,4 +1,3 @@
-
 import { ReactNode } from "react";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
@@ -73,8 +72,8 @@ export function MainLayout({
           </div>
         </header>
 
-        {/* Main Content */}
-        <div className="flex-1">
+        {/* Main Content with padding to avoid header overlap */}
+        <div className="flex-1 pt-16 md:pt-0">
           {children}
         </div>
 
