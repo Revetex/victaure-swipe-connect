@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Sword, Crown, Brain } from "lucide-react";
 import { ChessBoard } from "./chess/ChessBoard";
 import { ChessControls } from "./chess/ChessControls";
-import { useChessGame } from "./chess/useChessGame";
+import { useChessGame } from "@/hooks/chess/useChessGame";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 

@@ -74,11 +74,11 @@ export function calculatePossibleMoves(
         }
       }
 
-      for (const captureCol of [fromCol - 1, fromCol + 1]) {
-        if (isValidPosition(fromRow + direction, captureCol)) {
-          const target = board[fromRow + direction][captureCol];
+      for (const colOffset of [-1, 1]) {
+        if (isValidPosition(fromRow + direction, fromCol + colOffset)) {
+          const target = board[fromRow + direction][fromCol + colOffset];
           if (target && target.isWhite !== piece.isWhite) {
-            addMove(fromRow + direction, captureCol);
+            addMove(fromRow + direction, fromCol + colOffset);
           }
         }
       }
@@ -86,9 +86,21 @@ export function calculatePossibleMoves(
     }
 
     case 'rook': {
-      for (let i = 0; i < 8; i++) {
-        if (i !== fromCol && isPathClear(fromRow, fromCol, fromRow, i)) addMove(fromRow, i);
-        if (i !== fromRow && isPathClear(fromRow, fromCol, i, fromCol)) addMove(i, fromCol);
+      const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+      for (const [dRow, dCol] of directions) {
+        for (let i = 1; i < 8; i++) {
+          const newRow = fromRow + i * dRow;
+          const newCol = fromCol + i * dCol;
+          if (!isValidPosition(newRow, newCol)) break;
+          const target = board[newRow][newCol];
+          if (target) {
+            if (target.isWhite !== piece.isWhite) {
+              addMove(newRow, newCol);
+            }
+            break;
+          }
+          addMove(newRow, newCol);
+        }
       }
       break;
     }
@@ -105,41 +117,56 @@ export function calculatePossibleMoves(
     }
 
     case 'bishop': {
-      for (let i = 1; i < 8; i++) {
-        for (const [rowDir, colDir] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
-          const newRow = fromRow + i * rowDir;
-          const newCol = fromCol + i * colDir;
-          if (isValidPosition(newRow, newCol) && isPathClear(fromRow, fromCol, newRow, newCol)) {
-            addMove(newRow, newCol);
+      const directions = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
+      for (const [dRow, dCol] of directions) {
+        for (let i = 1; i < 8; i++) {
+          const newRow = fromRow + i * dRow;
+          const newCol = fromCol + i * dCol;
+          if (!isValidPosition(newRow, newCol)) break;
+          const target = board[newRow][newCol];
+          if (target) {
+            if (target.isWhite !== piece.isWhite) {
+              addMove(newRow, newCol);
+            }
+            break;
           }
+          addMove(newRow, newCol);
         }
       }
       break;
     }
 
     case 'queen': {
-      for (let i = 0; i < 8; i++) {
-        if (i !== fromCol && isPathClear(fromRow, fromCol, fromRow, i)) addMove(fromRow, i);
-        if (i !== fromRow && isPathClear(fromRow, fromCol, i, fromCol)) addMove(i, fromCol);
-      }
-      for (let i = 1; i < 8; i++) {
-        for (const [rowDir, colDir] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
-          const newRow = fromRow + i * rowDir;
-          const newCol = fromCol + i * colDir;
-          if (isValidPosition(newRow, newCol) && isPathClear(fromRow, fromCol, newRow, newCol)) {
-            addMove(newRow, newCol);
+      const directions = [
+        [0, 1], [1, 0], [0, -1], [-1, 0],
+        [1, 1], [1, -1], [-1, 1], [-1, -1]
+      ];
+      for (const [dRow, dCol] of directions) {
+        for (let i = 1; i < 8; i++) {
+          const newRow = fromRow + i * dRow;
+          const newCol = fromCol + i * dCol;
+          if (!isValidPosition(newRow, newCol)) break;
+          const target = board[newRow][newCol];
+          if (target) {
+            if (target.isWhite !== piece.isWhite) {
+              addMove(newRow, newCol);
+            }
+            break;
           }
+          addMove(newRow, newCol);
         }
       }
       break;
     }
 
     case 'king': {
-      for (let rowOffset = -1; rowOffset <= 1; rowOffset++) {
-        for (let colOffset = -1; colOffset <= 1; colOffset++) {
-          if (rowOffset === 0 && colOffset === 0) continue;
-          addMove(fromRow + rowOffset, fromCol + colOffset);
-        }
+      const directions = [
+        [-1, -1], [-1, 0], [-1, 1],
+        [0, -1], [0, 1],
+        [1, -1], [1, 0], [1, 1]
+      ];
+      for (const [dRow, dCol] of directions) {
+        addMove(fromRow + dRow, fromCol + dCol);
       }
       break;
     }

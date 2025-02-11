@@ -39,11 +39,11 @@ export function useChessBoard() {
     board,
     selectedPiece,
     possibleMoves,
-    setBoard,
     handlePieceSelect,
     makeMove,
     resetBoard,
+    setBoard,
     setPossibleMoves,
-    setSelectedPiece,
+    setSelectedPiece
   };
 }
