@@ -69,11 +69,12 @@ export function useChessGame() {
           board: newBoard,
           isWhiteTurn: false,
           moveHistory: [...moveHistory, move],
-          winner: null
+          winner: null,
+          difficulty // Ajout du paramètre manquant
         };
 
         try {
-          await createGame(gameState);
+          await createGame(gameState, difficulty); // Ajout du second argument requis
           
           // AI's turn
           await makeAIMove(
@@ -91,7 +92,8 @@ export function useChessGame() {
               setMoveHistory(prev => [...prev, aiMove]);
               setBoard(aiBoard);
               setIsWhiteTurn(true);
-            }
+            },
+            gameState // Ajout du quatrième argument requis
           );
         } catch (error) {
           console.error("Error during AI move:", error);
