@@ -702,13 +702,16 @@ export type Database = {
       jobs: {
         Row: {
           application_deadline: string | null
+          application_steps: Json | null
           benefits: string[] | null
           budget: number
           category: string
           certifications_required: string[] | null
+          company_culture: string[] | null
           company_description: string | null
           company_logo: string | null
           company_name: string | null
+          company_size: string | null
           company_website: string | null
           contract_type: string
           created_at: string | null
@@ -720,7 +723,9 @@ export type Database = {
           id: string
           images: string[] | null
           industry: string | null
+          interview_process: Json | null
           is_urgent: boolean | null
+          key_responsibilities: string[] | null
           language_requirements: string | null
           languages: string[] | null
           latitude: number | null
@@ -728,12 +733,15 @@ export type Database = {
           longitude: number | null
           mission_type: string
           payment_schedule: string | null
+          perks: string[] | null
           preferred_skills: string[] | null
           province: string | null
           qualifications: string[] | null
           remote_type: string | null
+          required_certifications: string[] | null
           required_skills: string[] | null
           responsibilities: string[] | null
+          salary_benefits: Json | null
           salary_currency: string | null
           salary_max: number | null
           salary_min: number | null
@@ -745,17 +753,21 @@ export type Database = {
           tools_and_technologies: string[] | null
           updated_at: string | null
           work_schedule: string[] | null
+          workplace_type: string | null
           years_of_experience: number | null
         }
         Insert: {
           application_deadline?: string | null
+          application_steps?: Json | null
           benefits?: string[] | null
           budget: number
           category?: string
           certifications_required?: string[] | null
+          company_culture?: string[] | null
           company_description?: string | null
           company_logo?: string | null
           company_name?: string | null
+          company_size?: string | null
           company_website?: string | null
           contract_type?: string
           created_at?: string | null
@@ -767,7 +779,9 @@ export type Database = {
           id?: string
           images?: string[] | null
           industry?: string | null
+          interview_process?: Json | null
           is_urgent?: boolean | null
+          key_responsibilities?: string[] | null
           language_requirements?: string | null
           languages?: string[] | null
           latitude?: number | null
@@ -775,12 +789,15 @@ export type Database = {
           longitude?: number | null
           mission_type?: string
           payment_schedule?: string | null
+          perks?: string[] | null
           preferred_skills?: string[] | null
           province?: string | null
           qualifications?: string[] | null
           remote_type?: string | null
+          required_certifications?: string[] | null
           required_skills?: string[] | null
           responsibilities?: string[] | null
+          salary_benefits?: Json | null
           salary_currency?: string | null
           salary_max?: number | null
           salary_min?: number | null
@@ -792,17 +809,21 @@ export type Database = {
           tools_and_technologies?: string[] | null
           updated_at?: string | null
           work_schedule?: string[] | null
+          workplace_type?: string | null
           years_of_experience?: number | null
         }
         Update: {
           application_deadline?: string | null
+          application_steps?: Json | null
           benefits?: string[] | null
           budget?: number
           category?: string
           certifications_required?: string[] | null
+          company_culture?: string[] | null
           company_description?: string | null
           company_logo?: string | null
           company_name?: string | null
+          company_size?: string | null
           company_website?: string | null
           contract_type?: string
           created_at?: string | null
@@ -814,7 +835,9 @@ export type Database = {
           id?: string
           images?: string[] | null
           industry?: string | null
+          interview_process?: Json | null
           is_urgent?: boolean | null
+          key_responsibilities?: string[] | null
           language_requirements?: string | null
           languages?: string[] | null
           latitude?: number | null
@@ -822,12 +845,15 @@ export type Database = {
           longitude?: number | null
           mission_type?: string
           payment_schedule?: string | null
+          perks?: string[] | null
           preferred_skills?: string[] | null
           province?: string | null
           qualifications?: string[] | null
           remote_type?: string | null
+          required_certifications?: string[] | null
           required_skills?: string[] | null
           responsibilities?: string[] | null
+          salary_benefits?: Json | null
           salary_currency?: string | null
           salary_max?: number | null
           salary_min?: number | null
@@ -839,6 +865,7 @@ export type Database = {
           tools_and_technologies?: string[] | null
           updated_at?: string | null
           work_schedule?: string[] | null
+          workplace_type?: string | null
           years_of_experience?: number | null
         }
         Relationships: [
