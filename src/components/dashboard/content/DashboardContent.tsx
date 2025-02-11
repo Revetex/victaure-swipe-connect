@@ -5,7 +5,7 @@ import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/Marketplace";
 import { Feed } from "@/components/feed/Feed";
 import { Settings } from "@/components/Settings";
-import { NotesMap } from "@/components/notes/NotesMap";
+import { NotesSection } from "@/components/notes/NotesSection";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
@@ -14,8 +14,8 @@ import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
 import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
-import { FriendRequestsPage } from "@/components/friends/FriendRequestsPage";
-import { ProfileSearchPage } from "@/components/friends/ProfileSearchPage";
+import { FriendsList } from "@/components/feed/FriendsList";
+import { cn } from "@/lib/utils";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -55,7 +55,12 @@ export function DashboardContent({
   };
 
   const getPageContent = () => {
-    const commonClasses = "min-h-screen pt-16 px-4";
+    const commonClasses = cn(
+      "min-h-[calc(100vh-4rem)]", // Full height minus header
+      "w-full max-w-7xl mx-auto", // Max width and center
+      "px-4 sm:px-6 lg:px-8", // Responsive padding
+      "pt-20 pb-8" // Top padding for header + bottom padding
+    );
 
     switch (currentPage) {
       case 1:
@@ -66,8 +71,6 @@ export function DashboardContent({
         return <div className={commonClasses}><Marketplace /></div>;
       case 4:
         return <div className={commonClasses}><Feed /></div>;
-      case 5:
-        return <div className={commonClasses}><NotesMap /></div>;
       case 7:
         return <div className={commonClasses}><TasksPage /></div>;
       case 8:
@@ -76,14 +79,14 @@ export function DashboardContent({
         return <div className={commonClasses}><NotificationsTab /></div>;
       case 10:
         return <div className={commonClasses}><Settings /></div>;
-      case 11:
-        return <div className={commonClasses}><ChessPage /></div>;
       case 12:
-        return <div className={commonClasses}><FriendRequestsPage /></div>;
-      case 13:
-        return <div className={commonClasses}><ProfileSearchPage /></div>;
+        return <div className={commonClasses}><FriendsList /></div>;
       case 14:
         return <div className={commonClasses}><TranslatorPage /></div>;
+      case 15:
+        return <div className={commonClasses}><ChessPage /></div>;
+      case 16:
+        return <div className={commonClasses}><NotesSection /></div>;
       default:
         return null;
     }
@@ -95,7 +98,7 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="container mx-auto"
+      className="relative min-h-screen bg-background"
     >
       {getPageContent()}
     </motion.div>
