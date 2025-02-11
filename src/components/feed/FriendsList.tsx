@@ -10,9 +10,9 @@ export function FriendsList() {
   return (
     <div className={cn(
       "container mx-auto max-w-4xl px-4",
-      isMobile ? "pt-4" : "pt-20"
+      isMobile ? "pt-2" : "pt-6"
     )}>
-      <Card className="p-6">
+      <Card>
         <FriendsContent />
       </Card>
     </div>

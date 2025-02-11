@@ -63,13 +63,15 @@ export function FriendsContent() {
 
   return (
     <motion.div 
-      className="space-y-6 p-4"
+      className="space-y-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <ToolsGrid tools={tools} onToolClick={handleToolClick} />
-      <ConnectionsSection />
+      <div className="p-4 space-y-4">
+        <ConnectionsSection />
+        <ToolsGrid tools={tools} onToolClick={handleToolClick} />
+      </div>
       <ToolDialog 
         activeTool={activeTool} 
         onOpenChange={() => setActiveTool(null)} 
@@ -77,4 +79,3 @@ export function FriendsContent() {
     </motion.div>
   );
 }
-
