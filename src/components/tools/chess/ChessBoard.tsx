@@ -41,63 +41,51 @@ export function ChessBoard({
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{
-        duration: 0.5,
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }}
-      className="w-full max-w-[min(90vh,800px)] mx-auto aspect-square"
-    >
-      <div className="grid grid-cols-8 h-full w-full gap-0 bg-yellow-500/20 p-1.5 rounded-xl overflow-hidden shadow-xl border border-white/10">
-        {board.map((row, rowIndex) => (
-          row.map((piece, colIndex) => {
-            const isSelected = selectedPiece?.row === rowIndex && selectedPiece?.col === colIndex;
-            const isPossibleMove = possibleMoves.some(move => move.row === rowIndex && move.col === colIndex);
-            const isLight = (rowIndex + colIndex) % 2 === 0;
-            
-            return (
-              <motion.button
-                key={`${rowIndex}-${colIndex}`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => onSquareClick(rowIndex, colIndex)}
-                disabled={(!isWhiteTurn && !piece?.isWhite) || isThinking || gameOver}
-                aria-label={`Square ${String.fromCharCode(97 + colIndex)}${8 - rowIndex}${piece ? ` with ${piece.type}` : ''}`}
-                className={cn(
-                  "aspect-square flex items-center justify-center relative",
-                  "transition-all duration-300 ease-out",
-                  isMobile ? "text-4xl sm:text-5xl" : "text-6xl sm:text-7xl",
-                  isLight ? 'bg-[#E8EDF9] hover:bg-[#DAE3F3]' : 'bg-[#B7C0D8] hover:bg-[#A1AECF]',
-                  isSelected && 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20 z-10 scale-105',
-                  isPossibleMove && 'after:absolute after:inset-3 after:rounded-full after:bg-yellow-400/30 after:animate-pulse',
-                  'disabled:cursor-not-allowed disabled:opacity-100'
-                )}
-              >
-                {piece && (
-                  <motion.span 
-                    initial={false}
-                    animate={{ 
-                      scale: isSelected ? 1.1 : 1,
-                      y: isSelected ? -2 : 0
-                    }}
-                    className={cn(
-                      "drop-shadow-lg transition-transform",
-                      piece.isWhite ? "text-white" : "text-[#2A2A2A]",
-                      "hover:drop-shadow-2xl"
-                    )}
-                  >
-                    {getPieceSymbol(piece)}
-                  </motion.span>
-                )}
-              </motion.button>
-            );
-          })
-        ))}
+    <div className="w-full max-w-3xl mx-auto">
+      <div 
+        className="aspect-square w-full bg-gradient-to-br from-slate-800 to-slate-900 p-2 rounded-xl shadow-2xl border border-slate-700"
+      >
+        <div className="grid grid-cols-8 gap-0 h-full w-full bg-slate-800 rounded-lg overflow-hidden">
+          {board.map((row, rowIndex) => (
+            row.map((piece, colIndex) => {
+              const isSelected = selectedPiece?.row === rowIndex && selectedPiece?.col === colIndex;
+              const isPossibleMove = possibleMoves.some(move => move.row === rowIndex && move.col === colIndex);
+              const isLight = (rowIndex + colIndex) % 2 === 0;
+              
+              return (
+                <button
+                  key={`${rowIndex}-${colIndex}`}
+                  onClick={() => onSquareClick(rowIndex, colIndex)}
+                  disabled={(!isWhiteTurn && !piece?.isWhite) || isThinking || gameOver}
+                  aria-label={`Square ${String.fromCharCode(97 + colIndex)}${8 - rowIndex}${piece ? ` with ${piece.type}` : ''}`}
+                  className={cn(
+                    "w-full h-full flex items-center justify-center relative",
+                    "transition-all duration-200",
+                    isMobile ? "text-3xl sm:text-4xl" : "text-5xl sm:text-6xl",
+                    isLight ? 'bg-slate-200' : 'bg-slate-400',
+                    isSelected && 'ring-2 ring-yellow-400 ring-inset z-10',
+                    isPossibleMove && 'after:absolute after:inset-2 after:rounded-full after:bg-yellow-400/30 after:animate-pulse',
+                    'hover:bg-opacity-90 active:bg-opacity-80',
+                    'disabled:cursor-not-allowed disabled:opacity-100'
+                  )}
+                >
+                  {piece && (
+                    <span 
+                      className={cn(
+                        "transform transition-transform",
+                        piece.isWhite ? "text-white drop-shadow-lg" : "text-slate-900",
+                        isSelected && "scale-110"
+                      )}
+                    >
+                      {getPieceSymbol(piece)}
+                    </span>
+                  )}
+                </button>
+              );
+            })
+          ))}
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
