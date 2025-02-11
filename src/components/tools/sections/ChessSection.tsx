@@ -9,15 +9,13 @@ export function ChessSection() {
 
   return (
     <div className={cn(
-      "fixed inset-0 w-full h-full bg-background pt-16",
-      "sm:relative sm:h-[calc(100vh-8rem)]",
+      "fixed inset-0 w-full h-full bg-background",
+      "sm:relative sm:h-[calc(100vh-4rem)]",
       "flex flex-col",
-      isMobile && "z-50" // Ensure it's above other content on mobile
+      isMobile && "z-50"
     )}>
       <ScrollArea className="flex-1 w-full">
-        <div className="container mx-auto p-4">
-          <ChessPage />
-        </div>
+        <ChessPage />
       </ScrollArea>
     </div>
   );
