@@ -25,7 +25,6 @@ export function TranslatorPage() {
 
   useEffect(() => {
     const handleKeyboardShortcuts = (e: KeyboardEvent) => {
-      // Check if Ctrl (or Cmd on Mac) is pressed
       const ctrlPressed = e.ctrlKey || e.metaKey;
       
       if (!ctrlPressed) return;
@@ -36,7 +35,6 @@ export function TranslatorPage() {
           handleTranslate();
           break;
         case 'c':
-          // Only trigger custom copy if there's translated text
           if (translatedText && document.activeElement?.tagName !== 'TEXTAREA') {
             e.preventDefault();
             copyToClipboard(translatedText);
@@ -54,7 +52,7 @@ export function TranslatorPage() {
   }, [handleTranslate, copyToClipboard, swapLanguages, translatedText]);
 
   return (
-    <div className="container mx-auto p-4 pt-16">
+    <div className="min-h-screen container mx-auto p-4 pt-20">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -117,4 +115,3 @@ export function TranslatorPage() {
     </div>
   );
 }
-
