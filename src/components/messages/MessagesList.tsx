@@ -1,6 +1,6 @@
 
 import { Message } from "@/types/messages";
-import { MessageItem } from "../MessageItem";
+import { MessageItem } from "./MessageItem"; // Updated import path
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useProfile } from "@/hooks/useProfile";
 import { Bot, RefreshCcw } from "lucide-react";
