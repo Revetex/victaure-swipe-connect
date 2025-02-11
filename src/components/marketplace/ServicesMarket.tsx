@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -12,6 +11,14 @@ import { Clock, Gavel, ImagePlus, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+type Service = Database["public"]["Tables"]["marketplace_services"]["Row"];
+type Category = Database["public"]["Tables"]["marketplace_categories"]["Row"];
+type ServiceWithDetails = Service & {
+  provider: { full_name: string; avatar_url: string | null };
+  bids: { count: number }[];
+};
 
 export function ServicesMarket() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -37,7 +44,7 @@ export function ServicesMarket() {
         throw error;
       }
 
-      return data;
+      return data as ServiceWithDetails[];
     }
   });
 
@@ -54,7 +61,7 @@ export function ServicesMarket() {
         throw error;
       }
 
-      return data;
+      return data as Category[];
     }
   });
 

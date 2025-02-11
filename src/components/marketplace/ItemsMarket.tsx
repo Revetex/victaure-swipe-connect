@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -12,6 +11,10 @@ import { ImagePlus, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+type Item = Database["public"]["Tables"]["marketplace_items"]["Row"];
+type Category = Database["public"]["Tables"]["marketplace_categories"]["Row"];
 
 export function ItemsMarket() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -36,7 +39,7 @@ export function ItemsMarket() {
         throw error;
       }
 
-      return data;
+      return data as (Item & { seller: { full_name: string; avatar_url: string | null } })[];
     }
   });
 
@@ -53,7 +56,7 @@ export function ItemsMarket() {
         throw error;
       }
 
-      return data;
+      return data as Category[];
     }
   });
 
