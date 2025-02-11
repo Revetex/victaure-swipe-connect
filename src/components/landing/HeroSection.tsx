@@ -4,13 +4,12 @@ import { HeroHeader } from "./hero/HeroHeader";
 import { HeroFeatures } from "./hero/HeroFeatures";
 import { HeroTrustSignals } from "./hero/HeroTrustSignals";
 import { DownloadApp } from "@/components/dashboard/DownloadApp";
-import { Footer } from "@/components/landing/Footer";
 
 export function HeroSection() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="relative flex-1">
-        <section className="relative overflow-hidden">
+    <div className="flex flex-col">
+      <div className="relative">
+        <section className="relative overflow-hidden pt-16 md:pt-24">
           {/* Animated background elements */}
           <HeroBackground />
 
@@ -31,8 +30,6 @@ export function HeroSection() {
           </div>
         </section>
       </div>
-      <Footer />
     </div>
   );
 }
-
