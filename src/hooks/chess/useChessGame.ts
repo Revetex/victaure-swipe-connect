@@ -6,6 +6,7 @@ import { useChessBoard } from "./useChessBoard";
 import { useChessAI } from "./useChessAI";
 import { getSquareName } from "./chessUtils";
 import { ChessPiece } from "@/types/chess";
+import { Json } from "@/integrations/supabase/types";
 
 export function useChessGame() {
   const {
@@ -31,16 +32,19 @@ export function useChessGame() {
     board: (ChessPiece | null)[][], 
     moveHistory: string[], 
     isWhiteTurn: boolean
-  ) => {
+  ): Json => {
     return {
       board: board.map(row => 
         row.map(piece => 
-          piece ? { type: piece.type, isWhite: piece.isWhite } : null
+          piece ? {
+            type: piece.type,
+            isWhite: piece.isWhite
+          } : null
         )
       ),
       moveHistory,
       isWhiteTurn
-    };
+    } as Json;
   };
 
   const createGame = async () => {
