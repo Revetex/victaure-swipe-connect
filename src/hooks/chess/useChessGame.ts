@@ -7,6 +7,26 @@ import { getSquareName } from "./chessUtils";
 import { ChessPiece } from "@/types/chess";
 import { Json } from "@/integrations/supabase/types";
 
+interface GameState {
+  board: (ChessPiece | null)[][];
+  moveHistory: string[];
+  isWhiteTurn: boolean;
+  enPassantTarget: { row: number; col: number } | null;
+  castlingRights: {
+    white_kingside: boolean;
+    white_queenside: boolean;
+    black_kingside: boolean;
+    black_queenside: boolean;
+  };
+  halfMoveClock: number;
+  fullMoveNumber: number;
+  isCheck: boolean;
+  isCheckmate: boolean;
+  isStalemate: boolean;
+  isDraw: boolean;
+  drawReason: string | null;
+}
+
 export function useChessGame() {
   const {
     board,
@@ -26,12 +46,22 @@ export function useChessGame() {
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState<string>("medium");
   const [gameId, setGameId] = useState<string | null>(null);
+  const [enPassantTarget, setEnPassantTarget] = useState<{row: number; col: number} | null>(null);
+  const [castlingRights, setCastlingRights] = useState({
+    white_kingside: true,
+    white_queenside: true,
+    black_kingside: true,
+    black_queenside: true
+  });
+  const [halfMoveClock, setHalfMoveClock] = useState(0);
+  const [fullMoveNumber, setFullMoveNumber] = useState(1);
+  const [isCheck, setIsCheck] = useState(false);
+  const [isCheckmate, setIsCheckmate] = useState(false);
+  const [isStalemate, setIsStalemate] = useState(false);
+  const [isDraw, setIsDraw] = useState(false);
+  const [drawReason, setDrawReason] = useState<string | null>(null);
 
-  const serializeGameState = (
-    board: (ChessPiece | null)[][], 
-    moveHistory: string[], 
-    isWhiteTurn: boolean
-  ): Json => {
+  const serializeGameState = (): Json => {
     return {
       board: board.map(row => 
         row.map(piece => 
@@ -42,9 +72,119 @@ export function useChessGame() {
         )
       ),
       moveHistory,
-      isWhiteTurn
+      isWhiteTurn,
+      enPassantTarget,
+      castlingRights,
+      halfMoveClock,
+      fullMoveNumber,
+      isCheck,
+      isCheckmate,
+      isStalemate,
+      isDraw,
+      drawReason
     } as Json;
   };
+
+  const loadGameState = (gameState: any) => {
+    if (!gameState) return;
+    
+    setBoard(gameState.board);
+    setMoveHistory(gameState.moveHistory || []);
+    setIsWhiteTurn(gameState.isWhiteTurn);
+    setEnPassantTarget(gameState.enPassantTarget);
+    setCastlingRights(gameState.castlingRights);
+    setHalfMoveClock(gameState.halfMoveClock);
+    setFullMoveNumber(gameState.fullMoveNumber);
+    setIsCheck(gameState.isCheck);
+    setIsCheckmate(gameState.isCheckmate);
+    setIsStalemate(gameState.isStalemate);
+    setIsDraw(gameState.isDraw);
+    setDrawReason(gameState.drawReason);
+  };
+
+  const createGame = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('chess_games')
+        .insert({
+          white_player_id: user.id,
+          ai_difficulty: difficulty,
+          game_state: serializeGameState(),
+          status: 'in_progress'
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      setGameId(data.id);
+    } catch (error) {
+      console.error('Error creating game:', error);
+    }
+  };
+
+  const saveGameState = async () => {
+    if (!gameId) return;
+
+    try {
+      const { error } = await supabase
+        .from('chess_games')
+        .update({
+          game_state: serializeGameState(),
+          status: gameOver ? 'completed' : 'in_progress',
+          is_check: isCheck,
+          is_checkmate: isCheckmate,
+          is_stalemate: isStalemate,
+          is_draw: isDraw,
+          draw_reason: drawReason
+        })
+        .eq('id', gameId);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error saving game state:', error);
+    }
+  };
+
+  const loadGame = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('chess_games')
+      .select('*')
+      .eq('white_player_id', user.id)
+      .eq('status', 'in_progress')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) {
+      if (error.code !== 'PGRST116') { // No rows returned
+        console.error('Error loading game:', error);
+      }
+      return;
+    }
+
+    if (data) {
+      setGameId(data.id);
+      loadGameState(data.game_state);
+    }
+  };
+
+  useEffect(() => {
+    if (!gameId) {
+      loadGame();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (gameId && board && moveHistory.length > 0) {
+      saveGameState();
+    }
+  }, [board, moveHistory, isWhiteTurn, gameOver, isCheck, isCheckmate, isStalemate, isDraw]);
 
   const checkForKing = (currentBoard: (ChessPiece | null)[][]): boolean => {
     let blackKingFound = false;
@@ -75,59 +215,6 @@ export function useChessGame() {
     return false;
   };
 
-  const createGame = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('chess_games')
-        .insert({
-          white_player_id: user.id,
-          ai_difficulty: difficulty,
-          game_state: serializeGameState(board, moveHistory, isWhiteTurn),
-          status: 'in_progress'
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      setGameId(data.id);
-    } catch (error) {
-      console.error('Error creating game:', error);
-    }
-  };
-
-  const saveGameState = async () => {
-    if (!gameId) return;
-
-    try {
-      const { error } = await supabase
-        .from('chess_games')
-        .update({
-          game_state: serializeGameState(board, moveHistory, isWhiteTurn),
-          status: gameOver ? 'completed' : 'in_progress'
-        })
-        .eq('id', gameId);
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error saving game state:', error);
-    }
-  };
-
-  useEffect(() => {
-    if (!gameId) {
-      createGame();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (gameId && board && moveHistory.length > 0) {
-      saveGameState();
-    }
-  }, [board, moveHistory, isWhiteTurn, gameOver]);
-
   const handleSquareClick = async (row: number, col: number) => {
     if (gameOver || (!isWhiteTurn && !selectedPiece)) return;
 
@@ -144,8 +231,15 @@ export function useChessGame() {
         setSelectedPiece(null);
         setPossibleMoves([]);
 
+        // Mettre à jour le compteur de coups
+        setHalfMoveClock(prev => prev + 1);
+        if (!isWhiteTurn) {
+          setFullMoveNumber(prev => prev + 1);
+        }
+
         if (checkForKing(newBoard)) {
           setGameOver(true);
+          setIsCheckmate(true);
           return;
         }
 
@@ -163,9 +257,12 @@ export function useChessGame() {
               const aiMove = `${getSquareName(from.row, from.col)} → ${getSquareName(to.row, to.col)}`;
               setMoveHistory(prev => [...prev, aiMove]);
               setBoard(aiBoard);
+              setHalfMoveClock(prev => prev + 1);
+              setFullMoveNumber(prev => prev + 1);
 
               if (checkForKing(aiBoard)) {
                 setGameOver(true);
+                setIsCheckmate(true);
                 return;
               }
 
@@ -173,6 +270,7 @@ export function useChessGame() {
             },
             () => {
               setGameOver(true);
+              setIsCheckmate(true);
               toast.success("Échec et mat ! Partie terminée");
             }
           );
@@ -206,6 +304,20 @@ export function useChessGame() {
     setGameId(null);
     setSelectedPiece(null);
     setPossibleMoves([]);
+    setEnPassantTarget(null);
+    setCastlingRights({
+      white_kingside: true,
+      white_queenside: true,
+      black_kingside: true,
+      black_queenside: true
+    });
+    setHalfMoveClock(0);
+    setFullMoveNumber(1);
+    setIsCheck(false);
+    setIsCheckmate(false);
+    setIsStalemate(false);
+    setIsDraw(false);
+    setDrawReason(null);
     createGame();
   };
 
@@ -218,6 +330,11 @@ export function useChessGame() {
     moveHistory,
     possibleMoves,
     difficulty,
+    isCheck,
+    isCheckmate,
+    isStalemate,
+    isDraw,
+    drawReason,
     handleSquareClick,
     resetGame,
     setDifficulty,

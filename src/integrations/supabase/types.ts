@@ -243,9 +243,18 @@ export type Database = {
         Row: {
           ai_difficulty: string | null
           black_player_id: string | null
+          castling_rights: Json | null
           created_at: string
+          draw_reason: string | null
+          en_passant_target: Json | null
+          full_move_number: number | null
           game_state: Json
+          half_move_clock: number | null
           id: string
+          is_check: boolean | null
+          is_checkmate: boolean | null
+          is_draw: boolean | null
+          is_stalemate: boolean | null
           status: string
           updated_at: string
           white_player_id: string
@@ -254,9 +263,18 @@ export type Database = {
         Insert: {
           ai_difficulty?: string | null
           black_player_id?: string | null
+          castling_rights?: Json | null
           created_at?: string
+          draw_reason?: string | null
+          en_passant_target?: Json | null
+          full_move_number?: number | null
           game_state?: Json
+          half_move_clock?: number | null
           id?: string
+          is_check?: boolean | null
+          is_checkmate?: boolean | null
+          is_draw?: boolean | null
+          is_stalemate?: boolean | null
           status?: string
           updated_at?: string
           white_player_id: string
@@ -265,9 +283,18 @@ export type Database = {
         Update: {
           ai_difficulty?: string | null
           black_player_id?: string | null
+          castling_rights?: Json | null
           created_at?: string
+          draw_reason?: string | null
+          en_passant_target?: Json | null
+          full_move_number?: number | null
           game_state?: Json
+          half_move_clock?: number | null
           id?: string
+          is_check?: boolean | null
+          is_checkmate?: boolean | null
+          is_draw?: boolean | null
+          is_stalemate?: boolean | null
           status?: string
           updated_at?: string
           white_player_id?: string
