@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { ProfileSearch } from "./ProfileSearch";
-import { FriendRequestsSection } from "./feed/friends/FriendRequestsSection";
+import { FriendRequestsSection } from "./friends/FriendRequestsSection";
 import { UserProfile } from "@/types/profile";
 
 export function FriendsList() {
