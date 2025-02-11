@@ -74,7 +74,7 @@ export function MainLayout({
         </header>
 
         {/* Main Content with padding to avoid header overlap */}
-        <div className="flex-1 mt-20 pt-4 md:pt-6">
+        <div className="flex-1 pt-[calc(4rem+1.5rem)] px-4">
           {children}
         </div>
 
