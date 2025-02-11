@@ -1,4 +1,3 @@
-
 import { Message, Receiver } from "@/types/messages"; 
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
@@ -83,7 +82,7 @@ export function ConversationView({
   if (!receiver || !profile) return null;
 
   return (
-    <div className="flex flex-col h-full relative">
+    <div className="flex flex-col h-[100dvh] relative">
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <ChatHeader
           title={receiver.full_name}
@@ -103,7 +102,7 @@ export function ConversationView({
         onTouchEnd={() => setIsScrolling(false)}
         onMouseDown={() => setIsScrolling(true)}
         onMouseUp={() => setIsScrolling(false)}
-        className="flex-1 overflow-y-auto px-4"
+        className="flex-1 overflow-y-auto px-4 pb-32"
       >
         <div className="max-w-3xl mx-auto space-y-4 py-4">
           {messages.length === 0 ? (
