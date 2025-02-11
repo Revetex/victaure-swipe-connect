@@ -1,6 +1,7 @@
 
 import { HeroSection } from "@/components/landing/HeroSection";
 import { Features } from "@/components/Features";
+import { Footer } from "@/components/landing/Footer";
 import { motion } from "framer-motion";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -27,6 +28,8 @@ export default function Index() {
           <Features />
         </Suspense>
       </motion.div>
+      <Footer />
     </div>
   );
 }
+
