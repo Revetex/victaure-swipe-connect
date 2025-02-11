@@ -47,7 +47,7 @@ export function useMessagesPersistence(receiverId: string | undefined) {
           timestamp: msg.created_at,
           thinking: false,
           message_type: msg.is_assistant ? 'ai' : 'user',
-          status: msg.status || 'sent',
+          status: (msg.status as "sent" | "delivered" | "read") || 'sent',
           metadata: msg.metadata || {}
         }));
 
@@ -95,7 +95,7 @@ export function useMessagesPersistence(receiverId: string | undefined) {
               timestamp: newMessage.created_at,
               thinking: false,
               message_type: newMessage.is_assistant ? 'ai' : 'user',
-              status: 'sent',
+              status: 'sent' as const,
               metadata: {}
             };
             setLocalMessages(prev => [...prev, formattedMessage]);
@@ -150,7 +150,7 @@ export function useMessagesPersistence(receiverId: string | undefined) {
         timestamp: data.created_at,
         thinking: false,
         message_type: receiverId === 'assistant' ? 'ai' : 'user',
-        status: 'sent',
+        status: 'sent' as const,
         metadata: {}
       };
 
