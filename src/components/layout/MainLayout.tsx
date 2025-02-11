@@ -76,12 +76,12 @@ export function MainLayout({
 
         {/* Content area with correct spacing */}
         <div className="pt-16">
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl mx-auto px-4 py-8">
             {children}
           </div>
         </div>
 
-        {/* Friends list overlay - adjusted z-index */}
+        {/* Friends list overlay */}
         <AnimatePresence mode="wait">
           {showFriendsList && (
             <DashboardFriendsList 
@@ -108,4 +108,3 @@ export function MainLayout({
     </div>
   );
 }
-
