@@ -43,6 +43,9 @@ export function MessagesContainer() {
     setReceiver(selectedReceiver);
     setShowConversation(true);
     setInputMessage('');
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
   };
 
   const handleBack = () => {
@@ -95,7 +98,7 @@ export function MessagesContainer() {
     <Card className="h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
       <ScrollArea 
         ref={scrollAreaRef}
-        className="flex-1 h-full"
+        className="flex-1 h-full overflow-y-auto"
         onScrollCapture={handleScroll}
       >
         <AnimatePresence mode="wait">
