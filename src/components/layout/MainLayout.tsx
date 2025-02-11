@@ -48,7 +48,10 @@ export function MainLayout({
       )}>
         {/* Header */}
         <header className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed top-0 left-0 right-0 z-40">
-          <div className="container h-full mx-auto px-4 flex items-center justify-between">
+          <div className={cn(
+            "container h-full mx-auto px-4 flex items-center justify-between",
+            !isMobile && "md:pl-[280px] lg:pl-[320px]"
+          )}>
             <div className="flex items-center gap-4">
               {isMobile && (
                 <Sheet>
@@ -74,7 +77,7 @@ export function MainLayout({
         </header>
 
         {/* Main Content with padding to avoid header overlap */}
-        <div className="flex-1 px-4 py-20 md:py-24 md:px-6 lg:px-8">
+        <div className="flex-1 pt-20 px-4 pb-24 md:pt-24 md:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto w-full">
             {children}
           </div>

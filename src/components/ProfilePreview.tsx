@@ -9,7 +9,7 @@ import { Dialog, DialogContent } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { useConnectionStatus } from "./profile/preview/hooks/useConnectionStatus";
 import { useConnectionActions } from "./profile/preview/hooks/useConnectionActions";
-import { UserPlus, UserMinus, Ban, MessageCircle } from "lucide-react";
+import { UserPlus, UserMinus, UserX, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -70,7 +70,7 @@ export function ProfilePreview({
     if (isOwnProfile) return null;
 
     return (
-      <div className="flex flex-col gap-2 mt-4">
+      <div className="flex flex-col gap-2 p-4 border-t">
         {!isFriend && !isFriendRequestSent && !isFriendRequestReceived && !isBlocked && (
           <Button 
             onClick={() => handleActionWithToast(handleAddFriend, "Demande d'ami envoyée")}
@@ -111,11 +111,11 @@ export function ProfilePreview({
           variant="outline"
           className="w-full flex items-center gap-2"
         >
-          <Ban className="h-4 w-4" />
+          <UserX className="h-4 w-4" />
           {isBlocked ? "Débloquer" : "Bloquer"}
         </Button>
 
-        {isFriend && (
+        {isFriend && !isBlocked && (
           <Button
             variant="outline"
             className="w-full flex items-center gap-2"
