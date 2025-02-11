@@ -46,6 +46,35 @@ export function useChessGame() {
     } as Json;
   };
 
+  const checkForKing = (currentBoard: (ChessPiece | null)[][]): boolean => {
+    let blackKingFound = false;
+    let whiteKingFound = false;
+
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const piece = currentBoard[row][col];
+        if (piece?.type === 'king') {
+          if (piece.isWhite) {
+            whiteKingFound = true;
+          } else {
+            blackKingFound = true;
+          }
+        }
+      }
+    }
+
+    if (!blackKingFound) {
+      toast.success("Félicitations ! Vous avez gagné en capturant le roi noir !");
+      return true;
+    }
+    if (!whiteKingFound) {
+      toast.success("L'IA a gagné en capturant votre roi !");
+      return true;
+    }
+
+    return false;
+  };
+
   const createGame = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -103,29 +132,30 @@ export function useChessGame() {
     if (gameOver || (!isWhiteTurn && !selectedPiece)) return;
 
     if (selectedPiece) {
-      // Si on clique sur une case possible
       if (possibleMoves.some(move => move.row === row && move.col === col)) {
-        // On fait une copie profonde du plateau avant de faire le mouvement
         const newBoard = board.map(row => [...row]);
         newBoard[row][col] = newBoard[selectedPiece.row][selectedPiece.col];
         newBoard[selectedPiece.row][selectedPiece.col] = null;
         
-        // On met à jour le plateau avec la copie
         setBoard(newBoard);
         
         const move = `${getSquareName(selectedPiece.row, selectedPiece.col)} → ${getSquareName(row, col)}`;
         setMoveHistory(prev => [...prev, move]);
         setSelectedPiece(null);
         setPossibleMoves([]);
+
+        if (checkForKing(newBoard)) {
+          setGameOver(true);
+          return;
+        }
+
         setIsWhiteTurn(false);
 
-        // Tour de l'IA
         try {
           await makeAIMove(
             newBoard,
             difficulty,
             (from, to) => {
-              // Important: on utilise newBoard ici, pas board
               const aiBoard = newBoard.map(row => [...row]);
               aiBoard[to.row][to.col] = aiBoard[from.row][from.col];
               aiBoard[from.row][from.col] = null;
@@ -133,6 +163,12 @@ export function useChessGame() {
               const aiMove = `${getSquareName(from.row, from.col)} → ${getSquareName(to.row, to.col)}`;
               setMoveHistory(prev => [...prev, aiMove]);
               setBoard(aiBoard);
+
+              if (checkForKing(aiBoard)) {
+                setGameOver(true);
+                return;
+              }
+
               setIsWhiteTurn(true);
             },
             () => {
@@ -146,18 +182,15 @@ export function useChessGame() {
           setIsWhiteTurn(true);
         }
       } else {
-        // Si on clique sur une autre case, on désélectionne
         setSelectedPiece(null);
         setPossibleMoves([]);
         
-        // Si la nouvelle case contient une pièce valide, on la sélectionne
         const piece = board[row][col];
         if (piece && piece.isWhite === isWhiteTurn) {
           handlePieceSelect(row, col, isWhiteTurn);
         }
       }
     } else {
-      // Sélection d'une nouvelle pièce
       const piece = board[row][col];
       if (piece && piece.isWhite === isWhiteTurn) {
         handlePieceSelect(row, col, isWhiteTurn);
