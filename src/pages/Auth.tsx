@@ -4,7 +4,6 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
 import { Logo } from "@/components/Logo";
 import { AuthVideo } from "@/components/auth/AuthVideo";
-import { Footer } from "@/components/landing/Footer";
 import { motion } from "framer-motion";
 import { useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -51,7 +50,7 @@ export default function Auth() {
       <ThemeSelector />
       
       <main className="flex-1 flex flex-col items-center justify-center w-full p-4 relative z-10">
-        <div className="w-full max-w-xl mx-auto space-y-8">
+        <div className="w-full max-w-xl mx-auto space-y-8 glass-panel rounded-2xl p-8 border border-primary/10">
           <motion.div 
             className="text-center space-y-6"
             initial={{ opacity: 0, y: 20 }}
@@ -78,8 +77,6 @@ export default function Auth() {
           </Suspense>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }
