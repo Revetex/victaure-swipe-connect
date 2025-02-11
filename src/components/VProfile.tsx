@@ -1,8 +1,9 @@
 
 import { UserProfile } from "@/types/profile";
 import { VCard } from "./VCard";
-import { Dialog, DialogContent } from "./ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface VProfileProps {
   profile: UserProfile;
@@ -18,6 +19,14 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl p-0 overflow-hidden">
+        <VisuallyHidden asChild>
+          <DialogTitle>Profil de {profile.full_name || "Utilisateur"}</DialogTitle>
+        </VisuallyHidden>
+        <VisuallyHidden asChild>
+          <DialogDescription>
+            Informations détaillées du profil de {profile.full_name || "l'utilisateur"}
+          </DialogDescription>
+        </VisuallyHidden>
         <AnimatePresence>
           {isOpen && (
             <motion.div
