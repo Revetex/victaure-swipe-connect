@@ -21,7 +21,9 @@ export function SearchBar({ searchQuery, onSearchChange, onSelectFriend }: Searc
             onValueChange={onSearchChange}
           />
           <CommandList>
-            <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+            {searchQuery && (
+              <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+            )}
           </CommandList>
         </Command>
         <FriendSelector onSelectFriend={onSelectFriend}>
