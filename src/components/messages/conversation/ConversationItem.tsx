@@ -16,9 +16,17 @@ interface ConversationItemProps {
     created_at: string;
   };
   onSelect: () => void;
+  onDelete?: () => void;
+  canDelete?: boolean;
 }
 
-export function ConversationItem({ user, lastMessage, onSelect }: ConversationItemProps) {
+export function ConversationItem({ 
+  user, 
+  lastMessage, 
+  onSelect,
+  onDelete,
+  canDelete 
+}: ConversationItemProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -27,7 +35,7 @@ export function ConversationItem({ user, lastMessage, onSelect }: ConversationIt
     >
       <Button
         variant="ghost"
-        className="w-full flex items-center gap-4 h-auto p-4 hover:bg-muted/50"
+        className="relative w-full flex items-center gap-4 h-auto p-4 hover:bg-muted/50"
         onClick={onSelect}
       >
         <Avatar className="h-12 w-12 ring-2 ring-muted/50">
@@ -51,6 +59,19 @@ export function ConversationItem({ user, lastMessage, onSelect }: ConversationIt
             {lastMessage.content}
           </p>
         </div>
+        {canDelete && onDelete && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+          >
+            Supprimer
+          </Button>
+        )}
       </Button>
     </motion.div>
   );

@@ -405,6 +405,24 @@ export type Database = {
         }
         Relationships: []
       }
+      deleted_ai_conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       deleted_conversations: {
         Row: {
           conversation_partner_id: string
@@ -2028,6 +2046,12 @@ export type Database = {
           "": unknown
         }
         Returns: number
+      }
+      delete_ai_conversation: {
+        Args: {
+          p_user_id: string
+        }
+        Returns: undefined
       }
       earth: {
         Args: Record<PropertyKey, never>
