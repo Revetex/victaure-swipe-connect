@@ -32,7 +32,7 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
       <Separator />
       
       <ScrollArea className="flex-1">
-        <nav className="p-4 space-y-1">
+        <nav className="p-6 space-y-2">
           {navigationItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -40,14 +40,32 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
                 key={item.id}
                 variant="ghost"
                 className={cn(
-                  "w-full justify-start gap-2 font-normal",
-                  "hover:bg-primary/10 hover:text-primary",
-                  currentPage === item.id && "bg-primary/15 text-primary"
+                  "w-full justify-start gap-3 font-medium tracking-tight",
+                  "h-11 px-4 relative group transition-colors duration-200",
+                  "bg-gradient-to-r hover:from-primary/5 hover:to-primary/10",
+                  "data-[state=open]:bg-accent",
+                  currentPage === item.id ? 
+                    "text-primary bg-primary/10 hover:bg-primary/15" : 
+                    "text-muted-foreground hover:text-foreground"
                 )}
                 onClick={() => onPageChange(item.id)}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className={cn(
+                  "h-4 w-4 shrink-0",
+                  "transition-transform duration-200",
+                  "group-hover:scale-110",
+                  currentPage === item.id && "text-primary"
+                )} />
                 <span>{item.name}</span>
+                {currentPage === item.id && (
+                  <motion.div
+                    layoutId="sidebar-active"
+                    className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  />
+                )}
               </Button>
             );
           })}
