@@ -26,7 +26,14 @@ export function PaymentSection() {
         .order('is_default', { ascending: false });
 
       if (error) throw error;
-      setPaymentMethods(methods || []);
+      
+      // Convertir explicitement le payment_type en type attendu
+      const typedMethods = methods?.map(method => ({
+        ...method,
+        payment_type: method.payment_type as 'credit_card' | 'interac'
+      }));
+      
+      setPaymentMethods(typedMethods || []);
     } catch (error) {
       console.error('Error loading payment methods:', error);
       toast.error("Erreur lors du chargement des méthodes de paiement");
