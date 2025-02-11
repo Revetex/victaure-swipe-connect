@@ -65,7 +65,7 @@ export function ConversationList({
   );
 
   return (
-    <div className="flex flex-col h-screen pt-16">
+    <div className="flex flex-col h-full max-h-[calc(100vh-4rem)]">
       <SearchBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}

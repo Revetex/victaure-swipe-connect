@@ -60,7 +60,31 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
+          vendor: [
+            'react', 
+            'react-dom',
+            'framer-motion',
+            '@tanstack/react-query',
+            '@supabase/supabase-js'
+          ],
+          auth: [
+            '@supabase/auth-ui-react',
+            '@supabase/auth-helpers-react'
+          ],
+          ui: [
+            '@radix-ui/react-alert-dialog',
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-label',
+            '@radix-ui/react-scroll-area',
+            '@radix-ui/react-select',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-switch',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast'
+          ]
         },
       },
     },
