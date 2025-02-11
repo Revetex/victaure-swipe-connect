@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CircleDot, MessageCircle, UserMinus, UserX } from "lucide-react";
@@ -11,10 +12,9 @@ import { useNavigate } from "react-router-dom";
 
 interface FriendItemProps {
   friend: FriendPreview;
-  onMessage: (friendId: string) => void;
 }
 
-export function FriendItem({ friend, onMessage }: FriendItemProps) {
+export function FriendItem({ friend }: FriendItemProps) {
   const [showProfile, setShowProfile] = useState(false);
   const navigate = useNavigate();
 
