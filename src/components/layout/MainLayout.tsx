@@ -33,57 +33,55 @@ export function MainLayout({
   const isFriendsPage = location.pathname.includes('/friends');
 
   return (
-    <div className="min-h-screen flex bg-background">
-      {/* Sidebar Navigation */}
+    <div className="flex min-h-screen bg-background">
+      {/* Navigation pour desktop */}
       {!isMobile && (
-        <aside className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
+        <nav className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <Navigation />
-        </aside>
+        </nav>
       )}
 
-      {/* Main Content Area */}
+      {/* Contenu principal */}
       <main className={cn(
-        "flex-1 min-h-screen flex flex-col relative",
-        !isMobile && "md:pl-[280px] lg:pl-[320px]"
+        "flex-1 relative",
+        !isMobile && "ml-[280px] lg:ml-[320px]"
       )}>
         {/* Header */}
-        <header className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed top-0 left-0 right-0 z-40">
+        <header className="h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b fixed top-0 right-0 z-50 flex items-center px-4">
           <div className={cn(
-            "h-full px-4 flex items-center justify-between",
-            !isMobile && "md:pl-[280px] lg:pl-[320px]"
+            "flex items-center gap-4 w-full",
+            !isMobile && "pl-0"
           )}>
-            <div className="flex items-center gap-4">
-              {isMobile && (
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <Menu className="h-5 w-5" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="left" className="p-0 w-[280px]">
-                    <Navigation />
-                  </SheetContent>
-                </Sheet>
-              )}
-              <DashboardHeader 
-                title={title}
-                showFriendsList={showFriendsList}
-                onToggleFriendsList={onToggleFriendsList}
-                isEditing={isEditing}
-                onToolReturn={onToolReturn}
-              />
-            </div>
+            {isMobile && (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-[280px]">
+                  <Navigation />
+                </SheetContent>
+              </Sheet>
+            )}
+            <DashboardHeader 
+              title={title}
+              showFriendsList={showFriendsList}
+              onToggleFriendsList={onToggleFriendsList}
+              isEditing={isEditing}
+              onToolReturn={onToolReturn}
+            />
           </div>
         </header>
 
-        {/* Main Content */}
-        <div className="flex-1 pt-24 px-4 pb-24 md:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto w-full">
+        {/* Zone de contenu */}
+        <div className="pt-24 px-4 pb-20">
+          <div className="max-w-7xl mx-auto">
             {children}
           </div>
         </div>
 
-        {/* Friends List Overlay */}
+        {/* Liste d'amis (overlay) */}
         <AnimatePresence mode="wait">
           {showFriendsList && (
             <DashboardFriendsList 
@@ -93,19 +91,16 @@ export function MainLayout({
           )}
         </AnimatePresence>
 
-        {/* Bottom Navigation */}
-        {!isFriendsPage && (
+        {/* Navigation mobile en bas */}
+        {!isFriendsPage && isMobile && (
           <nav 
-            className={cn(
-              "h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed bottom-0 left-0 right-0 z-40",
-              !isMobile && "md:ml-[280px] lg:ml-[320px]"
-            )}
+            className="h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed bottom-0 left-0 right-0 z-50"
             style={{ 
               paddingBottom: 'env(safe-area-inset-bottom)'
             }}
           >
             <div className="h-full px-4">
-              {/* Navigation content */}
+              {/* Contenu de la navigation */}
             </div>
           </nav>
         )}
@@ -113,4 +108,3 @@ export function MainLayout({
     </div>
   );
 }
-
