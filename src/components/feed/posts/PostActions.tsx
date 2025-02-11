@@ -1,7 +1,6 @@
 
-import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
-import { useReactions } from "./actions/useReactions";
-import { ReactionButton } from "./actions/ReactionButton";
+import { ReactionControls } from "./actions/ReactionControls";
+import { CommentButton } from "./actions/CommentButton";
 
 interface PostActionsProps {
   likes: number;
@@ -32,39 +31,24 @@ export function PostActions({
   onDislike,
   onToggleComments,
 }: PostActionsProps) {
-  const { handleReaction } = useReactions({
-    postId,
-    postAuthorId,
-    currentUserId,
-    userEmail,
-    onLike,
-    onDislike
-  });
-
   return (
     <div className="flex gap-2 items-center py-2">
-      <ReactionButton
-        icon={ThumbsUp}
-        count={likes || 0}
-        isActive={userReaction === 'like'}
-        onClick={() => handleReaction('like')}
-        activeClassName="bg-green-500 hover:bg-green-600 text-white shadow-lg"
+      <ReactionControls
+        likes={likes}
+        dislikes={dislikes}
+        userReaction={userReaction}
+        postId={postId}
+        postAuthorId={postAuthorId}
+        currentUserId={currentUserId}
+        userEmail={userEmail}
+        onLike={onLike}
+        onDislike={onDislike}
       />
-
-      <ReactionButton
-        icon={ThumbsDown}
-        count={dislikes || 0}
-        isActive={userReaction === 'dislike'}
-        onClick={() => handleReaction('dislike')}
-        activeClassName="bg-red-500 hover:bg-red-600 text-white shadow-lg"
-      />
-
-      <ReactionButton
-        icon={MessageSquare}
-        count={commentCount}
-        isActive={isExpanded}
-        onClick={onToggleComments}
-        activeClassName="bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
+      
+      <CommentButton
+        commentCount={commentCount}
+        isExpanded={isExpanded}
+        onToggleComments={onToggleComments}
       />
     </div>
   );
