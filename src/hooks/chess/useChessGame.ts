@@ -106,33 +106,45 @@ export function useChessGame() {
     if (selectedPiece) {
       // Si on clique sur une case possible
       if (possibleMoves.some(move => move.row === row && move.col === col)) {
-        const newBoard = makeMove(selectedPiece.row, selectedPiece.col, row, col);
+        // On fait une copie profonde du plateau avant de faire le mouvement
+        const newBoard = board.map(row => [...row]);
+        newBoard[row][col] = newBoard[selectedPiece.row][selectedPiece.col];
+        newBoard[selectedPiece.row][selectedPiece.col] = null;
+        
+        // On met à jour le plateau avec la copie
+        setBoard(newBoard);
+        
         const move = `${getSquareName(selectedPiece.row, selectedPiece.col)} → ${getSquareName(row, col)}`;
         setMoveHistory(prev => [...prev, move]);
-        setIsWhiteTurn(!isWhiteTurn);
+        setSelectedPiece(null);
+        setPossibleMoves([]);
+        setIsWhiteTurn(false);
 
         // Tour de l'IA
-        if (isWhiteTurn) {
-          try {
-            await makeAIMove(
-              newBoard,
-              difficulty,
-              (from, to) => {
-                const aiBoard = makeMove(from.row, from.col, to.row, to.col);
-                const aiMove = `${getSquareName(from.row, from.col)} → ${getSquareName(to.row, to.col)}`;
-                setMoveHistory(prev => [...prev, aiMove]);
-                setBoard(aiBoard);
-                setIsWhiteTurn(true);
-              },
-              () => {
-                setGameOver(true);
-                toast.success("Échec et mat ! Partie terminée");
-              }
-            );
-          } catch (error) {
-            console.error("Error during AI move:", error);
-            toast.error("Erreur lors du coup de l'IA");
-          }
+        try {
+          await makeAIMove(
+            newBoard,
+            difficulty,
+            (from, to) => {
+              // Encore une fois, on fait une copie profonde pour le mouvement de l'IA
+              const aiBoard = board.map(row => [...row]);
+              aiBoard[to.row][to.col] = aiBoard[from.row][from.col];
+              aiBoard[from.row][from.col] = null;
+              
+              const aiMove = `${getSquareName(from.row, from.col)} → ${getSquareName(to.row, to.col)}`;
+              setMoveHistory(prev => [...prev, aiMove]);
+              setBoard(aiBoard);
+              setIsWhiteTurn(true);
+            },
+            () => {
+              setGameOver(true);
+              toast.success("Échec et mat ! Partie terminée");
+            }
+          );
+        } catch (error) {
+          console.error("Error during AI move:", error);
+          toast.error("Erreur lors du coup de l'IA");
+          setIsWhiteTurn(true); // On redonne la main au joueur en cas d'erreur
         }
       } else {
         // Si on clique sur une autre case, on désélectionne
