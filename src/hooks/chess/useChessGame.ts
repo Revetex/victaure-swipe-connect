@@ -65,36 +65,25 @@ export function useChessGame() {
         setPossibleMoves([]);
         setIsWhiteTurn(false);
 
-        // Create game state for persistence
-        const gameState: GameState = {
-          board: newBoard,
-          isWhiteTurn: false,
-          gameOver: false,
-          moveHistory: [...moveHistory, move],
-          winner: null
-        };
-
         try {
-          await createGame(gameState);
+          await createGame({
+            board: newBoard,
+            isWhiteTurn: false,
+            moveHistory: [...moveHistory, move],
+            winner: null
+          });
           
           // AI's turn
-          await makeAIMove(
-            newBoard,
-            difficulty,
-            (from, to) => {
-              const aiBoard = newBoard.map(row => [...row]);
-              const aiPiece = aiBoard[from.row][from.col];
-              if (!aiPiece) return;
+          await makeAIMove(newBoard, difficulty, (from, to, aiBoard) => {
+            if (!aiBoard) return;
+            const aiPiece = aiBoard[from.row][from.col];
+            if (!aiPiece) return;
 
-              aiBoard[to.row][to.col] = aiBoard[from.row][from.col];
-              aiBoard[from.row][from.col] = null;
-              
-              const aiMove = `${aiPiece.type} ${getSquareName(from.row, from.col)} → ${getSquareName(to.row, to.col)}`;
-              setMoveHistory(prev => [...prev, aiMove]);
-              setBoard(aiBoard);
-              setIsWhiteTurn(true);
-            }
-          );
+            const aiMove = `${aiPiece.type} ${getSquareName(from.row, from.col)} → ${getSquareName(to.row, to.col)}`;
+            setMoveHistory(prev => [...prev, aiMove]);
+            setBoard(aiBoard);
+            setIsWhiteTurn(true);
+          });
         } catch (error) {
           console.error("Error during AI move:", error);
           toast.error("Erreur lors du coup de l'IA");

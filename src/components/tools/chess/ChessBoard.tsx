@@ -50,9 +50,9 @@ export function ChessBoard({
         stiffness: 100,
         damping: 15
       }}
-      className="w-full max-w-[min(95vh,700px)] mx-auto"
+      className="w-full max-w-[min(90vh,800px)] mx-auto aspect-square"
     >
-      <div className="grid grid-cols-8 gap-px bg-yellow-500/20 p-1.5 rounded-xl overflow-hidden shadow-xl border border-white/10">
+      <div className="grid grid-cols-8 h-full w-full gap-0 bg-yellow-500/20 p-1.5 rounded-xl overflow-hidden shadow-xl border border-white/10">
         {board.map((row, rowIndex) => (
           row.map((piece, colIndex) => {
             const isSelected = selectedPiece?.row === rowIndex && selectedPiece?.col === colIndex;
@@ -70,7 +70,7 @@ export function ChessBoard({
                 className={cn(
                   "aspect-square flex items-center justify-center relative",
                   "transition-all duration-300 ease-out",
-                  isMobile ? "text-4xl sm:text-5xl" : "text-5xl sm:text-6xl",
+                  isMobile ? "text-4xl sm:text-5xl" : "text-6xl sm:text-7xl",
                   isLight ? 'bg-[#E8EDF9] hover:bg-[#DAE3F3]' : 'bg-[#B7C0D8] hover:bg-[#A1AECF]',
                   isSelected && 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20 z-10 scale-105',
                   isPossibleMove && 'after:absolute after:inset-3 after:rounded-full after:bg-yellow-400/30 after:animate-pulse',

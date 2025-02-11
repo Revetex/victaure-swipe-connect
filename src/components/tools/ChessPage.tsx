@@ -77,7 +77,7 @@ export function ChessPage() {
             </motion.div>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_250px] gap-8">
             <div className="space-y-6">
               <ChessControls
                 isThinking={isThinking}
@@ -141,13 +141,13 @@ export function ChessPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="rounded-xl bg-white/5 border border-white/10 overflow-hidden"
+              className="rounded-xl bg-white/5 border border-white/10 overflow-hidden h-fit"
             >
               <div className="p-4 border-b border-white/10 flex items-center gap-2">
                 <History className="h-4 w-4 text-yellow-400" />
                 <h3 className="font-medium text-yellow-200/80">Historique des coups</h3>
               </div>
-              <ScrollArea className="h-[500px] p-4">
+              <ScrollArea className="h-[600px] p-4">
                 <div className="space-y-2">
                   {moveHistory.map((move, index) => (
                     <motion.div
@@ -156,7 +156,7 @@ export function ChessPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
                       className={cn(
-                        "p-2 rounded-lg text-sm",
+                        "p-3 rounded-lg text-base",
                         index % 2 === 0 ? "bg-white/5" : "bg-white/10"
                       )}
                     >
