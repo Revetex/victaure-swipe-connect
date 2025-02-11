@@ -39,16 +39,15 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
 
       if (receiver) {
         if (receiver.id === 'assistant') {
-          // For AI assistant messages, use is_assistant flag
+          // For AI assistant messages, filter by is_assistant flag
           query = query
             .eq('receiver_id', user.id)
             .eq('is_assistant', true);
         } else {
-          // For regular user messages
+          // For regular user messages, exclude AI messages and filter by sender/receiver
           query = query
             .eq('is_assistant', false)
-            .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-            .eq(user.id === receiver.id ? 'sender_id' : 'receiver_id', receiver.id);
+            .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
         }
       }
 
