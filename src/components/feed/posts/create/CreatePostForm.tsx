@@ -1,7 +1,7 @@
 
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Image, Send, Loader2, ImagePlus } from "lucide-react";
+import { Image, Send, Loader2, ImagePlus, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { FilePreview } from "../FilePreview";
