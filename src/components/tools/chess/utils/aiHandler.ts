@@ -60,7 +60,7 @@ export async function handleAIMove(
   board: (ChessPiece | null)[][],
   difficulty: string,
   setBoard: (board: (ChessPiece | null)[][]) => void,
-  setMoveHistory: (history: (prev: string[]) => string[]) => void,
+  setMoveHistory: (updater: (prev: string[]) => string[]) => void,
   setGameOver: (over: boolean) => void,
   setIsThinking: (thinking: boolean) => void,
   setIsWhiteTurn: (isWhiteTurn: boolean) => void,

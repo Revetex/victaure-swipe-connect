@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { initializeBoard, getSquareName } from "./utils/boardUtils";
 import { calculatePossibleMoves } from "./utils/moveCalculator";
 import { handleAIMove } from "./utils/aiHandler";
+import { supabase } from "@/integrations/supabase/client";
 
 export function useChessGame() {
   const [board, setBoard] = useState(initializeBoard());
@@ -15,7 +16,7 @@ export function useChessGame() {
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [possibleMoves, setPossibleMoves] = useState<{row: number, col: number}[]>([]);
   const [difficulty, setDifficulty] = useState<string>("medium");
-
+  
   const handleSquareClick = async (row: number, col: number) => {
     if (gameOver || (!isWhiteTurn && !selectedPiece)) return;
 
@@ -23,12 +24,13 @@ export function useChessGame() {
 
     if (selectedPiece) {
       if (possibleMoves.some(move => move.row === row && move.col === col)) {
-        const newBoard = [...board];
+        const newBoard = [...board.map(row => [...row])];
         newBoard[row][col] = board[selectedPiece.row][selectedPiece.col];
         newBoard[selectedPiece.row][selectedPiece.col] = null;
         
         const move = `${getSquareName(selectedPiece.row, selectedPiece.col)} → ${getSquareName(row, col)}`;
-        setMoveHistory([...moveHistory, move]);
+        const newMoveHistory = [...moveHistory, move];
+        setMoveHistory(newMoveHistory);
         
         setBoard(newBoard);
         setSelectedPiece(null);
@@ -37,18 +39,26 @@ export function useChessGame() {
 
         // AI's turn
         if (!gameOver && isWhiteTurn) {
-          await handleAIMove(
-            newBoard,
-            difficulty,
-            setBoard,
-            setMoveHistory,
-            setGameOver,
-            setIsThinking,
-            setIsWhiteTurn
-          );
+          try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+              await handleAIMove(
+                newBoard,
+                difficulty,
+                setBoard,
+                setMoveHistory,
+                setGameOver,
+                setIsThinking,
+                setIsWhiteTurn
+              );
+            }
+          } catch (error) {
+            console.error("Error during AI move:", error);
+            toast.error("Error during AI's move");
+          }
         }
       } else {
-        toast.error("Coup invalide");
+        toast.error("Invalid move");
         setSelectedPiece(null);
         setPossibleMoves([]);
       }
@@ -66,7 +76,7 @@ export function useChessGame() {
     setIsWhiteTurn(true);
     setGameOver(false);
     setMoveHistory([]);
-    toast.success("Nouvelle partie commencée");
+    toast.success("New game started");
   };
 
   return {
