@@ -11,12 +11,14 @@ interface ProfilePreviewButtonsProps {
   profile: UserProfile;
   onClose: () => void;
   canViewFullProfile: boolean;
+  onRequestChat?: () => void;
 }
 
 export function ProfilePreviewButtons({
   profile,
   onClose,
-  canViewFullProfile
+  canViewFullProfile,
+  onRequestChat
 }: ProfilePreviewButtonsProps) {
   const navigate = useNavigate();
   const {
@@ -53,7 +55,11 @@ export function ProfilePreviewButtons({
   };
 
   const handleMessageClick = () => {
-    navigate(`/messages?receiver=${profile.id}`);
+    if (onRequestChat) {
+      onRequestChat();
+    } else {
+      navigate(`/messages?receiver=${profile.id}`);
+    }
     onClose();
   };
 
