@@ -3,51 +3,21 @@ import { UserProfile } from "@/types/profile";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Phone, Mail, Globe, UserPlus, UserMinus, UserX } from "lucide-react";
+import { MessageCircle, Lock } from "lucide-react";
 import { motion } from "framer-motion";
-import { useConnectionStatus } from "./hooks/useConnectionStatus";
-import { useConnectionActions } from "./hooks/useConnectionActions";
-import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
 
 interface ProfilePreviewCardProps {
   profile: UserProfile;
   onRequestChat?: () => void;
   onClose: () => void;
+  canViewFullProfile?: boolean;
 }
 
 export function ProfilePreviewCard({
   profile,
   onRequestChat,
-  onClose,
+  canViewFullProfile = false
 }: ProfilePreviewCardProps) {
-  const { user } = useAuth();
-  const isOwnProfile = user?.id === profile.id;
-
-  const {
-    isFriend,
-    isBlocked,
-    isFriendRequestSent,
-    isFriendRequestReceived
-  } = useConnectionStatus(profile.id);
-
-  const {
-    handleAddFriend,
-    handleAcceptFriend,
-    handleRemoveFriend,
-    handleToggleBlock,
-  } = useConnectionActions(profile.id);
-
-  const handleActionWithToast = async (action: () => Promise<void>, successMessage: string) => {
-    try {
-      await action();
-      toast.success(successMessage);
-    } catch (error) {
-      console.error("Action error:", error);
-      toast.error("Une erreur est survenue");
-    }
-  };
-
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
@@ -72,104 +42,31 @@ export function ProfilePreviewCard({
             </p>
           </div>
 
-          {profile.company_name && (
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-              {profile.company_name}
-            </p>
-          )}
-
-          {!isOwnProfile && (
-            <div className="w-full space-y-2 border-t border-gray-200 dark:border-gray-700 pt-4">
-              {!isFriend && !isFriendRequestSent && !isFriendRequestReceived && !isBlocked && (
-                <Button 
-                  variant="default" 
-                  className="w-full flex items-center gap-2"
-                  onClick={() => handleActionWithToast(handleAddFriend, "Demande d'ami envoyée")}
-                >
-                  <UserPlus className="h-4 w-4" />
-                  Ajouter en ami
-                </Button>
+          {canViewFullProfile ? (
+            <>
+              {profile.company_name && (
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                  {profile.company_name}
+                </p>
               )}
 
-              {isFriendRequestReceived && (
-                <Button
-                  variant="default"
-                  className="w-full flex items-center gap-2"
-                  onClick={() => handleActionWithToast(handleAcceptFriend, "Demande d'ami acceptée")}
-                >
-                  <UserPlus className="h-4 w-4" />
-                  Accepter la demande
-                </Button>
-              )}
-
-              {(isFriend || isFriendRequestSent) && (
+              {onRequestChat && (
                 <Button
                   variant="outline"
-                  className="w-full flex items-center gap-2 text-destructive hover:text-destructive"
-                  onClick={() => handleActionWithToast(handleRemoveFriend, 
-                    isFriend ? "Ami retiré" : "Demande annulée")}
+                  className="w-full flex items-center gap-2"
+                  onClick={onRequestChat}
                 >
-                  <UserMinus className="h-4 w-4" />
-                  {isFriend ? "Retirer des amis" : "Annuler la demande"}
+                  <MessageCircle className="h-4 w-4" />
+                  Message
                 </Button>
               )}
-
-              <Button
-                variant="outline"
-                className="w-full flex items-center gap-2"
-                onClick={() => handleActionWithToast(handleToggleBlock, 
-                  isBlocked ? "Utilisateur débloqué" : "Utilisateur bloqué")}
-              >
-                <UserX className="h-4 w-4" />
-                {isBlocked ? "Débloquer" : "Bloquer"}
-              </Button>
+            </>
+          ) : (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Lock className="h-4 w-4" />
+              <span className="text-sm">Profil privé</span>
             </div>
           )}
-
-          <div className="w-full pt-4 grid grid-cols-2 gap-3">
-            {profile.email && (
-              <Button 
-                variant="outline" 
-                className="w-full flex items-center gap-2 bg-transparent"
-                onClick={() => window.location.href = `mailto:${profile.email}`}
-              >
-                <Mail className="w-4 h-4" />
-                Email
-              </Button>
-            )}
-            
-            {profile.phone && (
-              <Button
-                variant="outline"
-                className="w-full flex items-center gap-2 bg-transparent"
-                onClick={() => window.location.href = `tel:${profile.phone}`}
-              >
-                <Phone className="w-4 h-4" />
-                Téléphone
-              </Button>
-            )}
-
-            {profile.website && (
-              <Button
-                variant="outline"
-                className="w-full flex items-center gap-2 bg-transparent"
-                onClick={() => window.open(profile.website, '_blank')}
-              >
-                <Globe className="w-4 h-4" />
-                Site Web
-              </Button>
-            )}
-
-            {onRequestChat && isFriend && !isBlocked && (
-              <Button
-                className="w-full flex items-center gap-2 bg-primary hover:bg-primary/90"
-                onClick={onRequestChat}
-              >
-                <MessageCircle className="w-4 h-4" />
-                Message
-              </Button>
-            )}
-          </div>
         </div>
       </Card>
     </motion.div>

@@ -9,7 +9,7 @@ import { Dialog, DialogContent } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { useConnectionStatus } from "./profile/preview/hooks/useConnectionStatus";
 import { useConnectionActions } from "./profile/preview/hooks/useConnectionActions";
-import { UserPlus, UserMinus, UserX, MessageCircle } from "lucide-react";
+import { UserPlus, UserMinus, UserX, MessageCircle, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -47,6 +47,17 @@ export function ProfilePreview({
     handleToggleBlock,
   } = useConnectionActions(profile.id);
 
+  const canViewFullProfile = isOwnProfile || (isFriend && !profile.privacy_enabled);
+
+  const handleViewProfile = () => {
+    if (canViewFullProfile) {
+      navigate(`/profile/${profile.id}`);
+      onClose();
+    } else {
+      toast.error("Ce profil est privé. Vous devez être ami avec cet utilisateur pour voir son profil complet.");
+    }
+  };
+
   const handleRequestChat = () => {
     if (onRequestChat) {
       onRequestChat();
@@ -71,6 +82,21 @@ export function ProfilePreview({
 
     return (
       <div className="flex flex-col gap-2 p-4 border-t">
+        <Button 
+          onClick={handleViewProfile}
+          variant={canViewFullProfile ? "default" : "secondary"}
+          className="w-full flex items-center gap-2"
+        >
+          {canViewFullProfile ? (
+            "Voir le profil complet"
+          ) : (
+            <>
+              <Lock className="h-4 w-4" />
+              Profil privé
+            </>
+          )}
+        </Button>
+
         {!isFriend && !isFriendRequestSent && !isFriendRequestReceived && !isBlocked && (
           <Button 
             onClick={() => handleActionWithToast(handleAddFriend, "Demande d'ami envoyée")}
@@ -138,6 +164,7 @@ export function ProfilePreview({
             isOpen={isOpen}
             onClose={onClose}
             onRequestChat={handleRequestChat}
+            canViewFullProfile={canViewFullProfile}
           />
           {renderConnectionButtons()}
         </DialogContent>
@@ -179,6 +206,7 @@ export function ProfilePreview({
                 isOpen={isOpen}
                 onClose={onClose}
                 onRequestChat={handleRequestChat}
+                canViewFullProfile={canViewFullProfile}
               />
               {renderConnectionButtons()}
             </div>
