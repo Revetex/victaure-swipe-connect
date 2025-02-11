@@ -46,10 +46,12 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
 
       if (receiver) {
         if (receiver.id === 'assistant') {
+          // Pour les messages de l'assistant
           query = query
             .eq('receiver_id', user.id)
             .eq('is_assistant', true);
         } else {
+          // Pour les messages entre utilisateurs
           query = query
             .eq('is_assistant', false)
             .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
