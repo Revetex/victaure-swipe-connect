@@ -1,7 +1,6 @@
 
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Crown } from "lucide-react";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -13,6 +12,13 @@ const textSizes = {
   md: "text-2xl",
   lg: "text-3xl",
   xl: "text-4xl"
+};
+
+const logoSizes = {
+  sm: "w-6 h-6",
+  md: "w-8 h-8",
+  lg: "w-10 h-10",
+  xl: "w-12 h-12"
 };
 
 export function Logo({ size = "md", className }: LogoProps) {
@@ -38,8 +44,15 @@ export function Logo({ size = "md", className }: LogoProps) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <Crown className="w-8 h-8 text-primary stroke-[2.5]" />
-        <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent tracking-tight">
+        <img 
+          src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png" 
+          alt="Victaure Logo" 
+          className={cn(
+            logoSizes[size],
+            "object-contain"
+          )}
+        />
+        <span className="bg-gradient-to-r from-[#9b87f5] via-[#8B5CF6] to-[#7E69AB] bg-clip-text text-transparent font-playfair tracking-wide">
           Victaure
         </span>
       </motion.div>
