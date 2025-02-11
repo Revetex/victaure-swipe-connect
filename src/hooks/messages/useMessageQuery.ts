@@ -66,6 +66,8 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
         metadata: msg.metadata || {}
       })) as Message[] || [];
     },
-    enabled: true
+    enabled: true,
+    staleTime: 1000 * 60, // 1 minute
+    gcTime: 1000 * 60 * 5 // 5 minutes
   });
 }
