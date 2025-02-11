@@ -40,7 +40,24 @@ export const useReactions = ({
         p_reaction_type: type
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error handling reaction:', error);
+        
+        // Messages d'erreur personnalisés en fonction de l'erreur
+        let errorMessage = "Une erreur est survenue lors de la réaction";
+        if (error.message.includes("Le post n'existe pas")) {
+          errorMessage = "Cette publication n'existe plus";
+        } else if (error.message.includes("Type de réaction invalide")) {
+          errorMessage = "Type de réaction non valide";
+        }
+        
+        toast({
+          title: "Erreur",
+          description: errorMessage,
+          variant: "destructive"
+        });
+        return;
+      }
 
       // Send notification only if it's a like and not the user's own post
       if (type === 'like' && postAuthorId !== currentUserId) {
