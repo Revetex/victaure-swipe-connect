@@ -43,13 +43,13 @@ export function MainLayout({
 
       {/* Main Content Area */}
       <main className={cn(
-        "flex-1 min-h-screen flex flex-col",
+        "flex-1 min-h-screen flex flex-col relative",
         !isMobile && "md:pl-[280px] lg:pl-[320px]"
       )}>
         {/* Header */}
         <header className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed top-0 left-0 right-0 z-40">
           <div className={cn(
-            "container h-full mx-auto px-4 flex items-center justify-between",
+            "h-full px-4 flex items-center justify-between",
             !isMobile && "md:pl-[280px] lg:pl-[320px]"
           )}>
             <div className="flex items-center gap-4">
@@ -76,8 +76,8 @@ export function MainLayout({
           </div>
         </header>
 
-        {/* Main Content with padding to avoid header overlap */}
-        <div className="flex-1 pt-20 px-4 pb-24 md:pt-24 md:px-6 lg:px-8">
+        {/* Main Content */}
+        <div className="flex-1 pt-24 px-4 pb-24 md:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto w-full">
             {children}
           </div>
@@ -104,7 +104,7 @@ export function MainLayout({
               paddingBottom: 'env(safe-area-inset-bottom)'
             }}
           >
-            <div className="container mx-auto px-4 h-full">
+            <div className="h-full px-4">
               {/* Navigation content */}
             </div>
           </nav>
@@ -113,3 +113,4 @@ export function MainLayout({
     </div>
   );
 }
+
