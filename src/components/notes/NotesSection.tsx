@@ -32,7 +32,8 @@ export function NotesSection() {
       "flex flex-col h-full",
       "max-h-[calc(100vh-8rem)]",
       "sm:max-h-[calc(100vh-12rem)]",
-      isMobile && "pb-16"
+      "pt-20",
+      isMobile && "pb-16" // Ajoute un padding en bas sur mobile pour éviter que le contenu soit caché par la navigation
     )}>
       <NotesToolbar
         newNote={newNote}

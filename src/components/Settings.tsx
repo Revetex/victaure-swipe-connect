@@ -49,7 +49,7 @@ export function Settings() {
   }
 
   return (
-    <ScrollArea className="flex-1">
+    <ScrollArea className="flex-1 h-[calc(100vh-8rem)] pt-20">
       <motion.div
         initial="initial"
         animate="animate"
