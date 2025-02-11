@@ -27,7 +27,10 @@ export function NotesSection() {
   ];
 
   return (
-    <div className="flex flex-col h-full">
+    <div className={cn(
+      "flex flex-col h-[calc(100vh-4rem)]",
+      "mt-16"
+    )}>
       <NotesToolbar
         newNote={newNote}
         selectedColor={selectedColor}
