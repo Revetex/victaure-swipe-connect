@@ -36,7 +36,7 @@ export function MainLayout({
     <div className="min-h-screen flex bg-background">
       {/* Sidebar Navigation */}
       {!isMobile && (
-        <aside className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur z-50">
+        <aside className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
           <Navigation />
         </aside>
       )}
@@ -74,8 +74,10 @@ export function MainLayout({
         </header>
 
         {/* Main Content with padding to avoid header overlap */}
-        <div className="flex-1 pt-20 px-4 pb-16">
-          {children}
+        <div className="flex-1 px-4 py-20 md:py-24 md:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto w-full">
+            {children}
+          </div>
         </div>
 
         {/* Friends List Overlay */}
