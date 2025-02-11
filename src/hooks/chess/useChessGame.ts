@@ -50,10 +50,7 @@ export function useChessGame() {
   const createGame = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.log("User not authenticated, skipping game creation");
-        return;
-      }
+      if (!user) return;
 
       const { data, error } = await supabase
         .from('chess_games')
@@ -67,22 +64,16 @@ export function useChessGame() {
         .single();
 
       if (error) throw error;
-      console.log("Created new game:", data.id);
       setGameId(data.id);
     } catch (error) {
       console.error('Error creating game:', error);
-      toast.error("Erreur lors de la création de la partie");
     }
   };
 
   const saveGameState = async () => {
-    if (!gameId) {
-      console.log("No game ID, skipping save");
-      return;
-    }
+    if (!gameId) return;
 
     try {
-      console.log("Saving game state for game:", gameId);
       const { error } = await supabase
         .from('chess_games')
         .update({
@@ -94,47 +85,39 @@ export function useChessGame() {
       if (error) throw error;
     } catch (error) {
       console.error('Error saving game state:', error);
-      toast.error("Erreur lors de la sauvegarde de la partie");
     }
   };
 
   useEffect(() => {
     if (!gameId) {
-      console.log("No game ID, creating new game");
       createGame();
     }
   }, []);
 
   useEffect(() => {
     if (gameId && board && moveHistory.length > 0) {
-      console.log("Saving game state...");
       saveGameState();
     }
   }, [board, moveHistory, isWhiteTurn, gameOver]);
 
   const handleSquareClick = async (row: number, col: number) => {
-    if (gameOver || (!isWhiteTurn && !selectedPiece)) {
-      console.log("Move blocked - game over or not player's turn");
-      return;
-    }
+    if (gameOver || (!isWhiteTurn && !selectedPiece)) return;
 
     if (selectedPiece) {
+      // Si on clique sur une case possible
       if (possibleMoves.some(move => move.row === row && move.col === col)) {
-        console.log("Making move:", selectedPiece, "to", row, col);
         const newBoard = makeMove(selectedPiece.row, selectedPiece.col, row, col);
         const move = `${getSquareName(selectedPiece.row, selectedPiece.col)} → ${getSquareName(row, col)}`;
         setMoveHistory(prev => [...prev, move]);
         setIsWhiteTurn(!isWhiteTurn);
 
-        // AI's turn
-        if (!gameOver && isWhiteTurn) {
+        // Tour de l'IA
+        if (isWhiteTurn) {
           try {
-            console.log("Initiating AI move...");
             await makeAIMove(
               newBoard,
               difficulty,
               (from, to) => {
-                console.log("AI moving from", from, "to", to);
                 const aiBoard = makeMove(from.row, from.col, to.row, to.col);
                 const aiMove = `${getSquareName(from.row, from.col)} → ${getSquareName(to.row, to.col)}`;
                 setMoveHistory(prev => [...prev, aiMove]);
@@ -152,26 +135,33 @@ export function useChessGame() {
           }
         }
       } else {
-        console.log("Invalid move - deselecting piece");
+        // Si on clique sur une autre case, on désélectionne
         setSelectedPiece(null);
         setPossibleMoves([]);
+        
+        // Si la nouvelle case contient une pièce valide, on la sélectionne
+        const piece = board[row][col];
+        if (piece && piece.isWhite === isWhiteTurn) {
+          handlePieceSelect(row, col, isWhiteTurn);
+        }
       }
     } else {
+      // Sélection d'une nouvelle pièce
       const piece = board[row][col];
       if (piece && piece.isWhite === isWhiteTurn) {
-        console.log("Selecting piece at", row, col);
         handlePieceSelect(row, col, isWhiteTurn);
       }
     }
   };
 
   const resetGame = () => {
-    console.log("Resetting game...");
     resetBoard();
     setIsWhiteTurn(true);
     setGameOver(false);
     setMoveHistory([]);
     setGameId(null);
+    setSelectedPiece(null);
+    setPossibleMoves([]);
     createGame();
   };
 

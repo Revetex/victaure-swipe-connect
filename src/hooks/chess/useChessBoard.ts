@@ -1,7 +1,8 @@
 
 import { useState, useCallback } from "react";
 import { ChessPiece } from "@/types/chess";
-import { initializeBoard, calculatePossibleMoves } from "./chessUtils";
+import { calculatePossibleMoves } from "./chessUtils";
+import { toast } from "sonner";
 
 export function useChessBoard() {
   const [board, setBoard] = useState(initializeBoard());
@@ -20,8 +21,14 @@ export function useChessBoard() {
   }, [board]);
 
   const makeMove = useCallback((fromRow: number, fromCol: number, toRow: number, toCol: number) => {
-    const newBoard = JSON.parse(JSON.stringify(board));
-    newBoard[toRow][toCol] = board[fromRow][fromCol];
+    const piece = board[fromRow][fromCol];
+    if (!piece) {
+      toast.error("Aucune pièce sélectionnée");
+      return board;
+    }
+
+    const newBoard = board.map(row => [...row]);
+    newBoard[toRow][toCol] = piece;
     newBoard[fromRow][fromCol] = null;
     setBoard(newBoard);
     setSelectedPiece(null);
@@ -46,4 +53,23 @@ export function useChessBoard() {
     setPossibleMoves,
     setSelectedPiece
   };
+}
+
+function initializeBoard(): (ChessPiece | null)[][] {
+  const board = Array(8).fill(null).map(() => Array(8).fill(null));
+  
+  // Initialize pawns
+  for (let i = 0; i < 8; i++) {
+    board[1][i] = { type: 'pawn', isWhite: false };
+    board[6][i] = { type: 'pawn', isWhite: true };
+  }
+
+  // Initialize other pieces
+  const backRow = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'] as const;
+  for (let i = 0; i < 8; i++) {
+    board[0][i] = { type: backRow[i], isWhite: false };
+    board[7][i] = { type: backRow[i], isWhite: true };
+  }
+
+  return board;
 }
