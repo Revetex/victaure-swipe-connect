@@ -75,60 +75,58 @@ export function AuthForm({ redirectTo = '/dashboard' }: AuthFormProps) {
   };
 
   return (
-    <div className="flex min-h-[100dvh] flex-col">
-      <div className="flex-1">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="container relative mx-auto px-4 py-8 sm:px-6 lg:px-8 max-w-md"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-[#9b87f5]/10 via-[#8B5CF6]/5 to-[#7E69AB]/10 rounded-3xl blur-3xl" />
-          
-          <Tabs defaultValue="login" className="w-full relative">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="login" className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
-                Connexion
-              </TabsTrigger>
-              <TabsTrigger value="signup" className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
-                Inscription
-              </TabsTrigger>
-            </TabsList>
+    <main className="min-h-[100dvh] grid place-items-center bg-gradient-to-b from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 p-4">
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0 }}
+        className="w-full max-w-md backdrop-blur-xl bg-white/80 dark:bg-zinc-900/80 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800"
+      >
+        <Tabs defaultValue="login" className="w-full p-1">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger 
+              value="login" 
+              className="data-[state=active]:bg-zinc-900 data-[state=active]:text-white dark:data-[state=active]:bg-zinc-100 dark:data-[state=active]:text-zinc-900"
+            >
+              Connexion
+            </TabsTrigger>
+            <TabsTrigger 
+              value="signup"
+              className="data-[state=active]:bg-zinc-900 data-[state=active]:text-white dark:data-[state=active]:bg-zinc-100 dark:data-[state=active]:text-zinc-900"
+            >
+              Inscription
+            </TabsTrigger>
+          </TabsList>
 
-            <AnimatePresence mode="wait">
-              <TabsContent value="login" className="relative">
-                <div className="glass-card overflow-hidden border-[#9b87f5]/20">
-                  <LoginForm
-                    email={email}
-                    password={password}
-                    loading={loading}
-                    onEmailChange={setEmail}
-                    onPasswordChange={setPassword}
-                    onSubmit={() => handleAuth('login')}
-                  />
-                </div>
-              </TabsContent>
+          <AnimatePresence mode="wait">
+            <TabsContent value="login" className="p-6">
+              <LoginForm
+                email={email}
+                password={password}
+                loading={loading}
+                onEmailChange={setEmail}
+                onPasswordChange={setPassword}
+                onSubmit={() => handleAuth('login')}
+              />
+            </TabsContent>
 
-              <TabsContent value="signup" className="relative">
-                <div className="glass-card overflow-hidden border-[#9b87f5]/20">
-                  <SignupForm
-                    email={email}
-                    password={password}
-                    fullName={fullName}
-                    phone={phone}
-                    loading={loading}
-                    onEmailChange={setEmail}
-                    onPasswordChange={setPassword}
-                    onFullNameChange={setFullName}
-                    onPhoneChange={setPhone}
-                    onSubmit={() => handleAuth('signup')}
-                  />
-                </div>
-              </TabsContent>
-            </AnimatePresence>
-          </Tabs>
-        </motion.div>
-      </div>
-    </div>
+            <TabsContent value="signup" className="p-6">
+              <SignupForm
+                email={email}
+                password={password}
+                fullName={fullName}
+                phone={phone}
+                loading={loading}
+                onEmailChange={setEmail}
+                onPasswordChange={setPassword}
+                onFullNameChange={setFullName}
+                onPhoneChange={setPhone}
+                onSubmit={() => handleAuth('signup')}
+              />
+            </TabsContent>
+          </AnimatePresence>
+        </Tabs>
+      </motion.section>
+    </main>
   );
 }
