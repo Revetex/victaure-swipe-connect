@@ -1,7 +1,6 @@
 
 import type { Database } from "@/integrations/supabase/types";
 
-// Définition des types de base
 type Tables = Database['public']['Tables'];
 
 // Type pour les éléments du marketplace
@@ -57,15 +56,15 @@ export interface MarketplaceJob {
   experience_level: string;
   status: string;
   category_id: string | null;
-  category?: {
+  category: {
     name: string;
-  };
+  } | null;
   created_at: string;
   employer_id: string;
-  employer?: {
+  employer: {
     full_name: string;
     avatar_url: string | null;
-  };
+  } | null;
 }
 
 // Type pour les catégories d'emploi
@@ -77,4 +76,3 @@ export interface JobCategory {
   parent_id: string | null;
   created_at: string;
 }
-

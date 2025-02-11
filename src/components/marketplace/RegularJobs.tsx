@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -17,31 +16,35 @@ import type { MarketplaceJob, JobCategory } from "@/types/marketplace/types";
 export function RegularJobs() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const { data: jobs = [], isLoading } = useQuery({
+  const { data: jobs = [], isLoading: jobsLoading } = useQuery({
     queryKey: ['marketplace-jobs'],
     queryFn: async () => {
+      console.log('Fetching jobs...');
       const { data, error } = await supabase
         .from('marketplace_jobs')
         .select(`
           *,
-          employer:profiles(full_name, avatar_url),
-          category:marketplace_job_categories(name)
+          employer:profiles!marketplace_jobs_employer_id_fkey(full_name, avatar_url),
+          category:marketplace_job_categories!marketplace_jobs_category_id_fkey(name)
         `)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 
       if (error) {
+        console.error('Error fetching jobs:', error);
         toast.error("Erreur lors du chargement des offres d'emploi");
         throw error;
       }
 
-      return (data || []) as MarketplaceJob[];
+      console.log('Jobs fetched:', data);
+      return data as MarketplaceJob[];
     }
   });
 
-  const { data: categories = [] } = useQuery({
-    queryKey: ['marketplace-job-categories'],
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+    queryKey: ['job-categories'],
     queryFn: async () => {
+      console.log('Fetching categories...');
       const { data, error } = await supabase
         .from('marketplace_job_categories')
         .select('*')
@@ -49,13 +52,17 @@ export function RegularJobs() {
         .order('name');
 
       if (error) {
+        console.error('Error fetching categories:', error);
         toast.error("Erreur lors du chargement des catégories");
         throw error;
       }
 
-      return (data || []) as JobCategory[];
+      console.log('Categories fetched:', data);
+      return data as JobCategory[];
     }
   });
+
+  const isLoading = jobsLoading || categoriesLoading;
 
   return (
     <div className="space-y-6">
