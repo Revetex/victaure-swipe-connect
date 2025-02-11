@@ -40,11 +40,10 @@ export function ProfilePreviewModal({
       />
       
       <motion.div 
-        className="relative w-full max-w-lg mx-4"
+        className="relative z-[99] w-full max-w-lg mx-4"
         initial={{ y: 50 }}
         animate={{ y: 0 }}
         exit={{ y: 50 }}
-        style={{ zIndex: 90 }}
       >
         <div className="bg-background rounded-lg shadow-lg overflow-hidden max-h-[85vh] flex flex-col">
           <div className="flex-1 overflow-y-auto">
