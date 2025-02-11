@@ -46,46 +46,6 @@ export type MarketplaceItem = DbMarketplaceItem & {
   category?: MarketplaceCategory | null;
 };
 
-// Ajout des types manquants pour les jobs
-export type JobCategory = {
-  id: string;
-  name: string;
-  parent_id: string | null;
-  icon: string | null;
-  description: string | null;
-  created_at: string;
-  subcategories?: JobCategory[];
-};
-
-export type MarketplaceJob = {
-  id: string;
-  title: string;
-  description: string | null;
-  company_name: string | null;
-  company_logo: string | null;
-  location: string;
-  remote_type: string;
-  salary_min: number | null;
-  salary_max: number | null;
-  salary_currency: string;
-  salary_period: string;
-  contract_type: string;
-  experience_level: string;
-  status: string;
-  category_id: string | null;
-  employer_id: string;
-  created_at: string;
-  updated_at: string;
-  employer?: {
-    id: string;
-    full_name: string;
-    avatar_url: string | null;
-    email?: string;
-  } | null;
-  category?: JobCategory | null;
-};
-
-// Ajout du type pour les services marketplace
 export type MarketplaceService = {
   id: string;
   title: string;
@@ -114,3 +74,42 @@ export type MarketplaceService = {
   }[];
 };
 
+// Type pour les catégories d'emploi
+export type JobCategory = {
+  id: string;
+  name: string;
+  parent_id: string | null;
+  icon: string | null;
+  description: string | null;
+  created_at: string;
+  subcategories?: JobCategory[];
+};
+
+// Type pour les emplois du marketplace
+export type MarketplaceJob = {
+  id: string;
+  title: string;
+  description: string | null;
+  company_name: string | null;
+  company_logo: string | null;
+  location: string;
+  remote_type: string;
+  salary_min: number | null;
+  salary_max: number | null;
+  salary_currency: string;
+  salary_period: string;
+  contract_type: string;
+  experience_level: string;
+  status: string;
+  category_id: string | null;
+  employer_id: string;
+  created_at: string;
+  updated_at: string;
+  employer?: {
+    id: string;
+    full_name: string;
+    avatar_url: string | null;
+    email?: string;
+  } | null;
+  category?: JobCategory | null;
+};
