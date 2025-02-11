@@ -17,19 +17,19 @@ const LoadingFallback = () => (
 export default function Index() {
   return (
     <div className="flex flex-col min-h-screen">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="flex-1"
-      >
-        <Suspense fallback={<LoadingFallback />}>
-          <HeroSection />
-          <Features />
-        </Suspense>
-      </motion.div>
+      <main className="flex-1">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Suspense fallback={<LoadingFallback />}>
+            <HeroSection />
+            <Features />
+          </Suspense>
+        </motion.div>
+      </main>
       <Footer />
     </div>
   );
 }
-
