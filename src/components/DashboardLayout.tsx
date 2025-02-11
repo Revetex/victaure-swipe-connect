@@ -45,10 +45,11 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       />
 
       <main className={cn(
-        "flex-1 lg:ml-64 min-h-screen relative pt-16",
+        "flex-1 lg:ml-64 min-h-screen relative",
         "glass-panel"
       )}>
-        <div className="h-full">
+        <div className="sticky top-0 h-16 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b" />
+        <div className="h-[calc(100vh-4rem)]">
           {children || (
             <DashboardContent
               currentPage={currentPage}
