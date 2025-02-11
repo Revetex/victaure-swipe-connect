@@ -42,10 +42,8 @@ export function ChessBoard({
 
   return (
     <div className="w-full max-w-3xl mx-auto">
-      <div 
-        className="aspect-square w-full bg-gradient-to-br from-slate-800 to-slate-900 p-2 rounded-xl shadow-2xl border border-slate-700"
-      >
-        <div className="grid grid-cols-8 gap-0 h-full w-full bg-slate-800 rounded-lg overflow-hidden">
+      <div className="w-full aspect-square bg-slate-800 p-1 rounded-xl border border-slate-700">
+        <div className="grid grid-cols-8 grid-rows-[repeat(8,1fr)] h-full w-full gap-[1px] bg-slate-700">
           {board.map((row, rowIndex) => (
             row.map((piece, colIndex) => {
               const isSelected = selectedPiece?.row === rowIndex && selectedPiece?.col === colIndex;
@@ -59,7 +57,7 @@ export function ChessBoard({
                   disabled={(!isWhiteTurn && !piece?.isWhite) || isThinking || gameOver}
                   aria-label={`Square ${String.fromCharCode(97 + colIndex)}${8 - rowIndex}${piece ? ` with ${piece.type}` : ''}`}
                   className={cn(
-                    "w-full h-full flex items-center justify-center relative",
+                    "aspect-square w-full h-full flex items-center justify-center relative",
                     "transition-all duration-200",
                     isMobile ? "text-3xl sm:text-4xl" : "text-5xl sm:text-6xl",
                     isLight ? 'bg-slate-200' : 'bg-slate-400',

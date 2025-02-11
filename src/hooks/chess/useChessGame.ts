@@ -65,10 +65,9 @@ export function useChessGame() {
         setPossibleMoves([]);
         setIsWhiteTurn(false);
 
-        const gameState: GameState = {
+        const gameState = {
           board: newBoard,
           isWhiteTurn: false,
-          gameOver: false,
           moveHistory: [...moveHistory, move],
           winner: null
         };
@@ -92,8 +91,7 @@ export function useChessGame() {
               setMoveHistory(prev => [...prev, aiMove]);
               setBoard(aiBoard);
               setIsWhiteTurn(true);
-            },
-            gameState
+            }
           );
         } catch (error) {
           console.error("Error during AI move:", error);
