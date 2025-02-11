@@ -8,6 +8,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { useState } from "react";
 import { UserProfile } from "@/types/profile";
+import { navigationItems } from "@/config/navigation";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface DashboardMobileNavProps {
   currentPage: number;
@@ -57,13 +60,36 @@ export function DashboardMobileNav({
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0">
-            <DashboardSidebar 
-              currentPage={currentPage} 
-              onPageChange={(page) => {
-                onPageChange(page);
-                setShowMobileMenu(false);
-              }} 
-            />
+            <div className="p-4">
+              <Logo />
+            </div>
+            <nav className="space-y-1 p-4">
+              {navigationItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <motion.button
+                    key={item.id}
+                    onClick={() => {
+                      onPageChange(item.id);
+                      setShowMobileMenu(false);
+                    }}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: item.id * 0.1 }}
+                    className={cn(
+                      "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm",
+                      "transition-colors duration-200",
+                      currentPage === item.id 
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-muted"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span>{item.name}</span>
+                  </motion.button>
+                );
+              })}
+            </nav>
           </SheetContent>
         </Sheet>
         <div className="flex-1 flex justify-center">
