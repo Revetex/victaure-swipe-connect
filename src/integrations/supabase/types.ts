@@ -2221,6 +2221,7 @@ export type Database = {
         | "other"
       job_source: "linkedin" | "indeed" | "direct"
       message_delivery_status: "pending" | "delivered" | "read"
+      message_sender_type: "user" | "assistant" | "system"
       mission_type: "company" | "individual"
     }
     CompositeTypes: {
