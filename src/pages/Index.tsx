@@ -19,7 +19,7 @@ const LoadingFallback = () => (
 
 export default function Index() {
   const { user } = useAuth();
-  const isAdmin = user?.email === "contact@victaure.com"; // Remplacez par l'email de l'administrateur
+  const isAdmin = user?.email === "contact@victaure.com";
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-purple-900/5 to-background">
@@ -32,12 +32,11 @@ export default function Index() {
         >
           <Suspense fallback={<LoadingFallback />}>
             <HeroSection />
-            <div className="container mx-auto p-4 space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {isAdmin && <UploadApk />}
-                <DownloadApp />
+            {isAdmin && (
+              <div className="container mx-auto p-4">
+                <UploadApk />
               </div>
-            </div>
+            )}
             <Features />
           </Suspense>
         </motion.div>
