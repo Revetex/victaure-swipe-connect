@@ -44,6 +44,7 @@ export function FriendsContent() {
     {
       name: "Convertisseur",
       icon: Ruler,
+      component: null,
       description: "Convertissez des unités",
       comingSoon: true
     },
@@ -76,3 +77,4 @@ export function FriendsContent() {
     </motion.div>
   );
 }
+

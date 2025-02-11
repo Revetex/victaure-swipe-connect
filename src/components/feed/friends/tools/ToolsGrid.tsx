@@ -8,7 +8,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 interface Tool {
   name: string;
   icon: any;
-  component: any;
+  component: any | null;
   description: string;
   comingSoon?: boolean;
 }
@@ -61,3 +61,4 @@ export function ToolsGrid({ tools, onToolClick }: ToolsGridProps) {
     </div>
   );
 }
+
