@@ -7,6 +7,9 @@ export interface MessageSender {
   last_seen: string;
 }
 
+// Adding the Receiver type that matches MessageSender structure
+export type Receiver = MessageSender;
+
 export interface Message {
   id: string;
   content: string;
@@ -34,3 +37,4 @@ export interface MessageDelivery {
   read_at?: string;
   created_at: string;
 }
+
