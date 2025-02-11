@@ -33,6 +33,7 @@ export interface Job {
   skills?: string[];
   source?: "internal" | "external";
   url?: string;
+  mission_type: 'company' | 'individual';  // Added this field
   employer?: {
     full_name?: string;
     company_name?: string;
@@ -64,4 +65,3 @@ export interface Job {
 }
 
 export * from './jobCategories';
-
