@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useProfile } from "@/hooks/useProfile";
-import { Settings, LogOut, User, UserCircle, Bell, Shield } from "lucide-react";
+import { Settings, LogOut, User, Menu, Bell, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
@@ -35,19 +35,10 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 
-          className="relative h-10 w-10 rounded-full ring-2 ring-primary/10 hover:ring-primary/20 transition-all"
+          size="icon"
+          className="relative hover:bg-accent transition-colors"
         >
-          {profile?.avatar_url ? (
-            <img
-              src={profile.avatar_url}
-              alt={profile.full_name || "Avatar"}
-              className="h-10 w-10 rounded-full object-cover"
-            />
-          ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/5">
-              <UserCircle className="h-6 w-6 text-primary" />
-            </div>
-          )}
+          <Menu className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
