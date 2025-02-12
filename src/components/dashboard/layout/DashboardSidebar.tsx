@@ -25,6 +25,41 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
       animate={{ x: 0 }}
       className="hidden lg:flex flex-col w-64 border-r fixed h-screen glass-panel"
     >      
+      {profile && (
+        <>
+          <div className="p-4 border-b border-border/40">
+            <button
+              onClick={() => setShowProfilePreview(true)}
+              className="w-full gradient-border"
+            >
+              <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  {profile.avatar_url ? (
+                    <img
+                      src={profile.avatar_url}
+                      alt={profile.full_name || ""}
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-sm font-medium">
+                      {profile.full_name?.[0]?.toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0 text-left">
+                  <p className="font-medium truncate text-sm">
+                    {profile.full_name || "Utilisateur"}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {profile.role}
+                  </p>
+                </div>
+              </div>
+            </button>
+          </div>
+        </>
+      )}
+
       <ScrollArea className="flex-1">
         <nav className="p-6 space-y-2">
           {navigationItems.map((item) => {
@@ -65,42 +100,6 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
           })}
         </nav>
       </ScrollArea>
-
-      {profile && (
-        <>
-          <Separator />
-          <div className="p-4">
-            <button
-              onClick={() => setShowProfilePreview(true)}
-              className="w-full gradient-border"
-            >
-              <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  {profile.avatar_url ? (
-                    <img
-                      src={profile.avatar_url}
-                      alt={profile.full_name || ""}
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-sm font-medium">
-                      {profile.full_name?.[0]?.toUpperCase()}
-                    </span>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0 text-left">
-                  <p className="font-medium truncate text-sm">
-                    {profile.full_name || "Utilisateur"}
-                  </p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {profile.role}
-                  </p>
-                </div>
-              </div>
-            </button>
-          </div>
-        </>
-      )}
 
       {profile && (
         <ProfilePreview
