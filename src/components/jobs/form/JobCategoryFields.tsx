@@ -36,7 +36,7 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
 
         const uniqueCategories = Array.from(
           new Map(data.map(item => [item.name, item])).values()
-        );
+        ).filter(category => category.name && category.name.trim() !== '');
 
         return uniqueCategories;
       } catch (error) {
@@ -66,7 +66,7 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
           throw error;
         }
 
-        return data;
+        return data.filter(subcategory => subcategory.name && subcategory.name.trim() !== '');
       } catch (error) {
         console.error('Error in subcategory fetch:', error);
         toast.error("Erreur lors du chargement des sous-catégories");
@@ -106,7 +106,7 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
                   field.onChange(value);
                   handleCategoryChange(value);
                 }}
-                value={field.value || ""}
+                value={field.value || "select-category"}
                 disabled={categoriesLoading}
               >
                 <SelectTrigger className="w-full">
@@ -114,17 +114,20 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
                 </SelectTrigger>
                 <SelectContent>
                   <ScrollArea className="h-[300px]">
+                    <SelectItem value="select-category" disabled>Sélectionnez une catégorie</SelectItem>
                     {categories?.map((category) => (
-                      <SelectItem 
-                        key={category.id} 
-                        value={category.name || "default"}
-                        className="flex items-center gap-2"
-                      >
-                        <div className="flex items-center gap-2">
-                          <CategoryIcon category={category.name} />
-                          <span>{category.name}</span>
-                        </div>
-                      </SelectItem>
+                      category.name && (
+                        <SelectItem 
+                          key={category.id} 
+                          value={category.name}
+                          className="flex items-center gap-2"
+                        >
+                          <div className="flex items-center gap-2">
+                            <CategoryIcon category={category.name} />
+                            <span>{category.name}</span>
+                          </div>
+                        </SelectItem>
+                      )
                     ))}
                   </ScrollArea>
                 </SelectContent>
@@ -148,7 +151,7 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
                     field.onChange(value);
                     onChange?.({ subcategory: value });
                   }}
-                  value={field.value || ""}
+                  value={field.value || "select-subcategory"}
                   disabled={subcategoriesLoading}
                 >
                   <SelectTrigger>
@@ -156,13 +159,16 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
                   </SelectTrigger>
                   <SelectContent>
                     <ScrollArea className="h-[200px]">
+                      <SelectItem value="select-subcategory" disabled>Sélectionnez une sous-catégorie</SelectItem>
                       {subcategories?.map((subcategory) => (
-                        <SelectItem 
-                          key={subcategory.id} 
-                          value={subcategory.name || "default"}
-                        >
-                          {subcategory.name}
-                        </SelectItem>
+                        subcategory.name && (
+                          <SelectItem 
+                            key={subcategory.id} 
+                            value={subcategory.name}
+                          >
+                            {subcategory.name}
+                          </SelectItem>
+                        )
                       ))}
                     </ScrollArea>
                   </SelectContent>
