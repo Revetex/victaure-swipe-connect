@@ -33,7 +33,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
 
       <div className="flex-1 lg:ml-64">
         <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
-          <div className="flex h-14 items-center px-4">
+          <div className="flex h-16 items-center px-6">
             <div className="mr-4 hidden lg:flex">
               <Logo />
             </div>
@@ -50,7 +50,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
           </div>
         </header>
 
-        <div className="min-h-[calc(100vh-3.5rem)]">
+        <div className="min-h-[calc(100vh-4rem)]">
           {children || (
             <DashboardContent
               currentPage={currentPage}

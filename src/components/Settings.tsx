@@ -18,7 +18,7 @@ const sectionVariants = {
     opacity: 1, 
     y: 0,
     transition: {
-      duration: 0.3,
+      duration: 0.4,
       type: "spring",
       stiffness: 100,
       damping: 15
@@ -53,7 +53,7 @@ export function Settings() {
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-4rem)] pt-16">
+    <ScrollArea className="h-[calc(100vh-4rem)] pt-8">
       <div className="container mx-auto py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 px-6">
           {settingsSections.map(({ id, Component, icon: Icon, title, color }, index) => (
