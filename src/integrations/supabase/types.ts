@@ -2156,6 +2156,36 @@ export type Database = {
           },
         ]
       }
+      settings: {
+        Row: {
+          created_at: string | null
+          display_preferences: Json | null
+          id: string
+          language: string | null
+          notification_preferences: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          display_preferences?: Json | null
+          id?: string
+          language?: string | null
+          notification_preferences?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          display_preferences?: Json | null
+          id?: string
+          language?: string | null
+          notification_preferences?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       skills: {
         Row: {
           category: string
@@ -2334,6 +2364,42 @@ export type Database = {
           },
         ]
       }
+      tools: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          enabled: boolean | null
+          icon: string | null
+          id: string
+          name: string
+          order_index: number | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          enabled?: boolean | null
+          icon?: string | null
+          id?: string
+          name: string
+          order_index?: number | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          enabled?: boolean | null
+          icon?: string | null
+          id?: string
+          name?: string
+          order_index?: number | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       translations: {
         Row: {
           created_at: string
@@ -2417,6 +2483,47 @@ export type Database = {
             columns: ["participant2_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_tools: {
+        Row: {
+          created_at: string | null
+          custom_settings: Json | null
+          enabled: boolean | null
+          id: string
+          order_index: number | null
+          tool_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          custom_settings?: Json | null
+          enabled?: boolean | null
+          id?: string
+          order_index?: number | null
+          tool_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          custom_settings?: Json | null
+          enabled?: boolean | null
+          id?: string
+          order_index?: number | null
+          tool_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_tools_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "tools"
             referencedColumns: ["id"]
           },
         ]
