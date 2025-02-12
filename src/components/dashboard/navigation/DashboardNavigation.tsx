@@ -46,12 +46,12 @@ export function DashboardNavigation({
   };
 
   return (
-    <>
+    <div className="relative">
       <div className="fixed top-4 right-4 z-50">
         <NotificationsBox />
       </div>
 
-      <div className={cn("flex items-center justify-around w-full max-w-2xl mx-auto", className)}>
+      <div className={cn("flex items-center justify-around w-full max-w-2xl mx-auto relative", className)}>
         {navigationItems.map(({ id, icon: Icon, name, children }) => {
           const isTools = id === 5;
           const isActive = currentPage === id || (isTools && children?.some(child => child.id === currentPage));
@@ -95,7 +95,7 @@ export function DashboardNavigation({
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="absolute top-full mt-2 bg-background rounded-lg shadow-lg border p-2 min-w-[150px] z-50"
+                  className="absolute top-full mt-2 bg-background/95 backdrop-blur-sm rounded-lg shadow-lg border p-2 min-w-[150px] z-[100]"
                 >
                   {children?.map((tool) => (
                     <button
@@ -103,6 +103,7 @@ export function DashboardNavigation({
                       onClick={(e) => {
                         e.stopPropagation();
                         onPageChange(tool.id);
+                        setExpandedTools(false);
                       }}
                       className={cn(
                         "w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm",
@@ -147,6 +148,6 @@ export function DashboardNavigation({
           onClose={() => setShowProfilePreview(false)}
         />
       )}
-    </>
+    </div>
   );
 }
