@@ -19,16 +19,16 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
   const [showProfilePreview, setShowProfilePreview] = useState(false);
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-background border-r hidden lg:flex flex-col">
+    <aside className="fixed inset-y-0 left-0 z-50 w-56 bg-background border-r hidden lg:flex flex-col">
       {/* Profile Section */}
       {profile && (
-        <div className="p-4 border-b">
+        <div className="p-2 border-b">
           <button
             onClick={() => setShowProfilePreview(true)}
-            className="w-full bg-accent/50 hover:bg-accent transition-colors rounded-lg p-3"
+            className="w-full bg-accent/50 hover:bg-accent transition-colors rounded-md p-2"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                 {profile.avatar_url ? (
                   <img
                     src={profile.avatar_url}
@@ -36,16 +36,16 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
-                  <span className="text-lg font-semibold">
+                  <span className="text-sm font-semibold">
                     {profile.full_name?.[0]?.toUpperCase()}
                   </span>
                 )}
               </div>
               <div className="flex-1 min-w-0 text-left">
-                <p className="font-medium truncate">
+                <p className="text-sm font-medium truncate">
                   {profile.full_name || "Utilisateur"}
                 </p>
-                <p className="text-sm text-muted-foreground truncate">
+                <p className="text-xs text-muted-foreground truncate">
                   {profile.role}
                 </p>
               </div>
@@ -55,8 +55,8 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
       )}
 
       {/* Navigation */}
-      <ScrollArea className="flex-1 py-6">
-        <nav className="px-2 space-y-3">
+      <ScrollArea className="flex-1 py-2">
+        <nav className="px-1.5 space-y-2">
           {/* Principales */}
           <div className="space-y-0.5">
             <div className="px-2 py-1">
@@ -66,8 +66,9 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
               <Button
                 key={item.id}
                 variant="ghost"
+                size="sm"
                 className={cn(
-                  "w-full justify-start gap-2 text-sm font-medium",
+                  "w-full justify-start gap-2 text-sm font-medium h-8",
                   "relative group transition-all duration-200",
                   "hover:bg-accent",
                   currentPage === item.id && "bg-primary/10 text-primary hover:bg-primary/20"
@@ -84,7 +85,7 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
                 {currentPage === item.id && (
                   <motion.div
                     layoutId="sidebar-active"
-                    className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
+                    className="absolute left-0 w-0.5 inset-y-1 bg-primary rounded-full"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -103,8 +104,9 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
               <Button
                 key={item.id}
                 variant="ghost"
+                size="sm"
                 className={cn(
-                  "w-full justify-start gap-2 text-sm font-medium",
+                  "w-full justify-start gap-2 text-sm font-medium h-8",
                   "relative group transition-all duration-200",
                   "hover:bg-accent",
                   currentPage === item.id && "bg-primary/10 text-primary hover:bg-primary/20"
@@ -121,7 +123,7 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
                 {currentPage === item.id && (
                   <motion.div
                     layoutId="sidebar-active"
-                    className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
+                    className="absolute left-0 w-0.5 inset-y-1 bg-primary rounded-full"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -140,8 +142,9 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
               <Button
                 key={item.id}
                 variant="ghost"
+                size="sm"
                 className={cn(
-                  "w-full justify-start gap-2 text-sm font-medium",
+                  "w-full justify-start gap-2 text-sm font-medium h-8",
                   "relative group transition-all duration-200",
                   "hover:bg-accent",
                   currentPage === item.id && "bg-primary/10 text-primary hover:bg-primary/20"
@@ -158,7 +161,7 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
                 {currentPage === item.id && (
                   <motion.div
                     layoutId="sidebar-active"
-                    className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
+                    className="absolute left-0 w-0.5 inset-y-1 bg-primary rounded-full"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -177,8 +180,9 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
               <Button
                 key={item.id}
                 variant="ghost"
+                size="sm"
                 className={cn(
-                  "w-full justify-start gap-2 text-sm font-medium",
+                  "w-full justify-start gap-2 text-sm font-medium h-8",
                   "relative group transition-all duration-200",
                   "hover:bg-accent",
                   currentPage === item.id && "bg-primary/10 text-primary hover:bg-primary/20"
@@ -195,7 +199,7 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
                 {currentPage === item.id && (
                   <motion.div
                     layoutId="sidebar-active"
-                    className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
+                    className="absolute left-0 w-0.5 inset-y-1 bg-primary rounded-full"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -214,8 +218,9 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
               <Button
                 key={item.id}
                 variant="ghost"
+                size="sm"
                 className={cn(
-                  "w-full justify-start gap-2 text-sm font-medium",
+                  "w-full justify-start gap-2 text-sm font-medium h-8",
                   "relative group transition-all duration-200",
                   "hover:bg-accent",
                   currentPage === item.id && "bg-primary/10 text-primary hover:bg-primary/20"
@@ -232,7 +237,7 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
                 {currentPage === item.id && (
                   <motion.div
                     layoutId="sidebar-active"
-                    className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
+                    className="absolute left-0 w-0.5 inset-y-1 bg-primary rounded-full"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
