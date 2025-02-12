@@ -16,6 +16,7 @@ import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
 import { cn } from "@/lib/utils";
+import { DownloadApp } from "@/components/dashboard/DownloadApp";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -57,7 +58,14 @@ export function DashboardContent({
   const getPageContent = () => {
     switch (currentPage) {
       case 1:
-        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
+        return (
+          <>
+            <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />
+            <div className="mt-4">
+              <DownloadApp />
+            </div>
+          </>
+        );
       case 2:
         return <Messages />;
       case 3:
@@ -97,4 +105,3 @@ export function DashboardContent({
     </motion.div>
   );
 }
-
