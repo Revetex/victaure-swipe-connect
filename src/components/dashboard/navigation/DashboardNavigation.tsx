@@ -1,5 +1,4 @@
 
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { navigationItems } from "@/config/navigation";
 import { ChevronDown, User } from "lucide-react";
@@ -45,7 +44,7 @@ export function DashboardNavigation({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur-sm">
+    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-background/95 backdrop-blur-sm">
       <div className="fixed top-4 right-4">
         <NotificationsBox />
       </div>
@@ -69,12 +68,7 @@ export function DashboardNavigation({
                   onPageChange(id);
                 }
               }}
-              className={cn(
-                "flex flex-col items-center justify-center gap-1 p-2",
-                "transition-colors duration-200",
-                "hover:text-primary focus:outline-none",
-                isActive ? "text-primary" : "text-muted-foreground"
-              )}
+              className={cn("nav-item", isActive && "active")}
               title={name}
               aria-label={name}
             >
@@ -88,7 +82,7 @@ export function DashboardNavigation({
               )}
 
               {isTools && expandedTools && (
-                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-background border rounded-lg shadow-lg p-2 min-w-[200px]">
+                <div className="nav-tools-menu">
                   {children?.map((tool) => (
                     <button
                       key={tool.id}
@@ -98,14 +92,12 @@ export function DashboardNavigation({
                         setExpandedTools(false);
                       }}
                       className={cn(
-                        "w-full flex items-center gap-2 px-3 py-2 rounded",
-                        "transition-colors duration-200",
-                        "hover:bg-muted",
-                        currentPage === tool.id ? "text-primary bg-muted" : "text-foreground"
+                        "nav-tools-item",
+                        currentPage === tool.id && "bg-primary/20 text-primary"
                       )}
                     >
                       <tool.icon className="h-4 w-4" />
-                      <span className="text-sm">{tool.name}</span>
+                      <span>{tool.name}</span>
                     </button>
                   ))}
                 </div>
@@ -116,12 +108,7 @@ export function DashboardNavigation({
         
         <button
           onClick={() => setShowProfilePreview(true)}
-          className={cn(
-            "flex flex-col items-center justify-center gap-1 p-2",
-            "transition-colors duration-200",
-            "hover:text-primary focus:outline-none",
-            "text-muted-foreground"
-          )}
+          className="nav-item"
           title="Mon profil"
           aria-label="Mon profil"
         >
