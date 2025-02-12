@@ -3,7 +3,6 @@ import React, { useState, useCallback } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { DashboardContent } from "./dashboard/DashboardContent";
 import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
-import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
 import { NotificationsBox } from "./notifications/NotificationsBox";
 import { UserNav } from "./dashboard/layout/UserNav";
 import { Logo } from "./Logo";
@@ -11,13 +10,11 @@ import { Logo } from "./Logo";
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(4);
   const [isEditing, setIsEditing] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { profile } = useProfile();
 
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
     setIsEditing(false);
-    setShowMobileMenu(false);
   }, []);
 
   const handleEditStateChange = useCallback((state: boolean) => {
@@ -36,12 +33,14 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       <div className="flex-1">
         {/* Header - Fixed at top */}
         <header className="fixed top-0 right-0 left-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="flex h-16 items-center gap-4 px-4">
+          <div className="flex h-16 items-center px-4">
             <div className="lg:hidden">
               <UserNav />
             </div>
-            <Logo className="mx-auto lg:mx-0" />
-            <div className="flex items-center gap-2 ml-auto">
+            <div className="flex-1 flex justify-center">
+              <Logo />
+            </div>
+            <div className="flex items-center">
               <NotificationsBox />
             </div>
           </div>
