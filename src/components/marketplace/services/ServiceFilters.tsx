@@ -40,7 +40,7 @@ export function ServiceFilters({ categories, filters, onFilterChange }: ServiceF
             <SelectValue placeholder="Tous les types" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Tous les types</SelectItem>
+            <SelectItem value="all">Tous les types</SelectItem>
             <SelectItem value="fixed_price">Prix fixe</SelectItem>
             <SelectItem value="auction">Enchère</SelectItem>
           </SelectContent>
@@ -57,7 +57,7 @@ export function ServiceFilters({ categories, filters, onFilterChange }: ServiceF
             <SelectValue placeholder="Toutes les catégories" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Toutes les catégories</SelectItem>
+            <SelectItem value="all">Toutes les catégories</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name}
