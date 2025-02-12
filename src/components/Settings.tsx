@@ -21,7 +21,7 @@ const settingsSections = [
 
 export function Settings() {
   return (
-    <div className="max-w-3xl mx-auto p-4">
+    <div className="max-w-3xl mx-auto p-4 pt-20">
       <div className="space-y-6">
         {settingsSections.map(({ id, title, icon: Icon, Component }) => (
           <div 

@@ -12,7 +12,7 @@ import { Loader } from "@/components/ui/loader";
 import { NotificationsTab } from "@/components/notifications/NotificationsTab";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
-import { ChessPage } from "@/components/tools/ChessPage";
+import { ChessSection } from "@/components/tools/chess/ChessSection"; // Changé ici
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
 import { cn } from "@/lib/utils";
@@ -73,7 +73,7 @@ export function DashboardContent({
       case 4:
         return <Feed />;
       case 7:
-        return <TasksPage />;
+        return <ChessSection />; // Modifié ici pour utiliser le bon composant
       case 8:
         return <CalculatorPage />;
       case 9:
@@ -84,8 +84,6 @@ export function DashboardContent({
         return <FriendsList />;
       case 14:
         return <TranslatorPage />;
-      case 15:
-        return <ChessPage />;
       case 16:
         return <NotesSection />;
       default:
@@ -99,7 +97,7 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="relative bg-background"
+      className="relative bg-background pt-16"
     >
       {getPageContent()}
     </motion.div>
