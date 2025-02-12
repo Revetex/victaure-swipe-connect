@@ -22,7 +22,8 @@ export const navigationItems: NavigationItem[] = [
   { id: 16, icon: StickyNote, name: "Notes" },
   { id: 3, icon: ShoppingBag, name: "Marketplace" },
   
-  // Outils et autres
+  // Jeux et outils
+  { id: 7, icon: SwordIcon, name: "Échecs" },
   { id: 8, icon: Calculator, name: "Calculatrice" },
   { id: 14, icon: Languages, name: "Traducteur" },
   { id: 12, icon: Users, name: "Connections" },
@@ -42,6 +43,8 @@ export const getPageTitle = (currentPage: number): string => {
       return "Marketplace";
     case 4:
       return "Actualité";
+    case 7:
+      return "Échecs";
     case 8:
       return "Calculatrice";
     case 9:
