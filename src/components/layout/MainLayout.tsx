@@ -45,12 +45,10 @@ export const MainLayout = memo(function MainLayout({
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
-      {/* Main content with optimized layout structure */}
       <main className={cn(
         "flex-1 relative",
         "transition-all duration-200 ease-in-out"
       )}>
-        {/* Header with optimized backdrop and animations */}
         <motion.header 
           className={cn(
             "fixed top-0 right-0 z-40 h-16",
@@ -93,7 +91,6 @@ export const MainLayout = memo(function MainLayout({
           </div>
         </motion.header>
 
-        {/* Content area with improved layout and animations */}
         <motion.div 
           className={cn(
             "pt-16 min-h-[calc(100vh-4rem)]",
@@ -109,7 +106,6 @@ export const MainLayout = memo(function MainLayout({
           </div>
         </motion.div>
 
-        {/* Friends list overlay with improved animations */}
         <AnimatePresence mode="wait" initial={false}>
           {showFriendsList && (
             <DashboardFriendsList 
@@ -119,7 +115,6 @@ export const MainLayout = memo(function MainLayout({
           )}
         </AnimatePresence>
 
-        {/* Mobile navigation with improved safe area handling */}
         {!isFriendsPage && isMobile && (
           <motion.nav 
             className={cn(
@@ -137,9 +132,7 @@ export const MainLayout = memo(function MainLayout({
             exit={{ y: 100 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="h-full px-4">
-              {/* Mobile navigation content */}
-            </div>
+            <div className="h-full px-4" />
           </motion.nav>
         )}
       </main>
