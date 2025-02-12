@@ -37,9 +37,8 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "flex-1 lg:ml-64 min-h-screen relative",
         "glass-panel"
       )}>
-        <header className="fixed top-0 left-0 right-0 z-40 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 lg:left-64">
-          <div className="h-[2px] w-full bg-gradient-to-r from-primary/80 via-secondary/60 to-accent/40" />
-          <div className="flex items-center justify-between h-16 px-4">
+        <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex h-14 items-center gap-4 px-4">
             <Button 
               variant="ghost" 
               size="icon" 
@@ -48,7 +47,8 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <div className="flex items-center gap-2 ml-auto">
+            
+            <div className="flex items-center gap-4 ml-auto">
               <NotificationsBox />
               <UserNav />
             </div>
@@ -62,7 +62,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
           onPageChange={handlePageChange}
         />
 
-        <div className="pt-16">
+        <div className="p-6">
           {children || (
             <DashboardContent
               currentPage={currentPage}
