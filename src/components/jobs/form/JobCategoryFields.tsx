@@ -1,6 +1,7 @@
+
+import { useFormContext } from "react-hook-form";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useFormContext } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CategoryIcon } from "@/components/skills/CategoryIcon";
 import { useQuery } from "@tanstack/react-query";
@@ -18,7 +19,6 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
   const selectedCategory = watch("category");
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
-  // Fetch categories with proper error handling
   const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ['job-categories'],
     queryFn: async () => {
@@ -34,7 +34,6 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
           throw error;
         }
 
-        // Create a Map to remove duplicates based on name
         const uniqueCategories = Array.from(
           new Map(data.map(item => [item.name, item])).values()
         );
@@ -48,7 +47,6 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
     }
   });
 
-  // Fetch subcategories based on selected category ID
   const { data: subcategories, isLoading: subcategoriesLoading } = useQuery({
     queryKey: ['job-subcategories', selectedCategoryId],
     enabled: !!selectedCategoryId,
@@ -79,7 +77,6 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
 
   const handleCategoryChange = async (categoryName: string) => {
     try {
-      // Find the category object from our cached categories data
       const selectedCategory = categories?.find(cat => cat.name === categoryName);
       
       if (selectedCategory) {
@@ -110,6 +107,7 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
                   handleCategoryChange(value);
                 }}
                 value={field.value || ""}
+                disabled={categoriesLoading}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Sélectionnez une catégorie" />
@@ -117,7 +115,11 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
                 <SelectContent>
                   <ScrollArea className="h-[300px]">
                     {categories?.map((category) => (
-                      <SelectItem key={category.id} value={category.name} className="flex items-center gap-2">
+                      <SelectItem 
+                        key={category.id} 
+                        value={category.name || "default"}
+                        className="flex items-center gap-2"
+                      >
                         <div className="flex items-center gap-2">
                           <CategoryIcon category={category.name} />
                           <span>{category.name}</span>
@@ -155,7 +157,10 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
                   <SelectContent>
                     <ScrollArea className="h-[200px]">
                       {subcategories?.map((subcategory) => (
-                        <SelectItem key={subcategory.id} value={subcategory.name}>
+                        <SelectItem 
+                          key={subcategory.id} 
+                          value={subcategory.name || "default"}
+                        >
                           {subcategory.name}
                         </SelectItem>
                       ))}
