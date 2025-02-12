@@ -2257,6 +2257,33 @@ export type Database = {
         }
         Relationships: []
       }
+      theme_settings: {
+        Row: {
+          created_at: string | null
+          custom_colors: Json | null
+          id: string
+          mode: Database["public"]["Enums"]["theme_mode"] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          custom_colors?: Json | null
+          id?: string
+          mode?: Database["public"]["Enums"]["theme_mode"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          custom_colors?: Json | null
+          id?: string
+          mode?: Database["public"]["Enums"]["theme_mode"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       todos: {
         Row: {
           all_day: boolean | null
@@ -2616,6 +2643,7 @@ export type Database = {
       message_delivery_status: "pending" | "delivered" | "read"
       message_sender_type: "user" | "assistant" | "system"
       mission_type: "company" | "individual"
+      theme_mode: "light" | "dark" | "system"
     }
     CompositeTypes: {
       [_ in never]: never
