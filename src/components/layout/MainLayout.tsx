@@ -36,22 +36,23 @@ export function MainLayout({
     <div className="flex min-h-screen bg-background">
       {/* Navigation desktop */}
       {!isMobile && (
-        <nav className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <nav className="w-[280px] lg:w-[320px] fixed left-[-280px] lg:left-[-320px] top-0 bottom-0 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 hover:left-0 lg:hover:left-0 group">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-[-40px] top-4 bg-background border"
+          >
+            <Menu className="h-4 w-4" />
+          </Button>
           <Navigation />
         </nav>
       )}
 
       {/* Main content */}
-      <main className={cn(
-        "flex-1 relative",
-        !isMobile && "ml-[280px] lg:ml-[320px]"
-      )}>
+      <main className="flex-1 relative">
         {/* Fixed Header */}
-        <header className="fixed top-0 right-0 z-50 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-          <div className={cn(
-            "flex items-center gap-4 h-full px-4",
-            !isMobile && "ml-[280px] lg:ml-[320px]"
-          )}>
+        <header className="fixed top-0 right-0 z-50 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b w-full">
+          <div className="flex items-center gap-4 h-full px-4">
             {isMobile && (
               <Sheet>
                 <SheetTrigger asChild>
