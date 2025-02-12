@@ -3,13 +3,16 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Clock, Gavel, ImagePlus } from "lucide-react";
 import { MarketplaceService } from "@/types/marketplace/types";
+import { BidDialog } from "./BidDialog";
+import { useState } from "react";
 
 interface ServiceCardProps {
   service: MarketplaceService;
-  onBid?: () => void;
 }
 
-export function ServiceCard({ service, onBid }: ServiceCardProps) {
+export function ServiceCard({ service }: ServiceCardProps) {
+  const [showBidDialog, setShowBidDialog] = useState(false);
+
   return (
     <Card className="overflow-hidden">
       {service.images && service.images[0] ? (
@@ -43,20 +46,30 @@ export function ServiceCard({ service, onBid }: ServiceCardProps) {
         <p className="text-sm text-muted-foreground line-clamp-2">{service.description}</p>
         {service.type === 'auction' && service.bids && (
           <p className="text-sm text-muted-foreground">
-            {service.bids[0].count} enchère(s)
+            {service.bids[0]?.count} enchère(s)
           </p>
         )}
         {service.type === 'auction' && (
           <Button 
             className="w-full mt-2" 
             variant="secondary"
-            onClick={onBid}
+            onClick={() => setShowBidDialog(true)}
           >
             <Gavel className="h-4 w-4 mr-2" />
             Enchérir
           </Button>
         )}
       </div>
+
+      <BidDialog
+        open={showBidDialog}
+        onOpenChange={setShowBidDialog}
+        service={service}
+        onSuccess={() => {
+          // Le dialogue se fermera automatiquement
+          // La mise à jour des enchères se fera via la souscription en temps réel
+        }}
+      />
     </Card>
   );
 }
