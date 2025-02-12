@@ -9,8 +9,7 @@ const contractTypes = {
     "Part-time",
     "Contract",
     "Temporary",
-    "Internship",
-    "Seasonal"
+    "Internship"
   ],
   individual: [
     "One-time",

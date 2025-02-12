@@ -22,7 +22,7 @@ export function ExperienceLevelField() {
         <FormItem>
           <FormLabel>Niveau d'expérience requis</FormLabel>
           <FormControl>
-            <Select onValueChange={field.onChange} defaultValue={field.value || "Mid-Level"}>
+            <Select onValueChange={field.onChange} defaultValue={field.value || "Entry Level"}>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le niveau d'expérience" />
               </SelectTrigger>
