@@ -1,5 +1,4 @@
-
-import { MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, User, Users, Search, LayoutGrid, Menu, EyeOff } from "lucide-react";
+import { MessageSquare, BriefcaseIcon, ListTodo, Bell, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, User, Users, Search, LayoutGrid, Menu, EyeOff } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
 type NavigationItem = {
@@ -16,28 +15,19 @@ type NavigationItem = {
 };
 
 export const navigationItems: NavigationItem[] = [
-  // Section principale
+  // Principal
   { id: 1, icon: User, name: "Mon profil" },
   { id: 4, icon: Newspaper, name: "Actualité" },
-  { id: 2, icon: MessageSquare, name: "Messages", hidden: true },
   { id: 3, icon: BriefcaseIcon, name: "Emplois" },
-  
-  // Section outils
-  { 
-    id: 5, 
-    icon: LayoutGrid, 
-    name: "Outils",
-    children: [
-      { id: 7, icon: ListTodo, name: "Tâches", hidden: true },
-      { id: 8, icon: Calculator, name: "Calculatrice" },
-      { id: 14, icon: Languages, name: "Traducteur" },
-      { id: 15, icon: SwordIcon, name: "Échecs", hidden: true },
-      { id: 16, icon: StickyNote, name: "Notes" },
-    ]
-  },
-  
-  // Section réseau
   { id: 12, icon: Users, name: "Connections" },
+  
+  // Outils rapides
+  { id: 8, icon: Calculator, name: "Calculatrice" },
+  { id: 14, icon: Languages, name: "Traducteur" },
+  { id: 16, icon: StickyNote, name: "Notes" },
+  
+  // Settings et Messages (cachés par défaut)
+  { id: 2, icon: MessageSquare, name: "Messages", hidden: true },
   { id: 10, icon: Settings, name: "Paramètres" }
 ];
 
