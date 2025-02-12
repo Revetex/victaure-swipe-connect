@@ -8,7 +8,6 @@ import { useLocation } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Navigation } from "@/components/Navigation";
 import { cn } from "@/lib/utils";
 
 interface MainLayoutProps {
@@ -46,18 +45,10 @@ export const MainLayout = memo(function MainLayout({
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
-      {/* Navigation - optimized with conditional rendering */}
-      {!isMobile && (
-        <div className="hidden lg:block w-64 flex-shrink-0">
-          <Navigation />
-        </div>
-      )}
-      
       {/* Main content with optimized layout structure */}
       <main className={cn(
         "flex-1 relative",
-        "transition-all duration-200 ease-in-out",
-        !isMobile && "ml-64"
+        "transition-all duration-200 ease-in-out"
       )}>
         {/* Header with optimized backdrop and animations */}
         <motion.header 
@@ -65,7 +56,7 @@ export const MainLayout = memo(function MainLayout({
             "fixed top-0 right-0 z-40 h-16",
             "bg-background/95 backdrop-blur",
             "supports-[backdrop-filter]:bg-background/60 border-b",
-            "w-full lg:w-[calc(100%-16rem)]",
+            "w-full",
             "transition-all duration-200"
           )}
           initial={{ y: -20, opacity: 0 }}
@@ -88,7 +79,7 @@ export const MainLayout = memo(function MainLayout({
                   side="left" 
                   className="p-0 w-[280px] lg:hidden"
                 >
-                  <Navigation />
+                  {children}
                 </SheetContent>
               </Sheet>
             )}

@@ -23,15 +23,12 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Sidebar - Fixed on desktop, sliding on mobile */}
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
       />
 
-      {/* Main Content Area */}
       <div className="flex-1">
-        {/* Header - Fixed at top */}
         <header className="fixed top-0 right-0 left-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="flex h-16 items-center px-4">
             <div className="lg:hidden">
@@ -46,7 +43,6 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
           </div>
         </header>
 
-        {/* Main Content with correct padding */}
         <main className="lg:pl-64">
           <div className="max-w-7xl mx-auto">
             {children || (
