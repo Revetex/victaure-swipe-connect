@@ -39,22 +39,18 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       )}>
         <header className="fixed top-0 left-0 right-0 z-40 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 lg:left-64">
           <div className="h-[2px] w-full bg-gradient-to-r from-primary/80 via-secondary/60 to-accent/40" />
-          <div className="h-16 border-b border-border/40 px-4">
-            <div className="h-full flex items-center justify-between max-w-screen-2xl mx-auto">
-              <div className="flex items-center gap-4">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="lg:hidden"
-                  onClick={() => setShowMobileMenu(true)}
-                >
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </div>
-              <div className="flex items-center gap-2">
-                <NotificationsBox />
-                <UserNav />
-              </div>
+          <div className="flex items-center justify-between h-16 px-4">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="lg:hidden"
+              onClick={() => setShowMobileMenu(true)}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+            <div className="flex items-center gap-2">
+              <NotificationsBox />
+              <UserNav />
             </div>
           </div>
         </header>
