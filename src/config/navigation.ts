@@ -1,5 +1,5 @@
 
-import { MessageSquare, BriefcaseIcon, ListTodo, Bell, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, User, Users, Search, LayoutGrid, Menu, EyeOff, ShoppingBag } from "lucide-react";
+import { MessageSquare, BriefcaseIcon, ListTodo, Bell, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, Users, Search, LayoutGrid, Menu, EyeOff, ShoppingBag } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
 type NavigationItem = {
@@ -17,7 +17,6 @@ type NavigationItem = {
 
 export const navigationItems: NavigationItem[] = [
   // Pages principales
-  { id: 1, icon: User, name: "Profil" },
   { id: 4, icon: Newspaper, name: "Actualité" },
   { id: 16, icon: StickyNote, name: "Notes" },
   { id: 3, icon: ShoppingBag, name: "Marketplace" },

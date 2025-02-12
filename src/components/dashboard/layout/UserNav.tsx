@@ -65,7 +65,7 @@ export function UserNav() {
             onClick={() => navigate("/dashboard/profile")}
           >
             <User className="mr-3 h-4 w-4" />
-            <span>Mon profil</span>
+            <span>Profil</span>
           </DropdownMenuItem>
           <DropdownMenuItem 
             className="p-3 cursor-pointer"
