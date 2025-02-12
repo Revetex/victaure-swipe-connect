@@ -56,31 +56,32 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
 
       {/* Navigation */}
       <ScrollArea className="flex-1 py-6">
-        <nav className="px-2 space-y-1">
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = currentPage === item.id;
-            
-            return (
+        <nav className="px-2 space-y-3">
+          {/* Principales */}
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Principales</h2>
+            </div>
+            {navigationItems.slice(0, 2).map((item) => (
               <Button
                 key={item.id}
                 variant="ghost"
                 className={cn(
-                  "w-full justify-start gap-3 font-medium",
+                  "w-full justify-start gap-2 text-sm font-medium",
                   "relative group transition-all duration-200",
                   "hover:bg-accent",
-                  isActive && "bg-primary/10 text-primary hover:bg-primary/20"
+                  currentPage === item.id && "bg-primary/10 text-primary hover:bg-primary/20"
                 )}
                 onClick={() => onPageChange(item.id)}
               >
-                <Icon className={cn(
+                <item.icon className={cn(
                   "h-4 w-4 shrink-0",
                   "transition-transform duration-200",
                   "group-hover:scale-110",
-                  isActive && "text-primary"
+                  currentPage === item.id && "text-primary"
                 )} />
-                <span>{item.name}</span>
-                {isActive && (
+                {item.name}
+                {currentPage === item.id && (
                   <motion.div
                     layoutId="sidebar-active"
                     className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
@@ -90,8 +91,156 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
                   />
                 )}
               </Button>
-            );
-          })}
+            ))}
+          </div>
+
+          {/* Commerce & Jeux */}
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Commerce & Jeux</h2>
+            </div>
+            {navigationItems.slice(2, 4).map((item) => (
+              <Button
+                key={item.id}
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start gap-2 text-sm font-medium",
+                  "relative group transition-all duration-200",
+                  "hover:bg-accent",
+                  currentPage === item.id && "bg-primary/10 text-primary hover:bg-primary/20"
+                )}
+                onClick={() => onPageChange(item.id)}
+              >
+                <item.icon className={cn(
+                  "h-4 w-4 shrink-0",
+                  "transition-transform duration-200",
+                  "group-hover:scale-110",
+                  currentPage === item.id && "text-primary"
+                )} />
+                {item.name}
+                {currentPage === item.id && (
+                  <motion.div
+                    layoutId="sidebar-active"
+                    className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  />
+                )}
+              </Button>
+            ))}
+          </div>
+
+          {/* Productivité */}
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Productivité</h2>
+            </div>
+            {navigationItems.slice(4, 7).map((item) => (
+              <Button
+                key={item.id}
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start gap-2 text-sm font-medium",
+                  "relative group transition-all duration-200",
+                  "hover:bg-accent",
+                  currentPage === item.id && "bg-primary/10 text-primary hover:bg-primary/20"
+                )}
+                onClick={() => onPageChange(item.id)}
+              >
+                <item.icon className={cn(
+                  "h-4 w-4 shrink-0",
+                  "transition-transform duration-200",
+                  "group-hover:scale-110",
+                  currentPage === item.id && "text-primary"
+                )} />
+                {item.name}
+                {currentPage === item.id && (
+                  <motion.div
+                    layoutId="sidebar-active"
+                    className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  />
+                )}
+              </Button>
+            ))}
+          </div>
+
+          {/* Social */}
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Social</h2>
+            </div>
+            {navigationItems.slice(7, 9).map((item) => (
+              <Button
+                key={item.id}
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start gap-2 text-sm font-medium",
+                  "relative group transition-all duration-200",
+                  "hover:bg-accent",
+                  currentPage === item.id && "bg-primary/10 text-primary hover:bg-primary/20"
+                )}
+                onClick={() => onPageChange(item.id)}
+              >
+                <item.icon className={cn(
+                  "h-4 w-4 shrink-0",
+                  "transition-transform duration-200",
+                  "group-hover:scale-110",
+                  currentPage === item.id && "text-primary"
+                )} />
+                {item.name}
+                {currentPage === item.id && (
+                  <motion.div
+                    layoutId="sidebar-active"
+                    className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  />
+                )}
+              </Button>
+            ))}
+          </div>
+
+          {/* Paramètres */}
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Paramètres</h2>
+            </div>
+            {navigationItems.slice(9).map((item) => (
+              <Button
+                key={item.id}
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start gap-2 text-sm font-medium",
+                  "relative group transition-all duration-200",
+                  "hover:bg-accent",
+                  currentPage === item.id && "bg-primary/10 text-primary hover:bg-primary/20"
+                )}
+                onClick={() => onPageChange(item.id)}
+              >
+                <item.icon className={cn(
+                  "h-4 w-4 shrink-0",
+                  "transition-transform duration-200",
+                  "group-hover:scale-110",
+                  currentPage === item.id && "text-primary"
+                )} />
+                {item.name}
+                {currentPage === item.id && (
+                  <motion.div
+                    layoutId="sidebar-active"
+                    className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  />
+                )}
+              </Button>
+            ))}
+          </div>
         </nav>
       </ScrollArea>
 
