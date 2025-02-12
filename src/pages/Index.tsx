@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UploadApk } from "@/components/dashboard/UploadApk";
-import { DownloadApp } from "@/components/dashboard/DownloadApp";
 import { useAuth } from "@/hooks/useAuth";
 
 const LoadingFallback = () => (
@@ -33,7 +32,6 @@ export default function Index() {
           <Suspense fallback={<LoadingFallback />}>
             <HeroSection />
             <div className="container mx-auto p-4">
-              <DownloadApp />
               {isAdmin && <UploadApk />}
             </div>
             <Features />
