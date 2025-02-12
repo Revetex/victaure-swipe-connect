@@ -34,8 +34,14 @@ export function MainLayout({
 
   return (
     <div className="flex min-h-screen bg-background">
+      {/* Navigation - only show on desktop */}
+      {!isMobile && <Navigation />}
+      
       {/* Main content */}
-      <main className="flex-1 relative">
+      <main className={cn(
+        "flex-1 relative",
+        !isMobile && "ml-64" // Add margin to accommodate fixed navigation
+      )}>
         {/* Fixed Header */}
         <header className="fixed top-0 right-0 z-40 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b w-full">
           <div className="flex items-center gap-4 h-full px-4">
