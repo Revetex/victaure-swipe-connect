@@ -46,8 +46,7 @@ export function DashboardMobileNav({
   return (
     <header className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur shadow-sm">
       <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
-        {/* Add pt-safe-top to account for iOS safe area */}
-        <div className="flex h-16 items-center px-4 pt-safe-top">
+        <div className="flex justify-between px-4">
           <SheetTrigger asChild>
             <Button 
               variant="ghost" 
