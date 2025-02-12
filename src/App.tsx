@@ -6,6 +6,7 @@ import { AppRoutes } from './AppRoutes';
 import { ThemeProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
+import { Analytics } from '@vercel/analytics/react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,6 +24,7 @@ function App() {
         <SessionContextProvider supabaseClient={supabase}>
           <AppRoutes />
           <Toaster position="top-right" expand={false} richColors />
+          <Analytics />
         </SessionContextProvider>
       </QueryClientProvider>
     </ThemeProvider>
@@ -30,4 +32,3 @@ function App() {
 }
 
 export default App;
-
