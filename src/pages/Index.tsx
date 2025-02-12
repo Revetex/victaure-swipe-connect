@@ -32,11 +32,10 @@ export default function Index() {
         >
           <Suspense fallback={<LoadingFallback />}>
             <HeroSection />
-            {isAdmin && (
-              <div className="container mx-auto p-4">
-                <UploadApk />
-              </div>
-            )}
+            <div className="container mx-auto p-4">
+              <DownloadApp />
+              {isAdmin && <UploadApk />}
+            </div>
             <Features />
           </Suspense>
         </motion.div>
