@@ -21,7 +21,10 @@ export default function Index() {
   const isAdmin = user?.email === "contact@victaure.com";
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-purple-900/5 to-background">
+    <div 
+      className="min-h-screen flex flex-col bg-gradient-to-b from-background via-purple-900/5 to-background"
+      style={{ willChange: 'transform' }}
+    >
       <main className="flex-1">
         <motion.div
           initial={{ opacity: 0 }}
@@ -32,7 +35,15 @@ export default function Index() {
           <Suspense fallback={<LoadingFallback />}>
             <HeroSection />
             <div className="container mx-auto p-4">
-              {isAdmin && <UploadApk />}
+              {isAdmin && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <UploadApk />
+                </motion.div>
+              )}
             </div>
             <Features />
           </Suspense>
