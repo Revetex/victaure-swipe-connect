@@ -25,41 +25,52 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background">
+      {/* Sidebar - Fixed on desktop, sliding on mobile */}
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
       />
 
-      <div className="flex-1 lg:ml-64">
-        <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
-          <div className="flex h-16 items-center px-6">
-            <div className="mr-4 hidden lg:flex">
-              <Logo />
+      {/* Main Content Area */}
+      <div className="flex-1 lg:pl-64">
+        {/* Header - Fixed at top */}
+        <header className="fixed top-0 right-0 left-0 lg:left-64 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex h-16 items-center justify-between px-4">
+            <div className="flex items-center gap-4">
+              <div className="lg:hidden">
+                <DashboardMobileNav
+                  currentPage={currentPage}
+                  showMobileMenu={showMobileMenu}
+                  setShowMobileMenu={setShowMobileMenu}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+              <div className="hidden lg:flex">
+                <Logo />
+              </div>
             </div>
-            <DashboardMobileNav
-              currentPage={currentPage}
-              showMobileMenu={showMobileMenu}
-              setShowMobileMenu={setShowMobileMenu}
-              onPageChange={handlePageChange}
-            />
-            <div className="ml-auto flex items-center gap-4">
+
+            <div className="flex items-center gap-4">
               <NotificationsBox />
               <UserNav />
             </div>
           </div>
         </header>
 
-        <div className="min-h-[calc(100vh-4rem)]">
-          {children || (
-            <DashboardContent
-              currentPage={currentPage}
-              isEditing={isEditing}
-              onEditStateChange={handleEditStateChange}
-              onRequestChat={() => handlePageChange(2)}
-            />
-          )}
-        </div>
+        {/* Main Content - Scrollable */}
+        <main className="relative pt-16 min-h-screen">
+          <div className="container mx-auto p-4 lg:p-6">
+            {children || (
+              <DashboardContent
+                currentPage={currentPage}
+                isEditing={isEditing}
+                onEditStateChange={handleEditStateChange}
+                onRequestChat={() => handlePageChange(2)}
+              />
+            )}
+          </div>
+        </main>
       </div>
     </div>
   );
