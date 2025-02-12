@@ -1,5 +1,5 @@
 
-import { MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, User, Users, Search } from "lucide-react";
+import { MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, User, Users, Search, LayoutGrid } from "lucide-react";
 
 export const navigationItems = [
   // Section principale
@@ -8,16 +8,23 @@ export const navigationItems = [
   { id: 2, icon: MessageSquare, name: "Messages" },
   { id: 3, icon: BriefcaseIcon, name: "Emplois" },
   
+  // Section outils
+  { 
+    id: 5, 
+    icon: LayoutGrid, 
+    name: "Outils",
+    children: [
+      { id: 7, icon: ListTodo, name: "Tâches" },
+      { id: 8, icon: Calculator, name: "Calculatrice" },
+      { id: 14, icon: Languages, name: "Traducteur" },
+      { id: 15, icon: SwordIcon, name: "Échecs" },
+      { id: 16, icon: StickyNote, name: "Notes" },
+    ]
+  },
+  
   // Section réseau
   { id: 9, icon: Bell, name: "Notifications" },
   { id: 12, icon: Users, name: "Connections" },
-  
-  // Outils
-  { id: 7, icon: ListTodo, name: "Tâches" },
-  { id: 8, icon: Calculator, name: "Calculatrice" },
-  { id: 14, icon: Languages, name: "Traducteur" },
-  { id: 15, icon: SwordIcon, name: "Échecs" },
-  { id: 16, icon: StickyNote, name: "Notes" },
   { id: 10, icon: Settings, name: "Paramètres" }
 ] as const;
 
@@ -31,6 +38,8 @@ export const getPageTitle = (currentPage: number): string => {
       return "Emplois";
     case 4:
       return "Actualité";
+    case 5:
+      return "Outils";
     case 7:
       return "Tâches";
     case 8:
@@ -51,3 +60,4 @@ export const getPageTitle = (currentPage: number): string => {
       return "Actualité";
   }
 };
+
