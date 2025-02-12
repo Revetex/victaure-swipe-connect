@@ -34,29 +34,16 @@ export function Feed() {
   return (
     <ScrollArea 
       ref={scrollRef} 
-      className="h-[calc(100vh-3.5rem)] w-full scrollbar-none"
+      className="h-[calc(100vh-3.5rem)] w-full"
       onScroll={handleScroll}
     >
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 space-y-4">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <CreatePost onPostCreated={invalidatePosts} />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2 }}
-        >
-          <PostList 
-            onPostDeleted={invalidatePosts}
-            onPostUpdated={invalidatePosts}
-          />
-        </motion.div>
-      </div>
+      <main className="max-w-2xl mx-auto space-y-4 p-4">
+        <CreatePost onPostCreated={invalidatePosts} />
+        <PostList 
+          onPostDeleted={invalidatePosts}
+          onPostUpdated={invalidatePosts}
+        />
+      </main>
 
       <AnimatePresence>
         {showScrollTop && (

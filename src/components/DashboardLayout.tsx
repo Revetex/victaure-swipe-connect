@@ -7,8 +7,7 @@ import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
 import { NotificationsBox } from "./notifications/NotificationsBox";
 import { cn } from "@/lib/utils";
 import { UserNav } from "./dashboard/layout/UserNav";
-import { Menu } from "lucide-react";
-import { Button } from "./ui/button";
+import { Logo } from "./Logo";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(4);
@@ -27,27 +26,24 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-background relative">
+    <main className="flex min-h-screen bg-background">
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
       />
 
-      <main className={cn(
-        "flex-1 lg:ml-64 min-h-screen relative",
-        "glass-panel"
-      )}>
-        <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="flex h-14 items-center gap-4 px-4">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="lg:hidden"
-              onClick={() => setShowMobileMenu(true)}
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-            
+      <div className="flex-1 lg:ml-64">
+        <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex h-14 items-center px-4">
+            <div className="mr-4 hidden lg:flex">
+              <Logo />
+            </div>
+            <DashboardMobileNav
+              currentPage={currentPage}
+              showMobileMenu={showMobileMenu}
+              setShowMobileMenu={setShowMobileMenu}
+              onPageChange={handlePageChange}
+            />
             <div className="flex items-center gap-4 ml-auto">
               <NotificationsBox />
               <UserNav />
@@ -55,14 +51,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
           </div>
         </header>
 
-        <DashboardMobileNav
-          currentPage={currentPage}
-          showMobileMenu={showMobileMenu}
-          setShowMobileMenu={setShowMobileMenu}
-          onPageChange={handlePageChange}
-        />
-
-        <div className="p-6">
+        <section className="p-4">
           {children || (
             <DashboardContent
               currentPage={currentPage}
@@ -71,8 +60,8 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
               onRequestChat={() => handlePageChange(2)}
             />
           )}
-        </div>
-      </main>
-    </div>
+        </section>
+      </div>
+    </main>
   );
 }
