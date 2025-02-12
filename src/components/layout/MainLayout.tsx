@@ -1,5 +1,5 @@
 
-import { ReactNode, memo, useCallback } from "react";
+import { ReactNode, memo, useCallback, useState } from "react";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -30,9 +30,14 @@ export const MainLayout = memo(function MainLayout({
   const isMobile = useIsMobile();
   const location = useLocation();
   const isFriendsPage = location.pathname.includes('/friends');
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleNavigationToggle = useCallback(() => {
-    // Navigation toggle logic here
+    setIsOpen(!isOpen);
+  }, [isOpen]);
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
   }, []);
 
   return (
@@ -61,7 +66,7 @@ export const MainLayout = memo(function MainLayout({
         >
           <div className="flex items-center gap-4 h-full px-4">
             {isMobile && (
-              <Sheet>
+              <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
                   <Button 
                     variant="ghost" 
@@ -74,6 +79,7 @@ export const MainLayout = memo(function MainLayout({
                 <SheetContent 
                   side="left" 
                   className="p-0 w-[280px] lg:hidden"
+                  onClose={handleClose}
                 >
                   {children}
                 </SheetContent>
