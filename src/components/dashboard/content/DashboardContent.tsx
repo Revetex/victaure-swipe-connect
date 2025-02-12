@@ -12,7 +12,7 @@ import { Loader } from "@/components/ui/loader";
 import { NotificationsTab } from "@/components/notifications/NotificationsTab";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
-import { ChessSection } from "@/components/tools/chess/ChessSection"; // Changé ici
+import { ChessSection } from "@/components/tools/ChessSection"; // Corrigé ici
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
 import { cn } from "@/lib/utils";
