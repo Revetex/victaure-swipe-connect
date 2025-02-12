@@ -1,4 +1,3 @@
-
 import { MessageSquare, BriefcaseIcon, ListTodo, Bell, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, Users, Search, LayoutGrid, Menu, EyeOff, ShoppingBag } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
@@ -19,17 +18,21 @@ export const navigationItems: NavigationItem[] = [
   // Pages principales
   { id: 4, icon: Newspaper, name: "Actualité" },
   { id: 16, icon: StickyNote, name: "Notes" },
+  
+  // Commerce & Jeux
   { id: 3, icon: ShoppingBag, name: "Marketplace" },
   { id: 7, icon: SwordIcon, name: "Échecs" },
-  { id: 6, icon: ListTodo, name: "Tâches" },
   
-  // Outils
+  // Productivité
+  { id: 6, icon: ListTodo, name: "Tâches" },
   { id: 8, icon: Calculator, name: "Calculatrice" },
   { id: 14, icon: Languages, name: "Traducteur" },
-  { id: 12, icon: Users, name: "Connections" },
   
-  // Messages et paramètres
+  // Social
+  { id: 12, icon: Users, name: "Connections" },
   { id: 2, icon: MessageSquare, name: "Messages" },
+  
+  // Paramètres
   { id: 10, icon: Settings, name: "Paramètres" }
 ];
 

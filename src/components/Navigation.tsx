@@ -55,53 +55,48 @@ export function Navigation() {
 
       {/* Navigation Content */}
       <ScrollArea className="flex-1 py-6">
-        <nav className="px-2 space-y-1">
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = currentPage === item.id;
-            
-            return (
-              <motion.button
-                key={item.id}
-                className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium",
-                  "relative group transition-all duration-200",
-                  "hover:bg-accent",
-                  isActive && "bg-primary/10 text-primary hover:bg-primary/20"
-                )}
-                onClick={() => setCurrentPage(item.id)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Icon className={cn(
-                  "h-4 w-4 shrink-0",
-                  "transition-transform duration-200",
-                  "group-hover:scale-110",
-                  isActive && "text-primary"
-                )} />
-                <span>{item.name}</span>
-                {isActive && (
-                  <motion.div
-                    layoutId="nav-active"
-                    className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  />
-                )}
-              </motion.button>
-            );
-          })}
+        <nav className="px-2 space-y-6">
+          {/* Principales */}
+          <div className="space-y-1">
+            <div className="px-3 py-2">
+              <h2 className="text-sm font-semibold text-muted-foreground">Principales</h2>
+            </div>
+            {navigationItems.slice(0, 2).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
+          </div>
+
+          {/* Commerce & Jeux */}
+          <div className="space-y-1">
+            <div className="px-3 py-2">
+              <h2 className="text-sm font-semibold text-muted-foreground">Commerce & Jeux</h2>
+            </div>
+            {navigationItems.slice(2, 4).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
+          </div>
+
+          {/* Productivité */}
+          <div className="space-y-1">
+            <div className="px-3 py-2">
+              <h2 className="text-sm font-semibold text-muted-foreground">Productivité</h2>
+            </div>
+            {navigationItems.slice(4, 7).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
+          </div>
+
+          {/* Social */}
+          <div className="space-y-1">
+            <div className="px-3 py-2">
+              <h2 className="text-sm font-semibold text-muted-foreground">Social</h2>
+            </div>
+            {navigationItems.slice(7, 9).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
+          </div>
+
+          {/* Paramètres */}
+          <div className="space-y-1">
+            <div className="px-3 py-2">
+              <h2 className="text-sm font-semibold text-muted-foreground">Paramètres</h2>
+            </div>
+            {navigationItems.slice(9).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
+          </div>
         </nav>
       </ScrollArea>
-
-      {/* Footer Actions */}
-      <div className="h-16 border-t bg-background/50 backdrop-blur flex items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          <NotificationsBox />
-          <ThemeToggle />
-        </div>
-      </div>
 
       {/* Profile Preview */}
       {userProfile && (
@@ -112,5 +107,42 @@ export function Navigation() {
         />
       )}
     </div>
+  );
+}
+
+function renderNavItem(item: typeof navigationItems[0], currentPage: number, setCurrentPage: (id: number) => void) {
+  const Icon = item.icon;
+  const isActive = currentPage === item.id;
+  
+  return (
+    <motion.button
+      key={item.id}
+      className={cn(
+        "w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium",
+        "relative group transition-all duration-200",
+        "hover:bg-accent",
+        isActive && "bg-primary/10 text-primary hover:bg-primary/20"
+      )}
+      onClick={() => setCurrentPage(item.id)}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <Icon className={cn(
+        "h-4 w-4 shrink-0",
+        "transition-transform duration-200",
+        "group-hover:scale-110",
+        isActive && "text-primary"
+      )} />
+      <span>{item.name}</span>
+      {isActive && (
+        <motion.div
+          layoutId="nav-active"
+          className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        />
+      )}
+    </motion.button>
   );
 }
