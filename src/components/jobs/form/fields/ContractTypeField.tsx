@@ -5,17 +5,16 @@ import { useFormContext } from "react-hook-form";
 
 const contractTypes = {
   company: [
-    "Full-time",
-    "Part-time",
-    "Contract",
-    "Temporary",
-    "Internship"
+    { value: "full_time", label: "Temps plein" },
+    { value: "part_time", label: "Temps partiel" },
+    { value: "contract", label: "Contrat" },
+    { value: "temporary", label: "Temporaire" },
+    { value: "internship", label: "Stage" }
   ],
   individual: [
-    "One-time",
-    "Fixed-duration",
-    "Project-based",
-    "Consulting"
+    { value: "one_time", label: "Mission unique" },
+    { value: "fixed_duration", label: "Durée fixe" },
+    { value: "project_based", label: "Projet" }
   ]
 };
 
@@ -26,18 +25,25 @@ export function ContractTypeField() {
   return (
     <FormField
       name="contract_type"
+      control={control}
       render={({ field }) => (
         <FormItem>
           <FormLabel>Type de contrat</FormLabel>
           <FormControl>
-            <Select onValueChange={field.onChange} defaultValue={field.value || (missionType === "individual" ? "One-time" : "Full-time")}>
+            <Select 
+              onValueChange={field.onChange} 
+              value={field.value || "select-contract"}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le type de contrat" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="select-contract" disabled>
+                  Sélectionnez le type de contrat
+                </SelectItem>
                 {(missionType === "individual" ? contractTypes.individual : contractTypes.company).map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
                   </SelectItem>
                 ))}
               </SelectContent>
