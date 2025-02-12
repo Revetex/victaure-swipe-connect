@@ -40,7 +40,7 @@ export function ItemFilters({ categories, filters, onFilterChange }: ItemFilters
             <SelectValue placeholder="Toutes les catégories" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Toutes les catégories</SelectItem>
+            <SelectItem value="all">Toutes les catégories</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name}
@@ -80,7 +80,7 @@ export function ItemFilters({ categories, filters, onFilterChange }: ItemFilters
             <SelectValue placeholder="Tous les états" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Tous les états</SelectItem>
+            <SelectItem value="all">Tous les états</SelectItem>
             <SelectItem value="new">Neuf</SelectItem>
             <SelectItem value="like_new">Comme neuf</SelectItem>
             <SelectItem value="good">Bon état</SelectItem>
