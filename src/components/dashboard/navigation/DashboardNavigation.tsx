@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
+import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 
 interface DashboardNavigationProps {
   currentPage: number;
@@ -46,6 +47,10 @@ export function DashboardNavigation({
 
   return (
     <>
+      <div className="fixed top-4 right-4 z-50">
+        <NotificationsBox />
+      </div>
+
       <div className={cn("flex items-center justify-around w-full max-w-2xl mx-auto", className)}>
         {navigationItems.map(({ id, icon: Icon, name, children }) => {
           const isTools = id === 5;
@@ -145,4 +150,3 @@ export function DashboardNavigation({
     </>
   );
 }
-

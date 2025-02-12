@@ -1,4 +1,3 @@
-
 import { MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, User, Users, Search, LayoutGrid } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
@@ -35,7 +34,6 @@ export const navigationItems: NavigationItem[] = [
   },
   
   // Section réseau
-  { id: 9, icon: Bell, name: "Notifications" },
   { id: 12, icon: Users, name: "Connections" },
   { id: 10, icon: Settings, name: "Paramètres" }
 ];
