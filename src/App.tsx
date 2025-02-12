@@ -29,7 +29,7 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <ErrorBoundary fallback={<DashboardErrorBoundary />}>
+    <ErrorBoundary FallbackComponent={DashboardErrorBoundary}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <QueryClientProvider client={queryClient}>
           <SessionContextProvider supabaseClient={supabase}>
@@ -49,9 +49,9 @@ function App() {
                   },
                 }}
               />
-              <Analytics debug={false} />
-              <SpeedInsights />
             </Suspense>
+            <Analytics debug={false} />
+            <SpeedInsights />
           </SessionContextProvider>
         </QueryClientProvider>
       </ThemeProvider>
