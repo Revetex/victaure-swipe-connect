@@ -33,19 +33,12 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         onPageChange={handlePageChange}
       />
 
-      <DashboardMobileNav
-        currentPage={currentPage}
-        showMobileMenu={showMobileMenu}
-        setShowMobileMenu={setShowMobileMenu}
-        onPageChange={handlePageChange}
-      />
-
       <main className={cn(
-        "flex-1 lg:ml-64 min-h-screen relative pt-16",
+        "flex-1 lg:ml-64 min-h-screen relative",
         "glass-panel"
       )}>
-        <header className="fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:left-64">
-          <div className="h-[2px] w-full bg-gradient-to-r from-primary/80 to-secondary/80" />
+        <header className="fixed top-0 left-0 right-0 z-40 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 lg:left-64">
+          <div className="h-[2px] w-full bg-gradient-to-r from-primary/80 via-secondary/60 to-accent/40" />
           <div className="h-16 border-b border-border/40 px-4">
             <div className="h-full flex items-center justify-between max-w-screen-2xl mx-auto">
               <div className="flex items-center gap-4">
@@ -65,14 +58,24 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
             </div>
           </div>
         </header>
-        {children || (
-          <DashboardContent
-            currentPage={currentPage}
-            isEditing={isEditing}
-            onEditStateChange={handleEditStateChange}
-            onRequestChat={() => handlePageChange(2)}
-          />
-        )}
+
+        <DashboardMobileNav
+          currentPage={currentPage}
+          showMobileMenu={showMobileMenu}
+          setShowMobileMenu={setShowMobileMenu}
+          onPageChange={handlePageChange}
+        />
+
+        <div className="pt-16">
+          {children || (
+            <DashboardContent
+              currentPage={currentPage}
+              isEditing={isEditing}
+              onEditStateChange={handleEditStateChange}
+              onRequestChat={() => handlePageChange(2)}
+            />
+          )}
+        </div>
       </main>
     </div>
   );

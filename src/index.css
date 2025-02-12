@@ -5,45 +5,45 @@
 
 @layer base {
   :root {
-    --background: 220 13% 91%;
-    --foreground: 222 47% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 142 72% 29%;
-    --primary-foreground: 210 40% 98%;
+    --background: 222 47% 11%;
+    --foreground: 0 0% 98%;
+    --card: 223 47% 13%;
+    --card-foreground: 0 0% 98%;
+    --popover: 223 47% 13%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 143 72% 24%;
+    --primary-foreground: 0 0% 98%;
     --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 70%;
     --accent: 45 93% 47%;
-    --accent-foreground: 222 47% 11%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
     --ring: 142 72% 29%;
-    --radius: 0px;
+    --radius: 0.5rem;
   }
  
   .dark {
     --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 142 72% 29%;
-    --primary-foreground: 222 47% 11%;
+    --foreground: 0 0% 98%;
+    --card: 223 47% 13%;
+    --card-foreground: 0 0% 98%;
+    --popover: 223 47% 13%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 143 72% 24%;
+    --primary-foreground: 0 0% 98%;
     --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary-foreground: 0 0% 98%;
     --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted-foreground: 215 20% 70%;
     --accent: 45 93% 47%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
     --border: 217 33% 17%;
     --input: 217 33% 17%;
     --ring: 142 72% 29%;
@@ -61,7 +61,7 @@
 }
 
 .glass-panel {
-  @apply bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-border/50;
+  @apply bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-border/50;
 }
 
 .hover-card {
@@ -87,13 +87,13 @@
 
 .nav-tools-menu {
   @apply absolute bottom-full mb-2 right-0 bg-card/95
-    backdrop-blur supports-[backdrop-filter]:bg-card/60 border rounded-none shadow-2xl p-2 
+    backdrop-blur supports-[backdrop-filter]:bg-card/60 border rounded-lg shadow-2xl p-2 
     min-w-[200px] transform-gpu transition-all duration-200
     border-border/50;
 }
 
 .nav-tools-item {
   @apply w-full flex items-center gap-2 px-3 py-2 
-    transition-colors duration-200 text-sm
+    transition-colors duration-200 text-sm rounded-md
     hover:bg-primary/10 hover:text-primary;
 }
