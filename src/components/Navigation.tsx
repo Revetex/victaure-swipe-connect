@@ -44,7 +44,7 @@ export function Navigation() {
   return (
     <div className={cn(
       "h-full flex flex-col",
-      "lg:w-64 lg:border-r lg:border-border/50"
+      "fixed top-0 left-0 w-64 border-r border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50"
     )}>
       {/* Logo Section */}
       <div className="h-16 border-b flex items-center px-4">
