@@ -34,20 +34,6 @@ export function MainLayout({
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Navigation desktop */}
-      {!isMobile && (
-        <nav className="w-[280px] lg:w-[320px] fixed left-[-320px] top-0 bottom-0 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 hover:translate-x-[320px] z-50">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-[-40px] top-4 bg-background border"
-          >
-            <Menu className="h-4 w-4" />
-          </Button>
-          <Navigation />
-        </nav>
-      )}
-
       {/* Main content */}
       <main className="flex-1 relative">
         {/* Fixed Header */}
