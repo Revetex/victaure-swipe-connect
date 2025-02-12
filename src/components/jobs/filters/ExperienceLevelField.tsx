@@ -23,12 +23,12 @@ export function ExperienceLevelField() {
         <FormItem>
           <FormLabel>Niveau d'expérience</FormLabel>
           <FormControl>
-            <Select onValueChange={field.onChange} defaultValue={field.value || "all"}>
+            <Select onValueChange={field.onChange} defaultValue={field.value || "entry"}>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le niveau d'expérience" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tous les niveaux</SelectItem>
+                <SelectItem value="no_filter">Tous les niveaux</SelectItem>
                 {experienceLevels.map((level) => (
                   <SelectItem key={level.value} value={level.value}>
                     {level.label}

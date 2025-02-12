@@ -29,13 +29,13 @@ export function PaymentScheduleField() {
           <FormControl>
             <Select 
               onValueChange={field.onChange} 
-              defaultValue={field.value || (missionType === "individual" ? "one_time" : "monthly")}
+              defaultValue={field.value || "no_filter"}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le type de paiement" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tous les types</SelectItem>
+                <SelectItem value="no_filter">Tous les types</SelectItem>
                 {(missionType === "individual" ? paymentSchedules.individual : paymentSchedules.company).map((schedule) => (
                   <SelectItem key={schedule.value} value={schedule.value}>
                     {schedule.label}

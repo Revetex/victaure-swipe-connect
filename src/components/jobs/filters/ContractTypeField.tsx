@@ -31,13 +31,13 @@ export function ContractTypeField() {
           <FormControl>
             <Select 
               onValueChange={field.onChange} 
-              defaultValue={field.value || (missionType === "individual" ? "one_time" : "full_time")}
+              defaultValue={field.value || "no_filter"}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le type de contrat" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tous les types</SelectItem>
+                <SelectItem value="no_filter">Tous les types</SelectItem>
                 {(missionType === "individual" ? contractTypes.individual : contractTypes.company).map((type) => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}
