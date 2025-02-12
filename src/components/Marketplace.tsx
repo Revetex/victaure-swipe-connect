@@ -8,7 +8,7 @@ import { Package, Briefcase, HandshakeIcon } from "lucide-react";
 
 export function Marketplace() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-16">
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b">
         <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)]" />
@@ -49,15 +49,15 @@ export function Marketplace() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="items" className="space-y-4">
+          <TabsContent value="items" className="mt-6">
             <ItemsMarket />
           </TabsContent>
 
-          <TabsContent value="jobs" className="space-y-4">
+          <TabsContent value="jobs" className="mt-6">
             <RegularJobs />
           </TabsContent>
 
-          <TabsContent value="services" className="space-y-4">
+          <TabsContent value="services" className="mt-6">
             <ServicesMarket />
           </TabsContent>
         </Tabs>
