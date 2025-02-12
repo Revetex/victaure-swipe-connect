@@ -7,6 +7,7 @@ import { useState } from "react";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface DashboardNavigationProps {
   currentPage: number;
@@ -24,6 +25,7 @@ export function DashboardNavigation({
   const { user } = useAuth();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
   const [expandedTools, setExpandedTools] = useState(false);
+  const isLargeScreen = useMediaQuery("(min-width: 1024px)");
 
   if (isEditing) return null;
 
@@ -58,6 +60,8 @@ export function DashboardNavigation({
           const isTools = id === 5;
           const isActive = currentPage === id || (isTools && children?.some(child => child.id === currentPage));
 
+          if (!isLargeScreen && id > 6) return null;
+
           return (
             <button
               key={id}
@@ -68,7 +72,12 @@ export function DashboardNavigation({
                   onPageChange(id);
                 }
               }}
-              className={cn("nav-item", isActive && "active")}
+              className={cn(
+                "nav-item",
+                isActive && "active",
+                "flex flex-col items-center justify-center gap-1 px-3 py-2",
+                "hover:bg-accent/50 rounded-lg transition-colors"
+              )}
               title={name}
               aria-label={name}
             >
@@ -82,7 +91,7 @@ export function DashboardNavigation({
               )}
 
               {isTools && expandedTools && (
-                <div className="nav-tools-menu">
+                <div className="nav-tools-menu absolute bottom-full left-0 w-full bg-background border rounded-lg shadow-lg p-2 mb-2">
                   {children?.map((tool) => (
                     <button
                       key={tool.id}
@@ -92,7 +101,8 @@ export function DashboardNavigation({
                         setExpandedTools(false);
                       }}
                       className={cn(
-                        "nav-tools-item",
+                        "nav-tools-item w-full flex items-center gap-2 px-3 py-2 rounded-md",
+                        "hover:bg-accent/50 transition-colors",
                         currentPage === tool.id && "bg-primary/20 text-primary"
                       )}
                     >
@@ -108,7 +118,10 @@ export function DashboardNavigation({
         
         <button
           onClick={() => setShowProfilePreview(true)}
-          className="nav-item"
+          className={cn(
+            "nav-item flex flex-col items-center justify-center gap-1 px-3 py-2",
+            "hover:bg-accent/50 rounded-lg transition-colors"
+          )}
           title="Mon profil"
           aria-label="Mon profil"
         >

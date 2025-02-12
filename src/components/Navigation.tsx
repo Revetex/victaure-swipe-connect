@@ -12,11 +12,13 @@ import { ProfilePreview } from "./ProfilePreview";
 import { UserProfile } from "@/types/profile";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { navigationItems } from "@/config/navigation";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 export function Navigation() {
   const { isLoading, user } = useAuth();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
   const [currentPage, setCurrentPage] = useState(4);
+  const isLargeScreen = useMediaQuery("(min-width: 1024px)");
 
   if (isLoading || !user) {
     return null;
@@ -40,7 +42,10 @@ export function Navigation() {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className={cn(
+      "h-full flex flex-col",
+      "lg:w-64 lg:border-r lg:border-border/50"
+    )}>
       {/* Logo Section */}
       <div className="h-16 border-b flex items-center px-4">
         <motion.div 
@@ -55,7 +60,10 @@ export function Navigation() {
 
       {/* Navigation Content */}
       <ScrollArea className="flex-1 py-2">
-        <nav className="px-2 space-y-3">
+        <nav className={cn(
+          "px-2 space-y-3",
+          "lg:px-4"
+        )}>
           {/* Principales */}
           <div className="space-y-0.5">
             <div className="px-2 py-1">
@@ -146,4 +154,3 @@ function renderNavItem(item: typeof navigationItems[0], currentPage: number, set
     </motion.button>
   );
 }
-
