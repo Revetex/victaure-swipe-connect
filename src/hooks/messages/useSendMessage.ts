@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Message, Receiver } from "@/types/messages";
 import { useMessagesStore } from "@/store/messagesStore";
 import { messageSchema } from "@/schemas/messageSchema";
+import { z } from "zod"; // Ajout de l'import manquant
 
 export function useSendMessage() {
   const queryClient = useQueryClient();
