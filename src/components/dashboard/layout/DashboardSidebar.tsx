@@ -25,11 +25,9 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
       animate={{ x: 0 }}
       className="hidden lg:flex flex-col w-64 border-r fixed h-screen glass-panel"
     >
-      <div className="p-4">
+      <header className="p-4 border-b border-border/40">
         <Logo />
-      </div>
-      
-      <Separator />
+      </header>
       
       <ScrollArea className="flex-1">
         <nav className="p-6 space-y-2">
