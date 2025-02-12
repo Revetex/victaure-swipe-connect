@@ -5,7 +5,6 @@ import { DashboardContent } from "./dashboard/DashboardContent";
 import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
 import { NotificationsBox } from "./notifications/NotificationsBox";
-import { cn } from "@/lib/utils";
 import { UserNav } from "./dashboard/layout/UserNav";
 import { Logo } from "./Logo";
 
@@ -26,14 +25,14 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <main className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background">
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
       />
 
       <div className="flex-1 lg:ml-64">
-        <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
           <div className="flex h-14 items-center px-4">
             <div className="mr-4 hidden lg:flex">
               <Logo />
@@ -44,14 +43,14 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
               setShowMobileMenu={setShowMobileMenu}
               onPageChange={handlePageChange}
             />
-            <div className="flex items-center gap-4 ml-auto">
+            <div className="ml-auto flex items-center gap-4">
               <NotificationsBox />
               <UserNav />
             </div>
           </div>
         </header>
 
-        <section className="p-4">
+        <div className="min-h-[calc(100vh-3.5rem)]">
           {children || (
             <DashboardContent
               currentPage={currentPage}
@@ -60,8 +59,8 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
               onRequestChat={() => handlePageChange(2)}
             />
           )}
-        </section>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

@@ -37,13 +37,13 @@ export function Feed() {
       className="h-[calc(100vh-3.5rem)] w-full"
       onScroll={handleScroll}
     >
-      <main className="max-w-2xl mx-auto space-y-4 p-4">
+      <div className="max-w-2xl mx-auto px-4">
         <CreatePost onPostCreated={invalidatePosts} />
         <PostList 
           onPostDeleted={invalidatePosts}
           onPostUpdated={invalidatePosts}
         />
-      </main>
+      </div>
 
       <AnimatePresence>
         {showScrollTop && (
