@@ -39,8 +39,8 @@ export function Feed() {
         onScroll={handleScroll}
       >
         <div className={cn(
-          "max-w-2xl mx-auto space-y-6",
-          "px-4 sm:px-6 py-6",
+          "max-w-2xl mx-auto space-y-4",
+          "px-4 sm:px-6 pt-2 pb-6",
           "pb-safe"
         )}>
           <motion.div
