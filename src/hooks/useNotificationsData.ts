@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
-import { showToast, commonToasts } from "@/utils/toast";
 
 export function useNotificationsData() {
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -17,7 +16,7 @@ export function useNotificationsData() {
       .order('created_at', { ascending: false });
 
     if (error) {
-      commonToasts.errorOccurred();
+      console.error('Error fetching notifications:', error);
       return;
     }
 
@@ -55,9 +54,8 @@ export function useNotificationsData() {
       if (error) throw error;
 
       setNotifications(notifications.filter(n => n.id !== id));
-      showToast.success("Notification supprimée");
     } catch (error) {
-      commonToasts.actionFailed("de la suppression");
+      console.error('Error deleting notification:', error);
     }
   };
 
@@ -73,9 +71,8 @@ export function useNotificationsData() {
 
       setNotifications(notifications.map(n => ({ ...n, read: true })));
       setUnreadCount(0);
-      showToast.success("Toutes les notifications ont été marquées comme lues");
     } catch (error) {
-      commonToasts.errorOccurred();
+      console.error('Error marking notifications as read:', error);
     }
   };
 

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Message, Receiver } from "@/types/messages";
 import { useMessagesStore } from "@/store/messagesStore";
 import { messageSchema } from "@/schemas/messageSchema";
-import { z } from "zod"; // Ajout de l'import manquant
+import { z } from "zod";
 
 export function useSendMessage() {
   const queryClient = useQueryClient();
@@ -17,7 +17,6 @@ export function useSendMessage() {
       if (!user) throw new Error("User not authenticated");
 
       try {
-        // Valider les données du message
         messageSchema.parse({
           content,
           receiver_id: receiver.id,
@@ -84,8 +83,7 @@ export function useSendMessage() {
         return messageData;
       } catch (error) {
         if (error instanceof z.ZodError) {
-          const errorMessage = error.errors.map(e => e.message).join(', ');
-          throw new Error(errorMessage);
+          throw new Error(error.errors.map(e => e.message).join(', '));
         }
         throw error;
       }

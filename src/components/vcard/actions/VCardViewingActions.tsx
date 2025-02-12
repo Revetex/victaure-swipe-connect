@@ -1,3 +1,4 @@
+
 import { Share2, Edit, FileText, Copy } from "lucide-react";
 import { VCardActionButton } from "./VCardActionButton";
 import { toast } from "sonner";
@@ -25,7 +26,6 @@ export function VCardViewingActions({
           text: `Profil professionnel de ${profile.full_name || ''}`,
           url: window.location.href,
         });
-        toast.success("Profil partagé avec succès");
       } catch (error) {
         console.error('Error sharing:', error);
         handleCopyLink();
