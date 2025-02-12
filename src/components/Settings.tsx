@@ -1,6 +1,6 @@
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { AppearanceSection } from "./settings/AppearanceSection";
 import { NotificationsSection } from "./settings/NotificationsSection";
 import { PrivacySection } from "./settings/PrivacySection";
@@ -12,86 +12,71 @@ import { ScrollArea } from "./ui/scroll-area";
 import { Palette, Bell, Shield, Lock, Ban, CreditCard, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const sectionVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: { 
-    opacity: 1, 
-    y: 0,
-    transition: {
-      duration: 0.4,
-      type: "spring",
-      stiffness: 100,
-      damping: 15
-    }
-  },
-  exit: { 
-    opacity: 0, 
-    y: -20,
-    transition: { duration: 0.2 }
-  }
-};
-
 const settingsSections = [
-  { id: 'appearance', Component: AppearanceSection, icon: Palette, title: 'Apparence', color: 'from-purple-500/20 to-blue-500/20' },
-  { id: 'notifications', Component: NotificationsSection, icon: Bell, title: 'Notifications', color: 'from-blue-500/20 to-cyan-500/20' },
-  { id: 'privacy', Component: PrivacySection, icon: Shield, title: 'Confidentialité', color: 'from-green-500/20 to-emerald-500/20' },
-  { id: 'security', Component: SecuritySection, icon: Lock, title: 'Sécurité', color: 'from-yellow-500/20 to-orange-500/20' },
-  { id: 'payments', Component: PaymentSection, icon: CreditCard, title: 'Paiements', color: 'from-pink-500/20 to-rose-500/20' },
-  { id: 'blocked', Component: BlockedUsersSection, icon: Ban, title: 'Utilisateurs bloqués', color: 'from-red-500/20 to-pink-500/20' },
-  { id: 'logout', Component: LogoutSection, icon: LogOut, title: 'Déconnexion', color: 'from-gray-500/20 to-slate-500/20' }
+  { id: 'appearance', Component: AppearanceSection, icon: Palette, title: 'Apparence' },
+  { id: 'notifications', Component: NotificationsSection, icon: Bell, title: 'Notifications' },
+  { id: 'privacy', Component: PrivacySection, icon: Shield, title: 'Confidentialité' },
+  { id: 'security', Component: SecuritySection, icon: Lock, title: 'Sécurité' },
+  { id: 'payments', Component: PaymentSection, icon: CreditCard, title: 'Paiements' },
+  { id: 'blocked', Component: BlockedUsersSection, icon: Ban, title: 'Utilisateurs bloqués' },
+  { id: 'logout', Component: LogoutSection, icon: LogOut, title: 'Déconnexion' }
 ];
 
 export function Settings() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
+  const [activeSection, setActiveSection] = useState('appearance');
 
   return (
-    <ScrollArea className="h-[calc(100vh-4rem)] pt-8">
-      <div className="container mx-auto py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 px-6">
-          {settingsSections.map(({ id, Component, icon: Icon, title, color }, index) => (
-            <motion.div
+    <div className="h-[calc(100vh-4rem)] flex overflow-hidden">
+      {/* Barre latérale des paramètres */}
+      <div className="w-64 border-r border-border/50 bg-background/95 backdrop-blur-sm">
+        <div className="p-4 space-y-1">
+          {settingsSections.map(({ id, icon: Icon, title }) => (
+            <button
               key={id}
-              variants={sectionVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              transition={{ delay: index * 0.1 }}
+              onClick={() => setActiveSection(id)}
               className={cn(
-                "group relative overflow-hidden rounded-2xl border border-border/50",
-                "backdrop-blur-sm transition-all duration-300",
-                "hover:scale-[1.02] hover:shadow-lg"
+                "w-full flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                "hover:bg-primary/10",
+                activeSection === id 
+                  ? "bg-primary text-primary-foreground" 
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <div className={cn(
-                "absolute inset-0 opacity-50 bg-gradient-to-br",
-                color
-              )} />
-              
-              <div className="relative p-8">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="p-3 rounded-xl bg-white/10 backdrop-blur-sm 
-                              group-hover:bg-white/20 transition-colors">
-                    <Icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <h2 className="text-xl font-medium">{title}</h2>
-                </div>
-                
-                <div className="bg-black/5 backdrop-blur-sm rounded-xl p-6">
-                  <Component />
-                </div>
-              </div>
-            </motion.div>
+              <Icon className="h-4 w-4" />
+              {title}
+            </button>
           ))}
         </div>
       </div>
-    </ScrollArea>
+
+      {/* Contenu principal */}
+      <div className="flex-1 overflow-hidden">
+        <ScrollArea className="h-full">
+          <div className="p-6">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2 }}
+              className="max-w-2xl mx-auto"
+            >
+              {settingsSections.map(({ id, Component, title }) => (
+                activeSection === id && (
+                  <div key={id} className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+                    </div>
+                    <div className="bg-card/50 border border-border/50 rounded-xl p-6">
+                      <Component />
+                    </div>
+                  </div>
+                )
+              ))}
+            </motion.div>
+          </div>
+        </ScrollArea>
+      </div>
+    </div>
   );
 }
