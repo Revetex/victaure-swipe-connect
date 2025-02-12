@@ -19,7 +19,6 @@ interface MainLayoutProps {
   onToolReturn?: () => void;
 }
 
-// Optimized layout component with performance improvements
 export const MainLayout = memo(function MainLayout({ 
   children, 
   title = "", 
@@ -32,7 +31,6 @@ export const MainLayout = memo(function MainLayout({
   const location = useLocation();
   const isFriendsPage = location.pathname.includes('/friends');
 
-  // Memoize the navigation toggle handler
   const handleNavigationToggle = useCallback(() => {
     // Navigation toggle logic here
   }, []);
@@ -137,5 +135,5 @@ export const MainLayout = memo(function MainLayout({
         )}
       </main>
     </motion.div>
-  );
-}));
+  )
+});
