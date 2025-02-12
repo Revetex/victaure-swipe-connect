@@ -100,7 +100,7 @@ export const MainLayout = memo(function MainLayout({
               onToolReturn={onToolReturn}
             />
           </div>
-        </motion.header>
+        </motion.header>,
 
         {/* Content area with improved layout and animations */}
         <motion.div 
@@ -116,7 +116,7 @@ export const MainLayout = memo(function MainLayout({
           <div className="max-w-7xl mx-auto px-4">
             {children}
           </div>
-        </motion.div>
+        </motion.div>,
 
         {/* Friends list overlay with improved animations */}
         <AnimatePresence mode="wait" initial={false}>
@@ -126,7 +126,7 @@ export const MainLayout = memo(function MainLayout({
               onClose={onToggleFriendsList}
             />
           )}
-        </AnimatePresence>
+        </AnimatePresence>,
 
         {/* Mobile navigation with improved safe area handling */}
         {!isFriendsPage && isMobile && (
