@@ -9,6 +9,7 @@ interface VCardViewingActionsProps {
   onDownloadCV: () => Promise<void>;
   isPdfGenerating: boolean;
   profile: any;
+  isPublic?: boolean;
 }
 
 export function VCardViewingActions({
@@ -16,7 +17,8 @@ export function VCardViewingActions({
   onDownloadBusinessCard,
   onDownloadCV,
   isPdfGenerating,
-  profile
+  profile,
+  isPublic
 }: VCardViewingActionsProps) {
   const handleShare = async () => {
     if (navigator.share) {
@@ -39,6 +41,10 @@ export function VCardViewingActions({
     navigator.clipboard.writeText(window.location.href);
     toast.success("Lien copié dans le presse-papier");
   };
+
+  if (isPublic) {
+    return null;
+  }
 
   return (
     <>
