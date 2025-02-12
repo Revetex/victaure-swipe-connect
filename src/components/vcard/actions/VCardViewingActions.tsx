@@ -1,3 +1,4 @@
+
 import { Share2, Edit, FileText, Copy } from "lucide-react";
 import { VCardActionButton } from "./VCardActionButton";
 import { toast } from "sonner";
@@ -8,6 +9,7 @@ interface VCardViewingActionsProps {
   onDownloadCV: () => Promise<void>;
   isPdfGenerating: boolean;
   profile: any;
+  isPublic?: boolean;
 }
 
 export function VCardViewingActions({
@@ -15,7 +17,8 @@ export function VCardViewingActions({
   onDownloadBusinessCard,
   onDownloadCV,
   isPdfGenerating,
-  profile
+  profile,
+  isPublic
 }: VCardViewingActionsProps) {
   const handleShare = async () => {
     if (navigator.share) {
@@ -25,7 +28,6 @@ export function VCardViewingActions({
           text: `Profil professionnel de ${profile.full_name || ''}`,
           url: window.location.href,
         });
-        toast.success("Profil partagé avec succès");
       } catch (error) {
         console.error('Error sharing:', error);
         handleCopyLink();
@@ -39,6 +41,10 @@ export function VCardViewingActions({
     navigator.clipboard.writeText(window.location.href);
     toast.success("Lien copié dans le presse-papier");
   };
+
+  if (isPublic) {
+    return null;
+  }
 
   return (
     <>

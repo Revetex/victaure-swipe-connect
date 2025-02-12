@@ -1,5 +1,5 @@
 
-import { MessageSquare, Settings } from "lucide-react";
+import { MessageSquare, Settings, Newspaper, ListTodo, SwordIcon, ShoppingBag, Calculator, Languages, Users } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
@@ -7,15 +7,18 @@ import { motion } from "framer-motion";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { FeedSidebar } from "./feed/FeedSidebar";
 import { useState } from "react";
 import { ProfilePreview } from "./ProfilePreview";
 import { UserProfile } from "@/types/profile";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { navigationItems } from "@/config/navigation";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 export function Navigation() {
   const { isLoading, user } = useAuth();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
+  const [currentPage, setCurrentPage] = useState(4);
+  const isLargeScreen = useMediaQuery("(min-width: 1024px)");
 
   if (isLoading || !user) {
     return null;
@@ -39,7 +42,10 @@ export function Navigation() {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className={cn(
+      "h-full flex flex-col",
+      "lg:w-64 lg:border-r lg:border-border/50"
+    )}>
       {/* Logo Section */}
       <div className="h-16 border-b flex items-center px-4">
         <motion.div 
@@ -53,35 +59,52 @@ export function Navigation() {
       </div>
 
       {/* Navigation Content */}
-      <ScrollArea className="flex-1 p-4">
-        <nav className="space-y-6">
-          <div className="space-y-2">
-            <Link 
-              to="/dashboard/messages" 
-              className="flex items-center gap-2 px-2 py-1.5 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <MessageSquare className="h-4 w-4" />
-              <span>Messages</span>
-            </Link>
-            <Link 
-              to="/settings" 
-              className="flex items-center gap-2 px-2 py-1.5 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Settings className="h-4 w-4" />
-              <span>Paramètres</span>
-            </Link>
+      <ScrollArea className="flex-1 py-2">
+        <nav className={cn(
+          "px-2 space-y-3",
+          "lg:px-4"
+        )}>
+          {/* Principales */}
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Principales</h2>
+            </div>
+            {navigationItems.slice(0, 2).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
           </div>
-          <FeedSidebar />
+
+          {/* Commerce & Jeux */}
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Commerce & Jeux</h2>
+            </div>
+            {navigationItems.slice(2, 4).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
+          </div>
+
+          {/* Productivité */}
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Productivité</h2>
+            </div>
+            {navigationItems.slice(4, 7).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
+          </div>
+
+          {/* Social */}
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Social</h2>
+            </div>
+            {navigationItems.slice(7, 9).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
+          </div>
+
+          {/* Paramètres */}
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Paramètres</h2>
+            </div>
+            {navigationItems.slice(9).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
+          </div>
         </nav>
       </ScrollArea>
-
-      {/* Footer Actions */}
-      <div className="h-16 border-t bg-background/50 backdrop-blur flex items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          <NotificationsBox />
-          <ThemeToggle />
-        </div>
-      </div>
 
       {/* Profile Preview */}
       {userProfile && (
@@ -92,5 +115,42 @@ export function Navigation() {
         />
       )}
     </div>
+  );
+}
+
+function renderNavItem(item: typeof navigationItems[0], currentPage: number, setCurrentPage: (id: number) => void) {
+  const Icon = item.icon;
+  const isActive = currentPage === item.id;
+  
+  return (
+    <motion.button
+      key={item.id}
+      className={cn(
+        "w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm font-medium",
+        "relative group transition-all duration-200",
+        "hover:bg-accent",
+        isActive && "bg-primary/10 text-primary hover:bg-primary/20"
+      )}
+      onClick={() => setCurrentPage(item.id)}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <Icon className={cn(
+        "h-4 w-4 shrink-0",
+        "transition-transform duration-200",
+        "group-hover:scale-110",
+        isActive && "text-primary"
+      )} />
+      <span>{item.name}</span>
+      {isActive && (
+        <motion.div
+          layoutId="nav-active"
+          className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        />
+      )}
+    </motion.button>
   );
 }

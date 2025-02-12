@@ -1,3 +1,4 @@
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { provinceData } from "@/data/provinces";
 import { JobFilters } from "../JobFilterUtils";
@@ -9,8 +10,8 @@ interface LocationFilterProps {
 }
 
 export function LocationFilter({ filters, onFilterChange }: LocationFilterProps) {
-  const [selectedProvince, setSelectedProvince] = useState<string>(filters.province || "all");
-  const cities = selectedProvince !== "all" ? provinceData[selectedProvince] || [] : [];
+  const [selectedProvince, setSelectedProvince] = useState<string>(filters.province || "all_provinces");
+  const cities = selectedProvince !== "all_provinces" ? provinceData[selectedProvince] || [] : [];
 
   return (
     <div className="space-y-4">
@@ -23,14 +24,14 @@ export function LocationFilter({ filters, onFilterChange }: LocationFilterProps)
           onValueChange={(value) => {
             setSelectedProvince(value);
             onFilterChange("province", value);
-            onFilterChange("location", "all"); // Reset city when province changes
+            onFilterChange("location", "all_cities"); // Reset city when province changes
           }}
         >
           <SelectTrigger>
             <SelectValue placeholder="Toutes les provinces" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Toutes les provinces</SelectItem>
+            <SelectItem value="all_provinces">Toutes les provinces</SelectItem>
             {Object.keys(provinceData).map((province) => (
               <SelectItem key={province} value={province}>
                 {province}
@@ -47,13 +48,13 @@ export function LocationFilter({ filters, onFilterChange }: LocationFilterProps)
         <Select
           value={filters.location}
           onValueChange={(value) => onFilterChange("location", value)}
-          disabled={selectedProvince === "all"}
+          disabled={selectedProvince === "all_provinces"}
         >
           <SelectTrigger>
             <SelectValue placeholder="Toutes les villes" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Toutes les villes</SelectItem>
+            <SelectItem value="all_cities">Toutes les villes</SelectItem>
             {cities.map((city) => (
               <SelectItem key={city} value={city}>
                 {city}

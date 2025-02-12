@@ -35,13 +35,25 @@ export function ReactionControls({
     onDislike
   });
 
+  const handleReactionClick = async (type: 'like' | 'dislike') => {
+    // Mise à jour optimiste immédiate
+    if (type === 'like') {
+      onLike();
+    } else {
+      onDislike();
+    }
+    
+    // Appel API en arrière-plan
+    await handleReaction(type);
+  };
+
   return (
     <div className="flex gap-2">
       <ReactionButton
         icon={ThumbsUp}
         count={likes || 0}
         isActive={userReaction === 'like'}
-        onClick={() => handleReaction('like')}
+        onClick={() => handleReactionClick('like')}
         activeClassName="text-primary"
       />
 
@@ -49,7 +61,7 @@ export function ReactionControls({
         icon={ThumbsDown}
         count={dislikes || 0}
         isActive={userReaction === 'dislike'}
-        onClick={() => handleReaction('dislike')}
+        onClick={() => handleReactionClick('dislike')}
         activeClassName="text-destructive"
       />
     </div>

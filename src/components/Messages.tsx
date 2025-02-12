@@ -1,7 +1,6 @@
 
-import { useUserChat } from "@/hooks/useUserChat";
-import { MessagesContainer } from "./messages/MessagesContainer";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { MessagesContainer } from "./messages/MessagesContainer";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,7 +16,7 @@ const queryClient = new QueryClient({
 export function Messages() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="fixed inset-0 w-full h-full bg-background">
+      <div className="fixed inset-0 pt-16 w-full h-[calc(100vh-4rem)] bg-background">
         <MessagesContainer />
       </div>
     </QueryClientProvider>

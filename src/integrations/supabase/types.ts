@@ -105,6 +105,51 @@ export type Database = {
         }
         Relationships: []
       }
+      app_versions: {
+        Row: {
+          checksum: string | null
+          created_at: string | null
+          downloads_count: number | null
+          file_path: string
+          id: string
+          is_active: boolean | null
+          min_android_version: string | null
+          release_notes: string | null
+          released_at: string | null
+          size_bytes: number | null
+          updated_at: string | null
+          version: string
+        }
+        Insert: {
+          checksum?: string | null
+          created_at?: string | null
+          downloads_count?: number | null
+          file_path: string
+          id?: string
+          is_active?: boolean | null
+          min_android_version?: string | null
+          release_notes?: string | null
+          released_at?: string | null
+          size_bytes?: number | null
+          updated_at?: string | null
+          version: string
+        }
+        Update: {
+          checksum?: string | null
+          created_at?: string | null
+          downloads_count?: number | null
+          file_path?: string
+          id?: string
+          is_active?: boolean | null
+          min_android_version?: string | null
+          release_notes?: string | null
+          released_at?: string | null
+          size_bytes?: number | null
+          updated_at?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
       auth_sessions: {
         Row: {
           created_at: string | null
@@ -1764,6 +1809,7 @@ export type Database = {
           id: string
           post_id: string | null
           reaction_type: string
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
@@ -1771,6 +1817,7 @@ export type Database = {
           id?: string
           post_id?: string | null
           reaction_type: string
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
@@ -1778,6 +1825,7 @@ export type Database = {
           id?: string
           post_id?: string | null
           reaction_type?: string
+          updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -2108,6 +2156,36 @@ export type Database = {
           },
         ]
       }
+      settings: {
+        Row: {
+          created_at: string | null
+          display_preferences: Json | null
+          id: string
+          language: string | null
+          notification_preferences: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          display_preferences?: Json | null
+          id?: string
+          language?: string | null
+          notification_preferences?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          display_preferences?: Json | null
+          id?: string
+          language?: string | null
+          notification_preferences?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       skills: {
         Row: {
           category: string
@@ -2209,6 +2287,33 @@ export type Database = {
         }
         Relationships: []
       }
+      theme_settings: {
+        Row: {
+          created_at: string | null
+          custom_colors: Json | null
+          id: string
+          mode: Database["public"]["Enums"]["theme_mode"] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          custom_colors?: Json | null
+          id?: string
+          mode?: Database["public"]["Enums"]["theme_mode"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          custom_colors?: Json | null
+          id?: string
+          mode?: Database["public"]["Enums"]["theme_mode"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       todos: {
         Row: {
           all_day: boolean | null
@@ -2258,6 +2363,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tools: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          enabled: boolean | null
+          icon: string | null
+          id: string
+          name: string
+          order_index: number | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          enabled?: boolean | null
+          icon?: string | null
+          id?: string
+          name: string
+          order_index?: number | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          enabled?: boolean | null
+          icon?: string | null
+          id?: string
+          name?: string
+          order_index?: number | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       translations: {
         Row: {
@@ -2342,6 +2483,47 @@ export type Database = {
             columns: ["participant2_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_tools: {
+        Row: {
+          created_at: string | null
+          custom_settings: Json | null
+          enabled: boolean | null
+          id: string
+          order_index: number | null
+          tool_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          custom_settings?: Json | null
+          enabled?: boolean | null
+          id?: string
+          order_index?: number | null
+          tool_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          custom_settings?: Json | null
+          enabled?: boolean | null
+          id?: string
+          order_index?: number | null
+          tool_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_tools_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "tools"
             referencedColumns: ["id"]
           },
         ]
@@ -2506,6 +2688,12 @@ export type Database = {
         }
         Returns: undefined
       }
+      increment_app_download_count: {
+        Args: {
+          version_id: string
+        }
+        Returns: undefined
+      }
       latitude: {
         Args: {
           "": unknown
@@ -2562,6 +2750,7 @@ export type Database = {
       message_delivery_status: "pending" | "delivered" | "read"
       message_sender_type: "user" | "assistant" | "system"
       mission_type: "company" | "individual"
+      theme_mode: "light" | "dark" | "system"
     }
     CompositeTypes: {
       [_ in never]: never

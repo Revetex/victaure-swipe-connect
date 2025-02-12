@@ -17,7 +17,7 @@ export const tools: ToolInfo[] = [
       onLoad?.();
       return <NotesPage />;
     },
-    gradient: "from-amber-500/20 via-orange-500/20 to-rose-500/20"
+    gradient: "from-primary/20 to-secondary/10"
   },
   { 
     id: "tasks", 
@@ -28,7 +28,7 @@ export const tools: ToolInfo[] = [
       onLoad?.();
       return <TasksPage />;
     },
-    gradient: "from-blue-500/20 via-indigo-500/20 to-violet-500/20"
+    gradient: "from-secondary/20 to-primary/10"
   },
   { 
     id: "calculator", 
@@ -39,7 +39,7 @@ export const tools: ToolInfo[] = [
       onLoad?.();
       return <CalculatorPage />;
     },
-    gradient: "from-green-500/20 via-emerald-500/20 to-teal-500/20"
+    gradient: "from-accent/20 to-secondary/10"
   },
   { 
     id: "translator", 
@@ -50,7 +50,7 @@ export const tools: ToolInfo[] = [
       onLoad?.();
       return <TranslatorPage />;
     },
-    gradient: "from-purple-500/20 via-fuchsia-500/20 to-pink-500/20"
+    gradient: "from-primary/20 to-accent/10"
   },
   { 
     id: "converter", 
@@ -65,7 +65,7 @@ export const tools: ToolInfo[] = [
         </div>
       );
     },
-    gradient: "from-cyan-500/20 via-sky-500/20 to-blue-500/20",
+    gradient: "from-secondary/20 to-primary/10",
     comingSoon: true
   },
   { 
@@ -77,6 +77,6 @@ export const tools: ToolInfo[] = [
       onLoad?.();
       return <ChessPage />;
     },
-    gradient: "from-red-500/20 via-rose-500/20 to-pink-500/20"
+    gradient: "from-accent/20 to-secondary/10"
   }
 ];

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Message } from '@/types/messages';
@@ -22,7 +23,7 @@ export function useMessagesPersistence(receiverId: string | undefined) {
             sender:profiles!messages_sender_id_fkey(*),
             receiver:profiles!messages_receiver_id_fkey(*)
           `)
-          .or(`and(sender_id.eq.${profile.id},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${profile.id})`)
+          .or(`and(sender_id.eq.${profile.id},receiver_id.eq.${receiverId}),and(sender_id.is.null,receiver_id.eq.${profile.id},is_assistant.eq.true),and(sender_id.eq.${receiverId},receiver_id.eq.${profile.id})`)
           .order('created_at', { ascending: true });
 
         if (error) throw error;
@@ -35,7 +36,13 @@ export function useMessagesPersistence(receiverId: string | undefined) {
           created_at: msg.created_at,
           updated_at: msg.updated_at || msg.created_at,
           read: msg.read || false,
-          sender: msg.sender || {
+          sender: msg.is_assistant ? {
+            id: 'assistant',
+            full_name: 'M. Victaure',
+            avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+            online_status: true,
+            last_seen: new Date().toISOString()
+          } : msg.sender || {
             id: msg.sender_id,
             full_name: 'Unknown User',
             avatar_url: '',
@@ -70,7 +77,7 @@ export function useMessagesPersistence(receiverId: string | undefined) {
           event: '*',
           schema: 'public',
           table: 'messages',
-          filter: `sender_id=eq.${receiverId},receiver_id=eq.${profile.id}`
+          filter: `receiver_id=eq.${profile.id}`
         },
         (payload) => {
           if (payload.eventType === 'INSERT') {
@@ -83,7 +90,13 @@ export function useMessagesPersistence(receiverId: string | undefined) {
               created_at: newMessage.created_at,
               updated_at: newMessage.updated_at || newMessage.created_at,
               read: newMessage.read || false,
-              sender: newMessage.sender || {
+              sender: newMessage.is_assistant ? {
+                id: 'assistant',
+                full_name: 'M. Victaure',
+                avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+                online_status: true,
+                last_seen: new Date().toISOString()
+              } : newMessage.sender || {
                 id: newMessage.sender_id,
                 full_name: 'Unknown User',
                 avatar_url: '',
@@ -116,7 +129,13 @@ export function useMessagesPersistence(receiverId: string | undefined) {
     created_at: msg.created_at,
     updated_at: msg.updated_at || msg.created_at,
     read: msg.read || false,
-    sender: msg.sender || {
+    sender: msg.is_assistant ? {
+      id: 'assistant',
+      full_name: 'M. Victaure',
+      avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+      online_status: true,
+      last_seen: new Date().toISOString()
+    } : msg.sender || {
       id: msg.sender_id,
       full_name: 'Unknown User',
       avatar_url: '',
@@ -142,7 +161,8 @@ export function useMessagesPersistence(receiverId: string | undefined) {
           sender_id: profile.id,
           receiver_id: receiverId,
           status: 'sent',
-          message_type: receiverId === 'assistant' ? 'assistant' : 'user'
+          message_type: receiverId === 'assistant' ? 'assistant' : 'user',
+          is_assistant: receiverId === 'assistant'
         })
         .select(`
           *,

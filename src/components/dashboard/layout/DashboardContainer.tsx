@@ -28,7 +28,7 @@ export function DashboardContainer({ children }: DashboardContainerProps) {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="min-h-screen bg-background pt-16" // Added pt-16 for header spacing
+      className="min-h-screen bg-background pt-16"
     >
       {children}
     </motion.div>

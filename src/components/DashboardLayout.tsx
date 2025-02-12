@@ -3,20 +3,18 @@ import React, { useState, useCallback } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { DashboardContent } from "./dashboard/DashboardContent";
 import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
-import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { NotificationsBox } from "./notifications/NotificationsBox";
+import { UserNav } from "./dashboard/layout/UserNav";
+import { Logo } from "./Logo";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(4);
   const [isEditing, setIsEditing] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { profile } = useProfile();
 
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
     setIsEditing(false);
-    setShowMobileMenu(false);
   }, []);
 
   const handleEditStateChange = useCallback((state: boolean) => {
@@ -24,40 +22,44 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-background relative">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0.1, 0.2, 0.1] }}
-        transition={{ duration: 5, repeat: Infinity }}
-        className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#8B5CF6,transparent)] pointer-events-none"
-      />
-
+    <div className="flex min-h-screen bg-background">
+      {/* Sidebar - Fixed on desktop, sliding on mobile */}
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
       />
 
-      <DashboardMobileNav
-        currentPage={currentPage}
-        showMobileMenu={showMobileMenu}
-        setShowMobileMenu={setShowMobileMenu}
-        onPageChange={handlePageChange}
-      />
+      {/* Main Content Area */}
+      <div className="flex-1">
+        {/* Header - Fixed at top */}
+        <header className="fixed top-0 right-0 left-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex h-16 items-center px-4">
+            <div className="lg:hidden">
+              <UserNav />
+            </div>
+            <div className="flex-1 flex justify-center">
+              <Logo />
+            </div>
+            <div className="flex items-center">
+              <NotificationsBox />
+            </div>
+          </div>
+        </header>
 
-      <main className={cn(
-        "flex-1 lg:ml-64 min-h-screen relative",
-        "glass-panel"
-      )}>
-        <header className="fixed top-0 left-0 right-0 z-40 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b lg:left-64" />
-        {children || (
-          <DashboardContent
-            currentPage={currentPage}
-            isEditing={isEditing}
-            onEditStateChange={handleEditStateChange}
-            onRequestChat={() => handlePageChange(2)}
-          />
-        )}
-      </main>
+        {/* Main Content with correct padding */}
+        <main className="lg:pl-64">
+          <div className="max-w-7xl mx-auto">
+            {children || (
+              <DashboardContent
+                currentPage={currentPage}
+                isEditing={isEditing}
+                onEditStateChange={handleEditStateChange}
+                onRequestChat={() => handlePageChange(2)}
+              />
+            )}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

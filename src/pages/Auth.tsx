@@ -29,12 +29,16 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#9b87f5]/5 via-[#D6BCFA]/5 to-[#403E43]/5">
-      <div className="fixed inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
+      <div 
+        className="fixed inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" 
+        style={{ willChange: 'transform' }}
+      />
       
       <motion.div
         className="fixed inset-0 opacity-20"
         style={{
           background: "radial-gradient(circle at center, var(--primary) 0%, transparent 70%)",
+          willChange: 'transform, opacity'
         }}
         animate={{
           scale: [1, 1.2, 1],
@@ -43,7 +47,7 @@ export default function Auth() {
         transition={{
           duration: 8,
           repeat: Infinity,
-          ease: "easeInOut",
+          ease: "easeInOut"
         }}
       />
       

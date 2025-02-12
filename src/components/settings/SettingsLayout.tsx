@@ -40,7 +40,7 @@ export function SettingsLayout({ children, className }: SettingsLayoutProps) {
         className
       )}
     >
-      <div className="h-full w-full max-w-7xl mx-auto px-4 py-6">
+      <div className="h-full w-full max-w-7xl mx-auto">
         {children}
       </div>
     </motion.div>

@@ -43,7 +43,13 @@ export const useReactions = ({
       if (error) {
         console.error('Error handling reaction:', error);
         
-        // Messages d'erreur personnalisés en fonction de l'erreur
+        // En cas d'erreur, on peut annuler la mise à jour optimiste
+        if (type === 'like') {
+          onDislike();
+        } else {
+          onLike();
+        }
+        
         let errorMessage = "Une erreur est survenue lors de la réaction";
         if (error.message.includes("Le post n'existe pas")) {
           errorMessage = "Cette publication n'existe plus";
@@ -68,18 +74,6 @@ export const useReactions = ({
           'like'
         );
       }
-
-      // Update UI
-      if (type === 'like') {
-        onLike();
-      } else {
-        onDislike();
-      }
-
-      toast({
-        title: "Réaction mise à jour",
-        description: `Votre réaction a été enregistrée`,
-      });
 
     } catch (error) {
       console.error('Error handling reaction:', error);

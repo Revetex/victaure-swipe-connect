@@ -12,10 +12,11 @@ import { Loader } from "@/components/ui/loader";
 import { NotificationsTab } from "@/components/notifications/NotificationsTab";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
-import { ChessPage } from "@/components/tools/ChessPage";
+import { ChessSection } from "@/components/tools/ChessSection"; // Corrigé ici
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
 import { cn } from "@/lib/utils";
+import { DownloadApp } from "@/components/dashboard/DownloadApp";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -57,7 +58,14 @@ export function DashboardContent({
   const getPageContent = () => {
     switch (currentPage) {
       case 1:
-        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
+        return (
+          <>
+            <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />
+            <div className="mt-4">
+              <DownloadApp />
+            </div>
+          </>
+        );
       case 2:
         return <Messages />;
       case 3:
@@ -65,7 +73,7 @@ export function DashboardContent({
       case 4:
         return <Feed />;
       case 7:
-        return <TasksPage />;
+        return <ChessSection />; // Modifié ici pour utiliser le bon composant
       case 8:
         return <CalculatorPage />;
       case 9:
@@ -76,8 +84,6 @@ export function DashboardContent({
         return <FriendsList />;
       case 14:
         return <TranslatorPage />;
-      case 15:
-        return <ChessPage />;
       case 16:
         return <NotesSection />;
       default:
@@ -91,10 +97,9 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="relative bg-background"
+      className="relative bg-background pt-16"
     >
       {getPageContent()}
     </motion.div>
   );
 }
-

@@ -1,3 +1,4 @@
+
 import { UserProfile } from "@/types/profile";
 import { VCardExpandedHeader } from "./VCardExpandedHeader";
 import { VCardExpandedBio } from "./VCardExpandedBio";
@@ -17,8 +18,8 @@ export function VCardExpandedGrid({
   setProfile,
 }: VCardExpandedGridProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-      <div className="space-y-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8 bg-[#F6F6F7] dark:bg-[#1A1F2C]">
+      <div className="space-y-8">
         <VCardExpandedHeader
           profile={profile}
           isEditing={isEditing}
@@ -32,7 +33,7 @@ export function VCardExpandedGrid({
         />
       </div>
       
-      <div className="space-y-6">
+      <div className="space-y-8">
         <VCardExpandedBio
           profile={profile}
           isEditing={isEditing}

@@ -1,44 +1,59 @@
-.theme-modern {
-  --primary-color: #047857;
-  --secondary-color: #10B981;
-  --accent-color: #A7F3D0;
-  --text-color: #1a1a1a;
-  --gradient: linear-gradient(135deg, #047857, #10B981);
-  font-family: 'Inter', sans-serif;
+
+@layer base {
+  :root {
+    --background: #FFFFFF;
+    --foreground: #1A1F2C;
+    --primary: #9b87f5;
+    --secondary: #7E69AB;
+    --accent: #D6BCFA;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: var(--primary);
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: #1A1F2C;
+    --foreground: #FFFFFF;
+    --primary: #9b87f5;
+    --secondary: #7E69AB;
+    --accent: #D6BCFA;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+  }
 }
 
-.theme-elegant {
-  --primary-color: #7C3AED;
-  --secondary-color: #8B5CF6;
-  --accent-color: #DDD6FE;
-  --text-color: #1a1a1a;
-  --gradient: linear-gradient(135deg, #7C3AED, #8B5CF6);
-  font-family: 'Playfair Display', serif;
+/* Glass effects */
+.glass-panel {
+  @apply bg-background/50 backdrop-blur-lg border border-border/50;
 }
 
-.theme-bold {
-  --primary-color: #BE185D;
-  --secondary-color: #DB2777;
-  --accent-color: #FBCFE8;
-  --text-color: #1a1a1a;
-  --gradient: linear-gradient(135deg, #BE185D, #DB2777);
-  font-family: 'Oswald', sans-serif;
+.glass-button {
+  @apply bg-primary/10 hover:bg-primary/20 backdrop-blur-sm;
 }
 
-.theme-minimal {
-  --primary-color: #374151;
-  --secondary-color: #4B5563;
-  --accent-color: #E5E7EB;
-  --text-color: #1a1a1a;
-  --gradient: linear-gradient(135deg, #374151, #4B5563);
-  font-family: 'Montserrat', sans-serif;
+/* Animations */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-.theme-warm {
-  --primary-color: #B45309;
-  --secondary-color: #D97706;
-  --accent-color: #FDE68A;
-  --text-color: #1a1a1a;
-  --gradient: linear-gradient(135deg, #B45309, #D97706);
-  font-family: 'Cormorant Garamond', serif;
+.animated-gradient {
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
 }

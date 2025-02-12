@@ -14,7 +14,7 @@ export function ContractTypeField() {
         <FormItem>
           <FormLabel>Type de contrat</FormLabel>
           <FormControl>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select onValueChange={field.onChange} defaultValue={field.value || "full-time"}>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le type de contrat" />
               </SelectTrigger>
