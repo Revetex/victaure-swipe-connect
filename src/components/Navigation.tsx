@@ -1,5 +1,5 @@
 
-import { MessageSquare, Settings } from "lucide-react";
+import { MessageSquare, Settings, Newspaper, ListTodo, SwordIcon, ShoppingBag, Calculator, Languages, Users } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,10 +10,13 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { ProfilePreview } from "./ProfilePreview";
 import { UserProfile } from "@/types/profile";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { navigationItems } from "@/config/navigation";
 
 export function Navigation() {
   const { isLoading, user } = useAuth();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
+  const [currentPage, setCurrentPage] = useState(4);
 
   if (isLoading || !user) {
     return null;
@@ -49,6 +52,48 @@ export function Navigation() {
           <Logo size="sm" />
         </motion.div>
       </div>
+
+      {/* Navigation Content */}
+      <ScrollArea className="flex-1 py-6">
+        <nav className="px-2 space-y-1">
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentPage === item.id;
+            
+            return (
+              <motion.button
+                key={item.id}
+                className={cn(
+                  "w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium",
+                  "relative group transition-all duration-200",
+                  "hover:bg-accent",
+                  isActive && "bg-primary/10 text-primary hover:bg-primary/20"
+                )}
+                onClick={() => setCurrentPage(item.id)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Icon className={cn(
+                  "h-4 w-4 shrink-0",
+                  "transition-transform duration-200",
+                  "group-hover:scale-110",
+                  isActive && "text-primary"
+                )} />
+                <span>{item.name}</span>
+                {isActive && (
+                  <motion.div
+                    layoutId="nav-active"
+                    className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  />
+                )}
+              </motion.button>
+            );
+          })}
+        </nav>
+      </ScrollArea>
 
       {/* Footer Actions */}
       <div className="h-16 border-t bg-background/50 backdrop-blur flex items-center justify-between px-4">
