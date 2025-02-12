@@ -5,7 +5,7 @@ import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/Marketplace";
 import { Feed } from "@/components/feed/Feed";
 import { Settings } from "@/components/Settings";
-import { NotesMap } from "@/components/notes/NotesMap";
+import { NotesSection } from "@/components/notes/NotesSection";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
@@ -15,7 +15,6 @@ import { TasksPage } from "@/components/tools/TasksPage";
 import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
-import { NotesSection } from "@/components/notes/NotesSection";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -76,8 +75,10 @@ export function DashboardContent({
         return <Marketplace />;
       case 4:
         return <Feed />;
-      case 7:
+      case 6:
         return <TasksPage />;
+      case 7:
+        return <ChessPage />;
       case 8:
         return <CalculatorPage />;
       case 9:
@@ -88,8 +89,6 @@ export function DashboardContent({
         return <FriendsList />;
       case 14:
         return <TranslatorPage />;
-      case 15:
-        return <ChessPage />;
       case 16:
         return <NotesSection />;
       default:
