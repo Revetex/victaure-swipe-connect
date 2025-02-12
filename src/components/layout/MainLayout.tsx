@@ -44,6 +44,28 @@ export const MainLayout = memo(function MainLayout({
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
+      {isMobile && (
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild className="absolute top-4 left-4 z-50">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={handleNavigationToggle}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent 
+            side="left" 
+            className="p-0 w-[280px] lg:hidden"
+          >
+            <div className="h-full overflow-y-auto">
+              {children}
+            </div>
+          </SheetContent>
+        </Sheet>
+      )}
+
       <main className={cn(
         "flex-1 relative",
         "transition-all duration-200 ease-in-out"
@@ -61,25 +83,7 @@ export const MainLayout = memo(function MainLayout({
           transition={{ duration: 0.3 }}
         >
           <div className="flex items-center gap-4 h-full px-4">
-            {isMobile && (
-              <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    onClick={handleNavigationToggle}
-                  >
-                    <Menu className="h-5 w-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent 
-                  side="left" 
-                  className="p-0 w-[280px] lg:hidden"
-                >
-                  {children}
-                </SheetContent>
-              </Sheet>
-            )}
+            <div className="w-10 h-10 lg:hidden" /> {/* Spacer for menu button */}
             <DashboardHeader 
               title={title}
               showFriendsList={showFriendsList}
@@ -101,7 +105,7 @@ export const MainLayout = memo(function MainLayout({
           transition={{ duration: 0.3, delay: 0.1 }}
         >
           <div className="max-w-7xl mx-auto px-4">
-            {children}
+            {!isMobile && children}
           </div>
         </motion.div>
 
