@@ -25,7 +25,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background">
       {/* Sidebar - Fixed on desktop, sliding on mobile */}
       <DashboardSidebar 
         currentPage={currentPage}
@@ -58,9 +58,9 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
           </div>
         </header>
 
-        {/* Main Content - Scrollable */}
-        <main className="relative pt-16 min-h-screen">
-          <div className="container mx-auto p-4 lg:p-6">
+        {/* Main Content */}
+        <main className="pt-16">
+          <div className="max-w-7xl mx-auto">
             {children || (
               <DashboardContent
                 currentPage={currentPage}
