@@ -17,7 +17,7 @@ const queryClient = new QueryClient({
 export function Messages() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="fixed inset-0 w-full h-full bg-background" style={{ top: '3.5rem' }}>
+      <div className="h-[calc(100vh-3.5rem)] overflow-hidden relative bg-background">
         <MessagesContainer />
       </div>
     </QueryClientProvider>
