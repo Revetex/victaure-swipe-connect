@@ -14,7 +14,7 @@ export function PaymentScheduleField() {
         <FormItem>
           <FormLabel>Fréquence de paiement</FormLabel>
           <FormControl>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select onValueChange={field.onChange} defaultValue={field.value || "monthly"}>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez la fréquence de paiement" />
               </SelectTrigger>
