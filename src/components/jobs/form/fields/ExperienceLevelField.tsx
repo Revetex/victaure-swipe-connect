@@ -25,13 +25,13 @@ export function ExperienceLevelField() {
           <FormControl>
             <Select 
               onValueChange={field.onChange} 
-              value={field.value || "select-level"}
+              value={field.value || "select-experience"}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le niveau d'expérience" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="select-level" disabled>
+                <SelectItem value="select-experience" disabled>
                   Sélectionnez le niveau d'expérience
                 </SelectItem>
                 {experienceLevels.map((level) => (
