@@ -36,10 +36,6 @@ export const MainLayout = memo(function MainLayout({
     setIsOpen(!isOpen);
   }, [isOpen]);
 
-  const handleClose = useCallback(() => {
-    setIsOpen(false);
-  }, []);
-
   return (
     <motion.div 
       className="flex min-h-screen bg-background"
@@ -79,7 +75,6 @@ export const MainLayout = memo(function MainLayout({
                 <SheetContent 
                   side="left" 
                   className="p-0 w-[280px] lg:hidden"
-                  onClose={handleClose}
                 >
                   {children}
                 </SheetContent>
