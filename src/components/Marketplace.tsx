@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RegularJobs } from "./marketplace/RegularJobs";
 import { ItemsMarket } from "./marketplace/ItemsMarket";
 import { ServicesMarket } from "./marketplace/ServicesMarket";
-import { Building2, Briefcase, Package, HandshakeIcon } from "lucide-react";
+import { Package, Briefcase, HandshakeIcon } from "lucide-react";
 
 export function Marketplace() {
   return (
