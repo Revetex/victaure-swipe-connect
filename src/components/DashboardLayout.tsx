@@ -2,7 +2,6 @@
 import React, { useState, useCallback } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { DashboardContent } from "./dashboard/DashboardContent";
-import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
 import { NotificationsBox } from "./notifications/NotificationsBox";
 import { UserNav } from "./dashboard/layout/UserNav";
 import { Logo } from "./Logo";
@@ -23,12 +22,6 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Sidebar - Fixed on desktop, sliding on mobile */}
-      <DashboardSidebar 
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-      />
-
       {/* Main Content Area */}
       <div className="flex-1">
         {/* Header - Fixed at top */}
@@ -47,7 +40,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         </header>
 
         {/* Main Content with correct padding */}
-        <main className="lg:pl-64">
+        <main className="pt-16">
           <div className="max-w-7xl mx-auto">
             {children || (
               <DashboardContent
