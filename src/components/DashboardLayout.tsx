@@ -37,9 +37,13 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         {/* Header - Fixed at top */}
         <header className="fixed top-0 right-0 left-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="flex h-16 items-center gap-4 px-4">
-            <Logo className="mr-auto" />
-            <NotificationsBox />
-            <UserNav />
+            <div className="lg:hidden">
+              <UserNav />
+            </div>
+            <Logo className="mx-auto lg:mx-0" />
+            <div className="flex items-center gap-2 ml-auto">
+              <NotificationsBox />
+            </div>
           </div>
         </header>
 
