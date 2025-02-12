@@ -54,44 +54,44 @@ export function Navigation() {
       </div>
 
       {/* Navigation Content */}
-      <ScrollArea className="flex-1 py-6">
-        <nav className="px-2 space-y-6">
+      <ScrollArea className="flex-1 py-2">
+        <nav className="px-2 space-y-3">
           {/* Principales */}
-          <div className="space-y-1">
-            <div className="px-3 py-2">
-              <h2 className="text-sm font-semibold text-muted-foreground">Principales</h2>
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Principales</h2>
             </div>
             {navigationItems.slice(0, 2).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
           </div>
 
           {/* Commerce & Jeux */}
-          <div className="space-y-1">
-            <div className="px-3 py-2">
-              <h2 className="text-sm font-semibold text-muted-foreground">Commerce & Jeux</h2>
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Commerce & Jeux</h2>
             </div>
             {navigationItems.slice(2, 4).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
           </div>
 
           {/* Productivité */}
-          <div className="space-y-1">
-            <div className="px-3 py-2">
-              <h2 className="text-sm font-semibold text-muted-foreground">Productivité</h2>
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Productivité</h2>
             </div>
             {navigationItems.slice(4, 7).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
           </div>
 
           {/* Social */}
-          <div className="space-y-1">
-            <div className="px-3 py-2">
-              <h2 className="text-sm font-semibold text-muted-foreground">Social</h2>
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Social</h2>
             </div>
             {navigationItems.slice(7, 9).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
           </div>
 
           {/* Paramètres */}
-          <div className="space-y-1">
-            <div className="px-3 py-2">
-              <h2 className="text-sm font-semibold text-muted-foreground">Paramètres</h2>
+          <div className="space-y-0.5">
+            <div className="px-2 py-1">
+              <h2 className="text-xs font-semibold text-muted-foreground">Paramètres</h2>
             </div>
             {navigationItems.slice(9).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
           </div>
@@ -118,7 +118,7 @@ function renderNavItem(item: typeof navigationItems[0], currentPage: number, set
     <motion.button
       key={item.id}
       className={cn(
-        "w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium",
+        "w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm font-medium",
         "relative group transition-all duration-200",
         "hover:bg-accent",
         isActive && "bg-primary/10 text-primary hover:bg-primary/20"
@@ -146,3 +146,4 @@ function renderNavItem(item: typeof navigationItems[0], currentPage: number, set
     </motion.button>
   );
 }
+
