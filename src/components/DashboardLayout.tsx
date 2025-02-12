@@ -41,7 +41,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       />
 
       <main className={cn(
-        "flex-1 lg:ml-64 min-h-screen relative",
+        "flex-1 lg:ml-64 min-h-screen relative pt-16",
         "glass-panel"
       )}>
         <header className="fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:left-64">
