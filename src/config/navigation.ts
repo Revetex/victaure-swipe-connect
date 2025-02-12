@@ -1,7 +1,19 @@
 
 import { MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, User, Users, Search, LayoutGrid } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
-export const navigationItems = [
+type NavigationItem = {
+  id: number;
+  icon: LucideIcon;
+  name: string;
+  children?: {
+    id: number;
+    icon: LucideIcon;
+    name: string;
+  }[];
+};
+
+export const navigationItems: NavigationItem[] = [
   // Section principale
   { id: 1, icon: User, name: "Mon profil" },
   { id: 4, icon: Newspaper, name: "Actualité" },
@@ -26,7 +38,7 @@ export const navigationItems = [
   { id: 9, icon: Bell, name: "Notifications" },
   { id: 12, icon: Users, name: "Connections" },
   { id: 10, icon: Settings, name: "Paramètres" }
-] as const;
+];
 
 export const getPageTitle = (currentPage: number): string => {
   switch (currentPage) {
@@ -60,4 +72,3 @@ export const getPageTitle = (currentPage: number): string => {
       return "Actualité";
   }
 };
-
