@@ -4,7 +4,11 @@ import { useProfile } from "@/hooks/useProfile";
 import { DashboardContent } from "./dashboard/DashboardContent";
 import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
+import { NotificationsBox } from "./notifications/NotificationsBox";
 import { cn } from "@/lib/utils";
+import { UserNav } from "./dashboard/layout/UserNav";
+import { Menu } from "lucide-react";
+import { Button } from "./ui/button";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(4);
@@ -41,8 +45,25 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "glass-panel"
       )}>
         <header className="fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:left-64">
-          <div className="h-1 w-full bg-gradient-to-r from-primary via-secondary to-accent opacity-80" />
-          <div className="h-16 border-b border-border/40" />
+          <div className="h-[2px] w-full bg-gradient-to-r from-primary/80 to-secondary/80" />
+          <div className="h-16 border-b border-border/40 px-4">
+            <div className="h-full flex items-center justify-between max-w-screen-2xl mx-auto">
+              <div className="flex items-center gap-4">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="lg:hidden"
+                  onClick={() => setShowMobileMenu(true)}
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </div>
+              <div className="flex items-center gap-2">
+                <NotificationsBox />
+                <UserNav />
+              </div>
+            </div>
+          </div>
         </header>
         {children || (
           <DashboardContent
