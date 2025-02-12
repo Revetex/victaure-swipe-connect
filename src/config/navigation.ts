@@ -1,14 +1,17 @@
-import { MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, User, Users, Search, LayoutGrid } from "lucide-react";
+
+import { MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, User, Users, Search, LayoutGrid, Menu, EyeOff } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
 type NavigationItem = {
   id: number;
   icon: LucideIcon;
   name: string;
+  hidden?: boolean;
   children?: {
     id: number;
     icon: LucideIcon;
     name: string;
+    hidden?: boolean;
   }[];
 };
 
@@ -16,7 +19,7 @@ export const navigationItems: NavigationItem[] = [
   // Section principale
   { id: 1, icon: User, name: "Mon profil" },
   { id: 4, icon: Newspaper, name: "Actualité" },
-  { id: 2, icon: MessageSquare, name: "Messages" },
+  { id: 2, icon: MessageSquare, name: "Messages", hidden: true },
   { id: 3, icon: BriefcaseIcon, name: "Emplois" },
   
   // Section outils
@@ -25,10 +28,10 @@ export const navigationItems: NavigationItem[] = [
     icon: LayoutGrid, 
     name: "Outils",
     children: [
-      { id: 7, icon: ListTodo, name: "Tâches" },
+      { id: 7, icon: ListTodo, name: "Tâches", hidden: true },
       { id: 8, icon: Calculator, name: "Calculatrice" },
       { id: 14, icon: Languages, name: "Traducteur" },
-      { id: 15, icon: SwordIcon, name: "Échecs" },
+      { id: 15, icon: SwordIcon, name: "Échecs", hidden: true },
       { id: 16, icon: StickyNote, name: "Notes" },
     ]
   },
