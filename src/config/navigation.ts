@@ -20,10 +20,10 @@ export const navigationItems: NavigationItem[] = [
   { id: 4, icon: Newspaper, name: "Actualité" },
   { id: 16, icon: StickyNote, name: "Notes" },
   { id: 3, icon: ShoppingBag, name: "Marketplace" },
+  { id: 7, icon: SwordIcon, name: "Échecs" },
   { id: 6, icon: ListTodo, name: "Tâches" },
   
-  // Jeux et outils
-  { id: 7, icon: SwordIcon, name: "Échecs" },
+  // Outils
   { id: 8, icon: Calculator, name: "Calculatrice" },
   { id: 14, icon: Languages, name: "Traducteur" },
   { id: 12, icon: Users, name: "Connections" },
