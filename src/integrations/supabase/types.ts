@@ -105,6 +105,51 @@ export type Database = {
         }
         Relationships: []
       }
+      app_versions: {
+        Row: {
+          checksum: string | null
+          created_at: string | null
+          downloads_count: number | null
+          file_path: string
+          id: string
+          is_active: boolean | null
+          min_android_version: string | null
+          release_notes: string | null
+          released_at: string | null
+          size_bytes: number | null
+          updated_at: string | null
+          version: string
+        }
+        Insert: {
+          checksum?: string | null
+          created_at?: string | null
+          downloads_count?: number | null
+          file_path: string
+          id?: string
+          is_active?: boolean | null
+          min_android_version?: string | null
+          release_notes?: string | null
+          released_at?: string | null
+          size_bytes?: number | null
+          updated_at?: string | null
+          version: string
+        }
+        Update: {
+          checksum?: string | null
+          created_at?: string | null
+          downloads_count?: number | null
+          file_path?: string
+          id?: string
+          is_active?: boolean | null
+          min_android_version?: string | null
+          release_notes?: string | null
+          released_at?: string | null
+          size_bytes?: number | null
+          updated_at?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
       auth_sessions: {
         Row: {
           created_at: string | null
@@ -2503,6 +2548,12 @@ export type Database = {
           p_post_id: string
           p_user_id: string
           p_reaction_type: string
+        }
+        Returns: undefined
+      }
+      increment_app_download_count: {
+        Args: {
+          version_id: string
         }
         Returns: undefined
       }
