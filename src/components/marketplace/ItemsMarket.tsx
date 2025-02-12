@@ -1,29 +1,31 @@
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ImagePlus, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { MarketplaceItem, MarketplaceCategory } from "@/types/marketplace/types";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { cn } from "@/lib/utils";
+import { ItemCard } from "./items/ItemCard";
+import { ItemFilters } from "./items/ItemFilters";
+import { CreateItemDialog } from "./items/CreateItemDialog";
 
 export function ItemsMarket() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const [filters, setFilters] = useState({
+    search: "",
+    category: "",
+    minPrice: 0,
+    maxPrice: 10000,
+    condition: ""
+  });
 
-  const { data: items = [], isLoading } = useQuery({
-    queryKey: ['marketplace-items'],
+  // Fetch items
+  const { data: items = [], isLoading, refetch } = useQuery({
+    queryKey: ['marketplace-items', filters],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('marketplace_items')
         .select(`
           *,
@@ -36,6 +38,24 @@ export function ItemsMarket() {
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 
+      if (filters.search) {
+        query = query.textSearch('searchable_text', filters.search);
+      }
+      
+      if (filters.category) {
+        query = query.eq('category_id', filters.category);
+      }
+      
+      if (filters.condition) {
+        query = query.eq('condition', filters.condition);
+      }
+      
+      query = query
+        .gte('price', filters.minPrice)
+        .lte('price', filters.maxPrice);
+
+      const { data, error } = await query;
+
       if (error) {
         toast.error("Erreur lors du chargement des articles");
         throw error;
@@ -45,6 +65,7 @@ export function ItemsMarket() {
     }
   });
 
+  // Fetch categories
   const { data: categories = [] } = useQuery({
     queryKey: ['marketplace-categories'],
     queryFn: async () => {
@@ -62,156 +83,67 @@ export function ItemsMarket() {
     }
   });
 
+  const handleFilterChange = (key: string, value: any) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
   return (
     <div className="space-y-6 px-4 md:px-6 pt-4 pb-24 md:pb-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-xl md:text-2xl font-semibold">Articles à vendre ou louer</h2>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto">
-              <Plus className="h-4 w-4 mr-2" />
-              Publier une annonce
-            </Button>
-          </DialogTrigger>
-          <DialogContent className={cn(
-            "max-w-2xl",
-            isMobile && "w-[calc(100%-2rem)] top-[50%]"
-          )}>
-            <DialogHeader>
-              <DialogTitle>Publier une annonce</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-6 py-4">
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="title">Titre</Label>
-                    <Input id="title" placeholder="Nom de l'article" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="price">Prix</Label>
-                    <Input id="price" type="number" min="0" step="0.01" placeholder="0.00" />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="category">Catégorie</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner une catégorie" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="condition">État</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="État de l'article" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="new">Neuf</SelectItem>
-                        <SelectItem value="like_new">Comme neuf</SelectItem>
-                        <SelectItem value="good">Bon état</SelectItem>
-                        <SelectItem value="fair">État correct</SelectItem>
-                        <SelectItem value="poor">État moyen</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Décrivez votre article..."
-                    rows={5}
-                    className="resize-none"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Photos</Label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {[1, 2, 3, 4].map((index) => (
-                      <div
-                        key={index}
-                        className="aspect-square rounded-lg border-2 border-dashed border-muted flex items-center justify-center cursor-pointer hover:border-muted-foreground/50 transition-colors"
-                      >
-                        <ImagePlus className="h-6 w-6 text-muted-foreground" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <Button className="w-full">
-                Publier l'annonce
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => setIsDialogOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Publier une annonce
+        </Button>
       </div>
 
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-fr"
-      >
-        {isLoading ? (
-          Array.from({ length: 6 }).map((_, index) => (
-            <Card key={index} className="p-4 space-y-4">
-              <div className="w-full aspect-video bg-muted animate-pulse rounded-lg" />
-              <div className="space-y-2">
-                <div className="h-4 w-2/3 bg-muted animate-pulse rounded" />
-                <div className="h-4 w-1/3 bg-muted animate-pulse rounded" />
-              </div>
-            </Card>
-          ))
-        ) : items.length > 0 ? (
-          items.map((item) => (
-            <Card key={item.id} className="overflow-hidden flex flex-col">
-              {item.images && item.images[0] ? (
-                <div className="aspect-video relative">
-                  <img
-                    src={item.images[0]}
-                    alt={item.title}
-                    className="object-cover w-full h-full"
-                    loading="lazy"
-                  />
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Filters */}
+        <div className="lg:col-span-1">
+          <ItemFilters
+            categories={categories}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+          />
+        </div>
+
+        {/* Items Grid */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr"
+        >
+          {isLoading ? (
+            // Loading skeletons
+            Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="space-y-4 p-4 border rounded-lg animate-pulse">
+                <div className="w-full aspect-video bg-muted rounded-lg" />
+                <div className="space-y-2">
+                  <div className="h-4 w-2/3 bg-muted rounded" />
+                  <div className="h-4 w-1/3 bg-muted rounded" />
                 </div>
-              ) : (
-                <div className="aspect-video bg-muted flex items-center justify-center">
-                  <ImagePlus className="h-8 w-8 text-muted-foreground" />
-                </div>
-              )}
-              <div className="p-4 space-y-2 flex-1 flex flex-col">
-                <h3 className="font-semibold truncate">{item.title}</h3>
-                <p className="text-lg font-bold text-primary">{item.price.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' })}</p>
-                <p className="text-sm text-muted-foreground line-clamp-2 flex-1">{item.description}</p>
-                {item.seller && (
-                  <div className="flex items-center gap-2 pt-2 border-t">
-                    <div className="text-sm text-muted-foreground">
-                      Vendeur: {item.seller.full_name}
-                    </div>
-                  </div>
-                )}
               </div>
-            </Card>
-          ))
-        ) : (
-          <div className="col-span-full p-8 text-center border rounded-lg">
-            <p className="text-muted-foreground">
-              Aucune annonce pour le moment
-            </p>
-          </div>
-        )}
-      </motion.div>
+            ))
+          ) : items.length > 0 ? (
+            items.map((item) => (
+              <ItemCard key={item.id} item={item} />
+            ))
+          ) : (
+            <div className="col-span-full p-8 text-center border rounded-lg">
+              <p className="text-muted-foreground">
+                Aucune annonce pour le moment
+              </p>
+            </div>
+          )}
+        </motion.div>
+      </div>
+
+      <CreateItemDialog 
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        categories={categories}
+        onSuccess={refetch}
+      />
     </div>
   );
 }
