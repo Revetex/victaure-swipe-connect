@@ -34,16 +34,13 @@ export function MainLayout({
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Navigation - only show on desktop */}
-      {!isMobile && <Navigation />}
+      {/* Navigation */}
+      <Navigation />
       
       {/* Main content */}
-      <main className={cn(
-        "flex-1 relative",
-        !isMobile && "ml-64" // Add margin to accommodate fixed navigation
-      )}>
+      <main className="flex-1 pl-64">
         {/* Fixed Header */}
-        <header className="fixed top-0 right-0 z-40 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b w-full">
+        <header className="fixed top-0 right-0 z-40 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b w-[calc(100%-16rem)]">
           <div className="flex items-center gap-4 h-full px-4">
             {isMobile && (
               <Sheet>
@@ -52,7 +49,7 @@ export function MainLayout({
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="p-0 w-[280px]">
+                <SheetContent side="left" className="p-0 w-[280px] lg:hidden">
                   <Navigation />
                 </SheetContent>
               </Sheet>
@@ -88,9 +85,7 @@ export function MainLayout({
         {!isFriendsPage && isMobile && (
           <nav 
             className="h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed bottom-0 left-0 right-0 z-50"
-            style={{ 
-              paddingBottom: 'env(safe-area-inset-bottom)'
-            }}
+            style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
           >
             <div className="h-full px-4">
               {/* Mobile navigation content */}

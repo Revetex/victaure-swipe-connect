@@ -24,7 +24,6 @@ export function Navigation() {
     return null;
   }
 
-  // Convert User to UserProfile type
   const userProfile: UserProfile = {
     id: user.id,
     email: user.email || '',
@@ -42,9 +41,9 @@ export function Navigation() {
   };
 
   return (
-    <div className={cn(
-      "h-full flex flex-col",
-      "fixed top-0 left-0 w-64 border-r border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50"
+    <aside className={cn(
+      "hidden lg:flex flex-col fixed top-0 left-0 w-64 h-screen",
+      "border-r border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     )}>
       {/* Logo Section */}
       <div className="h-16 border-b flex items-center px-4">
@@ -58,51 +57,48 @@ export function Navigation() {
         </motion.div>
       </div>
 
-      {/* Navigation Content */}
-      <ScrollArea className="flex-1 py-2">
-        <nav className={cn(
-          "px-2 space-y-3",
-          "lg:px-4"
-        )}>
+      {/* Navigation Scroll Area */}
+      <ScrollArea className="flex-1">
+        <nav className="p-2 lg:p-4">
           {/* Principales */}
-          <div className="space-y-0.5">
-            <div className="px-2 py-1">
-              <h2 className="text-xs font-semibold text-muted-foreground">Principales</h2>
-            </div>
-            {navigationItems.slice(0, 2).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
-          </div>
+          <NavSection 
+            title="Principales"
+            items={navigationItems.slice(0, 2)}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
 
           {/* Commerce & Jeux */}
-          <div className="space-y-0.5">
-            <div className="px-2 py-1">
-              <h2 className="text-xs font-semibold text-muted-foreground">Commerce & Jeux</h2>
-            </div>
-            {navigationItems.slice(2, 4).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
-          </div>
+          <NavSection 
+            title="Commerce & Jeux"
+            items={navigationItems.slice(2, 4)}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
 
           {/* Productivité */}
-          <div className="space-y-0.5">
-            <div className="px-2 py-1">
-              <h2 className="text-xs font-semibold text-muted-foreground">Productivité</h2>
-            </div>
-            {navigationItems.slice(4, 7).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
-          </div>
+          <NavSection 
+            title="Productivité"
+            items={navigationItems.slice(4, 7)}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
 
           {/* Social */}
-          <div className="space-y-0.5">
-            <div className="px-2 py-1">
-              <h2 className="text-xs font-semibold text-muted-foreground">Social</h2>
-            </div>
-            {navigationItems.slice(7, 9).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
-          </div>
+          <NavSection 
+            title="Social"
+            items={navigationItems.slice(7, 9)}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
 
           {/* Paramètres */}
-          <div className="space-y-0.5">
-            <div className="px-2 py-1">
-              <h2 className="text-xs font-semibold text-muted-foreground">Paramètres</h2>
-            </div>
-            {navigationItems.slice(9).map((item) => renderNavItem(item, currentPage, setCurrentPage))}
-          </div>
+          <NavSection 
+            title="Paramètres"
+            items={navigationItems.slice(9)}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
         </nav>
       </ScrollArea>
 
@@ -114,24 +110,53 @@ export function Navigation() {
           onClose={() => setShowProfilePreview(false)}
         />
       )}
+    </aside>
+  );
+}
+
+interface NavSectionProps {
+  title: string;
+  items: typeof navigationItems;
+  currentPage: number;
+  setCurrentPage: (id: number) => void;
+}
+
+function NavSection({ title, items, currentPage, setCurrentPage }: NavSectionProps) {
+  return (
+    <div className="space-y-1 mb-4">
+      <h2 className="px-2 py-1 text-xs font-semibold text-muted-foreground">
+        {title}
+      </h2>
+      {items.map((item) => (
+        <NavItem 
+          key={item.id}
+          item={item}
+          isActive={currentPage === item.id}
+          onClick={() => setCurrentPage(item.id)}
+        />
+      ))}
     </div>
   );
 }
 
-function renderNavItem(item: typeof navigationItems[0], currentPage: number, setCurrentPage: (id: number) => void) {
+interface NavItemProps {
+  item: typeof navigationItems[0];
+  isActive: boolean;
+  onClick: () => void;
+}
+
+function NavItem({ item, isActive, onClick }: NavItemProps) {
   const Icon = item.icon;
-  const isActive = currentPage === item.id;
   
   return (
     <motion.button
-      key={item.id}
       className={cn(
         "w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm font-medium",
         "relative group transition-all duration-200",
         "hover:bg-accent",
         isActive && "bg-primary/10 text-primary hover:bg-primary/20"
       )}
-      onClick={() => setCurrentPage(item.id)}
+      onClick={onClick}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
