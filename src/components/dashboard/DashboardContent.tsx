@@ -54,7 +54,19 @@ export function DashboardContent({
     }
   };
 
-  const renderContent = () => {
+  return (
+    <motion.div
+      variants={variants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="h-full"
+    >
+      {renderContent()}
+    </motion.div>
+  );
+
+  function renderContent() {
     switch (currentPage) {
       case 1:
         return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
@@ -83,17 +95,5 @@ export function DashboardContent({
       default:
         return null;
     }
-  };
-
-  return (
-    <motion.div
-      variants={variants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      className="h-full"
-    >
-      {renderContent()}
-    </motion.div>
-  );
+  }
 }
