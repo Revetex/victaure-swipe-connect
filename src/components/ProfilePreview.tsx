@@ -1,4 +1,3 @@
-
 import { UserProfile } from "@/types/profile";
 import { ProfilePreviewDialog } from "./profile/preview/ProfilePreviewDialog";
 import { useNavigate } from "react-router-dom";
@@ -16,8 +15,7 @@ import {
   UserX,
   MessageCircle,
   Lock,
-  Heart,
-  HeartPlus
+  Heart
 } from "lucide-react";
 import { useConnectionStatus } from "./profile/preview/hooks/useConnectionStatus";
 import { useConnectionActions } from "./profile/preview/hooks/useConnectionActions";
@@ -117,7 +115,7 @@ export function ProfilePreview({
                 variant="outline"
                 className="w-full flex items-center justify-center gap-2"
               >
-                <HeartPlus className="h-4 w-4" />
+                <UserPlus className="h-4 w-4" />
                 Ajouter en ami
               </Button>
             )}
