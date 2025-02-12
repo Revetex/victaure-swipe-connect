@@ -5,9 +5,9 @@ import { useFormContext } from "react-hook-form";
 
 const paymentSchedules = {
   company: [
-    { value: "Monthly", label: "Mensuel" },
-    { value: "Bi-weekly", label: "Bimensuel" },
-    { value: "Weekly", label: "Hebdomadaire" }
+    { value: "monthly", label: "Mensuel" },
+    { value: "bi-weekly", label: "Bimensuel" },
+    { value: "weekly", label: "Hebdomadaire" }
   ],
   individual: [
     { value: "one_time", label: "Paiement unique" },
