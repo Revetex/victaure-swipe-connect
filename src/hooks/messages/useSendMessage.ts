@@ -22,6 +22,7 @@ export function useSendMessage() {
         sender_id: user.id,
         receiver_id: receiver.id,
         message_type: messageType,
+        is_assistant: messageType === 'assistant',
         read: false,
         status: 'sent',
         created_at: now,
