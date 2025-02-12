@@ -41,8 +41,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "glass-panel"
       )}>
         <header className="fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:left-64">
-          <div className="h-1 w-full bg-gradient-to-r from-primary via-secondary to-accent" />
-          <div className="h-16 border-b border-border/50 header-gradient" />
+          <div className="h-16 border-b border-border/20" />
         </header>
         {children || (
           <DashboardContent
