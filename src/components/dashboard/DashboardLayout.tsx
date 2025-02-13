@@ -1,11 +1,11 @@
 
 import React, { useState, useCallback } from "react";
 import { useProfile } from "@/hooks/useProfile";
-import { DashboardContent } from "./dashboard/DashboardContent";
-import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
-import { NotificationsBox } from "./notifications/NotificationsBox";
-import { UserNav } from "./dashboard/layout/UserNav";
-import { Logo } from "./Logo";
+import { DashboardContent } from "@/components/dashboard/content/DashboardContent";
+import { DashboardSidebar } from "@/components/dashboard/layout/DashboardSidebar";
+import { NotificationsBox } from "@/components/notifications/NotificationsBox";
+import { UserNav } from "@/components/dashboard/layout/UserNav";
+import { Logo } from "@/components/Logo";
 import { Navigation } from "@/components/Navigation";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
