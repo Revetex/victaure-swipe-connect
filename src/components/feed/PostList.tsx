@@ -5,7 +5,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useState, memo } from "react";
 import { PostCard } from "./posts/PostCard";
 import { usePostOperations } from "./posts/usePostOperations";
-import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { PostSkeleton } from "./posts/PostSkeleton";
 import { EmptyPostState } from "./posts/EmptyPostState";
@@ -70,34 +69,6 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
     gcTime: 1000 * 60 * 5,
   });
 
-  const handleDeletePost = async (postId: string, userId: string | undefined) => {
-    if (userId !== user?.id) {
-      toast.error("Vous ne pouvez supprimer que vos propres publications");
-      return;
-    }
-    
-    try {
-      await handleDelete(postId, userId);
-      onPostDeleted();
-      toast.success("Publication supprimée avec succès");
-      setPostToDelete(null);
-    } catch (error) {
-      console.error('Error deleting post:', error);
-      toast.error("Erreur lors de la suppression de la publication");
-    }
-  };
-
-  const handleUpdatePost = async (postId: string, content: string) => {
-    try {
-      await handleUpdate(postId, content);
-      onPostUpdated();
-      toast.success("Publication mise à jour avec succès");
-    } catch (error) {
-      console.error('Error updating post:', error);
-      toast.error("Erreur lors de la mise à jour de la publication");
-    }
-  };
-
   if (isLoading) {
     return <PostSkeleton />;
   }
@@ -126,7 +97,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
               onHide={(postId) => handleHide(postId, user?.id)}
               onReaction={(postId, type) => handleReaction(postId, user?.id, type)}
               onCommentAdded={() => queryClient.invalidateQueries({ queryKey: ["posts"] })}
-              onUpdate={handleUpdatePost}
+              onUpdate={handleUpdate}
             />
           </motion.div>
         ))}
@@ -135,7 +106,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
       <DeletePostDialog 
         isOpen={!!postToDelete}
         onClose={() => setPostToDelete(null)}
-        onConfirm={() => postToDelete && handleDeletePost(postToDelete, user?.id)}
+        onConfirm={() => postToDelete && handleDelete(postToDelete, user?.id)}
       />
     </div>
   );

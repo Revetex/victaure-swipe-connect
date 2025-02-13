@@ -1,5 +1,5 @@
 
-import { MessageCircle } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { ReactionButton } from "./ReactionButton";
 
 interface CommentButtonProps {
@@ -15,12 +15,12 @@ export function CommentButton({
 }: CommentButtonProps) {
   return (
     <ReactionButton
-      icon={MessageCircle}
+      icon={MessageSquare}
       count={commentCount}
       isActive={isExpanded}
       onClick={onToggleComments}
-      label="Commentaires" // Ajout de la propriété label manquante
-      activeClassName="bg-gradient-to-tr from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white shadow-lg"
+      label="Commentaires"
+      activeClassName="bg-blue-500/10 text-blue-500 dark:bg-blue-400/10 dark:text-blue-400"
     />
   );
 }
