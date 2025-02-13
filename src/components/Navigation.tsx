@@ -1,4 +1,3 @@
-
 import { MessageSquare, Settings, Newspaper, ListTodo, SwordIcon, ShoppingBag, Calculator, Languages, Users } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
@@ -41,9 +40,9 @@ export function Navigation() {
   };
 
   return (
-    <aside className={cn(
-      "hidden lg:flex flex-col fixed top-0 left-0 w-64 h-screen",
-      "border-r border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+    <div className={cn(
+      isLargeScreen ? "fixed inset-y-0 left-0 w-64 border-r" : "w-full h-full",
+      "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     )}>
       {/* Logo Section */}
       <div className="h-16 border-b flex items-center px-4">
@@ -58,7 +57,7 @@ export function Navigation() {
       </div>
 
       {/* Navigation Scroll Area */}
-      <ScrollArea className="flex-1">
+      <ScrollArea className="h-[calc(100vh-4rem)]">
         <nav className="p-2 lg:p-4">
           {/* Principales */}
           <NavSection 
@@ -110,7 +109,7 @@ export function Navigation() {
           onClose={() => setShowProfilePreview(false)}
         />
       )}
-    </aside>
+    </div>
   );
 }
 
