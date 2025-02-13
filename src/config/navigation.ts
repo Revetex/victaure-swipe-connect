@@ -9,7 +9,12 @@ import {
   SwordIcon, 
   StickyNote, 
   Users, 
-  ShoppingBag 
+  ShoppingBag,
+  Home,
+  Bell,
+  CircleUser,
+  FileText,
+  LayoutDashboard
 } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
@@ -18,42 +23,114 @@ type NavigationItem = {
   icon: LucideIcon;
   name: string;
   path: string;
+  description?: string;
   section?: string;
 };
 
 export const navigationSections = [
   {
-    id: "essential",
-    name: "Essentiel",
+    id: "accueil",
+    name: "Accueil",
+    description: "Votre espace principal",
     items: [
-      { id: 4, icon: Newspaper, name: "Actualité", path: "dashboard" },
-      { id: 2, icon: MessageSquare, name: "Messages", path: "messages" },
-      { id: 12, icon: Users, name: "Connections", path: "connections" }
+      { 
+        id: 4, 
+        icon: LayoutDashboard, 
+        name: "Tableau de bord", 
+        path: "dashboard",
+        description: "Vue d'ensemble de vos activités"
+      }
     ]
   },
   {
-    id: "tools",
-    name: "Outils",
+    id: "communication",
+    name: "Communication",
+    description: "Restez connecté",
     items: [
-      { id: 16, icon: StickyNote, name: "Notes", path: "notes" },
-      { id: 6, icon: ListTodo, name: "Tâches", path: "tasks" },
-      { id: 8, icon: Calculator, name: "Calculatrice", path: "calculator" },
-      { id: 14, icon: Languages, name: "Traducteur", path: "translator" }
+      { 
+        id: 2, 
+        icon: MessageSquare, 
+        name: "Messages", 
+        path: "messages",
+        description: "Vos conversations"
+      },
+      { 
+        id: 12, 
+        icon: Users, 
+        name: "Connections", 
+        path: "connections",
+        description: "Votre réseau professionnel"
+      }
     ]
   },
   {
-    id: "activities",
-    name: "Activités",
+    id: "productivite",
+    name: "Productivité",
+    description: "Outils et ressources",
     items: [
-      { id: 3, icon: ShoppingBag, name: "Marketplace", path: "marketplace" },
-      { id: 7, icon: SwordIcon, name: "Échecs", path: "chess" }
+      { 
+        id: 16, 
+        icon: StickyNote, 
+        name: "Notes", 
+        path: "notes",
+        description: "Vos notes et mémos"
+      },
+      { 
+        id: 6, 
+        icon: ListTodo, 
+        name: "Tâches", 
+        path: "tasks",
+        description: "Gestionnaire de tâches"
+      },
+      { 
+        id: 8, 
+        icon: Calculator, 
+        name: "Calculatrice", 
+        path: "calculator",
+        description: "Calculs rapides"
+      },
+      { 
+        id: 14, 
+        icon: Languages, 
+        name: "Traducteur", 
+        path: "translator",
+        description: "Traduction instantanée"
+      }
     ]
   },
   {
-    id: "settings",
-    name: "Paramètres",
+    id: "loisirs",
+    name: "Loisirs",
+    description: "Détente et divertissement",
     items: [
-      { id: 10, icon: Settings, name: "Paramètres", path: "settings" }
+      { 
+        id: 3, 
+        icon: ShoppingBag, 
+        name: "Marketplace", 
+        path: "marketplace",
+        description: "Achats et ventes"
+      },
+      { 
+        id: 7, 
+        icon: SwordIcon, 
+        name: "Échecs", 
+        path: "chess",
+        description: "Jouez aux échecs"
+      }
+    ]
+  },
+  {
+    id: "compte",
+    name: "Compte",
+    description: "Gérez votre profil",
+    items: [
+      { 
+        id: 10, 
+        icon: Settings, 
+        name: "Paramètres", 
+        path: "settings",
+        description: "Configuration du compte"
+      }
     ]
   }
 ];
@@ -62,5 +139,13 @@ export const navigationItems = navigationSections.flatMap(section => section.ite
 
 export const getPageTitle = (currentPage: number): string => {
   const item = navigationItems.find(item => item.id === currentPage);
-  return item?.name || "Actualité";
+  return item?.name || "Tableau de bord";
+};
+
+export const getCurrentSection = (currentPage: number): string => {
+  const item = navigationItems.find(item => item.id === currentPage);
+  const section = navigationSections.find(section => 
+    section.items.some(i => i.id === currentPage)
+  );
+  return section?.name || "Accueil";
 };
