@@ -135,7 +135,7 @@ export function ServicesList() {
                           Placement de l'enchère...
                         </>
                       ) : (
-                        'Confirmer l'enchère'
+                        'Confirmer l\'enchère'
                       )}
                     </Button>
                   </>
