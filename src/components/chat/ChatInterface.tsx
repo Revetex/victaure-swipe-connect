@@ -1,6 +1,5 @@
 
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -43,7 +42,22 @@ export function ChatInterface() {
     try {
       setIsThinking(true);
       
-      await sendMessage(input, {
+      // Créer immédiatement le message utilisateur
+      const userMessage = {
+        id: crypto.randomUUID(),
+        content: input,
+        sender_id: profile?.id || '',
+        receiver_id: 'assistant',
+        created_at: new Date().toISOString(),
+        timestamp: new Date().toISOString(),
+        message_type: 'user',
+        read: false,
+        status: 'sent',
+        metadata: {}
+      };
+
+      // Ajouter le message à l'interface immédiatement
+      sendMessage(input, {
         id: 'assistant',
         full_name: 'M. Victaure',
         avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
@@ -64,36 +78,27 @@ export function ChatInterface() {
 
   return (
     <ChatContainer>
-      <motion.div 
-        initial={false}
-        animate={{ 
-          borderColor: isThinking ? "hsl(var(--primary))" : "transparent" 
-        }}
-        className="p-4 border-b transition-colors duration-200"
+      <div 
+        className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b"
       >
-        <h2 className="text-xl font-semibold">Chat avec M. Victaure</h2>
-        <p className="text-sm text-muted-foreground">
-          Votre assistant personnel
-        </p>
-      </motion.div>
+        <div className="p-4">
+          <h2 className="text-xl font-semibold">Chat avec M. Victaure</h2>
+          <p className="text-sm text-muted-foreground">
+            Votre assistant personnel
+          </p>
+        </div>
+      </div>
 
-      <ChatMessagesList
-        messages={messages}
-        isThinking={isThinking}
-        onScroll={handleScroll}
-        messagesEndRef={messagesEndRef}
-      />
+      <div className="pt-24 pb-20">
+        <ChatMessagesList
+          messages={messages}
+          isThinking={isThinking}
+          onScroll={handleScroll}
+          messagesEndRef={messagesEndRef}
+        />
+      </div>
 
-      <AnimatePresence>
-        {showScrollButton && (
-          <ChatScrollButton 
-            show={showScrollButton}
-            onClick={scrollToBottom}
-          />
-        )}
-      </AnimatePresence>
-
-      <div className="p-4 border-t bg-background/95 backdrop-blur-sm sticky bottom-0 z-50">
+      <div className="fixed bottom-0 left-0 right-0 p-4 border-t bg-background/95 backdrop-blur-sm">
         <ChatInput
           value={input}
           onChange={setInput}
