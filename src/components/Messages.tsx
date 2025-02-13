@@ -1,23 +1,13 @@
 
-import { useUserChat } from "@/hooks/useUserChat";
-import { MessagesContainer } from "./messages/MessagesContainer";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { MessagesContainer } from "./MessagesContainer";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60, // 1 minute
-      gcTime: 1000 * 60 * 5, // 5 minutes
-      refetchOnWindowFocus: true,
-      retry: 1
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 export function Messages() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="fixed inset-0 w-full h-full bg-background">
+      <div className="h-screen">
         <MessagesContainer />
       </div>
     </QueryClientProvider>
