@@ -84,13 +84,10 @@ export async function handleAIMove(
     return;
   }
 
-  // For medium and hard difficulties, evaluate positions
   let selectedMove;
   if (difficulty === 'easy') {
-    // Random move for easy difficulty
     selectedMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
   } else {
-    // Evaluate each move and select the best one
     let bestScore = -Infinity;
     selectedMove = possibleMoves[0];
 
@@ -98,7 +95,6 @@ export async function handleAIMove(
       const newBoard = makeMove(board, move.from, move.to);
       const score = evaluatePosition(newBoard);
       
-      // Add some randomness for medium difficulty
       const randomFactor = difficulty === 'medium' ? Math.random() * 2 - 1 : 0;
       
       if (score + randomFactor > bestScore) {
@@ -108,11 +104,9 @@ export async function handleAIMove(
     });
   }
 
-  // Make the selected move
   const newBoard = makeMove(board, selectedMove.from, selectedMove.to);
   setBoard(newBoard);
   
-  // Add move to history
   const moveNotation = `${String.fromCharCode(97 + selectedMove.from.col)}${8 - selectedMove.from.row} → ${String.fromCharCode(97 + selectedMove.to.col)}${8 - selectedMove.to.row}`;
   setMoveHistory(prev => [...prev, moveNotation]);
   

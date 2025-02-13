@@ -20,7 +20,7 @@ export function ChessPage() {
   } = useChessGame();
 
   return (
-    <div className="container mx-auto p-4 pt-16">
+    <div className="container mx-auto p-4 pt-32">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -59,7 +59,7 @@ export function ChessPage() {
                 <div className="text-center p-6 rounded-xl bg-[#1A1F2C]/90 border border-white/10 shadow-2xl">
                   <Crown className="h-12 w-12 mx-auto mb-4 text-yellow-400" />
                   <h2 className="text-2xl font-bold mb-2">
-                    {isWhiteTurn ? "Les noirs gagnent!" : "Les blancs gagnent!"}
+                    {isWhiteTurn ? "Les blancs gagnent!" : "Les noirs gagnent!"}
                   </h2>
                   <button
                     onClick={resetGame}
