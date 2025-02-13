@@ -18,11 +18,10 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
   if (!profile) return null;
 
   const sections = [
-    { title: "Principales", items: navigationItems.slice(0, 2) },
-    { title: "Commerce & Jeux", items: navigationItems.slice(2, 4) },
-    { title: "Productivité", items: navigationItems.slice(4, 7) },
-    { title: "Social", items: navigationItems.slice(7, 9) },
-    { title: "Paramètres", items: navigationItems.slice(9) }
+    { title: "Principal", items: navigationItems.slice(0, 4) },
+    { title: "Productivité", items: navigationItems.slice(4, 6) },
+    { title: "Outils", items: navigationItems.slice(6, 9) },
+    { title: "Système", items: navigationItems.slice(9) }
   ];
 
   return (
