@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { useNotifications } from "./useNotifications";
 
 interface UseReactionsProps {
@@ -20,16 +20,11 @@ export const useReactions = ({
   onLike,
   onDislike,
 }: UseReactionsProps) => {
-  const { toast } = useToast();
   const { createNotification } = useNotifications();
 
   const handleReaction = async (type: 'like' | 'dislike') => {
     if (!currentUserId) {
-      toast({
-        title: "Erreur",
-        description: "Vous devez être connecté pour réagir",
-        variant: "destructive"
-      });
+      toast.error("Vous devez être connecté pour réagir aux publications");
       return;
     }
 
@@ -42,6 +37,7 @@ export const useReactions = ({
 
       if (error) throw error;
 
+      // Notification seulement pour les likes des autres utilisateurs
       if (type === 'like' && postAuthorId !== currentUserId) {
         await createNotification(
           postAuthorId,
@@ -53,17 +49,15 @@ export const useReactions = ({
 
       if (type === 'like') {
         onLike();
+        toast.success("J'aime ajouté");
       } else {
         onDislike();
+        toast.success("Je n'aime pas ajouté");
       }
 
     } catch (error) {
       console.error('Error handling reaction:', error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de la réaction",
-        variant: "destructive"
-      });
+      toast.error("Une erreur est survenue lors de la réaction");
     }
   };
 

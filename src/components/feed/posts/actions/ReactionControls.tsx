@@ -1,5 +1,5 @@
 
-import { Heart, HeartCrack } from "lucide-react";
+import { Heart, ThumbsDown } from "lucide-react";
 import { useReactions } from "./useReactions";
 import { ReactionButton } from "./ReactionButton";
 
@@ -42,13 +42,17 @@ export function ReactionControls({
         count={likes || 0}
         isActive={userReaction === 'like'}
         onClick={() => handleReaction('like')}
+        label="J'aime"
+        activeClassName="text-red-500 hover:bg-red-500/10"
       />
 
       <ReactionButton
-        icon={HeartCrack}
+        icon={ThumbsDown}
         count={dislikes || 0}
-        isActive={userReaction === 'dislike'}
+        isActive={userReaction === 'dislike'} 
         onClick={() => handleReaction('dislike')}
+        label="Je n'aime pas"
+        activeClassName="text-blue-500 hover:bg-blue-500/10"
       />
     </div>
   );
