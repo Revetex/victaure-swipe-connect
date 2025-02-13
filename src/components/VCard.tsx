@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
@@ -133,7 +134,7 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-3xl mx-auto bg-white/90 dark:bg-gray-900/90 rounded-xl shadow-xl overflow-hidden backdrop-blur-sm relative z-10"
+        className="max-w-3xl mx-auto bg-white/90 dark:bg-gray-900/90 rounded-xl shadow-xl overflow-hidden backdrop-blur-sm relative z-10 mt-16 sm:mt-6" // Added top margin
       >
         <div className="relative p-6 sm:p-8">
           <div className="absolute inset-0 bg-gradient-to-br from-[#9b87f5]/10 to-transparent" />

@@ -1,12 +1,18 @@
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Loader2, Search } from "lucide-react";
-import { useDebounce } from "use-debounce";
-import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList
+} from "@/components/ui/command";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ProfileSearchProps {
@@ -15,124 +21,70 @@ interface ProfileSearchProps {
   className?: string;
 }
 
-export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisateur...", className }: ProfileSearchProps) {
-  const [search, setSearch] = useState("");
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [debouncedSearch] = useDebounce(search, 300);
-  const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
-  const [isFocused, setIsFocused] = useState(false);
+export function ProfileSearch({ onSelect, placeholder, className }: ProfileSearchProps) {
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: profiles = [], isLoading } = useQuery({
-    queryKey: ["profiles", debouncedSearch],
+  const { data: profiles } = useQuery({
+    queryKey: ["profiles"],
     queryFn: async () => {
-      const query = supabase
+      const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .order("full_name");
+        .neq("id", (await supabase.auth.getUser()).data.user?.id || "");
 
-      if (debouncedSearch) {
-        query.ilike("full_name", `%${debouncedSearch}%`);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error("Error fetching profiles:", error);
-        return [];
-      }
-
+      if (error) throw error;
       return data as UserProfile[];
-    },
-    enabled: Boolean(debouncedSearch),
+    }
   });
 
-  const handleProfileClick = (profile: UserProfile) => {
-    setSelectedProfile(profile);
-    onSelect(profile);
-  };
+  const filteredProfiles = useMemo(() => {
+    if (!profiles) return [];
+    if (!searchQuery) return profiles;
 
-  const handleProfilePreviewClose = () => {
-    setSelectedProfile(null);
-    setSearch("");
-  };
+    const normalizedQuery = searchQuery.toLowerCase();
+    return profiles.filter(
+      (profile) =>
+        profile.full_name?.toLowerCase().includes(normalizedQuery) ||
+        profile.email?.toLowerCase().includes(normalizedQuery)
+    );
+  }, [profiles, searchQuery]);
 
   return (
-    <div className={cn(
-      "relative", 
-      "transition-all duration-200",
-      className
-    )} role="search">
-      <Command className="rounded-lg border shadow-md bg-background/95 backdrop-blur-sm" aria-label="Recherche de profils">
-        <div className="flex items-center px-3">
-          <Search className="w-4 h-4 text-muted-foreground/70" />
-          <CommandInput
-            placeholder={placeholder}
-            value={search}
-            onValueChange={setSearch}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            className="focus:ring-0 border-none"
-          />
-        </div>
-        <CommandList>
-          {debouncedSearch && (
-            <CommandGroup heading="Résultats de recherche">
-              {isLoading && (
-                <CommandItem disabled aria-label="Chargement en cours">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                  <span>Recherche en cours...</span>
-                </CommandItem>
-              )}
-              
-              {!isLoading && profiles.length === 0 && (
-                <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
-              )}
-
-              {profiles.map((profile) => (
-                <CommandItem
-                  key={profile.id}
-                  onSelect={() => handleProfileClick(profile)}
-                  onMouseEnter={() => setHoveredId(profile.id)}
-                  onMouseLeave={() => setHoveredId(null)}
-                  className={cn(
-                    "cursor-pointer transition-colors",
-                    "flex items-center gap-3 py-2",
-                    hoveredId === profile.id ? "bg-accent" : ""
-                  )}
-                >
-                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                    {profile.avatar_url ? (
-                      <img 
-                        src={profile.avatar_url} 
-                        alt={profile.full_name || ""}
-                        className="w-full h-full rounded-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-sm text-muted-foreground">
-                        {(profile.full_name?.[0] || profile.email[0]).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{profile.full_name || profile.email}</span>
-                    {profile.full_name && (
-                      <span className="text-xs text-muted-foreground">{profile.email}</span>
-                    )}
-                  </div>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
-        </CommandList>
-      </Command>
-
-      {selectedProfile && (
-        <ProfilePreview 
-          profile={selectedProfile} 
-          onClose={handleProfilePreviewClose}
-          isOpen={!!selectedProfile}
-        />
-      )}
-    </div>
+    <Command className={cn("rounded-lg border", className)}>
+      <CommandInput
+        value={searchQuery}
+        onValueChange={setSearchQuery}
+        placeholder={placeholder || "Rechercher un utilisateur..."}
+        className="h-9"
+      />
+      <CommandList>
+        <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+        <CommandGroup>
+          {filteredProfiles.map((profile) => (
+            <CommandItem
+              key={profile.id}
+              value={profile.full_name || profile.email || ""}
+              onSelect={() => onSelect(profile)}
+              className="flex items-center gap-2 p-2"
+            >
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={profile.avatar_url || ""} />
+                <AvatarFallback>
+                  <UserRound className="h-4 w-4" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col">
+                <span className="font-medium">
+                  {profile.full_name || "Utilisateur"}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {profile.email}
+                </span>
+              </div>
+            </CommandItem>
+          ))}
+        </CommandGroup>
+      </CommandList>
+    </Command>
   );
 }

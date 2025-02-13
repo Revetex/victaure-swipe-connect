@@ -54,24 +54,27 @@ export function FriendsContent() {
           className={cn(
             "bg-card/50 backdrop-blur-sm",
             "border rounded-xl shadow-lg",
-            "p-6 space-y-4"
+            "p-6 space-y-4",
+            "mt-16 sm:mt-6" // Add top margin on mobile
           )}
         >
           <h2 className="text-xl font-semibold bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent">
             Trouver des connections
           </h2>
-          <ProfileSearch 
-            onSelect={handleProfileSelect}
-            placeholder="Rechercher par nom ou email..."
-            className="w-full"
-          />
+          <div className="w-full max-w-xl mx-auto">
+            <ProfileSearch 
+              onSelect={handleProfileSelect}
+              placeholder="Rechercher par nom ou email..."
+              className="w-full"
+            />
+          </div>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="touch-manipulation"
+          className="touch-manipulation mx-auto max-w-4xl w-full px-4 sm:px-0"
         >
           <ConnectionsSection />
         </motion.div>
