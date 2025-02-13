@@ -13,10 +13,10 @@ interface JobBid {
   message: string | null;
   created_at: string | null;
   updated_at: string | null;
-  bidder?: {
+  bidder: {
     full_name: string | null;
     avatar_url: string | null;
-  };
+  } | null;
 }
 
 export function useJobBids(jobId: string) {
@@ -27,7 +27,7 @@ export function useJobBids(jobId: string) {
         .from('job_bids')
         .select(`
           *,
-          bidder:profiles(full_name, avatar_url)
+          bidder:profiles!job_bids_bidder_id_fkey(full_name, avatar_url)
         `)
         .eq('job_id', jobId)
         .order('created_at', { ascending: false });
