@@ -5,7 +5,7 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { MoreHorizontal, ArrowLeft, Trash2 } from "lucide-react";
+import { MoreHorizontal, ArrowLeft } from "lucide-react";
 import { DeleteConversationDialog } from "./DeleteConversationDialog";
 import { Badge } from "@/components/ui/badge";
 
