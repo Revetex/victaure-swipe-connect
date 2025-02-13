@@ -1,6 +1,6 @@
+
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
@@ -9,19 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useUser } from "@/hooks/useUser";
 import { PageLayout } from "@/components/layout/PageLayout";
-
-interface Message {
-  id: string;
-  content: string;
-  sender_id: string;
-  receiver_id: string;
-  created_at: string;
-  read: boolean;
-  sender: {
-    full_name: string;
-    avatar_url: string;
-  };
-}
+import type { Message } from "@/types/messages";
 
 export function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -50,15 +38,30 @@ export function ChatPage() {
 
         if (error) {
           console.error("Error fetching messages:", error);
-          toast.error("Failed to load messages.");
+          return;
         }
 
         if (data) {
-          setMessages(data as Message[]);
+          // Transform the data to match the Message type
+          const transformedMessages: Message[] = data.map(msg => ({
+            id: msg.id,
+            content: msg.content,
+            sender_id: msg.sender_id,
+            receiver_id: msg.receiver_id,
+            created_at: msg.created_at,
+            read: msg.read ?? false,
+            sender: {
+              id: msg.sender_id,
+              full_name: msg.sender.full_name || "Unknown",
+              avatar_url: msg.sender.avatar_url || "",
+              online_status: false,
+              last_seen: new Date().toISOString()
+            }
+          }));
+          setMessages(transformedMessages);
         }
       } catch (error) {
         console.error("Error fetching messages:", error);
-        toast.error("Failed to load messages.");
       } finally {
         setLoading(false);
       }
@@ -66,7 +69,6 @@ export function ChatPage() {
 
     fetchMessages();
 
-    // Subscribe to changes in the 'messages' table
     const messagesSubscription = supabase
       .channel('public:messages')
       .on(
@@ -74,17 +76,7 @@ export function ChatPage() {
         { event: '*', schema: 'public', table: 'messages' },
         (payload) => {
           if (payload.new) {
-            // Optimistically add the new message to the state
-            setMessages((prevMessages) => {
-              const newMessage = {
-                ...(payload.new as any),
-                sender: {
-                  full_name: user?.user_metadata?.full_name as string,
-                  avatar_url: user?.user_metadata?.avatar_url as string,
-                },
-              } as Message;
-              return [...prevMessages, newMessage];
-            });
+            setMessages((prevMessages) => [...prevMessages, payload.new as Message]);
           }
         }
       )
@@ -96,7 +88,6 @@ export function ChatPage() {
   }, [user]);
 
   useEffect(() => {
-    // Scroll to the bottom when messages are updated
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
@@ -111,19 +102,17 @@ export function ChatPage() {
         .insert({
           content: newMessage,
           sender_id: user.id,
-          receiver_id: '00000000-0000-0000-0000-000000000000', // Replace with actual receiver ID
+          receiver_id: '00000000-0000-0000-0000-000000000000',
           read: false,
         });
 
       if (error) {
         console.error("Error sending message:", error);
-        toast.error("Failed to send message.");
       } else {
         setNewMessage("");
       }
     } catch (error) {
       console.error("Error sending message:", error);
-      toast.error("Failed to send message.");
     }
   };
 
@@ -139,8 +128,7 @@ export function ChatPage() {
                 messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex flex-col ${message.sender_id === user?.id ? 'items-end' : 'items-start'
-                      }`}
+                    className={`flex flex-col ${message.sender_id === user?.id ? 'items-end' : 'items-start'}`}
                   >
                     <div className="flex items-center space-x-2">
                       <Avatar>

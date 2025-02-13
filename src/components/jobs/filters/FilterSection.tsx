@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -8,11 +9,13 @@ import { useDebouncedCallback } from "use-debounce";
 interface FilterSectionProps {
   filters: JobFilters;
   onFilterChange: (key: keyof JobFilters, value: any) => void;
+  onReset: () => void;
 }
 
 export const FilterSection = memo(function FilterSection({ 
   filters, 
-  onFilterChange 
+  onFilterChange,
+  onReset 
 }: FilterSectionProps) {
   const debouncedFilterChange = useDebouncedCallback(
     (value: string) => {
