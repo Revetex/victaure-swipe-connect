@@ -40,7 +40,8 @@ export function Navigation({ onNavigate, className, orientation = "vertical" }: 
                 className={cn(
                   "flex items-center gap-2 px-3 py-2 rounded-md transition-colors",
                   "hover:bg-accent hover:text-accent-foreground",
-                  orientation === "horizontal" ? "flex-row" : "w-full"
+                  orientation === "horizontal" ? "flex-row" : "w-full",
+                  "relative z-10"
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />
