@@ -4,21 +4,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { PaymentTypes } from "@/types/database/payments";
 import { toast } from "sonner";
 
-type ServiceWithDetails = PaymentTypes['Tables']['marketplace_services']['Row'] & {
+type MarketplaceService = PaymentTypes['Tables']['marketplace_services']['Row'];
+type ServiceBid = {
+  id: string;
+  amount: number;
+  status: string;
+  created_at: string;
+  bidder: {
+    full_name: string | null;
+    avatar_url: string | null;
+  } | null;
+};
+
+type ServiceWithDetails = MarketplaceService & {
   provider: {
     full_name: string | null;
     avatar_url: string | null;
   } | null;
-  bids: Array<{
-    id: string;
-    amount: number;
-    status: string;
-    created_at: string;
-    bidder: {
-      full_name: string | null;
-      avatar_url: string | null;
-    } | null;
-  }>;
+  bids: ServiceBid[];
 };
 
 export function useServicesData() {
@@ -31,38 +34,34 @@ export function useServicesData() {
         .from('marketplace_services')
         .select(`
           *,
-          provider:profiles(
-            full_name,
-            avatar_url
-          ),
+          provider:profiles(full_name, avatar_url),
           bids:service_bids(
             id,
             amount,
             status,
             created_at,
-            bidder:profiles(
-              full_name,
-              avatar_url
-            )
+            bidder:profiles(full_name, avatar_url)
           )
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as ServiceWithDetails[];
     }
   });
 
   const createBid = useMutation({
-    mutationFn: async (bid: Omit<PaymentTypes['Tables']['service_bids']['Insert'], 'bidder_id'>) => {
+    mutationFn: async (bid: { service_id: string; amount: number }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Vous devez être connecté pour faire une enchère");
 
       const { data, error } = await supabase
         .from('service_bids')
         .insert({
-          ...bid,
-          bidder_id: user.id
+          service_id: bid.service_id,
+          bidder_id: user.id,
+          amount: bid.amount,
+          status: 'pending'
         })
         .select()
         .single();

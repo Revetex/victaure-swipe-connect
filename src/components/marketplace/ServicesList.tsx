@@ -25,13 +25,20 @@ export function ServicesList() {
     );
   }
 
+  if (!services) {
+    return (
+      <div className="text-center text-muted-foreground">
+        Aucun service disponible pour le moment.
+      </div>
+    );
+  }
+
   const handleBid = async (serviceId: string) => {
     try {
       setIsPlacingBid(true);
       await createBid.mutateAsync({
         service_id: serviceId,
         amount: parseFloat(bidAmount),
-        status: 'pending'
       });
       setBidAmount("");
       setSelectedService(null);
@@ -44,7 +51,7 @@ export function ServicesList() {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {services?.map((service) => (
+      {services.map((service) => (
         <Card key={service.id} className="p-4 flex flex-col">
           <div className="flex items-start justify-between gap-4">
             <div>

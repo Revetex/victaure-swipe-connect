@@ -2,12 +2,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { PaymentTypes } from "@/types/database/payments";
 
-type PaymentEscrow = PaymentTypes['Tables']['payment_escrows']['Row'];
+type PaymentEscrow = {
+  id: string;
+  payer_id: string;
+  payee_id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  bid_id?: string;
+  contract_id?: string;
+  created_at: string;
+  updated_at: string;
+  release_conditions?: any;
+};
 
 export function usePayments() {
-  const { data: escrows, isLoading, error } = useQuery({
+  const { data: escrows, isLoading, error } = useQuery<PaymentEscrow[]>({
     queryKey: ['payment-escrows'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -25,7 +36,7 @@ export function usePayments() {
   });
 
   const createEscrow = async (
-    payment: Omit<PaymentTypes['Tables']['payment_escrows']['Insert'], 'payer_id'>
+    escrow: Omit<PaymentEscrow, 'id' | 'created_at' | 'updated_at'>
   ) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -36,11 +47,7 @@ export function usePayments() {
 
       const { error } = await supabase
         .from('payment_escrows')
-        .insert({
-          ...payment,
-          payer_id: user.id,
-          status: 'frozen'
-        });
+        .insert(escrow);
 
       if (error) throw error;
       
@@ -51,44 +58,10 @@ export function usePayments() {
     }
   };
 
-  const releasePayment = async (escrowId: string) => {
-    try {
-      const { error } = await supabase
-        .from('payment_escrows')
-        .update({ status: 'released' })
-        .eq('id', escrowId);
-
-      if (error) throw error;
-      
-      toast.success("Le paiement a été libéré avec succès");
-    } catch (error) {
-      console.error('Error releasing payment:', error);
-      toast.error("Une erreur est survenue lors de la libération du paiement");
-    }
-  };
-
-  const disputePayment = async (escrowId: string) => {
-    try {
-      const { error } = await supabase
-        .from('payment_escrows')
-        .update({ status: 'disputed' })
-        .eq('id', escrowId);
-
-      if (error) throw error;
-      
-      toast.success("Le litige a été ouvert avec succès");
-    } catch (error) {
-      console.error('Error disputing payment:', error);
-      toast.error("Une erreur est survenue lors de l'ouverture du litige");
-    }
-  };
-
   return {
     escrows,
     isLoading,
     error,
-    createEscrow,
-    releasePayment,
-    disputePayment
+    createEscrow
   };
 }

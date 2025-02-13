@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { PaymentTypes } from "@/types/database/payments";
 import { toast } from "sonner";
 
-type ItemWithSeller = PaymentTypes['Tables']['marketplace_items']['Row'] & {
+type MarketplaceItem = PaymentTypes['Tables']['marketplace_items']['Row'];
+
+type ItemWithSeller = MarketplaceItem & {
   seller: {
     full_name: string | null;
     avatar_url: string | null;
@@ -21,20 +23,17 @@ export function useMarketplaceItems() {
         .from('marketplace_items')
         .select(`
           *,
-          seller:profiles(
-            full_name,
-            avatar_url
-          )
+          seller:profiles(full_name, avatar_url)
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as ItemWithSeller[];
     }
   });
 
   const createItem = useMutation({
-    mutationFn: async (item: PaymentTypes['Tables']['marketplace_items']['Insert']) => {
+    mutationFn: async (item: Omit<MarketplaceItem, 'id' | 'created_at' | 'updated_at' | 'views_count' | 'favorites_count'>) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Vous devez être connecté pour créer une annonce");
 
