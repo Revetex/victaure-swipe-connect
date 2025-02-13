@@ -1,39 +1,78 @@
+
 import { Json } from './auth';
 
 export interface PaymentTypes {
   Tables: {
-    payments: {
+    job_bids: {
       Row: {
         id: string;
-        match_id: string | null;
+        job_id: string;
+        bidder_id: string;
         amount: number;
-        status: string | null;
-        stripe_payment_id: string | null;
+        currency: string;
+        status: 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'completed';
+        message: string | null;
         created_at: string | null;
         updated_at: string | null;
-        payment_type: string | null;
-        transaction_status: string | null;
       };
       Insert: {
-        match_id?: string | null;
+        job_id: string;
+        bidder_id: string;
         amount: number;
-        status?: string | null;
-        stripe_payment_id?: string | null;
+        currency?: string;
+        status?: 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'completed';
+        message?: string | null;
         created_at?: string | null;
         updated_at?: string | null;
-        payment_type?: string | null;
-        transaction_status?: string | null;
       };
       Update: {
-        id: string;
-        match_id?: string | null;
+        job_id?: string;
+        bidder_id?: string;
         amount?: number;
-        status?: string | null;
-        stripe_payment_id?: string | null;
+        currency?: string;
+        status?: 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'completed';
+        message?: string | null;
         created_at?: string | null;
         updated_at?: string | null;
-        payment_type?: string | null;
-        transaction_status?: string | null;
+      };
+    };
+    paypal_transactions: {
+      Row: {
+        id: string;
+        bid_id: string | null;
+        sender_id: string;
+        receiver_id: string;
+        amount: number;
+        currency: string;
+        paypal_transaction_id: string | null;
+        status: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
+        metadata: Json;
+        created_at: string | null;
+        updated_at: string | null;
+      };
+      Insert: {
+        bid_id?: string | null;
+        sender_id: string;
+        receiver_id: string;
+        amount: number;
+        currency?: string;
+        paypal_transaction_id?: string | null;
+        status?: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
+        metadata?: Json;
+        created_at?: string | null;
+        updated_at?: string | null;
+      };
+      Update: {
+        bid_id?: string | null;
+        sender_id?: string;
+        receiver_id?: string;
+        amount?: number;
+        currency?: string;
+        paypal_transaction_id?: string | null;
+        status?: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
+        metadata?: Json;
+        created_at?: string | null;
+        updated_at?: string | null;
       };
     };
   };

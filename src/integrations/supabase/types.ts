@@ -700,6 +700,50 @@ export type Database = {
           },
         ]
       }
+      job_bids: {
+        Row: {
+          amount: number
+          bidder_id: string
+          created_at: string | null
+          currency: string
+          id: string
+          job_id: string
+          message: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          bidder_id: string
+          created_at?: string | null
+          currency?: string
+          id?: string
+          job_id: string
+          message?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          bidder_id?: string
+          created_at?: string | null
+          currency?: string
+          id?: string
+          job_id?: string
+          message?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_bids_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_categories: {
         Row: {
           created_at: string | null
@@ -1747,6 +1791,56 @@ export type Database = {
             columns: ["match_id"]
             isOneToOne: false
             referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      paypal_transactions: {
+        Row: {
+          amount: number
+          bid_id: string | null
+          created_at: string | null
+          currency: string
+          id: string
+          metadata: Json | null
+          paypal_transaction_id: string | null
+          receiver_id: string
+          sender_id: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          bid_id?: string | null
+          created_at?: string | null
+          currency?: string
+          id?: string
+          metadata?: Json | null
+          paypal_transaction_id?: string | null
+          receiver_id: string
+          sender_id: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          bid_id?: string | null
+          created_at?: string | null
+          currency?: string
+          id?: string
+          metadata?: Json | null
+          paypal_transaction_id?: string | null
+          receiver_id?: string
+          sender_id?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paypal_transactions_bid_id_fkey"
+            columns: ["bid_id"]
+            isOneToOne: false
+            referencedRelation: "job_bids"
             referencedColumns: ["id"]
           },
         ]
