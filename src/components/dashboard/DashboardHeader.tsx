@@ -44,7 +44,9 @@ export function DashboardHeader({
             </SheetContent>
           </Sheet>
           <Logo size="lg" />
-          <h1 className="font-montserrat text-base sm:text-lg md:text-xl text-foreground/80">{title}</h1>
+          <button className="w-full bg-accent/50 hover:bg-accent transition-colors rounded-md p-2">
+            {title}
+          </button>
         </motion.div>
         
         <motion.div 
