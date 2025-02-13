@@ -4,10 +4,27 @@ import { supabase } from "@/integrations/supabase/client";
 import { PaymentTypes } from "@/types/database/payments";
 import { toast } from "sonner";
 
+type ServiceWithDetails = PaymentTypes['Tables']['marketplace_services']['Row'] & {
+  provider: {
+    full_name: string | null;
+    avatar_url: string | null;
+  } | null;
+  bids: Array<{
+    id: string;
+    amount: number;
+    status: string;
+    created_at: string;
+    bidder: {
+      full_name: string | null;
+      avatar_url: string | null;
+    } | null;
+  }>;
+};
+
 export function useServicesData() {
   const queryClient = useQueryClient();
 
-  const { data: services, isLoading } = useQuery({
+  const { data: services, isLoading } = useQuery<ServiceWithDetails[]>({
     queryKey: ['marketplace-services'],
     queryFn: async () => {
       const { data, error } = await supabase

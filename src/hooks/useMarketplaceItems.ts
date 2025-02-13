@@ -4,10 +4,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { PaymentTypes } from "@/types/database/payments";
 import { toast } from "sonner";
 
+type ItemWithSeller = PaymentTypes['Tables']['marketplace_items']['Row'] & {
+  seller: {
+    full_name: string | null;
+    avatar_url: string | null;
+  } | null;
+};
+
 export function useMarketplaceItems() {
   const queryClient = useQueryClient();
 
-  const { data: items, isLoading } = useQuery({
+  const { data: items, isLoading } = useQuery<ItemWithSeller[]>({
     queryKey: ['marketplace-items'],
     queryFn: async () => {
       const { data, error } = await supabase

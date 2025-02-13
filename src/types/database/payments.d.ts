@@ -1,4 +1,6 @@
 
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+
 export type PaymentTypes = {
   Tables: {
     marketplace_services: {
@@ -44,10 +46,10 @@ export type PaymentTypes = {
         category_id: string | null;
         images: string[] | null;
         condition: string | null;
-        location: any | null;
+        location: Json | null;
         views_count: number | null;
         favorites_count: number | null;
-        metadata: any | null;
+        metadata: Json | null;
       };
       Insert: Omit<PaymentTypes['Tables']['marketplace_items']['Row'], 'id' | 'created_at' | 'updated_at' | 'views_count' | 'favorites_count'>;
     };
