@@ -2,13 +2,6 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { navigationItems } from "@/config/navigation";
-import { Menu } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface DashboardNavigationProps {
   currentPage: number;

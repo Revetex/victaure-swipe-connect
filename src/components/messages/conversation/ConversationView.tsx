@@ -1,11 +1,13 @@
-
 import { Message, Receiver } from "@/types/messages"; 
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatThinking } from "@/components/chat/ChatThinking";
+import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useProfile } from "@/hooks/useProfile";
 
 export interface ConversationViewProps {
@@ -35,120 +37,110 @@ export function ConversationView({
   onDeleteConversation,
   messagesEndRef
 }: ConversationViewProps) {
+  const [showScrollButton, setShowScrollButton] = useState(false);
   const { profile } = useProfile();
-  const [autoScroll, setAutoScroll] = useState(true);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (autoScroll && containerRef.current) {
-      const scrollElement = containerRef.current;
-      scrollElement.scrollTop = scrollElement.scrollHeight;
-    }
-  }, [messages, autoScroll]);
-
-  useEffect(() => {
-    // Scroll to bottom on initial load
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-    }
-  }, []);
-
-  const handleScroll = () => {
-    if (containerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
-      setAutoScroll(isNearBottom);
-    }
+  const handleScroll = (event: any) => {
+    const target = event.target as HTMLDivElement;
+    const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
+    setShowScrollButton(!isNearBottom);
   };
 
-  if (!receiver || !profile) return null;
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollToBottom();
+    }
+  }, [messages]);
+
+  if (!receiver) return null;
 
   return (
-    <div className="flex flex-col h-screen max-h-screen bg-background">
-      <div className="flex-none border-b">
+    <div className="flex flex-col h-full bg-background">
+      <header className="flex-shrink-0 sticky top-0 left-0 right-0 bg-background/95 backdrop-blur z-[49] border-b">
         <ChatHeader
           title={receiver.full_name}
-          subtitle={receiver.online_status ? "En ligne" : "Hors ligne"}
+          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
           avatarUrl={receiver.avatar_url}
           onBack={onBack}
           onDelete={onDeleteConversation}
           isOnline={receiver.online_status}
           lastSeen={receiver.last_seen}
         />
-      </div>
+      </header>
 
-      <div 
-        ref={containerRef}
-        onScroll={handleScroll}
-        className="flex-1 overflow-y-auto scroll-smooth"
+      <ScrollArea 
+        className="flex-1 px-4 pt-2 pb-20 w-full overflow-x-hidden"
+        onScrollCapture={handleScroll}
       >
-        <div className="flex flex-col justify-end min-h-full">
-          <div className="max-w-3xl mx-auto w-full px-4 py-4 space-y-4">
-            {messages.length === 0 ? (
-              <div className="flex items-center justify-center h-32 text-muted-foreground">
-                Commencez une nouvelle conversation
-              </div>
-            ) : (
-              <AnimatePresence initial={false}>
-                {messages.map((message) => {
-                  const isUserMessage = message.sender_id === profile.id;
-                  const isAIMessage = message.sender_id === 'assistant';
-                  
-                  return (
-                    <motion.div
-                      key={message.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className={`flex ${isUserMessage ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <div className={`max-w-[70%] md:max-w-[60%] ${isAIMessage ? 'bg-primary/5 rounded-lg p-1' : ''}`}>
-                        <ChatMessage
-                          content={message.content}
-                          sender={isUserMessage ? "user" : "assistant"}
-                          timestamp={message.created_at}
-                          isRead={message.read}
-                          status={message.status}
-                          reaction={message.reaction}
-                        />
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-            )}
-            
-            {isThinking && (
+        <div className="space-y-4 py-2 min-h-full max-w-3xl mx-auto">
+          <AnimatePresence initial={false}>
+            {messages.map((message) => (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex justify-start"
+                key={message.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="max-w-[85%] mx-auto"
               >
-                <div className="max-w-[70%] md:max-w-[60%] bg-primary/5 rounded-lg p-1">
-                  <ChatThinking />
-                </div>
+                <ChatMessage
+                  content={message.content}
+                  sender={message.sender_id === profile?.id ? "user" : "assistant"}
+                  timestamp={message.created_at}
+                  isRead={message.read}
+                  status={message.status}
+                  reaction={message.reaction}
+                />
               </motion.div>
-            )}
-            
-            <div ref={messagesEndRef} />
-          </div>
+            ))}
+          </AnimatePresence>
+          
+          {isThinking && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <ChatThinking />
+            </motion.div>
+          )}
+          
+          <div ref={messagesEndRef} />
         </div>
-      </div>
+      </ScrollArea>
 
-      <div className="flex-none border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky bottom-0">
-        <div className="p-4 max-w-3xl mx-auto">
-          <ChatInput
-            value={inputMessage}
-            onChange={onInputChange}
-            onSend={onSendMessage}
-            isThinking={isThinking}
-            isListening={isListening}
-            onVoiceInput={onVoiceInput}
-            placeholder="Écrivez votre message..."
-          />
-        </div>
-      </div>
+      {showScrollButton && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          className="fixed bottom-20 right-4 z-10"
+        >
+          <Button
+            size="icon"
+            variant="secondary"
+            onClick={scrollToBottom}
+            className="rounded-full shadow-lg hover:shadow-xl transition-shadow"
+          >
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+        </motion.div>
+      )}
+
+      <footer className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t z-[48] p-4">
+        <ChatInput
+          value={inputMessage}
+          onChange={onInputChange}
+          onSend={onSendMessage}
+          isThinking={isThinking}
+          isListening={isListening}
+          onVoiceInput={onVoiceInput}
+          placeholder="Écrivez votre message..."
+        />
+      </footer>
     </div>
   );
 }

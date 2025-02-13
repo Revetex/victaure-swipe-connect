@@ -40,30 +40,7 @@ export const useReactions = ({
         p_reaction_type: type
       });
 
-      if (error) {
-        console.error('Error handling reaction:', error);
-        
-        // En cas d'erreur, on peut annuler la mise à jour optimiste
-        if (type === 'like') {
-          onDislike();
-        } else {
-          onLike();
-        }
-        
-        let errorMessage = "Une erreur est survenue lors de la réaction";
-        if (error.message.includes("Le post n'existe pas")) {
-          errorMessage = "Cette publication n'existe plus";
-        } else if (error.message.includes("Type de réaction invalide")) {
-          errorMessage = "Type de réaction non valide";
-        }
-        
-        toast({
-          title: "Erreur",
-          description: errorMessage,
-          variant: "destructive"
-        });
-        return;
-      }
+      if (error) throw error;
 
       // Send notification only if it's a like and not the user's own post
       if (type === 'like' && postAuthorId !== currentUserId) {
@@ -74,6 +51,18 @@ export const useReactions = ({
           'like'
         );
       }
+
+      // Update UI
+      if (type === 'like') {
+        onLike();
+      } else {
+        onDislike();
+      }
+
+      toast({
+        title: "Réaction mise à jour",
+        description: `Votre réaction a été enregistrée`,
+      });
 
     } catch (error) {
       console.error('Error handling reaction:', error);

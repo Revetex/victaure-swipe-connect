@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -44,12 +43,10 @@ export function ProfileActions({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-4 flex flex-col w-full gap-2 z-[9999]">
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent backdrop-blur-sm" />
-      
+    <div className="flex flex-col w-full gap-2">
       <Button 
         variant={areFriends ? "default" : "secondary"}
-        className="relative w-full bg-background/90 hover:bg-background/95 backdrop-blur-sm transition-all duration-200 shadow-lg"
+        className="w-full"
         onClick={onViewProfile}
       >
         {areFriends ? (
@@ -68,7 +65,7 @@ export function ProfileActions({
       {!isFriendRequestSent && !areFriends && (
         <Button
           variant="outline"
-          className="relative w-full bg-background/90 hover:bg-background/95 backdrop-blur-sm transition-all duration-200 shadow-lg"
+          className="w-full"
           onClick={handleSendFriendRequest}
         >
           <UserPlus className="mr-2 h-4 w-4" />
@@ -78,7 +75,7 @@ export function ProfileActions({
       
       <Button
         variant="ghost"
-        className="relative w-full bg-background/90 hover:bg-background/95 backdrop-blur-sm transition-all duration-200 shadow-lg"
+        className="w-full"
         onClick={onClose}
       >
         Fermer

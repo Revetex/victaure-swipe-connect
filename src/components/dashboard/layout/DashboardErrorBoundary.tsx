@@ -1,15 +1,11 @@
-
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface ErrorBoundaryProps {
-  error?: Error;
-  resetErrorBoundary?: () => void;
+  error: Error;
+  resetErrorBoundary: () => void;
 }
 
-export function DashboardErrorBoundary({ 
-  error = new Error("Une erreur inattendue s'est produite"), 
-  resetErrorBoundary = () => {} 
-}: ErrorBoundaryProps) {
+export function DashboardErrorBoundary({ error, resetErrorBoundary }: ErrorBoundaryProps) {
   return (
     <Alert variant="destructive" className="m-4">
       <AlertTitle>Une erreur est survenue</AlertTitle>

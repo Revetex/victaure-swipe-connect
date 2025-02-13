@@ -1,11 +1,15 @@
 
-import { ReactNode, memo } from "react";
+import { ReactNode } from "react";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
-import { AnimatePresence, motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Navigation } from "@/components/Navigation";
 import { cn } from "@/lib/utils";
-import { UserNav } from "../dashboard/layout/UserNav";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -16,7 +20,7 @@ interface MainLayoutProps {
   onToolReturn?: () => void;
 }
 
-export const MainLayout = memo(function MainLayout({ 
+export function MainLayout({ 
   children, 
   title = "", 
   isEditing = false,
@@ -24,28 +28,42 @@ export const MainLayout = memo(function MainLayout({
   onToggleFriendsList = () => {},
   onToolReturn = () => {}
 }: MainLayoutProps) {
+  const isMobile = useIsMobile();
   const location = useLocation();
+  const isFriendsPage = location.pathname.includes('/friends');
 
   return (
-    <motion.div 
-      className="flex min-h-screen bg-background"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-    >
-      <main className="flex-1 relative pb-16">
-        <motion.header 
-          className={cn(
-            "fixed top-0 right-0 z-40 h-16",
-            "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-            "w-full border-b"
-          )}
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className="flex items-center gap-4 h-full px-4">
+    <div className="flex min-h-screen bg-background">
+      {/* Navigation desktop */}
+      {!isMobile && (
+        <nav className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <Navigation />
+        </nav>
+      )}
+
+      {/* Main content */}
+      <main className={cn(
+        "flex-1 relative",
+        !isMobile && "ml-[280px] lg:ml-[320px]"
+      )}>
+        {/* Fixed Header */}
+        <header className="fixed top-0 right-0 z-50 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+          <div className={cn(
+            "flex items-center gap-4 h-full px-4",
+            !isMobile && "ml-[280px] lg:ml-[320px]"
+          )}>
+            {isMobile && (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-[280px]">
+                  <Navigation />
+                </SheetContent>
+              </Sheet>
+            )}
             <DashboardHeader 
               title={title}
               showFriendsList={showFriendsList}
@@ -54,21 +72,17 @@ export const MainLayout = memo(function MainLayout({
               onToolReturn={onToolReturn}
             />
           </div>
-        </motion.header>
+        </header>
 
-        <motion.div 
-          className="pt-16 pb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-        >
-          <div className="mx-auto">
+        {/* Content area with correct spacing */}
+        <div className="pt-16">
+          <div className="max-w-7xl mx-auto px-4">
             {children}
           </div>
-        </motion.div>
+        </div>
 
-        <AnimatePresence mode="wait" initial={false}>
+        {/* Friends list overlay */}
+        <AnimatePresence mode="wait">
           {showFriendsList && (
             <DashboardFriendsList 
               show={showFriendsList} 
@@ -77,10 +91,20 @@ export const MainLayout = memo(function MainLayout({
           )}
         </AnimatePresence>
 
-        <div className="fixed bottom-0 left-0 right-0 z-40">
-          <UserNav />
-        </div>
+        {/* Mobile navigation */}
+        {!isFriendsPage && isMobile && (
+          <nav 
+            className="h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed bottom-0 left-0 right-0 z-50"
+            style={{ 
+              paddingBottom: 'env(safe-area-inset-bottom)'
+            }}
+          >
+            <div className="h-full px-4">
+              {/* Mobile navigation content */}
+            </div>
+          </nav>
+        )}
       </main>
-    </motion.div>
+    </div>
   );
-});
+}

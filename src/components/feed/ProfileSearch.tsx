@@ -18,20 +18,21 @@ interface ProfileSearchProps {
 export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisateur...", className }: ProfileSearchProps) {
   const [search, setSearch] = useState("");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [debouncedSearch] = useDebounce(search, 500);
+  const [debouncedSearch] = useDebounce(search, 300);
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
+  const [isFocused, setIsFocused] = useState(false);
 
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["profiles", debouncedSearch],
     queryFn: async () => {
-      if (!debouncedSearch || debouncedSearch.length < 2) return [];
-
       const query = supabase
         .from("profiles")
         .select("*")
-        .order("full_name")
-        .ilike("full_name", `%${debouncedSearch}%`)
-        .limit(10);
+        .order("full_name");
+
+      if (debouncedSearch) {
+        query.ilike("full_name", `%${debouncedSearch}%`);
+      }
 
       const { data, error } = await query;
 
@@ -42,15 +43,12 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisate
 
       return data as UserProfile[];
     },
-    enabled: debouncedSearch.length >= 2,
-    staleTime: 30000,
-    gcTime: 60000
+    enabled: Boolean(debouncedSearch),
   });
 
   const handleProfileClick = (profile: UserProfile) => {
     setSelectedProfile(profile);
     onSelect(profile);
-    setSearch("");
   };
 
   const handleProfilePreviewClose = () => {
@@ -71,11 +69,13 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisate
             placeholder={placeholder}
             value={search}
             onValueChange={setSearch}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             className="focus:ring-0 border-none"
           />
         </div>
-        {debouncedSearch.length >= 2 && (
-          <CommandList>
+        <CommandList>
+          {debouncedSearch && (
             <CommandGroup heading="Résultats de recherche">
               {isLoading && (
                 <CommandItem disabled aria-label="Chargement en cours">
@@ -122,8 +122,8 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisate
                 </CommandItem>
               ))}
             </CommandGroup>
-          </CommandList>
-        )}
+          )}
+        </CommandList>
       </Command>
 
       {selectedProfile && (

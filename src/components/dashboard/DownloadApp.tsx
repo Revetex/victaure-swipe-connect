@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { useState } from "react";
@@ -15,7 +14,7 @@ export const DownloadApp = () => {
       const { data: fileExists, error: listError } = await supabase.storage
         .from('vcards')
         .list('', {
-          search: 'app-debug.apk'
+          search: 'victaure.apk'
         });
 
       if (listError) {
@@ -29,9 +28,10 @@ export const DownloadApp = () => {
         return;
       }
 
+      // getPublicUrl doesn't return an error property, just the data object
       const { data } = supabase.storage
         .from('vcards')
-        .getPublicUrl('app-debug.apk');
+        .getPublicUrl('victaure.apk');
 
       if (!data.publicUrl) {
         console.error('No public URL available');

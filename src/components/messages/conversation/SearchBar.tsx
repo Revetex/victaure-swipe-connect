@@ -12,7 +12,7 @@ interface SearchBarProps {
 
 export function SearchBar({ searchQuery, onSearchChange, onSelectFriend }: SearchBarProps) {
   return (
-    <div className="sticky top-0 left-0 right-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3 border-b">
+    <div className="sticky top-16 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3 border-b">
       <div className="flex items-center gap-2">
         <Command className="flex-1">
           <CommandInput 

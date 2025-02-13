@@ -6,11 +6,7 @@ import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { motion } from "framer-motion";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { FeedSidebar } from "../feed/FeedSidebar";
-import { UserNav } from "./layout/UserNav";
-import { Suspense, useState } from "react";
-import { ProfileSection } from "./layout/sidebar/ProfileSection";
-import { useProfile } from "@/hooks/useProfile";
-import { Navigation } from "@/components/Navigation";
+import { Suspense } from "react";
 
 export interface DashboardHeaderProps {
   title: string;
@@ -26,12 +22,8 @@ export function DashboardHeader({
   onToggleFriendsList,
   isEditing
 }: DashboardHeaderProps) {
-  const { profile } = useProfile();
-  const [showProfilePreview, setShowProfilePreview] = useState(false);
-
   return (
     <div className="sticky top-0 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
-      {/* En-tête principal */}
       <div className="flex items-center justify-between p-4 max-w-[2000px] mx-auto">
         <motion.div 
           className="flex items-center gap-6"
@@ -52,6 +44,7 @@ export function DashboardHeader({
             </SheetContent>
           </Sheet>
           <Logo size="lg" />
+          <h1 className="font-montserrat text-base sm:text-lg md:text-xl text-foreground/80">{title}</h1>
         </motion.div>
         
         <motion.div 
@@ -61,15 +54,6 @@ export function DashboardHeader({
           transition={{ duration: 0.3 }}
         >
           <NotificationsBox />
-          <UserNav />
-          {profile && (
-            <ProfileSection
-              profile={profile}
-              showProfilePreview={showProfilePreview}
-              onProfileClick={() => setShowProfilePreview(true)}
-              onClosePreview={() => setShowProfilePreview(false)}
-            />
-          )}
           {!isEditing && (
             <Button
               variant="outline"
@@ -87,16 +71,6 @@ export function DashboardHeader({
             </Button>
           )}
         </motion.div>
-      </div>
-
-      {/* Menu de navigation en bas du header */}
-      <div className="border-t border-border/50">
-        <div className="max-w-[2000px] mx-auto px-4">
-          <Navigation
-            className="flex items-center justify-start gap-4 py-2 overflow-x-auto"
-            orientation="horizontal"
-          />
-        </div>
       </div>
     </div>
   );

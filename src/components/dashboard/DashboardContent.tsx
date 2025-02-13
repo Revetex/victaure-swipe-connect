@@ -5,7 +5,7 @@ import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/Marketplace";
 import { Feed } from "@/components/feed/Feed";
 import { Settings } from "@/components/Settings";
-import { NotesSection } from "@/components/notes/NotesSection";
+import { NotesMap } from "@/components/notes/NotesMap";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
@@ -15,6 +15,7 @@ import { TasksPage } from "@/components/tools/TasksPage";
 import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
+import { NotesSection } from "@/components/notes/NotesSection";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -53,6 +54,37 @@ export function DashboardContent({
     }
   };
 
+  const renderContent = () => {
+    switch (currentPage) {
+      case 1:
+        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
+      case 2:
+        return <Messages />;
+      case 3:
+        return <Marketplace />;
+      case 4:
+        return <Feed />;
+      case 7:
+        return <TasksPage />;
+      case 8:
+        return <CalculatorPage />;
+      case 9:
+        return <NotificationsTab />;
+      case 10:
+        return <Settings />;
+      case 12:
+        return <FriendsList />;
+      case 14:
+        return <TranslatorPage />;
+      case 15:
+        return <ChessPage />;
+      case 16:
+        return <NotesSection />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <motion.div
       variants={variants}
@@ -64,35 +96,4 @@ export function DashboardContent({
       {renderContent()}
     </motion.div>
   );
-
-  function renderContent() {
-    switch (currentPage) {
-      case 1:
-        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
-      case 2:
-        return <Messages />;
-      case 3:
-        return <Marketplace />;
-      case 4:
-        return <Feed />;
-      case 6:
-        return <TasksPage />;
-      case 7:
-        return <ChessPage />;
-      case 8:
-        return <CalculatorPage />;
-      case 9:
-        return <NotificationsTab />;
-      case 10:
-        return <Settings />;
-      case 12:
-        return <FriendsList />;
-      case 14:
-        return <TranslatorPage />;
-      case 16:
-        return <NotesSection />;
-      default:
-        return null;
-    }
-  }
 }

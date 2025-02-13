@@ -1,135 +1,53 @@
 
-import { 
-  Home,
-  MessageSquare, 
-  ListTodo, 
-  Calculator, 
-  Languages, 
-  Settings, 
-  ShoppingBag,
-  Sword,
-  StickyNote,
-  Users,
-} from "lucide-react";
-import { LucideIcon } from "lucide-react";
+import { MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, User, Users, Search } from "lucide-react";
 
-export type NavigationItem = {
-  id: number;
-  icon: LucideIcon;
-  name: string;
-  path: string;
-  description: string;
-  badge?: string;
-};
-
-export type NavigationSection = {
-  id: string;
-  name: string;
-  description: string;
-  items: NavigationItem[];
-};
-
-export const navigationItems: NavigationItem[] = [
-  { 
-    id: 1, 
-    icon: Home, 
-    name: "Feed", 
-    path: "/dashboard",
-    description: "Fil d'actualité",
-  },
-  { 
-    id: 2, 
-    icon: MessageSquare, 
-    name: "Messages", 
-    path: "/dashboard/messages",
-    description: "Messagerie instantanée"
-  },
-  { 
-    id: 3, 
-    icon: Users, 
-    name: "Communauté", 
-    path: "/dashboard/community",
-    description: "Recherche et gestion d'amis",
-  },
-  { 
-    id: 4, 
-    icon: ShoppingBag, 
-    name: "Marketplace", 
-    path: "/dashboard/marketplace",
-    description: "Emplois et services"
-  },
-  { 
-    id: 5, 
-    icon: StickyNote, 
-    name: "Notes", 
-    path: "/dashboard/notes",
-    description: "Gestionnaire de notes"
-  },
-  { 
-    id: 6, 
-    icon: ListTodo, 
-    name: "Tâches", 
-    path: "/dashboard/tasks",
-    description: "Gestionnaire de tâches"
-  },
-  { 
-    id: 7, 
-    icon: Calculator, 
-    name: "Calculatrice", 
-    path: "/dashboard/calculator",
-    description: "Outil de calcul"
-  },
-  { 
-    id: 8, 
-    icon: Languages, 
-    name: "Traducteur", 
-    path: "/dashboard/translator",
-    description: "Traduction instantanée"
-  },
-  { 
-    id: 9, 
-    icon: Sword, 
-    name: "Échecs", 
-    path: "/dashboard/chess",
-    description: "Jeu d'échecs en ligne"
-  },
-  { 
-    id: 10, 
-    icon: Settings, 
-    name: "Paramètres", 
-    path: "/dashboard/settings",
-    description: "Configuration du compte"
-  }
-];
-
-export const navigationSections: NavigationSection[] = [
-  {
-    id: "main",
-    name: "Principal",
-    description: "Sections principales",
-    items: navigationItems.slice(0, 4) // Feed, Messages, Communauté, Marketplace
-  },
-  {
-    id: "productivity",
-    name: "Productivité",
-    description: "Organisation et gestion",
-    items: navigationItems.slice(4, 6) // Notes, Tâches
-  },
-  {
-    id: "tools",
-    name: "Outils",
-    description: "Utilitaires et divertissement",
-    items: navigationItems.slice(6, 9) // Calculatrice, Traducteur, Échecs
-  },
-  {
-    id: "system",
-    name: "Système",
-    description: "Paramètres système",
-    items: navigationItems.slice(9) // Paramètres
-  }
-];
+export const navigationItems = [
+  // Section principale
+  { id: 1, icon: User, name: "Mon profil" },
+  { id: 4, icon: Newspaper, name: "Actualité" },
+  { id: 2, icon: MessageSquare, name: "Messages" },
+  { id: 3, icon: BriefcaseIcon, name: "Emplois" },
+  
+  // Section réseau
+  { id: 9, icon: Bell, name: "Notifications" },
+  { id: 12, icon: Users, name: "Connections" },
+  
+  // Outils
+  { id: 7, icon: ListTodo, name: "Tâches" },
+  { id: 8, icon: Calculator, name: "Calculatrice" },
+  { id: 14, icon: Languages, name: "Traducteur" },
+  { id: 15, icon: SwordIcon, name: "Échecs" },
+  { id: 16, icon: StickyNote, name: "Notes" },
+  { id: 10, icon: Settings, name: "Paramètres" }
+] as const;
 
 export const getPageTitle = (currentPage: number): string => {
-  const item = navigationItems.find(item => item.id === currentPage);
-  return item?.name || "Feed";
+  switch (currentPage) {
+    case 1:
+      return "Mon profil";
+    case 2:
+      return "Messages";
+    case 3:
+      return "Emplois";
+    case 4:
+      return "Actualité";
+    case 7:
+      return "Tâches";
+    case 8:
+      return "Calculatrice";
+    case 9:
+      return "Notifications";
+    case 10:
+      return "Paramètres";
+    case 12:
+      return "Connections";
+    case 14:
+      return "Traducteur";
+    case 15:
+      return "Échecs";
+    case 16:
+      return "Notes";
+    default:
+      return "Actualité";
+  }
 };

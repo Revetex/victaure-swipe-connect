@@ -4,12 +4,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useFormContext } from "react-hook-form";
 
 const experienceLevels = [
-  { value: "entry", label: "Débutant" },
-  { value: "junior", label: "Junior (1-3 ans)" },
-  { value: "intermediate", label: "Intermédiaire (3-5 ans)" },
-  { value: "senior", label: "Senior (5+ ans)" },
-  { value: "expert", label: "Expert" },
-  { value: "lead", label: "Lead" }
+  "Entry Level",
+  "Junior (1-3 years)",
+  "Intermediate (3-5 years)",
+  "Senior (5+ years)",
+  "Lead",
+  "Expert"
 ];
 
 export function ExperienceLevelField() {
@@ -17,26 +17,19 @@ export function ExperienceLevelField() {
 
   return (
     <FormField
-      control={control}
       name="experience_level"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Niveau d'expérience</FormLabel>
+          <FormLabel>Niveau d'expérience requis</FormLabel>
           <FormControl>
-            <Select 
-              onValueChange={field.onChange} 
-              value={field.value || "select-experience"}
-            >
+            <Select onValueChange={field.onChange} defaultValue={field.value || "Mid-Level"}>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le niveau d'expérience" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="select-experience" disabled>
-                  Sélectionnez le niveau d'expérience
-                </SelectItem>
                 {experienceLevels.map((level) => (
-                  <SelectItem key={level.value} value={level.value}>
-                    {level.label}
+                  <SelectItem key={level} value={level}>
+                    {level}
                   </SelectItem>
                 ))}
               </SelectContent>

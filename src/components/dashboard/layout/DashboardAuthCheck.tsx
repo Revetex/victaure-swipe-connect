@@ -1,7 +1,7 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { DashboardLoading } from "./DashboardLoading";
 
 interface DashboardAuthCheckProps {
@@ -17,12 +17,14 @@ export function DashboardAuthCheck({ children }: DashboardAuthCheckProps) {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
+          toast.error("Veuillez vous connecter pour accéder au tableau de bord");
           navigate("/auth");
           return;
         }
         setIsLoading(false);
       } catch (error) {
         console.error("Auth check error:", error);
+        toast.error("Erreur lors de la vérification de l'authentification");
         setIsLoading(false);
       }
     };

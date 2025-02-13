@@ -23,9 +23,9 @@ export function ConversationList({
   const [searchQuery, setSearchQuery] = useState("");
   const { profile } = useProfile();
   
-  // Grouper les messages par conversation (uniquement pour les conversations utilisateur)
-  const userConversations = messages.reduce((acc: { user: Receiver; lastMessage: Message }[], message: Message) => {
-    if (!profile || !message || message.sender_id === 'assistant' || message.receiver_id === 'assistant') {
+  // Group messages by conversation (sender/receiver pair)
+  const conversations = messages.reduce((acc: { user: Receiver; lastMessage: Message }[], message: Message) => {
+    if (!profile || !message) {
       return acc;
     }
 
@@ -56,7 +56,7 @@ export function ConversationList({
     return acc;
   }, []);
 
-  const filteredConversations = userConversations.filter(conv => 
+  const filteredConversations = conversations.filter(conv => 
     conv.user?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -65,7 +65,7 @@ export function ConversationList({
   );
 
   return (
-    <div className="flex flex-col h-full max-h-[calc(100vh-4rem)]">
+    <div className="flex flex-col h-full pt-16">
       <SearchBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -80,78 +80,73 @@ export function ConversationList({
 
       <ScrollArea className="flex-1">
         <div className="px-4 space-y-4 py-4">
-          {/* Section M. Victaure (Assistant IA) */}
-          <div className="mb-6 border-b border-border pb-4">
-            <h3 className="text-sm font-medium text-muted-foreground mb-3 px-2">Assistant IA</h3>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
+          {/* AI Assistant - M. Victaure */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Button
+              variant="outline"
+              className="w-full flex items-center gap-2 h-auto p-4 bg-primary/5 hover:bg-primary/10"
+              onClick={() => onSelectConversation({
+                id: 'assistant',
+                full_name: 'M. Victaure',
+                avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+                online_status: true,
+                last_seen: new Date().toISOString()
+              })}
             >
-              <Button
-                variant="outline"
-                className="w-full flex items-center gap-2 h-auto p-4 bg-primary/5 hover:bg-primary/10"
-                onClick={() => onSelectConversation({
-                  id: 'assistant',
-                  full_name: 'M. Victaure',
-                  avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-                  online_status: true,
-                  last_seen: new Date().toISOString()
-                })}
-              >
-                <Bot className="h-5 w-5 text-primary" />
-                <div className="flex-1 text-left">
-                  <h3 className="font-medium">M. Victaure</h3>
-                  <p className="text-sm text-muted-foreground">Assistant virtuel</p>
-                </div>
-                {chatMessages.length > 0 && (
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(chatMessages[chatMessages.length - 1].created_at).toLocaleDateString()}
-                  </span>
-                )}
-              </Button>
-            </motion.div>
-          </div>
-
-          {/* Section Conversations Utilisateurs */}
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-3 px-2">Conversations</h3>
-            {sortedConversations.length > 0 ? (
-              <div className="space-y-2">
-                {sortedConversations.map((conv, index) => (
-                  <motion.div
-                    key={conv.user.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <ConversationItem
-                      user={conv.user}
-                      lastMessage={conv.lastMessage}
-                      onSelect={() => onSelectConversation(conv.user)}
-                    />
-                  </motion.div>
-                ))}
+              <Bot className="h-5 w-5 text-primary" />
+              <div className="flex-1 text-left">
+                <h3 className="font-medium">M. Victaure</h3>
+                <p className="text-sm text-muted-foreground">Assistant virtuel</p>
               </div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-8"
-              >
-                <p className="text-sm text-muted-foreground">
-                  {searchQuery ? 'Aucune conversation trouvée' : 'Aucune conversation pour le moment'}
+              {chatMessages.length > 0 && (
+                <span className="text-xs text-muted-foreground">
+                  {new Date(chatMessages[chatMessages.length - 1].created_at).toLocaleDateString()}
+                </span>
+              )}
+            </Button>
+          </motion.div>
+
+          {/* User Conversations */}
+          {sortedConversations.length > 0 ? (
+            <div className="space-y-2">
+              {sortedConversations.map((conv, index) => (
+                <motion.div
+                  key={conv.user.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <ConversationItem
+                    user={conv.user}
+                    lastMessage={conv.lastMessage}
+                    onSelect={() => onSelectConversation(conv.user)}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-8"
+            >
+              <p className="text-sm text-muted-foreground">
+                {searchQuery ? 'Aucune conversation trouvée' : 'Aucune conversation pour le moment'}
+              </p>
+              {!searchQuery && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Commencez une nouvelle conversation en cliquant sur le bouton +
                 </p>
-                {!searchQuery && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Commencez une nouvelle conversation en cliquant sur le bouton +
-                  </p>
-                )}
-              </motion.div>
-            )}
-          </div>
+              )}
+            </motion.div>
+          )}
         </div>
       </ScrollArea>
     </div>
   );
 }
+

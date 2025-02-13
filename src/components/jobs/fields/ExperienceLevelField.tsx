@@ -14,7 +14,7 @@ export function ExperienceLevelField() {
         <FormItem>
           <FormLabel>Niveau d'expérience</FormLabel>
           <FormControl>
-            <Select onValueChange={field.onChange} defaultValue={field.value || "entry"}>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le niveau d'expérience" />
               </SelectTrigger>

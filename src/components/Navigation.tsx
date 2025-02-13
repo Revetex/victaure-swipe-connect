@@ -1,65 +1,96 @@
 
-import { navigationSections } from "@/config/navigation";
+import { MessageSquare, Settings } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { Logo } from "@/components/Logo";
+import { useAuth } from "@/hooks/useAuth";
+import { motion } from "framer-motion";
+import { NotificationsBox } from "@/components/notifications/NotificationsBox";
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { FeedSidebar } from "./feed/FeedSidebar";
+import { useState } from "react";
+import { ProfilePreview } from "./ProfilePreview";
+import { UserProfile } from "@/types/profile";
 
-interface NavigationProps {
-  onNavigate?: () => void;
-  className?: string;
-  orientation?: "vertical" | "horizontal";
-}
+export function Navigation() {
+  const { isLoading, user } = useAuth();
+  const [showProfilePreview, setShowProfilePreview] = useState(false);
 
-export function Navigation({ onNavigate, className, orientation = "vertical" }: NavigationProps) {
-  const navigate = useNavigate();
+  if (isLoading || !user) {
+    return null;
+  }
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    onNavigate?.();
+  // Convert User to UserProfile type
+  const userProfile: UserProfile = {
+    id: user.id,
+    email: user.email || '',
+    full_name: user.user_metadata?.full_name || null,
+    avatar_url: user.user_metadata?.avatar_url || null,
+    role: 'professional',
+    bio: null,
+    phone: null,
+    city: null,
+    state: null,
+    country: 'Canada',
+    skills: [],
+    latitude: null,
+    longitude: null
   };
 
   return (
-    <nav className={cn(
-      "text-sm",
-      orientation === "horizontal" ? "flex-row" : "flex-col",
-      className
-    )}>
-      {navigationSections.map((section) => (
-        <div
-          key={section.id}
-          className={cn(
-            "space-y-1",
-            orientation === "horizontal" ? "flex items-center gap-4" : ""
-          )}
+    <div className="h-full flex flex-col">
+      {/* Logo Section */}
+      <div className="h-16 border-b flex items-center px-4">
+        <motion.div 
+          className="flex items-center gap-3 group cursor-pointer"
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          onClick={() => setShowProfilePreview(true)}
         >
-          {section.items.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleNavigation(item.path)}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-md transition-colors",
-                  "hover:bg-accent hover:text-accent-foreground",
-                  orientation === "horizontal" ? "flex-row" : "w-full",
-                  "relative z-10"
-                )}
-              >
-                <Icon className="h-4 w-4 shrink-0" />
-                <span className={cn(
-                  orientation === "horizontal" ? "hidden sm:inline" : ""
-                )}>
-                  {item.name}
-                </span>
-                {item.badge && (
-                  <span className="ml-auto text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+          <Logo size="sm" />
+        </motion.div>
+      </div>
+
+      {/* Navigation Content */}
+      <ScrollArea className="flex-1 p-4">
+        <nav className="space-y-6">
+          <div className="space-y-2">
+            <Link 
+              to="/dashboard/messages" 
+              className="flex items-center gap-2 px-2 py-1.5 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <MessageSquare className="h-4 w-4" />
+              <span>Messages</span>
+            </Link>
+            <Link 
+              to="/settings" 
+              className="flex items-center gap-2 px-2 py-1.5 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Settings className="h-4 w-4" />
+              <span>Paramètres</span>
+            </Link>
+          </div>
+          <FeedSidebar />
+        </nav>
+      </ScrollArea>
+
+      {/* Footer Actions */}
+      <div className="h-16 border-t bg-background/50 backdrop-blur flex items-center justify-between px-4">
+        <div className="flex items-center gap-2">
+          <NotificationsBox />
+          <ThemeToggle />
         </div>
-      ))}
-    </nav>
+      </div>
+
+      {/* Profile Preview */}
+      {userProfile && (
+        <ProfilePreview
+          profile={userProfile}
+          isOpen={showProfilePreview}
+          onClose={() => setShowProfilePreview(false)}
+        />
+      )}
+    </div>
   );
 }

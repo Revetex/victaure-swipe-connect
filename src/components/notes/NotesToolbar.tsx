@@ -6,7 +6,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ColorOption } from "@/types/todo";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 interface NotesToolbarProps {
   newNote: string;
@@ -51,11 +50,7 @@ export function NotesToolbar({
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col gap-4"
-    >
+    <div className="flex flex-col gap-4 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
       <div className="flex gap-2">
         <Input
           value={newNote}
@@ -90,15 +85,10 @@ export function NotesToolbar({
             ))}
           </SelectContent>
         </Select>
-        <Button 
-          onClick={handleAddNote} 
-          size="icon" 
-          variant="default"
-          className="bg-primary hover:bg-primary/90"
-        >
+        <Button onClick={handleAddNote} size="icon" variant="ghost">
           <Plus className="h-4 w-4" />
         </Button>
       </div>
-    </motion.div>
+    </div>
   );
 }

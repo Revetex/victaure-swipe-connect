@@ -5,14 +5,14 @@ import { useFormContext } from "react-hook-form";
 
 const paymentSchedules = {
   company: [
-    { value: "monthly", label: "Mensuel" },
-    { value: "bi-weekly", label: "Bimensuel" },
-    { value: "weekly", label: "Hebdomadaire" }
+    "Monthly",
+    "Bi-weekly",
+    "Weekly"
   ],
   individual: [
-    { value: "one_time", label: "Paiement unique" },
-    { value: "milestone", label: "Par étapes" },
-    { value: "hourly", label: "Taux horaire" }
+    "one_time",
+    "milestone",
+    "hourly"
   ]
 };
 
@@ -23,25 +23,23 @@ export function PaymentScheduleField() {
   return (
     <FormField
       name="payment_schedule"
-      control={control}
       render={({ field }) => (
         <FormItem>
           <FormLabel>Type de paiement</FormLabel>
           <FormControl>
             <Select 
               onValueChange={field.onChange} 
-              value={field.value || "select-payment"}
+              defaultValue={field.value || (missionType === "individual" ? "one_time" : "Monthly")}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le type de paiement" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="select-payment" disabled>
-                  Sélectionnez le type de paiement
-                </SelectItem>
-                {(missionType === "individual" ? paymentSchedules.individual : paymentSchedules.company).map((schedule) => (
-                  <SelectItem key={schedule.value} value={schedule.value}>
-                    {schedule.label}
+                {(missionType === "individual" ? paymentSchedules.individual : paymentSchedules.company).map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type === "one_time" ? "Paiement unique" : 
+                     type === "milestone" ? "Par étapes" :
+                     type === "hourly" ? "Taux horaire" : type}
                   </SelectItem>
                 ))}
               </SelectContent>

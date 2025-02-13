@@ -9,11 +9,13 @@ import { NotesSection } from "@/components/notes/NotesSection";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
+import { NotificationsTab } from "@/components/notifications/NotificationsTab";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
 import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
+import { cn } from "@/lib/utils";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -30,80 +32,69 @@ export function DashboardContent({
 }: DashboardContentProps) {
   const { user } = useAuth();
 
+  useEffect(() => {
+    if (currentPage === 5) {
+      onEditStateChange(true);
+    }
+  }, [currentPage, onEditStateChange]);
+
   if (!user) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader className="w-8 h-8" />
-      </div>
-    );
+    return <Loader className="w-8 h-8" />;
   }
 
-  const pageVariants = {
-    initial: { 
-      opacity: 0,
-      y: 20
-    },
+  const variants = {
+    initial: { opacity: 0 },
     animate: { 
       opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.3,
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }
+      transition: { duration: 0.2 }
     },
     exit: { 
       opacity: 0,
-      y: -20,
-      transition: {
-        duration: 0.2
-      }
+      transition: { duration: 0.15 }
     }
   };
 
   const getPageContent = () => {
     switch (currentPage) {
       case 1:
-        return <Feed />;
+        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
       case 2:
-        return (
-          <div className="max-w-5xl mx-auto">
-            <Messages />
-          </div>
-        );
+        return <Messages />;
       case 3:
-        return <FriendsList />;
-      case 4:
         return <Marketplace />;
-      case 5:
-        return <NotesSection />;
-      case 6:
-        return <TasksPage />;
+      case 4:
+        return <Feed />;
       case 7:
-        return <CalculatorPage />;
+        return <TasksPage />;
       case 8:
-        return <TranslatorPage />;
+        return <CalculatorPage />;
       case 9:
-        return <ChessPage />;
+        return <NotificationsTab />;
       case 10:
         return <Settings />;
+      case 12:
+        return <FriendsList />;
+      case 14:
+        return <TranslatorPage />;
+      case 15:
+        return <ChessPage />;
+      case 16:
+        return <NotesSection />;
       default:
-        return <Feed />;
+        return null;
     }
   };
 
   return (
     <motion.div
-      variants={pageVariants}
+      variants={variants}
       initial="initial"
       animate="animate"
       exit="exit"
-      className="relative bg-background min-h-screen pt-16 pb-20"
+      className="relative bg-background"
     >
-      <div className="container mx-auto px-4">
-        {getPageContent()}
-      </div>
+      {getPageContent()}
     </motion.div>
   );
 }
+

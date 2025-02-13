@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { UserProfile } from "@/types/profile";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface VCardAvatarProps {
   profile: UserProfile;
@@ -19,7 +18,6 @@ interface VCardAvatarProps {
 export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted }: VCardAvatarProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [showFullImage, setShowFullImage] = useState(false);
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -105,10 +103,7 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
         "relative",
         isLoading && "opacity-50"
       )}>
-        <Avatar 
-          className="h-24 w-24 sm:h-28 sm:w-28 ring-2 ring-primary/20 shadow-lg cursor-pointer hover:opacity-90 transition-opacity"
-          onClick={() => profile.avatar_url && setShowFullImage(true)}
-        >
+        <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-2 ring-primary/20 shadow-lg">
           {!imageError && profile.avatar_url ? (
             <AvatarImage 
               src={profile.avatar_url} 
@@ -128,20 +123,6 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
           </div>
         )}
       </div>
-
-      {profile.avatar_url && (
-        <Dialog open={showFullImage} onOpenChange={setShowFullImage}>
-          <DialogContent className="max-w-[90vw] max-h-[90vh] p-0">
-            <img
-              src={profile.avatar_url}
-              alt={profile.full_name || ""}
-              className="w-full h-full object-contain"
-              onClick={() => setShowFullImage(false)}
-            />
-          </DialogContent>
-        </Dialog>
-      )}
-
       {isEditing && !isLoading && (
         <div className="absolute inset-0 flex items-center justify-center gap-2">
           <label 
