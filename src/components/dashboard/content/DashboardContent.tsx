@@ -11,12 +11,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
 import { NotificationsTab } from "@/components/notifications/NotificationsTab";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
-import { TasksPage } from "@/components/tools/TasksPage";
 import { ChessSection } from "@/components/tools/ChessSection";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
-import { cn } from "@/lib/utils";
 import { DownloadApp } from "@/components/dashboard/DownloadApp";
+import { navigationItems } from "@/config/navigation";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -40,31 +41,63 @@ export function DashboardContent({
   }, [currentPage, onEditStateChange]);
 
   if (!user) {
-    return <Loader className="w-8 h-8" />;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader className="w-8 h-8" />
+      </div>
+    );
   }
 
-  const variants = {
-    initial: { opacity: 0 },
+  const pageVariants = {
+    initial: { 
+      opacity: 0,
+      y: 20
+    },
     animate: { 
       opacity: 1,
-      transition: { duration: 0.2 }
+      y: 0,
+      transition: {
+        duration: 0.3,
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
     },
     exit: { 
       opacity: 0,
-      transition: { duration: 0.15 }
+      y: -20,
+      transition: {
+        duration: 0.2
+      }
     }
   };
 
   const getPageContent = () => {
+    // Vérifier si la page existe dans la navigation
+    const pageExists = navigationItems.some(item => item.id === currentPage);
+    
+    if (!pageExists) {
+      return (
+        <Alert variant="destructive" className="max-w-xl mx-auto mt-8">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Page introuvable</AlertTitle>
+          <AlertDescription>
+            La page que vous recherchez n'existe pas ou n'est plus disponible.
+          </AlertDescription>
+        </Alert>
+      );
+    }
+
     switch (currentPage) {
       case 1:
         return (
-          <>
-            <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />
-            <div className="mt-4">
-              <DownloadApp />
-            </div>
-          </>
+          <div className="space-y-4">
+            <VCard 
+              onEditStateChange={onEditStateChange} 
+              onRequestChat={onRequestChat} 
+            />
+            <DownloadApp />
+          </div>
         );
       case 2:
         return <Messages />;
@@ -93,13 +126,15 @@ export function DashboardContent({
 
   return (
     <motion.div
-      variants={variants}
+      variants={pageVariants}
       initial="initial"
       animate="animate"
       exit="exit"
-      className="relative bg-background pt-16"
+      className="relative bg-background min-h-screen pt-16 pb-20"
     >
-      {getPageContent()}
+      <div className="container mx-auto px-4">
+        {getPageContent()}
+      </div>
     </motion.div>
   );
 }
