@@ -36,10 +36,10 @@ export function Feed() {
 
   return (
     <ScrollArea 
-      className="h-[calc(100vh-3.5rem)] w-full"
+      className="h-[calc(100vh-3.5rem)] w-full pb-20"
       onScroll={handleScroll}
     >
-      <div className="max-w-2xl mx-auto px-4 space-y-6">
+      <div className="max-w-2xl mx-auto px-4 space-y-6 min-h-[calc(100vh-3.5rem)]">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -62,7 +62,7 @@ export function Feed() {
             exit={{ opacity: 0, scale: 0.8 }}
             className={cn(
               "fixed z-20",
-              isMobile ? "bottom-20 right-3" : "bottom-6 right-6"
+              isMobile ? "bottom-24 right-3" : "bottom-6 right-6"
             )}
           >
             <Button
