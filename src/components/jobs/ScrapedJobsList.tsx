@@ -1,140 +1,61 @@
-
-import { motion } from "framer-motion";
-import { Loader2, Search } from "lucide-react";
-import { useJobsData } from "@/hooks/useJobsData";
-import type { ScrapedJobsListProps } from "@/types/jobs/types";
-import { JobCard } from "./JobCard";
-import type { Job } from "@/types/job";
-import { JobFilterUtils, defaultFilters } from "./JobFilterUtils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { JobList } from "./JobList";
 import { FilterSection } from "./filters/FilterSection";
-import { JobFiltersPanel } from "./JobFiltersPanel";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Job } from "@/types/job";
+import { useJobFilters } from "@/hooks/useJobFilters";
 
-export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
-  const { data: jobs = [], isLoading } = useJobsData(queryString);
-  const [filters, setFilters] = useState(defaultFilters);
-  const [showFilters, setShowFilters] = useState(true);
+export function ScrapedJobsList() {
+  const { filters, updateFilter, resetFilters } = useJobFilters();
+  const [jobs, setJobs] = useState<Job[]>([]);
 
-  // Convertir les UnifiedJob en Job avec tous les champs requis
-  const convertedJobs: Job[] = jobs.map(job => ({
-    id: job.id,
-    title: job.title,
-    description: job.description || '',
-    budget: 0,
-    location: job.location,
-    employer_id: '',
-    status: 'open',
-    category: '',
-    contract_type: '',
-    experience_level: '',
-    created_at: job.posted_at,
-    company: job.company,
-    source: job.source === 'Victaure' ? 'internal' : 'external',
-    url: job.url,
-    mission_type: 'company' // Default value for scraped jobs
-  }));
+  useEffect(() => {
+    // Simulate fetching jobs based on filters
+    const fetchedJobs = [
+      {
+        id: "1",
+        title: "Software Engineer",
+        company: "Tech Corp",
+        location: "San Francisco",
+        salary: "$120,000 - $150,000",
+        description: "Develop and maintain software applications.",
+        postedDate: "2 days ago",
+        skills: ["JavaScript", "React", "Node.js"],
+        category: "Technology",
+        experienceLevel: "Mid-Level",
+        duration: "Full-time",
+        employer_id: "some_employer_id",
+        budget: 130000,
+        required_skills: ["JavaScript", "React", "Node.js"]
+      },
+      {
+        id: "2",
+        title: "Data Scientist",
+        company: "Data Solutions Inc.",
+        location: "New York",
+        salary: "$110,000 - $140,000",
+        description: "Analyze data and create machine learning models.",
+        postedDate: "5 days ago",
+        skills: ["Python", "Machine Learning", "Data Analysis"],
+        category: "Data Science",
+        experienceLevel: "Senior",
+        duration: "Full-time",
+        employer_id: "some_employer_id",
+        budget: 120000,
+        required_skills: ["Python", "Machine Learning", "Data Analysis"]
+      },
+    ];
 
-  // Filtrer les offres selon les critères
-  const filteredJobs = JobFilterUtils.applyFilters(convertedJobs, filters);
-
-  // Gérer le changement des filtres
-  const handleFilterChange = (key: string, value: any) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value
-    }));
-  };
-
-  if (isLoading) {
-    return (
-      <div 
-        className="flex items-center justify-center p-8" 
-        role="status" 
-        aria-label="Chargement des offres d'emploi"
-      >
-        <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />
-      </div>
-    );
-  }
+    setJobs(fetchedJobs as any);
+  }, [filters]);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6">
-      <aside className={cn(
-        "lg:w-80 shrink-0",
-        showFilters ? "block" : "hidden lg:block"
-      )}>
-        <JobFiltersPanel
-          filters={filters}
-          onFilterChange={handleFilterChange}
-        />
-      </aside>
-
-      <main className="flex-1 space-y-4">
-        <div className="flex items-center justify-between gap-4 mb-6">
-          <Button 
-            variant="outline" 
-            className="lg:hidden"
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
-          </Button>
-        </div>
-
-        <FilterSection 
-          filters={filters}
-          onFilterChange={handleFilterChange}
-        />
-
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col space-y-4"
-        >
-          {filteredJobs.length === 0 ? (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex flex-col items-center justify-center py-12 text-center space-y-4"
-              role="status"
-            >
-              <div className="rounded-full bg-muted p-6 mb-2">
-                <Search className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-semibold">Aucune offre trouvée</h3>
-              <p className="text-muted-foreground max-w-sm">
-                Essayez de modifier vos critères de recherche pour voir plus d'opportunités
-              </p>
-              <Button 
-                variant="outline"
-                onClick={() => setFilters(defaultFilters)}
-                className="mt-4"
-              >
-                Réinitialiser les filtres
-              </Button>
-            </motion.div>
-          ) : (
-            <div 
-              className="space-y-4" 
-              role="list" 
-              aria-label="Liste des offres d'emploi"
-            >
-              {filteredJobs.map((job) => (
-                <motion.div 
-                  key={job.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  role="listitem"
-                >
-                  <JobCard job={job} />
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </motion.div>
-      </main>
+    <div className="space-y-4">
+      <FilterSection 
+        filters={filters} 
+        onFilterChange={updateFilter}
+        onReset={resetFilters}
+      />
+      <JobList filters={filters} showFilters={true} jobs={jobs} />
     </div>
   );
 }

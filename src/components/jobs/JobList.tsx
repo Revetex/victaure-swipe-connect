@@ -5,14 +5,18 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { JobCard } from "./JobCard";
 import { useSwipeJobs } from "./swipe/useSwipeJobs";
 import { JobFilters } from "./JobFilterUtils";
+import { Job } from "@/types/job";
 
 interface JobListProps {
   filters: JobFilters;
   showFilters: boolean;
+  jobs?: Job[];
+  onJobDeleted?: () => void;
 }
 
-export function JobList({ filters, showFilters }: JobListProps) {
-  const { jobs, loading } = useSwipeJobs(filters);
+export function JobList({ filters, showFilters, jobs: propJobs, onJobDeleted }: JobListProps) {
+  const { jobs: fetchedJobs, loading } = useSwipeJobs(filters);
+  const jobs = propJobs || fetchedJobs;
 
   if (loading) {
     return (
@@ -62,7 +66,7 @@ export function JobList({ filters, showFilters }: JobListProps) {
               exit={{ opacity: 0, y: -20 }}
               layout
             >
-              <JobCard job={job} />
+              <JobCard job={job} onDeleted={onJobDeleted} />
             </motion.div>
           ))}
         </AnimatePresence>

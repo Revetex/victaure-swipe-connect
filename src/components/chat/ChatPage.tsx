@@ -28,9 +28,12 @@ export function ChatPage() {
           .from('messages')
           .select(`
             *,
-            sender:profiles (
+            sender:profiles!messages_sender_id_fkey (
+              id,
               full_name,
-              avatar_url
+              avatar_url,
+              online_status,
+              last_seen
             )
           `)
           .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
@@ -42,21 +45,25 @@ export function ChatPage() {
         }
 
         if (data) {
-          // Transform the data to match the Message type
           const transformedMessages: Message[] = data.map(msg => ({
             id: msg.id,
             content: msg.content,
             sender_id: msg.sender_id,
             receiver_id: msg.receiver_id,
             created_at: msg.created_at,
+            updated_at: msg.updated_at || msg.created_at,
             read: msg.read ?? false,
             sender: {
-              id: msg.sender_id,
+              id: msg.sender.id,
               full_name: msg.sender.full_name || "Unknown",
               avatar_url: msg.sender.avatar_url || "",
-              online_status: false,
-              last_seen: new Date().toISOString()
-            }
+              online_status: msg.sender.online_status || false,
+              last_seen: msg.sender.last_seen || new Date().toISOString()
+            },
+            timestamp: msg.created_at,
+            message_type: msg.message_type || 'user',
+            status: msg.status || 'sent',
+            metadata: msg.metadata || {}
           }));
           setMessages(transformedMessages);
         }
