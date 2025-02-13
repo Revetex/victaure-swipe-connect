@@ -11,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { navigationSections } from "@/config/navigation";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Separator } from "./ui/separator";
+import { useViewport } from "@/hooks/useViewport";
 
 interface NavigationProps {
   onNavigate?: () => void;
@@ -21,6 +22,7 @@ export function Navigation({ onNavigate }: NavigationProps) {
   const [showProfilePreview, setShowProfilePreview] = useState(false);
   const [currentPage, setCurrentPage] = useState(4);
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
+  const { viewportHeight } = useViewport();
   const navigate = useNavigate();
 
   if (isLoading || !user) {
@@ -46,10 +48,12 @@ export function Navigation({ onNavigate }: NavigationProps) {
   return (
     <div className={cn(
       isLargeScreen ? "fixed inset-y-0 left-0 w-64 border-r" : "w-full h-full",
-      "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-    )}>
+      "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+      "flex flex-col"
+    )}
+    style={{ height: isLargeScreen ? `${viewportHeight}px` : 'auto' }}>
       {/* Logo Section */}
-      <div className="h-16 border-b flex items-center px-4">
+      <div className="h-16 border-b flex items-center px-4 flex-shrink-0">
         <motion.div 
           className="flex items-center gap-3 group cursor-pointer"
           whileHover={{ scale: 1.02 }}
@@ -61,7 +65,7 @@ export function Navigation({ onNavigate }: NavigationProps) {
       </div>
 
       {/* Navigation Sections */}
-      <ScrollArea className="h-[calc(100vh-4rem)]">
+      <ScrollArea className="flex-1 h-[calc(100%-4rem)]">
         <nav className="p-4 space-y-6">
           {navigationSections.map((section) => (
             <div key={section.id} className="space-y-3">
@@ -116,11 +120,12 @@ function NavButton({ item, isActive, onClick }: NavButtonProps) {
         "w-full flex items-center gap-3 px-2 py-2 rounded-md text-sm font-medium",
         "relative group transition-all duration-200",
         "hover:bg-accent/50",
+        "active:scale-95 touch-none", // Amélioration du feedback tactile
         isActive ? "bg-primary/10 text-primary hover:bg-primary/20" : "text-foreground/70 hover:text-foreground"
       )}
       onClick={onClick}
       whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
+      whileTap={{ scale: 0.98 }}
     >
       <Icon className={cn(
         "h-4 w-4 shrink-0",

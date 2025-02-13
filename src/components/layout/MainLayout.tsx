@@ -8,6 +8,7 @@ import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Navigation } from "@/components/Navigation";
 import { UserNav } from "../dashboard/layout/UserNav";
+import { useViewport } from "@/hooks/useViewport";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -28,6 +29,7 @@ export const MainLayout = memo(function MainLayout({
 }: MainLayoutProps) {
   const isMobile = useIsMobile();
   const location = useLocation();
+  const { viewportHeight } = useViewport();
 
   return (
     <motion.div 
@@ -36,6 +38,7 @@ export const MainLayout = memo(function MainLayout({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
+      style={{ minHeight: `${viewportHeight}px` }}
     >
       {!isMobile && <Navigation />}
       {isMobile && <UserNav />}
@@ -43,7 +46,8 @@ export const MainLayout = memo(function MainLayout({
       <main className={cn(
         "flex-1 relative",
         "transition-all duration-200 ease-in-out",
-        !isMobile && "lg:pl-64"
+        !isMobile && "lg:pl-64",
+        "pb-safe" // Pour la zone sécurisée sur iPhone
       )}>
         <motion.header 
           className={cn(
@@ -51,7 +55,8 @@ export const MainLayout = memo(function MainLayout({
             "bg-background/95 backdrop-blur",
             "supports-[backdrop-filter]:bg-background/60 border-b",
             "w-full",
-            "transition-all duration-200"
+            "transition-all duration-200",
+            isMobile ? "pl-4" : "pl-64"
           )}
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -69,13 +74,19 @@ export const MainLayout = memo(function MainLayout({
         </motion.header>
 
         <motion.div 
-          className="pt-16"
+          className={cn(
+            "pt-16",
+            isMobile && "pb-16" // Espace pour la navigation mobile
+          )}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3, delay: 0.1 }}
         >
-          <div className="max-w-7xl mx-auto px-4">
+          <div className={cn(
+            "mx-auto px-4",
+            isMobile ? "w-full" : "max-w-7xl"
+          )}>
             {children}
           </div>
         </motion.div>
