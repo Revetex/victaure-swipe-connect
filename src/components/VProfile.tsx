@@ -69,7 +69,7 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
           </DialogDescription>
         </VisuallyHidden>
         
-        <div className="p-4 bg-muted/30 border-b flex justify-end gap-2">
+        <div className="sticky top-0 z-10 p-4 bg-background/95 backdrop-blur border-b flex justify-end gap-2">
           {isOwnProfile ? (
             <Button
               onClick={handleEditProfile}
@@ -128,7 +128,7 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
           )}
         </div>
 
-        <ScrollArea className="h-[80vh]">
+        <ScrollArea className="h-[calc(100vh-10rem)]">
           <AnimatePresence>
             {isOpen && (
               <motion.div
