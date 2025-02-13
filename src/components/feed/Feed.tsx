@@ -10,9 +10,6 @@ import { useRef, useState, useCallback } from "react";
 
 export function Feed() {
   const queryClient = useQueryClient();
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [showScrollTop, setShowScrollTop] = useState(false);
-  const isMobile = useIsMobile();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const invalidatePosts = useCallback(() => {
@@ -26,36 +23,32 @@ export function Feed() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <ScrollArea className="h-[calc(100vh-4rem)]">
-        <div className={cn(
-          "max-w-2xl mx-auto",
-          "px-4 sm:px-6",
-          "pt-20 pb-8"
-        )}>
-          <div className="space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className="sticky top-16 z-40 bg-background/80 dark:bg-background/80 backdrop-blur-lg pb-4"
-            >
-              <CreatePost onPostCreated={handleRefresh} />
-            </motion.div>
+    <ScrollArea className="h-[calc(100vh-4rem)]">
+      <div className={cn(
+        "max-w-2xl mx-auto",
+        "px-4 sm:px-6 py-4",
+        "space-y-6"
+      )}>
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className={cn(
+            "sticky top-0 z-40",
+            "bg-background/95 dark:bg-background/95",
+            "backdrop-blur-md",
+            "pb-4 pt-2",
+            "border-b border-border/50"
+          )}
+        >
+          <CreatePost onPostCreated={handleRefresh} />
+        </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.2 }}
-            >
-              <PostList 
-                onPostDeleted={handleRefresh}
-                onPostUpdated={handleRefresh}
-              />
-            </motion.div>
-          </div>
-        </div>
-      </ScrollArea>
-    </div>
+        <PostList 
+          onPostDeleted={handleRefresh}
+          onPostUpdated={handleRefresh}
+        />
+      </div>
+    </ScrollArea>
   );
 }

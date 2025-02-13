@@ -28,31 +28,37 @@ export function ReactionButton({
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
+    <motion.button
       onClick={handleClick}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       className={cn(
-        "flex items-center gap-1.5 px-3 h-8 rounded-full",
-        "hover:bg-muted/80 active:scale-95",
-        "transition-all duration-200 ease-in-out",
-        isActive && activeClassName,
+        "flex items-center gap-2 px-4 py-1.5 rounded-full",
+        "text-sm font-medium",
+        "bg-transparent hover:bg-accent/10",
+        "transition-all duration-200",
+        "border border-transparent",
+        "focus:outline-none focus:ring-2 focus:ring-accent/20",
+        isActive && [
+          "bg-accent/10",
+          "border-accent/20",
+          "text-accent",
+          activeClassName
+        ]
       )}
       title={label}
     >
-      <motion.div
-        whileTap={{ scale: 0.9 }}
-        className="flex items-center gap-1.5"
-      >
-        <Icon className={cn(
-          "h-4 w-4",
-          isActive && "fill-current"
-        )} />
-        <span className={cn(
-          "text-sm font-medium",
-          isActive && "text-current"
-        )}>{count}</span>
-      </motion.div>
-    </Button>
+      <Icon className={cn(
+        "h-4 w-4",
+        "transition-all duration-200",
+        isActive && "fill-current text-accent"
+      )} />
+      <span className={cn(
+        "min-w-[1rem] text-center",
+        isActive && "text-accent font-semibold"
+      )}>
+        {count}
+      </span>
+    </motion.button>
   );
 }

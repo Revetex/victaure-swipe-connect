@@ -24,9 +24,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-background relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-background to-muted/20 pointer-events-none" />
-      
+    <div className="flex min-h-screen bg-background">
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -40,23 +38,31 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       />
 
       <main className={cn(
-        "flex-1 lg:ml-64 min-h-screen relative",
-        "bg-background dark:bg-background"
+        "flex-1 lg:ml-64 min-h-screen",
+        "bg-gradient-to-b from-background to-background/95",
+        "transition-all duration-300 ease-in-out"
       )}>
-        <header className="fixed top-0 right-0 left-0 lg:left-64 z-40 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-          <div className="flex h-full items-center justify-end px-4">
+        <header className="fixed top-0 right-0 left-0 lg:left-64 z-40 h-16">
+          <div className={cn(
+            "h-full flex items-center justify-end px-4",
+            "bg-background/80 backdrop-blur-md",
+            "border-b border-border/50",
+            "transition-all duration-300"
+          )}>
             <NotificationsBox />
           </div>
         </header>
         
-        {children || (
-          <DashboardContent
-            currentPage={currentPage}
-            isEditing={isEditing}
-            onEditStateChange={handleEditStateChange}
-            onRequestChat={() => handlePageChange(2)}
-          />
-        )}
+        <div className="pt-16 min-h-screen">
+          {children || (
+            <DashboardContent
+              currentPage={currentPage}
+              isEditing={isEditing}
+              onEditStateChange={handleEditStateChange}
+              onRequestChat={() => handlePageChange(2)}
+            />
+          )}
+        </div>
       </main>
     </div>
   );

@@ -1,6 +1,7 @@
 
 import { Textarea } from "@/components/ui/textarea";
 import { PostImageGrid } from "../PostImageGrid";
+import { cn } from "@/lib/utils";
 
 interface PostCardContentProps {
   content: string;
@@ -23,12 +24,23 @@ export function PostCardContent({
         <Textarea
           value={editContent}
           onChange={(e) => onEditContentChange(e.target.value)}
-          className="min-h-[80px] resize-none mobile-friendly-input"
+          className={cn(
+            "min-h-[80px] resize-none",
+            "bg-accent/5 border-accent/20",
+            "focus:border-accent/30 focus:ring-accent/20",
+            "placeholder:text-muted-foreground/50",
+            "rounded-lg"
+          )}
           placeholder="Que voulez-vous partager ?"
         />
       ) : (
         content && (
-          <div className="text-sm text-foreground/90 whitespace-pre-wrap">
+          <div className={cn(
+            "text-sm leading-relaxed",
+            "text-foreground/90",
+            "whitespace-pre-wrap",
+            "break-words"
+          )}>
             {content}
           </div>
         )
