@@ -28,7 +28,6 @@ export const MainLayout = memo(function MainLayout({
 }: MainLayoutProps) {
   const isMobile = useIsMobile();
   const location = useLocation();
-  const isFriendsPage = location.pathname.includes('/friends');
 
   return (
     <motion.div 
@@ -70,10 +69,7 @@ export const MainLayout = memo(function MainLayout({
         </motion.header>
 
         <motion.div 
-          className={cn(
-            "pt-16 min-h-[calc(100vh-4rem)]",
-            "transition-all duration-200"
-          )}
+          className="pt-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
@@ -92,29 +88,7 @@ export const MainLayout = memo(function MainLayout({
             />
           )}
         </AnimatePresence>
-
-        {!isFriendsPage && isMobile && (
-          <motion.nav 
-            className={cn(
-              "h-16 border-t fixed bottom-0 left-0 right-0 z-50",
-              "bg-background/95 backdrop-blur",
-              "supports-[backdrop-filter]:bg-background/60",
-              "transition-all duration-200"
-            )}
-            style={{ 
-              paddingBottom: 'env(safe-area-inset-bottom)',
-              height: 'calc(4rem + env(safe-area-inset-bottom))'
-            }}
-            initial={{ y: 100 }}
-            animate={{ y: 0 }}
-            exit={{ y: 100 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="h-full px-4" />
-          </motion.nav>
-        )}
       </main>
     </motion.div>
   )
 });
-

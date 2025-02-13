@@ -32,13 +32,13 @@ export function Feed() {
   }, []);
 
   return (
-    <div className="min-h-screen pt-16 pb-20">
+    <div className="min-h-screen">
       <ScrollArea 
         ref={scrollRef} 
-        className="h-[calc(100vh-4rem)] w-full"
+        className="h-screen w-full"
         onScroll={handleScroll}
       >
-        <div className="max-w-2xl mx-auto px-4 pb-16">
+        <div className="max-w-2xl mx-auto px-4 py-16">
           <CreatePost onPostCreated={invalidatePosts} />
           <PostList 
             onPostDeleted={invalidatePosts}
@@ -59,7 +59,7 @@ export function Feed() {
                 "hover:scale-105 active:scale-95",
                 "min-h-[40px] min-w-[40px] z-50",
                 "touch-manipulation",
-                isMobile ? "bottom-20 right-3" : "bottom-6 right-6"
+                "bottom-6 right-6"
               )}
               aria-label="Retourner en haut"
             >
