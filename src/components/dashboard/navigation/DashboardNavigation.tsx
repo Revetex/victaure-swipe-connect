@@ -24,7 +24,6 @@ export function DashboardNavigation({
 }: DashboardNavigationProps) {
   const { user } = useAuth();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
-  const [expandedTools, setExpandedTools] = useState(false);
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
 
   if (isEditing) return null;
@@ -56,62 +55,24 @@ export function DashboardNavigation({
         "lg:h-20 lg:px-8",
         className
       )}>
-        {navigationItems.map(({ id, icon: Icon, name, children }) => {
-          const isTools = id === 5;
-          const isActive = currentPage === id || (isTools && children?.some(child => child.id === currentPage));
-
-          if (!isLargeScreen && id > 6) return null;
+        {navigationItems.map((item) => {
+          if (!isLargeScreen && item.id > 6) return null;
 
           return (
             <button
-              key={id}
-              onClick={() => {
-                if (isTools) {
-                  setExpandedTools(!expandedTools);
-                } else {
-                  onPageChange(id);
-                }
-              }}
+              key={item.id}
+              onClick={() => onPageChange(item.id)}
               className={cn(
                 "nav-item",
-                isActive && "active",
+                currentPage === item.id && "active",
                 "flex flex-col items-center justify-center gap-1 px-3 py-2",
                 "hover:bg-accent/50 rounded-lg transition-colors"
               )}
-              title={name}
-              aria-label={name}
+              title={item.name}
+              aria-label={item.name}
             >
-              <Icon className="h-5 w-5" />
-              <span className="text-xs font-medium">{name}</span>
-              {isTools && (
-                <ChevronDown className={cn(
-                  "h-3 w-3 transition-transform",
-                  expandedTools && "rotate-180"
-                )} />
-              )}
-
-              {isTools && expandedTools && (
-                <div className="nav-tools-menu absolute bottom-full left-0 w-full bg-background border rounded-lg shadow-lg p-2 mb-2">
-                  {children?.map((tool) => (
-                    <button
-                      key={tool.id}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onPageChange(tool.id);
-                        setExpandedTools(false);
-                      }}
-                      className={cn(
-                        "nav-tools-item w-full flex items-center gap-2 px-3 py-2 rounded-md",
-                        "hover:bg-accent/50 transition-colors",
-                        currentPage === tool.id && "bg-primary/20 text-primary"
-                      )}
-                    >
-                      <tool.icon className="h-4 w-4" />
-                      <span>{tool.name}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+              <item.icon className="h-5 w-5" />
+              <span className="text-xs font-medium">{item.name}</span>
             </button>
           );
         })}

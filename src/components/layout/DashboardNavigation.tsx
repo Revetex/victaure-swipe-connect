@@ -2,8 +2,7 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { navigationItems } from "@/config/navigation";
-import { Menu, EyeOff, Eye } from "lucide-react";
-import { useState } from "react";
+import { Menu } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,11 +21,7 @@ export function DashboardNavigation({
   onPageChange,
   isEditing 
 }: DashboardNavigationProps) {
-  const [showHidden, setShowHidden] = useState(false);
-
   if (isEditing) return null;
-
-  const visibleItems = navigationItems.filter(item => !item.hidden || showHidden);
 
   return (
     <nav 
@@ -38,46 +33,7 @@ export function DashboardNavigation({
     >
       <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
         <div className="flex items-center justify-around w-full max-w-2xl mx-auto">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <motion.button
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={cn(
-                  "w-16 h-16 rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-1",
-                  "hover:bg-primary/10 active:scale-95",
-                  "focus:outline-none focus:ring-2 focus:ring-primary/20",
-                  "touch-manipulation"
-                )}
-              >
-                <Menu className="h-5 w-5" />
-                <span className="text-xs font-medium">Menu</span>
-              </motion.button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent 
-              align="center"
-              className="w-48 bg-background/95 backdrop-blur-sm border border-border/50"
-            >
-              <DropdownMenuItem 
-                onClick={() => setShowHidden(!showHidden)}
-                className="flex items-center justify-between"
-              >
-                {showHidden ? (
-                  <>
-                    <Eye className="h-4 w-4 mr-2" />
-                    <span>Masquer les éléments</span>
-                  </>
-                ) : (
-                  <>
-                    <EyeOff className="h-4 w-4 mr-2" />
-                    <span>Afficher tout</span>
-                  </>
-                )}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {visibleItems.map(({ id, icon: Icon, name }) => (
+          {navigationItems.map(({ id, icon: Icon, name }) => (
             <motion.button
               key={id}
               onClick={() => onPageChange(id)}
