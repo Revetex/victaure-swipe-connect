@@ -41,49 +41,49 @@ export function ChessBoard({
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <div className="w-full aspect-square bg-slate-800 p-1 rounded-xl border border-slate-700">
-        <div className="grid grid-cols-8 grid-rows-[repeat(8,1fr)] h-full w-full gap-[1px] bg-slate-700">
-          {board.map((row, rowIndex) => (
-            row.map((piece, colIndex) => {
-              const isSelected = selectedPiece?.row === rowIndex && selectedPiece?.col === colIndex;
-              const isPossibleMove = possibleMoves.some(move => move.row === rowIndex && move.col === colIndex);
-              const isLight = (rowIndex + colIndex) % 2 === 0;
-              
-              return (
-                <button
-                  key={`${rowIndex}-${colIndex}`}
-                  onClick={() => onSquareClick(rowIndex, colIndex)}
-                  disabled={(!isWhiteTurn && !piece?.isWhite) || isThinking || gameOver}
-                  aria-label={`Square ${String.fromCharCode(97 + colIndex)}${8 - rowIndex}${piece ? ` with ${piece.type}` : ''}`}
-                  className={cn(
-                    "aspect-square w-full h-full flex items-center justify-center relative",
-                    "transition-all duration-200",
-                    isMobile ? "text-3xl sm:text-4xl" : "text-5xl sm:text-6xl",
-                    isLight ? 'bg-slate-200' : 'bg-slate-400',
-                    isSelected && 'ring-2 ring-yellow-400 ring-inset z-10',
-                    isPossibleMove && 'after:absolute after:inset-2 after:rounded-full after:bg-yellow-400/30 after:animate-pulse',
-                    'hover:bg-opacity-90 active:bg-opacity-80',
-                    'disabled:cursor-not-allowed disabled:opacity-100'
-                  )}
-                >
-                  {piece && (
-                    <span 
-                      className={cn(
-                        "transform transition-transform",
-                        piece.isWhite ? "text-white drop-shadow-lg" : "text-slate-900",
-                        isSelected && "scale-110"
-                      )}
-                    >
-                      {getPieceSymbol(piece)}
-                    </span>
-                  )}
-                </button>
-              );
-            })
-          ))}
-        </div>
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="w-full max-w-[min(90vh,600px)] mx-auto"
+    >
+      <div className="grid grid-cols-8 gap-px bg-neutral-300 p-1 rounded-lg overflow-hidden">
+        {board.map((row, rowIndex) => (
+          row.map((piece, colIndex) => {
+            const isSelected = selectedPiece?.row === rowIndex && selectedPiece?.col === colIndex;
+            const isPossibleMove = possibleMoves.some(move => move.row === rowIndex && move.col === colIndex);
+            const isLight = (rowIndex + colIndex) % 2 === 0;
+            
+            return (
+              <button
+                key={`${rowIndex}-${colIndex}`}
+                onClick={() => onSquareClick(rowIndex, colIndex)}
+                disabled={(!isWhiteTurn && !piece?.isWhite) || isThinking || gameOver}
+                aria-label={`Square ${String.fromCharCode(97 + colIndex)}${8 - rowIndex}${piece ? ` with ${piece.type}` : ''}`}
+                className={cn(
+                  "aspect-square flex items-center justify-center relative",
+                  "transition-colors duration-200 ease-out",
+                  isMobile ? "text-3xl sm:text-4xl" : "text-4xl sm:text-5xl",
+                  isLight ? 'bg-[#E8EDF9]' : 'bg-[#B7C0D8]',
+                  isSelected && 'ring-2 ring-yellow-400 z-10',
+                  isPossibleMove && 'after:absolute after:inset-3 after:rounded-full after:bg-yellow-400/20',
+                  'hover:brightness-110',
+                  'disabled:cursor-not-allowed disabled:opacity-100'
+                )}
+              >
+                {piece && (
+                  <span className={cn(
+                    "drop-shadow-sm transition-transform",
+                    piece.isWhite ? "text-white" : "text-[#2A2A2A]",
+                    isSelected && "scale-110"
+                  )}>
+                    {getPieceSymbol(piece)}
+                  </span>
+                )}
+              </button>
+            );
+          })
+        ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -3,7 +3,6 @@ import { PostHeader } from "../../PostHeader";
 import { Button } from "@/components/ui/button";
 import { Edit2, Save, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 interface PostCardHeaderProps {
   profile: {
@@ -33,10 +32,7 @@ export function PostCardHeader({
   onDelete
 }: PostCardHeaderProps) {
   return (
-    <div className={cn(
-      "flex justify-between items-start gap-3",
-      "pb-2 border-b border-border/40"
-    )}>
+    <div className="flex justify-between items-start gap-3">
       <PostHeader 
         profile={profile}
         created_at={created_at}
@@ -46,21 +42,14 @@ export function PostCardHeader({
       {isOwnPost && (
         <div className="flex gap-1">
           {isEditing ? (
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="flex gap-1"
-            >
+            <>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onSave}
                 className={cn(
-                  "h-8 w-8 rounded-full",
-                  "text-accent hover:text-accent/90",
-                  "hover:bg-accent/10",
-                  "transition-colors"
+                  "text-primary hover:text-primary/90 hover:bg-primary/10",
+                  "min-h-[44px] min-w-[44px] touch-manipulation"
                 )}
                 aria-label="Sauvegarder les modifications"
                 title="Sauvegarder les modifications"
@@ -72,33 +61,24 @@ export function PostCardHeader({
                 size="icon"
                 onClick={onCancel}
                 className={cn(
-                  "h-8 w-8 rounded-full",
                   "text-muted-foreground hover:text-foreground",
-                  "hover:bg-accent/10",
-                  "transition-colors"
+                  "min-h-[44px] min-w-[44px] touch-manipulation"
                 )}
                 aria-label="Annuler les modifications"
                 title="Annuler les modifications"
               >
                 <X className="h-4 w-4" />
               </Button>
-            </motion.div>
+            </>
           ) : (
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="flex gap-1"
-            >
+            <>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onEdit}
                 className={cn(
-                  "h-8 w-8 rounded-full",
-                  "text-accent hover:text-accent/90",
-                  "hover:bg-accent/10",
-                  "transition-colors"
+                  "text-primary hover:text-primary/90 hover:bg-primary/10",
+                  "min-h-[44px] min-w-[44px] touch-manipulation"
                 )}
                 aria-label="Modifier la publication"
                 title="Modifier la publication"
@@ -110,17 +90,15 @@ export function PostCardHeader({
                 size="icon"
                 onClick={onDelete}
                 className={cn(
-                  "h-8 w-8 rounded-full",
-                  "text-destructive hover:text-destructive/90",
-                  "hover:bg-destructive/10",
-                  "transition-colors"
+                  "text-destructive hover:text-destructive/90 hover:bg-destructive/10",
+                  "min-h-[44px] min-w-[44px] touch-manipulation"
                 )}
                 aria-label="Supprimer la publication"
                 title="Supprimer la publication"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
-            </motion.div>
+            </>
           )}
         </div>
       )}

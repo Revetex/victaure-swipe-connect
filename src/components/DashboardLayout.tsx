@@ -4,8 +4,8 @@ import { useProfile } from "@/hooks/useProfile";
 import { DashboardContent } from "./dashboard/DashboardContent";
 import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { NotificationsBox } from "./notifications/NotificationsBox";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(4);
@@ -24,7 +24,14 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background relative">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0.1, 0.2, 0.1] }}
+        transition={{ duration: 5, repeat: Infinity }}
+        className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#8B5CF6,transparent)]"
+      />
+
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -38,22 +45,10 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       />
 
       <main className={cn(
-        "flex-1 lg:ml-64 min-h-screen",
-        "bg-gradient-to-b from-background to-background/95",
-        "transition-all duration-300 ease-in-out"
+        "flex-1 lg:ml-64 min-h-screen relative",
+        "glass-panel"
       )}>
-        <header className="fixed top-0 right-0 left-0 lg:left-64 z-40 h-16">
-          <div className={cn(
-            "h-full flex items-center justify-end px-4",
-            "bg-background/80 backdrop-blur-md",
-            "border-b border-border/50",
-            "transition-all duration-300"
-          )}>
-            <NotificationsBox />
-          </div>
-        </header>
-        
-        <div className="pt-16 min-h-screen">
+        <div className="h-full">
           {children || (
             <DashboardContent
               currentPage={currentPage}

@@ -1,10 +1,11 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useState, memo, useCallback } from "react";
+import { useState, memo } from "react";
 import { PostCard } from "./posts/PostCard";
 import { usePostOperations } from "./posts/usePostOperations";
+import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { PostSkeleton } from "./posts/PostSkeleton";
 import { EmptyPostState } from "./posts/EmptyPostState";
@@ -19,6 +20,7 @@ const MemoizedPostCard = memo(PostCard);
 
 export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
   const { handleReaction, handleDelete, handleHide, handleUpdate } = usePostOperations();
 
@@ -28,14 +30,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
       const { data, error } = await supabase
         .from("posts")
         .select(`
-          id,
-          content,
-          created_at,
-          user_id,
-          privacy_level,
-          images,
-          likes,
-          dislikes,
+          *,
           profiles (
             id,
             full_name,
@@ -46,12 +41,12 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
             reaction_type,
             user_id
           ),
-          comments:post_comments!left(
+          comments:post_comments(
             id,
             content,
             created_at,
             user_id,
-            profiles (
+            profiles(
               id,
               full_name,
               avatar_url
@@ -71,37 +66,40 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
         }))
       }));
     },
-    staleTime: 1000 * 60 * 5, // Cache pendant 5 minutes
-    gcTime: 1000 * 60 * 10,   // Garbage collection après 10 minutes
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 5,
   });
 
-  const handleDeletePost = useCallback(async (postId: string) => {
-    try {
-      await handleDelete(postId, user?.id);
-      setPostToDelete(null);
-      onPostDeleted();
-    } catch (error) {
-      console.error("Error deleting post:", error);
+  const handleDeletePost = async (postId: string, userId: string | undefined) => {
+    if (userId !== user?.id) {
+      toast.error("Vous ne pouvez supprimer que vos propres publications");
+      return;
     }
-  }, [handleDelete, user?.id, onPostDeleted]);
+    
+    try {
+      await handleDelete(postId, userId);
+      onPostDeleted();
+      toast.success("Publication supprimée avec succès");
+      setPostToDelete(null);
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      toast.error("Erreur lors de la suppression de la publication");
+    }
+  };
 
-  const handleUpdatePost = useCallback(async (postId: string, content: string) => {
+  const handleUpdatePost = async (postId: string, content: string) => {
     try {
       await handleUpdate(postId, content);
       onPostUpdated();
+      toast.success("Publication mise à jour avec succès");
     } catch (error) {
-      console.error("Error updating post:", error);
+      console.error('Error updating post:', error);
+      toast.error("Erreur lors de la mise à jour de la publication");
     }
-  }, [handleUpdate, onPostUpdated]);
+  };
 
   if (isLoading) {
-    return (
-      <div className="space-y-6">
-        {[...Array(3)].map((_, i) => (
-          <PostSkeleton key={i} />
-        ))}
-      </div>
-    );
+    return <PostSkeleton />;
   }
 
   if (!posts?.length) {
@@ -110,7 +108,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
 
   return (
     <div className="space-y-6">
-      <AnimatePresence mode="popLayout" initial={false}>
+      <AnimatePresence mode="popLayout">
         {posts.map((post) => (
           <motion.div
             key={post.id}
@@ -118,7 +116,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            layout="position"
+            layout
           >
             <MemoizedPostCard
               post={post}
@@ -127,6 +125,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
               onDelete={() => post.user_id === user?.id && setPostToDelete(post.id)}
               onHide={(postId) => handleHide(postId, user?.id)}
               onReaction={(postId, type) => handleReaction(postId, user?.id, type)}
+              onCommentAdded={() => queryClient.invalidateQueries({ queryKey: ["posts"] })}
               onUpdate={handleUpdatePost}
             />
           </motion.div>
@@ -136,7 +135,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
       <DeletePostDialog 
         isOpen={!!postToDelete}
         onClose={() => setPostToDelete(null)}
-        onConfirm={() => postToDelete && handleDeletePost(postToDelete)}
+        onConfirm={() => postToDelete && handleDeletePost(postToDelete, user?.id)}
       />
     </div>
   );

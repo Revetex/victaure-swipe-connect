@@ -10,7 +10,6 @@ interface ReactionButtonProps {
   isActive: boolean;
   onClick: () => void;
   activeClassName?: string;
-  label: string;
 }
 
 export function ReactionButton({
@@ -18,47 +17,33 @@ export function ReactionButton({
   count,
   isActive,
   onClick,
-  activeClassName,
-  label
+  activeClassName
 }: ReactionButtonProps) {
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onClick();
-  };
-
   return (
-    <motion.button
-      onClick={handleClick}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      className={cn(
-        "flex items-center gap-2 px-4 py-1.5 rounded-full",
-        "text-sm font-medium",
-        "bg-transparent hover:bg-accent/10",
-        "transition-all duration-200",
-        "border border-transparent",
-        "focus:outline-none focus:ring-2 focus:ring-accent/20",
-        isActive && [
-          "bg-accent/10",
-          "border-accent/20",
-          "text-accent",
-          activeClassName
-        ]
-      )}
-      title={label}
+    <motion.div 
+      whileTap={{ scale: 0.95 }}
+      whileHover={{ scale: 1.05 }}
+      className="will-change-transform"
     >
-      <Icon className={cn(
-        "h-4 w-4",
-        "transition-all duration-200",
-        isActive && "fill-current text-accent"
-      )} />
-      <span className={cn(
-        "min-w-[1rem] text-center",
-        isActive && "text-accent font-semibold"
-      )}>
-        {count}
-      </span>
-    </motion.button>
+      <Button
+        variant={isActive ? 'default' : 'ghost'}
+        size="sm"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onClick();
+        }}
+        className={cn(
+          "flex gap-2 items-center transition-all duration-150 min-w-[80px] justify-center",
+          isActive && activeClassName
+        )}
+      >
+        <Icon className={cn(
+          "h-4 w-4 transition-transform",
+          isActive && "scale-110"
+        )} />
+        <span className="font-medium text-sm">{count}</span>
+      </Button>
+    </motion.div>
   );
 }
