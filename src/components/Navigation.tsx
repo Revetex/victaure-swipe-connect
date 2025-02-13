@@ -1,153 +1,56 @@
 
-import { Logo } from "@/components/Logo";
-import { useAuth } from "@/hooks/useAuth";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { ProfilePreview } from "./ProfilePreview";
-import { UserProfile } from "@/types/profile";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { navigationSections } from "@/config/navigation";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { Separator } from "./ui/separator";
-import { useViewport } from "@/hooks/useViewport";
+import { cn } from "@/lib/utils";
 
 interface NavigationProps {
   onNavigate?: () => void;
+  className?: string;
+  orientation?: "vertical" | "horizontal";
 }
 
-export function Navigation({ onNavigate }: NavigationProps) {
-  const { isLoading, user } = useAuth();
-  const [showProfilePreview, setShowProfilePreview] = useState(false);
-  const [currentPage, setCurrentPage] = useState(4);
-  const isLargeScreen = useMediaQuery("(min-width: 1024px)");
-  const { viewportHeight } = useViewport();
-  const navigate = useNavigate();
-
-  if (isLoading || !user) {
-    return null;
-  }
-
-  const userProfile: UserProfile = {
-    id: user.id,
-    email: user.email || '',
-    full_name: user.user_metadata?.full_name || null,
-    avatar_url: user.user_metadata?.avatar_url || null,
-    role: 'professional',
-    bio: null,
-    phone: null,
-    city: null,
-    state: null,
-    country: 'Canada',
-    skills: [],
-    latitude: null,
-    longitude: null
-  };
-
+export function Navigation({ onNavigate, className, orientation = "vertical" }: NavigationProps) {
   return (
-    <div className={cn(
-      isLargeScreen ? "fixed inset-y-0 left-0 w-64 border-r" : "w-full h-full",
-      "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-      "flex flex-col"
-    )}
-    style={{ height: isLargeScreen ? `${viewportHeight}px` : 'auto' }}>
-      {/* Logo Section */}
-      <div className="h-16 border-b flex items-center px-4 flex-shrink-0">
-        <motion.div 
-          className="flex items-center gap-3 group cursor-pointer"
-          whileHover={{ scale: 1.02 }}
-          transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          onClick={() => setShowProfilePreview(true)}
+    <nav className={cn(
+      "text-sm",
+      orientation === "horizontal" ? "flex-row" : "flex-col",
+      className
+    )}>
+      {navigationSections.map((section) => (
+        <div
+          key={section.id}
+          className={cn(
+            "space-y-1",
+            orientation === "horizontal" ? "flex items-center gap-4" : ""
+          )}
         >
-          <Logo size="sm" />
-        </motion.div>
-      </div>
-
-      {/* Navigation Sections */}
-      <ScrollArea className="flex-1 h-[calc(100%-4rem)]">
-        <nav className="p-4 space-y-6">
-          {navigationSections.map((section) => (
-            <div key={section.id} className="space-y-3">
-              <h4 className="text-xs font-medium text-muted-foreground px-2">
-                {section.name}
-              </h4>
-              <div className="space-y-1">
-                {section.items.map((item) => (
-                  <NavButton
-                    key={item.id}
-                    item={item}
-                    isActive={currentPage === item.id}
-                    onClick={() => {
-                      setCurrentPage(item.id);
-                      navigate(`/${item.path}`);
-                      onNavigate?.();
-                    }}
-                  />
-                ))}
-              </div>
-              {section.id !== "system" && (
-                <Separator className="mt-4 opacity-50" />
-              )}
-            </div>
-          ))}
-        </nav>
-      </ScrollArea>
-
-      {userProfile && (
-        <ProfilePreview
-          profile={userProfile}
-          isOpen={showProfilePreview}
-          onClose={() => setShowProfilePreview(false)}
-        />
-      )}
-    </div>
-  );
-}
-
-interface NavButtonProps {
-  item: typeof navigationSections[0]['items'][0];
-  isActive: boolean;
-  onClick: () => void;
-}
-
-function NavButton({ item, isActive, onClick }: NavButtonProps) {
-  const Icon = item.icon;
-  
-  return (
-    <motion.button
-      className={cn(
-        "w-full flex items-center gap-3 px-2 py-2 rounded-md text-sm font-medium",
-        "relative group transition-all duration-200",
-        "hover:bg-accent/50",
-        "active:scale-95 touch-none", // Amélioration du feedback tactile
-        isActive ? "bg-primary/10 text-primary hover:bg-primary/20" : "text-foreground/70 hover:text-foreground"
-      )}
-      onClick={onClick}
-      whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.98 }}
-    >
-      <Icon className={cn(
-        "h-4 w-4 shrink-0",
-        "transition-transform duration-200",
-        "group-hover:scale-110",
-        isActive && "text-primary"
-      )} />
-      <span>{item.name}</span>
-      {item.badge && (
-        <span className="ml-auto bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">
-          {item.badge}
-        </span>
-      )}
-      {isActive && (
-        <motion.div
-          layoutId="nav-active"
-          className="absolute left-0 w-1 inset-y-1 bg-primary rounded-full"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        />
-      )}
-    </motion.button>
+          {section.items.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                onClick={() => onNavigate?.()}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-2 rounded-md transition-colors",
+                  "hover:bg-accent hover:text-accent-foreground",
+                  orientation === "horizontal" ? "flex-row" : "w-full"
+                )}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className={cn(
+                  orientation === "horizontal" ? "hidden sm:inline" : ""
+                )}>
+                  {item.name}
+                </span>
+                {item.badge && (
+                  <span className="ml-auto text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                    {item.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      ))}
+    </nav>
   );
 }
