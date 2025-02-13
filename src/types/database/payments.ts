@@ -11,6 +11,7 @@ export interface PaymentTypes {
         amount: number;
         currency: string;
         status: 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'completed';
+        payment_status: 'unpaid' | 'paid' | 'frozen' | 'released' | 'refunded' | 'disputed';
         message: string | null;
         created_at: string | null;
         updated_at: string | null;
@@ -21,6 +22,7 @@ export interface PaymentTypes {
         amount: number;
         currency?: string;
         status?: 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'completed';
+        payment_status?: 'unpaid' | 'paid' | 'frozen' | 'released' | 'refunded' | 'disputed';
         message?: string | null;
         created_at?: string | null;
         updated_at?: string | null;
@@ -31,48 +33,124 @@ export interface PaymentTypes {
         amount?: number;
         currency?: string;
         status?: 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'completed';
+        payment_status?: 'unpaid' | 'paid' | 'frozen' | 'released' | 'refunded' | 'disputed';
         message?: string | null;
         created_at?: string | null;
         updated_at?: string | null;
       };
     };
-    paypal_transactions: {
+    service_contracts: {
       Row: {
         id: string;
-        bid_id: string | null;
-        sender_id: string;
-        receiver_id: string;
-        amount: number;
+        title: string;
+        description: string | null;
+        contractor_id: string;
+        client_id: string | null;
+        contract_type: 'fixed_price' | 'auction' | 'hourly';
+        status: 'draft' | 'open' | 'in_progress' | 'completed' | 'cancelled';
+        fixed_price: number | null;
+        min_bid: number | null;
+        max_bid: number | null;
         currency: string;
-        paypal_transaction_id: string | null;
-        status: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
-        metadata: Json;
-        created_at: string | null;
-        updated_at: string | null;
+        payment_status: 'unpaid' | 'paid' | 'frozen' | 'released' | 'refunded' | 'disputed';
+        start_date: string | null;
+        end_date: string | null;
+        created_at: string;
+        updated_at: string;
       };
       Insert: {
-        bid_id?: string | null;
-        sender_id: string;
-        receiver_id: string;
-        amount: number;
+        title: string;
+        description?: string | null;
+        contractor_id: string;
+        client_id?: string | null;
+        contract_type: 'fixed_price' | 'auction' | 'hourly';
+        status?: 'draft' | 'open' | 'in_progress' | 'completed' | 'cancelled';
+        fixed_price?: number | null;
+        min_bid?: number | null;
+        max_bid?: number | null;
         currency?: string;
-        paypal_transaction_id?: string | null;
-        status?: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
-        metadata?: Json;
-        created_at?: string | null;
-        updated_at?: string | null;
+        payment_status?: 'unpaid' | 'paid' | 'frozen' | 'released' | 'refunded' | 'disputed';
+        start_date?: string | null;
+        end_date?: string | null;
       };
       Update: {
-        bid_id?: string | null;
-        sender_id?: string;
-        receiver_id?: string;
+        title?: string;
+        description?: string | null;
+        contractor_id?: string;
+        client_id?: string | null;
+        contract_type?: 'fixed_price' | 'auction' | 'hourly';
+        status?: 'draft' | 'open' | 'in_progress' | 'completed' | 'cancelled';
+        fixed_price?: number | null;
+        min_bid?: number | null;
+        max_bid?: number | null;
+        currency?: string;
+        payment_status?: 'unpaid' | 'paid' | 'frozen' | 'released' | 'refunded' | 'disputed';
+        start_date?: string | null;
+        end_date?: string | null;
+      };
+    };
+    service_bids: {
+      Row: {
+        id: string;
+        service_id: string;
+        bidder_id: string;
+        amount: number;
+        currency: string;
+        status: 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'completed';
+        message: string | null;
+        created_at: string;
+        updated_at: string;
+      };
+      Insert: {
+        service_id: string;
+        bidder_id: string;
+        amount: number;
+        currency?: string;
+        status?: 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'completed';
+        message?: string | null;
+      };
+      Update: {
+        service_id?: string;
+        bidder_id?: string;
         amount?: number;
         currency?: string;
-        paypal_transaction_id?: string | null;
-        status?: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
-        metadata?: Json;
-        created_at?: string | null;
-        updated_at?: string | null;
+        status?: 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'completed';
+        message?: string | null;
+      };
+    };
+    payment_escrows: {
+      Row: {
+        id: string;
+        contract_id: string | null;
+        bid_id: string | null;
+        amount: number;
+        currency: string;
+        status: 'frozen' | 'released' | 'refunded' | 'disputed';
+        payer_id: string;
+        payee_id: string;
+        release_conditions: Json;
+        created_at: string;
+        updated_at: string;
+      };
+      Insert: {
+        contract_id?: string | null;
+        bid_id?: string | null;
+        amount: number;
+        currency?: string;
+        status?: 'frozen' | 'released' | 'refunded' | 'disputed';
+        payer_id: string;
+        payee_id: string;
+        release_conditions?: Json;
+      };
+      Update: {
+        contract_id?: string | null;
+        bid_id?: string | null;
+        amount?: number;
+        currency?: string;
+        status?: 'frozen' | 'released' | 'refunded' | 'disputed';
+        payer_id?: string;
+        payee_id?: string;
+        release_conditions?: Json;
       };
     };
   };

@@ -709,6 +709,7 @@ export type Database = {
           id: string
           job_id: string
           message: string | null
+          payment_status: string | null
           status: string
           updated_at: string | null
         }
@@ -720,6 +721,7 @@ export type Database = {
           id?: string
           job_id: string
           message?: string | null
+          payment_status?: string | null
           status?: string
           updated_at?: string | null
         }
@@ -731,6 +733,7 @@ export type Database = {
           id?: string
           job_id?: string
           message?: string | null
+          payment_status?: string | null
           status?: string
           updated_at?: string | null
         }
@@ -1714,6 +1717,77 @@ export type Database = {
           },
         ]
       }
+      payment_escrows: {
+        Row: {
+          amount: number
+          bid_id: string | null
+          contract_id: string | null
+          created_at: string | null
+          currency: string | null
+          id: string
+          payee_id: string
+          payer_id: string
+          release_conditions: Json | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          bid_id?: string | null
+          contract_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          payee_id: string
+          payer_id: string
+          release_conditions?: Json | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          bid_id?: string | null
+          contract_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          payee_id?: string
+          payer_id?: string
+          release_conditions?: Json | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_escrows_bid_id_fkey"
+            columns: ["bid_id"]
+            isOneToOne: false
+            referencedRelation: "job_bids"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_escrows_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "service_contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_escrows_payee_id_fkey"
+            columns: ["payee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_escrows_payer_id_fkey"
+            columns: ["payer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_methods: {
         Row: {
           card_brand: string | null
@@ -2253,6 +2327,78 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "marketplace_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_contracts: {
+        Row: {
+          client_id: string | null
+          contract_type: string
+          contractor_id: string
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          end_date: string | null
+          fixed_price: number | null
+          id: string
+          max_bid: number | null
+          min_bid: number | null
+          payment_status: string | null
+          start_date: string | null
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          contract_type: string
+          contractor_id: string
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          end_date?: string | null
+          fixed_price?: number | null
+          id?: string
+          max_bid?: number | null
+          min_bid?: number | null
+          payment_status?: string | null
+          start_date?: string | null
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          contract_type?: string
+          contractor_id?: string
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          end_date?: string | null
+          fixed_price?: number | null
+          id?: string
+          max_bid?: number | null
+          min_bid?: number | null
+          payment_status?: string | null
+          start_date?: string | null
+          status?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_contracts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_contracts_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

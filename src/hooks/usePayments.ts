@@ -1,68 +1,94 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { PaymentTypes } from "@/types/database/payments";
 
-interface PaymentTransaction {
-  id: string;
-  match_id: string | null;
-  amount: number;
-  payment_type: 'interac' | 'credit_card';
-  status: 'frozen' | 'released' | 'cancelled';
-  created_at: string;
-  match?: {
-    id: string;
-    job?: {
-      title: string;
-    } | null;
-  } | null;
-}
+type PaymentEscrow = PaymentTypes['Tables']['payment_escrows']['Row'];
 
 export function usePayments() {
-  const { data: transactions, isLoading } = useQuery({
-    queryKey: ['payment-transactions'],
+  const { data: escrows, isLoading, error } = useQuery({
+    queryKey: ['payment-escrows'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
-        .from('payments')
-        .select(`
-          id,
-          match_id,
-          amount,
-          payment_type,
-          status,
-          created_at,
-          match:matches (
-            id,
-            job:jobs(title)
-          )
-        `)
+        .from('payment_escrows')
+        .select('*')
+        .or(`payer_id.eq.${user.id},payee_id.eq.${user.id}`)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
-      return (data as any[]).map(payment => ({
-        ...payment,
-        match: Array.isArray(payment.match) ? payment.match[0] : payment.match,
-        job: payment.match?.job && Array.isArray(payment.match.job) 
-          ? payment.match.job[0] 
-          : payment.match?.job
-      })) as PaymentTransaction[];
+      return data as PaymentEscrow[];
     }
   });
 
-  const handlePayment = async (amount: number) => {
+  const createEscrow = async (
+    payment: Omit<PaymentTypes['Tables']['payment_escrows']['Insert'], 'payer_id'>
+  ) => {
     try {
-      toast.info("Cette fonctionnalité sera bientôt disponible");
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Vous devez être connecté pour créer un paiement");
+        return;
+      }
+
+      const { error } = await supabase
+        .from('payment_escrows')
+        .insert({
+          ...payment,
+          payer_id: user.id,
+          status: 'frozen'
+        });
+
+      if (error) throw error;
+      
+      toast.success("Le paiement a été gelé avec succès");
     } catch (error) {
-      toast.error("Une erreur est survenue lors du paiement");
+      console.error('Error creating escrow:', error);
+      toast.error("Une erreur est survenue lors de la création du paiement");
+    }
+  };
+
+  const releasePayment = async (escrowId: string) => {
+    try {
+      const { error } = await supabase
+        .from('payment_escrows')
+        .update({ status: 'released' })
+        .eq('id', escrowId);
+
+      if (error) throw error;
+      
+      toast.success("Le paiement a été libéré avec succès");
+    } catch (error) {
+      console.error('Error releasing payment:', error);
+      toast.error("Une erreur est survenue lors de la libération du paiement");
+    }
+  };
+
+  const disputePayment = async (escrowId: string) => {
+    try {
+      const { error } = await supabase
+        .from('payment_escrows')
+        .update({ status: 'disputed' })
+        .eq('id', escrowId);
+
+      if (error) throw error;
+      
+      toast.success("Le litige a été ouvert avec succès");
+    } catch (error) {
+      console.error('Error disputing payment:', error);
+      toast.error("Une erreur est survenue lors de l'ouverture du litige");
     }
   };
 
   return {
-    transactions,
+    escrows,
     isLoading,
-    handlePayment
+    error,
+    createEscrow,
+    releasePayment,
+    disputePayment
   };
 }
