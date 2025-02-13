@@ -63,7 +63,6 @@ export function PaymentSection() {
 
       if (error) throw error;
 
-      // Validate and transform the data to match PaymentTransaction type
       const validTransactions = (data || []).map(transaction => {
         // Validate status
         if (!['pending', 'frozen', 'confirmed', 'cancelled'].includes(transaction.status)) {
@@ -83,12 +82,20 @@ export function PaymentSection() {
           transaction.transaction_type = 'other'; // Default to other if invalid
         }
 
-        return {
-          ...transaction,
+        // Cast the transaction to the correct type, including metadata conversion
+        const validTransaction: PaymentTransaction = {
+          id: transaction.id,
+          amount: transaction.amount,
+          currency: transaction.currency,
           status: transaction.status as PaymentTransaction['status'],
+          transaction_type: transaction.transaction_type as PaymentTransaction['transaction_type'],
           payment_method: transaction.payment_method as PaymentTransaction['payment_method'],
-          transaction_type: transaction.transaction_type as PaymentTransaction['transaction_type']
+          metadata: transaction.metadata as Record<string, any>,
+          created_at: transaction.created_at,
+          updated_at: transaction.updated_at
         };
+
+        return validTransaction;
       });
 
       setTransactions(validTransactions);
