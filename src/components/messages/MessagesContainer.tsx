@@ -1,3 +1,4 @@
+
 import { useState, useRef, useCallback, useEffect } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
@@ -39,22 +40,22 @@ export function MessagesContainer() {
 
   useMessageReadStatus(showConversation, receiver);
 
-  const handleSelectConversation = (selectedReceiver: any) => {
+  const handleSelectConversation = useCallback((selectedReceiver: any) => {
     setReceiver(selectedReceiver);
     setShowConversation(true);
     setInputMessage('');
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
-  };
+  }, [setReceiver, setInputMessage]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setShowConversation(false);
     setReceiver(null);
     setInputMessage('');
-  };
+  }, [setReceiver, setInputMessage]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = useCallback(() => {
     if (!receiver || !inputMessage.trim()) return;
 
     if (receiver.id === 'assistant') {
@@ -67,16 +68,50 @@ export function MessagesContainer() {
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
-  };
+  }, [receiver, inputMessage, handleAISendMessage, handleUserSendMessage, setInputMessage]);
 
-  const handleScroll = (event: any) => {
+  const handleScroll = useCallback((event: any) => {
     const target = event.target as HTMLDivElement;
     const isAtTop = target.scrollTop === 0;
     
     if (isAtTop && hasMore) {
       updatePagination(messages);
     }
-  };
+  }, [hasMore, messages, updatePagination]);
+
+  const fetchRecentJobs = useCallback(async () => {
+    if (!receiver?.id || receiver.id !== 'assistant') return;
+    
+    try {
+      const { data: jobs, error } = await supabase
+        .from('scraped_jobs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+
+      if (jobs.length > 0) {
+        const jobsMessage = `J'ai trouvé quelques offres d'emploi récentes qui pourraient vous intéresser:\n\n${jobs
+          .map(
+            (job) =>
+              `📌 ${job.title} chez ${job.company}\n📍 ${job.location}\n🔗 ${job.url}\n`
+          )
+          .join('\n')}`;
+
+        handleAISendMessage(jobsMessage);
+      }
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    }
+  }, [receiver, handleAISendMessage]);
+
+  useEffect(() => {
+    if (receiver?.id === 'assistant') {
+      const interval = setInterval(fetchRecentJobs, 300000); // Every 5 minutes
+      return () => clearInterval(interval);
+    }
+  }, [receiver, fetchRecentJobs]);
 
   if (isLoadingMessages) {
     return (
@@ -93,42 +128,6 @@ export function MessagesContainer() {
   }
 
   const currentMessages = receiver?.id === 'assistant' ? aiMessages : messages;
-
-  const fetchRecentJobs = useCallback(async () => {
-    if (!receiver?.id || receiver.id !== 'assistant') return;
-    
-    try {
-      const { data: jobs, error } = await supabase
-        .from('scraped_jobs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(3);
-
-      if (error) throw error;
-
-      // Format jobs for message
-      if (jobs.length > 0) {
-        const jobsMessage = `J'ai trouvé quelques offres d'emploi récentes qui pourraient vous intéresser:\n\n${jobs
-          .map(
-            (job) =>
-              `📌 ${job.title} chez ${job.company}\n📍 ${job.location}\n🔗 ${job.url}\n`
-          )
-          .join('\n')}`;
-
-        handleAISendMessage(jobsMessage);
-      }
-    } catch (error) {
-      console.error('Error fetching jobs:', error);
-    }
-  }, [receiver, handleAISendMessage]);
-
-  // Fetch jobs periodically when chatting with assistant
-  useEffect(() => {
-    if (receiver?.id === 'assistant') {
-      const interval = setInterval(fetchRecentJobs, 300000); // Every 5 minutes
-      return () => clearInterval(interval);
-    }
-  }, [receiver, fetchRecentJobs]);
 
   return (
     <Card className="h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
