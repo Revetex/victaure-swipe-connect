@@ -12,11 +12,11 @@ export function UserNav() {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button 
-          variant="outline" 
-          size="sm"
+          variant="ghost" 
+          size="icon"
           className="relative hover:bg-accent transition-colors"
         >
-          Menu
+          <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
       <SheetContent 
