@@ -838,6 +838,13 @@ export type Database = {
             foreignKeyName: "job_transcriptions_job_id_fkey"
             columns: ["job_id"]
             isOneToOne: false
+            referencedRelation: "relevant_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_transcriptions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
             referencedRelation: "scraped_jobs"
             referencedColumns: ["id"]
           },
@@ -2294,34 +2301,67 @@ export type Database = {
       }
       scraped_jobs: {
         Row: {
+          benefits: string[] | null
           company: string
           created_at: string | null
           description: string | null
+          experience_level: string | null
           id: string
+          industry: string | null
+          job_type: string | null
           location: string
+          match_score: number | null
           posted_at: string | null
+          relevance_score: number | null
+          remote_type: string | null
+          requirements: string[] | null
+          salary_range: string | null
+          skills: string[] | null
+          source_platform: string | null
           title: string
           updated_at: string | null
           url: string
         }
         Insert: {
+          benefits?: string[] | null
           company: string
           created_at?: string | null
           description?: string | null
+          experience_level?: string | null
           id?: string
+          industry?: string | null
+          job_type?: string | null
           location: string
+          match_score?: number | null
           posted_at?: string | null
+          relevance_score?: number | null
+          remote_type?: string | null
+          requirements?: string[] | null
+          salary_range?: string | null
+          skills?: string[] | null
+          source_platform?: string | null
           title: string
           updated_at?: string | null
           url: string
         }
         Update: {
+          benefits?: string[] | null
           company?: string
           created_at?: string | null
           description?: string | null
+          experience_level?: string | null
           id?: string
+          industry?: string | null
+          job_type?: string | null
           location?: string
+          match_score?: number | null
           posted_at?: string | null
+          relevance_score?: number | null
+          remote_type?: string | null
+          requirements?: string[] | null
+          salary_range?: string | null
+          skills?: string[] | null
+          source_platform?: string | null
           title?: string
           updated_at?: string | null
           url?: string
@@ -2935,6 +2975,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      relevant_jobs: {
+        Row: {
+          benefits: string[] | null
+          company: string | null
+          created_at: string | null
+          description: string | null
+          experience_level: string | null
+          id: string | null
+          industry: string | null
+          job_type: string | null
+          location: string | null
+          match_score: number | null
+          posted_at: string | null
+          relevance_score: number | null
+          remote_type: string | null
+          requirements: string[] | null
+          salary_range: string | null
+          skills: string[] | null
+          source_platform: string | null
+          title: string | null
+          updated_at: string | null
+          url: string | null
+        }
+        Insert: {
+          benefits?: string[] | null
+          company?: string | null
+          created_at?: string | null
+          description?: string | null
+          experience_level?: string | null
+          id?: string | null
+          industry?: string | null
+          job_type?: string | null
+          location?: string | null
+          match_score?: number | null
+          posted_at?: string | null
+          relevance_score?: number | null
+          remote_type?: string | null
+          requirements?: string[] | null
+          salary_range?: string | null
+          skills?: string[] | null
+          source_platform?: string | null
+          title?: string | null
+          updated_at?: string | null
+          url?: string | null
+        }
+        Update: {
+          benefits?: string[] | null
+          company?: string | null
+          created_at?: string | null
+          description?: string | null
+          experience_level?: string | null
+          id?: string | null
+          industry?: string | null
+          job_type?: string | null
+          location?: string | null
+          match_score?: number | null
+          posted_at?: string | null
+          relevance_score?: number | null
+          remote_type?: string | null
+          requirements?: string[] | null
+          salary_range?: string | null
+          skills?: string[] | null
+          source_platform?: string | null
+          title?: string | null
+          updated_at?: string | null
+          url?: string | null
+        }
+        Relationships: []
       }
     }
     Functions: {
