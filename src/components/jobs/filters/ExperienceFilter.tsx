@@ -1,6 +1,7 @@
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { JobFilters } from "../JobFilterUtils";
-import { contractTypes, experienceLevels } from "@/data/provinces";
+import { type JobFilters } from "../JobFilterUtils";
+import { contractTypes, experienceLevels } from "../JobFilterUtils";
 
 interface ExperienceFilterProps {
   filters: JobFilters;
@@ -15,8 +16,8 @@ export function ExperienceFilter({ filters, onFilterChange }: ExperienceFilterPr
           Type de contrat
         </label>
         <Select
-          value={filters.duration}
-          onValueChange={(value) => onFilterChange("duration", value)}
+          value={filters.contractType}
+          onValueChange={(value) => onFilterChange("contractType", value)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Tous les types" />

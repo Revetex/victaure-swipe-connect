@@ -13,6 +13,9 @@ export const jobFilterSchema = z.object({
   salaryMax: z.number().nullable().default(null),
   searchTerm: z.string().default(""),
   postedWithin: z.string().default("all"),
+  duration: z.string().default("all"), // Ajout de duration
+  minBudget: z.number().nullable().default(null), // Ajout de minBudget
+  maxBudget: z.number().nullable().default(null), // Ajout de maxBudget
 });
 
 export type JobFilters = z.infer<typeof jobFilterSchema>;
@@ -29,6 +32,9 @@ export const defaultFilters: JobFilters = {
   salaryMax: null,
   searchTerm: "",
   postedWithin: "all",
+  duration: "all",
+  minBudget: null,
+  maxBudget: null,
 };
 
 export const experienceLevels = [

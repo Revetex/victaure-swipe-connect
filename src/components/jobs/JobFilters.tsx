@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,14 +13,14 @@ import {
   remoteTypes, 
   contractTypes, 
   postedWithinOptions,
-  JobFilters
+  type JobFilters as JobFiltersType 
 } from "./JobFilterUtils";
 import { LocationFilter } from "./filters/LocationFilter";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface JobFiltersProps {
-  filters: JobFilters;
-  onFilterChange: (key: keyof JobFilters, value: any) => void;
+  filters: JobFiltersType;
+  onFilterChange: (key: keyof JobFiltersType, value: any) => void;
 }
 
 export function JobFilters({ filters, onFilterChange }: JobFiltersProps) {
@@ -140,7 +139,7 @@ export function JobFilters({ filters, onFilterChange }: JobFiltersProps) {
         variant="outline"
         onClick={() => {
           Object.keys(filters).forEach((key) => {
-            onFilterChange(key as keyof JobFilters, "all");
+            onFilterChange(key as keyof JobFiltersType, "all");
           });
         }}
       >

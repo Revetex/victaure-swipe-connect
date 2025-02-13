@@ -1,6 +1,7 @@
+
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { JobFilters } from "../JobFilterUtils";
+import { type JobFilters } from "../JobFilterUtils";
 
 interface BudgetFilterProps {
   filters: JobFilters;
@@ -16,8 +17,8 @@ export function BudgetFilter({ filters, onFilterChange }: BudgetFilterProps) {
           <Label className="text-sm text-muted-foreground">Minimum</Label>
           <Input
             type="number"
-            value={filters.minBudget || ""}
-            onChange={(e) => onFilterChange("minBudget", Number(e.target.value))}
+            value={filters.salaryMin || ""}
+            onChange={(e) => onFilterChange("salaryMin", e.target.value ? Number(e.target.value) : null)}
             placeholder="Min"
             min={0}
           />
@@ -26,8 +27,8 @@ export function BudgetFilter({ filters, onFilterChange }: BudgetFilterProps) {
           <Label className="text-sm text-muted-foreground">Maximum</Label>
           <Input
             type="number"
-            value={filters.maxBudget || ""}
-            onChange={(e) => onFilterChange("maxBudget", Number(e.target.value))}
+            value={filters.salaryMax || ""}
+            onChange={(e) => onFilterChange("salaryMax", e.target.value ? Number(e.target.value) : null)}
             placeholder="Max"
             min={0}
           />
