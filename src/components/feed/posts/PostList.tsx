@@ -107,14 +107,14 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-6">
       <AnimatePresence mode="popLayout">
         {posts.map((post) => (
           <motion.div
             key={post.id}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
             layout
           >
