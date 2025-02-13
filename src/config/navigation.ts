@@ -1,3 +1,4 @@
+
 import { MessageSquare, BriefcaseIcon, ListTodo, Bell, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, Users, Search, LayoutGrid, Menu, EyeOff, ShoppingBag } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
@@ -5,35 +6,37 @@ type NavigationItem = {
   id: number;
   icon: LucideIcon;
   name: string;
+  path: string;
   hidden?: boolean;
   children?: {
     id: number;
     icon: LucideIcon;
     name: string;
+    path: string;
     hidden?: boolean;
   }[];
 };
 
 export const navigationItems: NavigationItem[] = [
   // Pages principales
-  { id: 4, icon: Newspaper, name: "Actualité" },
-  { id: 16, icon: StickyNote, name: "Notes" },
+  { id: 4, icon: Newspaper, name: "Actualité", path: "dashboard" },
+  { id: 16, icon: StickyNote, name: "Notes", path: "notes" },
   
   // Commerce & Jeux
-  { id: 3, icon: ShoppingBag, name: "Marketplace" },
-  { id: 7, icon: SwordIcon, name: "Échecs" },
+  { id: 3, icon: ShoppingBag, name: "Marketplace", path: "marketplace" },
+  { id: 7, icon: SwordIcon, name: "Échecs", path: "chess" },
   
   // Productivité
-  { id: 6, icon: ListTodo, name: "Tâches" },
-  { id: 8, icon: Calculator, name: "Calculatrice" },
-  { id: 14, icon: Languages, name: "Traducteur" },
+  { id: 6, icon: ListTodo, name: "Tâches", path: "tasks" },
+  { id: 8, icon: Calculator, name: "Calculatrice", path: "calculator" },
+  { id: 14, icon: Languages, name: "Traducteur", path: "translator" },
   
   // Social
-  { id: 12, icon: Users, name: "Connections" },
-  { id: 2, icon: MessageSquare, name: "Messages" },
+  { id: 12, icon: Users, name: "Connections", path: "connections" },
+  { id: 2, icon: MessageSquare, name: "Messages", path: "messages" },
   
   // Paramètres
-  { id: 10, icon: Settings, name: "Paramètres" }
+  { id: 10, icon: Settings, name: "Paramètres", path: "settings" }
 ];
 
 export const getPageTitle = (currentPage: number): string => {

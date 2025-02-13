@@ -72,7 +72,7 @@ export function Navigation({ onNavigate }: NavigationProps) {
               currentPage={currentPage}
               onSelect={(id) => {
                 setCurrentPage(id);
-                navigate(`/${section.path || ''}`);
+                navigate(`/${section.path}`);
                 onNavigate?.();
               }}
             />
