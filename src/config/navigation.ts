@@ -10,7 +10,6 @@ import {
   Sword,
   StickyNote,
   Users,
-  Bell,
 } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
@@ -34,9 +33,9 @@ export const navigationItems: NavigationItem[] = [
   { 
     id: 1, 
     icon: Home, 
-    name: "Tableau de bord", 
+    name: "Feed", 
     path: "/dashboard",
-    description: "Tableau de bord principal",
+    description: "Fil d'actualité",
   },
   { 
     id: 2, 
@@ -50,14 +49,14 @@ export const navigationItems: NavigationItem[] = [
     icon: Users, 
     name: "Communauté", 
     path: "/dashboard/community",
-    description: "Réseau social",
+    description: "Recherche et gestion d'amis",
   },
   { 
     id: 4, 
     icon: ShoppingBag, 
     name: "Marketplace", 
     path: "/dashboard/marketplace",
-    description: "Achats et ventes"
+    description: "Emplois et services"
   },
   { 
     id: 5, 
@@ -96,13 +95,6 @@ export const navigationItems: NavigationItem[] = [
   },
   { 
     id: 10, 
-    icon: Bell, 
-    name: "Notifications", 
-    path: "/dashboard/notifications",
-    description: "Centre de notifications"
-  },
-  { 
-    id: 11, 
     icon: Settings, 
     name: "Paramètres", 
     path: "/dashboard/settings",
@@ -115,7 +107,7 @@ export const navigationSections: NavigationSection[] = [
     id: "main",
     name: "Principal",
     description: "Sections principales",
-    items: navigationItems.slice(0, 4) // Tableau de bord, Messages, Communauté, Marketplace
+    items: navigationItems.slice(0, 4) // Feed, Messages, Communauté, Marketplace
   },
   {
     id: "productivity",
@@ -132,12 +124,12 @@ export const navigationSections: NavigationSection[] = [
   {
     id: "system",
     name: "Système",
-    description: "Paramètres et notifications",
-    items: navigationItems.slice(9) // Notifications, Paramètres
+    description: "Paramètres système",
+    items: navigationItems.slice(9) // Paramètres
   }
 ];
 
 export const getPageTitle = (currentPage: number): string => {
   const item = navigationItems.find(item => item.id === currentPage);
-  return item?.name || "Tableau de bord";
+  return item?.name || "Feed";
 };
