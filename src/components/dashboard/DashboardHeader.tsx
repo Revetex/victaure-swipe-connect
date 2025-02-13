@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { FeedSidebar } from "../feed/FeedSidebar";
 import { UserNav } from "./layout/UserNav";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { ProfileSection } from "./layout/sidebar/ProfileSection";
 import { useProfile } from "@/hooks/useProfile";
 import { Navigation } from "@/components/Navigation";
