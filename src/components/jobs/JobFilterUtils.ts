@@ -2,6 +2,7 @@
 import { z } from "zod";
 
 export const jobFilterSchema = z.object({
+  // Propriétés de base
   category: z.string().default("all"),
   subcategory: z.string().default("all"),
   location: z.string().default("all"),
@@ -9,18 +10,25 @@ export const jobFilterSchema = z.object({
   remoteType: z.string().default("all"),
   contractType: z.string().default("all"),
   experienceLevel: z.string().default("all"),
-  salaryMin: z.number().nullable().default(null),
-  salaryMax: z.number().nullable().default(null),
   searchTerm: z.string().default(""),
   postedWithin: z.string().default("all"),
-  duration: z.string().default("all"), // Ajout de duration
-  minBudget: z.number().nullable().default(null), // Ajout de minBudget
-  maxBudget: z.number().nullable().default(null), // Ajout de maxBudget
+  
+  // Propriétés salariales et budget
+  salaryMin: z.number().nullable().default(null),
+  salaryMax: z.number().nullable().default(null),
+  minBudget: z.number().nullable().default(null),
+  maxBudget: z.number().nullable().default(null),
+  
+  // Propriétés additionnelles
+  duration: z.string().default("all"),
+  missionType: z.string().default("company"),
+  paymentSchedule: z.string().default("monthly"),
 });
 
 export type JobFilters = z.infer<typeof jobFilterSchema>;
 
 export const defaultFilters: JobFilters = {
+  // Propriétés de base
   category: "all",
   subcategory: "all",
   location: "all",
@@ -28,13 +36,19 @@ export const defaultFilters: JobFilters = {
   remoteType: "all",
   contractType: "all",
   experienceLevel: "all",
-  salaryMin: null,
-  salaryMax: null,
   searchTerm: "",
   postedWithin: "all",
-  duration: "all",
+  
+  // Propriétés salariales et budget
+  salaryMin: null,
+  salaryMax: null,
   minBudget: null,
   maxBudget: null,
+  
+  // Propriétés additionnelles
+  duration: "all",
+  missionType: "company",
+  paymentSchedule: "monthly",
 };
 
 export const experienceLevels = [

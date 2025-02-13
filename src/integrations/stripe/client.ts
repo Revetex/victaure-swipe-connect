@@ -24,7 +24,7 @@ export const getStripeKey = async () => {
 export const getStripeClient = async () => {
   const secret = await getStripeKey();
   return new Stripe(secret, {
-    apiVersion: '2023-10-16',
+    apiVersion: '2025-01-27.acacia',
     typescript: true,
   });
 };
