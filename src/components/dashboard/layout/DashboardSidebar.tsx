@@ -1,6 +1,6 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { navigationItems } from "@/config/navigation";
+import { navigationSections } from "@/config/navigation";
 import { useProfile } from "@/hooks/useProfile";
 import { useState } from "react";
 import { ProfileSection } from "./sidebar/ProfileSection";
@@ -17,13 +17,6 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
 
   if (!profile) return null;
 
-  const sections = [
-    { title: "Principal", items: navigationItems.slice(0, 4) },
-    { title: "Productivité", items: navigationItems.slice(4, 6) },
-    { title: "Outils", items: navigationItems.slice(6, 9) },
-    { title: "Système", items: navigationItems.slice(9) }
-  ];
-
   return (
     <aside className="fixed inset-y-0 left-0 z-50 w-56 bg-background border-r hidden lg:flex flex-col">
       <ProfileSection
@@ -35,10 +28,10 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
 
       <ScrollArea className="flex-1 py-2">
         <nav className="px-1.5 space-y-2">
-          {sections.map((section) => (
+          {navigationSections.map((section) => (
             <NavigationSection
-              key={section.title}
-              title={section.title}
+              key={section.id}
+              title={section.name}
               items={section.items}
               currentPage={currentPage}
               onPageChange={onPageChange}

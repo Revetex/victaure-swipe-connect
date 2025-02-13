@@ -48,52 +48,52 @@ export const navigationItems: NavigationItem[] = [
   },
   { 
     id: 3, 
+    icon: Users, 
+    name: "Communauté", 
+    path: "community",
+    description: "Réseau social",
+  },
+  { 
+    id: 4, 
     icon: ShoppingBag, 
     name: "Marketplace", 
     path: "marketplace",
     description: "Achats et ventes"
   },
   { 
-    id: 4, 
-    icon: Users, 
-    name: "Communauté", 
-    path: "community",
-    description: "Réseau social"
-  },
-  { 
     id: 5, 
-    icon: ListTodo, 
-    name: "Tâches", 
-    path: "tasks",
-    description: "Gestionnaire de tâches"
-  },
-  { 
-    id: 6, 
     icon: StickyNote, 
     name: "Notes", 
     path: "notes",
     description: "Gestionnaire de notes"
   },
   { 
-    id: 7, 
-    icon: Sword, 
-    name: "Échecs", 
-    path: "chess",
-    description: "Jeu d'échecs en ligne"
+    id: 6, 
+    icon: ListTodo, 
+    name: "Tâches", 
+    path: "tasks",
+    description: "Gestionnaire de tâches"
   },
   { 
-    id: 8, 
+    id: 7, 
     icon: Calculator, 
     name: "Calculatrice", 
     path: "calculator",
     description: "Outil de calcul"
   },
   { 
-    id: 9, 
+    id: 8, 
     icon: Languages, 
     name: "Traducteur", 
     path: "translator",
     description: "Traduction instantanée"
+  },
+  { 
+    id: 9, 
+    icon: Sword, 
+    name: "Échecs", 
+    path: "chess",
+    description: "Jeu d'échecs en ligne"
   },
   { 
     id: 10, 
@@ -113,28 +113,28 @@ export const navigationItems: NavigationItem[] = [
 
 export const navigationSections: NavigationSection[] = [
   {
-    id: "main",
-    name: "Principal",
-    description: "Fonctionnalités principales",
-    items: navigationItems.slice(0, 4)
+    id: "social",
+    name: "Social",
+    description: "Communication et réseautage",
+    items: navigationItems.slice(0, 4) // Accueil, Messages, Communauté, Marketplace
   },
   {
     id: "productivity",
     name: "Productivité",
-    description: "Outils de gestion et d'organisation",
-    items: navigationItems.slice(4, 6)
+    description: "Organisation et gestion",
+    items: navigationItems.slice(4, 6) // Notes, Tâches
   },
   {
     id: "tools",
     name: "Outils",
-    description: "Outils et utilitaires",
-    items: navigationItems.slice(6, 9)
+    description: "Utilitaires et divertissement",
+    items: navigationItems.slice(6, 9) // Calculatrice, Traducteur, Échecs
   },
   {
     id: "system",
     name: "Système",
     description: "Paramètres et notifications",
-    items: navigationItems.slice(9)
+    items: navigationItems.slice(9) // Notifications, Paramètres
   }
 ];
 
