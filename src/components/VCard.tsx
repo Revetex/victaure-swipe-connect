@@ -136,7 +136,7 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
         className="max-w-3xl mx-auto bg-white/90 dark:bg-gray-900/90 rounded-xl shadow-xl overflow-hidden backdrop-blur-sm relative z-10"
       >
         <div className="relative p-6 sm:p-8">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#9b87f5]/10 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
           
           <div className="relative">
             <VCardHeader 
