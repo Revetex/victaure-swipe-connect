@@ -6,6 +6,7 @@ import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { NotificationsBox } from "./notifications/NotificationsBox";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(4);
@@ -48,7 +49,12 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "flex-1 lg:ml-64 min-h-screen relative",
         "glass-panel"
       )}>
-        <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b lg:left-64" />
+        <header className="fixed top-0 right-0 left-0 lg:left-64 z-40 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+          <div className="flex h-full items-center justify-end px-4">
+            <NotificationsBox />
+          </div>
+        </header>
+        
         {children || (
           <DashboardContent
             currentPage={currentPage}
