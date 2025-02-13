@@ -5,7 +5,7 @@ import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/Marketplace";
 import { Feed } from "@/components/feed/Feed";
 import { Settings } from "@/components/Settings";
-import { NotesMap } from "@/components/notes/NotesMap";
+import { NotesSection } from "@/components/notes/NotesSection";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
@@ -15,7 +15,7 @@ import { TasksPage } from "@/components/tools/TasksPage";
 import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
-import { NotesSection } from "@/components/notes/NotesSection";
+import { cn } from "@/lib/utils";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -54,7 +54,7 @@ export function DashboardContent({
     }
   };
 
-  const renderContent = () => {
+  const getPageContent = () => {
     switch (currentPage) {
       case 1:
         return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
@@ -91,9 +91,9 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="h-full"
+      className="relative min-h-screen pt-16"
     >
-      {renderContent()}
+      {getPageContent()}
     </motion.div>
   );
 }
