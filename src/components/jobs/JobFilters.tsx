@@ -1,74 +1,151 @@
+
 import { Button } from "@/components/ui/button";
-import { SlidersHorizontal, RefreshCw } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { JobFilters as JobFiltersType, defaultFilters } from "./JobFilterUtils";
-import { SearchFilter } from "./filters/SearchFilter";
-import { CategoryFilters } from "./filters/CategoryFilters";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { 
+  experienceLevels, 
+  remoteTypes, 
+  contractTypes, 
+  postedWithinOptions,
+  JobFilters
+} from "./JobFilterUtils";
 import { LocationFilter } from "./filters/LocationFilter";
-import { WorkTypeFilters } from "./filters/WorkTypeFilters";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { motion } from "framer-motion";
 
 interface JobFiltersProps {
-  filters: JobFiltersType;
-  onFilterChange: (key: keyof JobFiltersType, value: any) => void;
+  filters: JobFilters;
+  onFilterChange: (key: keyof JobFilters, value: any) => void;
 }
 
-export function JobFilters({
-  filters,
-  onFilterChange,
-}: JobFiltersProps) {
-  const isMobile = useIsMobile();
-
-  const resetFilters = () => {
-    Object.keys(defaultFilters).forEach((key) => {
-      onFilterChange(key as keyof JobFiltersType, defaultFilters[key as keyof JobFiltersType]);
-    });
-  };
-
+export function JobFilters({ filters, onFilterChange }: JobFiltersProps) {
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`bg-card rounded-lg shadow-sm border sticky ${
-        isMobile ? "top-0 z-10 bg-opacity-95 backdrop-blur-sm" : "top-4"
-      }`}
-    >
-      <div className="p-4 border-b border-border">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <SlidersHorizontal className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold">Filtres</h3>
+    <div className="space-y-6">
+      <div>
+        <Label>Type de contrat</Label>
+        <Select
+          value={filters.contractType}
+          onValueChange={(value) => onFilterChange("contractType", value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionner un type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous les types</SelectItem>
+            <ScrollArea className="h-[200px]">
+              {contractTypes.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type}
+                </SelectItem>
+              ))}
+            </ScrollArea>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <LocationFilter 
+        filters={filters}
+        onFilterChange={onFilterChange}
+      />
+
+      <div>
+        <Label>Type de travail</Label>
+        <Select
+          value={filters.remoteType}
+          onValueChange={(value) => onFilterChange("remoteType", value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionner un type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous les types</SelectItem>
+            {remoteTypes.map((type) => (
+              <SelectItem key={type} value={type}>
+                {type}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <Label>Niveau d'expérience</Label>
+        <Select
+          value={filters.experienceLevel}
+          onValueChange={(value) => onFilterChange("experienceLevel", value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionner un niveau" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous les niveaux</SelectItem>
+            {experienceLevels.map((level) => (
+              <SelectItem key={level} value={level}>
+                {level}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-4">
+        <Label>Salaire</Label>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Input
+              type="number"
+              placeholder="Min"
+              value={filters.salaryMin || ""}
+              onChange={(e) => onFilterChange("salaryMin", e.target.value ? Number(e.target.value) : null)}
+            />
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={resetFilters}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Réinitialiser
-          </Button>
+          <div>
+            <Input
+              type="number"
+              placeholder="Max"
+              value={filters.salaryMax || ""}
+              onChange={(e) => onFilterChange("salaryMax", e.target.value ? Number(e.target.value) : null)}
+            />
+          </div>
         </div>
       </div>
 
-      <ScrollArea className="h-[calc(100vh-200px)] lg:h-auto">
-        <motion.div 
-          className="p-4 space-y-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
+      <div>
+        <Label>Date de publication</Label>
+        <Select
+          value={filters.postedWithin}
+          onValueChange={(value) => onFilterChange("postedWithin", value)}
         >
-          <SearchFilter filters={filters} onFilterChange={onFilterChange} />
-          <Separator />
-          <CategoryFilters filters={filters} onFilterChange={onFilterChange} />
-          <Separator />
-          <LocationFilter filters={filters} onFilterChange={onFilterChange} />
-          <Separator />
-          <WorkTypeFilters filters={filters} onFilterChange={onFilterChange} />
-        </motion.div>
-      </ScrollArea>
-    </motion.div>
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionner une période" />
+          </SelectTrigger>
+          <SelectContent>
+            {postedWithinOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <Button 
+        className="w-full"
+        variant="outline"
+        onClick={() => {
+          Object.keys(filters).forEach((key) => {
+            onFilterChange(key as keyof JobFilters, "all");
+          });
+        }}
+      >
+        Réinitialiser les filtres
+      </Button>
+    </div>
   );
 }

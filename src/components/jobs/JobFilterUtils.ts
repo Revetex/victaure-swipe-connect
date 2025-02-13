@@ -1,58 +1,62 @@
 
-import { Job } from "@/types/job";
-import type { JobFilters } from "@/types/filters";
-import { defaultFilters } from "@/types/filters";
+import { z } from "zod";
 
-export type { JobFilters };
-export { defaultFilters };
+export const jobFilterSchema = z.object({
+  category: z.string().default("all"),
+  subcategory: z.string().default("all"),
+  location: z.string().default("all"),
+  province: z.string().default("all"),
+  remoteType: z.string().default("all"),
+  contractType: z.string().default("all"),
+  experienceLevel: z.string().default("all"),
+  salaryMin: z.number().nullable().default(null),
+  salaryMax: z.number().nullable().default(null),
+  searchTerm: z.string().default(""),
+  postedWithin: z.string().default("all"),
+});
 
-export class JobFilterUtils {
-  static applyFilters(jobs: Job[], filters: JobFilters): Job[] {
-    return jobs.filter(job => {
-      // Filtre par recherche textuelle
-      if (filters.searchTerm && !this.matchesSearchTerm(job, filters.searchTerm)) {
-        return false;
-      }
+export type JobFilters = z.infer<typeof jobFilterSchema>;
 
-      // Filtre par catégorie
-      if (filters.category !== "all" && job.category !== filters.category) {
-        return false;
-      }
+export const defaultFilters: JobFilters = {
+  category: "all",
+  subcategory: "all",
+  location: "all",
+  province: "all",
+  remoteType: "all",
+  contractType: "all",
+  experienceLevel: "all",
+  salaryMin: null,
+  salaryMax: null,
+  searchTerm: "",
+  postedWithin: "all",
+};
 
-      // Filtre par type de contrat
-      if (filters.duration !== "all" && job.contract_type !== filters.duration) {
-        return false;
-      }
+export const experienceLevels = [
+  "Débutant",
+  "Junior (1-3 ans)",
+  "Intermédiaire (3-5 ans)",
+  "Senior (5-8 ans)",
+  "Expert (8+ ans)"
+] as const;
 
-      // Filtre par niveau d'expérience
-      if (filters.experienceLevel !== "all" && job.experience_level !== filters.experienceLevel) {
-        return false;
-      }
+export const remoteTypes = [
+  "Sur place",
+  "Hybride",
+  "Télétravail"
+] as const;
 
-      // Filtre par localisation
-      if (filters.location && !job.location.toLowerCase().includes(filters.location.toLowerCase())) {
-        return false;
-      }
+export const contractTypes = [
+  "CDI",
+  "CDD",
+  "Freelance",
+  "Stage",
+  "Alternance"
+] as const;
 
-      // Filtre par budget
-      if (filters.minBudget && job.budget < filters.minBudget) {
-        return false;
-      }
-      if (filters.maxBudget && job.budget > filters.maxBudget) {
-        return false;
-      }
-
-      return true;
-    });
-  }
-
-  private static matchesSearchTerm(job: Job, searchTerm: string): boolean {
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      job.title.toLowerCase().includes(searchLower) ||
-      job.description.toLowerCase().includes(searchLower) ||
-      job.company?.toLowerCase().includes(searchLower) ||
-      job.location.toLowerCase().includes(searchLower)
-    );
-  }
-}
+export const postedWithinOptions = [
+  { label: "24 dernières heures", value: "24h" },
+  { label: "3 derniers jours", value: "3d" },
+  { label: "7 derniers jours", value: "7d" },
+  { label: "30 derniers jours", value: "30d" },
+  { label: "Tout", value: "all" }
+] as const;
