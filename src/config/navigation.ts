@@ -23,6 +23,13 @@ export type NavigationItem = {
   badge?: string;
 };
 
+export type NavigationSection = {
+  id: string;
+  name: string;
+  description: string;
+  items: NavigationItem[];
+};
+
 export const navigationItems: NavigationItem[] = [
   { 
     id: 1, 
@@ -97,25 +104,28 @@ export const navigationItems: NavigationItem[] = [
   }
 ];
 
-export const getPageTitle = (currentPage: number): string => {
-  const item = navigationItems.find(item => item.id === currentPage);
-  return item?.name || "Accueil";
-};
-
-export const navigationSections = [
+export const navigationSections: NavigationSection[] = [
   {
     id: "essentials",
     name: "Essentiel",
+    description: "Fonctionnalités principales de l'application",
     items: navigationItems.slice(0, 4)
   },
   {
     id: "tools",
     name: "Outils",
+    description: "Outils et fonctionnalités additionnelles",
     items: navigationItems.slice(4, 7)
   },
   {
     id: "system",
     name: "Système",
+    description: "Paramètres et configuration du système",
     items: navigationItems.slice(7)
   }
 ];
+
+export const getPageTitle = (currentPage: number): string => {
+  const item = navigationItems.find(item => item.id === currentPage);
+  return item?.name || "Accueil";
+};
