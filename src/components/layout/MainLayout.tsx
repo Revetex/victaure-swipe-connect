@@ -90,5 +90,5 @@ export const MainLayout = memo(function MainLayout({
         </AnimatePresence>
       </main>
     </motion.div>
-  )
+  );
 });

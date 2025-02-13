@@ -82,7 +82,7 @@ export function Navigation({ onNavigate }: NavigationProps) {
                   />
                 ))}
               </div>
-              {section.id !== "settings" && (
+              {section.id !== "system" && (
                 <Separator className="mt-4 opacity-50" />
               )}
             </div>
@@ -129,6 +129,11 @@ function NavButton({ item, isActive, onClick }: NavButtonProps) {
         isActive && "text-primary"
       )} />
       <span>{item.name}</span>
+      {item.badge && (
+        <span className="ml-auto bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">
+          {item.badge}
+        </span>
+      )}
       {isActive && (
         <motion.div
           layoutId="nav-active"
