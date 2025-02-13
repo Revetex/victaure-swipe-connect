@@ -4,12 +4,13 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ProfilePreviewCard } from "./ProfilePreviewCard";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
-interface ProfilePreviewDialogProps {
+export interface ProfilePreviewDialogProps {
   profile: UserProfile;
   isOpen: boolean;
   onClose: () => void;
   onRequestChat?: () => void;
   canViewFullProfile?: boolean;
+  onImageClick?: () => void;
 }
 
 export function ProfilePreviewDialog({
@@ -18,6 +19,7 @@ export function ProfilePreviewDialog({
   onClose,
   onRequestChat,
   canViewFullProfile = false,
+  onImageClick,
 }: ProfilePreviewDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -36,6 +38,7 @@ export function ProfilePreviewDialog({
           onRequestChat={onRequestChat}
           onClose={onClose}
           canViewFullProfile={canViewFullProfile}
+          onImageClick={onImageClick}
         />
       </DialogContent>
     </Dialog>

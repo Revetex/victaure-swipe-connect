@@ -39,118 +39,66 @@ export interface PaymentTypes {
         updated_at?: string | null;
       };
     };
-    service_contracts: {
+    marketplace_services: {
       Row: {
         id: string;
         title: string;
         description: string | null;
-        contractor_id: string;
-        client_id: string | null;
-        contract_type: 'fixed_price' | 'auction' | 'hourly';
-        status: 'draft' | 'open' | 'in_progress' | 'completed' | 'cancelled';
-        fixed_price: number | null;
-        min_bid: number | null;
-        max_bid: number | null;
+        provider_id: string;
+        status: 'active' | 'closed' | 'pending' | 'cancelled';
+        price: number | null;
         currency: string;
-        payment_status: 'unpaid' | 'paid' | 'frozen' | 'released' | 'refunded' | 'disputed';
-        start_date: string | null;
-        end_date: string | null;
         created_at: string;
         updated_at: string;
+        category_id: string | null;
+        images: string[] | null;
+        type: 'fixed' | 'auction';
+        auction_end_date: string | null;
+        current_price: number | null;
       };
       Insert: {
         title: string;
         description?: string | null;
-        contractor_id: string;
-        client_id?: string | null;
-        contract_type: 'fixed_price' | 'auction' | 'hourly';
-        status?: 'draft' | 'open' | 'in_progress' | 'completed' | 'cancelled';
-        fixed_price?: number | null;
-        min_bid?: number | null;
-        max_bid?: number | null;
+        provider_id: string;
+        status?: 'active' | 'closed' | 'pending' | 'cancelled';
+        price?: number | null;
         currency?: string;
-        payment_status?: 'unpaid' | 'paid' | 'frozen' | 'released' | 'refunded' | 'disputed';
-        start_date?: string | null;
-        end_date?: string | null;
+        category_id?: string | null;
+        images?: string[] | null;
+        type: 'fixed' | 'auction';
+        auction_end_date?: string | null;
+        current_price?: number | null;
       };
-      Update: {
-        title?: string;
+    };
+    marketplace_items: {
+      Row: {
+        id: string;
+        title: string;
+        description: string | null;
+        seller_id: string;
+        price: number;
+        status: 'active' | 'sold' | 'cancelled';
+        created_at: string;
+        updated_at: string;
+        category_id: string | null;
+        images: string[] | null;
+        condition: string | null;
+        location: Json | null;
+        views_count: number | null;
+        favorites_count: number | null;
+        metadata: Json | null;
+      };
+      Insert: {
+        title: string;
         description?: string | null;
-        contractor_id?: string;
-        client_id?: string | null;
-        contract_type?: 'fixed_price' | 'auction' | 'hourly';
-        status?: 'draft' | 'open' | 'in_progress' | 'completed' | 'cancelled';
-        fixed_price?: number | null;
-        min_bid?: number | null;
-        max_bid?: number | null;
-        currency?: string;
-        payment_status?: 'unpaid' | 'paid' | 'frozen' | 'released' | 'refunded' | 'disputed';
-        start_date?: string | null;
-        end_date?: string | null;
-      };
-    };
-    service_bids: {
-      Row: {
-        id: string;
-        service_id: string;
-        bidder_id: string;
-        amount: number;
-        currency: string;
-        status: 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'completed';
-        message: string | null;
-        created_at: string;
-        updated_at: string;
-      };
-      Insert: {
-        service_id: string;
-        bidder_id: string;
-        amount: number;
-        currency?: string;
-        status?: 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'completed';
-        message?: string | null;
-      };
-      Update: {
-        service_id?: string;
-        bidder_id?: string;
-        amount?: number;
-        currency?: string;
-        status?: 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'completed';
-        message?: string | null;
-      };
-    };
-    payment_escrows: {
-      Row: {
-        id: string;
-        contract_id: string | null;
-        bid_id: string | null;
-        amount: number;
-        currency: string;
-        status: 'frozen' | 'released' | 'refunded' | 'disputed';
-        payer_id: string;
-        payee_id: string;
-        release_conditions: Json;
-        created_at: string;
-        updated_at: string;
-      };
-      Insert: {
-        contract_id?: string | null;
-        bid_id?: string | null;
-        amount: number;
-        currency?: string;
-        status?: 'frozen' | 'released' | 'refunded' | 'disputed';
-        payer_id: string;
-        payee_id: string;
-        release_conditions?: Json;
-      };
-      Update: {
-        contract_id?: string | null;
-        bid_id?: string | null;
-        amount?: number;
-        currency?: string;
-        status?: 'frozen' | 'released' | 'refunded' | 'disputed';
-        payer_id?: string;
-        payee_id?: string;
-        release_conditions?: Json;
+        seller_id: string;
+        price: number;
+        status?: 'active' | 'sold' | 'cancelled';
+        category_id?: string | null;
+        images?: string[] | null;
+        condition?: string | null;
+        location?: Json | null;
+        metadata?: Json | null;
       };
     };
   };

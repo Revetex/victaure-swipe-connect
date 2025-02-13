@@ -4,12 +4,13 @@ import { motion } from "framer-motion";
 import { ProfilePreviewDialog } from "./ProfilePreviewDialog";
 import { ProfilePreviewButtons } from "./ProfilePreviewButtons";
 
-interface ProfilePreviewModalProps {
+export interface ProfilePreviewModalProps {
   profile: UserProfile;
   isOpen: boolean;
   onClose: () => void;
   onRequestChat?: () => void;
   canViewFullProfile?: boolean;
+  onImageClick?: () => void;
 }
 
 export function ProfilePreviewModal({
@@ -18,6 +19,7 @@ export function ProfilePreviewModal({
   onClose,
   onRequestChat,
   canViewFullProfile = false,
+  onImageClick,
 }: ProfilePreviewModalProps) {
   return (
     <motion.div
@@ -53,6 +55,7 @@ export function ProfilePreviewModal({
               onClose={onClose}
               onRequestChat={onRequestChat}
               canViewFullProfile={canViewFullProfile}
+              onImageClick={onImageClick}
             />
           </div>
           <div className="border-t bg-background">
@@ -60,7 +63,7 @@ export function ProfilePreviewModal({
               profile={profile}
               onRequestChat={onRequestChat}
               onClose={onClose}
-              canViewFullProfile={!!canViewFullProfile}
+              canViewFullProfile={canViewFullProfile}
             />
           </div>
         </div>

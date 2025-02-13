@@ -1,80 +1,42 @@
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserProfile } from "@/types/profile";
-import { Card } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { MessageCircle, Lock } from "lucide-react";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { UserRound } from "lucide-react";
 
 interface ProfilePreviewCardProps {
   profile: UserProfile;
   onRequestChat?: () => void;
   onClose: () => void;
-  canViewFullProfile?: boolean;
+  canViewFullProfile: boolean;
+  onImageClick?: () => void;
 }
 
 export function ProfilePreviewCard({
   profile,
+  onRequestChat,
   onClose,
-  canViewFullProfile = false
+  canViewFullProfile,
+  onImageClick,
 }: ProfilePreviewCardProps) {
-  const navigate = useNavigate();
-
-  const handleRequestChat = () => {
-    navigate(`/dashboard/messages?receiver=${profile.id}`);
-    onClose();
-  };
-
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="w-full max-w-md mx-auto"
-    >
-      <Card className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-        <div className="flex flex-col items-center text-center space-y-4">
-          <Avatar className="w-20 h-20 border-2 border-primary/10">
-            <AvatarImage src={profile.avatar_url || ""} alt={profile.full_name || ""} />
-            <AvatarFallback>
-              {profile.full_name?.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-
-          <div className="space-y-1">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              {profile.full_name}
-            </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {profile.role}
-            </p>
-          </div>
-
-          {canViewFullProfile ? (
-            <>
-              {profile.company_name && (
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                  {profile.company_name}
-                </p>
-              )}
-
-              <Button
-                variant="outline"
-                className="w-full flex items-center gap-2"
-                onClick={handleRequestChat}
-              >
-                <MessageCircle className="h-4 w-4" />
-                Message
-              </Button>
-            </>
-          ) : (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Lock className="h-4 w-4" />
-              <span className="text-sm">Profil privé</span>
-            </div>
+    <div className="bg-background p-6 rounded-lg">
+      <div className="flex flex-col items-center space-y-4">
+        <Avatar 
+          className="h-24 w-24 cursor-pointer"
+          onClick={onImageClick}
+        >
+          <AvatarImage src={profile.avatar_url || ""} />
+          <AvatarFallback>
+            <UserRound className="h-8 w-8" />
+          </AvatarFallback>
+        </Avatar>
+        <div className="text-center">
+          <h3 className="text-lg font-semibold">{profile.full_name}</h3>
+          {canViewFullProfile && (
+            <p className="text-sm text-muted-foreground">{profile.email}</p>
           )}
         </div>
-      </Card>
-    </motion.div>
+      </div>
+    </div>
   );
 }
