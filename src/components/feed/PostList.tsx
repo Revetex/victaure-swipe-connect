@@ -1,8 +1,8 @@
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useState, memo } from "react";
+import { useState, memo, useCallback } from "react";
 import { PostCard } from "./posts/PostCard";
 import { usePostOperations } from "./posts/usePostOperations";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,7 +19,6 @@ const MemoizedPostCard = memo(PostCard);
 
 export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
   const { handleReaction, handleDelete, handleHide, handleUpdate } = usePostOperations();
 
@@ -29,7 +28,14 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
       const { data, error } = await supabase
         .from("posts")
         .select(`
-          *,
+          id,
+          content,
+          created_at,
+          user_id,
+          privacy_level,
+          images,
+          likes,
+          dislikes,
           profiles (
             id,
             full_name,
@@ -40,12 +46,12 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
             reaction_type,
             user_id
           ),
-          comments:post_comments(
+          comments:post_comments!left(
             id,
             content,
             created_at,
             user_id,
-            profiles(
+            profiles (
               id,
               full_name,
               avatar_url
@@ -65,12 +71,37 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
         }))
       }));
     },
-    staleTime: 1000 * 60,
-    gcTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5, // Cache pendant 5 minutes
+    gcTime: 1000 * 60 * 10,   // Garbage collection après 10 minutes
   });
 
+  const handleDeletePost = useCallback(async (postId: string) => {
+    try {
+      await handleDelete(postId, user?.id);
+      setPostToDelete(null);
+      onPostDeleted();
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  }, [handleDelete, user?.id, onPostDeleted]);
+
+  const handleUpdatePost = useCallback(async (postId: string, content: string) => {
+    try {
+      await handleUpdate(postId, content);
+      onPostUpdated();
+    } catch (error) {
+      console.error("Error updating post:", error);
+    }
+  }, [handleUpdate, onPostUpdated]);
+
   if (isLoading) {
-    return <PostSkeleton />;
+    return (
+      <div className="space-y-6">
+        {[...Array(3)].map((_, i) => (
+          <PostSkeleton key={i} />
+        ))}
+      </div>
+    );
   }
 
   if (!posts?.length) {
@@ -79,7 +110,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
 
   return (
     <div className="space-y-6">
-      <AnimatePresence mode="popLayout">
+      <AnimatePresence mode="popLayout" initial={false}>
         {posts.map((post) => (
           <motion.div
             key={post.id}
@@ -87,7 +118,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            layout
+            layout="position"
           >
             <MemoizedPostCard
               post={post}
@@ -96,8 +127,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
               onDelete={() => post.user_id === user?.id && setPostToDelete(post.id)}
               onHide={(postId) => handleHide(postId, user?.id)}
               onReaction={(postId, type) => handleReaction(postId, user?.id, type)}
-              onCommentAdded={() => queryClient.invalidateQueries({ queryKey: ["posts"] })}
-              onUpdate={handleUpdate}
+              onUpdate={handleUpdatePost}
             />
           </motion.div>
         ))}
@@ -106,7 +136,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
       <DeletePostDialog 
         isOpen={!!postToDelete}
         onClose={() => setPostToDelete(null)}
-        onConfirm={() => postToDelete && handleDelete(postToDelete, user?.id)}
+        onConfirm={() => postToDelete && handleDeletePost(postToDelete)}
       />
     </div>
   );
