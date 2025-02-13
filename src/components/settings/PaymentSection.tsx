@@ -62,7 +62,36 @@ export function PaymentSection() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setTransactions(data || []);
+
+      // Validate and transform the data to match PaymentTransaction type
+      const validTransactions = (data || []).map(transaction => {
+        // Validate status
+        if (!['pending', 'frozen', 'confirmed', 'cancelled'].includes(transaction.status)) {
+          console.warn(`Invalid status: ${transaction.status} for transaction ${transaction.id}`);
+          transaction.status = 'pending'; // Default to pending if invalid
+        }
+
+        // Validate payment_method
+        if (!['credit_card', 'interac'].includes(transaction.payment_method)) {
+          console.warn(`Invalid payment_method: ${transaction.payment_method} for transaction ${transaction.id}`);
+          transaction.payment_method = 'credit_card'; // Default to credit_card if invalid
+        }
+
+        // Validate transaction_type
+        if (!['job_posting', 'subscription', 'other'].includes(transaction.transaction_type)) {
+          console.warn(`Invalid transaction_type: ${transaction.transaction_type} for transaction ${transaction.id}`);
+          transaction.transaction_type = 'other'; // Default to other if invalid
+        }
+
+        return {
+          ...transaction,
+          status: transaction.status as PaymentTransaction['status'],
+          payment_method: transaction.payment_method as PaymentTransaction['payment_method'],
+          transaction_type: transaction.transaction_type as PaymentTransaction['transaction_type']
+        };
+      });
+
+      setTransactions(validTransactions);
     } catch (error) {
       console.error('Error loading transactions:', error);
       toast.error("Erreur lors du chargement des transactions");
