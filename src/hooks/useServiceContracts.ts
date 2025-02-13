@@ -2,9 +2,27 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { PaymentTypes } from "@/types/database/payments";
 
-type ServiceContract = PaymentTypes['Tables']['service_contracts']['Row'] & {
+type ServiceContract = {
+  id: string;
+  contractor_id: string;
+  client_id?: string;
+  title: string;
+  description?: string;
+  contract_type: string;
+  status: "draft" | "pending" | "active" | "completed" | "cancelled";
+  fixed_price?: number;
+  min_bid?: number;
+  max_bid?: number;
+  start_date?: string;
+  end_date?: string;
+  payment_status?: string;
+  currency?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type ServiceContractWithContractor = ServiceContract & {
   contractor: {
     full_name: string | null;
     avatar_url: string | null;
@@ -12,7 +30,7 @@ type ServiceContract = PaymentTypes['Tables']['service_contracts']['Row'] & {
 };
 
 export function useServiceContracts() {
-  const { data: contracts, isLoading, error } = useQuery({
+  const { data: contracts, isLoading, error } = useQuery<ServiceContractWithContractor[]>({
     queryKey: ['service-contracts'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -24,12 +42,12 @@ export function useServiceContracts() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as ServiceContract[];
+      return data as ServiceContractWithContractor[];
     }
   });
 
   const createContract = async (
-    contract: Omit<PaymentTypes['Tables']['service_contracts']['Insert'], 'contractor_id'>
+    contract: Omit<ServiceContract, 'id' | 'contractor_id' | 'created_at' | 'updated_at'>
   ) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -42,7 +60,10 @@ export function useServiceContracts() {
         .from('service_contracts')
         .insert({
           ...contract,
-          contractor_id: user.id
+          contractor_id: user.id,
+          contract_type: contract.contract_type || 'standard',
+          status: 'draft',
+          title: contract.title,
         });
 
       if (error) throw error;
