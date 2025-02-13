@@ -27,7 +27,7 @@ export function useMarketplaceItems() {
   });
 
   const createItem = useMutation({
-    mutationFn: async (item: Omit<PaymentTypes['Tables']['marketplace_items']['Insert'], 'seller_id'>) => {
+    mutationFn: async (item: PaymentTypes['Tables']['marketplace_items']['Insert']) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Vous devez être connecté pour créer une annonce");
 
@@ -35,7 +35,8 @@ export function useMarketplaceItems() {
         .from('marketplace_items')
         .insert({
           ...item,
-          seller_id: user.id
+          seller_id: user.id,
+          status: 'active'
         })
         .select()
         .single();
