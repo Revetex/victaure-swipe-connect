@@ -8,40 +8,17 @@ import { ProfileSearch } from "@/components/feed/ProfileSearch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ProfilePreview } from "@/components/ProfilePreview";
 
 export function FriendsContent() {
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
 
   const handleProfileSelect = async (profile: UserProfile) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    setSelectedProfile(profile);
+  };
 
-    const { data: existingRequest } = await supabase
-      .from("friend_requests")
-      .select("*")
-      .or(`and(sender_id.eq.${user.id},receiver_id.eq.${profile.id}),and(sender_id.eq.${profile.id},receiver_id.eq.${user.id})`)
-      .maybeSingle();
-
-    if (existingRequest) {
-      toast.error("Une demande d'ami existe déjà avec ce profil");
-      return;
-    }
-
-    const { error } = await supabase
-      .from("friend_requests")
-      .insert({
-        sender_id: user.id,
-        receiver_id: profile.id,
-        status: "pending"
-      });
-
-    if (error) {
-      console.error("Error sending friend request:", error);
-      toast.error("Erreur lors de l'envoi de la demande d'ami");
-      return;
-    }
-
-    toast.success("Demande d'ami envoyée avec succès");
+  const handleClosePreview = () => {
+    setSelectedProfile(null);
   };
 
   return (
@@ -78,6 +55,14 @@ export function FriendsContent() {
         >
           <ConnectionsSection />
         </motion.div>
+
+        {selectedProfile && (
+          <ProfilePreview
+            profile={selectedProfile}
+            isOpen={!!selectedProfile}
+            onClose={handleClosePreview}
+          />
+        )}
       </div>
     </ScrollArea>
   );
