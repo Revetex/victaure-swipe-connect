@@ -46,7 +46,7 @@ export function FriendsContent() {
 
   return (
     <ScrollArea className="h-[calc(100vh-4rem)]">
-      <div className="container mx-auto px-4 py-6 space-y-6 max-w-4xl">
+      <div className="container py-6 px-4 lg:px-8 max-w-3xl mx-auto space-y-8">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -54,17 +54,17 @@ export function FriendsContent() {
           className={cn(
             "bg-card/50 backdrop-blur-sm",
             "border rounded-xl shadow-lg",
-            "p-6 space-y-4",
-            "mt-16 sm:mt-6" // Add top margin on mobile
+            "p-4 lg:p-6 space-y-4",
+            "mt-16 sm:mt-6"
           )}
         >
           <h2 className="text-xl font-semibold bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent">
             Trouver des connections
           </h2>
-          <div className="w-full max-w-xl mx-auto">
+          <div className="w-full">
             <ProfileSearch 
               onSelect={handleProfileSelect}
-              placeholder="Rechercher par nom ou email..."
+              placeholder="Rechercher par nom..."
               className="w-full"
             />
           </div>
@@ -74,7 +74,7 @@ export function FriendsContent() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="touch-manipulation mx-auto max-w-4xl w-full px-4 sm:px-0"
+          className="touch-manipulation w-full"
         >
           <ConnectionsSection />
         </motion.div>

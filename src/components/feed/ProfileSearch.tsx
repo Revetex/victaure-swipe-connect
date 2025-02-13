@@ -29,7 +29,7 @@ export function ProfileSearch({ onSelect, placeholder, className }: ProfileSearc
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
+        .select("id, full_name, avatar_url")
         .neq("id", (await supabase.auth.getUser()).data.user?.id || "");
 
       if (error) throw error;
@@ -38,53 +38,50 @@ export function ProfileSearch({ onSelect, placeholder, className }: ProfileSearc
   });
 
   const filteredProfiles = useMemo(() => {
-    if (!profiles) return [];
-    if (!searchQuery) return profiles;
-
-    const normalizedQuery = searchQuery.toLowerCase();
+    if (!profiles || !searchQuery.trim()) return [];
+    
+    const normalizedQuery = searchQuery.toLowerCase().trim();
     return profiles.filter(
-      (profile) =>
-        profile.full_name?.toLowerCase().includes(normalizedQuery) ||
-        profile.email?.toLowerCase().includes(normalizedQuery)
+      (profile) => profile.full_name?.toLowerCase().includes(normalizedQuery)
     );
   }, [profiles, searchQuery]);
 
   return (
-    <Command className={cn("rounded-lg border", className)}>
+    <Command className={cn("rounded-lg border shadow-sm", className)}>
       <CommandInput
         value={searchQuery}
         onValueChange={setSearchQuery}
         placeholder={placeholder || "Rechercher un utilisateur..."}
-        className="h-9"
+        className="h-11"
       />
-      <CommandList>
-        <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
-        <CommandGroup>
-          {filteredProfiles.map((profile) => (
-            <CommandItem
-              key={profile.id}
-              value={profile.full_name || profile.email || ""}
-              onSelect={() => onSelect(profile)}
-              className="flex items-center gap-2 p-2"
-            >
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={profile.avatar_url || ""} />
-                <AvatarFallback>
-                  <UserRound className="h-4 w-4" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
+      {searchQuery.trim() && (
+        <CommandList>
+          <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+          <CommandGroup>
+            {filteredProfiles.map((profile) => (
+              <CommandItem
+                key={profile.id}
+                value={profile.full_name || ""}
+                onSelect={() => {
+                  onSelect(profile);
+                  setSearchQuery("");
+                }}
+                className="flex items-center gap-3 p-3"
+              >
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={profile.avatar_url || ""} />
+                  <AvatarFallback>
+                    <UserRound className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
                 <span className="font-medium">
                   {profile.full_name || "Utilisateur"}
                 </span>
-                <span className="text-xs text-muted-foreground">
-                  {profile.email}
-                </span>
-              </div>
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      )}
     </Command>
   );
 }
