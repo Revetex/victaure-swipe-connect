@@ -12,7 +12,7 @@ import { Loader } from "@/components/ui/loader";
 import { NotificationsTab } from "@/components/notifications/NotificationsTab";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
-import { ChessSection } from "@/components/tools/ChessSection"; // Corrigé ici
+import { ChessSection } from "@/components/tools/ChessSection";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
 import { cn } from "@/lib/utils";
@@ -73,7 +73,7 @@ export function DashboardContent({
       case 4:
         return <Feed />;
       case 7:
-        return <ChessSection />; // Modifié ici pour utiliser le bon composant
+        return <ChessSection />;
       case 8:
         return <CalculatorPage />;
       case 9:
