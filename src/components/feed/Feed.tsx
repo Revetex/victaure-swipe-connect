@@ -3,7 +3,6 @@ import { CreatePost } from "./posts/CreatePost";
 import { PostList } from "./posts/PostList";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -13,7 +12,6 @@ import { useState, useCallback } from "react";
 export function Feed() {
   const queryClient = useQueryClient();
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const isMobile = useIsMobile();
 
   const invalidatePosts = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["posts"] });
@@ -60,10 +58,7 @@ export function Feed() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            className={cn(
-              "fixed z-20",
-              isMobile ? "bottom-24 right-3" : "bottom-6 right-6"
-            )}
+            className="fixed z-20 bottom-24 right-3"
           >
             <Button
               onClick={scrollToTop}

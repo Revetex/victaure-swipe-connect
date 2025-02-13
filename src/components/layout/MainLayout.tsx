@@ -1,14 +1,11 @@
 
-import { ReactNode, memo, useCallback, useState } from "react";
+import { ReactNode, memo } from "react";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Navigation } from "@/components/Navigation";
 import { UserNav } from "../dashboard/layout/UserNav";
-import { useViewport } from "@/hooks/useViewport";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -27,9 +24,7 @@ export const MainLayout = memo(function MainLayout({
   onToggleFriendsList = () => {},
   onToolReturn = () => {}
 }: MainLayoutProps) {
-  const isMobile = useIsMobile();
   const location = useLocation();
-  const { viewportHeight } = useViewport();
 
   return (
     <motion.div 
@@ -38,25 +33,13 @@ export const MainLayout = memo(function MainLayout({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      style={{ minHeight: `${viewportHeight}px` }}
     >
-      {!isMobile && <Navigation />}
-      {isMobile && <UserNav />}
-
-      <main className={cn(
-        "flex-1 relative",
-        "transition-all duration-200 ease-in-out",
-        !isMobile && "lg:pl-64",
-        "pb-safe" // Pour la zone sécurisée sur iPhone
-      )}>
+      <main className="flex-1 relative pb-16">
         <motion.header 
           className={cn(
             "fixed top-0 right-0 z-40 h-16",
-            "bg-background/95 backdrop-blur",
-            "supports-[backdrop-filter]:bg-background/60 border-b",
-            "w-full",
-            "transition-all duration-200",
-            isMobile ? "pl-4" : "pl-64"
+            "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+            "w-full border-b"
           )}
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -74,19 +57,13 @@ export const MainLayout = memo(function MainLayout({
         </motion.header>
 
         <motion.div 
-          className={cn(
-            "pt-16",
-            isMobile && "pb-16" // Espace pour la navigation mobile
-          )}
+          className="pt-16 pb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3, delay: 0.1 }}
         >
-          <div className={cn(
-            "mx-auto px-4",
-            isMobile ? "w-full" : "max-w-7xl"
-          )}>
+          <div className="mx-auto">
             {children}
           </div>
         </motion.div>
@@ -99,6 +76,10 @@ export const MainLayout = memo(function MainLayout({
             />
           )}
         </AnimatePresence>
+
+        <div className="fixed bottom-0 left-0 right-0 z-40">
+          <UserNav />
+        </div>
       </main>
     </motion.div>
   );
