@@ -1,9 +1,9 @@
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { ChessPiece } from "@/types/chess";
-import { initializeBoard, getSquareName } from "./utils/boardUtils";
-import { calculatePossibleMoves } from "./utils/moveCalculator";
-import { handleAIMove } from "./utils/aiHandler";
+import { initializeBoard, getSquareName } from "@/components/tools/chess/utils/boardUtils";
+import { calculatePossibleMoves } from "@/components/tools/chess/utils/moveCalculator";
+import { handleAIMove } from "@/components/tools/chess/utils/aiHandler";
 import { supabase } from "@/integrations/supabase/client";
 
 export function useChessGame() {
