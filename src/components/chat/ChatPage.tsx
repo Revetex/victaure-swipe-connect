@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -61,9 +62,10 @@ export function ChatPage() {
             },
             timestamp: msg.created_at,
             message_type: (msg.message_type as 'user' | 'assistant' | 'system') || 'user',
-            status: msg.status || 'sent',
+            status: (msg.status as 'sent' | 'delivered' | 'read') || 'sent',
             metadata: msg.metadata || {},
             is_assistant: msg.is_assistant || false,
+            thinking: msg.thinking || false,
             reaction: msg.reaction
           }));
           setMessages(transformedMessages);

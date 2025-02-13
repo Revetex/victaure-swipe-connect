@@ -1,13 +1,21 @@
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import { JobFilters } from "../JobFilterUtils";
 
 interface ExternalSearchSectionProps {
   queryString: string;
+  filters: JobFilters;
+  onFilterChange: (key: keyof JobFilters, value: any) => void;
 }
 
-export function ExternalSearchSection({ queryString }: ExternalSearchSectionProps) {
+export function ExternalSearchSection({ 
+  queryString,
+  filters,
+  onFilterChange 
+}: ExternalSearchSectionProps) {
   const [search, setSearch] = useState(queryString || "");
 
   const handleSearch = () => {
