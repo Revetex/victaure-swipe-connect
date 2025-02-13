@@ -19,6 +19,7 @@ export function CommentButton({
       count={commentCount}
       isActive={isExpanded}
       onClick={onToggleComments}
+      label="Commentaires" // Ajout de la propriété label manquante
       activeClassName="bg-gradient-to-tr from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white shadow-lg"
     />
   );
