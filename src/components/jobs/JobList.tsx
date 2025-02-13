@@ -1,18 +1,20 @@
-import { JobCard } from "@/components/jobs/JobCard";
-import { Job } from "@/types/job";
-import { JobActions } from "./JobActions";
+
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Search } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { JobCard } from "./JobCard";
+import { useSwipeJobs } from "./swipe/useSwipeJobs";
+import { JobFilters } from "./JobFilterUtils";
 
 interface JobListProps {
-  jobs: Job[];
-  isLoading?: boolean;
-  onJobDeleted?: () => void;
+  filters: JobFilters;
+  showFilters: boolean;
 }
 
-export function JobList({ jobs, isLoading = false, onJobDeleted }: JobListProps) {
-  if (isLoading) {
+export function JobList({ filters, showFilters }: JobListProps) {
+  const { jobs, loading } = useSwipeJobs(filters);
+
+  if (loading) {
     return (
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -30,11 +32,11 @@ export function JobList({ jobs, isLoading = false, onJobDeleted }: JobListProps)
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col items-center justify-center py-8 space-y-4"
+        className="flex flex-col items-center justify-center py-12 space-y-4"
       >
         <Search className="h-12 w-12 text-muted-foreground" />
         <div className="text-center space-y-2">
-          <p className="text-lg font-medium">Aucune annonce disponible</p>
+          <p className="text-lg font-medium">Aucune offre disponible</p>
           <p className="text-sm text-muted-foreground">
             Essayez d'ajuster vos filtres pour voir plus d'offres
           </p>
@@ -55,19 +57,12 @@ export function JobList({ jobs, isLoading = false, onJobDeleted }: JobListProps)
           {jobs.map((job) => (
             <motion.div
               key={job.id}
-              className="relative"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               layout
             >
               <JobCard job={job} />
-              <JobActions 
-                jobId={job.id} 
-                employerId={job.employer_id}
-                onDelete={onJobDeleted}
-                onEdit={() => {}}
-              />
             </motion.div>
           ))}
         </AnimatePresence>

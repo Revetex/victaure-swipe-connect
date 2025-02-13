@@ -1,10 +1,11 @@
 
-import { Building2, MapPin, Calendar, Clock, Briefcase } from "lucide-react";
+import { Building2, MapPin, Calendar, Clock, Briefcase, Coins } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Job } from "@/types/job";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 interface JobCardProps {
   job: Job;
@@ -25,11 +26,16 @@ export function JobCard({ job }: JobCardProps) {
   };
 
   return (
-    <Card className="relative p-6 hover:shadow-lg transition-shadow bg-card">
+    <Card className="relative p-6 hover:shadow-lg transition-shadow bg-card group">
       <div className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
-            <h3 className="text-lg font-semibold truncate">{job.title}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-semibold truncate">{job.title}</h3>
+              {job.is_urgent && (
+                <Badge variant="destructive" className="shrink-0">Urgent</Badge>
+              )}
+            </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
               <Building2 className="h-4 w-4 shrink-0" />
               <span className="truncate">
@@ -39,9 +45,12 @@ export function JobCard({ job }: JobCardProps) {
           </div>
           <Badge 
             variant={job.mission_type === 'individual' ? 'secondary' : 'default'} 
-            className="shrink-0"
+            className={cn(
+              "shrink-0",
+              job.remote_type === 'remote' && "bg-green-500/10 text-green-500 hover:bg-green-500/20"
+            )}
           >
-            {job.mission_type === 'individual' ? 'Particulier' : 'Entreprise'}
+            {job.remote_type === 'remote' ? 'Remote' : job.mission_type === 'individual' ? 'Particulier' : 'Entreprise'}
           </Badge>
         </div>
 
@@ -64,12 +73,30 @@ export function JobCard({ job }: JobCardProps) {
           </div>
 
           {job.budget > 0 && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Briefcase className="h-4 w-4 shrink-0" />
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Coins className="h-4 w-4 shrink-0 text-yellow-500" />
               <span>{job.budget} CAD</span>
+              {job.payment_schedule && (
+                <span className="text-muted-foreground">• {job.payment_schedule}</span>
+              )}
             </div>
           )}
         </div>
+
+        {job.required_skills && job.required_skills.length > 0 && (
+          <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
+            {job.required_skills.slice(0, 3).map((skill, index) => (
+              <Badge key={index} variant="secondary" className="bg-primary/10">
+                {skill}
+              </Badge>
+            ))}
+            {job.required_skills.length > 3 && (
+              <Badge variant="secondary" className="bg-primary/10">
+                +{job.required_skills.length - 3}
+              </Badge>
+            )}
+          </div>
+        )}
       </div>
     </Card>
   );
