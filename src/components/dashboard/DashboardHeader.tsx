@@ -6,6 +6,7 @@ import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { motion } from "framer-motion";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { FeedSidebar } from "../feed/FeedSidebar";
+import { UserNav } from "./layout/UserNav";
 import { Suspense } from "react";
 
 export interface DashboardHeaderProps {
@@ -44,9 +45,6 @@ export function DashboardHeader({
             </SheetContent>
           </Sheet>
           <Logo size="lg" />
-          <button className="w-full bg-accent/50 hover:bg-accent transition-colors rounded-md p-2">
-            {title}
-          </button>
         </motion.div>
         
         <motion.div 
@@ -56,6 +54,7 @@ export function DashboardHeader({
           transition={{ duration: 0.3 }}
         >
           <NotificationsBox />
+          <UserNav />
           {!isEditing && (
             <Button
               variant="outline"
