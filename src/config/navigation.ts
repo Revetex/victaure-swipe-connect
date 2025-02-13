@@ -34,89 +34,88 @@ export const navigationItems: NavigationItem[] = [
   { 
     id: 1, 
     icon: Home, 
-    name: "Accueil", 
-    path: "home",
+    name: "Tableau de bord", 
+    path: "/dashboard",
     description: "Tableau de bord principal",
-    badge: "New"
   },
   { 
     id: 2, 
     icon: MessageSquare, 
     name: "Messages", 
-    path: "messages",
+    path: "/dashboard/messages",
     description: "Messagerie instantanée"
   },
   { 
     id: 3, 
     icon: Users, 
     name: "Communauté", 
-    path: "community",
+    path: "/dashboard/community",
     description: "Réseau social",
   },
   { 
     id: 4, 
     icon: ShoppingBag, 
     name: "Marketplace", 
-    path: "marketplace",
+    path: "/dashboard/marketplace",
     description: "Achats et ventes"
   },
   { 
     id: 5, 
     icon: StickyNote, 
     name: "Notes", 
-    path: "notes",
+    path: "/dashboard/notes",
     description: "Gestionnaire de notes"
   },
   { 
     id: 6, 
     icon: ListTodo, 
     name: "Tâches", 
-    path: "tasks",
+    path: "/dashboard/tasks",
     description: "Gestionnaire de tâches"
   },
   { 
     id: 7, 
     icon: Calculator, 
     name: "Calculatrice", 
-    path: "calculator",
+    path: "/dashboard/calculator",
     description: "Outil de calcul"
   },
   { 
     id: 8, 
     icon: Languages, 
     name: "Traducteur", 
-    path: "translator",
+    path: "/dashboard/translator",
     description: "Traduction instantanée"
   },
   { 
     id: 9, 
     icon: Sword, 
     name: "Échecs", 
-    path: "chess",
+    path: "/dashboard/chess",
     description: "Jeu d'échecs en ligne"
   },
   { 
     id: 10, 
     icon: Bell, 
     name: "Notifications", 
-    path: "notifications",
+    path: "/dashboard/notifications",
     description: "Centre de notifications"
   },
   { 
     id: 11, 
     icon: Settings, 
     name: "Paramètres", 
-    path: "settings",
+    path: "/dashboard/settings",
     description: "Configuration du compte"
   }
 ];
 
 export const navigationSections: NavigationSection[] = [
   {
-    id: "social",
-    name: "Social",
-    description: "Communication et réseautage",
-    items: navigationItems.slice(0, 4) // Accueil, Messages, Communauté, Marketplace
+    id: "main",
+    name: "Principal",
+    description: "Sections principales",
+    items: navigationItems.slice(0, 4) // Tableau de bord, Messages, Communauté, Marketplace
   },
   {
     id: "productivity",
@@ -140,5 +139,5 @@ export const navigationSections: NavigationSection[] = [
 
 export const getPageTitle = (currentPage: number): string => {
   const item = navigationItems.find(item => item.id === currentPage);
-  return item?.name || "Accueil";
+  return item?.name || "Tableau de bord";
 };

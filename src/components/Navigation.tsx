@@ -1,6 +1,7 @@
 
 import { navigationSections } from "@/config/navigation";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface NavigationProps {
   onNavigate?: () => void;
@@ -9,6 +10,13 @@ interface NavigationProps {
 }
 
 export function Navigation({ onNavigate, className, orientation = "vertical" }: NavigationProps) {
+  const navigate = useNavigate();
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    onNavigate?.();
+  };
+
   return (
     <nav className={cn(
       "text-sm",
@@ -28,7 +36,7 @@ export function Navigation({ onNavigate, className, orientation = "vertical" }: 
             return (
               <button
                 key={item.id}
-                onClick={() => onNavigate?.()}
+                onClick={() => handleNavigation(item.path)}
                 className={cn(
                   "flex items-center gap-2 px-3 py-2 rounded-md transition-colors",
                   "hover:bg-accent hover:text-accent-foreground",
