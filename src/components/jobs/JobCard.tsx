@@ -1,4 +1,3 @@
-
 import { Building2, MapPin, Calendar, Clock, Briefcase, Coins } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,9 +8,10 @@ import { cn } from "@/lib/utils";
 
 interface JobCardProps {
   job: Job;
+  onDeleted?: () => void;
 }
 
-export function JobCard({ job }: JobCardProps) {
+export function JobCard({ job, onDeleted }: JobCardProps) {
   const getFormattedDate = () => {
     try {
       const date = job.created_at ? new Date(job.created_at) : new Date();

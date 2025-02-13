@@ -1,3 +1,4 @@
+
 import { JobList } from "./JobList";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -51,6 +52,8 @@ export function MyJobsTab() {
       ) : myJobs && myJobs.length > 0 ? (
         <JobList 
           jobs={myJobs} 
+          filters={{}}
+          showFilters={false}
           onJobDeleted={() => {
             refetchMyJobs();
             toast.success("Annonce supprimée avec succès");

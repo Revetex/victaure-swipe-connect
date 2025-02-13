@@ -7,6 +7,14 @@ export interface MessageSender {
   last_seen: string;
 }
 
+export interface Receiver {
+  id: string;
+  full_name: string;
+  avatar_url: string;
+  online_status: boolean;
+  last_seen: string;
+}
+
 export interface Message {
   id: string;
   content: string;
@@ -16,8 +24,12 @@ export interface Message {
   updated_at: string;
   read: boolean;
   sender: MessageSender;
+  receiver?: Receiver;
   timestamp: string;
   message_type: 'user' | 'assistant' | 'system';
   status: 'sent' | 'delivered' | 'read';
   metadata: Record<string, any>;
+  reaction?: string;
+  is_assistant?: boolean;
+  thinking?: boolean;
 }
