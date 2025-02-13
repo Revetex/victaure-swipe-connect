@@ -19,7 +19,10 @@ export function UserNav() {
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="p-0">
+      <SheetContent 
+        side="left" 
+        className="p-0 w-full sm:w-[300px] border-r"
+      >
         <Navigation onNavigate={() => setOpen(false)} />
       </SheetContent>
     </Sheet>

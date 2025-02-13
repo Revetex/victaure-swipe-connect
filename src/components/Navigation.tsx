@@ -1,18 +1,16 @@
 
-import { MessageSquare, Settings, Newspaper, ListTodo, SwordIcon, ShoppingBag, Calculator, Languages, Users } from "lucide-react";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
-import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { ProfilePreview } from "./ProfilePreview";
 import { UserProfile } from "@/types/profile";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { navigationItems } from "@/config/navigation";
+import { navigationSections } from "@/config/navigation";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { Separator } from "./ui/separator";
 
 interface NavigationProps {
   onNavigate?: () => void;
@@ -62,20 +60,32 @@ export function Navigation({ onNavigate }: NavigationProps) {
         </motion.div>
       </div>
 
-      {/* Navigation Scroll Area */}
+      {/* Navigation Sections */}
       <ScrollArea className="h-[calc(100vh-4rem)]">
-        <nav className="p-2 lg:p-4">
-          {navigationItems.map((section) => (
-            <NavSection
-              key={section.id}
-              item={section}
-              currentPage={currentPage}
-              onSelect={(id) => {
-                setCurrentPage(id);
-                navigate(`/${section.path}`);
-                onNavigate?.();
-              }}
-            />
+        <nav className="p-4 space-y-6">
+          {navigationSections.map((section) => (
+            <div key={section.id} className="space-y-3">
+              <h4 className="text-xs font-medium text-muted-foreground px-2">
+                {section.name}
+              </h4>
+              <div className="space-y-1">
+                {section.items.map((item) => (
+                  <NavButton
+                    key={item.id}
+                    item={item}
+                    isActive={currentPage === item.id}
+                    onClick={() => {
+                      setCurrentPage(item.id);
+                      navigate(`/${item.path}`);
+                      onNavigate?.();
+                    }}
+                  />
+                ))}
+              </div>
+              {section.id !== "settings" && (
+                <Separator className="mt-4 opacity-50" />
+              )}
+            </div>
           ))}
         </nav>
       </ScrollArea>
@@ -91,27 +101,26 @@ export function Navigation({ onNavigate }: NavigationProps) {
   );
 }
 
-interface NavSectionProps {
-  item: typeof navigationItems[0];
-  currentPage: number;
-  onSelect: (id: number) => void;
+interface NavButtonProps {
+  item: typeof navigationSections[0]['items'][0];
+  isActive: boolean;
+  onClick: () => void;
 }
 
-function NavSection({ item, currentPage, onSelect }: NavSectionProps) {
-  const isActive = currentPage === item.id;
+function NavButton({ item, isActive, onClick }: NavButtonProps) {
   const Icon = item.icon;
   
   return (
     <motion.button
       className={cn(
-        "w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm font-medium",
+        "w-full flex items-center gap-3 px-2 py-2 rounded-md text-sm font-medium",
         "relative group transition-all duration-200",
-        "hover:bg-accent",
-        isActive && "bg-primary/10 text-primary hover:bg-primary/20"
+        "hover:bg-accent/50",
+        isActive ? "bg-primary/10 text-primary hover:bg-primary/20" : "text-foreground/70 hover:text-foreground"
       )}
-      onClick={() => onSelect(item.id)}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
     >
       <Icon className={cn(
         "h-4 w-4 shrink-0",
