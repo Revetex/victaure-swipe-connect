@@ -42,7 +42,6 @@ export function ChatInterface() {
     try {
       setIsThinking(true);
       
-      // Créer immédiatement le message utilisateur
       const userMessage = {
         id: crypto.randomUUID(),
         content: input,
@@ -56,7 +55,6 @@ export function ChatInterface() {
         metadata: {}
       };
 
-      // Ajouter le message à l'interface immédiatement
       sendMessage(input, {
         id: 'assistant',
         full_name: 'M. Victaure',
@@ -79,7 +77,7 @@ export function ChatInterface() {
   return (
     <ChatContainer>
       <div 
-        className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b"
+        className="fixed top-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b"
       >
         <div className="p-4">
           <h2 className="text-xl font-semibold">Chat avec M. Victaure</h2>
@@ -89,7 +87,7 @@ export function ChatInterface() {
         </div>
       </div>
 
-      <div className="pt-24 pb-20">
+      <div className="pt-36 pb-20">
         <ChatMessagesList
           messages={messages}
           isThinking={isThinking}
