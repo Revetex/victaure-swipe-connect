@@ -8,7 +8,6 @@ import { ProfilePreview } from "@/components/ProfilePreview";
 import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { navigationItems } from "@/config/navigation";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface DashboardMobileNavProps {
@@ -46,7 +45,6 @@ export function DashboardMobileNav({
   return (
     <header className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur shadow-sm">
       <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
-        {/* Add pt-safe-top to account for iOS safe area */}
         <div className="flex h-16 items-center px-4 pt-safe-top">
           <SheetTrigger asChild>
             <Button 
@@ -72,18 +70,15 @@ export function DashboardMobileNav({
             {navigationItems.map((item) => {
               const Icon = item.icon;
               return (
-                <motion.button
+                <button
                   key={item.id}
                   onClick={() => {
                     onPageChange(item.id);
                     setShowMobileMenu(false);
                   }}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: item.id * 0.1 }}
                   className={cn(
                     "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm",
-                    "transition-colors duration-200",
+                    "transition-colors",
                     currentPage === item.id 
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-muted"
@@ -93,7 +88,7 @@ export function DashboardMobileNav({
                 >
                   <Icon className="h-4 w-4" aria-hidden="true" />
                   <span>{item.name}</span>
-                </motion.button>
+                </button>
               );
             })}
           </nav>
@@ -110,4 +105,3 @@ export function DashboardMobileNav({
     </header>
   );
 }
-
