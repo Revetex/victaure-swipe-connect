@@ -63,9 +63,9 @@ export function ChatPage() {
             timestamp: msg.created_at,
             message_type: (msg.message_type as 'user' | 'assistant' | 'system') || 'user',
             status: (msg.status as 'sent' | 'delivered' | 'read') || 'sent',
-            metadata: msg.metadata || {},
-            is_assistant: msg.is_assistant || false,
-            thinking: msg.thinking || false,
+            metadata: (typeof msg.metadata === 'object' && msg.metadata !== null) ? msg.metadata as Record<string, any> : {},
+            is_assistant: Boolean(msg.is_assistant),
+            thinking: Boolean(msg.is_ai_message),
             reaction: msg.reaction
           }));
           setMessages(transformedMessages);

@@ -55,6 +55,7 @@ export function Marketplace() {
 
       <section className="py-8">
         <ExternalSearchSection 
+          queryString={filters.searchTerm || ""}
           filters={filters}
           onFilterChange={handleFilterChange}
         />
