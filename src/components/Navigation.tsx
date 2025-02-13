@@ -1,10 +1,11 @@
+
 import { MessageSquare, Settings, Newspaper, ListTodo, SwordIcon, ShoppingBag, Calculator, Languages, Users } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { ProfilePreview } from "./ProfilePreview";
@@ -13,11 +14,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { navigationItems } from "@/config/navigation";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
-export function Navigation() {
+interface NavigationProps {
+  onNavigate?: () => void;
+}
+
+export function Navigation({ onNavigate }: NavigationProps) {
   const { isLoading, user } = useAuth();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
   const [currentPage, setCurrentPage] = useState(4);
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
+  const navigate = useNavigate();
 
   if (isLoading || !user) {
     return null;
@@ -59,49 +65,21 @@ export function Navigation() {
       {/* Navigation Scroll Area */}
       <ScrollArea className="h-[calc(100vh-4rem)]">
         <nav className="p-2 lg:p-4">
-          {/* Principales */}
-          <NavSection 
-            title="Principales"
-            items={navigationItems.slice(0, 2)}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-
-          {/* Commerce & Jeux */}
-          <NavSection 
-            title="Commerce & Jeux"
-            items={navigationItems.slice(2, 4)}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-
-          {/* Productivité */}
-          <NavSection 
-            title="Productivité"
-            items={navigationItems.slice(4, 7)}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-
-          {/* Social */}
-          <NavSection 
-            title="Social"
-            items={navigationItems.slice(7, 9)}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-
-          {/* Paramètres */}
-          <NavSection 
-            title="Paramètres"
-            items={navigationItems.slice(9)}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
+          {navigationItems.map((section) => (
+            <NavSection
+              key={section.id}
+              item={section}
+              currentPage={currentPage}
+              onSelect={(id) => {
+                setCurrentPage(id);
+                navigate(`/${section.path || ''}`);
+                onNavigate?.();
+              }}
+            />
+          ))}
         </nav>
       </ScrollArea>
 
-      {/* Profile Preview */}
       {userProfile && (
         <ProfilePreview
           profile={userProfile}
@@ -114,37 +92,13 @@ export function Navigation() {
 }
 
 interface NavSectionProps {
-  title: string;
-  items: typeof navigationItems;
-  currentPage: number;
-  setCurrentPage: (id: number) => void;
-}
-
-function NavSection({ title, items, currentPage, setCurrentPage }: NavSectionProps) {
-  return (
-    <div className="space-y-1 mb-4">
-      <h2 className="px-2 py-1 text-xs font-semibold text-muted-foreground">
-        {title}
-      </h2>
-      {items.map((item) => (
-        <NavItem 
-          key={item.id}
-          item={item}
-          isActive={currentPage === item.id}
-          onClick={() => setCurrentPage(item.id)}
-        />
-      ))}
-    </div>
-  );
-}
-
-interface NavItemProps {
   item: typeof navigationItems[0];
-  isActive: boolean;
-  onClick: () => void;
+  currentPage: number;
+  onSelect: (id: number) => void;
 }
 
-function NavItem({ item, isActive, onClick }: NavItemProps) {
+function NavSection({ item, currentPage, onSelect }: NavSectionProps) {
+  const isActive = currentPage === item.id;
   const Icon = item.icon;
   
   return (
@@ -155,7 +109,7 @@ function NavItem({ item, isActive, onClick }: NavItemProps) {
         "hover:bg-accent",
         isActive && "bg-primary/10 text-primary hover:bg-primary/20"
       )}
-      onClick={onClick}
+      onClick={() => onSelect(item.id)}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
