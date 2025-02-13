@@ -1,5 +1,4 @@
-
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
 import { useReceiver } from "@/hooks/useReceiver";
@@ -10,6 +9,7 @@ import { useConversationDelete } from "@/hooks/useConversationDelete";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMessageReadStatus } from "@/hooks/useMessageReadStatus";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { supabase } from "@/integrations/supabase/client";
 
 export function MessagesContainer() {
   const { receiver, setReceiver } = useReceiver();
@@ -93,6 +93,42 @@ export function MessagesContainer() {
   }
 
   const currentMessages = receiver?.id === 'assistant' ? aiMessages : messages;
+
+  const fetchRecentJobs = useCallback(async () => {
+    if (!receiver?.id || receiver.id !== 'assistant') return;
+    
+    try {
+      const { data: jobs, error } = await supabase
+        .from('scraped_jobs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+
+      // Format jobs for message
+      if (jobs.length > 0) {
+        const jobsMessage = `J'ai trouvé quelques offres d'emploi récentes qui pourraient vous intéresser:\n\n${jobs
+          .map(
+            (job) =>
+              `📌 ${job.title} chez ${job.company}\n📍 ${job.location}\n🔗 ${job.url}\n`
+          )
+          .join('\n')}`;
+
+        handleAISendMessage(jobsMessage);
+      }
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    }
+  }, [receiver, handleAISendMessage]);
+
+  // Fetch jobs periodically when chatting with assistant
+  useEffect(() => {
+    if (receiver?.id === 'assistant') {
+      const interval = setInterval(fetchRecentJobs, 300000); // Every 5 minutes
+      return () => clearInterval(interval);
+    }
+  }, [receiver, fetchRecentJobs]);
 
   return (
     <Card className="h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
