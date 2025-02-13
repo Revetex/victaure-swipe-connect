@@ -5,10 +5,9 @@ import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsLis
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Navigation } from "@/components/Navigation";
+import { UserNav } from "../dashboard/layout/UserNav";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -30,11 +29,6 @@ export const MainLayout = memo(function MainLayout({
   const isMobile = useIsMobile();
   const location = useLocation();
   const isFriendsPage = location.pathname.includes('/friends');
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleNavigationToggle = useCallback(() => {
-    setIsOpen(!isOpen);
-  }, [isOpen]);
 
   return (
     <motion.div 
@@ -44,31 +38,13 @@ export const MainLayout = memo(function MainLayout({
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
-      {isMobile && (
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild className="absolute top-4 left-4 z-50">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={handleNavigationToggle}
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent 
-            side="left" 
-            className="p-0 w-[280px] lg:hidden"
-          >
-            <div className="h-full overflow-y-auto">
-              {children}
-            </div>
-          </SheetContent>
-        </Sheet>
-      )}
+      {!isMobile && <Navigation />}
+      {isMobile && <UserNav />}
 
       <main className={cn(
         "flex-1 relative",
-        "transition-all duration-200 ease-in-out"
+        "transition-all duration-200 ease-in-out",
+        !isMobile && "lg:pl-64"
       )}>
         <motion.header 
           className={cn(
@@ -83,7 +59,6 @@ export const MainLayout = memo(function MainLayout({
           transition={{ duration: 0.3 }}
         >
           <div className="flex items-center gap-4 h-full px-4">
-            <div className="w-10 h-10 lg:hidden" /> {/* Spacer for menu button */}
             <DashboardHeader 
               title={title}
               showFriendsList={showFriendsList}
@@ -105,7 +80,7 @@ export const MainLayout = memo(function MainLayout({
           transition={{ duration: 0.3, delay: 0.1 }}
         >
           <div className="max-w-7xl mx-auto px-4">
-            {!isMobile && children}
+            {children}
           </div>
         </motion.div>
 
@@ -142,3 +117,4 @@ export const MainLayout = memo(function MainLayout({
     </motion.div>
   )
 });
+
