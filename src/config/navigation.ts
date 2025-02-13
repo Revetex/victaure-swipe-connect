@@ -9,10 +9,7 @@ import {
   SwordIcon, 
   StickyNote, 
   Users, 
-  ShoppingBag, 
-  Briefcase,
-  Folder,
-  GraduationCap
+  ShoppingBag 
 } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
@@ -22,7 +19,6 @@ type NavigationItem = {
   name: string;
   path: string;
   section?: string;
-  hidden?: boolean;
 };
 
 export const navigationSections = [
@@ -39,8 +35,8 @@ export const navigationSections = [
     id: "tools",
     name: "Outils",
     items: [
-      { id: 6, icon: ListTodo, name: "Tâches", path: "tasks" },
       { id: 16, icon: StickyNote, name: "Notes", path: "notes" },
+      { id: 6, icon: ListTodo, name: "Tâches", path: "tasks" },
       { id: 8, icon: Calculator, name: "Calculatrice", path: "calculator" },
       { id: 14, icon: Languages, name: "Traducteur", path: "translator" }
     ]
