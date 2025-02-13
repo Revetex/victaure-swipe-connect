@@ -37,24 +37,26 @@ export function Logo({ size = "md", className }: LogoProps) {
       <motion.div 
         className={cn(
           "font-sans font-bold tracking-wider",
-          "relative flex items-center gap-3",
+          "relative flex items-center justify-center gap-3",
           "transition-all duration-500",
           textSizes[size]
         )}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <img 
-          src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png" 
-          alt="Victaure Logo" 
-          className={cn(
-            logoSizes[size],
-            "object-contain drop-shadow"
-          )}
-        />
-        <span className="font-inter text-zinc-900 dark:text-white font-black tracking-tight">
-          VICTAURE
-        </span>
+        <div className="flex items-center justify-center gap-3 relative">
+          <img 
+            src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png" 
+            alt="Victaure Logo" 
+            className={cn(
+              logoSizes[size],
+              "object-contain drop-shadow absolute left-1/2 -translate-x-1/2"
+            )}
+          />
+          <span className="font-inter text-zinc-900 dark:text-white font-black tracking-tight">
+            VICTAURE
+          </span>
+        </div>
       </motion.div>
     </motion.div>
   );

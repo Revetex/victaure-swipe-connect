@@ -60,10 +60,34 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-        },
-      },
-    },
-  },
+          'vendor': ['react', 'react-dom'],
+          'router': ['react-router-dom'],
+          'ui': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-toast',
+            '@radix-ui/react-toggle',
+            '@radix-ui/react-tooltip',
+          ],
+          'form': [
+            'react-hook-form',
+            '@hookform/resolvers',
+            'zod'
+          ],
+          'utils': [
+            'date-fns',
+            'clsx',
+            'tailwind-merge'
+          ],
+          'animations': [
+            'framer-motion'
+          ],
+          'data': [
+            '@tanstack/react-query'
+          ]
+        }
+      }
+    }
+  }
 }));
-
