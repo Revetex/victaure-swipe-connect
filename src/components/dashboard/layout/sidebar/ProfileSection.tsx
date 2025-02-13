@@ -1,5 +1,5 @@
 
-import { Profile } from "@/components/ProfilePreview";
+import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
 
 interface ProfileSectionProps {
@@ -13,7 +13,7 @@ export function ProfileSection({ profile, showProfilePreview, onProfileClick, on
   return (
     <>
       {profile && (
-        <Profile
+        <ProfilePreview
           profile={profile}
           isOpen={showProfilePreview}
           onClose={onClosePreview}
