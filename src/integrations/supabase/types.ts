@@ -105,6 +105,51 @@ export type Database = {
         }
         Relationships: []
       }
+      app_versions: {
+        Row: {
+          checksum: string | null
+          created_at: string | null
+          downloads_count: number | null
+          file_path: string
+          id: string
+          is_active: boolean | null
+          min_android_version: string | null
+          release_notes: string | null
+          released_at: string | null
+          size_bytes: number | null
+          updated_at: string | null
+          version: string
+        }
+        Insert: {
+          checksum?: string | null
+          created_at?: string | null
+          downloads_count?: number | null
+          file_path: string
+          id?: string
+          is_active?: boolean | null
+          min_android_version?: string | null
+          release_notes?: string | null
+          released_at?: string | null
+          size_bytes?: number | null
+          updated_at?: string | null
+          version: string
+        }
+        Update: {
+          checksum?: string | null
+          created_at?: string | null
+          downloads_count?: number | null
+          file_path?: string
+          id?: string
+          is_active?: boolean | null
+          min_android_version?: string | null
+          release_notes?: string | null
+          released_at?: string | null
+          size_bytes?: number | null
+          updated_at?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
       auth_sessions: {
         Row: {
           created_at: string | null
@@ -923,6 +968,275 @@ export type Database = {
           },
         ]
       }
+      marketplace_categories: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      marketplace_items: {
+        Row: {
+          category_id: string | null
+          condition: string | null
+          created_at: string | null
+          description: string | null
+          favorites_count: number | null
+          id: string
+          images: string[] | null
+          location: Json | null
+          metadata: Json | null
+          price: number
+          searchable_text: unknown | null
+          seller_id: string
+          status: string
+          title: string
+          updated_at: string | null
+          views_count: number | null
+        }
+        Insert: {
+          category_id?: string | null
+          condition?: string | null
+          created_at?: string | null
+          description?: string | null
+          favorites_count?: number | null
+          id?: string
+          images?: string[] | null
+          location?: Json | null
+          metadata?: Json | null
+          price: number
+          searchable_text?: unknown | null
+          seller_id: string
+          status?: string
+          title: string
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Update: {
+          category_id?: string | null
+          condition?: string | null
+          created_at?: string | null
+          description?: string | null
+          favorites_count?: number | null
+          id?: string
+          images?: string[] | null
+          location?: Json | null
+          metadata?: Json | null
+          price?: number
+          searchable_text?: unknown | null
+          seller_id?: string
+          status?: string
+          title?: string
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_items_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_job_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          parent_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          parent_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          parent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_job_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_job_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_jobs: {
+        Row: {
+          category_id: string | null
+          company_logo: string | null
+          company_name: string | null
+          contract_type: string
+          created_at: string
+          description: string | null
+          employer_id: string
+          experience_level: string
+          id: string
+          location: string
+          remote_type: string
+          salary_currency: string
+          salary_max: number | null
+          salary_min: number | null
+          salary_period: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category_id?: string | null
+          company_logo?: string | null
+          company_name?: string | null
+          contract_type: string
+          created_at?: string
+          description?: string | null
+          employer_id: string
+          experience_level: string
+          id?: string
+          location: string
+          remote_type: string
+          salary_currency?: string
+          salary_max?: number | null
+          salary_min?: number | null
+          salary_period: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string | null
+          company_logo?: string | null
+          company_name?: string | null
+          contract_type?: string
+          created_at?: string
+          description?: string | null
+          employer_id?: string
+          experience_level?: string
+          id?: string
+          location?: string
+          remote_type?: string
+          salary_currency?: string
+          salary_max?: number | null
+          salary_min?: number | null
+          salary_period?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_jobs_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_job_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_jobs_employer_id_fkey"
+            columns: ["employer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_services: {
+        Row: {
+          auction_end_date: string | null
+          category_id: string | null
+          created_at: string | null
+          current_price: number | null
+          description: string | null
+          id: string
+          images: string[] | null
+          price: number | null
+          provider_id: string
+          status: string
+          title: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          auction_end_date?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          current_price?: number | null
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          price?: number | null
+          provider_id: string
+          status?: string
+          title: string
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          auction_end_date?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          current_price?: number | null
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          price?: number | null
+          provider_id?: string
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_services_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       matches: {
         Row: {
           created_at: string | null
@@ -1495,6 +1809,7 @@ export type Database = {
           id: string
           post_id: string | null
           reaction_type: string
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
@@ -1502,6 +1817,7 @@ export type Database = {
           id?: string
           post_id?: string | null
           reaction_type: string
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
@@ -1509,6 +1825,7 @@ export type Database = {
           id?: string
           post_id?: string | null
           reaction_type?: string
+          updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -1797,6 +2114,78 @@ export type Database = {
         }
         Relationships: []
       }
+      service_bids: {
+        Row: {
+          amount: number
+          bidder_id: string
+          created_at: string | null
+          id: string
+          service_id: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          bidder_id: string
+          created_at?: string | null
+          id?: string
+          service_id: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          bidder_id?: string
+          created_at?: string | null
+          id?: string
+          service_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_bids_bidder_id_fkey"
+            columns: ["bidder_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_bids_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      settings: {
+        Row: {
+          created_at: string | null
+          display_preferences: Json | null
+          id: string
+          language: string | null
+          notification_preferences: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          display_preferences?: Json | null
+          id?: string
+          language?: string | null
+          notification_preferences?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          display_preferences?: Json | null
+          id?: string
+          language?: string | null
+          notification_preferences?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       skills: {
         Row: {
           category: string
@@ -1898,6 +2287,33 @@ export type Database = {
         }
         Relationships: []
       }
+      theme_settings: {
+        Row: {
+          created_at: string | null
+          custom_colors: Json | null
+          id: string
+          mode: Database["public"]["Enums"]["theme_mode"] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          custom_colors?: Json | null
+          id?: string
+          mode?: Database["public"]["Enums"]["theme_mode"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          custom_colors?: Json | null
+          id?: string
+          mode?: Database["public"]["Enums"]["theme_mode"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       todos: {
         Row: {
           all_day: boolean | null
@@ -1947,6 +2363,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tools: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          enabled: boolean | null
+          icon: string | null
+          id: string
+          name: string
+          order_index: number | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          enabled?: boolean | null
+          icon?: string | null
+          id?: string
+          name: string
+          order_index?: number | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          enabled?: boolean | null
+          icon?: string | null
+          id?: string
+          name?: string
+          order_index?: number | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       translations: {
         Row: {
@@ -2035,6 +2487,47 @@ export type Database = {
           },
         ]
       }
+      user_tools: {
+        Row: {
+          created_at: string | null
+          custom_settings: Json | null
+          enabled: boolean | null
+          id: string
+          order_index: number | null
+          tool_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          custom_settings?: Json | null
+          enabled?: boolean | null
+          id?: string
+          order_index?: number | null
+          tool_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          custom_settings?: Json | null
+          enabled?: boolean | null
+          id?: string
+          order_index?: number | null
+          tool_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_tools_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       latest_messages: {
@@ -2056,6 +2549,44 @@ export type Database = {
           sender_id: string | null
           status: string | null
           updated_at: string | null
+        }
+        Insert: {
+          content?: string | null
+          conversation_id?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: Json | null
+          edited_at?: string | null
+          id?: string | null
+          is_ai_message?: boolean | null
+          is_deleted?: boolean | null
+          message_type?: string | null
+          metadata?: Json | null
+          reaction?: string | null
+          read?: boolean | null
+          receiver_id?: string | null
+          sender_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string | null
+          conversation_id?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: Json | null
+          edited_at?: string | null
+          id?: string | null
+          is_ai_message?: boolean | null
+          is_deleted?: boolean | null
+          message_type?: string | null
+          metadata?: Json | null
+          reaction?: string | null
+          read?: boolean | null
+          receiver_id?: string | null
+          sender_id?: string | null
+          status?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -2195,6 +2726,12 @@ export type Database = {
         }
         Returns: undefined
       }
+      increment_app_download_count: {
+        Args: {
+          version_id: string
+        }
+        Returns: undefined
+      }
       latitude: {
         Args: {
           "": unknown
@@ -2234,6 +2771,7 @@ export type Database = {
       }
     }
     Enums: {
+      chess_game_status: "in_progress" | "completed" | "abandoned"
       conversation_status: "active" | "archived" | "blocked"
       job_category:
         | "technology"
@@ -2250,6 +2788,7 @@ export type Database = {
       message_delivery_status: "pending" | "delivered" | "read"
       message_sender_type: "user" | "assistant" | "system"
       mission_type: "company" | "individual"
+      theme_mode: "light" | "dark" | "system"
     }
     CompositeTypes: {
       [_ in never]: never

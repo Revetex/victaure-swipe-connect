@@ -3,6 +3,11 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFormContext } from "react-hook-form";
 
+const missionTypes = [
+  { id: "company", label: "Mission d'entreprise" },
+  { id: "individual", label: "Mission de particulier" }
+];
+
 export function MissionTypeField() {
   const { control } = useFormContext();
 
@@ -18,8 +23,11 @@ export function MissionTypeField() {
                 <SelectValue placeholder="Sélectionnez le type de mission" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="company">Mission d'entreprise</SelectItem>
-                <SelectItem value="individual">Mission de particulier</SelectItem>
+                {missionTypes.map((type) => (
+                  <SelectItem key={type.id} value={type.id}>
+                    {type.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </FormControl>

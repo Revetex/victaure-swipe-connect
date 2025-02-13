@@ -5,14 +5,14 @@ import { useFormContext } from "react-hook-form";
 
 const paymentSchedules = {
   company: [
-    "Monthly",
-    "Bi-weekly",
-    "Weekly"
+    { id: "monthly", label: "Mensuel" },
+    { id: "biweekly", label: "Aux deux semaines" },
+    { id: "weekly", label: "Hebdomadaire" }
   ],
   individual: [
-    "one_time",
-    "milestone",
-    "hourly"
+    { id: "one_time", label: "Paiement unique" },
+    { id: "milestone", label: "Par étapes" },
+    { id: "hourly", label: "Taux horaire" }
   ]
 };
 
@@ -29,17 +29,15 @@ export function PaymentScheduleField() {
           <FormControl>
             <Select 
               onValueChange={field.onChange} 
-              defaultValue={field.value || (missionType === "individual" ? "one_time" : "Monthly")}
+              defaultValue={field.value || (missionType === "individual" ? "one_time" : "monthly")}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le type de paiement" />
               </SelectTrigger>
               <SelectContent>
-                {(missionType === "individual" ? paymentSchedules.individual : paymentSchedules.company).map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type === "one_time" ? "Paiement unique" : 
-                     type === "milestone" ? "Par étapes" :
-                     type === "hourly" ? "Taux horaire" : type}
+                {(missionType === "individual" ? paymentSchedules.individual : paymentSchedules.company).map((schedule) => (
+                  <SelectItem key={schedule.id} value={schedule.id}>
+                    {schedule.label}
                   </SelectItem>
                 ))}
               </SelectContent>
