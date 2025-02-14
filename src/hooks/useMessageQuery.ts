@@ -6,9 +6,10 @@ import { toast } from "sonner";
 
 const MESSAGES_PER_PAGE = 20;
 
-interface UseMessageQueryOptions {
+export interface UseMessageQueryOptions {
   staleTime?: number;
   cacheTime?: number;
+  refetchOnWindowFocus?: boolean;
 }
 
 export function useMessageQuery(
@@ -87,9 +88,9 @@ export function useMessageQuery(
         return [];
       }
     },
-    enabled: !!receiver,
+    enabled: true,
     staleTime: options.staleTime || 1000 * 30,
     gcTime: options.cacheTime || 1000 * 60 * 5,
-    retry: 1,
+    refetchOnWindowFocus: options.refetchOnWindowFocus ?? true
   });
 }

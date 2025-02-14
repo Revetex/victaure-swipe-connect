@@ -20,8 +20,7 @@ export function useMessages() {
   const { data: messages = [], isLoading } = useMessageQuery(receiver, lastCursor, hasMore, {
     staleTime: 60 * 1000, // 1 minute
     cacheTime: 5 * 60 * 1000, // 5 minutes
-    retry: 3, // Ajouter des tentatives en cas d'échec
-    refetchOnWindowFocus: false // Désactiver le refetch automatique
+    refetchOnWindowFocus: false
   });
 
   // S'assurer que nous avons un tableau même si onMessage reçoit undefined
