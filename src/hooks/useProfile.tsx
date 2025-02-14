@@ -34,11 +34,11 @@ export function useProfile() {
 
         if (mounted) {
           setProfile(data);
+          setIsLoading(false);
         }
       } catch (error) {
         console.error('Profile fetch error:', error);
         toast.error("Erreur lors du chargement du profil");
-      } finally {
         if (mounted) {
           setIsLoading(false);
         }

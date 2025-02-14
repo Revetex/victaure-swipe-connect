@@ -1,6 +1,5 @@
 
 import { useProfile } from "@/hooks/useProfile";
-import { DashboardAuth } from "./dashboard/core/DashboardAuth";
 import { DashboardLayout } from "./DashboardLayout";
 import { VCardCreationForm } from "./VCardCreationForm";
 import { motion, AnimatePresence } from "framer-motion";
