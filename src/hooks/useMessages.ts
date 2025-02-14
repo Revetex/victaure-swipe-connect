@@ -16,16 +16,19 @@ export function useMessages() {
   const [hasMore, setHasMore] = useState(true);
   const queryClient = useQueryClient();
 
-  // Configure staleTime to cache messages for 1 minute
+  // S'assurer que messages a une valeur par défaut
   const { data: messages = [], isLoading } = useMessageQuery(receiver, lastCursor, hasMore, {
     staleTime: 60 * 1000, // 1 minute
     cacheTime: 5 * 60 * 1000, // 5 minutes
+    retry: 3, // Ajouter des tentatives en cas d'échec
+    refetchOnWindowFocus: false // Désactiver le refetch automatique
   });
 
-  // Subscribe to real-time message updates
+  // S'assurer que nous avons un tableau même si onMessage reçoit undefined
   useMessageSubscription({
     onMessage: (newMessage: Message) => {
       queryClient.setQueryData(['messages', receiver?.id, lastCursor], (oldMessages: Message[] = []) => {
+        if (!oldMessages) return [newMessage];
         const messageExists = oldMessages.some(msg => msg.id === newMessage.id);
         if (messageExists) return oldMessages;
         return [...oldMessages, newMessage];
@@ -41,15 +44,19 @@ export function useMessages() {
     await sendMessageMutation.mutateAsync({ content, receiver });
   };
 
-  const updatePagination = (messages: Message[]) => {
-    setHasMore(messages.length === MESSAGES_PER_PAGE);
-    if (messages.length > 0) {
-      setLastCursor(messages[messages.length - 1].created_at);
+  const updatePagination = (currentMessages: Message[]) => {
+    if (!currentMessages) {
+      setHasMore(false);
+      return;
+    }
+    setHasMore(currentMessages.length === MESSAGES_PER_PAGE);
+    if (currentMessages.length > 0) {
+      setLastCursor(currentMessages[currentMessages.length - 1].created_at);
     }
   };
 
   return {
-    messages,
+    messages: messages || [], // Garantir un tableau même si messages est undefined
     isLoading,
     markAsRead: markAsReadMutation,
     handleSendMessage,
