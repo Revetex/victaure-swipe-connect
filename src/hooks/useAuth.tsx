@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { User } from '@supabase/supabase-js';
 import { useSession } from './useSession';
-import { clearStorages } from '@/utils/authUtils';
+import { clearStorages, handleAuthError } from '@/utils/authUtils';
 import { toast } from 'sonner';
 
 interface AuthState {
@@ -63,6 +63,7 @@ export function useAuth() {
 
   useEffect(() => {
     let mounted = true;
+    let refreshTimeout: NodeJS.Timeout | null = null;
     
     const initializeAuth = async () => {
       try {
@@ -70,7 +71,8 @@ export function useAuth() {
         
         if (sessionError) {
           console.error('Session error:', sessionError);
-          throw sessionError;
+          handleAuthError(sessionError, signOut);
+          return;
         }
 
         if (!session) {
@@ -85,18 +87,34 @@ export function useAuth() {
           return;
         }
 
-        // Verify user data with retry logic
+        // Calculate time until token expiry and set up refresh
+        const expiresAt = session.expires_at;
+        if (expiresAt) {
+          const timeUntilExpiry = (expiresAt * 1000) - Date.now();
+          const refreshTime = Math.max(0, timeUntilExpiry - (5 * 60 * 1000)); // 5 minutes before expiry
+          
+          if (refreshTimeout) clearTimeout(refreshTimeout);
+          refreshTimeout = setTimeout(async () => {
+            const { error: refreshError } = await supabase.auth.refreshSession();
+            if (refreshError) {
+              console.error('Session refresh error:', refreshError);
+              handleAuthError(refreshError, signOut);
+            }
+          }, refreshTime);
+        }
+
+        // Verify user with retry logic
         const verifyUser = async (attempt = 0): Promise<void> => {
           try {
             const { data: { user }, error: userError } = await supabase.auth.getUser();
             
-            if (userError || !user) {
+            if (userError) {
               if (attempt < 3) {
                 console.log(`Retrying user verification (${attempt + 1}/3)...`);
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 return verifyUser(attempt + 1);
               }
-              throw userError || new Error("User not found");
+              throw userError;
             }
 
             if (mounted) {
@@ -109,8 +127,7 @@ export function useAuth() {
             }
           } catch (error) {
             console.error("User verification error:", error);
-            toast.error("Erreur de vérification utilisateur");
-            await supabase.auth.signOut();
+            handleAuthError(error as Error, signOut);
             if (mounted) {
               setState({
                 isLoading: false,
@@ -126,6 +143,7 @@ export function useAuth() {
 
       } catch (error) {
         console.error("Auth initialization error:", error);
+        handleAuthError(error as Error, signOut);
         if (mounted) {
           setState({
             isLoading: false,
@@ -134,7 +152,6 @@ export function useAuth() {
             user: null
           });
         }
-        toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
       }
     };
 
@@ -159,6 +176,7 @@ export function useAuth() {
         });
       } else if (event === 'TOKEN_REFRESHED') {
         console.log("Token refreshed successfully");
+        initializeAuth();
       }
     });
 
@@ -170,10 +188,11 @@ export function useAuth() {
 
     return () => {
       mounted = false;
+      if (refreshTimeout) clearTimeout(refreshTimeout);
       clearInterval(authCheckInterval);
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, signOut]);
 
   return { 
     ...state,
