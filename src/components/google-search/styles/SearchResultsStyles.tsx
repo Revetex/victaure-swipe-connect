@@ -1,3 +1,4 @@
+
 export const SearchResultsStyles = `
   .gsc-control-cse {
     padding: 0 !important;

@@ -1,3 +1,4 @@
+
 interface Window {
   ___gcfg?: {
     parsetags?: string;

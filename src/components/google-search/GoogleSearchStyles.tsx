@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { SearchBarStyles } from './styles/SearchBarStyles';
 import { SearchResultsStyles } from './styles/SearchResultsStyles';
