@@ -1,26 +1,27 @@
 
 import { Button } from "@/components/ui/button";
-import { UserPlus, UserMinus, UserX, MessageCircle, Lock } from "lucide-react";
+import { UserPlus, UserMinus, UserX, MessageCircle, Lock, ExternalLink } from "lucide-react";
 import { UserProfile } from "@/types/profile";
 import { useConnectionStatus } from "./hooks/useConnectionStatus";
 import { useConnectionActions } from "./hooks/useConnectionActions";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 interface ProfilePreviewButtonsProps {
   profile: UserProfile;
   onClose: () => void;
   canViewFullProfile: boolean;
   onRequestChat?: () => void;
+  onViewProfile?: () => void;
 }
 
 export function ProfilePreviewButtons({
   profile,
   onClose,
   canViewFullProfile,
-  onRequestChat
+  onRequestChat,
+  onViewProfile
 }: ProfilePreviewButtonsProps) {
-  const navigate = useNavigate();
   const {
     isFriend,
     isBlocked,
@@ -45,33 +46,23 @@ export function ProfilePreviewButtons({
     }
   };
 
-  const handleViewProfile = () => {
-    if (!canViewFullProfile) {
-      toast.error("Ce profil est privé. Vous devez être ami avec cet utilisateur pour voir son profil complet.");
-      return;
-    }
-    window.location.href = `/profile/${profile.id}`;
-    onClose();
-  };
-
-  const handleMessageClick = () => {
-    if (onRequestChat) {
-      onRequestChat();
-    } else {
-      navigate(`/messages?receiver=${profile.id}`);
-    }
-    onClose();
-  };
-
   return (
-    <div className="flex flex-col gap-2 p-4">
+    <motion.div 
+      className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <Button 
-        onClick={handleViewProfile}
+        onClick={onViewProfile}
         variant={canViewFullProfile ? "default" : "secondary"}
         className="w-full flex items-center gap-2"
       >
         {canViewFullProfile ? (
-          "Voir le profil complet"
+          <>
+            <ExternalLink className="h-4 w-4" />
+            Voir le profil
+          </>
         ) : (
           <>
             <Lock className="h-4 w-4" />
@@ -87,7 +78,7 @@ export function ProfilePreviewButtons({
           className="w-full flex items-center gap-2"
         >
           <UserPlus className="h-4 w-4" />
-          Ajouter en ami
+          Ajouter
         </Button>
       )}
 
@@ -98,7 +89,7 @@ export function ProfilePreviewButtons({
           className="w-full flex items-center gap-2"
         >
           <UserPlus className="h-4 w-4" />
-          Accepter la demande
+          Accepter
         </Button>
       )}
 
@@ -110,7 +101,18 @@ export function ProfilePreviewButtons({
           className="w-full flex items-center gap-2 text-destructive hover:text-destructive"
         >
           <UserMinus className="h-4 w-4" />
-          {isFriend ? "Retirer des amis" : "Annuler la demande"}
+          {isFriend ? "Retirer" : "Annuler"}
+        </Button>
+      )}
+
+      {!isBlocked && isFriend && onRequestChat && (
+        <Button
+          variant="outline"
+          className="w-full flex items-center gap-2"
+          onClick={onRequestChat}
+        >
+          <MessageCircle className="h-4 w-4" />
+          Message
         </Button>
       )}
 
@@ -118,22 +120,11 @@ export function ProfilePreviewButtons({
         onClick={() => handleActionWithToast(handleToggleBlock, 
           isBlocked ? "Utilisateur débloqué" : "Utilisateur bloqué")}
         variant="outline"
-        className="w-full flex items-center gap-2"
+        className="w-full flex items-center gap-2 col-span-full"
       >
         <UserX className="h-4 w-4" />
         {isBlocked ? "Débloquer" : "Bloquer"}
       </Button>
-
-      {isFriend && !isBlocked && (
-        <Button
-          variant="outline"
-          className="w-full flex items-center gap-2"
-          onClick={handleMessageClick}
-        >
-          <MessageCircle className="h-4 w-4" />
-          Envoyer un message
-        </Button>
-      )}
-    </div>
+    </motion.div>
   );
 }

@@ -9,6 +9,7 @@ import { Dialog, DialogContent } from "./ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { ProfilePreviewModal } from "./profile/preview/ProfilePreviewModal";
 import { ProfilePreviewButtons } from "./profile/preview/ProfilePreviewButtons";
+import { toast } from "sonner";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
@@ -38,26 +39,52 @@ export function ProfilePreview({
     }
   };
 
+  const handleMessageClick = () => {
+    if (!user) {
+      toast.error("Vous devez être connecté pour envoyer un message");
+      return;
+    }
+    
+    if (onRequestChat) {
+      onRequestChat();
+    } else {
+      navigate(`/messages?receiver=${profile.id}`);
+    }
+    onClose();
+  };
+
+  const handleViewFullProfile = () => {
+    if (!canViewFullProfile) {
+      toast.error("Ce profil est privé");
+      return;
+    }
+    navigate(`/profile/${profile.id}`);
+    onClose();
+  };
+
   if (isMobile) {
     return (
       <>
         <Dialog open={isOpen} onOpenChange={onClose}>
           <DialogContent className="max-w-md w-full p-0">
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full overflow-hidden">
               <MemoizedProfilePreviewDialog
                 profile={profile}
                 isOpen={isOpen}
                 onClose={onClose}
-                onRequestChat={onRequestChat}
+                onRequestChat={handleMessageClick}
                 canViewFullProfile={canViewFullProfile}
                 onImageClick={handleImageClick}
               />
-              <ProfilePreviewButtons
-                profile={profile}
-                onRequestChat={onRequestChat}
-                onClose={onClose}
-                canViewFullProfile={canViewFullProfile}
-              />
+              <div className="p-4 border-t bg-card/95 backdrop-blur-sm">
+                <ProfilePreviewButtons
+                  profile={profile}
+                  onRequestChat={handleMessageClick}
+                  onClose={onClose}
+                  canViewFullProfile={canViewFullProfile}
+                  onViewProfile={handleViewFullProfile}
+                />
+              </div>
             </div>
           </DialogContent>
         </Dialog>
@@ -85,20 +112,25 @@ export function ProfilePreview({
           profile={profile}
           isOpen={isOpen}
           onClose={onClose}
-          onRequestChat={onRequestChat}
+          onRequestChat={handleMessageClick}
           canViewFullProfile={canViewFullProfile}
           onImageClick={handleImageClick}
+          onViewProfile={handleViewFullProfile}
         />
       )}
 
       <Dialog open={showFullscreenImage} onOpenChange={setShowFullscreenImage}>
         <DialogContent className="max-w-none w-screen h-screen p-0 bg-black/90">
           <div className="relative w-full h-full flex items-center justify-center">
-            <img 
+            <motion.img 
               src={profile.avatar_url || ""} 
               alt={profile.full_name || ""}
-              className="max-w-full max-h-full object-contain"
+              className="max-w-full max-h-full object-contain cursor-pointer"
               onClick={() => setShowFullscreenImage(false)}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ type: "spring", duration: 0.5 }}
             />
           </div>
         </DialogContent>
