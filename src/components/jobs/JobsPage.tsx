@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { JobList } from "./JobList";
 import { JobFiltersPanel } from "./JobFiltersPanel";
 import { FilterSection } from "./filters/FilterSection";
@@ -23,7 +22,7 @@ export function JobsPage() {
           <div className="flex items-center justify-between gap-4 flex-wrap mb-6">
             <TabsList className="w-full sm:w-auto">
               <TabsTrigger value="regular">Emplois réguliers</TabsTrigger>
-              <TabsTrigger value="contracts">Contrats & Jobines</TabsTrigger>
+              <TabsTrigger value="contract">Contrats & Jobines</TabsTrigger>
               <TabsTrigger value="marketplace">Victaure Market</TabsTrigger>
             </TabsList>
 
@@ -65,21 +64,21 @@ export function JobsPage() {
 
               <TabsContent value="regular">
                 <JobList 
-                  filters={{ ...filters, type: "regular" }}
+                  filters={{ ...filters, source: "regular" }}
                   showFilters={showFilters}
                 />
               </TabsContent>
 
-              <TabsContent value="contracts">
+              <TabsContent value="contract">
                 <JobList 
-                  filters={{ ...filters, type: "contract" }}
+                  filters={{ ...filters, source: "contract" }}
                   showFilters={showFilters}
                 />
               </TabsContent>
 
               <TabsContent value="marketplace">
                 <JobList 
-                  filters={{ ...filters, type: "marketplace" }}
+                  filters={{ ...filters, source: "marketplace" }}
                   showFilters={showFilters}
                 />
               </TabsContent>

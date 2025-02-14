@@ -3,21 +3,24 @@ export interface JobFilters {
   searchTerm: string;
   category: string;
   location: string;
-  type: "regular" | "contract" | "marketplace";
   experienceLevel: string;
-  source: "internal" | "external" | "all";
+  source: "regular" | "contract" | "marketplace" | "all";
   remote: boolean;
   salary: [number, number] | null;
   postedWithin: string;
+  contractType?: string;
+  remoteType?: string;
+  salaryMin?: number;
+  salaryMax?: number;
+  paymentSchedule?: string;
 }
 
 export const defaultFilters: JobFilters = {
   searchTerm: "",
   category: "all",
   location: "",
-  type: "regular",
   experienceLevel: "all",
-  source: "all",
+  source: "regular",
   remote: false,
   salary: null,
   postedWithin: "all"

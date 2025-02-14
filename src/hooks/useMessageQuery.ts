@@ -69,7 +69,7 @@ export function useMessageQuery(
         return messages?.map(msg => ({
           ...msg,
           timestamp: msg.created_at,
-          status: msg.message_deliveries?.[0]?.status || msg.status || 'sent',
+          status: msg.status || 'sent',
           message_type: msg.is_assistant ? 'assistant' : 'user',
           metadata: msg.metadata || {},
           sender: msg.sender || {
@@ -88,8 +88,8 @@ export function useMessageQuery(
       }
     },
     enabled: !!receiver,
-    staleTime: options.staleTime || 1000 * 30, // 30 secondes par défaut
-    gcTime: options.cacheTime || 1000 * 60 * 5, // 5 minutes par défaut
-    retry: 1, // Limite les tentatives de nouvelle requête en cas d'échec
+    staleTime: options.staleTime || 1000 * 30,
+    gcTime: options.cacheTime || 1000 * 60 * 5,
+    retry: 1,
   });
 }
