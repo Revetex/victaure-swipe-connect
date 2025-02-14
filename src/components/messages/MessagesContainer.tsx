@@ -79,61 +79,27 @@ export function MessagesContainer() {
     }
   }, [hasMore, messages, updatePagination]);
 
-  const fetchRecentJobs = useCallback(async () => {
-    if (!receiver?.id || receiver.id !== 'assistant') return;
-    
-    try {
-      const { data: jobs, error } = await supabase
-        .from('scraped_jobs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(3);
-
-      if (error) throw error;
-
-      if (jobs.length > 0) {
-        const jobsMessage = `J'ai trouvé quelques offres d'emploi récentes qui pourraient vous intéresser:\n\n${jobs
-          .map(
-            (job) =>
-              `📌 ${job.title} chez ${job.company}\n📍 ${job.location}\n🔗 ${job.url}\n`
-          )
-          .join('\n')}`;
-
-        handleAISendMessage(jobsMessage);
-      }
-    } catch (error) {
-      console.error('Error fetching jobs:', error);
-    }
-  }, [receiver, handleAISendMessage]);
-
-  useEffect(() => {
-    if (receiver?.id === 'assistant') {
-      const interval = setInterval(fetchRecentJobs, 300000); // Every 5 minutes
-      return () => clearInterval(interval);
-    }
-  }, [receiver, fetchRecentJobs]);
-
   if (isLoadingMessages) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-muted-foreground"
-        >
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex items-center justify-center h-[calc(100vh-4rem)]"
+      >
+        <div className="text-muted-foreground">
           Chargement des messages...
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
     );
   }
 
   const currentMessages = receiver?.id === 'assistant' ? aiMessages : messages;
 
   return (
-    <Card className="h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
+    <Card className="h-[calc(100vh-4rem)]">
       <ScrollArea 
         ref={scrollAreaRef}
-        className="flex-1 h-full overflow-y-auto"
+        className="h-full"
         onScrollCapture={handleScroll}
       >
         <AnimatePresence mode="wait">
@@ -143,7 +109,6 @@ export function MessagesContainer() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="flex flex-col h-full"
             >
               <ConversationView
                 receiver={receiver}
@@ -165,7 +130,6 @@ export function MessagesContainer() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="flex-1"
             >
               <ConversationList
                 messages={messages}
