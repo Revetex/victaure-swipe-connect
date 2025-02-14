@@ -111,12 +111,14 @@ export function useAuth() {
             console.error("User verification error:", error);
             toast.error("Erreur de vérification utilisateur");
             await supabase.auth.signOut();
-            setState({
-              isLoading: false,
-              isAuthenticated: false,
-              error: error instanceof Error ? error : new Error('Authentication failed'),
-              user: null
-            });
+            if (mounted) {
+              setState({
+                isLoading: false,
+                isAuthenticated: false,
+                error: error instanceof Error ? error : new Error('Authentication failed'),
+                user: null
+              });
+            }
           }
         };
 
@@ -133,7 +135,6 @@ export function useAuth() {
           });
         }
         toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
-        navigate('/auth');
       }
     };
 
@@ -149,18 +150,15 @@ export function useAuth() {
           user: null
         });
       } else if (event === 'SIGNED_IN' && session) {
+        const { data: { user } } = await supabase.auth.getUser();
         setState({
           isLoading: false,
           isAuthenticated: true,
           error: null,
-          user: session.user
+          user: user
         });
       } else if (event === 'TOKEN_REFRESHED') {
         console.log("Token refreshed successfully");
-        setState(prev => ({
-          ...prev,
-          isAuthenticated: true
-        }));
       }
     });
 

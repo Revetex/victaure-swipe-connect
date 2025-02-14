@@ -1,33 +1,23 @@
 
-import React from 'react';
-import { SessionContextProvider } from '@supabase/auth-helpers-react';
-import { supabase } from "@/integrations/supabase/client";
-import { AppRoutes } from './AppRoutes';
-import { ThemeProvider } from "next-themes";
+import { BrowserRouter } from "react-router-dom";
+import { AppRoutes } from "./AppRoutes";
+import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <QueryClientProvider client={queryClient}>
-        <SessionContextProvider supabaseClient={supabase}>
+    <BrowserRouter>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
           <AppRoutes />
-          <Toaster position="top-right" expand={false} richColors />
-        </SessionContextProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+          <Toaster />
+        </QueryClientProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   );
 }
 
 export default App;
-
