@@ -1,3 +1,4 @@
+
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
 
@@ -16,7 +17,7 @@ export function VCardContainer({ children, isEditing, customStyles }: VCardConta
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="relative w-full min-h-screen transition-all duration-300 text-foreground text-sm sm:text-base bg-transparent px-0"
+      className="relative w-full min-h-screen transition-all duration-300 text-foreground text-sm sm:text-base bg-transparent px-0 mt-6"
       style={{
         fontFamily: customStyles?.font || 'inherit',
         backgroundColor: 'transparent',
