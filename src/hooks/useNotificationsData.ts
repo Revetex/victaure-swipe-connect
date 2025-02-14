@@ -1,31 +1,33 @@
 
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "./useAuth";
-import { showToast, commonToasts } from "@/utils/toast";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Notification } from '@/types/notification';
+import { useEffect } from 'react';
 
-export function useNotificationsData() {
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const { user } = useAuth();
+export const useNotificationsData = () => {
+  const queryClient = useQueryClient();
 
-  const fetchNotifications = async () => {
-    const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', user?.id)
-      .order('created_at', { ascending: false });
+  const { data: notifications = [], isLoading } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
 
-    if (error) {
-      commonToasts.errorOccurred();
-      return;
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data as Notification[];
     }
+  });
 
-    setNotifications(data || []);
-    setUnreadCount(data?.filter(n => !n.read).length || 0);
-  };
+  const setupSubscription = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
 
-  const subscribeToNotifications = () => {
     const channel = supabase
       .channel('notifications')
       .on(
@@ -34,9 +36,11 @@ export function useNotificationsData() {
           event: '*',
           schema: 'public',
           table: 'notifications',
-          filter: `user_id=eq.${user?.id}`
+          filter: `user_id=eq.${user.id}`
         },
-        fetchNotifications
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['notifications'] });
+        }
       )
       .subscribe();
 
@@ -45,53 +49,70 @@ export function useNotificationsData() {
     };
   };
 
-  const deleteNotification = async (id: string) => {
-    try {
+  useEffect(() => {
+    const unsubscribe = setupSubscription();
+    return () => {
+      unsubscribe.then(cleanup => cleanup?.());
+    };
+  }, []);
+
+  const { mutate: deleteNotification } = useMutation({
+    mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('notifications')
         .delete()
         .eq('id', id);
 
       if (error) throw error;
-
-      setNotifications(notifications.filter(n => n.id !== id));
-      showToast.success(); // Suppression de l'argument
-    } catch (error) {
-      commonToasts.actionFailed(); // Suppression de l'argument
+    },
+    onSuccess: (_, id) => {
+      queryClient.setQueryData(['notifications'], (old: Notification[] | undefined) => 
+        old?.filter(n => n.id !== id) ?? []
+      );
     }
-  };
+  });
 
-  const handleMarkAllAsRead = async () => {
-    try {
+  const { mutate: markAllAsRead } = useMutation({
+    mutationFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
       const { error } = await supabase
         .from('notifications')
         .update({ read: true })
-        .eq('user_id', user?.id)
-        .eq('read', false);
+        .eq('user_id', user.id);
 
       if (error) throw error;
-
-      setNotifications(notifications.map(n => ({ ...n, read: true })));
-      setUnreadCount(0);
-      showToast.success(); // Suppression de l'argument
-    } catch (error) {
-      commonToasts.errorOccurred();
+    },
+    onSuccess: () => {
+      queryClient.setQueryData(['notifications'], (old: Notification[] | undefined) =>
+        old?.map(n => ({ ...n, read: true })) ?? []
+      );
     }
-  };
+  });
 
-  useEffect(() => {
-    if (!user) return;
-    fetchNotifications();
-    const unsubscribe = subscribeToNotifications();
-    return () => {
-      unsubscribe();
-    };
-  }, [user]);
+  const { mutate: deleteAllNotifications } = useMutation({
+    mutationFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.setQueryData(['notifications'], []);
+    }
+  });
 
   return {
     notifications,
-    unreadCount,
+    isLoading,
     deleteNotification,
-    handleMarkAllAsRead
+    markAllAsRead,
+    deleteAllNotifications
   };
-}
+};

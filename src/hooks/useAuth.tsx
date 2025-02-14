@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { User } from '@supabase/supabase-js';
 import { useSession } from './useSession';
 import { clearStorages } from '@/utils/authUtils';
-import { toast } from 'sonner';
 
 interface AuthState {
   isLoading: boolean;
@@ -26,7 +25,6 @@ export function useAuth() {
   const signOut = async () => {
     try {
       setState(prev => ({ ...prev, isLoading: true }));
-      toast.loading("Déconnexion en cours...");
       
       clearStorages();
       
@@ -43,8 +41,6 @@ export function useAuth() {
         user: null
       });
 
-      toast.dismiss();
-      toast.success("Déconnexion réussie");
       navigate('/auth');
       
     } catch (error) {
@@ -55,8 +51,6 @@ export function useAuth() {
         isLoading: false,
         error: error instanceof Error ? error : new Error('Unknown error')
       }));
-      toast.dismiss();
-      toast.error("Erreur lors de la déconnexion");
       navigate('/auth');
     }
   };
@@ -85,7 +79,6 @@ export function useAuth() {
           return;
         }
 
-        // Verify user data with retry logic
         const verifyUser = async (attempt = 0): Promise<void> => {
           try {
             const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -109,7 +102,6 @@ export function useAuth() {
             }
           } catch (error) {
             console.error("User verification error:", error);
-            toast.error("Erreur de vérification utilisateur");
             await supabase.auth.signOut();
             setState({
               isLoading: false,
@@ -132,12 +124,10 @@ export function useAuth() {
             user: null
           });
         }
-        toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
         navigate('/auth');
       }
     };
 
-    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event);
       
@@ -164,10 +154,8 @@ export function useAuth() {
       }
     });
 
-    // Initial auth check
     initializeAuth();
 
-    // Periodic auth check every 5 minutes
     const authCheckInterval = setInterval(initializeAuth, 300000);
 
     return () => {
