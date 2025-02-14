@@ -146,4 +146,29 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
                   onValueChange={(value) => {
                     field.onChange(value);
                     onChange?.({ subcategory: value });
-                  
+                  }}
+                  value={field.value || ""}
+                  disabled={subcategoriesLoading}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez une sous-catégorie" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <ScrollArea className="h-[200px]">
+                      {subcategories?.map((subcategory) => (
+                        <SelectItem key={subcategory.id} value={subcategory.name}>
+                          {subcategory.name}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
+    </div>
+  );
+}
