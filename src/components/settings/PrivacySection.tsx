@@ -29,24 +29,32 @@ export function PrivacySection() {
       setPrivacyEnabled(profile?.privacy_enabled || false);
     } catch (error) {
       console.error('Error fetching privacy settings:', error);
-      toast.error("Erreur lors du chargement des paramètres de confidentialité");
+      // Utilisation d'un ID unique pour éviter les toasts en double
+      toast.error("Erreur lors du chargement des paramètres de confidentialité", {
+        id: 'privacy-fetch-error'
+      });
     }
   };
 
   const handlePrivacyToggle = async () => {
+    if (isLoading) return;
+    
     try {
       setIsLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Non authentifié');
+      if (!user) {
+        toast.error("Non authentifié", {
+          id: 'privacy-auth-error'
+        });
+        return;
+      }
 
       const newPrivacyState = !privacyEnabled;
 
-      // Utilisation de l'en-tête Prefer pour éviter les retours mutuels
       const { error } = await supabase
         .from('profiles')
         .update({ 
           privacy_enabled: newPrivacyState,
-          // Ajout d'un champ pour indiquer que c'est une mise à jour de confidentialité
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id)
@@ -56,10 +64,14 @@ export function PrivacySection() {
       if (error) throw error;
 
       setPrivacyEnabled(newPrivacyState);
-      toast.success(`Profil ${newPrivacyState ? 'privé' : 'public'}`);
+      toast.success(newPrivacyState ? 'Profil privé' : 'Profil public', {
+        id: 'privacy-update-success'
+      });
     } catch (error) {
       console.error('Error updating privacy settings:', error);
-      toast.error("Erreur lors de la mise à jour des paramètres de confidentialité");
+      toast.error("Erreur lors de la mise à jour des paramètres de confidentialité", {
+        id: 'privacy-update-error'
+      });
     } finally {
       setIsLoading(false);
     }
