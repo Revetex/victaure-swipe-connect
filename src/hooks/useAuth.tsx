@@ -2,16 +2,12 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { User, AuthError } from '@supabase/supabase-js';
+import { AuthError } from '@supabase/supabase-js';
 import { clearStorages, handleAuthError } from '@/utils/authUtils';
 import { toast } from 'sonner';
-
-interface AuthState {
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  error: Error | null;
-  user: User | null;
-}
+import { AuthState } from '@/types/auth';
+import { useAuthSession } from './auth/useAuthSession';
+import { useTokenRefresh } from './auth/useTokenRefresh';
 
 export function useAuth() {
   const navigate = useNavigate();
@@ -60,112 +56,17 @@ export function useAuth() {
     }
   };
 
+  let mounted = true;
   useEffect(() => {
-    let mounted = true;
-    let refreshTimeout: NodeJS.Timeout | null = null;
-    
-    const initializeAuth = async () => {
-      try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          handleAuthError(sessionError, signOut);
-          return;
-        }
-
-        if (!session) {
-          if (mounted) {
-            setState({
-              isLoading: false,
-              isAuthenticated: false,
-              error: null,
-              user: null
-            });
-          }
-          return;
-        }
-
-        // Calculate time until token expiry and set up refresh
-        const expiresAt = session.expires_at;
-        if (expiresAt) {
-          const timeUntilExpiry = (expiresAt * 1000) - Date.now();
-          const refreshTime = Math.max(0, timeUntilExpiry - (5 * 60 * 1000)); // 5 minutes before expiry
-          
-          if (refreshTimeout) clearTimeout(refreshTimeout);
-          refreshTimeout = setTimeout(async () => {
-            const { error: refreshError } = await supabase.auth.refreshSession();
-            if (refreshError) {
-              console.error('Session refresh error:', refreshError);
-              handleAuthError(refreshError, signOut);
-            }
-          }, refreshTime);
-        }
-
-        // Verify user with retry logic
-        const verifyUser = async (attempt = 0): Promise<void> => {
-          try {
-            const { data: { user }, error: userError } = await supabase.auth.getUser();
-            
-            if (userError) {
-              if (attempt < 3) {
-                console.log(`Retrying user verification (${attempt + 1}/3)...`);
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                return verifyUser(attempt + 1);
-              }
-              throw userError;
-            }
-
-            if (mounted) {
-              setState({
-                isLoading: false,
-                isAuthenticated: true,
-                error: null,
-                user
-              });
-            }
-          } catch (error) {
-            console.error("User verification error:", error);
-            if (error instanceof AuthError) {
-              handleAuthError(error, signOut);
-            } else {
-              console.error("Unexpected error type:", error);
-              toast.error("Une erreur inattendue s'est produite");
-              signOut();
-            }
-            if (mounted) {
-              setState({
-                isLoading: false,
-                isAuthenticated: false,
-                error: error instanceof Error ? error : new Error('Authentication failed'),
-                user: null
-              });
-            }
-          }
-        };
-
-        await verifyUser();
-
-      } catch (error) {
-        console.error("Auth initialization error:", error);
-        if (error instanceof AuthError) {
-          handleAuthError(error, signOut);
-        } else {
-          console.error("Unexpected error type:", error);
-          toast.error("Une erreur inattendue s'est produite");
-          signOut();
-        }
-        if (mounted) {
-          setState({
-            isLoading: false,
-            isAuthenticated: false,
-            error: error instanceof Error ? error : new Error('Authentication failed'),
-            user: null
-          });
-        }
-      }
+    return () => {
+      mounted = false;
     };
+  }, []);
 
+  const { initializeAuth } = useAuthSession(setState, signOut, mounted);
+  useTokenRefresh(signOut);
+
+  useEffect(() => {
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event);
@@ -198,12 +99,10 @@ export function useAuth() {
     const authCheckInterval = setInterval(initializeAuth, 300000);
 
     return () => {
-      mounted = false;
-      if (refreshTimeout) clearTimeout(refreshTimeout);
       clearInterval(authCheckInterval);
       subscription.unsubscribe();
     };
-  }, [navigate, signOut]);
+  }, [navigate, signOut, initializeAuth]);
 
   return { 
     ...state,
