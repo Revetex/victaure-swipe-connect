@@ -7,6 +7,7 @@ import { useSendMessage } from "./messages/useSendMessage";
 import { useMarkAsRead } from "./messages/useMarkAsRead";
 import { Message } from "@/types/messages";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const MESSAGES_PER_PAGE = 20;
 
@@ -16,21 +17,32 @@ export function useMessages() {
   const [hasMore, setHasMore] = useState(true);
   const queryClient = useQueryClient();
 
-  // S'assurer que messages a une valeur par défaut
-  const { data: messages = [], isLoading } = useMessageQuery(receiver, lastCursor, hasMore, {
-    staleTime: 60 * 1000, // 1 minute
-    cacheTime: 5 * 60 * 1000, // 5 minutes
+  const { 
+    data: messages = [], 
+    isLoading,
+    error,
+    refetch
+  } = useMessageQuery(receiver, lastCursor, hasMore, {
+    staleTime: 60 * 1000,
+    cacheTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false
   });
 
-  // S'assurer que nous avons un tableau même si onMessage reçoit undefined
+  // Gérer les erreurs de requête
+  if (error) {
+    console.error("Erreur de chargement:", error);
+    toast.error("Erreur lors du chargement des messages. Réessayez plus tard.");
+  }
+
   useMessageSubscription({
     onMessage: (newMessage: Message) => {
-      queryClient.setQueryData(['messages', receiver?.id, lastCursor], (oldMessages: Message[] = []) => {
-        if (!oldMessages) return [newMessage];
-        const messageExists = oldMessages.some(msg => msg.id === newMessage.id);
-        if (messageExists) return oldMessages;
-        return [...oldMessages, newMessage];
+      if (!receiver) return;
+      
+      queryClient.setQueryData(['messages', receiver.id, lastCursor], (oldMessages: Message[] = []) => {
+        const uniqueMessages = [...new Set([newMessage, ...oldMessages])];
+        return uniqueMessages.filter((msg, index, self) => 
+          self.findIndex(m => m.id === msg.id) === index
+        );
       });
     }
   });
@@ -39,24 +51,31 @@ export function useMessages() {
   const markAsReadMutation = useMarkAsRead(receiver?.id);
 
   const handleSendMessage = async (content: string) => {
-    if (!receiver) return;
-    await sendMessageMutation.mutateAsync({ content, receiver });
+    if (!receiver || !content.trim()) return;
+
+    try {
+      await sendMessageMutation.mutateAsync({ content, receiver });
+      await refetch(); // Recharger les messages après l'envoi
+    } catch (error) {
+      console.error("Erreur d'envoi:", error);
+      toast.error("Erreur lors de l'envoi du message");
+    }
   };
 
   const updatePagination = (currentMessages: Message[]) => {
-    if (!currentMessages) {
+    if (!Array.isArray(currentMessages) || currentMessages.length === 0) {
       setHasMore(false);
       return;
     }
-    setHasMore(currentMessages.length === MESSAGES_PER_PAGE);
-    if (currentMessages.length > 0) {
-      setLastCursor(currentMessages[currentMessages.length - 1].created_at);
-    }
+
+    setHasMore(currentMessages.length >= MESSAGES_PER_PAGE);
+    setLastCursor(currentMessages[currentMessages.length - 1].created_at);
   };
 
   return {
-    messages: messages || [], // Garantir un tableau même si messages est undefined
+    messages: Array.isArray(messages) ? messages : [],
     isLoading,
+    error,
     markAsRead: markAsReadMutation,
     handleSendMessage,
     hasMore,

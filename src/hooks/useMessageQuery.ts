@@ -21,10 +21,22 @@ export function useMessageQuery(
   return useQuery({
     queryKey: ["messages", receiver?.id, lastCursor],
     queryFn: async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("Non authentifié");
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) {
+        console.error("Erreur d'authentification:", authError);
+        throw new Error("Erreur d'authentification");
+      }
 
+      if (!user) {
+        throw new Error("Non authentifié");
+      }
+
+      if (!receiver) {
+        return [];
+      }
+
+      try {
         let query = supabase
           .from("messages")
           .select(`
@@ -51,23 +63,28 @@ export function useMessageQuery(
           query = query.lt('created_at', lastCursor);
         }
 
-        if (receiver) {
-          if (receiver.id === 'assistant') {
-            query = query
-              .eq('receiver_id', user.id)
-              .eq('is_assistant', true);
-          } else {
-            query = query
-              .eq('is_assistant', false)
-              .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
-          }
+        if (receiver.id === 'assistant') {
+          query = query
+            .eq('receiver_id', user.id)
+            .eq('is_assistant', true);
+        } else {
+          query = query
+            .eq('is_assistant', false)
+            .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
         }
 
-        const { data: messages, error } = await query;
+        const { data: messages, error: queryError } = await query;
 
-        if (error) throw error;
+        if (queryError) {
+          console.error("Erreur de requête:", queryError);
+          throw queryError;
+        }
 
-        return messages?.map(msg => ({
+        if (!messages) {
+          return [];
+        }
+
+        return messages.map(msg => ({
           ...msg,
           timestamp: msg.created_at,
           status: msg.status || 'sent',
@@ -81,16 +98,19 @@ export function useMessageQuery(
             last_seen: new Date().toISOString()
           },
           receiver: msg.receiver || receiver
-        })) as Message[] || [];
+        })) as Message[];
       } catch (error) {
         console.error("Erreur chargement messages:", error);
-        toast.error("Erreur lors du chargement des messages");
-        return [];
+        throw error; // Remonter l'erreur pour une meilleure gestion
       }
     },
-    enabled: true,
+    enabled: !!receiver && hasMore, // N'exécuter que si on a un receiver et qu'il y a plus de messages
     staleTime: options.staleTime || 1000 * 30,
     gcTime: options.cacheTime || 1000 * 60 * 5,
-    refetchOnWindowFocus: options.refetchOnWindowFocus ?? true
+    refetchOnWindowFocus: options.refetchOnWindowFocus ?? false,
+    retry: (failureCount, error) => {
+      console.error(`Tentative ${failureCount} échouée:`, error);
+      return failureCount < 3;
+    }
   });
 }
