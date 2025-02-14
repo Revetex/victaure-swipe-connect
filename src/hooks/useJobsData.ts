@@ -48,12 +48,14 @@ export const useJobsData = (queryString: string = "") => {
             company: job.employer?.company_name || job.company_name || 'Entreprise',
             url: `/jobs/${job.id}`,
             source: "internal" as const,
-            mission_type: job.mission_type || 'company',
+            mission_type: (job.mission_type === 'company' || job.mission_type === 'individual') 
+              ? job.mission_type 
+              : 'company' as const,
             employer: {
               company_name: job.employer?.company_name,
               avatar_url: job.employer?.avatar_url
             },
-            status: job.status as "open" | "closed" | "in-progress" // Forcer le type ici
+            status: job.status as "open" | "closed" | "in-progress"
           })),
           ...scrapedJobs.map(job => ({
             id: job.id,
