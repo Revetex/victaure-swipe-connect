@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       protocol: 'ws',
       host: '052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
-      clientPort: 8080
+      clientPort: 443
     },
     watch: {
       usePolling: true,
@@ -46,11 +46,12 @@ export default defineConfig(({ mode }) => ({
         'Access-Control-Allow-Credentials',
         'Access-Control-Allow-Methods',
         'Access-Control-Allow-Headers',
-        'X-Supabase-Auth'
+        'X-Supabase-Auth',
+        '*'
       ],
       exposedHeaders: ['Content-Range', 'Range'],
       credentials: true,
-      preflightContinue: true,
+      preflightContinue: false,
       optionsSuccessStatus: 204
     }
   },
