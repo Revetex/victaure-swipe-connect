@@ -48,11 +48,11 @@ serve(async (req) => {
     
     Message actuel: ${message}`;
 
-    console.log("Sending request to Hugging Face API");
+    console.log("Sending request to Hugging Face API with Janus model");
 
-    // Call Hugging Face API for text generation using Mixtral model
+    // Call Hugging Face API for text generation using Janus model
     const response = await hf.textGeneration({
-      model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+      model: 'deepseek-ai/Janus-Pro-7B',
       inputs: conversationContext,
       parameters: {
         max_new_tokens: 500,
@@ -64,15 +64,27 @@ serve(async (req) => {
 
     console.log("Received response from Hugging Face:", response);
 
-    const assistantMessage = response.generated_text || "Je m'excuse, je n'ai pas pu générer une réponse appropriée.";
+    // Translate response to French using Any-to-Any model
+    console.log("Translating response to French");
+    const translationResponse = await hf.translation({
+      model: 'facebook/nllb-200-distilled-600M',
+      inputs: response.generated_text || "",
+      parameters: {
+        src_lang: "eng_Latn",
+        tgt_lang: "fra_Latn"
+      }
+    });
+
+    const assistantMessage = translationResponse.translation_text || "Je m'excuse, je n'ai pas pu générer une réponse appropriée.";
 
     // Update user profile if needed
     if (userProfile && message.toLowerCase().includes('oui') && previousMessages.length > 0) {
       try {
-        // Extract skills using Hugging Face model
+        // Extract skills using Janus model
+        const skillsPrompt = `Extract professional skills from this text. Respond with a list, one skill per line: ${message}`;
         const skillsResponse = await hf.textGeneration({
-          model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
-          inputs: `Extrais uniquement les compétences professionnelles mentionnées dans ce message: ${message}`,
+          model: 'deepseek-ai/Janus-Pro-7B',
+          inputs: skillsPrompt,
           parameters: {
             max_new_tokens: 100,
             temperature: 0.3,
@@ -81,7 +93,17 @@ serve(async (req) => {
         });
 
         if (skillsResponse.generated_text) {
-          const skills = skillsResponse.generated_text
+          // Translate skills to French
+          const skillsTranslation = await hf.translation({
+            model: 'facebook/nllb-200-distilled-600M',
+            inputs: skillsResponse.generated_text,
+            parameters: {
+              src_lang: "eng_Latn",
+              tgt_lang: "fra_Latn"
+            }
+          });
+
+          const skills = skillsTranslation.translation_text
             .split('\n')
             .filter((skill: string) => skill.trim().length > 0)
             .map((skill: string) => skill.trim().replace(/^[-*]\s*/, ''));
