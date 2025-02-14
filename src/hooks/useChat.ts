@@ -61,28 +61,33 @@ export function useChat() {
   const handleSendMessage = useCallback(async (message: string) => {
     if (!message.trim()) return;
     
-    setState(prev => ({ ...prev, isThinking: true }));
     try {
+      // Ajouter immédiatement le message de l'utilisateur
       const userMessage = addMessage(message);
       setInputMessage('');
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // Save user message to database
+      // Simuler le début de la réponse
+      setState(prev => ({ ...prev, isThinking: true }));
+
+      // Sauvegarder le message dans la base de données
       const { error: saveError } = await supabase
-        .from('ai_chat_messages')
+        .from('messages')
         .insert({
           id: userMessage.id,
-          user_id: user.id,
           content: message,
-          sender: 'user'
+          sender_id: user.id,
+          receiver_id: 'assistant',
+          message_type: 'user',
+          status: 'sent',
+          metadata: {}
         });
 
       if (saveError) throw saveError;
 
-      console.log("Getting AI response...");
-      // Get AI response from our edge function
+      // Obtenir la réponse de l'IA
       const { data, error } = await supabase.functions.invoke('ai-chat', {
         body: { 
           message,
@@ -95,8 +100,6 @@ export function useChat() {
 
       if (error) throw error;
 
-      console.log("AI response received:", data);
-
       const assistantMessage = addMessage(data.response, {
         id: 'assistant',
         full_name: 'M. Victaure',
@@ -105,14 +108,17 @@ export function useChat() {
         last_seen: new Date().toISOString()
       });
 
-      // Save assistant message to database
+      // Sauvegarder la réponse de l'assistant
       const { error: saveAssistantError } = await supabase
-        .from('ai_chat_messages')
+        .from('messages')
         .insert({
           id: assistantMessage.id,
-          user_id: user.id,
           content: data.response,
-          sender: 'assistant'
+          sender_id: 'assistant',
+          receiver_id: user.id,
+          message_type: 'assistant',
+          status: 'sent',
+          metadata: {}
         });
 
       if (saveAssistantError) throw saveAssistantError;
@@ -135,9 +141,9 @@ export function useChat() {
       if (!user) throw new Error('User not authenticated');
 
       const { error } = await supabase
-        .from('ai_chat_messages')
+        .from('messages')
         .delete()
-        .eq('user_id', user.id);
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
       if (error) throw error;
 
@@ -154,9 +160,9 @@ export function useChat() {
     inputMessage: state.inputMessage,
     isListening: state.isListening,
     isThinking: state.isThinking,
-    setInputMessage: (message: string) => setState(prev => ({ ...prev, inputMessage: message })),
-    handleSendMessage: handleSendMessage,
-    handleVoiceInput: handleVoiceInput,
-    clearChat: clearChat
+    setInputMessage,
+    handleSendMessage,
+    handleVoiceInput,
+    clearChat
   };
 }

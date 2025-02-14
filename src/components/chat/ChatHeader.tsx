@@ -36,7 +36,6 @@ export function ChatHeader({
             variant="ghost"
             size="icon"
             onClick={onBack}
-            className="lg:hidden"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
