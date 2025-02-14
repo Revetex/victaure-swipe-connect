@@ -7,6 +7,36 @@ import { toast } from "sonner";
 
 type MissionType = "company" | "individual";
 
+// Helper function to safely parse JSON array
+const parseJsonArray = (value: unknown): any[] => {
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};
+
+// Helper function to safely parse JSON object
+const parseJsonObject = (value: unknown): Record<string, any> => {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, any>;
+  }
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+  return {};
+};
+
 export const useJobsData = (queryString: string = "") => {
   return useQuery({
     queryKey: ["all-jobs", queryString],
@@ -50,9 +80,9 @@ export const useJobsData = (queryString: string = "") => {
               job.mission_type === 'individual' ? 'individual' : 'company';
             
             // Parse interview_process as array or provide empty array if invalid
-            const interviewProcess = job.interview_process 
-              ? (Array.isArray(job.interview_process) ? job.interview_process : [])
-              : [];
+            const interviewProcess = parseJsonArray(job.interview_process);
+            const applicationSteps = parseJsonArray(job.application_steps);
+            const salaryBenefits = parseJsonObject(job.salary_benefits);
             
             return {
               ...job,
@@ -66,17 +96,17 @@ export const useJobsData = (queryString: string = "") => {
               },
               status: job.status as "open" | "closed" | "in-progress",
               interview_process: interviewProcess,
-              application_steps: job.application_steps || [],
-              salary_benefits: job.salary_benefits || {},
-              company_culture: job.company_culture || [],
-              perks: job.perks || [],
-              benefits: job.benefits || [],
-              languages: job.languages || [],
-              qualifications: job.qualifications || [],
-              responsibilities: job.responsibilities || [],
-              tools_and_technologies: job.tools_and_technologies || [],
-              certifications_required: job.certifications_required || [],
-              work_schedule: job.work_schedule || []
+              application_steps: applicationSteps,
+              salary_benefits: salaryBenefits,
+              company_culture: Array.isArray(job.company_culture) ? job.company_culture : [],
+              perks: Array.isArray(job.perks) ? job.perks : [],
+              benefits: Array.isArray(job.benefits) ? job.benefits : [],
+              languages: Array.isArray(job.languages) ? job.languages : [],
+              qualifications: Array.isArray(job.qualifications) ? job.qualifications : [],
+              responsibilities: Array.isArray(job.responsibilities) ? job.responsibilities : [],
+              tools_and_technologies: Array.isArray(job.tools_and_technologies) ? job.tools_and_technologies : [],
+              certifications_required: Array.isArray(job.certifications_required) ? job.certifications_required : [],
+              work_schedule: Array.isArray(job.work_schedule) ? job.work_schedule : []
             } satisfies Job;
           }),
           ...scrapedJobs.map(job => ({
