@@ -1,6 +1,6 @@
 
 import { ChessPiece } from "@/types/chess";
-import { canMoveToPosition } from "../moveValidation";
+import { canMoveToPosition, isPathClear } from "../moveValidation";
 
 export type Direction = [number, number];
 
@@ -14,13 +14,19 @@ export function calculateSlidingMoves(
   const moves: { row: number; col: number; }[] = [];
 
   for (const [rowDir, colDir] of directions) {
-    let r = row + rowDir;
-    let c = col + colDir;
-    while (canMoveToPosition(r, c, piece, board)) {
-      moves.push({ row: r, col: c });
-      if (board[r][c]) break;
-      r += rowDir;
-      c += colDir;
+    let currentRow = row + rowDir;
+    let currentCol = col + colDir;
+
+    while (canMoveToPosition(currentRow, currentCol, piece, board)) {
+      if (isPathClear(row, col, currentRow, currentCol, board)) {
+        moves.push({ row: currentRow, col: currentCol });
+        // Si on capture une pièce, on arrête dans cette direction
+        if (board[currentRow][currentCol]) break;
+      } else {
+        break;
+      }
+      currentRow += rowDir;
+      currentCol += colDir;
     }
   }
 

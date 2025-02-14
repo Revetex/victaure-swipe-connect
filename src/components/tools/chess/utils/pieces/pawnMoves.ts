@@ -10,27 +10,36 @@ export function calculatePawnMoves(
 ): { row: number; col: number; }[] {
   const moves: { row: number; col: number; }[] = [];
   const direction = piece.isWhite ? -1 : 1;
+  const startRow = piece.isWhite ? 6 : 1;
 
-  // Forward move
-  if (canMoveToPosition(row + direction, col, piece, board) && !board[row + direction][col]) {
-    moves.push({ row: row + direction, col });
-    // First move can be 2 squares
-    if (
-      ((piece.isWhite && row === 6) || (!piece.isWhite && row === 1)) &&
-      !board[row + direction][col] &&
-      !board[row + 2 * direction][col]
-    ) {
-      moves.push({ row: row + 2 * direction, col });
+  // Mouvement vers l'avant d'une case
+  const oneForward = row + direction;
+  if (isValidPosition(oneForward, col) && !board[oneForward][col]) {
+    moves.push({ row: oneForward, col });
+
+    // Mouvement initial de deux cases
+    if (row === startRow) {
+      const twoForward = row + (2 * direction);
+      if (!board[twoForward][col]) {
+        moves.push({ row: twoForward, col });
+      }
     }
   }
 
-  // Capture diagonally
-  for (const colOffset of [-1, 1]) {
-    if (canMoveToPosition(row + direction, col + colOffset, piece, board) && 
-        board[row + direction][col + colOffset]?.isWhite !== piece.isWhite) {
-      moves.push({ row: row + direction, col: col + colOffset });
+  // Captures en diagonale
+  const captureCols = [col - 1, col + 1];
+  for (const captureCol of captureCols) {
+    if (isValidPosition(oneForward, captureCol)) {
+      const targetPiece = board[oneForward][captureCol];
+      if (targetPiece && targetPiece.isWhite !== piece.isWhite) {
+        moves.push({ row: oneForward, col: captureCol });
+      }
     }
   }
 
   return moves;
+}
+
+function isValidPosition(row: number, col: number): boolean {
+  return row >= 0 && row < 8 && col >= 0 && col < 8;
 }

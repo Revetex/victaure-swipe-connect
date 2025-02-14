@@ -52,25 +52,23 @@ export function ChessBoard({
       className="w-full max-w-[min(90vh,600px)] mx-auto"
     >
       <div className="relative">
-        {/* Coordonnées des colonnes (haut) */}
         <div className="absolute -top-6 left-0 right-0 flex justify-around px-4">
           {['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map(file => (
-            <span key={file} className="text-xs text-muted-foreground">
+            <span key={file} className="text-xs text-muted-foreground dark:text-gray-400">
               {file}
             </span>
           ))}
         </div>
 
-        {/* Coordonnées des rangées (gauche) */}
         <div className="absolute -left-6 top-0 bottom-0 flex flex-col justify-around py-2">
           {[8, 7, 6, 5, 4, 3, 2, 1].map(rank => (
-            <span key={rank} className="text-xs text-muted-foreground">
+            <span key={rank} className="text-xs text-muted-foreground dark:text-gray-400">
               {rank}
             </span>
           ))}
         </div>
 
-        <div className="grid grid-cols-8 gap-px bg-neutral-300 p-1 rounded-lg overflow-hidden">
+        <div className="grid grid-cols-8 gap-px bg-neutral-300 dark:bg-neutral-700 p-1 rounded-lg overflow-hidden">
           {board.map((row, rowIndex) => (
             row.map((piece, colIndex) => {
               const isSelected = selectedPiece?.row === rowIndex && selectedPiece?.col === colIndex;
@@ -88,9 +86,10 @@ export function ChessBoard({
                     "aspect-square flex items-center justify-center relative",
                     "transition-all duration-200 ease-out",
                     isMobile ? "text-3xl sm:text-4xl" : "text-4xl sm:text-5xl",
-                    isLight ? 'bg-[#E8EDF9] hover:bg-[#D8E0F0]' : 'bg-[#B7C0D8] hover:bg-[#A7B0C8]',
-                    isSelected && 'ring-2 ring-yellow-400 z-10',
-                    isPossibleMove && 'after:absolute after:inset-3 after:rounded-full after:bg-yellow-400/20',
+                    isLight ? 'bg-[#E8EDF9] dark:bg-[#2A2A2A] hover:bg-[#D8E0F0] dark:hover:bg-[#3A3A3A]' : 
+                             'bg-[#B7C0D8] dark:bg-[#4A4A4A] hover:bg-[#A7B0C8] dark:hover:bg-[#5A5A5A]',
+                    isSelected && 'ring-2 ring-yellow-400 dark:ring-yellow-500 z-10',
+                    isPossibleMove && 'after:absolute after:inset-3 after:rounded-full after:bg-yellow-400/20 dark:after:bg-yellow-500/20',
                     'disabled:cursor-not-allowed disabled:opacity-100',
                     piece && 'hover:scale-105 active:scale-100'
                   )}
@@ -98,7 +97,7 @@ export function ChessBoard({
                   {piece && (
                     <span className={cn(
                       "drop-shadow-md transition-transform",
-                      piece.isWhite ? "text-white" : "text-[#2A2A2A]",
+                      piece.isWhite ? "text-white dark:text-gray-200" : "text-[#2A2A2A] dark:text-gray-800",
                       isSelected && "scale-110",
                       "hover:drop-shadow-lg"
                     )}>
