@@ -23,7 +23,7 @@ export function FriendsContent() {
 
   return (
     <ScrollArea className="h-screen">
-      <div className="container mx-auto px-4 py-6 max-w-3xl w-full space-y-8 overflow-x-hidden min-h-screen pb-8">
+      <div className="container mx-auto px-2 py-6 max-w-2xl w-full space-y-8 overflow-x-hidden min-h-screen pb-8">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}

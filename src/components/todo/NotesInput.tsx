@@ -1,3 +1,4 @@
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -33,6 +34,23 @@ export function NotesInput({
     }
   };
 
+  const getColorClass = (color: string) => {
+    switch (color) {
+      case 'yellow':
+        return 'bg-[#FEF7CD] text-yellow-900';
+      case 'blue':
+        return 'bg-[#D3E4FD] text-blue-900';
+      case 'green':
+        return 'bg-[#F2FCE2] text-green-900';
+      case 'purple':
+        return 'bg-[#E5DEFF] text-purple-900';
+      case 'orange':
+        return 'bg-[#FEC6A1] text-orange-900';
+      default:
+        return 'bg-[#FEF7CD] text-yellow-900';
+    }
+  };
+
   return (
     <div className={cn(
       "flex gap-2 w-full",
@@ -58,12 +76,7 @@ export function NotesInput({
         <Select onValueChange={onColorChange} value={selectedColor}>
           <SelectTrigger className={cn(
             isMobile ? "w-[120px]" : "w-[100px]",
-            selectedColor === "yellow" && "bg-[#FEF7CD]",
-            selectedColor === "blue" && "bg-[#D3E4FD]",
-            selectedColor === "green" && "bg-[#F2FCE2]",
-            selectedColor === "pink" && "bg-[#FFDEE2]",
-            selectedColor === "purple" && "bg-[#E5DEFF]",
-            selectedColor === "orange" && "bg-[#FEC6A1]",
+            getColorClass(selectedColor),
             "border border-border/10"
           )}>
             <SelectValue />
@@ -76,17 +89,13 @@ export function NotesInput({
                 className={cn(
                   "flex items-center gap-2",
                   "cursor-pointer",
+                  getColorClass(color.value),
                   "transition-colors"
                 )}
               >
                 <div className={cn(
                   "w-4 h-4 rounded-full",
-                  color.value === "yellow" && "bg-[#FEF7CD]",
-                  color.value === "blue" && "bg-[#D3E4FD]",
-                  color.value === "green" && "bg-[#F2FCE2]",
-                  color.value === "pink" && "bg-[#FFDEE2]",
-                  color.value === "purple" && "bg-[#E5DEFF]",
-                  color.value === "orange" && "bg-[#FEC6A1]",
+                  getColorClass(color.value)
                 )} />
                 {color.label}
               </SelectItem>
