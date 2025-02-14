@@ -246,6 +246,102 @@ export type Database = {
           },
         ]
       }
+      business_profiles: {
+        Row: {
+          company_name: string
+          company_size: string | null
+          created_at: string
+          description: string | null
+          id: string
+          industry: string | null
+          location: string | null
+          logo_url: string | null
+          subscription_status: string | null
+          trial_end_date: string | null
+          verified: boolean | null
+          website: string | null
+        }
+        Insert: {
+          company_name: string
+          company_size?: string | null
+          created_at?: string
+          description?: string | null
+          id: string
+          industry?: string | null
+          location?: string | null
+          logo_url?: string | null
+          subscription_status?: string | null
+          trial_end_date?: string | null
+          verified?: boolean | null
+          website?: string | null
+        }
+        Update: {
+          company_name?: string
+          company_size?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          industry?: string | null
+          location?: string | null
+          logo_url?: string | null
+          subscription_status?: string | null
+          trial_end_date?: string | null
+          verified?: boolean | null
+          website?: string | null
+        }
+        Relationships: []
+      }
+      business_subscriptions: {
+        Row: {
+          business_id: string
+          cancelled_at: string | null
+          created_at: string
+          current_period_end: string
+          current_period_start: string
+          id: string
+          product_id: string
+          status: string | null
+          stripe_subscription_id: string | null
+        }
+        Insert: {
+          business_id: string
+          cancelled_at?: string | null
+          created_at?: string
+          current_period_end: string
+          current_period_start: string
+          id?: string
+          product_id: string
+          status?: string | null
+          stripe_subscription_id?: string | null
+        }
+        Update: {
+          business_id?: string
+          cancelled_at?: string | null
+          created_at?: string
+          current_period_end?: string
+          current_period_start?: string
+          id?: string
+          product_id?: string
+          status?: string | null
+          stripe_subscription_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_subscriptions_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_subscriptions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       certifications: {
         Row: {
           created_at: string | null
@@ -962,6 +1058,65 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      job_postings: {
+        Row: {
+          business_id: string
+          created_at: string
+          description: string
+          expires_at: string | null
+          id: string
+          is_priority: boolean | null
+          job_type: string | null
+          location: string | null
+          priority_expires_at: string | null
+          published_at: string | null
+          salary_max: number | null
+          salary_min: number | null
+          status: string | null
+          title: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          description: string
+          expires_at?: string | null
+          id?: string
+          is_priority?: boolean | null
+          job_type?: string | null
+          location?: string | null
+          priority_expires_at?: string | null
+          published_at?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          status?: string | null
+          title: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          description?: string
+          expires_at?: string | null
+          id?: string
+          is_priority?: boolean | null
+          job_type?: string | null
+          location?: string | null
+          priority_expires_at?: string | null
+          published_at?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          status?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_postings_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       job_subcategories: {
         Row: {
@@ -2917,6 +3072,42 @@ export type Database = {
           stripe_payment_intent_id?: string | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      subscription_products: {
+        Row: {
+          created_at: string
+          currency: string | null
+          description: string | null
+          features: Json | null
+          id: string
+          interval: string | null
+          name: string
+          price: number
+          type: string | null
+        }
+        Insert: {
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          features?: Json | null
+          id?: string
+          interval?: string | null
+          name: string
+          price: number
+          type?: string | null
+        }
+        Update: {
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          features?: Json | null
+          id?: string
+          interval?: string | null
+          name?: string
+          price?: number
+          type?: string | null
         }
         Relationships: []
       }
