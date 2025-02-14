@@ -1,3 +1,4 @@
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,14 +9,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 interface DeleteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void>;
 }
 
 export function DeleteDialog({ open, onOpenChange, onConfirm }: DeleteDialogProps) {
+  const handleDelete = async () => {
+    try {
+      await onConfirm();
+      toast.success("Conversation supprimée avec succès");
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      toast.error("Erreur lors de la suppression de la conversation");
+    }
+  };
+
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -28,7 +40,7 @@ export function DeleteDialog({ open, onOpenChange, onConfirm }: DeleteDialogProp
         <AlertDialogFooter>
           <AlertDialogCancel>Annuler</AlertDialogCancel>
           <AlertDialogAction
-            onClick={onConfirm}
+            onClick={handleDelete}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             Supprimer
