@@ -3594,7 +3594,7 @@ export type Database = {
           deleted_by: Json | null
           edited_at: string | null
           id: string | null
-          is_ai_message: boolean | null
+          is_assistant: boolean | null
           is_deleted: boolean | null
           message_type: string | null
           metadata: Json | null
@@ -3604,44 +3604,6 @@ export type Database = {
           sender_id: string | null
           status: string | null
           updated_at: string | null
-        }
-        Insert: {
-          content?: string | null
-          conversation_id?: string | null
-          created_at?: string | null
-          deleted_at?: string | null
-          deleted_by?: Json | null
-          edited_at?: string | null
-          id?: string | null
-          is_ai_message?: boolean | null
-          is_deleted?: boolean | null
-          message_type?: string | null
-          metadata?: Json | null
-          reaction?: string | null
-          read?: boolean | null
-          receiver_id?: string | null
-          sender_id?: string | null
-          status?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          content?: string | null
-          conversation_id?: string | null
-          created_at?: string | null
-          deleted_at?: string | null
-          deleted_by?: Json | null
-          edited_at?: string | null
-          id?: string | null
-          is_ai_message?: boolean | null
-          is_deleted?: boolean | null
-          message_type?: string | null
-          metadata?: Json | null
-          reaction?: string | null
-          read?: boolean | null
-          receiver_id?: string | null
-          sender_id?: string | null
-          status?: string | null
-          updated_at?: string | null
         }
         Relationships: [
           {
