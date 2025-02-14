@@ -1870,7 +1870,6 @@ export type Database = {
           deleted_by: Json | null
           edited_at: string | null
           id: string
-          is_ai_message: boolean | null
           is_assistant: boolean | null
           is_deleted: boolean | null
           is_system_sender: boolean | null
@@ -1895,7 +1894,6 @@ export type Database = {
           deleted_by?: Json | null
           edited_at?: string | null
           id?: string
-          is_ai_message?: boolean | null
           is_assistant?: boolean | null
           is_deleted?: boolean | null
           is_system_sender?: boolean | null
@@ -1920,7 +1918,6 @@ export type Database = {
           deleted_by?: Json | null
           edited_at?: string | null
           id?: string
-          is_ai_message?: boolean | null
           is_assistant?: boolean | null
           is_deleted?: boolean | null
           is_system_sender?: boolean | null
