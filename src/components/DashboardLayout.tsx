@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
 import { cn } from "@/lib/utils";
 
-interface MainLayoutProps {
+interface DashboardLayoutProps {
   children: ReactNode;
   title?: string;
   isEditing?: boolean;
@@ -20,14 +20,14 @@ interface MainLayoutProps {
   onToolReturn?: () => void;
 }
 
-export function MainLayout({ 
+export function DashboardLayout({ 
   children, 
   title = "", 
   isEditing = false,
   showFriendsList = false,
   onToggleFriendsList = () => {},
   onToolReturn = () => {}
-}: MainLayoutProps) {
+}: DashboardLayoutProps) {
   const isMobile = useIsMobile();
   const location = useLocation();
   const isFriendsPage = location.pathname.includes('/friends');
