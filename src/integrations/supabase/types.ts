@@ -857,6 +857,33 @@ export type Database = {
           },
         ]
       }
+      job_views: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          order_index: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          order_index?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          order_index?: number | null
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           accept_bids: boolean | null
@@ -2927,6 +2954,48 @@ export type Database = {
             foreignKeyName: "user_conversations_participant2_id_fkey"
             columns: ["participant2_id"]
             isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_job_preferences: {
+        Row: {
+          created_at: string | null
+          default_view: string | null
+          filters: Json | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          default_view?: string | null
+          filters?: Json | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          default_view?: string | null
+          filters?: Json | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_job_preferences_default_view_fkey"
+            columns: ["default_view"]
+            isOneToOne: false
+            referencedRelation: "job_views"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_job_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
