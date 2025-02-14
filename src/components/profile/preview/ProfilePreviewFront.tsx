@@ -5,8 +5,6 @@ import { FileText, UserPlus, UserMinus, Ban, Download, MessageCircle } from "luc
 import { useConnectionStatus } from "./hooks/useConnectionStatus";
 import { useConnectionActions } from "./hooks/useConnectionActions";
 import { ProfilePreviewHeader } from "./ProfilePreviewHeader";
-import { ProfilePreviewBio } from "./ProfilePreviewBio";
-import { ProfilePreviewSkills } from "./ProfilePreviewSkills";
 import { ProfilePreviewContact } from "./ProfilePreviewContact";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -79,8 +77,6 @@ export function ProfilePreviewFront({
               transition={{ duration: 0.3 }}
               className="mt-6 space-y-6 border-t border-gray-200/10 pt-6"
             >
-              <ProfilePreviewBio profile={profile} />
-              <ProfilePreviewSkills profile={profile} />
               <ProfilePreviewContact profile={profile} />
             </motion.div>
           )}
