@@ -1,7 +1,7 @@
 
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
-import { FileText, UserPlus, UserMinus, Ban, Download, MessageCircle } from "lucide-react";
+import { FileText, UserPlus, UserMinus, Ban, MessageCircle } from "lucide-react";
 import { useConnectionStatus } from "./hooks/useConnectionStatus";
 import { useConnectionActions } from "./hooks/useConnectionActions";
 import { ProfilePreviewHeader } from "./ProfilePreviewHeader";
@@ -35,7 +35,6 @@ export function ProfilePreviewFront({
     handleAcceptFriend,
     handleRemoveFriend,
     handleToggleBlock,
-    handleRequestCV,
   } = useConnectionActions(profile.id);
 
   const handleViewFullProfile = () => {
@@ -143,7 +142,7 @@ export function ProfilePreviewFront({
             {isBlocked ? "Débloquer" : "Bloquer"}
           </Button>
 
-          {isFriend && onRequestChat && (
+          {isFriend && (
             <Button
               variant="outline"
               className="flex items-center gap-2"
@@ -151,17 +150,6 @@ export function ProfilePreviewFront({
             >
               <MessageCircle className="h-4 w-4" />
               Message
-            </Button>
-          )}
-
-          {isFriend && !onRequestChat && (
-            <Button
-              variant="outline"
-              className="flex items-center gap-2"
-              onClick={handleRequestCV}
-            >
-              <Download className="h-4 w-4" />
-              Demander CV
             </Button>
           )}
         </div>
