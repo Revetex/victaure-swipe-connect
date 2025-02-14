@@ -24,7 +24,15 @@ export function useUserChat(): UserChat {
   const { profile } = useProfile();
   const { messages, setMessages, addMessage } = useMessagesStore();
 
-  useMessageSubscription(profile);
+  // Correctly pass an onMessage handler to useMessageSubscription
+  useMessageSubscription({
+    onMessage: (message: Message) => {
+      if (profile && message.receiver_id === profile.id) {
+        addMessage(message);
+      }
+    }
+  });
+  
   usePresenceTracking(profile);
 
   const handleSendMessage = useCallback(async (message: string, receiver: Receiver) => {
