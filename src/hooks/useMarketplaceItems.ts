@@ -2,7 +2,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PaymentTypes } from "@/types/database/payments";
-import { toast } from "sonner";
 
 type MarketplaceItem = PaymentTypes['Tables']['marketplace_items']['Row'];
 
@@ -52,11 +51,9 @@ export function useMarketplaceItems() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['marketplace-items'] });
-      toast.success("Votre article a été publié avec succès");
     },
     onError: (error) => {
       console.error('Error creating item:', error);
-      toast.error("Une erreur est survenue lors de la création de l'annonce");
     }
   });
 

@@ -7,7 +7,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 
 interface DeleteConversationDialogProps {
   onConfirm: () => Promise<void>;
@@ -18,10 +17,8 @@ export function DeleteConversationDialog({ onConfirm, onCancel }: DeleteConversa
   const handleDelete = async () => {
     try {
       await onConfirm();
-      toast.success("Conversation supprimée avec succès");
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
-      toast.error("Erreur lors de la suppression de la conversation");
     } finally {
       if (typeof document !== 'undefined') {
         const dialog = document.querySelector('dialog');

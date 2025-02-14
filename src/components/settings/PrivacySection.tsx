@@ -3,7 +3,6 @@ import { Eye, EyeOff } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 export function PrivacySection() {
@@ -31,12 +30,7 @@ export function PrivacySection() {
         throw authError;
       }
 
-      if (!user) {
-        toast.error("Session expirée", {
-          id: 'privacy-session-error'
-        });
-        return;
-      }
+      if (!user) return;
 
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -48,9 +42,6 @@ export function PrivacySection() {
       setPrivacyEnabled(profile?.privacy_enabled || false);
     } catch (error) {
       console.error('Error fetching privacy settings:', error);
-      toast.error("Erreur lors du chargement des paramètres de confidentialité", {
-        id: 'privacy-fetch-error'
-      });
     } finally {
       setIsLoading(false);
     }
@@ -68,12 +59,7 @@ export function PrivacySection() {
         throw authError;
       }
 
-      if (!user) {
-        toast.error("Non authentifié", {
-          id: 'privacy-auth-error'
-        });
-        return;
-      }
+      if (!user) return;
 
       const newPrivacyState = !privacyEnabled;
 
@@ -90,14 +76,8 @@ export function PrivacySection() {
       if (error) throw error;
 
       setPrivacyEnabled(newPrivacyState);
-      toast.success(newPrivacyState ? 'Profil privé' : 'Profil public', {
-        id: 'privacy-update-success'
-      });
     } catch (error) {
       console.error('Error updating privacy settings:', error);
-      toast.error("Erreur lors de la mise à jour des paramètres de confidentialité", {
-        id: 'privacy-update-error'
-      });
     } finally {
       setIsLoading(false);
     }
