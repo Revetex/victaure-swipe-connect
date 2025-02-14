@@ -2,7 +2,7 @@
 import { Search, Plus } from "lucide-react";
 import { FriendSelector } from "./FriendSelector";
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandList } from "@/components/ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
 interface SearchBarProps {
   searchQuery: string;
@@ -21,8 +21,11 @@ export function SearchBar({ searchQuery, onSearchChange, onSelectFriend }: Searc
             onValueChange={onSearchChange}
           />
           <CommandList>
+            <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
             <CommandGroup>
-              {searchQuery && <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>}
+              <CommandItem value="placeholder">
+                Commencez à taper pour rechercher...
+              </CommandItem>
             </CommandGroup>
           </CommandList>
         </Command>
