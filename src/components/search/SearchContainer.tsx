@@ -1,3 +1,4 @@
+
 import { useGoogleSearchStyles } from "@/components/google-search/GoogleSearchStyles";
 import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
 import { AISearchSuggestions } from "@/components/google-search/AISearchSuggestions";

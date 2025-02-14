@@ -6,7 +6,7 @@ import { JobCard } from "./JobCard";
 import { useSwipeJobs } from "./swipe/useSwipeJobs";
 import { JobFilters } from "./JobFilterUtils";
 import { Job } from "@/types/job";
-import { EmptyState } from "@/components/ui/empty-state";
+import { Card } from "@/components/ui/card";
 
 interface JobListProps {
   filters: JobFilters;
@@ -34,12 +34,11 @@ export function JobList({ filters, showFilters, jobs: propJobs, onJobDeleted }: 
 
   if (!jobs?.length) {
     return (
-      <EmptyState
-        icon={Search}
-        title="Aucune offre trouvée"
-        description="Essayez de modifier vos critères de recherche"
-        className="py-12"
-      />
+      <Card className="flex flex-col items-center justify-center p-8 text-center">
+        <Search className="h-12 w-12 text-muted-foreground mb-4" />
+        <h3 className="font-semibold text-lg">Aucune offre trouvée</h3>
+        <p className="text-muted-foreground">Essayez de modifier vos critères de recherche</p>
+      </Card>
     );
   }
 
