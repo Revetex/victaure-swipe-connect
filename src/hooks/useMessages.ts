@@ -17,7 +17,7 @@ export function useMessages() {
   // Subscribe to real-time message updates
   useMessageSubscription();
 
-  const { data: messages = [], isLoading } = useMessageQuery(receiver, lastCursor, hasMore);
+  const { data: messages = [], isLoading, error } = useMessageQuery(receiver, lastCursor, hasMore);
   const sendMessageMutation = useSendMessage();
   const markAsReadMutation = useMarkAsRead(receiver?.id);
 
@@ -27,15 +27,25 @@ export function useMessages() {
   };
 
   const updatePagination = (messages: Message[]) => {
-    setHasMore(messages.length === MESSAGES_PER_PAGE);
+    const newHasMore = messages.length === MESSAGES_PER_PAGE;
+    setHasMore(newHasMore);
+    
     if (messages.length > 0) {
-      setLastCursor(messages[messages.length - 1].created_at);
+      const newCursor = messages[messages.length - 1].created_at;
+      setLastCursor(newCursor);
+      console.log("Setting new cursor:", newCursor);
     }
   };
+
+  // Reset pagination when receiver changes
+  if (messages && receiver) {
+    updatePagination(messages);
+  }
 
   return {
     messages,
     isLoading,
+    error,
     markAsRead: markAsReadMutation,
     handleSendMessage,
     hasMore,

@@ -13,6 +13,8 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
+      console.log("Fetching messages with cursor:", lastCursor);
+
       let query = supabase
         .from("messages")
         .select(`
@@ -30,11 +32,6 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
             avatar_url,
             online_status,
             last_seen
-          ),
-          message_deliveries!inner(
-            status,
-            delivered_at,
-            read_at
           )
         `)
         .order('created_at', { ascending: false })
@@ -51,7 +48,6 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
             .eq('is_assistant', true);
         } else {
           query = query
-            .eq('is_assistant', false)
             .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
         }
       }
@@ -64,10 +60,10 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
         throw error;
       }
 
-      return messages?.map(msg => ({
+      return (messages || []).map(msg => ({
         ...msg,
         timestamp: msg.created_at,
-        status: msg.message_deliveries?.[0]?.status || msg.status || 'sent',
+        status: msg.status || 'sent',
         message_type: msg.is_assistant ? 'assistant' : 'user',
         metadata: msg.metadata || {},
         sender: msg.sender || {
@@ -77,17 +73,11 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
           online_status: false,
           last_seen: new Date().toISOString()
         },
-        receiver: msg.receiver || {
-          id: msg.receiver_id,
-          full_name: 'Unknown User',
-          avatar_url: '',
-          online_status: false,
-          last_seen: new Date().toISOString()
-        }
-      })) as Message[] || [];
+        receiver: msg.receiver || receiver
+      })) as Message[];
     },
-    enabled: true,
-    staleTime: 1000 * 60, // 1 minute
-    gcTime: 1000 * 60 * 5 // 5 minutes
+    enabled: !!receiver,
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 5
   });
 }
