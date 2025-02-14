@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 
 interface ProfilePreviewHeaderProps {
   profile: UserProfile;
+  onRequestChat?: () => void; // Rendons cette prop optionnelle
 }
 
 export function ProfilePreviewHeader({ profile }: ProfilePreviewHeaderProps) {
