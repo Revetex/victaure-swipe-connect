@@ -3019,69 +3019,32 @@ export type Database = {
       }
       relevant_jobs: {
         Row: {
-          benefits: string[] | null
+          budget: number | null
+          category: string | null
+          contract_type: string | null
           created_at: string | null
           description: string | null
+          employer_avatar_url: string | null
+          employer_company_name: string | null
+          employer_id: string | null
           experience_level: string | null
           id: string | null
-          industry: string | null
-          job_type: string | null
+          is_owner: boolean | null
           location: string | null
-          match_score: number | null
-          posted_at: string | null
-          relevance_score: number | null
-          remote_type: string | null
-          requirements: string[] | null
-          salary_range: string | null
-          skills: string[] | null
-          source_platform: string | null
+          mission_type: string | null
+          status: string | null
           title: string | null
           updated_at: string | null
-          url: string | null
         }
-        Insert: {
-          benefits?: string[] | null
-          created_at?: string | null
-          description?: string | null
-          experience_level?: string | null
-          id?: string | null
-          industry?: string | null
-          job_type?: string | null
-          location?: string | null
-          match_score?: never
-          posted_at?: string | null
-          relevance_score?: never
-          remote_type?: string | null
-          requirements?: string[] | null
-          salary_range?: never
-          skills?: string[] | null
-          source_platform?: never
-          title?: string | null
-          updated_at?: string | null
-          url?: never
-        }
-        Update: {
-          benefits?: string[] | null
-          created_at?: string | null
-          description?: string | null
-          experience_level?: string | null
-          id?: string | null
-          industry?: string | null
-          job_type?: string | null
-          location?: string | null
-          match_score?: never
-          posted_at?: string | null
-          relevance_score?: never
-          remote_type?: string | null
-          requirements?: string[] | null
-          salary_range?: never
-          skills?: string[] | null
-          source_platform?: never
-          title?: string | null
-          updated_at?: string | null
-          url?: never
-        }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "jobs_employer_id_fkey"
+            columns: ["employer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
