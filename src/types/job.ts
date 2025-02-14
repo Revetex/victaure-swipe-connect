@@ -39,7 +39,12 @@ export interface Job {
     company_name?: string;
     avatar_url?: string;
   };
-  // New fields based on the database schema
+  // Propriétés de l'enchère
+  accept_bids?: boolean;
+  min_bid?: number;
+  max_bid?: number;
+  bid_end_date?: string;
+  // Nouvelles propriétés basées sur le schéma de la base de données
   company_size?: string;
   company_culture?: string[];
   perks?: string[];
@@ -62,11 +67,6 @@ export interface Job {
   salary_max?: number;
   salary_currency?: string;
   salary_period?: string;
-  // New bidding fields
-  accept_bids?: boolean;
-  min_bid?: number;
-  max_bid?: number;
-  bid_end_date?: string;
 }
 
 export * from './jobCategories';

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,6 +31,7 @@ export default function Dashboard() {
 
       if (error) {
         console.error("Error checking profile:", error);
+        toast.error("Erreur lors de la vérification du profil");
         return;
       }
 
