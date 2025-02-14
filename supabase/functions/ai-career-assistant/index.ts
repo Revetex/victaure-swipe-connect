@@ -15,10 +15,10 @@ serve(async (req) => {
   }
 
   try {
-    const { message, userId, context } = await req.json();
+    const { message, userId, context, audioFormat = false } = await req.json();
     const { previousMessages, userProfile } = context;
 
-    console.log("Processing request with:", { message, userId });
+    console.log("Processing request with:", { message, userId, audioFormat });
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -75,7 +75,21 @@ serve(async (req) => {
       }
     });
 
-    const assistantMessage = translationResponse.translation_text || "Je m'excuse, je n'ai pas pu générer une réponse appropriée.";
+    const textResponse = translationResponse.translation_text || "Je m'excuse, je n'ai pas pu générer une réponse appropriée.";
+
+    let audioContent = null;
+    if (audioFormat) {
+      // Generate audio response using text-to-speech
+      console.log("Generating audio response");
+      const audioResponse = await hf.textToSpeech({
+        model: 'facebook/mms-tts-fra',
+        inputs: textResponse
+      });
+
+      // Convert audio to base64
+      const arrayBuffer = await audioResponse.arrayBuffer();
+      audioContent = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    }
 
     // Update user profile if needed
     if (userProfile && message.toLowerCase().includes('oui') && previousMessages.length > 0) {
@@ -139,7 +153,8 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({
-        message: assistantMessage,
+        message: textResponse,
+        audioContent,
         suggestedJobs: jobs
       }),
       {
