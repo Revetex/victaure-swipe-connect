@@ -5,7 +5,7 @@ import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/Marketplace";
 import { Feed } from "@/components/feed/Feed";
 import { Settings } from "@/components/Settings";
-import { NotesMap } from "@/components/notes/NotesMap";
+import { NotesSection } from "@/components/notes/NotesSection";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
@@ -15,7 +15,6 @@ import { TasksPage } from "@/components/tools/TasksPage";
 import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
-import { NotesSection } from "@/components/notes/NotesSection";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -91,7 +90,7 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="h-full"
+      className="relative bg-background"
     >
       {renderContent()}
     </motion.div>
