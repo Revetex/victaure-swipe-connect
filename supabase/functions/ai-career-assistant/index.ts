@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -23,10 +24,10 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get Hugging Face API key
-    const huggingFaceApiKey = Deno.env.get('HUGGING_FACE_API_KEY');
-    if (!huggingFaceApiKey) {
-      throw new Error('Hugging Face API key not configured');
+    // Get OpenAI API key
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openAIApiKey) {
+      throw new Error('OpenAI API key not configured');
     }
 
     // Prepare conversation context
@@ -44,63 +45,61 @@ serve(async (req) => {
     
     Message actuel: ${message}`;
 
-    console.log("Sending request to Hugging Face API");
+    console.log("Sending request to OpenAI API");
 
-    // Call Hugging Face API
-    const response = await fetch(
-      "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${huggingFaceApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          inputs: conversationContext,
-          parameters: {
-            max_new_tokens: 500,
-            temperature: 0.7,
-            top_p: 0.95,
-            return_full_text: false,
-          }
-        }),
-      }
-    );
+    // Call OpenAI API
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages: [
+          { role: 'system', content: 'Tu es M. Victaure, un assistant de carrière professionnel et amical. Tu communiques toujours en français.' },
+          { role: 'user', content: conversationContext }
+        ],
+        temperature: 0.7,
+        max_tokens: 500
+      }),
+    });
 
     if (!response.ok) {
-      console.error("Hugging Face API error:", await response.text());
-      throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}`);
+      console.error("OpenAI API error:", await response.text());
+      throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
     }
 
     const result = await response.json();
-    console.log("Received response from Hugging Face:", result);
+    console.log("Received response from OpenAI:", result);
 
-    const assistantMessage = result[0]?.generated_text || "Je m'excuse, je n'ai pas pu générer une réponse appropriée.";
+    const assistantMessage = result.choices[0]?.message?.content || "Je m'excuse, je n'ai pas pu générer une réponse appropriée.";
 
     // Update user profile if needed
     if (userProfile && message.toLowerCase().includes('oui') && previousMessages.length > 0) {
       try {
         // Extract skills from the conversation
-        const skillsResponse = await fetch(
-          "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
-          {
-            headers: {
-              "Authorization": `Bearer ${huggingFaceApiKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              inputs: `Extrais les compétences professionnelles mentionnées dans ce texte et retourne-les sous forme de liste: ${message}`,
-              parameters: {
-                max_new_tokens: 100,
-                temperature: 0.3,
-              }
-            }),
-          }
-        );
+        const skillsResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openAIApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'gpt-4',
+            messages: [
+              { role: 'system', content: 'Extrais uniquement les compétences professionnelles mentionnées dans ce message.' },
+              { role: 'user', content: message }
+            ],
+            temperature: 0.3,
+            max_tokens: 100
+          }),
+        });
 
         if (skillsResponse.ok) {
           const skillsResult = await skillsResponse.json();
-          const skills = skillsResult[0]?.generated_text
+          const skillsText = skillsResult.choices[0]?.message?.content;
+          const skills = skillsText
             .split('\n')
             .filter((skill: string) => skill.trim().length > 0)
             .map((skill: string) => skill.trim().replace(/^[-*]\s*/, ''));
