@@ -20,13 +20,11 @@ export function SearchBar({ searchQuery, onSearchChange, onSelectFriend }: Searc
             value={searchQuery}
             onValueChange={onSearchChange}
           />
-          {searchQuery && (
-            <CommandList>
-              <CommandGroup>
-                <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
-              </CommandGroup>
-            </CommandList>
-          )}
+          <CommandList>
+            <CommandGroup>
+              {searchQuery && <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>}
+            </CommandGroup>
+          </CommandList>
         </Command>
         <FriendSelector onSelectFriend={onSelectFriend}>
           <Button variant="outline" size="icon" className="shrink-0">
