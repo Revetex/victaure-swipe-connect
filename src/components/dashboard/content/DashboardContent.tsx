@@ -15,6 +15,7 @@ import { TasksPage } from "@/components/tools/TasksPage";
 import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
+import { ScrapedJobs } from "@/components/dashboard/ScrapedJobs";
 import { cn } from "@/lib/utils";
 
 interface DashboardContentProps {
@@ -64,6 +65,8 @@ export function DashboardContent({
         return <Marketplace />;
       case 4:
         return <Feed />;
+      case 5:
+        return <ScrapedJobs />;
       case 7:
         return <TasksPage />;
       case 8:
@@ -97,4 +100,3 @@ export function DashboardContent({
     </motion.div>
   );
 }
-
