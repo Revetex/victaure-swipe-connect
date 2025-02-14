@@ -1,9 +1,13 @@
 
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RefreshCw } from "lucide-react";
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { CompassIcon, RefreshCw, Settings2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ChessControlsProps {
   isThinking: boolean;
@@ -23,40 +27,46 @@ export function ChessControls({
   onReset,
 }: ChessControlsProps) {
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-lg bg-white/5">
-      <div className="flex items-center gap-4 w-full sm:w-auto">
-        <Select value={difficulty} onValueChange={onDifficultyChange}>
-          <SelectTrigger className="w-36 bg-white/5">
-            <SelectValue placeholder="Difficulté" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="easy">Facile</SelectItem>
-            <SelectItem value="medium">Moyen</SelectItem>
-            <SelectItem value="hard">Difficile</SelectItem>
-          </SelectContent>
-        </Select>
+    <div className="flex flex-wrap items-center justify-between gap-4 bg-card p-4 rounded-lg border">
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <CompassIcon className="h-4 w-4" />
+          <span className="text-sm font-medium">
+            Tour : {isWhiteTurn ? "Blancs" : "Noirs"}
+          </span>
+        </div>
         
-        <Button 
-          variant="outline"
-          size="icon"
-          onClick={onReset}
-          className="h-10 w-10 bg-white/5"
-        >
-          <RefreshCw className="h-4 w-4" />
-        </Button>
+        <div className="h-4 w-px bg-border" />
+        
+        <div className="flex items-center gap-2">
+          <Settings2 className="h-4 w-4" />
+          <Select
+            value={difficulty}
+            onValueChange={onDifficultyChange}
+            disabled={isThinking}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Difficulté" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="easy">Facile</SelectItem>
+              <SelectItem value="medium">Moyen</SelectItem>
+              <SelectItem value="hard">Difficile</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <motion.div 
-        className="text-sm font-medium"
-        animate={{ opacity: 1 }}
-        initial={{ opacity: 0 }}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={onReset}
+        disabled={isThinking}
+        className="ml-auto"
       >
-        {isThinking ? (
-          <span className="text-muted-foreground">L'IA réfléchit...</span>
-        ) : (
-          <span>Tour des {isWhiteTurn ? "blancs" : "noirs"}</span>
-        )}
-      </motion.div>
+        <RefreshCw className="h-4 w-4 mr-2" />
+        Nouvelle partie
+      </Button>
     </div>
   );
 }
