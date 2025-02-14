@@ -55,9 +55,9 @@ export function useNotificationsData() {
       if (error) throw error;
 
       setNotifications(notifications.filter(n => n.id !== id));
-      showToast.success("Notification supprimée");
+      showToast.success(); // Suppression de l'argument
     } catch (error) {
-      commonToasts.actionFailed("de la suppression");
+      commonToasts.actionFailed(); // Suppression de l'argument
     }
   };
 
@@ -73,7 +73,7 @@ export function useNotificationsData() {
 
       setNotifications(notifications.map(n => ({ ...n, read: true })));
       setUnreadCount(0);
-      showToast.success("Toutes les notifications ont été marquées comme lues");
+      showToast.success(); // Suppression de l'argument
     } catch (error) {
       commonToasts.errorOccurred();
     }
