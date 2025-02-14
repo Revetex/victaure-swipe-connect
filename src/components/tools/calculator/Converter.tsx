@@ -1,8 +1,11 @@
+
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ArrowRightLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface ConverterProps {
   conversionType: string;
@@ -29,6 +32,31 @@ export function Converter({
   onValueChange,
   onConvert
 }: ConverterProps) {
+  const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({});
+  const [isLoadingRates, setIsLoadingRates] = useState(false);
+
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      if (conversionType !== 'currency') return;
+      
+      setIsLoadingRates(true);
+      try {
+        const response = await fetch('https://api.exchangerate-api.com/v4/latest/CAD');
+        const data = await response.json();
+        setExchangeRates(data.rates);
+      } catch (error) {
+        console.error('Error fetching exchange rates:', error);
+        toast.error("Erreur lors de la récupération des taux de change");
+      } finally {
+        setIsLoadingRates(false);
+      }
+    };
+
+    fetchExchangeRates();
+    const interval = setInterval(fetchExchangeRates, 60000); // Refresh every minute
+    return () => clearInterval(interval);
+  }, [conversionType]);
+
   const getUnitOptions = (type: string) => {
     switch (type) {
       case "length":
@@ -54,6 +82,13 @@ export function Converter({
           ["f", "Fahrenheit"],
           ["k", "Kelvin"],
         ];
+      case "currency":
+        return [
+          ["CAD", "Dollar Canadien"],
+          ["USD", "Dollar Américain"],
+          ["EUR", "Euro"],
+          ["GBP", "Livre Sterling"],
+        ];
       default:
         return [];
     }
@@ -69,6 +104,7 @@ export function Converter({
           <SelectItem value="length">Longueur</SelectItem>
           <SelectItem value="weight">Poids</SelectItem>
           <SelectItem value="temperature">Température</SelectItem>
+          <SelectItem value="currency">Devises</SelectItem>
         </SelectContent>
       </Select>
 
@@ -109,13 +145,18 @@ export function Converter({
         )}
       />
 
-      <Button onClick={onConvert} className="w-full">
-        Convertir
+      <Button onClick={onConvert} className="w-full" disabled={isLoadingRates}>
+        {isLoadingRates ? "Chargement des taux..." : "Convertir"}
       </Button>
 
       {conversionResult && (
         <div className="p-4 text-center bg-background/80 rounded-lg">
           <p className="text-lg font-semibold">{conversionResult}</p>
+          {conversionType === 'currency' && (
+            <p className="text-sm text-muted-foreground mt-1">
+              Taux mis à jour il y a {Math.floor(Date.now() / 60000)} minutes
+            </p>
+          )}
         </div>
       )}
     </div>

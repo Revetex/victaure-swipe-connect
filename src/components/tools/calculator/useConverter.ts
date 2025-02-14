@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -31,7 +32,7 @@ export function useConverter() {
   const [conversionValue, setConversionValue] = useState("");
   const [conversionResult, setConversionResult] = useState("");
 
-  const handleConversion = () => {
+  const handleConversion = async () => {
     if (!conversionValue || isNaN(Number(conversionValue))) {
       toast.error("Veuillez entrer une valeur numérique valide");
       return;
@@ -40,24 +41,48 @@ export function useConverter() {
     const value = parseFloat(conversionValue);
     let result = 0;
 
-    if (conversionType === "temperature") {
-      const fromTemp = conversionRates.temperature[fromUnit as keyof typeof conversionRates.temperature](value);
-      let toTemp = fromTemp;
-      
-      if (toUnit === "f") {
-        toTemp = (fromTemp * 9/5) + 32;
-      } else if (toUnit === "k") {
-        toTemp = fromTemp + 273.15;
+    try {
+      if (conversionType === "currency") {
+        const response = await fetch('https://api.exchangerate-api.com/v4/latest/CAD');
+        const data = await response.json();
+        
+        // Convert to CAD first if not already in CAD
+        const valueInCad = fromUnit === "CAD" ? value : value / data.rates[fromUnit];
+        // Then convert to target currency
+        result = valueInCad * data.rates[toUnit];
+        
+        setConversionResult(`${result.toFixed(2)} ${toUnit}`);
+      } else if (conversionType === "temperature") {
+        const tempFuncs = conversionRates.temperature;
+        // Convert to Celsius first
+        let tempInC = value;
+        if (fromUnit === "f") {
+          tempInC = (value - 32) * 5/9;
+        } else if (fromUnit === "k") {
+          tempInC = value - 273.15;
+        }
+        
+        // Convert from Celsius to target unit
+        if (toUnit === "f") {
+          result = tempFuncs.f(tempInC);
+        } else if (toUnit === "k") {
+          result = tempFuncs.k(tempInC);
+        } else {
+          result = tempInC;
+        }
+        
+        setConversionResult(result.toFixed(2));
+      } else {
+        const rates = conversionRates[conversionType as keyof typeof conversionRates];
+        const fromRate = rates[fromUnit as keyof typeof rates] as number;
+        const toRate = rates[toUnit as keyof typeof rates] as number;
+        
+        result = (value / fromRate) * toRate;
+        setConversionResult(result.toFixed(2));
       }
-      
-      setConversionResult(toTemp.toFixed(2));
-    } else {
-      const rates = conversionRates[conversionType as keyof typeof conversionRates];
-      const fromRate = rates[fromUnit as keyof typeof rates] as number;
-      const toRate = rates[toUnit as keyof typeof rates] as number;
-      
-      result = (value / fromRate) * toRate;
-      setConversionResult(result.toFixed(2));
+    } catch (error) {
+      console.error('Error during conversion:', error);
+      toast.error("Une erreur est survenue lors de la conversion");
     }
   };
 
