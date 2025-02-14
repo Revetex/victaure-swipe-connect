@@ -1,12 +1,21 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { Message, Receiver } from "@/types/messages";
 
 const MESSAGES_PER_PAGE = 20;
 
-export function useMessageQuery(receiver: Receiver | null, lastCursor: string | null, hasMore: boolean) {
+interface UseMessageQueryOptions {
+  staleTime?: number;
+  cacheTime?: number;
+}
+
+export function useMessageQuery(
+  receiver: Receiver | null, 
+  lastCursor: string | null, 
+  hasMore: boolean,
+  options: UseMessageQueryOptions = {}
+) {
   return useQuery({
     queryKey: ["messages", receiver?.id, lastCursor],
     queryFn: async () => {
@@ -60,7 +69,6 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
 
       if (error) {
         console.error("Error fetching messages:", error);
-        toast.error("Erreur lors du chargement des messages");
         throw error;
       }
 
@@ -87,7 +95,7 @@ export function useMessageQuery(receiver: Receiver | null, lastCursor: string | 
       })) as Message[] || [];
     },
     enabled: true,
-    staleTime: 1000 * 60, // 1 minute
-    gcTime: 1000 * 60 * 5 // 5 minutes
+    staleTime: options.staleTime || 1000 * 60, // 1 minute par défaut
+    gcTime: options.cacheTime || 1000 * 60 * 5, // 5 minutes par défaut
   });
 }

@@ -1,11 +1,12 @@
 
 import { useState } from "react";
 import { useReceiver } from "./useReceiver";
-import { useMessageQuery } from "./messages/useMessageQuery";
-import { useMessageSubscription } from "./messages/useMessageSubscription";
+import { useMessageQuery } from "./useMessageQuery";
+import { useMessageSubscription } from "./useMessageSubscription";
 import { useSendMessage } from "./messages/useSendMessage";
 import { useMarkAsRead } from "./messages/useMarkAsRead";
 import { Message } from "@/types/messages";
+import { useQueryClient } from "@tanstack/react-query";
 
 const MESSAGES_PER_PAGE = 20;
 
@@ -13,11 +14,25 @@ export function useMessages() {
   const { receiver } = useReceiver();
   const [lastCursor, setLastCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
+  const queryClient = useQueryClient();
+
+  // Configure staleTime to cache messages for 1 minute
+  const { data: messages = [], isLoading } = useMessageQuery(receiver, lastCursor, hasMore, {
+    staleTime: 60 * 1000, // 1 minute
+    cacheTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   // Subscribe to real-time message updates
-  useMessageSubscription();
+  useMessageSubscription({
+    onMessage: (newMessage) => {
+      queryClient.setQueryData(['messages', receiver?.id, lastCursor], (oldMessages: Message[] = []) => {
+        const messageExists = oldMessages.some(msg => msg.id === newMessage.id);
+        if (messageExists) return oldMessages;
+        return [...oldMessages, newMessage];
+      });
+    }
+  });
 
-  const { data: messages = [], isLoading } = useMessageQuery(receiver, lastCursor, hasMore);
   const sendMessageMutation = useSendMessage();
   const markAsReadMutation = useMarkAsRead(receiver?.id);
 
