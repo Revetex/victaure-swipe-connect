@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Job } from "@/types/job";
 import { JobFilters } from "../JobFilterUtils";
@@ -9,7 +9,7 @@ export function useSwipeJobs(filters: JobFilters) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const fetchJobs = async () => {
+  const fetchJobs = useCallback(async () => {
     try {
       setLoading(true);
       console.log("Fetching jobs with filters:", filters);
@@ -26,8 +26,6 @@ export function useSwipeJobs(filters: JobFilters) {
         `)
         .eq('status', 'open')
         .order('created_at', { ascending: false });
-
-      console.log("Initial query built");
 
       // Apply filters only if they are set to non-default values
       if (filters.category && filters.category !== "all") {
@@ -49,11 +47,7 @@ export function useSwipeJobs(filters: JobFilters) {
         query = query.or(`title.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
       }
 
-      console.log("Filters applied to query");
-
       const { data: jobsData, error: jobsError } = await query;
-
-      console.log("Query executed, results:", { jobsData, jobsError });
 
       if (jobsError) {
         console.error("Error fetching jobs:", jobsError);
@@ -61,10 +55,8 @@ export function useSwipeJobs(filters: JobFilters) {
       }
 
       if (!jobsData || jobsData.length === 0) {
-        console.log("No jobs found with filters, fetching recent jobs");
         setJobs([]);
       } else {
-        console.log("Found jobs with filters, formatting data");
         const formattedJobs = jobsData.map(job => ({
           ...job,
           company: job.employer?.company_name || "Entreprise",
@@ -74,7 +66,6 @@ export function useSwipeJobs(filters: JobFilters) {
           source: job.source || "internal"
         })) as Job[];
 
-        console.log("Formatted jobs:", formattedJobs);
         setJobs(formattedJobs);
       }
 
@@ -84,12 +75,18 @@ export function useSwipeJobs(filters: JobFilters) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    filters.category,
+    filters.subcategory,
+    filters.contractType,
+    filters.experienceLevel,
+    filters.location,
+    filters.searchTerm
+  ]); // Dépendances explicites pour éviter les boucles infinies
 
   useEffect(() => {
-    console.log("useEffect triggered, calling fetchJobs");
     fetchJobs();
-  }, [filters]);
+  }, [fetchJobs]); // Utilisation de fetchJobs mémorisé comme seule dépendance
 
   const handleSwipe = async (direction: "left" | "right") => {
     if (currentIndex < jobs.length) {
