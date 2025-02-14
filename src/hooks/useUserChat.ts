@@ -46,6 +46,8 @@ export function useUserChat(): UserChat {
       return;
     }
     
+    if (isLoading) return; // Prevent multiple sends while loading
+    
     setIsLoading(true);
     try {
       const newMessage = await sendMessage(message, receiver, profile);
@@ -59,11 +61,12 @@ export function useUserChat(): UserChat {
     } finally {
       setIsLoading(false);
     }
-  }, [profile, addMessage, setInputMessage]);
+  }, [profile, addMessage, setInputMessage, isLoading]);
 
   const clearChat = useCallback(async (receiverId: string) => {
-    if (!profile) return;
+    if (!profile?.id) return;
     
+    setIsLoading(true);
     try {
       const { error } = await supabase
         .from('messages')
@@ -77,8 +80,10 @@ export function useUserChat(): UserChat {
     } catch (error) {
       console.error('Erreur effacement conversation:', error);
       toast.error("Erreur lors de l'effacement");
+    } finally {
+      setIsLoading(false);
     }
-  }, [profile, setMessages]);
+  }, [profile?.id, setMessages]);
 
   return {
     messages,
