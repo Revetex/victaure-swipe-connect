@@ -30,9 +30,12 @@ export function ExternalSearchSection({
         placeholder="Rechercher des offres externes..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="flex-1"
+        className="flex-1 bg-background/60 backdrop-blur-sm border-border/50 focus-visible:ring-primary/20"
       />
-      <Button onClick={handleSearch}>
+      <Button 
+        onClick={handleSearch}
+        className="bg-primary/80 hover:bg-primary/90 backdrop-blur-sm"
+      >
         <Search className="h-4 w-4 mr-2" />
         Rechercher
       </Button>
