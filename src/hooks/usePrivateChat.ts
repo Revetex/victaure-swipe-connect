@@ -26,8 +26,9 @@ export function usePrivateChat(receiver: Receiver) {
         message_type: 'user',
         status: 'sent',
         metadata: {
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+          type: 'private_message'
+        } as Record<string, any>
       };
 
       const { data, error } = await supabase
@@ -43,14 +44,22 @@ export function usePrivateChat(receiver: Receiver) {
       if (error) throw error;
 
       if (data) {
+        const messageSender = {
+          id: profile.id,
+          full_name: profile.full_name || '',
+          avatar_url: profile.avatar_url || '',
+          online_status: profile.online_status || false,
+          last_seen: profile.last_seen || new Date().toISOString()
+        };
+
         addMessage({
           ...data,
           timestamp: data.created_at,
           status: 'sent',
           message_type: 'user',
           metadata: data.metadata || {},
-          sender: data.sender || profile,
-          receiver: data.receiver || receiver
+          sender: messageSender,
+          receiver: receiver
         });
 
         // Envoyer une notification
