@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { UserCircle, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useConnectionStatus } from "./hooks/useConnectionStatus";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ProfilePreviewHeaderProps {
   profile: UserProfile;
@@ -12,6 +15,21 @@ interface ProfilePreviewHeaderProps {
 
 export function ProfilePreviewHeader({ profile, onRequestChat }: ProfilePreviewHeaderProps) {
   const { isFriend } = useConnectionStatus(profile.id);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleChatClick = () => {
+    if (!user) {
+      toast.error("Vous devez être connecté pour envoyer un message");
+      return;
+    }
+
+    if (onRequestChat) {
+      onRequestChat();
+    } else {
+      navigate(`/messages?receiver=${profile.id}`);
+    }
+  };
 
   return (
     <motion.div 
@@ -20,9 +38,9 @@ export function ProfilePreviewHeader({ profile, onRequestChat }: ProfilePreviewH
       className="space-y-4"
     >
       <div className="flex items-center gap-4">
-        {isFriend && onRequestChat && (
+        {isFriend && (
           <Button
-            onClick={onRequestChat}
+            onClick={handleChatClick}
             variant="secondary"
             size="icon"
             className="shrink-0 rounded-full hover:scale-105 transition-transform"
