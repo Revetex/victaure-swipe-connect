@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -19,13 +20,23 @@ export const useSession = (signOut: () => Promise<void>) => {
 
   useEffect(() => {
     let mounted = true;
+    let retryCount = 0;
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000; // 1 second delay between retries
 
     const checkSession = async () => {
       try {
+        // Get current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Session error:", sessionError);
+          if (retryCount < MAX_RETRIES) {
+            retryCount++;
+            console.log(`Retrying session check (${retryCount}/${MAX_RETRIES})...`);
+            setTimeout(checkSession, RETRY_DELAY);
+            return;
+          }
           handleAuthError(sessionError, signOut);
           return;
         }
@@ -41,6 +52,12 @@ export const useSession = (signOut: () => Promise<void>) => {
         
         if (userError) {
           console.error("User verification error:", userError);
+          if (retryCount < MAX_RETRIES) {
+            retryCount++;
+            console.log(`Retrying user verification (${retryCount}/${MAX_RETRIES})...`);
+            setTimeout(checkSession, RETRY_DELAY);
+            return;
+          }
           handleAuthError(userError, signOut);
           return;
         }
@@ -52,6 +69,7 @@ export const useSession = (signOut: () => Promise<void>) => {
             isLoading: false,
           });
         }
+
       } catch (error) {
         console.error('Session check error:', error);
         if (mounted) {
