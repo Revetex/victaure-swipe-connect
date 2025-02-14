@@ -101,10 +101,10 @@ export function useMessageQuery(
         })) as Message[];
       } catch (error) {
         console.error("Erreur chargement messages:", error);
-        throw error; // Remonter l'erreur pour une meilleure gestion
+        throw error;
       }
     },
-    enabled: !!receiver && hasMore, // N'exécuter que si on a un receiver et qu'il y a plus de messages
+    enabled: !!receiver && hasMore,
     staleTime: options.staleTime || 1000 * 30,
     gcTime: options.cacheTime || 1000 * 60 * 5,
     refetchOnWindowFocus: options.refetchOnWindowFocus ?? false,
