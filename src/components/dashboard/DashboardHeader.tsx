@@ -7,6 +7,10 @@ import { motion } from "framer-motion";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { FeedSidebar } from "../feed/FeedSidebar";
 import { Suspense } from "react";
+import { useProfile } from "@/hooks/useProfile";
+import { ProfilePreview } from "@/components/ProfilePreview";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 export interface DashboardHeaderProps {
   title: string;
@@ -22,6 +26,9 @@ export function DashboardHeader({
   onToggleFriendsList,
   isEditing
 }: DashboardHeaderProps) {
+  const { profile } = useProfile();
+  const [showProfilePreview, setShowProfilePreview] = useState(false);
+
   return (
     <div className="sticky top-0 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
       <div className="flex items-center justify-between p-4 max-w-[2000px] mx-auto">
@@ -44,6 +51,25 @@ export function DashboardHeader({
             </SheetContent>
           </Sheet>
           <Logo size="lg" />
+          <div 
+            className="cursor-pointer flex items-center gap-2"
+            onClick={() => setShowProfilePreview(true)}
+          >
+            {profile && profile.avatar_url ? (
+              <img 
+                src={profile.avatar_url} 
+                alt={profile.full_name || ""}
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-sm font-medium">
+                  {profile?.full_name?.[0]?.toUpperCase()}
+                </span>
+              </div>
+            )}
+            <span className="text-sm font-medium">{profile?.full_name}</span>
+          </div>
           <h1 className="font-montserrat text-base sm:text-lg md:text-xl text-foreground/80">{title}</h1>
         </motion.div>
         
@@ -58,12 +84,12 @@ export function DashboardHeader({
             <Button
               variant="outline"
               onClick={onToggleFriendsList}
-              className={`
-                flex items-center gap-2 text-sm sm:text-base
-                transition-all duration-300
-                hover:bg-primary/10 hover:text-primary
-                ${showFriendsList ? 'bg-primary/5 text-primary' : ''}
-              `}
+              className={cn(
+                "flex items-center gap-2 text-sm sm:text-base",
+                "transition-all duration-300",
+                "hover:bg-primary/10 hover:text-primary",
+                showFriendsList ? 'bg-primary/5 text-primary' : ''
+              )}
               size="sm"
             >
               <MenuIcon className="h-4 w-4" />
@@ -72,6 +98,14 @@ export function DashboardHeader({
           )}
         </motion.div>
       </div>
+
+      {profile && (
+        <ProfilePreview
+          profile={profile}
+          isOpen={showProfilePreview}
+          onClose={() => setShowProfilePreview(false)}
+        />
+      )}
     </div>
   );
 }
