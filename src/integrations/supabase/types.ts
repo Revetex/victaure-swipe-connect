@@ -752,6 +752,13 @@ export type Database = {
             referencedRelation: "jobs"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "job_bids_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "relevant_jobs"
+            referencedColumns: ["id"]
+          },
         ]
       }
       job_categories: {
@@ -835,7 +842,7 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "job_transcriptions_job_id_fkey"
+            foreignKeyName: "fk_job_transcriptions_job"
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "relevant_jobs"
@@ -1342,6 +1349,13 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "relevant_jobs"
             referencedColumns: ["id"]
           },
           {
@@ -2979,7 +2993,6 @@ export type Database = {
       relevant_jobs: {
         Row: {
           benefits: string[] | null
-          company: string | null
           created_at: string | null
           description: string | null
           experience_level: string | null
@@ -3001,7 +3014,6 @@ export type Database = {
         }
         Insert: {
           benefits?: string[] | null
-          company?: string | null
           created_at?: string | null
           description?: string | null
           experience_level?: string | null
@@ -3009,21 +3021,20 @@ export type Database = {
           industry?: string | null
           job_type?: string | null
           location?: string | null
-          match_score?: number | null
+          match_score?: never
           posted_at?: string | null
-          relevance_score?: number | null
+          relevance_score?: never
           remote_type?: string | null
           requirements?: string[] | null
-          salary_range?: string | null
+          salary_range?: never
           skills?: string[] | null
-          source_platform?: string | null
+          source_platform?: never
           title?: string | null
           updated_at?: string | null
-          url?: string | null
+          url?: never
         }
         Update: {
           benefits?: string[] | null
-          company?: string | null
           created_at?: string | null
           description?: string | null
           experience_level?: string | null
@@ -3031,17 +3042,17 @@ export type Database = {
           industry?: string | null
           job_type?: string | null
           location?: string | null
-          match_score?: number | null
+          match_score?: never
           posted_at?: string | null
-          relevance_score?: number | null
+          relevance_score?: never
           remote_type?: string | null
           requirements?: string[] | null
-          salary_range?: string | null
+          salary_range?: never
           skills?: string[] | null
-          source_platform?: string | null
+          source_platform?: never
           title?: string | null
           updated_at?: string | null
-          url?: string | null
+          url?: never
         }
         Relationships: []
       }
@@ -3058,76 +3069,11 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
-      cube:
-        | {
-            Args: {
-              "": number[]
-            }
-            Returns: unknown
-          }
-        | {
-            Args: {
-              "": number
-            }
-            Returns: unknown
-          }
-      cube_dim: {
-        Args: {
-          "": unknown
-        }
-        Returns: number
-      }
-      cube_in: {
-        Args: {
-          "": unknown
-        }
-        Returns: unknown
-      }
-      cube_is_point: {
-        Args: {
-          "": unknown
-        }
-        Returns: boolean
-      }
-      cube_out: {
-        Args: {
-          "": unknown
-        }
-        Returns: unknown
-      }
-      cube_recv: {
-        Args: {
-          "": unknown
-        }
-        Returns: unknown
-      }
-      cube_send: {
-        Args: {
-          "": unknown
-        }
-        Returns: string
-      }
-      cube_size: {
-        Args: {
-          "": unknown
-        }
-        Returns: number
-      }
       delete_ai_conversation: {
         Args: {
           p_user_id: string
         }
         Returns: undefined
-      }
-      earth: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      gc_to_sec: {
-        Args: {
-          "": number
-        }
-        Returns: number
       }
       get_secret: {
         Args: {
@@ -3151,18 +3097,6 @@ export type Database = {
         }
         Returns: undefined
       }
-      latitude: {
-        Args: {
-          "": unknown
-        }
-        Returns: number
-      }
-      longitude: {
-        Args: {
-          "": unknown
-        }
-        Returns: number
-      }
       mark_conversation_deleted: {
         Args: {
           p_user_id: string
@@ -3181,12 +3115,6 @@ export type Database = {
           conversation_id: string
         }
         Returns: undefined
-      }
-      sec_to_gc: {
-        Args: {
-          "": number
-        }
-        Returns: number
       }
     }
     Enums: {
