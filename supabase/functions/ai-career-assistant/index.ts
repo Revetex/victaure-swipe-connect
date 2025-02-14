@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { HfInference } from 'https://esm.sh/@huggingface/inference@2.3.2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,11 +25,13 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get OpenAI API key
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
+    // Get Hugging Face token
+    const hfToken = Deno.env.get('HUGGING_FACE_ACCESS_TOKEN');
+    if (!hfToken) {
+      throw new Error('Hugging Face token not configured');
     }
+
+    const hf = new HfInference(hfToken);
 
     // Prepare conversation context
     const conversationContext = `Tu es M. Victaure, un assistant de carrière spécialisé dans les emplois de construction au Québec.
@@ -45,61 +48,40 @@ serve(async (req) => {
     
     Message actuel: ${message}`;
 
-    console.log("Sending request to OpenAI API");
+    console.log("Sending request to Hugging Face API");
 
-    // Call OpenAI API
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4',
-        messages: [
-          { role: 'system', content: 'Tu es M. Victaure, un assistant de carrière professionnel et amical. Tu communiques toujours en français.' },
-          { role: 'user', content: conversationContext }
-        ],
+    // Call Hugging Face API for text generation using Mixtral model
+    const response = await hf.textGeneration({
+      model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+      inputs: conversationContext,
+      parameters: {
+        max_new_tokens: 500,
         temperature: 0.7,
-        max_tokens: 500
-      }),
+        top_p: 0.95,
+        return_full_text: false
+      }
     });
 
-    if (!response.ok) {
-      console.error("OpenAI API error:", await response.text());
-      throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
-    }
+    console.log("Received response from Hugging Face:", response);
 
-    const result = await response.json();
-    console.log("Received response from OpenAI:", result);
-
-    const assistantMessage = result.choices[0]?.message?.content || "Je m'excuse, je n'ai pas pu générer une réponse appropriée.";
+    const assistantMessage = response.generated_text || "Je m'excuse, je n'ai pas pu générer une réponse appropriée.";
 
     // Update user profile if needed
     if (userProfile && message.toLowerCase().includes('oui') && previousMessages.length > 0) {
       try {
-        // Extract skills from the conversation
-        const skillsResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${openAIApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'gpt-4',
-            messages: [
-              { role: 'system', content: 'Extrais uniquement les compétences professionnelles mentionnées dans ce message.' },
-              { role: 'user', content: message }
-            ],
+        // Extract skills using Hugging Face model
+        const skillsResponse = await hf.textGeneration({
+          model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+          inputs: `Extrais uniquement les compétences professionnelles mentionnées dans ce message: ${message}`,
+          parameters: {
+            max_new_tokens: 100,
             temperature: 0.3,
-            max_tokens: 100
-          }),
+            return_full_text: false
+          }
         });
 
-        if (skillsResponse.ok) {
-          const skillsResult = await skillsResponse.json();
-          const skillsText = skillsResult.choices[0]?.message?.content;
-          const skills = skillsText
+        if (skillsResponse.generated_text) {
+          const skills = skillsResponse.generated_text
             .split('\n')
             .filter((skill: string) => skill.trim().length > 0)
             .map((skill: string) => skill.trim().replace(/^[-*]\s*/, ''));
