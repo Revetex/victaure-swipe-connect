@@ -11,6 +11,7 @@ export interface ProfilePreviewModalProps {
   onRequestChat?: () => void;
   canViewFullProfile?: boolean;
   onImageClick?: () => void;
+  onViewProfile?: () => void;
 }
 
 export function ProfilePreviewModal({
@@ -20,6 +21,7 @@ export function ProfilePreviewModal({
   onRequestChat,
   canViewFullProfile = false,
   onImageClick,
+  onViewProfile,
 }: ProfilePreviewModalProps) {
   return (
     <motion.div
@@ -58,12 +60,13 @@ export function ProfilePreviewModal({
               onImageClick={onImageClick}
             />
           </div>
-          <div className="border-t bg-background">
+          <div className="border-t bg-background p-4">
             <ProfilePreviewButtons
               profile={profile}
               onRequestChat={onRequestChat}
               onClose={onClose}
               canViewFullProfile={canViewFullProfile}
+              onViewProfile={onViewProfile}
             />
           </div>
         </div>
