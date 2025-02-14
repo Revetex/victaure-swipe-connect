@@ -49,34 +49,35 @@ export function SearchBar({ searchQuery, onSearchChange, onSelectFriend }: Searc
               setOpen(true);
             }}
           />
-          <CommandList>
-            {profiles.length === 0 && (
-              <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
-            )}
-            {profiles.length > 0 && (
-              <CommandGroup heading="Résultats">
-                {profiles.map((profile) => (
-                  <CommandItem
-                    key={profile.id}
-                    value={profile.full_name || ""}
-                    onSelect={() => {
-                      setSelectedProfile(profile);
-                      setOpen(false);
-                    }}
-                    className="flex items-center gap-2"
-                  >
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src={profile.avatar_url || ""} />
-                      <AvatarFallback>
-                        {profile.full_name?.charAt(0) || "?"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span>{profile.full_name}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
-          </CommandList>
+          {open && searchQuery && (
+            <CommandList>
+              {(!profiles || profiles.length === 0) ? (
+                <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+              ) : (
+                <CommandGroup heading="Résultats">
+                  {profiles.map((profile) => (
+                    <CommandItem
+                      key={profile.id}
+                      value={profile.full_name || ""}
+                      onSelect={() => {
+                        setSelectedProfile(profile);
+                        setOpen(false);
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={profile.avatar_url || ""} />
+                        <AvatarFallback>
+                          {profile.full_name?.charAt(0) || "?"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span>{profile.full_name}</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+            </CommandList>
+          )}
         </Command>
         <FriendSelector onSelectFriend={onSelectFriend}>
           <Button variant="outline" size="icon" className="shrink-0">
