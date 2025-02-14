@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { UnifiedJob, JobTranscription } from "@/types/jobs/types";
+import { Job } from "@/types/job";
 import { toast } from "sonner";
 
 export const useJobsData = (queryString: string = "") => {
@@ -41,33 +42,33 @@ export const useJobsData = (queryString: string = "") => {
         if (scrapedError) throw scrapedError;
 
         // Formater de manière uniforme
-        const formattedJobs: UnifiedJob[] = [
+        const formattedJobs: Job[] = [
           ...victaureJobs.map(job => ({
-            id: job.id,
-            title: job.title,
+            ...job,
             company: job.employer?.company_name || job.company_name || 'Entreprise',
-            location: job.location,
             url: `/jobs/${job.id}`,
-            posted_at: job.created_at,
-            source: 'Victaure' as const,
-            description: job.description,
-            transcription: job.job_transcriptions?.[0] ? 
-              (job.job_transcriptions[0] as unknown as JobTranscription).ai_transcription : 
-              undefined,
-            logo_url: job.employer?.avatar_url
+            source: "internal" as const,
+            mission_type: job.mission_type || 'company',
+            employer: {
+              company_name: job.employer?.company_name,
+              avatar_url: job.employer?.avatar_url
+            }
           })),
           ...scrapedJobs.map(job => ({
             id: job.id,
             title: job.title,
-            company: job.company,
+            description: job.description || '',
+            budget: 0,
             location: job.location,
+            employer_id: '',
+            status: 'open' as const,
+            category: job.industry || 'Technology',
+            contract_type: job.job_type || 'full-time',
+            experience_level: job.experience_level || 'mid-level',
+            company: job.company,
             url: job.url,
-            posted_at: job.posted_at,
-            source: 'Externe' as const,
-            description: job.description,
-            transcription: job.job_transcriptions?.[0] ? 
-              (job.job_transcriptions[0] as unknown as JobTranscription).ai_transcription : 
-              undefined
+            source: "external" as const,
+            mission_type: 'company' as const
           }))
         ];
 
@@ -77,10 +78,9 @@ export const useJobsData = (queryString: string = "") => {
           return formattedJobs.filter(job => {
             const searchableText = `
               ${job.title} 
-              ${job.company} 
+              ${job.company || ''} 
               ${job.location} 
               ${job.description || ''} 
-              ${job.transcription || ''}
             `.toLowerCase();
             
             return searchTerms.every(term => searchableText.includes(term));
