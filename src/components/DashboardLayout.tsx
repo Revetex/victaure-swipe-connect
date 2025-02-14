@@ -4,7 +4,6 @@ import { useProfile } from "@/hooks/useProfile";
 import { DashboardContent } from "./dashboard/DashboardContent";
 import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
@@ -25,13 +24,6 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-background relative">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0.1, 0.2, 0.1] }}
-        transition={{ duration: 5, repeat: Infinity }}
-        className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#8B5CF6,transparent)]"
-      />
-
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -45,19 +37,17 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       />
 
       <main className={cn(
-        "flex-1 lg:ml-64 min-h-screen relative",
+        "flex-1 lg:ml-64 min-h-screen",
         "glass-panel"
       )}>
-        <div className="h-full">
-          {children || (
-            <DashboardContent
-              currentPage={currentPage}
-              isEditing={isEditing}
-              onEditStateChange={handleEditStateChange}
-              onRequestChat={() => handlePageChange(2)}
-            />
-          )}
-        </div>
+        {children || (
+          <DashboardContent
+            currentPage={currentPage}
+            isEditing={isEditing}
+            onEditStateChange={handleEditStateChange}
+            onRequestChat={() => handlePageChange(2)}
+          />
+        )}
       </main>
     </div>
   );

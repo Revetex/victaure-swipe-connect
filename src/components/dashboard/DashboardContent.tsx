@@ -90,7 +90,7 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="relative bg-background"
+      className="min-h-screen w-full"
     >
       {renderContent()}
     </motion.div>
