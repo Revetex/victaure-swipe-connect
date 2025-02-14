@@ -52,7 +52,8 @@ export const useJobsData = (queryString: string = "") => {
             employer: {
               company_name: job.employer?.company_name,
               avatar_url: job.employer?.avatar_url
-            }
+            },
+            status: job.status as "open" | "closed" | "in-progress" // Forcer le type ici
           })),
           ...scrapedJobs.map(job => ({
             id: job.id,
