@@ -1,13 +1,16 @@
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserProfile } from "@/types/profile";
-import { UserRound } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { ProfilePreviewFront } from "./ProfilePreviewFront";
+import { ProfilePreviewBack } from "./ProfilePreviewBack";
+import { useState } from "react";
 
 interface ProfilePreviewCardProps {
   profile: UserProfile;
   onRequestChat?: () => void;
-  onClose: () => void;
-  canViewFullProfile: boolean;
+  onClose?: () => void;
+  canViewFullProfile?: boolean;
   onImageClick?: () => void;
 }
 
@@ -15,27 +18,31 @@ export function ProfilePreviewCard({
   profile,
   onRequestChat,
   onClose,
-  canViewFullProfile,
-  onImageClick,
+  canViewFullProfile = false,
+  onImageClick
 }: ProfilePreviewCardProps) {
+  const [isFlipped, setIsFlipped] = useState(false);
+
   return (
-    <div className="bg-background p-6 rounded-lg">
-      <div className="flex flex-col items-center space-y-4">
-        <Avatar 
-          className="h-24 w-24 cursor-pointer"
-          onClick={onImageClick}
-        >
-          <AvatarImage src={profile.avatar_url || ""} />
-          <AvatarFallback>
-            <UserRound className="h-8 w-8" />
-          </AvatarFallback>
-        </Avatar>
-        <div className="text-center">
-          <h3 className="text-lg font-semibold">{profile.full_name}</h3>
-          {canViewFullProfile && (
-            <p className="text-sm text-muted-foreground">{profile.email}</p>
-          )}
-        </div>
+    <div className={cn(
+      "relative w-full max-w-md mx-auto",
+      "bg-background/95 backdrop-blur-sm",
+      "rounded-xl shadow-xl overflow-hidden",
+      "border border-border/50"
+    )}>
+      <div className="p-6">
+        {!isFlipped ? (
+          <ProfilePreviewFront
+            profile={profile}
+            onRequestChat={onRequestChat}
+            onFlip={() => setIsFlipped(true)}
+          />
+        ) : (
+          <ProfilePreviewBack
+            profile={profile}
+            onFlip={() => setIsFlipped(false)}
+          />
+        )}
       </div>
     </div>
   );
