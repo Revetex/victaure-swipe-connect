@@ -43,9 +43,9 @@ serve(async (req) => {
 
     const previousTerms = previousSuggestions?.map(s => s.response) || [];
 
-    const prompt = `<Instruction>Génère une suggestion de recherche d'emploi dans la construction (3 mots maximum):
+    const prompt = `<Instruction>Génère une suggestion de recherche d'emploi ciblée:
 - Profile: ${profile.role || 'professionnel'} à ${profile.city || 'Québec'}
-- Compétences: ${profile.skills?.join(', ') || 'construction'}
+- Compétences: ${profile.skills?.join(', ') || 'général'}
 - Format: une seule ligne de 3 mots maximum en français
 - La suggestion doit être différente de: ${previousTerms.join(', ')}
 - NE PAS inclure de ponctuation ou guillemets
@@ -76,11 +76,7 @@ serve(async (req) => {
 
     const data = await response.json();
     let suggestion = data[0]?.generated_text?.trim() || '';
-    
-    // Ensure max 3 words
     suggestion = suggestion.split(' ').slice(0, 3).join(' ');
-    
-    // Remove any punctuation
     suggestion = suggestion.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '');
 
     // Save the suggestion

@@ -1,8 +1,5 @@
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
-import { useState } from "react";
+import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
 import { JobFilters } from "../JobFilterUtils";
 
 interface ExternalSearchSectionProps {
@@ -16,29 +13,9 @@ export function ExternalSearchSection({
   filters,
   onFilterChange 
 }: ExternalSearchSectionProps) {
-  const [search, setSearch] = useState(queryString || "");
-
-  const handleSearch = () => {
-    const url = `https://www.google.com/search?q=${search}`;
-    window.open(url, '_blank');
-  };
-
   return (
-    <div className="flex items-center space-x-2">
-      <Input
-        type="text"
-        placeholder="Rechercher des offres externes..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="flex-1 bg-background/60 backdrop-blur-sm border-border/50 focus-visible:ring-primary/20"
-      />
-      <Button 
-        onClick={handleSearch}
-        className="bg-primary/80 hover:bg-primary/90 backdrop-blur-sm"
-      >
-        <Search className="h-4 w-4 mr-2" />
-        Rechercher
-      </Button>
+    <div className="w-full p-4 bg-background/60 backdrop-blur-sm rounded-lg border border-border/50">
+      <GoogleSearchBox />
     </div>
   );
 }
