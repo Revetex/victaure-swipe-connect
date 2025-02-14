@@ -1,5 +1,6 @@
+
 import { useState, useCallback, useEffect } from 'react';
-import { Message, MessageSender } from '@/types/messages';
+import { Message } from '@/types/messages';
 import { useProfile } from './useProfile';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -20,6 +21,7 @@ export function useAIChat(): AIChat {
   const [inputMessage, setInputMessage] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { profile } = useProfile();
 
   const formatAIMessage = (aiMessage: any): Message => ({
@@ -44,10 +46,14 @@ export function useAIChat(): AIChat {
   });
 
   const loadMessages = useCallback(async () => {
+    if (!profile?.id || isLoading) return;
+    
     try {
+      setIsLoading(true);
       const { data: aiMessages, error } = await supabase
         .from('ai_messages')
         .select('*')
+        .eq('user_id', profile.id)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
@@ -56,23 +62,22 @@ export function useAIChat(): AIChat {
     } catch (error) {
       console.error('Error loading AI messages:', error);
       toast.error("Erreur lors du chargement des messages");
+    } finally {
+      setIsLoading(false);
     }
-  }, [profile]);
+  }, [profile?.id]);
 
   const handleSendMessage = useCallback(async (message: string) => {
-    if (!message.trim()) return;
+    if (!message.trim() || !profile?.id) return;
     
     setIsThinking(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
       // Add user message to AI messages
       const { data: userMessage, error: userMessageError } = await supabase
         .from('ai_messages')
         .insert({
           content: message,
-          user_id: user.id,
+          user_id: profile.id,
           sender: 'user',
           read: true
         })
@@ -85,7 +90,7 @@ export function useAIChat(): AIChat {
       const { data, error } = await supabase.functions.invoke('ai-chat', {
         body: { 
           message,
-          userId: user.id,
+          userId: profile.id,
           context: {
             previousMessages: messages.slice(-5),
             userProfile: profile,
@@ -100,7 +105,7 @@ export function useAIChat(): AIChat {
         .from('ai_messages')
         .insert({
           content: data.response,
-          user_id: user.id,
+          user_id: profile.id,
           sender: 'assistant',
           read: false
         })
@@ -126,14 +131,13 @@ export function useAIChat(): AIChat {
   }, [isListening]);
 
   const clearChat = useCallback(async () => {
+    if (!profile?.id) return;
+    
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
       const { error } = await supabase
         .from('ai_messages')
         .delete()
-        .eq('user_id', user.id);
+        .eq('user_id', profile.id);
 
       if (error) throw error;
 
@@ -143,12 +147,13 @@ export function useAIChat(): AIChat {
       console.error('Error clearing chat:', error);
       toast.error("Erreur lors de l'effacement de la conversation");
     }
-  }, []);
+  }, [profile?.id]);
 
-  // Load initial messages
   useEffect(() => {
-    loadMessages();
-  }, [loadMessages]);
+    if (profile?.id) {
+      loadMessages();
+    }
+  }, [profile?.id, loadMessages]);
 
   return {
     messages,
