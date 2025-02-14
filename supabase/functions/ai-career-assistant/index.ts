@@ -33,24 +33,56 @@ serve(async (req) => {
 
     const hf = new HfInference(hfToken);
 
-    // Prepare conversation context
+    // Analyze message intent
+    let intent = '';
+    if (message.toLowerCase().includes('cv')) {
+      intent = 'cv';
+    } else if (message.toLowerCase().includes('lettre') || message.toLowerCase().includes('motivation')) {
+      intent = 'cover_letter';
+    } else if (message.toLowerCase().includes('emploi') || message.toLowerCase().includes('job')) {
+      intent = 'job_search';
+    }
+
+    // Store user interaction
+    await supabase
+      .from('user_interactions')
+      .insert({
+        user_id: userId,
+        interaction_type: 'chat',
+        content: message,
+        metadata: { intent }
+      });
+
+    // Prepare conversation context with enhanced profile info
     const conversationContext = `Tu es M. Victaure, un assistant de carrière spécialisé dans les emplois de construction au Québec.
-    Ton rôle est d'aider les utilisateurs à identifier leurs compétences et leurs aspirations professionnelles.
-    Tu dois poser des questions pertinentes sur leur expérience et leurs préférences.
-    Basé sur leurs réponses, suggère des catégories d'emploi et aide à mettre à jour leur profil.
-    Communique toujours en français et maintiens un ton professionnel mais amical.
+    Ton rôle est d'être proactif et d'aider les utilisateurs dans leur recherche d'emploi.
     
-    Profil de l'utilisateur:
-    ${JSON.stringify(userProfile, null, 2)}
+    Objectifs principaux:
+    1. Aider à compléter le profil utilisateur
+    2. Suggérer des emplois pertinents
+    3. Aider à la création de CV et lettres de motivation
+    4. Accompagner dans les candidatures
     
-    Messages précédents:
+    Profil actuel de l'utilisateur:
+    ${JSON.stringify({
+      ...userProfile,
+      interactions: previousMessages.length
+    }, null, 2)}
+    
+    Historique récent:
     ${previousMessages.map((msg: any) => `${msg.sender}: ${msg.content}`).join('\n')}
     
-    Message actuel: ${message}`;
+    Message actuel: ${message}
+    
+    Instructions spéciales:
+    - Si le profil est incomplet, pose des questions pour le compléter
+    - Suggère des emplois qui correspondent au profil
+    - Propose de l'aide pour le CV ou la lettre de motivation si pertinent
+    - Maintiens un ton professionnel mais amical
+    - Communique toujours en français
+    - Sois proactif dans tes suggestions`;
 
-    console.log("Sending request to Hugging Face API with Janus model");
-
-    // Call Hugging Face API for text generation using Janus model
+    // Generate response using Janus model
     const response = await hf.textGeneration({
       model: 'deepseek-ai/Janus-Pro-7B',
       inputs: conversationContext,
@@ -62,10 +94,7 @@ serve(async (req) => {
       }
     });
 
-    console.log("Received response from Hugging Face:", response);
-
-    // Translate response to French using Any-to-Any model
-    console.log("Translating response to French");
+    // Translate response to French
     const translationResponse = await hf.translation({
       model: 'facebook/nllb-200-distilled-600M',
       inputs: response.generated_text || "",
@@ -77,68 +106,80 @@ serve(async (req) => {
 
     const textResponse = translationResponse.translation_text || "Je m'excuse, je n'ai pas pu générer une réponse appropriée.";
 
+    // Generate audio if requested
     let audioContent = null;
     if (audioFormat) {
-      // Generate audio response using text-to-speech
-      console.log("Generating audio response");
       const audioResponse = await hf.textToSpeech({
         model: 'facebook/mms-tts-fra',
         inputs: textResponse
       });
-
-      // Convert audio to base64
       const arrayBuffer = await audioResponse.arrayBuffer();
       audioContent = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
     }
 
-    // Update user profile if needed
+    // Update profile if needed
     if (userProfile && message.toLowerCase().includes('oui') && previousMessages.length > 0) {
       try {
-        // Extract skills using Janus model
-        const skillsPrompt = `Extract professional skills from this text. Respond with a list, one skill per line: ${message}`;
-        const skillsResponse = await hf.textGeneration({
-          model: 'deepseek-ai/Janus-Pro-7B',
-          inputs: skillsPrompt,
-          parameters: {
-            max_new_tokens: 100,
-            temperature: 0.3,
-            return_full_text: false
-          }
-        });
+        const profileUpdates: any = {};
+        const lastMessage = previousMessages[previousMessages.length - 1].content.toLowerCase();
 
-        if (skillsResponse.generated_text) {
-          // Translate skills to French
-          const skillsTranslation = await hf.translation({
-            model: 'facebook/nllb-200-distilled-600M',
-            inputs: skillsResponse.generated_text,
+        // Extract skills
+        if (lastMessage.includes('compétence')) {
+          const skillsPrompt = `Extract professional skills from this text. Respond with a list, one skill per line: ${message}`;
+          const skillsResponse = await hf.textGeneration({
+            model: 'deepseek-ai/Janus-Pro-7B',
+            inputs: skillsPrompt,
             parameters: {
-              src_lang: "eng_Latn",
-              tgt_lang: "fra_Latn"
+              max_new_tokens: 100,
+              temperature: 0.3,
+              return_full_text: false
             }
           });
 
-          const skills = skillsTranslation.translation_text
-            .split('\n')
-            .filter((skill: string) => skill.trim().length > 0)
-            .map((skill: string) => skill.trim().replace(/^[-*]\s*/, ''));
+          if (skillsResponse.generated_text) {
+            const skillsTranslation = await hf.translation({
+              model: 'facebook/nllb-200-distilled-600M',
+              inputs: skillsResponse.generated_text,
+              parameters: {
+                src_lang: "eng_Latn",
+                tgt_lang: "fra_Latn"
+              }
+            });
 
-          if (skills.length > 0) {
-            const { error: updateError } = await supabase
-              .from('profiles')
-              .update({ skills })
-              .eq('id', userId);
+            profileUpdates.skills = skillsTranslation.translation_text
+              .split('\n')
+              .filter((skill: string) => skill.trim().length > 0)
+              .map((skill: string) => skill.trim().replace(/^[-*]\s*/, ''));
+          }
+        }
 
-            if (updateError) {
-              console.error("Error updating profile:", updateError);
-            }
+        // Extract career objectives
+        if (lastMessage.includes('objectif') || lastMessage.includes('carrière')) {
+          profileUpdates.career_objectives = message;
+        }
+
+        // Extract preferred locations
+        if (lastMessage.includes('lieu') || lastMessage.includes('région')) {
+          profileUpdates.preferred_locations = message.split(',').map(loc => loc.trim());
+        }
+
+        // Update profile if we have changes
+        if (Object.keys(profileUpdates).length > 0) {
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update(profileUpdates)
+            .eq('id', userId);
+
+          if (updateError) {
+            console.error("Error updating profile:", updateError);
           }
         }
       } catch (error) {
-        console.error("Error processing skills:", error);
+        console.error("Error processing profile update:", error);
       }
     }
 
-    // Search for relevant jobs
+    // Search for relevant jobs based on user profile
     const { data: jobs, error: jobsError } = await supabase
       .from('jobs')
       .select('*')
@@ -151,11 +192,41 @@ serve(async (req) => {
       throw jobsError;
     }
 
+    // Calculate job match scores
+    const matchedJobs = jobs.map((job: any) => {
+      let score = 0;
+      
+      // Match skills
+      if (userProfile.skills) {
+        const matchingSkills = userProfile.skills.filter((skill: string) => 
+          job.required_skills?.includes(skill) || job.preferred_skills?.includes(skill)
+        );
+        score += matchingSkills.length * 2;
+      }
+
+      // Match location
+      if (userProfile.preferred_locations?.includes(job.location)) {
+        score += 3;
+      }
+
+      // Match work type
+      if (userProfile.preferred_work_type?.includes(job.contract_type)) {
+        score += 2;
+      }
+
+      return {
+        ...job,
+        match_score: score
+      };
+    }).sort((a: any, b: any) => b.match_score - a.match_score);
+
     return new Response(
       JSON.stringify({
         message: textResponse,
         audioContent,
-        suggestedJobs: jobs
+        suggestedJobs: matchedJobs,
+        userProfile, // Include current profile for UI updates
+        intent // Include detected intent for UI handling
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

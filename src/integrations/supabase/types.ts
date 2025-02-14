@@ -495,6 +495,79 @@ export type Database = {
         }
         Relationships: []
       }
+      cover_letters: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          job_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cover_letters_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cover_letters_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "relevant_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cover_letters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cv_templates: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          template_data: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          template_data: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          template_data?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dashboard_friends_list_components: {
         Row: {
           component_name: string
@@ -729,6 +802,78 @@ export type Database = {
           },
           {
             foreignKeyName: "hidden_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_applications: {
+        Row: {
+          application_date: string
+          cover_letter_id: string | null
+          created_at: string
+          cv_id: string | null
+          id: string
+          job_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          application_date?: string
+          cover_letter_id?: string | null
+          created_at?: string
+          cv_id?: string | null
+          id?: string
+          job_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          application_date?: string
+          cover_letter_id?: string | null
+          created_at?: string
+          cv_id?: string | null
+          id?: string
+          job_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_cover_letter_id_fkey"
+            columns: ["cover_letter_id"]
+            isOneToOne: false
+            referencedRelation: "cover_letters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_applications_cv_id_fkey"
+            columns: ["cv_id"]
+            isOneToOne: false
+            referencedRelation: "user_cvs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "relevant_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_applications_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -2274,8 +2419,11 @@ export type Database = {
       profiles: {
         Row: {
           auto_update_enabled: boolean | null
+          availability_date: string | null
           avatar_url: string | null
           bio: string | null
+          career_objectives: string | null
+          certificates: string[] | null
           chess_elo: number | null
           city: string | null
           company_name: string | null
@@ -2290,6 +2438,7 @@ export type Database = {
           full_name: string | null
           id: string
           industry: string | null
+          languages: string[] | null
           last_activity: string | null
           last_seen: string | null
           last_used_tool: string | null
@@ -2299,10 +2448,13 @@ export type Database = {
           notifications_enabled: boolean | null
           online_status: boolean | null
           phone: string | null
+          preferred_locations: string[] | null
+          preferred_work_type: string[] | null
           privacy_enabled: boolean | null
           push_notifications_enabled: boolean | null
           push_token: string | null
           role: string
+          salary_expectations: Json | null
           search_enabled: boolean | null
           sections_order: string[] | null
           skills: string[] | null
@@ -2315,8 +2467,11 @@ export type Database = {
         }
         Insert: {
           auto_update_enabled?: boolean | null
+          availability_date?: string | null
           avatar_url?: string | null
           bio?: string | null
+          career_objectives?: string | null
+          certificates?: string[] | null
           chess_elo?: number | null
           city?: string | null
           company_name?: string | null
@@ -2331,6 +2486,7 @@ export type Database = {
           full_name?: string | null
           id: string
           industry?: string | null
+          languages?: string[] | null
           last_activity?: string | null
           last_seen?: string | null
           last_used_tool?: string | null
@@ -2340,10 +2496,13 @@ export type Database = {
           notifications_enabled?: boolean | null
           online_status?: boolean | null
           phone?: string | null
+          preferred_locations?: string[] | null
+          preferred_work_type?: string[] | null
           privacy_enabled?: boolean | null
           push_notifications_enabled?: boolean | null
           push_token?: string | null
           role: string
+          salary_expectations?: Json | null
           search_enabled?: boolean | null
           sections_order?: string[] | null
           skills?: string[] | null
@@ -2356,8 +2515,11 @@ export type Database = {
         }
         Update: {
           auto_update_enabled?: boolean | null
+          availability_date?: string | null
           avatar_url?: string | null
           bio?: string | null
+          career_objectives?: string | null
+          certificates?: string[] | null
           chess_elo?: number | null
           city?: string | null
           company_name?: string | null
@@ -2372,6 +2534,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           industry?: string | null
+          languages?: string[] | null
           last_activity?: string | null
           last_seen?: string | null
           last_used_tool?: string | null
@@ -2381,10 +2544,13 @@ export type Database = {
           notifications_enabled?: boolean | null
           online_status?: boolean | null
           phone?: string | null
+          preferred_locations?: string[] | null
+          preferred_work_type?: string[] | null
           privacy_enabled?: boolean | null
           push_notifications_enabled?: boolean | null
           push_token?: string | null
           role?: string
+          salary_expectations?: Json | null
           search_enabled?: boolean | null
           sections_order?: string[] | null
           skills?: string[] | null
@@ -3025,6 +3191,83 @@ export type Database = {
           {
             foreignKeyName: "user_conversations_participant2_id_fkey"
             columns: ["participant2_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_cvs: {
+        Row: {
+          created_at: string
+          cv_data: Json
+          id: string
+          template_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          cv_data: Json
+          id?: string
+          template_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          cv_data?: Json
+          id?: string
+          template_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_cvs_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "cv_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_cvs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_interactions: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          interaction_type: string
+          metadata: Json | null
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          interaction_type: string
+          metadata?: Json | null
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          metadata?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_interactions_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
