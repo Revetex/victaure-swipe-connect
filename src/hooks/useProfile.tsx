@@ -52,5 +52,5 @@ export function useProfile() {
     };
   }, [user, isAuthenticated]);
 
-  return { profile, isLoading };
+  return { profile, isLoading, setProfile };
 }
