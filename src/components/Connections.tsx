@@ -66,22 +66,22 @@ const ToolCard = memo(({ tool, onClick }: {
     >
       <Card 
         className={cn(
-          "p-6 cursor-pointer transition-all duration-300",
+          "p-4 sm:p-6 cursor-pointer transition-all duration-300",
           "hover:shadow-lg hover:border-primary/20",
           "active:scale-95"
         )}
         onClick={onClick}
       >
-        <div className="flex items-start gap-4">
+        <div className="flex items-start gap-3 sm:gap-4">
           <div className={cn(
-            "p-3 rounded-xl",
+            "p-2 sm:p-3 rounded-xl",
             tool.color
           )}>
-            <Icon className="h-6 w-6" />
+            <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
-          <div className="flex-1 space-y-2">
-            <h3 className="font-semibold tracking-tight">{tool.name}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+          <div className="flex-1 space-y-1 sm:space-y-2">
+            <h3 className="font-semibold tracking-tight text-sm sm:text-base">{tool.name}</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
               {tool.description}
             </p>
           </div>
@@ -118,9 +118,9 @@ export function Connections() {
   };
 
   return (
-    <div className="min-h-screen p-4 space-y-6 pt-20">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+    <div className="min-h-screen p-2 sm:p-4 space-y-4 sm:space-y-6 pt-16 sm:pt-20 w-full max-w-7xl mx-auto">
+      <div className="flex items-center justify-between mb-2 px-2">
+        <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
           Outils
         </h2>
         <Button
@@ -133,12 +133,12 @@ export function Connections() {
         </Button>
       </div>
 
-      <ScrollArea className="h-[calc(100vh-12rem)]">
+      <ScrollArea className="h-[calc(100vh-8rem)]">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 px-2"
         >
           {tools.map((tool) => (
             <motion.div
