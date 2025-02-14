@@ -24,7 +24,7 @@ export function useMessages() {
 
   // Subscribe to real-time message updates
   useMessageSubscription({
-    onMessage: (newMessage) => {
+    onMessage: (newMessage: Message) => {
       queryClient.setQueryData(['messages', receiver?.id, lastCursor], (oldMessages: Message[] = []) => {
         const messageExists = oldMessages.some(msg => msg.id === newMessage.id);
         if (messageExists) return oldMessages;
