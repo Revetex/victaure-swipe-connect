@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Job } from "@/types/job";
 import { JobFilters } from "../JobFilterUtils";
-import { toast } from "sonner";
 
 export function useSwipeJobs(filters: JobFilters) {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -37,8 +36,8 @@ export function useSwipeJobs(filters: JobFilters) {
       if (filters.subcategory && filters.subcategory !== "all") {
         query = query.eq("subcategory", filters.subcategory);
       }
-      if (filters.duration && filters.duration !== "all") {
-        query = query.eq("contract_type", filters.duration);
+      if (filters.contractType && filters.contractType !== "all") {
+        query = query.eq("contract_type", filters.contractType);
       }
       if (filters.experienceLevel && filters.experienceLevel !== "all") {
         query = query.eq("experience_level", filters.experienceLevel);
@@ -82,7 +81,6 @@ export function useSwipeJobs(filters: JobFilters) {
       setCurrentIndex(0);
     } catch (error) {
       console.error('Error in fetchJobs:', error);
-      toast.error("Impossible de charger les offres");
     } finally {
       setLoading(false);
     }
