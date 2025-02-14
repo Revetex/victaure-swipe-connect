@@ -5,6 +5,8 @@ import type { UnifiedJob, JobTranscription } from "@/types/jobs/types";
 import { Job } from "@/types/job";
 import { toast } from "sonner";
 
+type MissionType = "company" | "individual";
+
 export const useJobsData = (queryString: string = "") => {
   return useQuery({
     queryKey: ["all-jobs", queryString],
@@ -42,21 +44,24 @@ export const useJobsData = (queryString: string = "") => {
         if (scrapedError) throw scrapedError;
 
         // Formater de manière uniforme
-        const formattedJobs: Job[] = [
-          ...victaureJobs.map(job => ({
-            ...job,
-            company: job.employer?.company_name || job.company_name || 'Entreprise',
-            url: `/jobs/${job.id}`,
-            source: "internal" as const,
-            mission_type: (job.mission_type === 'company' || job.mission_type === 'individual') 
-              ? job.mission_type 
-              : 'company' as const,
-            employer: {
-              company_name: job.employer?.company_name,
-              avatar_url: job.employer?.avatar_url
-            },
-            status: job.status as "open" | "closed" | "in-progress"
-          })),
+        const formattedJobs = [
+          ...victaureJobs.map(job => {
+            const missionType: MissionType = 
+              job.mission_type === 'individual' ? 'individual' : 'company';
+            
+            return {
+              ...job,
+              company: job.employer?.company_name || job.company_name || 'Entreprise',
+              url: `/jobs/${job.id}`,
+              source: "internal" as const,
+              mission_type: missionType,
+              employer: {
+                company_name: job.employer?.company_name,
+                avatar_url: job.employer?.avatar_url
+              },
+              status: job.status as "open" | "closed" | "in-progress"
+            } satisfies Job;
+          }),
           ...scrapedJobs.map(job => ({
             id: job.id,
             title: job.title,
@@ -71,9 +76,9 @@ export const useJobsData = (queryString: string = "") => {
             company: job.company,
             url: job.url,
             source: "external" as const,
-            mission_type: 'company' as const
-          }))
-        ];
+            mission_type: 'company' as MissionType
+          } satisfies Job))
+        ] as Job[];
 
         // Filtrer si une recherche est présente
         if (queryString) {
