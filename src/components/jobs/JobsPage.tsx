@@ -64,21 +64,24 @@ export function JobsPage() {
 
               <TabsContent value="regular">
                 <JobList 
-                  filters={{ ...filters, source: "regular" }}
+                  filters={filters}
+                  filterType="regular"
                   showFilters={showFilters}
                 />
               </TabsContent>
 
               <TabsContent value="contract">
                 <JobList 
-                  filters={{ ...filters, source: "contract" }}
+                  filters={filters}
+                  filterType="contract"
                   showFilters={showFilters}
                 />
               </TabsContent>
 
               <TabsContent value="marketplace">
                 <JobList 
-                  filters={{ ...filters, source: "marketplace" }}
+                  filters={filters}
+                  filterType="marketplace"
                   showFilters={showFilters}
                 />
               </TabsContent>
