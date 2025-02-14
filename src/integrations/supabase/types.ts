@@ -36,6 +36,42 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_file_uploads: {
+        Row: {
+          content_text: string | null
+          created_at: string
+          file_name: string
+          file_path: string
+          file_type: string
+          id: string
+          processed: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content_text?: string | null
+          created_at?: string
+          file_name: string
+          file_path: string
+          file_type: string
+          id?: string
+          processed?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content_text?: string | null
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          file_type?: string
+          id?: string
+          processed?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_learning_data: {
         Row: {
           context: Json | null
