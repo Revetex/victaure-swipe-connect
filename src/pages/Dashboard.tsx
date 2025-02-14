@@ -73,5 +73,12 @@ export default function Dashboard() {
     );
   }
 
-  return <DashboardLayout />;
+  return (
+    <DashboardLayout>
+      <div className="p-4">
+        <h1 className="text-2xl font-bold">Tableau de bord</h1>
+        <p className="mt-2 text-gray-600">Bienvenue sur votre tableau de bord</p>
+      </div>
+    </DashboardLayout>
+  );
 }
