@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -11,6 +10,8 @@ interface StripePaymentIntent {
   status: string;
   client_secret: string;
 }
+
+const STRIPE_PUBLISHABLE_KEY = 'pk_live_51QsA1qP81SjrpHwZtEEXH47DNbu9Uv5EIo1p3tD8FZBSWU4yLRcCcHKbRryaZVi4NcRKpiXx9hxhITg5XASiMyss00HFqJd6Ur';
 
 export function useStripePayment() {
   const [loading, setLoading] = useState(false);
@@ -125,12 +126,5 @@ async function getStripe() {
   if (typeof window === 'undefined') return null;
   
   const { loadStripe } = await import('@stripe/stripe-js');
-  const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-  
-  if (!publishableKey) {
-    console.error('Stripe publishable key not found');
-    return null;
-  }
-
-  return await loadStripe(publishableKey);
+  return await loadStripe(STRIPE_PUBLISHABLE_KEY);
 }
