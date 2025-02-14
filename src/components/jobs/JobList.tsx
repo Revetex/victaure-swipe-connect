@@ -8,15 +8,16 @@ import { JobFilters } from "./JobFilterUtils";
 import { Job } from "@/types/job";
 import { Card } from "@/components/ui/card";
 
-interface JobListProps {
+export interface JobListProps {
   filters: JobFilters;
   showFilters: boolean;
   jobs?: Job[];
   onJobDeleted?: () => void;
+  filterType: "regular" | "contract" | "marketplace";
 }
 
-export function JobList({ filters, showFilters, jobs: propJobs, onJobDeleted }: JobListProps) {
-  const { jobs: fetchedJobs, loading } = useSwipeJobs(filters);
+export function JobList({ filters, showFilters, jobs: propJobs, onJobDeleted, filterType }: JobListProps) {
+  const { jobs: fetchedJobs, loading } = useSwipeJobs({ ...filters, source: filterType });
   const jobs = propJobs || fetchedJobs;
 
   if (loading) {
