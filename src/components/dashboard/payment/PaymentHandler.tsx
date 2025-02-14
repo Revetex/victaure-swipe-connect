@@ -25,9 +25,10 @@ export function PaymentHandler() {
     try {
       await createEscrow({
         amount: Number(amount),
-        payment_type: paymentType,
+        currency: 'CAD',
         status: 'frozen',
-        currency: 'CAD'
+        payer_id: '', // sera rempli par le backend
+        payee_id: '', // sera rempli par le backend
       });
       
       setAmount("");
@@ -83,7 +84,14 @@ export function PaymentHandler() {
           </div>
         ) : (
           <TransactionList
-            transactions={escrows || []}
+            transactions={escrows?.map(escrow => ({
+              id: escrow.id,
+              match_id: null,
+              amount: escrow.amount,
+              payment_type: 'interac',
+              status: escrow.status as 'frozen' | 'released' | 'cancelled',
+              created_at: escrow.created_at,
+            })) || []}
             onRelease={handleRelease}
           />
         )}
