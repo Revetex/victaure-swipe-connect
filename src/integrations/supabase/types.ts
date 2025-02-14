@@ -859,9 +859,11 @@ export type Database = {
       }
       jobs: {
         Row: {
+          accept_bids: boolean | null
           application_deadline: string | null
           application_steps: Json | null
           benefits: string[] | null
+          bid_end_date: string | null
           budget: number
           category: string
           certifications_required: string[] | null
@@ -889,6 +891,8 @@ export type Database = {
           latitude: number | null
           location: string
           longitude: number | null
+          max_bid: number | null
+          min_bid: number | null
           mission_type: string
           payment_schedule: string | null
           perks: string[] | null
@@ -915,9 +919,11 @@ export type Database = {
           years_of_experience: number | null
         }
         Insert: {
+          accept_bids?: boolean | null
           application_deadline?: string | null
           application_steps?: Json | null
           benefits?: string[] | null
+          bid_end_date?: string | null
           budget: number
           category?: string
           certifications_required?: string[] | null
@@ -945,6 +951,8 @@ export type Database = {
           latitude?: number | null
           location: string
           longitude?: number | null
+          max_bid?: number | null
+          min_bid?: number | null
           mission_type?: string
           payment_schedule?: string | null
           perks?: string[] | null
@@ -971,9 +979,11 @@ export type Database = {
           years_of_experience?: number | null
         }
         Update: {
+          accept_bids?: boolean | null
           application_deadline?: string | null
           application_steps?: Json | null
           benefits?: string[] | null
+          bid_end_date?: string | null
           budget?: number
           category?: string
           certifications_required?: string[] | null
@@ -1001,6 +1011,8 @@ export type Database = {
           latitude?: number | null
           location?: string
           longitude?: number | null
+          max_bid?: number | null
+          min_bid?: number | null
           mission_type?: string
           payment_schedule?: string | null
           perks?: string[] | null
@@ -1817,7 +1829,9 @@ export type Database = {
           id: string
           is_active: boolean | null
           is_default: boolean | null
+          last_used_at: string | null
           payment_type: string
+          stripe_payment_method_id: string | null
           updated_at: string
           user_id: string
         }
@@ -1828,7 +1842,9 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_default?: boolean | null
+          last_used_at?: string | null
           payment_type: string
+          stripe_payment_method_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -1839,7 +1855,9 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_default?: boolean | null
+          last_used_at?: string | null
           payment_type?: string
+          stripe_payment_method_id?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -2597,6 +2615,42 @@ export type Database = {
           id?: string
           stripe_customer_id?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stripe_payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string | null
+          id: string
+          metadata: Json | null
+          status: string | null
+          stripe_payment_intent_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
