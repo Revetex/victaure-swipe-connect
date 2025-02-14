@@ -19,12 +19,14 @@ export function DeleteConversationDialog({ onConfirm, onCancel }: DeleteConversa
     try {
       await onConfirm();
       toast.success("Conversation supprimée avec succès");
-      if (typeof document !== 'undefined') {
-        document.querySelector('dialog')?.close();
-      }
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
       toast.error("Erreur lors de la suppression de la conversation");
+    } finally {
+      if (typeof document !== 'undefined') {
+        const dialog = document.querySelector('dialog');
+        if (dialog) dialog.close();
+      }
     }
   };
 
@@ -39,17 +41,12 @@ export function DeleteConversationDialog({ onConfirm, onCancel }: DeleteConversa
       <DialogFooter className="flex gap-2 mt-4">
         <Button 
           variant="ghost" 
-          onClick={() => {
-            onCancel?.();
-            if (typeof document !== 'undefined') {
-              document.querySelector('dialog')?.close();
-            }
-          }}
+          onClick={onCancel}
         >
           Annuler
         </Button>
         <Button 
-          variant="destructive" 
+          variant="destructive"
           onClick={handleDelete}
         >
           Supprimer
