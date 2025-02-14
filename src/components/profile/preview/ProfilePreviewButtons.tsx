@@ -6,6 +6,8 @@ import { useConnectionStatus } from "./hooks/useConnectionStatus";
 import { useConnectionActions } from "./hooks/useConnectionActions";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ProfilePreviewButtonsProps {
   profile: UserProfile;
@@ -19,7 +21,6 @@ export function ProfilePreviewButtons({
   profile,
   onClose,
   canViewFullProfile,
-  onRequestChat,
   onViewProfile
 }: ProfilePreviewButtonsProps) {
   const {
@@ -28,6 +29,9 @@ export function ProfilePreviewButtons({
     isFriendRequestSent,
     isFriendRequestReceived
   } = useConnectionStatus(profile.id);
+
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const {
     handleAddFriend,
@@ -44,6 +48,15 @@ export function ProfilePreviewButtons({
       console.error("Action error:", error);
       toast.error("Une erreur est survenue");
     }
+  };
+
+  const handleMessageClick = () => {
+    if (!user) {
+      toast.error("Vous devez être connecté pour envoyer un message");
+      return;
+    }
+    onClose();
+    navigate(`/messages?receiver=${profile.id}`);
   };
 
   return (
@@ -105,11 +118,11 @@ export function ProfilePreviewButtons({
         </Button>
       )}
 
-      {!isBlocked && isFriend && onRequestChat && (
+      {isFriend && (
         <Button
           variant="outline"
           className="w-full flex items-center gap-2"
-          onClick={onRequestChat}
+          onClick={handleMessageClick}
         >
           <MessageCircle className="h-4 w-4" />
           Message

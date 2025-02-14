@@ -1,36 +1,13 @@
 
 import { UserProfile } from "@/types/profile";
-import { Button } from "@/components/ui/button";
-import { UserCircle, MessageCircle } from "lucide-react";
+import { UserCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { useConnectionStatus } from "./hooks/useConnectionStatus";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
 
 interface ProfilePreviewHeaderProps {
   profile: UserProfile;
-  onRequestChat?: () => void;
 }
 
-export function ProfilePreviewHeader({ profile, onRequestChat }: ProfilePreviewHeaderProps) {
-  const { isFriend } = useConnectionStatus(profile.id);
-  const navigate = useNavigate();
-  const { user } = useAuth();
-
-  const handleChatClick = () => {
-    if (!user) {
-      toast.error("Vous devez être connecté pour envoyer un message");
-      return;
-    }
-
-    if (onRequestChat) {
-      onRequestChat();
-    } else {
-      navigate(`/messages?receiver=${profile.id}`);
-    }
-  };
-
+export function ProfilePreviewHeader({ profile }: ProfilePreviewHeaderProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
@@ -38,17 +15,6 @@ export function ProfilePreviewHeader({ profile, onRequestChat }: ProfilePreviewH
       className="space-y-4"
     >
       <div className="flex items-center gap-4">
-        {isFriend && (
-          <Button
-            onClick={handleChatClick}
-            variant="secondary"
-            size="icon"
-            className="shrink-0 rounded-full hover:scale-105 transition-transform"
-          >
-            <MessageCircle className="w-4 h-4" />
-          </Button>
-        )}
-
         <div className="relative w-16 h-16 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center ring-2 ring-primary/10">
           {profile.avatar_url ? (
             <img
@@ -71,7 +37,7 @@ export function ProfilePreviewHeader({ profile, onRequestChat }: ProfilePreviewH
           <p className="text-sm text-muted-foreground">
             {profile.role === "professional" ? "Professionnel" : "Employeur"}
           </p>
-          {isFriend && profile.city && (
+          {profile.city && (
             <p className="text-sm text-muted-foreground mt-1">
               {[profile.city, profile.country].filter(Boolean).join(", ")}
             </p>
