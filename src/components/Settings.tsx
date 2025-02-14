@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { AppearanceSection } from "./settings/AppearanceSection";
 import { NotificationsSection } from "./settings/NotificationsSection";
 import { PrivacySection } from "./settings/PrivacySection";
@@ -51,7 +51,7 @@ export function Settings() {
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-3.5rem)]">
+    <ScrollArea className="h-[calc(100vh-4rem)]">
       <motion.div
         initial="initial"
         animate="animate"
@@ -66,16 +66,13 @@ export function Settings() {
           },
           exit: { opacity: 0 }
         }}
-        className="container mx-auto px-4 py-6 space-y-8 max-w-2xl"
+        className="w-full max-w-2xl mx-auto px-4 py-6 mt-16"
       >
         {settingsSections.map(({ id, Component }, index) => (
           <motion.div
             key={id}
             variants={sectionVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{ delay: index * 0.1 }}
+            className="mb-6"
           >
             <Component />
           </motion.div>
