@@ -9,6 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 export function PrivacySection() {
   const [privacyEnabled, setPrivacyEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
 
   useEffect(() => {
     fetchPrivacySettings();
@@ -16,8 +18,25 @@ export function PrivacySection() {
 
   const fetchPrivacySettings = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      setIsLoading(true);
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) {
+        console.error('Auth error:', authError);
+        if (retryCount < MAX_RETRIES) {
+          setRetryCount(prev => prev + 1);
+          setTimeout(fetchPrivacySettings, 1000 * (retryCount + 1));
+          return;
+        }
+        throw authError;
+      }
+
+      if (!user) {
+        toast.error("Session expirée", {
+          id: 'privacy-session-error'
+        });
+        return;
+      }
 
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -29,10 +48,11 @@ export function PrivacySection() {
       setPrivacyEnabled(profile?.privacy_enabled || false);
     } catch (error) {
       console.error('Error fetching privacy settings:', error);
-      // Utilisation d'un ID unique pour éviter les toasts en double
       toast.error("Erreur lors du chargement des paramètres de confidentialité", {
         id: 'privacy-fetch-error'
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -41,7 +61,13 @@ export function PrivacySection() {
     
     try {
       setIsLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) {
+        console.error('Auth error:', authError);
+        throw authError;
+      }
+
       if (!user) {
         toast.error("Non authentifié", {
           id: 'privacy-auth-error'
