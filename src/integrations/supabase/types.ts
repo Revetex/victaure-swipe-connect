@@ -1411,6 +1411,41 @@ export type Database = {
           },
         ]
       }
+      marketplace_bids: {
+        Row: {
+          amount: number
+          bidder_id: string
+          created_at: string
+          id: string
+          service_id: string
+          status: string | null
+        }
+        Insert: {
+          amount: number
+          bidder_id: string
+          created_at?: string
+          id?: string
+          service_id: string
+          status?: string | null
+        }
+        Update: {
+          amount?: number
+          bidder_id?: string
+          created_at?: string
+          id?: string
+          service_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_bids_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketplace_categories: {
         Row: {
           created_at: string | null
