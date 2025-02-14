@@ -12,8 +12,8 @@ export function Marketplace() {
         
         <Tabs defaultValue="services" className="w-full">
           <TabsList className="w-full sm:w-auto">
-            <TabsTrigger value="services" className="flex-1 sm:flex-none">Services</TabsTrigger>
-            <TabsTrigger value="items" className="flex-1 sm:flex-none">Articles</TabsTrigger>
+            <TabsTrigger value="services">Services</TabsTrigger>
+            <TabsTrigger value="items">Articles</TabsTrigger>
           </TabsList>
           
           <TabsContent value="services" className="mt-6">
