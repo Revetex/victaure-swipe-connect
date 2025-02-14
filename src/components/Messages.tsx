@@ -7,7 +7,7 @@ const queryClient = new QueryClient();
 export function Messages() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="h-[calc(100vh-4rem)] flex flex-col">
+      <div className="h-screen flex flex-col">
         <MessagesContainer />
       </div>
     </QueryClientProvider>
