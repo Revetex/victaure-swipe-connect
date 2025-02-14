@@ -7,99 +7,85 @@ import { FilterSection } from "./filters/FilterSection";
 import { useJobFilters } from "@/hooks/useJobFilters";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
-import { Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function JobsPage() {
   const { filters, updateFilter, resetFilters } = useJobFilters();
   const [showFilters, setShowFilters] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateFilter("searchTerm", searchTerm);
-  };
 
   return (
     <PageLayout>
       <div className="flex flex-col gap-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* En-tête */}
-        <div className="text-center space-y-4 max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Trouvez votre prochain emploi
-          </h1>
-          <p className="text-muted-foreground">
-            Parcourez les offres d'emploi disponibles ou publiez votre propre annonce
-          </p>
-        </div>
+        <Tabs defaultValue="regular" className="w-full">
+          <div className="flex items-center justify-between gap-4 flex-wrap mb-6">
+            <TabsList className="w-full sm:w-auto">
+              <TabsTrigger value="regular">Emplois réguliers</TabsTrigger>
+              <TabsTrigger value="contracts">Contrats & Jobines</TabsTrigger>
+              <TabsTrigger value="marketplace">Victaure Market</TabsTrigger>
+            </TabsList>
 
-        {/* Barre de recherche principale */}
-        <form onSubmit={handleSearch} className="max-w-2xl mx-auto w-full">
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Rechercher un poste, une entreprise..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-4 pr-12 py-3"
-            />
-            <Button 
-              type="submit" 
-              size="icon"
-              variant="ghost"
-              className="absolute right-2 top-1/2 -translate-y-1/2"
-            >
-              <Search className="h-4 w-4" />
-            </Button>
+            <Link to="/jobs/new" className="ml-auto">
+              <Button className="whitespace-nowrap">
+                <Plus className="h-4 w-4 mr-2" />
+                Publier une offre
+              </Button>
+            </Link>
           </div>
-        </form>
 
-        <div className="flex flex-col lg:flex-row gap-6 mt-8">
-          {/* Panneau de filtres */}
-          <aside className={cn(
-            "lg:w-80 shrink-0",
-            showFilters ? "block" : "hidden lg:block"
-          )}>
-            <div className="sticky top-32">
-              <JobFiltersPanel
-                filters={filters}
+          <div className="flex flex-col lg:flex-row gap-6">
+            <aside className={cn(
+              "lg:w-80 shrink-0 lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)]",
+              showFilters ? "block" : "hidden lg:block"
+            )}>
+              <JobFiltersPanel 
+                filters={filters} 
                 onFilterChange={updateFilter}
               />
-            </div>
-          </aside>
+            </aside>
 
-          <main className="flex-1 space-y-4">
-            <div className="flex items-center justify-between gap-4 flex-wrap">
-              <Button 
-                variant="outline" 
-                className="lg:hidden"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
-              </Button>
-
-              <Link to="/jobs/new" className="ml-auto">
-                <Button className="whitespace-nowrap">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Publier une offre
+            <main className="flex-1 space-y-4">
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <Button 
+                  variant="outline" 
+                  className="lg:hidden"
+                  onClick={() => setShowFilters(!showFilters)}
+                >
+                  {showFilters ? 'Masquer les filtres' : 'Afficher les filtres'}
                 </Button>
-              </Link>
-            </div>
+              </div>
 
-            <FilterSection 
-              filters={filters}
-              onFilterChange={updateFilter}
-              onReset={resetFilters}
-            />
+              <FilterSection 
+                filters={filters}
+                onFilterChange={updateFilter}
+                onReset={resetFilters}
+              />
 
-            <JobList 
-              filters={filters}
-              showFilters={showFilters}
-            />
-          </main>
-        </div>
+              <TabsContent value="regular">
+                <JobList 
+                  filters={{ ...filters, type: "regular" }}
+                  showFilters={showFilters}
+                />
+              </TabsContent>
+
+              <TabsContent value="contracts">
+                <JobList 
+                  filters={{ ...filters, type: "contract" }}
+                  showFilters={showFilters}
+                />
+              </TabsContent>
+
+              <TabsContent value="marketplace">
+                <JobList 
+                  filters={{ ...filters, type: "marketplace" }}
+                  showFilters={showFilters}
+                />
+              </TabsContent>
+            </main>
+          </div>
+        </Tabs>
       </div>
     </PageLayout>
   );
