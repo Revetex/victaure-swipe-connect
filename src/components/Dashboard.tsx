@@ -9,6 +9,8 @@ import { useEffect, memo } from "react";
 import { DashboardLoading } from "./dashboard/core/DashboardLoading";
 import { ErrorBoundary } from "react-error-boundary";
 import { DashboardErrorBoundary } from "./dashboard/layout/DashboardErrorBoundary";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const pageVariants = {
   initial: { 
@@ -38,26 +40,36 @@ const MemoizedVCardCreationForm = memo(VCardCreationForm);
 const MemoizedDashboardLoading = memo(DashboardLoading);
 
 export function Dashboard() {
-  const { profile, isLoading } = useProfile();
+  const { profile, isLoading: isProfileLoading } = useProfile();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const navigate = useNavigate();
 
-  // Log performance metrics
+  // Redirect to auth if not authenticated
   useEffect(() => {
-    const startTime = performance.now();
-    return () => {
-      const endTime = performance.now();
-      console.log(`Dashboard render time: ${endTime - startTime}ms`);
-    };
-  }, []);
+    if (!isAuthLoading && !isAuthenticated) {
+      console.log("Not authenticated, redirecting to auth");
+      toast.error("Veuillez vous connecter pour accéder au tableau de bord");
+      navigate("/auth");
+    }
+  }, [isAuthenticated, isAuthLoading, navigate]);
+
+  // Show loading state while checking auth and profile
+  if (isAuthLoading || isProfileLoading) {
+    return <MemoizedDashboardLoading />;
+  }
+
+  // Don't render anything if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Optimized background with reduced opacity for better performance */}
       <div className="absolute inset-0 bg-gradient-to-br from-background to-background/50 z-0" 
            style={{ willChange: 'transform' }} />
       <div className="absolute inset-0 bg-grid-pattern opacity-[0.01] z-0" 
            style={{ willChange: 'opacity' }} />
       
-      {/* Content */}
       <ErrorBoundary 
         FallbackComponent={DashboardErrorBoundary}
         onError={(error) => {
@@ -66,30 +78,26 @@ export function Dashboard() {
         }}
       >
         <AnimatePresence mode="wait" initial={false}>
-          {isLoading ? (
-            <MemoizedDashboardLoading />
-          ) : (
-            <motion.div
-              key={profile ? 'dashboard' : 'auth'}
-              variants={pageVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="relative z-10"
-              layoutId="dashboard-content"
-            >
-              {!profile ? (
-                <MemoizedVCardCreationForm />
-              ) : (
-                <MemoizedDashboardLayout>
-                  <div className="p-4">
-                    <h1 className="text-2xl font-bold">Tableau de bord</h1>
-                    <p className="mt-2 text-gray-600">Bienvenue sur votre tableau de bord</p>
-                  </div>
-                </MemoizedDashboardLayout>
-              )}
-            </motion.div>
-          )}
+          <motion.div
+            key={profile ? 'dashboard' : 'create-profile'}
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="relative z-10"
+            layoutId="dashboard-content"
+          >
+            {!profile ? (
+              <MemoizedVCardCreationForm />
+            ) : (
+              <MemoizedDashboardLayout>
+                <div className="p-4">
+                  <h1 className="text-2xl font-bold">Tableau de bord</h1>
+                  <p className="mt-2 text-gray-600">Bienvenue sur votre tableau de bord</p>
+                </div>
+              </MemoizedDashboardLayout>
+            )}
+          </motion.div>
         </AnimatePresence>
       </ErrorBoundary>
     </div>
