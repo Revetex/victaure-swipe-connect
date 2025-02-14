@@ -1,13 +1,14 @@
 
-import { Building2, MapPin, Calendar, Clock, Briefcase, Coins } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { JobBadges } from "./badges/JobBadges";
+import { cn } from "@/lib/utils";
 import { Job } from "@/types/job";
+import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { useJobBids } from "@/hooks/useJobBids";
 
 interface JobCardProps {
   job: Job;
@@ -15,104 +16,108 @@ interface JobCardProps {
 }
 
 export function JobCard({ job, onDeleted }: JobCardProps) {
-  const getFormattedDate = () => {
-    try {
-      const date = job.created_at ? new Date(job.created_at) : new Date();
-      return formatDistanceToNow(date, {
-        addSuffix: true,
-        locale: fr,
-      });
-    } catch (error) {
-      return 'Date non disponible';
-    }
+  const [expanded, setExpanded] = useState(false);
+  const [bidAmount, setBidAmount] = useState("");
+  const { bids, placeBid } = useJobBids(job.id);
+
+  const handleBidSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bidAmount) return;
+    
+    const amount = parseFloat(bidAmount);
+    if (isNaN(amount)) return;
+    
+    if (job.min_bid && amount < job.min_bid) return;
+    if (job.max_bid && amount > job.max_bid) return;
+    
+    await placeBid(amount);
+    setBidAmount("");
+  };
+
+  const isValidBid = () => {
+    const amount = parseFloat(bidAmount);
+    if (isNaN(amount)) return false;
+    if (job.min_bid && amount < job.min_bid) return false;
+    if (job.max_bid && amount > job.max_bid) return false;
+    return true;
   };
 
   return (
-    <Card className="relative p-6 hover:shadow-lg transition-shadow bg-card">
-      <div className="space-y-4">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0 flex-1">
-            <h3 className="text-lg font-semibold truncate">{job.title}</h3>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-              <Building2 className="h-4 w-4 shrink-0" />
-              <span className="truncate">{job.company}</span>
-            </div>
+    <Card className={cn(
+      "relative p-6 transition-all",
+      "md:hover:shadow-lg md:hover:scale-[1.02]",
+      "active:scale-[0.98] cursor-pointer",
+      expanded ? "bg-card/50" : ""
+    )}>
+      <motion.div 
+        layout
+        onClick={() => setExpanded(!expanded)}
+        className="space-y-4"
+      >
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h3 className="text-lg font-semibold leading-none tracking-tight">
+              {job.title}
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              {job.company || "Entreprise non spécifiée"}
+            </p>
           </div>
           
-          {job.is_urgent && (
-            <Badge variant="destructive">Urgent</Badge>
-          )}
-        </div>
-
-        <div className="grid sm:grid-cols-2 gap-3">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm">
-              <MapPin className="h-4 w-4 shrink-0 text-muted-foreground" />
-              <span>{job.location}</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm">
-              <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
-              <span>{job.contract_type}</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm">
-              <Clock className="h-4 w-4 shrink-0 text-muted-foreground" />
-              <span>{getFormattedDate()}</span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            {job.experience_level && (
-              <div className="flex items-center gap-2 text-sm">
-                <Briefcase className="h-4 w-4 shrink-0 text-muted-foreground" />
-                <span>{job.experience_level}</span>
-              </div>
-            )}
-
-            {job.budget > 0 && (
-              <div className="flex items-center gap-2 text-sm">
-                <Coins className="h-4 w-4 shrink-0 text-yellow-500" />
-                <span className="font-medium">{job.budget} CAD</span>
-                {job.payment_schedule && (
-                  <span className="text-muted-foreground">• {job.payment_schedule}</span>
-                )}
-              </div>
-            )}
+          <div className="flex items-center gap-2">
+            <p className="text-lg font-semibold">{job.budget} CAD</p>
           </div>
         </div>
 
-        {(job.required_skills?.length > 0 || job.tools_and_technologies?.length > 0) && (
-          <div className="border-t border-border pt-4">
-            <div className="flex flex-wrap gap-2">
-              {[...(job.required_skills || []), ...(job.tools_and_technologies || [])]
-                .slice(0, 5)
-                .map((skill, index) => (
-                  <Badge key={index} variant="secondary">
-                    {skill}
-                  </Badge>
-                ))}
-            </div>
-          </div>
+        <JobBadges job={job} />
+
+        {expanded && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-4"
+          >
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+              {job.description}
+            </p>
+
+            {job.accept_bids && (
+              <div className="space-y-4 pt-4 border-t">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div>
+                    <h4 className="font-medium">Enchères</h4>
+                    {job.bid_end_date && (
+                      <p className="text-sm text-muted-foreground">
+                        Se termine dans {formatDistanceToNow(new Date(job.bid_end_date), { locale: fr })}
+                      </p>
+                    )}
+                  </div>
+
+                  <form onSubmit={handleBidSubmit} className="flex items-center gap-2 w-full sm:w-auto">
+                    <input
+                      type="number"
+                      value={bidAmount}
+                      onChange={(e) => setBidAmount(e.target.value)}
+                      placeholder={`${job.min_bid || 0} - ${job.max_bid || "∞"} CAD`}
+                      className="w-full sm:w-32 px-3 py-1 rounded-md border"
+                      step="0.01"
+                      min={job.min_bid || 0}
+                      max={job.max_bid || undefined}
+                    />
+                    <Button 
+                      type="submit"
+                      disabled={!isValidBid()}
+                      className="whitespace-nowrap"
+                    >
+                      Placer une enchère
+                    </Button>
+                  </form>
+                </div>
+              </div>
+            )}
+          </motion.div>
         )}
-
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
-          {job.source === "external" ? (
-            <Button 
-              variant="outline"
-              onClick={() => window.open(job.url, '_blank')}
-            >
-              Voir l'offre externe
-            </Button>
-          ) : (
-            <Link to={`/jobs/${job.id}`}>
-              <Button>
-                Voir les détails
-              </Button>
-            </Link>
-          )}
-        </div>
-      </div>
+      </motion.div>
     </Card>
   );
 }
