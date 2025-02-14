@@ -7,9 +7,11 @@ import { useState } from "react";
 import { ExternalSearchSection } from "./jobs/sections/ExternalSearchSection";
 import { JobFilters } from "./jobs/JobFilterUtils";
 import { defaultFilters } from "./jobs/JobFilterUtils";
+import { useSwipeJobs } from "./jobs/swipe/useSwipeJobs";
 
 export function Marketplace() {
   const [filters, setFilters] = useState<JobFilters>(defaultFilters);
+  const { jobs } = useSwipeJobs(filters);
 
   const handleFilterChange = (key: keyof JobFilters, value: any) => {
     setFilters(prev => ({
@@ -58,6 +60,7 @@ export function Marketplace() {
           queryString={filters.searchTerm || ""}
           filters={filters}
           onFilterChange={handleFilterChange}
+          jobs={jobs}
         />
       </section>
     </div>
