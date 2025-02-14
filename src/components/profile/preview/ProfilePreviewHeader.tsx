@@ -1,3 +1,4 @@
+
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
 import { UserCircle, MessageCircle } from "lucide-react";
@@ -19,6 +20,17 @@ export function ProfilePreviewHeader({ profile, onRequestChat }: ProfilePreviewH
       className="space-y-4"
     >
       <div className="flex items-center gap-4">
+        {isFriend && onRequestChat && (
+          <Button
+            onClick={onRequestChat}
+            variant="secondary"
+            size="icon"
+            className="shrink-0 rounded-full hover:scale-105 transition-transform"
+          >
+            <MessageCircle className="w-4 h-4" />
+          </Button>
+        )}
+
         <div className="relative w-16 h-16 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center ring-2 ring-primary/10">
           {profile.avatar_url ? (
             <img
@@ -47,17 +59,6 @@ export function ProfilePreviewHeader({ profile, onRequestChat }: ProfilePreviewH
             </p>
           )}
         </div>
-
-        {isFriend && onRequestChat && (
-          <Button
-            onClick={onRequestChat}
-            variant="secondary"
-            size="icon"
-            className="rounded-full hover:scale-105 transition-transform"
-          >
-            <MessageCircle className="w-4 h-4" />
-          </Button>
-        )}
       </div>
     </motion.div>
   );

@@ -1,7 +1,7 @@
 
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
-import { FileText, UserPlus, UserMinus, Ban, MessageCircle } from "lucide-react";
+import { FileText, UserPlus, UserMinus, Ban } from "lucide-react";
 import { useConnectionStatus } from "./hooks/useConnectionStatus";
 import { useConnectionActions } from "./hooks/useConnectionActions";
 import { ProfilePreviewHeader } from "./ProfilePreviewHeader";
@@ -67,7 +67,7 @@ export function ProfilePreviewFront({
         </div>
         
         <div className="relative p-6">
-          <ProfilePreviewHeader profile={profile} />
+          <ProfilePreviewHeader profile={profile} onRequestChat={onRequestChat} />
           
           {isFriend && (
             <motion.div
@@ -136,22 +136,11 @@ export function ProfilePreviewFront({
           <Button
             variant={isBlocked ? "destructive" : "outline"}
             onClick={handleToggleBlock}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 col-span-2"
           >
             <Ban className="h-4 w-4" />
             {isBlocked ? "Débloquer" : "Bloquer"}
           </Button>
-
-          {isFriend && (
-            <Button
-              variant="outline"
-              className="flex items-center gap-2"
-              onClick={onRequestChat}
-            >
-              <MessageCircle className="h-4 w-4" />
-              Message
-            </Button>
-          )}
         </div>
 
         <Button
