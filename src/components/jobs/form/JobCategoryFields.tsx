@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface JobCategoryFieldsProps {
   category?: string;
@@ -97,12 +98,12 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-full px-2 sm:px-4">
       <FormField
         control={control}
         name="category"
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="w-full">
             <FormLabel>Catégorie</FormLabel>
             <FormControl>
               <Select
@@ -112,14 +113,21 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
                 }}
                 value={field.value || ""}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className={cn(
+                  "w-full truncate",
+                  "max-w-[calc(100vw-2rem)] sm:max-w-none"
+                )}>
                   <SelectValue placeholder="Sélectionnez une catégorie" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="min-w-[200px] w-full max-w-[90vw]">
                   <ScrollArea className="h-[300px]">
                     {categories?.map((category) => (
-                      <SelectItem key={category.id} value={category.name} className="flex items-center gap-2">
-                        <div className="flex items-center gap-2">
+                      <SelectItem 
+                        key={category.id} 
+                        value={category.name} 
+                        className="flex items-center gap-2"
+                      >
+                        <div className="flex items-center gap-2 truncate">
                           <CategoryIcon category={category.name} />
                           <span>{category.name}</span>
                         </div>
@@ -139,7 +147,7 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
           control={control}
           name="subcategory"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full">
               <FormLabel>Sous-catégorie</FormLabel>
               <FormControl>
                 <Select
@@ -150,13 +158,20 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
                   value={field.value || ""}
                   disabled={subcategoriesLoading}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className={cn(
+                    "w-full truncate",
+                    "max-w-[calc(100vw-2rem)] sm:max-w-none"
+                  )}>
                     <SelectValue placeholder="Sélectionnez une sous-catégorie" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="min-w-[200px] w-full max-w-[90vw]">
                     <ScrollArea className="h-[200px]">
                       {subcategories?.map((subcategory) => (
-                        <SelectItem key={subcategory.id} value={subcategory.name}>
+                        <SelectItem 
+                          key={subcategory.id} 
+                          value={subcategory.name}
+                          className="truncate"
+                        >
                           {subcategory.name}
                         </SelectItem>
                       ))}
