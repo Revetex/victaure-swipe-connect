@@ -14,6 +14,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ProfilePreview } from "@/components/ProfilePreview";
 
 interface ProfileSearchProps {
   onSelect: (profile: UserProfile) => void;
@@ -23,6 +24,7 @@ interface ProfileSearchProps {
 
 export function ProfileSearch({ onSelect, placeholder, className }: ProfileSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
 
   const { data: profiles } = useQuery({
     queryKey: ["profiles"],
@@ -46,6 +48,10 @@ export function ProfileSearch({ onSelect, placeholder, className }: ProfileSearc
     );
   }, [profiles, searchQuery]);
 
+  const handleProfileSelect = (profile: UserProfile) => {
+    setSelectedProfile(profile);
+  };
+
   return (
     <Command className={cn("rounded-lg border shadow-sm", className)}>
       <CommandInput
@@ -62,10 +68,7 @@ export function ProfileSearch({ onSelect, placeholder, className }: ProfileSearc
               <CommandItem
                 key={profile.id}
                 value={profile.full_name || ""}
-                onSelect={() => {
-                  onSelect(profile);
-                  setSearchQuery("");
-                }}
+                onSelect={() => handleProfileSelect(profile)}
                 className="flex items-center gap-3 p-3"
               >
                 <Avatar className="h-10 w-10">
@@ -81,6 +84,17 @@ export function ProfileSearch({ onSelect, placeholder, className }: ProfileSearc
             ))}
           </CommandGroup>
         </CommandList>
+      )}
+
+      {selectedProfile && (
+        <ProfilePreview
+          profile={selectedProfile}
+          isOpen={!!selectedProfile}
+          onClose={() => {
+            setSelectedProfile(null);
+            onSelect(selectedProfile);
+          }}
+        />
       )}
     </Command>
   );
