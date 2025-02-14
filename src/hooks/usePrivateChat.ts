@@ -52,12 +52,16 @@ export function usePrivateChat(receiver: Receiver) {
           last_seen: profile.last_seen || new Date().toISOString()
         };
 
+        const messageMetadata = typeof data.metadata === 'object' && data.metadata !== null 
+          ? data.metadata 
+          : {} as Record<string, any>;
+
         addMessage({
           ...data,
           timestamp: data.created_at,
           status: 'sent',
           message_type: 'user',
-          metadata: data.metadata || {},
+          metadata: messageMetadata,
           sender: messageSender,
           receiver: receiver
         });
