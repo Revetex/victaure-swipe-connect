@@ -1,109 +1,63 @@
 
-import { ReactNode } from "react";
-import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
-import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { AnimatePresence } from "framer-motion";
-import { useLocation } from "react-router-dom";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Navigation } from "@/components/Navigation";
+import React, { useState, useCallback } from "react";
+import { useProfile } from "@/hooks/useProfile";
+import { DashboardContent } from "./dashboard/DashboardContent";
+import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
+import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-interface DashboardLayoutProps {
-  children: ReactNode;
-  title?: string;
-  isEditing?: boolean;
-  showFriendsList?: boolean;
-  onToggleFriendsList?: () => void;
-  onToolReturn?: () => void;
-}
+export function DashboardLayout({ children }: { children?: React.ReactNode }) {
+  const [currentPage, setCurrentPage] = useState(4);
+  const [isEditing, setIsEditing] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const { profile } = useProfile();
 
-export function DashboardLayout({ 
-  children, 
-  title = "", 
-  isEditing = false,
-  showFriendsList = false,
-  onToggleFriendsList = () => {},
-  onToolReturn = () => {}
-}: DashboardLayoutProps) {
-  const isMobile = useIsMobile();
-  const location = useLocation();
-  const isFriendsPage = location.pathname.includes('/friends');
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+    setIsEditing(false);
+    setShowMobileMenu(false);
+  }, []);
+
+  const handleEditStateChange = useCallback((state: boolean) => {
+    setIsEditing(state);
+  }, []);
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Navigation desktop */}
-      {!isMobile && (
-        <nav className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <Navigation />
-        </nav>
-      )}
+    <div className="flex min-h-screen bg-background relative">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0.1, 0.2, 0.1] }}
+        transition={{ duration: 5, repeat: Infinity }}
+        className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#8B5CF6,transparent)]"
+      />
 
-      {/* Main content */}
+      <DashboardSidebar 
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+      />
+
+      <DashboardMobileNav
+        currentPage={currentPage}
+        showMobileMenu={showMobileMenu}
+        setShowMobileMenu={setShowMobileMenu}
+        onPageChange={handlePageChange}
+      />
+
       <main className={cn(
-        "flex-1 relative",
-        !isMobile && "ml-[280px] lg:ml-[320px]"
+        "flex-1 lg:ml-64 min-h-screen relative",
+        "glass-panel"
       )}>
-        {/* Fixed Header */}
-        <header className="fixed top-0 right-0 z-50 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-          <div className={cn(
-            "flex items-center gap-4 h-full px-4",
-            !isMobile && "ml-[280px] lg:ml-[320px]"
-          )}>
-            {isMobile && (
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Menu className="h-5 w-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="p-0 w-[280px]">
-                  <Navigation />
-                </SheetContent>
-              </Sheet>
-            )}
-            <DashboardHeader 
-              title={title}
-              showFriendsList={showFriendsList}
-              onToggleFriendsList={onToggleFriendsList}
+        <div className="h-full">
+          {children || (
+            <DashboardContent
+              currentPage={currentPage}
               isEditing={isEditing}
-              onToolReturn={onToolReturn}
-            />
-          </div>
-        </header>
-
-        {/* Content area with correct spacing */}
-        <div className="pt-16">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
-        </div>
-
-        {/* Friends list overlay - adjusted z-index */}
-        <AnimatePresence mode="wait">
-          {showFriendsList && (
-            <DashboardFriendsList 
-              show={showFriendsList} 
-              onClose={onToggleFriendsList}
+              onEditStateChange={handleEditStateChange}
+              onRequestChat={() => handlePageChange(2)}
             />
           )}
-        </AnimatePresence>
-
-        {/* Mobile navigation */}
-        {!isFriendsPage && isMobile && (
-          <nav 
-            className="h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed bottom-0 left-0 right-0 z-50"
-            style={{ 
-              paddingBottom: 'env(safe-area-inset-bottom)'
-            }}
-          >
-            <div className="h-full px-4">
-              {/* Mobile navigation content */}
-            </div>
-          </nav>
-        )}
+        </div>
       </main>
     </div>
   );

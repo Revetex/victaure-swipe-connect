@@ -9,12 +9,12 @@ import { Dialog, DialogContent } from "./ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { ProfilePreviewModal } from "./profile/preview/ProfilePreviewModal";
 import { ProfilePreviewButtons } from "./profile/preview/ProfilePreviewButtons";
-import { useReceiver } from "@/hooks/useReceiver";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
   isOpen: boolean;
   onClose: () => void;
+  onRequestChat?: () => void;
 }
 
 const MemoizedProfilePreviewDialog = memo(ProfilePreviewDialog);
@@ -23,11 +23,11 @@ export function ProfilePreview({
   profile,
   isOpen,
   onClose,
+  onRequestChat,
 }: ProfilePreviewProps) {
   const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const { user } = useAuth();
-  const { setReceiver } = useReceiver();
   const isOwnProfile = user?.id === profile.id;
   const canViewFullProfile = isOwnProfile || !profile.privacy_enabled;
   const [showFullscreenImage, setShowFullscreenImage] = useState(false);
@@ -36,18 +36,6 @@ export function ProfilePreview({
     if (profile.avatar_url) {
       setShowFullscreenImage(true);
     }
-  };
-
-  const handleRequestChat = () => {
-    setReceiver({
-      id: profile.id,
-      full_name: profile.full_name || "Utilisateur",
-      avatar_url: profile.avatar_url || "",
-      online_status: profile.online_status || false,
-      last_seen: profile.last_seen || new Date().toISOString()
-    });
-    onClose();
-    navigate("/dashboard/messages");
   };
 
   if (isMobile) {
@@ -60,13 +48,13 @@ export function ProfilePreview({
                 profile={profile}
                 isOpen={isOpen}
                 onClose={onClose}
-                onRequestChat={handleRequestChat}
+                onRequestChat={onRequestChat}
                 canViewFullProfile={canViewFullProfile}
                 onImageClick={handleImageClick}
               />
               <ProfilePreviewButtons
                 profile={profile}
-                onRequestChat={handleRequestChat}
+                onRequestChat={onRequestChat}
                 onClose={onClose}
                 canViewFullProfile={canViewFullProfile}
               />
@@ -97,7 +85,7 @@ export function ProfilePreview({
           profile={profile}
           isOpen={isOpen}
           onClose={onClose}
-          onRequestChat={handleRequestChat}
+          onRequestChat={onRequestChat}
           canViewFullProfile={canViewFullProfile}
           onImageClick={handleImageClick}
         />
