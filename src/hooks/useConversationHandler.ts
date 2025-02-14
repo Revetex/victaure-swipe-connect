@@ -30,7 +30,7 @@ export const useConversationHandler = () => {
           .from('messages')
           .select('*')
           .eq('receiver_id', user.id)
-          .eq('is_ai_message', true)
+          .eq('is_assistant', true)
           .limit(1);
 
         if (msgError) {
@@ -46,7 +46,7 @@ export const useConversationHandler = () => {
               content: "Bonjour ! Je suis M. Victaure, votre assistant personnel. Comment puis-je vous aider aujourd'hui ?",
               sender_id: 'assistant',
               receiver_id: user.id,
-              is_ai_message: true
+              is_assistant: true
             });
 
           if (welcomeError) {
