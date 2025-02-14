@@ -1,114 +1,128 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light dark;
-  text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  -moz-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
+@layer base {
+  :root {
+    --background: 0 0% 7%;  /* #121212 */
+    --foreground: 0 0% 92%;  /* #EAEAEA */
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 92%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 92%;
+    --primary: 25 100% 50%;  /* Orange vif pour le bouton principal */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 15%;  /* Gris foncé pour les boutons secondaires */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 65%;  /* Gris clair pour les infos secondaires */
+    --accent: 267 100% 25%;  /* Violet foncé pour les nouveautés */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 25 100% 50%;
+    --radius: 0.5rem;
+  }
 }
 
 body {
-  background-color: #f8fafc;
-  background-image: 
-    radial-gradient(at 47% 33%, hsla(262, 83%, 58%, 0.4) 0, transparent 59%), 
-    radial-gradient(at 82% 65%, hsla(218.00, 39.29%, 11.96%, 0.1) 0, transparent 55%);
-  background-attachment: fixed;
-  min-height: 100vh;
-  height: 100%;
-  overflow-y: auto;
-  color: #1a1a1a;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: 'Inter', 'Roboto', -apple-system, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.dark body {
-  background-color: #0f172a;
-  background-image: 
-    radial-gradient(at 47% 33%, hsla(262, 83%, 58%, 0.1) 0, transparent 59%), 
-    radial-gradient(at 82% 65%, hsla(262, 83%, 58%, 0.05) 0, transparent 55%);
-  color: #ffffff;
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;  /* semi-bold pour les titres */
+  }
+
+  p, span, div {
+    font-weight: 400;  /* regular pour le texte principal */
+  }
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  background: rgba(18, 18, 18, 0.8);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.dark .glass-card {
-  background: rgba(17, 24, 39, 0.7);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
 }
 
 @layer utilities {
-  /* Cross-browser scrollbar hiding */
   .scrollbar-none {
     -ms-overflow-style: none;
-    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
   
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
 
-  @supports (scrollbar-width: none) {
-    .scrollbar-none {
-      scrollbar-width: none;
-    }
-  }
-
-  /* Use display: -webkit-box for line clamping instead of -webkit-line-clamp */
-  .line-clamp {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  .text-balance {
+    text-wrap: balance;
   }
 }
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 262 83.3% 57.8%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 262 83.3% 57.8%;
-    --radius: 0.75rem;
-  }
+/* Styles spécifiques pour le chat */
+.chat-container {
+  background-color: hsl(var(--background));
+  min-height: 100vh;
+}
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 262 83.3% 57.8%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 262 83.3% 57.8%;
-  }
+.chat-message {
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 0.5rem 0;
+  max-width: 85%;
+}
+
+.chat-message.user {
+  background-color: hsl(var(--primary) / 0.1);
+  margin-left: auto;
+}
+
+.chat-message.assistant {
+  background-color: hsl(var(--secondary));
+  margin-right: auto;
+}
+
+.new-chat-button {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.new-chat-button:hover {
+  background-color: hsl(var(--primary) / 0.9);
+  transform: translateY(-1px);
+}
+
+.secondary-button {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.secondary-button:hover {
+  background-color: hsl(var(--secondary) / 0.9);
+}
+
+.highlight {
+  background-color: hsl(var(--accent) / 0.1);
+  color: hsl(var(--accent-foreground));
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--accent) / 0.2);
 }
