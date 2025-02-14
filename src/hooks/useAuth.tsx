@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { User } from '@supabase/supabase-js';
+import { User, AuthError } from '@supabase/supabase-js';
 import { useSession } from './useSession';
 import { clearStorages, handleAuthError } from '@/utils/authUtils';
 import { toast } from 'sonner';
@@ -127,7 +127,13 @@ export function useAuth() {
             }
           } catch (error) {
             console.error("User verification error:", error);
-            handleAuthError(error as Error, signOut);
+            if (error instanceof AuthError) {
+              handleAuthError(error, signOut);
+            } else {
+              console.error("Unexpected error type:", error);
+              toast.error("Une erreur inattendue s'est produite");
+              signOut();
+            }
             if (mounted) {
               setState({
                 isLoading: false,
@@ -143,7 +149,13 @@ export function useAuth() {
 
       } catch (error) {
         console.error("Auth initialization error:", error);
-        handleAuthError(error as Error, signOut);
+        if (error instanceof AuthError) {
+          handleAuthError(error, signOut);
+        } else {
+          console.error("Unexpected error type:", error);
+          toast.error("Une erreur inattendue s'est produite");
+          signOut();
+        }
         if (mounted) {
           setState({
             isLoading: false,
