@@ -33,7 +33,7 @@ export interface Job {
   skills?: string[];
   source?: "internal" | "external";
   url?: string;
-  mission_type: 'company' | 'individual';  // Added this field
+  mission_type: 'company' | 'individual';
   employer?: {
     full_name?: string;
     company_name?: string;
@@ -62,6 +62,11 @@ export interface Job {
   salary_max?: number;
   salary_currency?: string;
   salary_period?: string;
+  // New bidding fields
+  accept_bids?: boolean;
+  min_bid?: number;
+  max_bid?: number;
+  bid_end_date?: string;
 }
 
 export * from './jobCategories';
