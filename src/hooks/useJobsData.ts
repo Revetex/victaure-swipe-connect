@@ -49,6 +49,11 @@ export const useJobsData = (queryString: string = "") => {
             const missionType: MissionType = 
               job.mission_type === 'individual' ? 'individual' : 'company';
             
+            // Parse interview_process as array or provide empty array if invalid
+            const interviewProcess = job.interview_process 
+              ? (Array.isArray(job.interview_process) ? job.interview_process : [])
+              : [];
+            
             return {
               ...job,
               company: job.employer?.company_name || job.company_name || 'Entreprise',
@@ -59,7 +64,19 @@ export const useJobsData = (queryString: string = "") => {
                 company_name: job.employer?.company_name,
                 avatar_url: job.employer?.avatar_url
               },
-              status: job.status as "open" | "closed" | "in-progress"
+              status: job.status as "open" | "closed" | "in-progress",
+              interview_process: interviewProcess,
+              application_steps: job.application_steps || [],
+              salary_benefits: job.salary_benefits || {},
+              company_culture: job.company_culture || [],
+              perks: job.perks || [],
+              benefits: job.benefits || [],
+              languages: job.languages || [],
+              qualifications: job.qualifications || [],
+              responsibilities: job.responsibilities || [],
+              tools_and_technologies: job.tools_and_technologies || [],
+              certifications_required: job.certifications_required || [],
+              work_schedule: job.work_schedule || []
             } satisfies Job;
           }),
           ...scrapedJobs.map(job => ({
@@ -76,7 +93,19 @@ export const useJobsData = (queryString: string = "") => {
             company: job.company,
             url: job.url,
             source: "external" as const,
-            mission_type: 'company' as MissionType
+            mission_type: 'company' as MissionType,
+            interview_process: [],
+            application_steps: [],
+            salary_benefits: {},
+            company_culture: [],
+            perks: [],
+            benefits: [],
+            languages: [],
+            qualifications: [],
+            responsibilities: [],
+            tools_and_technologies: [],
+            certifications_required: [],
+            work_schedule: []
           } satisfies Job))
         ] as Job[];
 
