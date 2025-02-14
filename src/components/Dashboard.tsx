@@ -1,3 +1,4 @@
+
 import { useProfile } from "@/hooks/useProfile";
 import { DashboardAuth } from "./dashboard/core/DashboardAuth";
 import { DashboardLayout } from "./DashboardLayout";
@@ -80,7 +81,12 @@ export function Dashboard() {
               {!profile ? (
                 <MemoizedVCardCreationForm />
               ) : (
-                <MemoizedDashboardLayout />
+                <MemoizedDashboardLayout>
+                  <div className="p-4">
+                    <h1 className="text-2xl font-bold">Tableau de bord</h1>
+                    <p className="mt-2 text-gray-600">Bienvenue sur votre tableau de bord</p>
+                  </div>
+                </MemoizedDashboardLayout>
               )}
             </motion.div>
           )}
