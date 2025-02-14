@@ -20,10 +20,10 @@ export function SearchBar({ searchQuery, onSearchChange, onSelectFriend }: Searc
   const [open, setOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
 
-  const { data: profiles } = useQuery({
+  const { data: profiles = [] } = useQuery({
     queryKey: ["profiles", searchQuery],
     queryFn: async () => {
-      if (!searchQuery.trim()) return [];
+      if (!searchQuery.trim()) return [] as UserProfile[];
       
       const { data, error } = await supabase
         .from("profiles")
@@ -32,7 +32,7 @@ export function SearchBar({ searchQuery, onSearchChange, onSelectFriend }: Searc
         .limit(5);
 
       if (error) throw error;
-      return data as UserProfile[];
+      return (data || []) as UserProfile[];
     },
     enabled: searchQuery.length > 0
   });
@@ -49,11 +49,13 @@ export function SearchBar({ searchQuery, onSearchChange, onSelectFriend }: Searc
               setOpen(true);
             }}
           />
-          {open && (
-            <CommandList>
+          <CommandList>
+            {profiles.length === 0 && (
               <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+            )}
+            {profiles.length > 0 && (
               <CommandGroup heading="Résultats">
-                {profiles?.map((profile) => (
+                {profiles.map((profile) => (
                   <CommandItem
                     key={profile.id}
                     value={profile.full_name || ""}
@@ -73,8 +75,8 @@ export function SearchBar({ searchQuery, onSearchChange, onSelectFriend }: Searc
                   </CommandItem>
                 ))}
               </CommandGroup>
-            </CommandList>
-          )}
+            )}
+          </CommandList>
         </Command>
         <FriendSelector onSelectFriend={onSelectFriend}>
           <Button variant="outline" size="icon" className="shrink-0">
