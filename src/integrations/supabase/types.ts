@@ -2382,6 +2382,33 @@ export type Database = {
         }
         Relationships: []
       }
+      search_parameters: {
+        Row: {
+          created_at: string | null
+          custom_parameters: Json | null
+          google_cse_id: string | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          custom_parameters?: Json | null
+          google_cse_id?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          custom_parameters?: Json | null
+          google_cse_id?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       service_bids: {
         Row: {
           amount: number

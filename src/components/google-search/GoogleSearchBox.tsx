@@ -8,6 +8,19 @@ import { supabase } from "@/integrations/supabase/client";
 export function GoogleSearchBox() {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  
+  useEffect(() => {
+    // Initialize Google Custom Search
+    const script = document.createElement('script');
+    script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup
+      document.head.removeChild(script);
+    };
+  }, []);
 
   const handleSearch = async () => {
     try {
@@ -23,9 +36,6 @@ export function GoogleSearchBox() {
       if (data?.suggestion) {
         setSuggestions(prev => [...prev, data.suggestion]);
       }
-
-      // Ouvre la recherche Google dans un nouvel onglet
-      window.open(`https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`, '_blank');
     } catch (error) {
       console.error('Error during search:', error);
     }
@@ -46,6 +56,10 @@ export function GoogleSearchBox() {
           Rechercher
         </Button>
       </div>
+      
+      {/* Google Custom Search Element */}
+      <div className="gcse-search"></div>
+      
       {suggestions.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {suggestions.map((suggestion, index) => (
