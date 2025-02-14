@@ -10,7 +10,7 @@ import { useConversationDelete } from "@/hooks/useConversationDelete";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMessageReadStatus } from "@/hooks/useMessageReadStatus";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
 
 export function MessagesContainer() {
   const { receiver, setReceiver } = useReceiver();
@@ -86,8 +86,11 @@ export function MessagesContainer() {
         animate={{ opacity: 1 }}
         className="flex items-center justify-center h-[calc(100vh-4rem)]"
       >
-        <div className="text-muted-foreground">
-          Chargement des messages...
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="text-muted-foreground">
+            Chargement des messages...
+          </div>
         </div>
       </motion.div>
     );
