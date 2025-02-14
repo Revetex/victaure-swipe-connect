@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { User, AuthError } from '@supabase/supabase-js';
-import { useSession } from './useSession';
 import { clearStorages, handleAuthError } from '@/utils/authUtils';
 import { toast } from 'sonner';
 

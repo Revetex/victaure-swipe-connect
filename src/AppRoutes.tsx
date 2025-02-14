@@ -2,7 +2,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
-import Dashboard from "@/pages/Dashboard";
+import { Dashboard } from "@/components/Dashboard";
 import { TermsPage } from "@/components/legal/TermsPage";
 import { PrivacyPage } from "@/components/legal/PrivacyPage";
 import { CookiesPage } from "@/components/legal/CookiesPage";
