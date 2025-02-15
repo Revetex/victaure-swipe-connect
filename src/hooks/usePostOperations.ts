@@ -2,9 +2,11 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 export const usePostOperations = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const handleReaction = async (postId: string, userId: string | undefined, type: 'like' | 'dislike') => {
     if (!userId) {
@@ -36,13 +38,34 @@ export const usePostOperations = () => {
     }
 
     try {
-      const { error } = await supabase.rpc('handle_comment_reaction', {
-        p_comment_id: commentId,
-        p_user_id: userId,
-        p_reaction_type: type
-      });
+      const { data: existingReaction } = await supabase
+        .from('comment_reactions')
+        .select('*')
+        .eq('comment_id', commentId)
+        .eq('user_id', userId)
+        .maybeSingle();
 
-      if (error) throw error;
+      if (existingReaction && existingReaction.reaction_type === type) {
+        // Remove reaction if clicking the same type
+        const { error } = await supabase
+          .from('comment_reactions')
+          .delete()
+          .eq('comment_id', commentId)
+          .eq('user_id', userId);
+
+        if (error) throw error;
+      } else {
+        // Add or update reaction
+        const { error } = await supabase
+          .from('comment_reactions')
+          .upsert({
+            comment_id: commentId,
+            user_id: userId,
+            reaction_type: type
+          });
+
+        if (error) throw error;
+      }
 
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     } catch (error) {
@@ -57,11 +80,16 @@ export const usePostOperations = () => {
     receiverId: string,
     message?: string
   ) => {
+    if (!user?.id) {
+      toast.error("Vous devez être connecté pour partager du contenu");
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('shared_items')
         .insert({
-          sender_id: userId,
+          sender_id: user.id,
           receiver_id: receiverId,
           item_type: itemType,
           item_id: itemId,
