@@ -35,7 +35,7 @@ export interface DatabaseMessage {
   content: string;
   sender_id: string;
   receiver_id: string;
-  created_at: string;
+  created_at: string | null;
   updated_at: string | null;
   read: boolean;
   message_type: string;
@@ -49,8 +49,9 @@ export interface DatabaseMessage {
 
 export const transformDatabaseMessage = (msg: DatabaseMessage): Message => ({
   ...msg,
-  updated_at: msg.updated_at || msg.created_at,
-  timestamp: msg.created_at,
+  created_at: msg.created_at || new Date().toISOString(),
+  updated_at: msg.updated_at || msg.created_at || new Date().toISOString(),
+  timestamp: msg.created_at || new Date().toISOString(),
   message_type: (msg.message_type === 'system' || msg.message_type === 'user' || msg.message_type === 'assistant' 
     ? msg.message_type 
     : msg.is_assistant ? 'assistant' : 'user') as Message['message_type'],
@@ -60,5 +61,35 @@ export const transformDatabaseMessage = (msg: DatabaseMessage): Message => ({
   metadata: (typeof msg.metadata === 'object' && msg.metadata !== null 
     ? msg.metadata as Record<string, Json>
     : {}) as Record<string, Json>,
-  thinking: false
+  thinking: false,
+  reaction: msg.reaction || null,
+  is_assistant: Boolean(msg.is_assistant)
+});
+
+export const createEmptyMessage = (partial: Partial<Message> & Pick<Message, 'id' | 'content' | 'sender_id' | 'receiver_id'>): Message => ({
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  read: false,
+  message_type: 'user',
+  status: 'sent',
+  metadata: {},
+  reaction: null,
+  is_assistant: false,
+  thinking: false,
+  timestamp: new Date().toISOString(),
+  sender: {
+    id: partial.sender_id,
+    full_name: 'Unknown',
+    avatar_url: null,
+    online_status: false,
+    last_seen: new Date().toISOString()
+  },
+  receiver: {
+    id: partial.receiver_id,
+    full_name: 'Unknown',
+    avatar_url: null,
+    online_status: false,
+    last_seen: new Date().toISOString()
+  },
+  ...partial
 });

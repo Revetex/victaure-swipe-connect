@@ -5,7 +5,7 @@ import { useMessageQuery } from "./useMessageQuery";
 import { useMessageSubscription } from "./useMessageSubscription";
 import { useSendMessage } from "./messages/useSendMessage";
 import { useMarkAsRead } from "./messages/useMarkAsRead";
-import { Message } from "@/types/messages";
+import { Message, transformDatabaseMessage } from "@/types/messages";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -22,7 +22,7 @@ export function useMessages() {
     isLoading,
     error,
     refetch
-  } = useMessageQuery(receiver, lastCursor, hasMore, {
+  } = useMessageQuery(receiver?.id, {
     staleTime: 60 * 1000,
     cacheTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false
@@ -73,7 +73,7 @@ export function useMessages() {
   };
 
   return {
-    messages: Array.isArray(messages) ? messages : [],
+    messages: Array.isArray(messages) ? messages.map(msg => transformDatabaseMessage(msg)) : [],
     isLoading,
     error,
     markAsRead: markAsReadMutation,

@@ -1,6 +1,5 @@
-
 import { useState, useCallback } from 'react';
-import { Message, MessageSender } from '@/types/messages';
+import { Message, createEmptyMessage } from '@/types/messages';
 import { useProfile } from './useProfile';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,30 +20,23 @@ export function useChat() {
   });
   const { profile } = useProfile();
 
-  const defaultSender: MessageSender = {
-    id: profile?.id || '',
-    full_name: profile?.full_name || 'User',
-    avatar_url: profile?.avatar_url || '',
-    online_status: true,
-    last_seen: new Date().toISOString()
-  };
-
-  const addMessage = useCallback((content: string, sender: MessageSender = defaultSender) => {
-    const newMessage: Message = {
+  const addMessage = useCallback((content: string, receiver: Message['receiver']) => {
+    const newMessage = createEmptyMessage({
       id: crypto.randomUUID(),
       content,
-      sender_id: sender.id,
-      receiver_id: 'assistant',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      read: false,
-      sender,
-      timestamp: new Date().toISOString(),
-      message_type: sender.id === 'assistant' ? 'assistant' : 'user',
-      status: 'sent',
-      thinking: false,
-      metadata: {}
-    };
+      sender_id: profile?.id || '',
+      receiver_id: receiver.id,
+      sender: {
+        id: profile?.id || '',
+        full_name: profile?.full_name || 'User',
+        avatar_url: profile?.avatar_url || null,
+        online_status: true,
+        last_seen: new Date().toISOString()
+      },
+      receiver,
+      message_type: receiver.id === 'assistant' ? 'assistant' : 'user',
+      is_assistant: receiver.id === 'assistant'
+    });
 
     setState(prev => ({
       ...prev,
@@ -52,7 +44,7 @@ export function useChat() {
     }));
 
     return newMessage;
-  }, [defaultSender]);
+  }, [profile]);
 
   const setInputMessage = useCallback((message: string) => {
     setState(prev => ({ ...prev, inputMessage: message }));
@@ -62,17 +54,14 @@ export function useChat() {
     if (!message.trim()) return;
     
     try {
-      // Ajouter immédiatement le message de l'utilisateur
-      const userMessage = addMessage(message);
+      const userMessage = addMessage(message, { id: 'assistant' });
       setInputMessage('');
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // Simuler le début de la réponse
       setState(prev => ({ ...prev, isThinking: true }));
 
-      // Sauvegarder le message dans la base de données
       const { error: saveError } = await supabase
         .from('messages')
         .insert({
@@ -87,7 +76,6 @@ export function useChat() {
 
       if (saveError) throw saveError;
 
-      // Obtenir la réponse de l'IA
       const { data, error } = await supabase.functions.invoke('ai-chat', {
         body: { 
           message,
@@ -108,7 +96,6 @@ export function useChat() {
         last_seen: new Date().toISOString()
       });
 
-      // Sauvegarder la réponse de l'assistant
       const { error: saveAssistantError } = await supabase
         .from('messages')
         .insert({
@@ -160,7 +147,9 @@ export function useChat() {
     inputMessage: state.inputMessage,
     isListening: state.isListening,
     isThinking: state.isThinking,
-    setInputMessage,
+    setInputMessage: useCallback((message: string) => {
+      setState(prev => ({ ...prev, inputMessage: message }));
+    }, []),
     handleSendMessage,
     handleVoiceInput,
     clearChat
