@@ -27,8 +27,10 @@ export function useSendMessage() {
         created_at: now,
         updated_at: now,
         timestamp: now,
-        metadata: {},
-        receiver: receiver
+        metadata: {} as Record<string, any>,
+        receiver: receiver,
+        reaction: null,
+        is_assistant: receiver.id === 'assistant'
       };
 
       const { data: message, error: messageError } = await supabase
@@ -42,7 +44,6 @@ export function useSendMessage() {
         .single();
 
       if (messageError) throw messageError;
-
       return message;
     },
     onSuccess: (messageData) => {
@@ -53,7 +54,7 @@ export function useSendMessage() {
           status: 'sent',
           message_type: messageData.is_assistant ? 'assistant' : 'user',
           metadata: messageData.metadata || {},
-          reaction: null
+          reaction: messageData.reaction || null
         };
         addMessage(formattedMessage);
         queryClient.invalidateQueries({ queryKey: ["messages"] });
