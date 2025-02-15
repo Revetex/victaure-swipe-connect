@@ -50,19 +50,20 @@ export const useConversationDelete = () => {
 
           toast.success("Conversation définitivement supprimée");
         } else {
+          // Utiliser upsert avec onConflict pour gérer les doublons
           const { error: insertError } = await supabase
             .from('deleted_conversations')
             .upsert({
               user_id: user.id,
               conversation_partner_id: receiver.id
+            }, {
+              onConflict: 'user_id,conversation_partner_id',
+              ignoreDuplicates: true
             });
 
           if (insertError) {
-            if (insertError.code === '23505') { // Conflict error code
-              toast.info("Cette conversation est déjà supprimée");
-            } else {
-              throw insertError;
-            }
+            console.error('Insert error:', insertError);
+            toast.error("Erreur lors de la suppression de la conversation");
           } else {
             toast.success("Conversation supprimée de votre liste");
           }
