@@ -8,6 +8,8 @@ import { useConversationMessages } from "@/hooks/useConversationMessages";
 import { useAIChat } from "@/hooks/useAIChat";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
 import { Card } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export function MessagesContainer() {
   const { receiver, setReceiver, showConversation, setShowConversation } = useReceiver();
@@ -36,7 +38,8 @@ export function MessagesContainer() {
       const { error } = await supabase.from('messages').insert({
         content: inputMessage,
         receiver_id: receiver.id,
-        is_assistant: false
+        is_assistant: false,
+        message_type: 'user'
       });
 
       if (error) {
@@ -57,7 +60,7 @@ export function MessagesContainer() {
         {showConversation && receiver ? (
           <ConversationView
             receiver={receiver}
-            messages={messages}
+            messages={messages || []}
             inputMessage={inputMessage}
             isThinking={isThinking}
             onInputChange={setInputMessage}
@@ -71,7 +74,6 @@ export function MessagesContainer() {
           />
         ) : (
           <ConversationList
-            isLoading={isLoadingConversations}
             conversations={conversations}
             onSelectConversation={(receiver) => {
               setReceiver(receiver);

@@ -1,28 +1,27 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Message, Receiver } from "@/types/messages";
+import { Message } from "@/types/messages";
 import { toast } from "sonner";
 
 const MESSAGES_PER_PAGE = 20;
 
 export function useMessageQuery() {
-  const { data: { user } } = await supabase.auth.getUser();
-  
   return useQuery({
     queryKey: ["conversations"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user?.id) throw new Error("Non authentifié");
 
       try {
-        // Récupérer d'abord les conversations existantes
         const { data: conversations, error: convError } = await supabase
           .from('messages')
           .select(`
-            distinct on (LEAST(sender_id, receiver_id), GREATEST(sender_id, receiver_id))
             id,
             content,
             created_at,
+            sender_id,
+            receiver_id,
             sender:profiles!messages_sender_id_fkey(
               id, full_name, avatar_url, online_status, last_seen
             ),
@@ -45,11 +44,19 @@ export function useMessageQuery() {
 
         const deletedIds = new Set(deletedConvs?.map(dc => dc.conversation_partner_id) || []);
 
-        // Filtrer les conversations supprimées
+        // Filtrer les conversations supprimées et formater les données
         const activeConversations = conversations?.filter(conv => {
           const partnerId = conv.sender_id === user.id ? conv.receiver_id : conv.sender_id;
           return !deletedIds.has(partnerId);
-        }) || [];
+        }).map(conv => ({
+          id: conv.id,
+          content: conv.content,
+          created_at: conv.created_at,
+          sender: conv.sender,
+          receiver: conv.receiver,
+          message_type: 'user' as const,
+          timestamp: conv.created_at
+        })) || [];
 
         return activeConversations;
       } catch (error) {

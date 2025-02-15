@@ -2,18 +2,12 @@
 export interface MessageSender {
   id: string;
   full_name: string;
-  avatar_url: string;
+  avatar_url: string | null;
   online_status: boolean;
   last_seen: string;
 }
 
-export interface Receiver {
-  id: string;
-  full_name: string;
-  avatar_url: string;
-  online_status: boolean;
-  last_seen: string;
-}
+export type Receiver = MessageSender;
 
 export interface Message {
   id: string;
@@ -21,15 +15,14 @@ export interface Message {
   sender_id: string;
   receiver_id: string;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
   read: boolean;
   sender: MessageSender;
-  receiver?: Receiver;
+  receiver: Receiver;
   timestamp: string;
-  message_type: 'user' | 'assistant' | 'system';
-  status: 'sent' | 'delivered' | 'read';
-  metadata: Record<string, any>;
-  reaction?: string;
-  is_assistant?: boolean;
   thinking?: boolean;
+  message_type: 'system' | 'user' | 'assistant';
+  status: 'sent' | 'delivered' | 'read';
+  metadata?: Record<string, any>;
+  reaction?: string | null;
 }
