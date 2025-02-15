@@ -74,7 +74,6 @@ export function MessagesContainer() {
   };
 
   const handleStartNewChat = () => {
-    // Ici, on pourrait ouvrir un modal ou un dialogue pour sélectionner un utilisateur
     toast.info("Fonctionnalité en cours de développement");
   };
 
@@ -84,7 +83,14 @@ export function MessagesContainer() {
     conv.content?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const messages = receiver?.id === 'assistant' ? aiMessages : currentMessages;
+  const messages: Message[] = receiver?.id === 'assistant' 
+    ? aiMessages 
+    : (Array.isArray(currentMessages) 
+        ? currentMessages.map(msg => ({
+            ...transformDatabaseMessage(msg as DatabaseMessage),
+            message_type: msg.is_assistant ? 'assistant' : 'user'
+          }))
+        : []);
 
   return (
     <Card className="h-[calc(100vh-4rem)] flex flex-col">
