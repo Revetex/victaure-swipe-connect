@@ -22,20 +22,15 @@ export const formatChatMessages = (messages: ChatMessage[]): Message[] => {
       online_status: true,
       last_seen: new Date().toISOString()
     } : msg.sender,
+    receiver: typeof msg.sender === 'string' ? {
+      id: msg.receiver_id,
+      full_name: 'Utilisateur',
+      avatar_url: null,
+      online_status: true,
+      last_seen: new Date().toISOString()
+    } : msg.receiver,
     message_type: 'user',
     status: 'sent',
     metadata: {}
   }));
-};
-
-export const filterMessages = (messages: Message[], receiver: Receiver | null): Message[] => {
-  if (!Array.isArray(messages) || !receiver) return [];
-  
-  if (receiver.id === 'assistant') {
-    return messages;
-  }
-
-  return messages.filter(message => 
-    message && (message.sender_id === receiver.id || message.receiver_id === receiver.id)
-  );
 };

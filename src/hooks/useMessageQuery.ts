@@ -1,10 +1,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Message } from "@/types/messages";
+import { Message, Receiver } from "@/types/messages";
 import { toast } from "sonner";
-
-const MESSAGES_PER_PAGE = 20;
 
 export function useMessageQuery() {
   return useQuery({
@@ -22,6 +20,11 @@ export function useMessageQuery() {
             created_at,
             sender_id,
             receiver_id,
+            read,
+            status,
+            metadata,
+            reaction,
+            is_assistant,
             sender:profiles!messages_sender_id_fkey(
               id, full_name, avatar_url, online_status, last_seen
             ),
@@ -44,27 +47,33 @@ export function useMessageQuery() {
 
         const deletedIds = new Set(deletedConvs?.map(dc => dc.conversation_partner_id) || []);
 
-        // Filtrer les conversations supprimées et formater les données
-        const activeConversations = conversations?.filter(conv => {
-          const partnerId = conv.sender_id === user.id ? conv.receiver_id : conv.sender_id;
-          return !deletedIds.has(partnerId);
-        }).map(conv => ({
-          id: conv.id,
-          content: conv.content,
-          created_at: conv.created_at,
-          sender: conv.sender,
-          receiver: conv.receiver,
-          message_type: 'user' as const,
-          timestamp: conv.created_at
-        })) || [];
-
-        return activeConversations;
+        // Formater les conversations
+        return (conversations || [])
+          .filter(conv => {
+            const partnerId = conv.sender_id === user.id ? conv.receiver_id : conv.sender_id;
+            return !deletedIds.has(partnerId);
+          })
+          .map(conv => ({
+            id: conv.id,
+            content: conv.content,
+            sender_id: conv.sender_id,
+            receiver_id: conv.receiver_id,
+            created_at: conv.created_at,
+            updated_at: conv.created_at,
+            read: conv.read || false,
+            sender: conv.sender,
+            receiver: conv.receiver,
+            timestamp: conv.created_at,
+            message_type: conv.is_assistant ? 'assistant' as const : 'user' as const,
+            status: conv.status || 'sent',
+            metadata: conv.metadata || {},
+            reaction: conv.reaction,
+            is_assistant: conv.is_assistant
+          }));
       } catch (error) {
         console.error("Erreur chargement conversations:", error);
         throw error;
       }
-    },
-    staleTime: 30000,
-    retry: 1
+    }
   });
 }

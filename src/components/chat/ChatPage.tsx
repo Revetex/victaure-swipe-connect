@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,6 +24,7 @@ interface DatabaseMessage {
   metadata?: Record<string, any>;
   reaction?: string;
   sender?: MessageSender;
+  receiver?: MessageSender;
 }
 
 export function ChatPage() {
@@ -51,6 +51,13 @@ export function ChatPage() {
               avatar_url,
               online_status,
               last_seen
+            ),
+            receiver:profiles!messages_receiver_id_fkey (
+              id,
+              full_name,
+              avatar_url,
+              online_status,
+              last_seen
             )
           `)
           .order('created_at', { ascending: true });
@@ -68,10 +75,7 @@ export function ChatPage() {
 
         const { data, error } = await query;
 
-        if (error) {
-          console.error("Error fetching messages:", error);
-          return;
-        }
+        if (error) throw error;
 
         if (data) {
           const transformedMessages: Message[] = data.map(msg => ({
@@ -82,20 +86,14 @@ export function ChatPage() {
             created_at: msg.created_at,
             updated_at: msg.updated_at || msg.created_at,
             read: msg.read ?? false,
-            sender: msg.sender || {
-              id: msg.sender_id,
-              full_name: "Unknown",
-              avatar_url: "",
-              online_status: false,
-              last_seen: new Date().toISOString()
-            },
+            sender: msg.sender,
+            receiver: msg.receiver,
             timestamp: msg.created_at,
             message_type: msg.is_assistant ? 'assistant' : 'user',
-            status: (msg.status as 'sent' | 'delivered' | 'read') || 'sent',
-            metadata: (typeof msg.metadata === 'object' && msg.metadata !== null) ? msg.metadata as Record<string, any> : {},
-            is_assistant: msg.is_assistant || false,
-            thinking: false,
-            reaction: msg.reaction
+            status: msg.status || 'sent',
+            metadata: msg.metadata || {},
+            reaction: msg.reaction,
+            is_assistant: msg.is_assistant
           }));
           setMessages(transformedMessages);
         }
@@ -144,18 +142,13 @@ export function ChatPage() {
                 created_at: newMsg.created_at,
                 updated_at: newMsg.updated_at || newMsg.created_at,
                 read: newMsg.read ?? false,
-                sender: newMsg.sender || {
-                  id: newMsg.sender_id,
-                  full_name: "Unknown",
-                  avatar_url: "",
-                  online_status: false,
-                  last_seen: new Date().toISOString()
-                },
+                sender: newMsg.sender,
+                receiver: newMsg.receiver,
                 timestamp: newMsg.created_at,
                 message_type: newMsg.is_assistant ? 'assistant' : 'user',
                 status: newMsg.status || 'sent',
                 metadata: newMsg.metadata || {},
-                is_assistant: newMsg.is_assistant || false,
+                is_assistant: newMsg.is_assistant,
                 thinking: false,
                 reaction: newMsg.reaction
               };

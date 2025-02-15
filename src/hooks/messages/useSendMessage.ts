@@ -17,22 +17,23 @@ export function useSendMessage() {
       const messageType = receiver.id === 'assistant' ? 'assistant' as const : 'user' as const;
       const now = new Date().toISOString();
 
-      const newMessage: Omit<Message, 'id' | 'sender'> = {
+      const messageData = {
         content,
         sender_id: user.id,
         receiver_id: receiver.id,
         message_type: messageType,
         read: false,
-        status: 'sent',
+        status: 'sent' as const,
         created_at: now,
         updated_at: now,
         timestamp: now,
-        metadata: {}
+        metadata: {},
+        receiver: receiver
       };
 
-      const { data: messageData, error: messageError } = await supabase
+      const { data: message, error: messageError } = await supabase
         .from("messages")
-        .insert(newMessage)
+        .insert(messageData)
         .select(`
           *,
           sender:profiles!messages_sender_id_fkey(*),
@@ -42,36 +43,21 @@ export function useSendMessage() {
 
       if (messageError) throw messageError;
 
+      return message;
+    },
+    onSuccess: (messageData) => {
       if (messageData) {
         const formattedMessage: Message = {
           ...messageData,
           timestamp: messageData.created_at,
           status: 'sent',
-          message_type: messageType,
-          metadata: (messageData.metadata || {}) as Record<string, any>,
-          sender: messageData.sender || {
-            id: user.id,
-            full_name: user.user_metadata.full_name,
-            avatar_url: '',
-            online_status: true,
-            last_seen: new Date().toISOString()
-          },
-          receiver: messageData.receiver || receiver
+          message_type: messageData.is_assistant ? 'assistant' : 'user',
+          metadata: messageData.metadata || {},
+          reaction: null
         };
         addMessage(formattedMessage);
+        queryClient.invalidateQueries({ queryKey: ["messages"] });
       }
-
-      await supabase.from('notifications').insert({
-        user_id: receiver.id,
-        title: 'Nouveau message',
-        message: `${user.user_metadata.full_name || 'Quelqu\'un'} vous a envoyé un message`,
-        type: 'message'
-      });
-
-      return messageData;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["messages"] });
     },
     onError: () => {
       toast.error("Erreur lors de l'envoi du message");
