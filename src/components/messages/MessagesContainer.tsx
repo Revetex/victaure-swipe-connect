@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
@@ -16,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Plus, Bot } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { FriendSelector } from "./conversation/FriendSelector";
 
 export function MessagesContainer() {
   const { receiver, setReceiver, showConversation, setShowConversation } = useReceiver();
@@ -73,8 +73,25 @@ export function MessagesContainer() {
     setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
   };
 
-  const handleStartNewChat = () => {
-    toast.info("Fonctionnalité en cours de développement");
+  const handleStartNewChat = async (friendId: string) => {
+    try {
+      const { data: friend, error: friendError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', friendId)
+        .single();
+
+      if (friendError || !friend) {
+        toast.error("Impossible de trouver cet utilisateur");
+        return;
+      }
+
+      setReceiver(friend);
+      setShowConversation(true);
+    } catch (error) {
+      console.error('Error starting new chat:', error);
+      toast.error("Erreur lors de la création de la conversation");
+    }
   };
 
   const filteredConversations = conversations.filter(conv => 
@@ -123,13 +140,11 @@ export function MessagesContainer() {
                     className="pl-8"
                   />
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  onClick={handleStartNewChat}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
+                <FriendSelector onSelectFriend={handleStartNewChat}>
+                  <Button variant="outline" size="icon">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </FriendSelector>
               </div>
               
               <Button
