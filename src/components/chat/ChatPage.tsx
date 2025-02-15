@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -9,23 +8,9 @@ import { Separator } from "@/components/ui/separator";
 import { useUser } from "@/hooks/useUser";
 import { useReceiver } from "@/hooks/useReceiver";
 import { PageLayout } from "@/components/layout/PageLayout";
-import type { Message, MessageSender } from "@/types/messages";
-
-interface DatabaseMessage {
-  id: string;
-  content: string;
-  sender_id: string;
-  receiver_id: string;
-  created_at: string;
-  updated_at: string | null;
-  read: boolean;
-  is_assistant: boolean;
-  status?: 'sent' | 'delivered' | 'read';
-  metadata?: Record<string, any>;
-  reaction?: string;
-  sender?: MessageSender;
-  receiver?: MessageSender;
-}
+import { ChatMessage } from "./ChatMessage";
+import { toast } from "sonner";
+import type { Message } from "@/types/messages";
 
 export function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -89,8 +74,8 @@ export function ChatPage() {
             sender: msg.sender,
             receiver: msg.receiver,
             timestamp: msg.created_at,
-            message_type: msg.is_assistant ? 'assistant' : 'user',
-            status: msg.status || 'sent',
+            message_type: msg.is_assistant ? 'assistant' as const : 'user' as const,
+            status: (msg.status as Message['status']) || 'sent',
             metadata: msg.metadata || {},
             reaction: msg.reaction,
             is_assistant: msg.is_assistant
@@ -99,6 +84,7 @@ export function ChatPage() {
         }
       } catch (error) {
         console.error("Error fetching messages:", error);
+        toast.error("Erreur lors du chargement des messages");
       } finally {
         setLoading(false);
       }
@@ -182,16 +168,20 @@ export function ChatPage() {
           sender_id: user.id,
           receiver_id: receiver.id,
           read: false,
-          is_assistant: false
+          is_assistant: false,
+          status: 'sent',
+          message_type: 'user'
         });
 
       if (error) {
         console.error("Error sending message:", error);
+        toast.error("Erreur lors de l'envoi du message");
       } else {
         setNewMessage("");
       }
     } catch (error) {
       console.error("Error sending message:", error);
+      toast.error("Erreur lors de l'envoi du message");
     }
   };
 
@@ -215,29 +205,7 @@ export function ChatPage() {
                 <p>Loading messages...</p>
               ) : (
                 messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex flex-col ${message.sender_id === user?.id ? 'items-end' : 'items-start'}`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <Avatar>
-                        <AvatarImage src={message.sender.avatar_url} alt={message.sender.full_name} />
-                        <AvatarFallback>{message.sender.full_name?.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium leading-none">{message.sender.full_name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {message.content}
-                        </p>
-                      </div>
-                    </div>
-                    <time
-                      dateTime={message.created_at}
-                      className="ml-auto text-xs text-muted-foreground"
-                    >
-                      {new Date(message.created_at).toLocaleTimeString()}
-                    </time>
-                  </div>
+                  <ChatMessage key={message.id} message={message} />
                 ))
               )}
             </div>
@@ -248,7 +216,7 @@ export function ChatPage() {
           <div className="flex items-center space-x-2">
             <Input
               type="text"
-              placeholder="Type your message..."
+              placeholder="Écrivez votre message..."
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyDown={(e) => {
@@ -259,7 +227,7 @@ export function ChatPage() {
             />
             <Button onClick={handleSendMessage}>
               <Send className="h-4 w-4 mr-2" />
-              Send
+              Envoyer
             </Button>
           </div>
         </div>

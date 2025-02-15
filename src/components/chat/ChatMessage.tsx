@@ -5,72 +5,71 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
 import { Bot, Check, CheckCheck } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Message } from "@/types/messages";
+import { useUser } from "@/hooks/useUser";
 
 interface ChatMessageProps {
-  content: string;
-  sender: "user" | "assistant";
-  timestamp?: string;
-  isRead?: boolean;
-  status?: 'sent' | 'delivered' | 'read';
-  reaction?: string;
+  message: Message;
 }
 
-export function ChatMessage({ 
-  content, 
-  sender, 
-  timestamp,
-  isRead,
-  status,
-  reaction 
-}: ChatMessageProps) {
-  const isUser = sender === "user";
+export function ChatMessage({ message }: ChatMessageProps) {
+  const { user } = useUser();
+  const isOwnMessage = message.sender_id === user?.id;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "flex gap-2",
-        isUser ? "flex-row-reverse" : "flex-row"
+        "flex w-full gap-4 p-4",
+        isOwnMessage ? "flex-row-reverse" : "flex-row"
       )}
     >
-      {!isUser && (
-        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-          <Bot className="h-5 w-5 text-primary" />
-        </div>
-      )}
+      <Avatar className={cn(
+        "h-10 w-10 ring-2",
+        isOwnMessage ? "ring-primary" : "ring-muted"
+      )}>
+        <AvatarImage 
+          src={message.sender.avatar_url || "/user-icon.svg"}
+          alt={message.sender.full_name}
+        />
+        <AvatarFallback>
+          {message.sender.full_name.charAt(0)}
+        </AvatarFallback>
+      </Avatar>
       
       <div className={cn(
-        "flex flex-col",
-        isUser && "items-end"
+        "flex flex-col gap-1 max-w-[70%]",
+        isOwnMessage ? "items-end" : "items-start"
       )}>
+        <p className="text-sm font-medium text-muted-foreground">
+          {message.sender.full_name}
+        </p>
+        
         <Card className={cn(
-          "px-3 py-2 max-w-md",
-          isUser ? "bg-primary text-primary-foreground" : "bg-muted"
+          "p-4 relative group",
+          isOwnMessage 
+            ? "bg-primary text-primary-foreground" 
+            : "bg-muted"
         )}>
-          {content}
-        </Card>
-        
-        <div className="flex items-center gap-1 px-2 mt-1">
-          {timestamp && (
-            <span className="text-xs text-muted-foreground">
-              {format(new Date(timestamp), "HH:mm", { locale: fr })}
-            </span>
-          )}
-          {isUser && status && (
-            <span className="text-xs text-muted-foreground">
-              {status === 'sent' && <Check className="h-3 w-3" />}
-              {status === 'delivered' && <CheckCheck className="h-3 w-3" />}
-              {status === 'read' && <CheckCheck className="h-3 w-3 text-blue-500" />}
-            </span>
-          )}
-        </div>
-        
-        {reaction && (
-          <div className="text-sm text-muted-foreground mt-1">
-            {reaction}
+          <p className="text-sm whitespace-pre-wrap break-words">
+            {message.content}
+          </p>
+          
+          <div className="flex items-center gap-1 mt-1 text-xs opacity-70">
+            <time className="text-xs">
+              {format(new Date(message.created_at), "HH:mm", { locale: fr })}
+            </time>
+            {isOwnMessage && (
+              <span>
+                {message.status === 'sent' && <Check className="h-3 w-3" />}
+                {message.status === 'delivered' && <CheckCheck className="h-3 w-3" />}
+                {message.status === 'read' && <CheckCheck className="h-3 w-3 text-blue-500" />}
+              </span>
+            )}
           </div>
-        )}
+        </Card>
       </div>
     </motion.div>
   );
