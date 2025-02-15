@@ -1855,10 +1855,13 @@ export type Database = {
           deleted_at: string | null
           deleted_by: Json | null
           edited_at: string | null
+          encrypted: boolean | null
+          encryption_key: string | null
           id: string
           is_assistant: boolean | null
           is_deleted: boolean | null
           is_system_sender: boolean | null
+          message_hash: string | null
           message_state: string | null
           message_type: string | null
           metadata: Json | null
@@ -1879,10 +1882,13 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: Json | null
           edited_at?: string | null
+          encrypted?: boolean | null
+          encryption_key?: string | null
           id?: string
           is_assistant?: boolean | null
           is_deleted?: boolean | null
           is_system_sender?: boolean | null
+          message_hash?: string | null
           message_state?: string | null
           message_type?: string | null
           metadata?: Json | null
@@ -1903,10 +1909,13 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: Json | null
           edited_at?: string | null
+          encrypted?: boolean | null
+          encryption_key?: string | null
           id?: string
           is_assistant?: boolean | null
           is_deleted?: boolean | null
           is_system_sender?: boolean | null
+          message_hash?: string | null
           message_state?: string | null
           message_type?: string | null
           metadata?: Json | null
