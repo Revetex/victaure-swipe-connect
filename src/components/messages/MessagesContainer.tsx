@@ -18,12 +18,14 @@ import { Search, Plus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FriendSelector } from "./conversation/FriendSelector";
 import { AssistantMessage } from "./conversation/AssistantMessage";
+import { useUser } from "@/hooks/useUser";
 
 export function MessagesContainer() {
   const { receiver, setReceiver, showConversation, setShowConversation } = useReceiver();
   const [inputMessage, setInputMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { user } = useUser();
   
   const { data: conversations = [], isLoading: isLoadingConversations } = useMessageQuery();
   const { data: currentMessages = [], isLoading: isLoadingMessages } = useConversationMessages(receiver);
@@ -44,7 +46,10 @@ export function MessagesContainer() {
   }, [currentMessages, aiMessages]);
 
   const handleSendMessage = async () => {
-    if (!receiver || !inputMessage.trim()) return;
+    if (!receiver || !inputMessage.trim() || !user) {
+      toast.error("Une erreur est survenue");
+      return;
+    }
 
     if (receiver.id === 'assistant') {
       handleAISendMessage(inputMessage);
@@ -52,6 +57,7 @@ export function MessagesContainer() {
     } else {
       const messageData = {
         content: inputMessage,
+        sender_id: user.id,
         receiver_id: receiver.id,
         is_assistant: false,
         message_type: 'user' as const,
@@ -65,6 +71,7 @@ export function MessagesContainer() {
       const { error } = await supabase.from('messages').insert(messageData);
 
       if (error) {
+        console.error("Error sending message:", error);
         toast.error("Erreur lors de l'envoi du message");
         return;
       }
