@@ -2600,6 +2600,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_locked: boolean | null
           auto_update_enabled: boolean | null
           availability_date: string | null
           avatar_url: string | null
@@ -2617,11 +2618,13 @@ export type Database = {
           custom_text_color: string | null
           display_name: string | null
           email: string
+          failed_attempts: number | null
           full_name: string | null
           id: string
           industry: string | null
           languages: string[] | null
           last_activity: string | null
+          last_failed_attempt: string | null
           last_seen: string | null
           last_used_tool: string | null
           latitude: number | null
@@ -2648,6 +2651,7 @@ export type Database = {
           website: string | null
         }
         Insert: {
+          account_locked?: boolean | null
           auto_update_enabled?: boolean | null
           availability_date?: string | null
           avatar_url?: string | null
@@ -2665,11 +2669,13 @@ export type Database = {
           custom_text_color?: string | null
           display_name?: string | null
           email: string
+          failed_attempts?: number | null
           full_name?: string | null
           id: string
           industry?: string | null
           languages?: string[] | null
           last_activity?: string | null
+          last_failed_attempt?: string | null
           last_seen?: string | null
           last_used_tool?: string | null
           latitude?: number | null
@@ -2696,6 +2702,7 @@ export type Database = {
           website?: string | null
         }
         Update: {
+          account_locked?: boolean | null
           auto_update_enabled?: boolean | null
           availability_date?: string | null
           avatar_url?: string | null
@@ -2713,11 +2720,13 @@ export type Database = {
           custom_text_color?: string | null
           display_name?: string | null
           email?: string
+          failed_attempts?: number | null
           full_name?: string | null
           id?: string
           industry?: string | null
           languages?: string[] | null
           last_activity?: string | null
+          last_failed_attempt?: string | null
           last_seen?: string | null
           last_used_tool?: string | null
           latitude?: number | null
