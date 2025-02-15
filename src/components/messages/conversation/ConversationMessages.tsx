@@ -16,7 +16,7 @@ export function ConversationMessages({
 }: ConversationMessagesProps) {
   return (
     <ScrollArea 
-      className="flex-1 pt-4"
+      className="flex-1 pt-4 flex flex-col-reverse"
       onScrollCapture={onScroll}
     >
       <div className="space-y-4 px-4 max-w-3xl mx-auto">

@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
@@ -36,6 +37,7 @@ export function MessagesContainer() {
   
   const { handleDeleteConversation } = useConversationDelete();
 
+  // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -115,7 +117,7 @@ export function MessagesContainer() {
         {showConversation && receiver ? (
           <ConversationView
             receiver={receiver}
-            messages={messages}
+            messages={messages.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())}
             inputMessage={inputMessage}
             isThinking={isThinking}
             onInputChange={setInputMessage}

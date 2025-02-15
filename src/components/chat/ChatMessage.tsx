@@ -24,6 +24,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
       className={cn(
         "flex w-full gap-4 p-2",
         isOwnMessage ? "flex-row-reverse" : "flex-row"
