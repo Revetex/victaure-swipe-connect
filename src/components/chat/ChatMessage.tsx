@@ -21,56 +21,51 @@ export function ChatMessage({ message }: ChatMessageProps) {
   const isOwnMessage = message.sender_id === user.id;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-      className={cn(
-        "flex w-full gap-4 p-2",
-        isOwnMessage ? "flex-row-reverse" : "flex-row"
+    <div className={cn(
+      "flex w-full gap-2 items-end mb-1",
+      isOwnMessage ? "flex-row-reverse" : "flex-row"
+    )}>
+      {!isOwnMessage && (
+        <Avatar className="h-6 w-6 flex-shrink-0">
+          <AvatarImage 
+            src={message.sender?.avatar_url || "/user-icon.svg"}
+            alt={message.sender?.full_name || "User"}
+          />
+          <AvatarFallback>
+            {message.sender?.full_name?.charAt(0) || "U"}
+          </AvatarFallback>
+        </Avatar>
       )}
-    >
-      <Avatar className={cn(
-        "h-8 w-8 ring-2 flex-shrink-0",
-        isOwnMessage ? "ring-primary" : "ring-muted"
-      )}>
-        <AvatarImage 
-          src={message.sender?.avatar_url || "/user-icon.svg"}
-          alt={message.sender?.full_name || "User"}
-        />
-        <AvatarFallback>
-          {message.sender?.full_name?.charAt(0) || "U"}
-        </AvatarFallback>
-      </Avatar>
       
       <div className={cn(
-        "flex flex-col gap-1 max-w-[70%]",
+        "group max-w-[75%]",
         isOwnMessage ? "items-end" : "items-start"
       )}>
-        <Card className={cn(
-          "p-3 relative group",
+        <div className={cn(
+          "px-3 py-2 rounded-2xl text-sm break-words",
           isOwnMessage 
-            ? "bg-primary text-primary-foreground" 
-            : "bg-muted"
+            ? "bg-primary text-primary-foreground rounded-br-sm" 
+            : "bg-muted rounded-bl-sm"
         )}>
-          <p className="text-sm whitespace-pre-wrap break-words">
-            {message.content}
-          </p>
-          
-          <div className="flex items-center gap-1 mt-1 text-xs opacity-70">
-            <time className="text-xs">
-              {format(new Date(message.created_at), "HH:mm", { locale: fr })}
-            </time>
-            {isOwnMessage && (
-              <span>
-                {message.status === 'sent' && <Check className="h-3 w-3" />}
-                {message.status === 'delivered' && <CheckCheck className="h-3 w-3" />}
-                {message.status === 'read' && <CheckCheck className="h-3 w-3 text-blue-500" />}
-              </span>
-            )}
-          </div>
-        </Card>
+          {message.content}
+        </div>
+        
+        <div className={cn(
+          "flex items-center gap-1 mt-0.5 text-[10px] text-muted-foreground",
+          isOwnMessage ? "justify-end" : "justify-start"
+        )}>
+          <time>
+            {format(new Date(message.created_at), "HH:mm", { locale: fr })}
+          </time>
+          {isOwnMessage && (
+            <span className="text-primary">
+              {message.status === 'sent' && <Check className="h-3 w-3" />}
+              {message.status === 'delivered' && <CheckCheck className="h-3 w-3" />}
+              {message.status === 'read' && <CheckCheck className="h-3 w-3" />}
+            </span>
+          )}
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

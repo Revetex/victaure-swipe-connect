@@ -1,72 +1,82 @@
 
+import React, { KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Send, Mic, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { Loader2, Mic, Send } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ChatInputProps {
   value: string;
   onChange: (value: string) => void;
   onSend: () => void;
-  placeholder?: string;
   isThinking?: boolean;
   isListening?: boolean;
   onVoiceInput?: () => void;
+  placeholder?: string;
 }
 
 export function ChatInput({
   value,
   onChange,
   onSend,
-  placeholder = "Écrivez votre message...",
-  isThinking = false,
-  isListening = false,
-  onVoiceInput
+  isThinking,
+  isListening,
+  onVoiceInput,
+  placeholder = "Écrivez votre message..."
 }: ChatInputProps) {
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      onSend();
+      if (value.trim()) onSend();
     }
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <Input
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={handleKeyPress}
-        disabled={isThinking}
-        className="flex-1"
-      />
-      {onVoiceInput && (
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={onVoiceInput}
-          disabled={isThinking}
-          className={isListening ? "bg-red-100 hover:bg-red-200" : ""}
-        >
-          <Mic className={`h-4 w-4 ${isListening ? "text-red-500" : ""}`} />
-        </Button>
-      )}
-      <Button
-        onClick={onSend}
-        disabled={isThinking || !value.trim()}
-        size="icon"
-      >
-        {isThinking ? (
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+    <div className="flex items-end gap-2 bg-background rounded-lg">
+      <div className="flex-1 relative">
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          rows={1}
+          className={cn(
+            "w-full resize-none bg-muted rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary",
+            "min-h-[44px] max-h-[200px]"
+          )}
+          style={{
+            height: 'auto',
+            minHeight: '44px',
+            maxHeight: '200px'
+          }}
+        />
+      </div>
+
+      <div className="flex items-center gap-2 pb-1">
+        {onVoiceInput && (
+          <Button
+            size="icon"
+            variant={isListening ? "default" : "ghost"}
+            onClick={onVoiceInput}
+            className="rounded-full h-10 w-10"
+            disabled={isThinking}
           >
-            <Loader2 className="h-4 w-4" />
-          </motion.div>
-        ) : (
-          <Send className="h-4 w-4" />
+            <Mic className={cn("h-5 w-5", isListening && "text-white")} />
+          </Button>
         )}
-      </Button>
+
+        <Button
+          size="icon"
+          onClick={onSend}
+          disabled={!value.trim() || isThinking}
+          className="rounded-full h-10 w-10"
+        >
+          {isThinking ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Send className="h-5 w-5" />
+          )}
+        </Button>
+      </div>
     </div>
   );
 }
