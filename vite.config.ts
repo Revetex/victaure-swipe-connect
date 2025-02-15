@@ -30,7 +30,8 @@ export default defineConfig(({ mode }) => ({
       origin: [
         'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
         'https://mfjllillnpleasclqabb.supabase.co',
-        'wss://mfjllillnpleasclqabb.supabase.co'
+        'wss://mfjllillnpleasclqabb.supabase.co',
+        'https://victaure.com'
       ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: [
@@ -92,4 +93,3 @@ export default defineConfig(({ mode }) => ({
     }
   }
 }));
-
