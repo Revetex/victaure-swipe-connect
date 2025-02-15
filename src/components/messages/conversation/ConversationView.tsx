@@ -52,9 +52,7 @@ export function ConversationView({
   };
 
   useEffect(() => {
-    if (messages.length > 0) {
-      scrollToBottom();
-    }
+    scrollToBottom();
   }, [messages]);
 
   if (!receiver) return null;
@@ -74,10 +72,10 @@ export function ConversationView({
       </header>
 
       <ScrollArea 
-        className="flex-1 px-4 pt-2 pb-20 w-full overflow-x-hidden"
+        className="flex-1 px-4 pt-2 h-[calc(100vh-8rem)]"
         onScrollCapture={handleScroll}
       >
-        <div className="space-y-4 py-2 min-h-full max-w-3xl mx-auto">
+        <div className="flex flex-col-reverse min-h-full space-y-reverse space-y-4 py-2 max-w-3xl mx-auto">
           <AnimatePresence initial={false}>
             {messages.map((message) => (
               <motion.div
@@ -109,7 +107,7 @@ export function ConversationView({
             </motion.div>
           )}
           
-          <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} className="pt-4" />
         </div>
       </ScrollArea>
 
