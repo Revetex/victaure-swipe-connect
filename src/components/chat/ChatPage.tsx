@@ -86,7 +86,30 @@ export function ChatPage() {
         { event: '*', schema: 'public', table: 'messages' },
         (payload) => {
           if (payload.new) {
-            setMessages((prevMessages) => [...prevMessages, payload.new as Message]);
+            setMessages((prevMessages) => {
+              // Vérifier si le message existe déjà
+              const messageExists = prevMessages.some(msg => msg.id === payload.new.id);
+              if (messageExists) {
+                return prevMessages;
+              }
+              // Transformer le nouveau message
+              const newMessage: Message = {
+                ...payload.new,
+                timestamp: payload.new.created_at,
+                message_type: payload.new.is_assistant ? 'assistant' : 'user',
+                status: payload.new.status || 'sent',
+                metadata: payload.new.metadata || {},
+                thinking: false,
+                sender: payload.new.sender || {
+                  id: payload.new.sender_id,
+                  full_name: "Unknown",
+                  avatar_url: "",
+                  online_status: false,
+                  last_seen: new Date().toISOString()
+                }
+              };
+              return [...prevMessages, newMessage];
+            });
           }
         }
       )
@@ -114,6 +137,7 @@ export function ChatPage() {
           sender_id: user.id,
           receiver_id: '00000000-0000-0000-0000-000000000000',
           read: false,
+          is_assistant: false
         });
 
       if (error) {
