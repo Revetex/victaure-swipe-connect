@@ -1,7 +1,8 @@
+
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
+import { Send, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -16,8 +17,9 @@ export function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const { user } = useUser();
-  const { receiver } = useReceiver();
+  const { receiver, setReceiver } = useReceiver();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -100,7 +102,7 @@ export function ChatPage() {
         (payload) => {
           if (payload.new) {
             setMessages((prevMessages) => {
-              const newMsg = payload.new as DatabaseMessage;
+              const newMsg = payload.new;
               
               // Vérifier si le message existe déjà
               const messageExists = prevMessages.some(msg => msg.id === newMsg.id);
@@ -135,7 +137,6 @@ export function ChatPage() {
                 status: newMsg.status || 'sent',
                 metadata: newMsg.metadata || {},
                 is_assistant: newMsg.is_assistant,
-                thinking: false,
                 reaction: newMsg.reaction
               };
 
@@ -168,7 +169,7 @@ export function ChatPage() {
           sender_id: user.id,
           receiver_id: receiver.id,
           read: false,
-          is_assistant: false,
+          is_assistant: receiver.id === 'assistant',
           status: 'sent',
           message_type: 'user'
         });
@@ -185,19 +186,23 @@ export function ChatPage() {
     }
   };
 
-  if (!receiver) {
-    return (
-      <PageLayout>
-        <div className="flex items-center justify-center h-full">
-          <p className="text-muted-foreground">Sélectionnez une conversation pour commencer</p>
-        </div>
-      </PageLayout>
-    );
-  }
-
   return (
     <PageLayout>
-      <div className="flex flex-col h-[calc(100vh-12rem)]">
+      <div className="flex flex-col h-[calc(100vh-12rem)] relative">
+        <div className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10 p-4 border-b">
+          <div className="flex items-center gap-2">
+            <Input
+              placeholder="Rechercher une conversation..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1"
+            />
+            <Button variant="outline" size="icon">
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
         <div className="flex-1 overflow-hidden">
           <ScrollArea className="h-full w-full" ref={scrollAreaRef}>
             <div className="p-4 space-y-4">
@@ -211,6 +216,7 @@ export function ChatPage() {
             </div>
           </ScrollArea>
         </div>
+
         <Separator />
         <div className="p-4">
           <div className="flex items-center space-x-2">

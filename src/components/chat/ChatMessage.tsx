@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
-import { Bot, Check, CheckCheck } from "lucide-react";
+import { Check, CheckCheck } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Message } from "@/types/messages";
 import { useUser } from "@/hooks/useUser";
@@ -22,12 +22,12 @@ export function ChatMessage({ message }: ChatMessageProps) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "flex w-full gap-4 p-4",
+        "flex w-full gap-4",
         isOwnMessage ? "flex-row-reverse" : "flex-row"
       )}
     >
       <Avatar className={cn(
-        "h-10 w-10 ring-2",
+        "h-8 w-8 ring-2 flex-shrink-0",
         isOwnMessage ? "ring-primary" : "ring-muted"
       )}>
         <AvatarImage 
@@ -43,12 +43,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
         "flex flex-col gap-1 max-w-[70%]",
         isOwnMessage ? "items-end" : "items-start"
       )}>
-        <p className="text-sm font-medium text-muted-foreground">
-          {message.sender.full_name}
-        </p>
-        
         <Card className={cn(
-          "p-4 relative group",
+          "p-3 relative group",
           isOwnMessage 
             ? "bg-primary text-primary-foreground" 
             : "bg-muted"
