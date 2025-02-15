@@ -8,10 +8,10 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useUser } from "@/hooks/useUser";
+import { useReceiver } from "@/hooks/useReceiver";
 import { PageLayout } from "@/components/layout/PageLayout";
 import type { Message, MessageSender } from "@/types/messages";
 
-// Define the database message type
 interface DatabaseMessage {
   id: string;
   content: string;
@@ -32,15 +32,16 @@ export function ChatPage() {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const { user } = useUser();
+  const { receiver } = useReceiver();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchMessages = async () => {
       try {
         setLoading(true);
-        if (!user) return;
+        if (!user || !receiver) return;
 
-        const { data, error } = await supabase
+        let query = supabase
           .from('messages')
           .select(`
             *,
@@ -52,8 +53,20 @@ export function ChatPage() {
               last_seen
             )
           `)
-          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
           .order('created_at', { ascending: true });
+
+        if (receiver.id === 'assistant') {
+          query = query
+            .eq('receiver_id', user.id)
+            .eq('is_assistant', true);
+        } else {
+          query = query.or(
+            `and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),` +
+            `and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`
+          );
+        }
+
+        const { data, error } = await query;
 
         if (error) {
           console.error("Error fetching messages:", error);
@@ -69,12 +82,12 @@ export function ChatPage() {
             created_at: msg.created_at,
             updated_at: msg.updated_at || msg.created_at,
             read: msg.read ?? false,
-            sender: {
-              id: msg.sender.id,
-              full_name: msg.sender.full_name || "Unknown",
-              avatar_url: msg.sender.avatar_url || "",
-              online_status: msg.sender.online_status || false,
-              last_seen: msg.sender.last_seen || new Date().toISOString()
+            sender: msg.sender || {
+              id: msg.sender_id,
+              full_name: "Unknown",
+              avatar_url: "",
+              online_status: false,
+              last_seen: new Date().toISOString()
             },
             timestamp: msg.created_at,
             message_type: msg.is_assistant ? 'assistant' : 'user',
@@ -109,6 +122,17 @@ export function ChatPage() {
               const messageExists = prevMessages.some(msg => msg.id === newMsg.id);
               if (messageExists) {
                 return prevMessages;
+              }
+
+              // Vérifier si le message appartient à la conversation en cours
+              if (receiver?.id === 'assistant') {
+                if (!newMsg.is_assistant && newMsg.sender_id !== user?.id) {
+                  return prevMessages;
+                }
+              } else {
+                if (newMsg.sender_id !== user?.id && newMsg.sender_id !== receiver?.id) {
+                  return prevMessages;
+                }
               }
 
               // Transformer le nouveau message
@@ -146,7 +170,7 @@ export function ChatPage() {
     return () => {
       supabase.removeChannel(messagesSubscription);
     };
-  }, [user]);
+  }, [user, receiver]);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -155,7 +179,7 @@ export function ChatPage() {
   }, [messages]);
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !user) return;
+    if (!newMessage.trim() || !user || !receiver) return;
 
     try {
       const { error } = await supabase
@@ -163,7 +187,7 @@ export function ChatPage() {
         .insert({
           content: newMessage,
           sender_id: user.id,
-          receiver_id: '00000000-0000-0000-0000-000000000000',
+          receiver_id: receiver.id,
           read: false,
           is_assistant: false
         });
@@ -177,6 +201,16 @@ export function ChatPage() {
       console.error("Error sending message:", error);
     }
   };
+
+  if (!receiver) {
+    return (
+      <PageLayout>
+        <div className="flex items-center justify-center h-full">
+          <p className="text-muted-foreground">Sélectionnez une conversation pour commencer</p>
+        </div>
+      </PageLayout>
+    );
+  }
 
   return (
     <PageLayout>
