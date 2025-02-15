@@ -4,6 +4,25 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
+interface CommentReaction {
+  id: string;
+  comment_id: string;
+  user_id: string;
+  reaction_type: 'like' | 'dislike';
+  created_at: string;
+  updated_at: string;
+}
+
+interface SharedItem {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  item_type: 'post' | 'comment' | 'conversation';
+  item_id: string;
+  message?: string;
+  created_at: string;
+}
+
 export const usePostOperations = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -23,7 +42,6 @@ export const usePostOperations = () => {
 
       if (error) throw error;
 
-      // Invalidate queries to refresh the posts data
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     } catch (error) {
       console.error('Error handling reaction:', error);
@@ -38,34 +56,11 @@ export const usePostOperations = () => {
     }
 
     try {
-      const { data: existingReaction } = await supabase
-        .from('comment_reactions')
-        .select('*')
-        .eq('comment_id', commentId)
-        .eq('user_id', userId)
-        .maybeSingle();
-
-      if (existingReaction && existingReaction.reaction_type === type) {
-        // Remove reaction if clicking the same type
-        const { error } = await supabase
-          .from('comment_reactions')
-          .delete()
-          .eq('comment_id', commentId)
-          .eq('user_id', userId);
-
-        if (error) throw error;
-      } else {
-        // Add or update reaction
-        const { error } = await supabase
-          .from('comment_reactions')
-          .upsert({
-            comment_id: commentId,
-            user_id: userId,
-            reaction_type: type
-          });
-
-        if (error) throw error;
-      }
+      const { data: existingReaction } = await supabase.rpc('handle_comment_reaction', {
+        p_comment_id: commentId,
+        p_user_id: userId,
+        p_reaction_type: type
+      });
 
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     } catch (error) {
@@ -86,15 +81,12 @@ export const usePostOperations = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from('shared_items')
-        .insert({
-          sender_id: user.id,
-          receiver_id: receiverId,
-          item_type: itemType,
-          item_id: itemId,
-          message
-        });
+      const { error } = await supabase.rpc('share_item', {
+        p_item_type: itemType,
+        p_item_id: itemId,
+        p_receiver_id: receiverId,
+        p_message: message
+      });
 
       if (error) throw error;
 
