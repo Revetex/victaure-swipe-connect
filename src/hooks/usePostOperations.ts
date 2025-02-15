@@ -29,6 +29,54 @@ export const usePostOperations = () => {
     }
   };
 
+  const handleCommentReaction = async (commentId: string, userId: string | undefined, type: 'like' | 'dislike') => {
+    if (!userId) {
+      toast("Vous devez être connecté pour réagir aux commentaires");
+      return;
+    }
+
+    try {
+      const { error } = await supabase.rpc('handle_comment_reaction', {
+        p_comment_id: commentId,
+        p_user_id: userId,
+        p_reaction_type: type
+      });
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    } catch (error) {
+      console.error('Error handling comment reaction:', error);
+      toast("Une erreur est survenue lors de la réaction");
+    }
+  };
+
+  const handleShare = async (
+    itemType: 'post' | 'comment' | 'conversation',
+    itemId: string,
+    receiverId: string,
+    message?: string
+  ) => {
+    try {
+      const { error } = await supabase
+        .from('shared_items')
+        .insert({
+          sender_id: userId,
+          receiver_id: receiverId,
+          item_type: itemType,
+          item_id: itemId,
+          message
+        });
+
+      if (error) throw error;
+
+      toast.success("Élément partagé avec succès");
+    } catch (error) {
+      console.error('Error sharing item:', error);
+      toast.error("Erreur lors du partage");
+    }
+  };
+
   const handleDelete = async (postId: string, userId: string | undefined) => {
     if (!userId) return;
 
@@ -103,6 +151,8 @@ export const usePostOperations = () => {
 
   return {
     handleReaction,
+    handleCommentReaction,
+    handleShare,
     handleDelete,
     handleHide,
     handleUpdate
