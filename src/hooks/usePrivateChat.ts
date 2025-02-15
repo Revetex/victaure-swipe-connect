@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { Message, Receiver } from '@/types/messages';
+import { Message, Receiver, transformDatabaseMessage } from '@/types/messages';
 import { useProfile } from './useProfile';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,12 +23,12 @@ export function usePrivateChat(receiver: Receiver) {
         content,
         sender_id: profile.id,
         receiver_id: receiver.id,
-        message_type: 'user',
-        status: 'sent',
+        message_type: 'user' as const,
+        status: 'sent' as const,
         metadata: {
-          timestamp: new Date().toISOString(),
-          type: 'private_message'
-        } as Record<string, any>
+          type: 'private_message',
+          timestamp: new Date().toISOString()
+        }
       };
 
       const { data, error } = await supabase
@@ -44,35 +44,8 @@ export function usePrivateChat(receiver: Receiver) {
       if (error) throw error;
 
       if (data) {
-        const messageSender = {
-          id: profile.id,
-          full_name: profile.full_name || '',
-          avatar_url: profile.avatar_url || '',
-          online_status: profile.online_status || false,
-          last_seen: profile.last_seen || new Date().toISOString()
-        };
-
-        const messageMetadata = typeof data.metadata === 'object' && data.metadata !== null 
-          ? data.metadata 
-          : {} as Record<string, any>;
-
-        addMessage({
-          ...data,
-          timestamp: data.created_at,
-          status: 'sent',
-          message_type: 'user',
-          metadata: messageMetadata,
-          sender: messageSender,
-          receiver: receiver
-        });
-
-        // Envoyer une notification
-        await supabase.from('notifications').insert({
-          user_id: receiver.id,
-          title: "Nouveau message",
-          message: `${profile.full_name} vous a envoyé un message`,
-          type: 'message'
-        });
+        const transformedMessage = transformDatabaseMessage(data);
+        addMessage(transformedMessage);
       }
     } catch (error) {
       console.error('Error sending private message:', error);

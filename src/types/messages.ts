@@ -1,5 +1,5 @@
 
-import { Json } from "../types/database/auth";
+import { Json } from "./database/auth";
 
 export interface MessageSender {
   id: string;
@@ -30,9 +30,35 @@ export interface Message {
   is_assistant: boolean;
 }
 
-export interface MessageWithOptionalFields extends Partial<Message> {
+export interface DatabaseMessage {
   id: string;
   content: string;
   sender_id: string;
   receiver_id: string;
+  created_at: string;
+  updated_at: string | null;
+  read: boolean;
+  message_type: string;
+  status: string;
+  metadata: Json;
+  reaction: string | null;
+  is_assistant: boolean;
+  sender: MessageSender;
+  receiver: Receiver;
 }
+
+export const transformDatabaseMessage = (msg: DatabaseMessage): Message => ({
+  ...msg,
+  updated_at: msg.updated_at || msg.created_at,
+  timestamp: msg.created_at,
+  message_type: (msg.message_type === 'system' || msg.message_type === 'user' || msg.message_type === 'assistant' 
+    ? msg.message_type 
+    : msg.is_assistant ? 'assistant' : 'user') as Message['message_type'],
+  status: (msg.status === 'sent' || msg.status === 'delivered' || msg.status === 'read' 
+    ? msg.status 
+    : 'sent') as Message['status'],
+  metadata: (typeof msg.metadata === 'object' && msg.metadata !== null 
+    ? msg.metadata as Record<string, Json>
+    : {}) as Record<string, Json>,
+  thinking: false
+});

@@ -1,7 +1,8 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Message, Receiver } from '@/types/messages';
+import { Message, Receiver, DatabaseMessage, transformDatabaseMessage } from '@/types/messages';
 import { UserProfile } from '@/types/profile';
+import { Json } from '@/types/database/auth';
 
 export const sendMessage = async (
   message: string,
@@ -18,7 +19,7 @@ export const sendMessage = async (
     metadata: {
       device: 'web',
       timestamp: new Date().toISOString()
-    } as Record<string, any>
+    } as Record<string, Json>
   };
 
   const { data: messageData, error: messageError } = await supabase
@@ -33,36 +34,20 @@ export const sendMessage = async (
 
   if (messageError) throw messageError;
 
-  // Message delivery will be created automatically via trigger
-
-  const notification = {
-    user_id: receiver.id,
-    title: "Nouveau message",
-    message: `${profile.full_name} vous a envoyé : ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
-    type: 'message'
-  };
-
-  await supabase
-    .from('notifications')
-    .insert(notification)
-    .throwOnError();
-
   if (messageData) {
-    return {
-      ...messageData,
-      timestamp: messageData.created_at,
-      status: 'sent',
-      message_type: messageData.is_assistant ? 'assistant' : 'user',
-      metadata: typeof messageData.metadata === 'object' ? messageData.metadata : {} as Record<string, any>,
-      sender: messageData.sender || {
-        id: profile.id,
-        full_name: profile.full_name,
-        avatar_url: profile.avatar_url || '/placeholder.svg',
-        online_status: true,
-        last_seen: new Date().toISOString()
-      },
-      receiver: messageData.receiver || receiver
+    const notification = {
+      user_id: receiver.id,
+      title: "Nouveau message",
+      message: `${profile.full_name} vous a envoyé : ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+      type: 'message'
     };
+
+    await supabase
+      .from('notifications')
+      .insert(notification)
+      .throwOnError();
+
+    return transformDatabaseMessage(messageData as DatabaseMessage);
   }
 
   return null;
