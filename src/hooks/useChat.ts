@@ -5,9 +5,17 @@ import { useProfile } from './useProfile';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
-const defaultSender: MessageSender = {
-  id: 'system',
-  full_name: 'System',
+const defaultAssistant: MessageSender = {
+  id: 'assistant',
+  full_name: 'M. Victaure',
+  avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+  online_status: true,
+  last_seen: new Date().toISOString()
+};
+
+const defaultUser: MessageSender = {
+  id: 'user',
+  full_name: 'User',
   avatar_url: null,
   online_status: true,
   last_seen: new Date().toISOString()
@@ -27,7 +35,7 @@ export function useChat() {
   });
   const { profile } = useProfile();
 
-  const addMessage = useCallback((content: string, receiver: MessageSender) => {
+  const addMessage = useCallback((content: string, receiver: MessageSender = defaultAssistant) => {
     if (!profile) return;
 
     const sender: MessageSender = {
@@ -45,8 +53,8 @@ export function useChat() {
       receiver_id: receiver.id,
       sender,
       receiver,
-      message_type: 'user',
-      is_assistant: false
+      message_type: receiver.id === 'assistant' ? 'assistant' : 'user',
+      is_assistant: receiver.id === 'assistant'
     });
 
     setState(prev => ({
@@ -65,7 +73,7 @@ export function useChat() {
     if (!message.trim()) return;
     
     try {
-      const userMessage = addMessage(message, { id: 'assistant' });
+      const userMessage = addMessage(message, defaultAssistant);
       setInputMessage('');
 
       const { data: { user } } = await supabase.auth.getUser();
@@ -99,13 +107,7 @@ export function useChat() {
 
       if (error) throw error;
 
-      const assistantMessage = addMessage(data.response, {
-        id: 'assistant',
-        full_name: 'M. Victaure',
-        avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-        online_status: true,
-        last_seen: new Date().toISOString()
-      });
+      const assistantMessage = addMessage(data.response, defaultAssistant);
 
       const { error: saveAssistantError } = await supabase
         .from('messages')
@@ -158,9 +160,7 @@ export function useChat() {
     inputMessage: state.inputMessage,
     isListening: state.isListening,
     isThinking: state.isThinking,
-    setInputMessage: useCallback((message: string) => {
-      setState(prev => ({ ...prev, inputMessage: message }));
-    }, []),
+    setInputMessage,
     handleSendMessage,
     handleVoiceInput,
     clearChat
