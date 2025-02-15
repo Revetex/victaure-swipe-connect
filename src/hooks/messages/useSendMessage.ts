@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Message, Receiver } from "@/types/messages";
 import { useMessagesStore } from "@/store/messagesStore";
+import { Json } from "@/types/database/auth";
 
 export function useSendMessage() {
   const queryClient = useQueryClient();
@@ -26,8 +27,10 @@ export function useSendMessage() {
         status: 'sent' as const,
         created_at: now,
         updated_at: now,
-        timestamp: now,
-        metadata: {},
+        metadata: {
+          timestamp: now,
+          device: 'web'
+        } as Record<string, Json>,
         reaction: null,
         is_assistant: receiver.id === 'assistant'
       };
@@ -56,7 +59,7 @@ export function useSendMessage() {
           reaction: messageData.reaction || null,
           thinking: false,
           is_assistant: messageData.is_assistant || false
-        };
+        } as Message;
         addMessage(formattedMessage);
         queryClient.invalidateQueries({ queryKey: ["messages"] });
       }

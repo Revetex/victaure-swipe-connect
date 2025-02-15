@@ -5,7 +5,7 @@ import { useMessageQuery } from "./useMessageQuery";
 import { useMessageSubscription } from "./useMessageSubscription";
 import { useSendMessage } from "./messages/useSendMessage";
 import { useMarkAsRead } from "./messages/useMarkAsRead";
-import { Message, transformDatabaseMessage } from "@/types/messages";
+import { Message } from "@/types/messages";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -22,23 +22,13 @@ export function useMessages() {
     isLoading,
     error,
     refetch
-  } = useMessageQuery(receiver?.id, {
-    staleTime: 60 * 1000,
-    cacheTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false
-  });
-
-  // Gérer les erreurs de requête
-  if (error) {
-    console.error("Erreur de chargement:", error);
-    toast.error("Erreur lors du chargement des messages. Réessayez plus tard.");
-  }
+  } = useMessageQuery(receiver?.id);
 
   useMessageSubscription({
     onMessage: (newMessage: Message) => {
       if (!receiver) return;
       
-      queryClient.setQueryData(['messages', receiver.id, lastCursor], (oldMessages: Message[] = []) => {
+      queryClient.setQueryData(['messages', receiver.id], (oldMessages: Message[] = []) => {
         const uniqueMessages = [...new Set([newMessage, ...oldMessages])];
         return uniqueMessages.filter((msg, index, self) => 
           self.findIndex(m => m.id === msg.id) === index
@@ -55,7 +45,7 @@ export function useMessages() {
 
     try {
       await sendMessageMutation.mutateAsync({ content, receiver });
-      await refetch(); // Recharger les messages après l'envoi
+      await refetch();
     } catch (error) {
       console.error("Erreur d'envoi:", error);
       toast.error("Erreur lors de l'envoi du message");
@@ -73,7 +63,7 @@ export function useMessages() {
   };
 
   return {
-    messages: Array.isArray(messages) ? messages.map(msg => transformDatabaseMessage(msg)) : [],
+    messages,
     isLoading,
     error,
     markAsRead: markAsReadMutation,

@@ -1,18 +1,25 @@
+
 import { useState, useCallback } from 'react';
-import { Message, createEmptyMessage } from '@/types/messages';
+import { Message, MessageSender, createEmptyMessage } from '@/types/messages';
 import { useProfile } from './useProfile';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
-interface ChatState {
-  messages: Message[];
-  inputMessage: string;
-  isListening: boolean;
-  isThinking: boolean;
-}
+const defaultSender: MessageSender = {
+  id: 'system',
+  full_name: 'System',
+  avatar_url: null,
+  online_status: true,
+  last_seen: new Date().toISOString()
+};
 
 export function useChat() {
-  const [state, setState] = useState<ChatState>({
+  const [state, setState] = useState<{
+    messages: Message[];
+    inputMessage: string;
+    isListening: boolean;
+    isThinking: boolean;
+  }>({
     messages: [],
     inputMessage: '',
     isListening: false,
@@ -20,19 +27,23 @@ export function useChat() {
   });
   const { profile } = useProfile();
 
-  const addMessage = useCallback((content: string, receiver: Message['receiver']) => {
+  const addMessage = useCallback((content: string, receiver: MessageSender) => {
+    if (!profile) return;
+
+    const sender: MessageSender = {
+      id: profile.id,
+      full_name: profile.full_name,
+      avatar_url: profile.avatar_url,
+      online_status: true,
+      last_seen: new Date().toISOString()
+    };
+
     const newMessage = createEmptyMessage({
       id: crypto.randomUUID(),
       content,
-      sender_id: profile?.id || '',
+      sender_id: sender.id,
       receiver_id: receiver.id,
-      sender: {
-        id: profile?.id || '',
-        full_name: profile?.full_name || 'User',
-        avatar_url: profile?.avatar_url || null,
-        online_status: true,
-        last_seen: new Date().toISOString()
-      },
+      sender,
       receiver,
       message_type: receiver.id === 'assistant' ? 'assistant' : 'user',
       is_assistant: receiver.id === 'assistant'

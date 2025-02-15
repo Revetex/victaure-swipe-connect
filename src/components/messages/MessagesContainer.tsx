@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
@@ -9,7 +10,8 @@ import { useConversationDelete } from "@/hooks/useConversationDelete";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Message, transformDatabaseMessage } from "@/types/messages";
+import { Message, DatabaseMessage, transformDatabaseMessage } from "@/types/messages";
+import { Json } from "@/types/database/auth";
 
 export function MessagesContainer() {
   const { receiver, setReceiver, showConversation, setShowConversation } = useReceiver();
@@ -19,10 +21,6 @@ export function MessagesContainer() {
   const { data: conversations = [], isLoading: isLoadingConversations } = useMessageQuery();
   const { data: currentMessages = [], isLoading: isLoadingMessages } = useConversationMessages(receiver);
   
-  const transformedMessages = Array.isArray(currentMessages) 
-    ? currentMessages.map(msg => transformDatabaseMessage(msg))
-    : [];
-
   const { 
     messages: aiMessages, 
     handleSendMessage: handleAISendMessage,
@@ -45,7 +43,10 @@ export function MessagesContainer() {
         is_assistant: false,
         message_type: 'user' as const,
         status: 'sent' as const,
-        metadata: {}
+        metadata: {
+          timestamp: new Date().toISOString(),
+          type: 'chat'
+        } as Record<string, Json>
       };
 
       const { error } = await supabase.from('messages').insert(messageData);
@@ -60,7 +61,7 @@ export function MessagesContainer() {
     setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
   };
 
-  const messages = receiver?.id === 'assistant' ? aiMessages : transformedMessages;
+  const messages = receiver?.id === 'assistant' ? aiMessages : currentMessages;
 
   return (
     <Card className="h-[calc(100vh-4rem)]">
