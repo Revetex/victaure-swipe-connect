@@ -85,14 +85,7 @@ export function ConversationView({
                 exit={{ opacity: 0, y: -20 }}
                 className="max-w-[85%] mx-auto"
               >
-                <ChatMessage
-                  content={message.content}
-                  sender={message.sender_id === profile?.id ? "user" : "assistant"}
-                  timestamp={message.created_at}
-                  isRead={message.read}
-                  status={message.status}
-                  reaction={message.reaction}
-                />
+                <ChatMessage message={message} />
               </motion.div>
             ))}
           </AnimatePresence>

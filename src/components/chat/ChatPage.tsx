@@ -11,7 +11,7 @@ import { useReceiver } from "@/hooks/useReceiver";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { ChatMessage } from "./ChatMessage";
 import { toast } from "sonner";
-import type { Message } from "@/types/messages";
+import type { Message, MessageSender } from "@/types/messages";
 
 export function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -66,21 +66,34 @@ export function ChatPage() {
 
         if (data) {
           const transformedMessages: Message[] = data.map(msg => ({
-            id: msg.id,
+            id: msg.id || crypto.randomUUID(),
             content: msg.content,
             sender_id: msg.sender_id,
             receiver_id: msg.receiver_id,
             created_at: msg.created_at,
             updated_at: msg.updated_at || msg.created_at,
             read: msg.read ?? false,
-            sender: msg.sender,
-            receiver: msg.receiver,
+            sender: msg.sender || {
+              id: msg.sender_id,
+              full_name: 'Unknown User',
+              avatar_url: null,
+              online_status: false,
+              last_seen: new Date().toISOString()
+            },
+            receiver: msg.receiver || {
+              id: msg.receiver_id,
+              full_name: 'Unknown User',
+              avatar_url: null,
+              online_status: false,
+              last_seen: new Date().toISOString()
+            },
             timestamp: msg.created_at,
             message_type: msg.is_assistant ? 'assistant' : 'user',
-            status: msg.status || 'sent',
-            metadata: {},
-            reaction: msg.reaction,
-            is_assistant: msg.is_assistant
+            status: (msg.status as 'sent' | 'delivered' | 'read') || 'sent',
+            metadata: msg.metadata || {},
+            reaction: msg.reaction || null,
+            is_assistant: msg.is_assistant || false,
+            thinking: false
           }));
           setMessages(transformedMessages);
         }
@@ -102,15 +115,12 @@ export function ChatPage() {
         (payload) => {
           if (payload.new) {
             setMessages((prevMessages) => {
-              const newMsg = payload.new;
+              const newMsg = payload.new as any;
               
-              // Vérifier si le message existe déjà
-              const messageExists = prevMessages.some(msg => msg.id === newMsg.id);
-              if (messageExists) {
+              if (prevMessages.some(msg => msg.id === newMsg.id)) {
                 return prevMessages;
               }
 
-              // Vérifier si le message appartient à la conversation en cours
               if (receiver?.id === 'assistant') {
                 if (!newMsg.is_assistant && newMsg.sender_id !== user?.id) {
                   return prevMessages;
@@ -121,7 +131,6 @@ export function ChatPage() {
                 }
               }
 
-              // Transformer le nouveau message
               const transformedMessage: Message = {
                 id: newMsg.id,
                 content: newMsg.content,
@@ -130,14 +139,27 @@ export function ChatPage() {
                 created_at: newMsg.created_at,
                 updated_at: newMsg.updated_at || newMsg.created_at,
                 read: newMsg.read ?? false,
-                sender: newMsg.sender,
-                receiver: newMsg.receiver,
+                sender: newMsg.sender || {
+                  id: newMsg.sender_id,
+                  full_name: 'Unknown User',
+                  avatar_url: null,
+                  online_status: false,
+                  last_seen: new Date().toISOString()
+                },
+                receiver: newMsg.receiver || {
+                  id: newMsg.receiver_id,
+                  full_name: 'Unknown User',
+                  avatar_url: null,
+                  online_status: false,
+                  last_seen: new Date().toISOString()
+                },
                 timestamp: newMsg.created_at,
                 message_type: newMsg.is_assistant ? 'assistant' : 'user',
-                status: newMsg.status || 'sent',
+                status: 'sent',
                 metadata: newMsg.metadata || {},
-                is_assistant: newMsg.is_assistant,
-                reaction: newMsg.reaction
+                reaction: newMsg.reaction || null,
+                is_assistant: newMsg.is_assistant || false,
+                thinking: false
               };
 
               return [...prevMessages, transformedMessage];
@@ -162,17 +184,19 @@ export function ChatPage() {
     if (!newMessage.trim() || !user || !receiver) return;
 
     try {
+      const messageData = {
+        content: newMessage,
+        sender_id: user.id,
+        receiver_id: receiver.id,
+        read: false,
+        is_assistant: receiver.id === 'assistant',
+        status: 'sent' as const,
+        message_type: receiver.id === 'assistant' ? 'assistant' as const : 'user' as const
+      };
+
       const { error } = await supabase
         .from('messages')
-        .insert({
-          content: newMessage,
-          sender_id: user.id,
-          receiver_id: receiver.id,
-          read: false,
-          is_assistant: receiver.id === 'assistant',
-          status: 'sent',
-          message_type: 'user'
-        });
+        .insert(messageData);
 
       if (error) {
         console.error("Error sending message:", error);

@@ -15,7 +15,7 @@ export interface Message {
   sender_id: string;
   receiver_id: string;
   created_at: string;
-  updated_at?: string;
+  updated_at: string;
   read: boolean;
   sender: MessageSender;
   receiver: Receiver;
@@ -24,6 +24,6 @@ export interface Message {
   message_type: 'system' | 'user' | 'assistant';
   status: 'sent' | 'delivered' | 'read';
   metadata: Record<string, any>;
-  reaction?: string | null;
-  is_assistant?: boolean;
+  reaction: string | null;
+  is_assistant: boolean;
 }
