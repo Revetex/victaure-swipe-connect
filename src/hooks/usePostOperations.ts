@@ -56,11 +56,32 @@ export const usePostOperations = () => {
     }
 
     try {
-      const { data: existingReaction } = await supabase.rpc('handle_comment_reaction', {
-        p_comment_id: commentId,
-        p_user_id: userId,
-        p_reaction_type: type
-      });
+      const { data: existingReaction } = await supabase
+        .from('comment_reactions')
+        .select('*')
+        .eq('comment_id', commentId)
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (existingReaction && existingReaction.reaction_type === type) {
+        const { error } = await supabase
+          .from('comment_reactions')
+          .delete()
+          .eq('comment_id', commentId)
+          .eq('user_id', userId);
+
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('comment_reactions')
+          .upsert({
+            comment_id: commentId,
+            user_id: userId,
+            reaction_type: type
+          });
+
+        if (error) throw error;
+      }
 
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     } catch (error) {
@@ -81,12 +102,15 @@ export const usePostOperations = () => {
     }
 
     try {
-      const { error } = await supabase.rpc('share_item', {
-        p_item_type: itemType,
-        p_item_id: itemId,
-        p_receiver_id: receiverId,
-        p_message: message
-      });
+      const { error } = await supabase
+        .from('shared_items')
+        .insert({
+          sender_id: user.id,
+          receiver_id: receiverId,
+          item_type: itemType,
+          item_id: itemId,
+          message
+        });
 
       if (error) throw error;
 
