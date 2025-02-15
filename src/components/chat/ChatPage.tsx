@@ -76,9 +76,9 @@ export function ChatPage() {
             sender: msg.sender,
             receiver: msg.receiver,
             timestamp: msg.created_at,
-            message_type: msg.is_assistant ? 'assistant' as const : 'user' as const,
-            status: (msg.status as Message['status']) || 'sent',
-            metadata: msg.metadata || {},
+            message_type: msg.is_assistant ? 'assistant' : 'user',
+            status: msg.status || 'sent',
+            metadata: {},
             reaction: msg.reaction,
             is_assistant: msg.is_assistant
           }));

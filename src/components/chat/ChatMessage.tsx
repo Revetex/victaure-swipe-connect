@@ -15,7 +15,11 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message }: ChatMessageProps) {
   const { user } = useUser();
-  const isOwnMessage = message.sender_id === user?.id;
+  
+  // Vérification que le message et l'utilisateur existent
+  if (!message || !user) return null;
+  
+  const isOwnMessage = message.sender_id === user.id;
 
   return (
     <motion.div
@@ -31,11 +35,11 @@ export function ChatMessage({ message }: ChatMessageProps) {
         isOwnMessage ? "ring-primary" : "ring-muted"
       )}>
         <AvatarImage 
-          src={message.sender.avatar_url || "/user-icon.svg"}
-          alt={message.sender.full_name}
+          src={message.sender?.avatar_url || "/user-icon.svg"}
+          alt={message.sender?.full_name || "User"}
         />
         <AvatarFallback>
-          {message.sender.full_name.charAt(0)}
+          {message.sender?.full_name?.charAt(0) || "U"}
         </AvatarFallback>
       </Avatar>
       
