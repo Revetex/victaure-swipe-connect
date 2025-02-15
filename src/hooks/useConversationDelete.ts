@@ -14,66 +14,58 @@ export const useConversationDelete = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Utilisateur non authentifié");
 
-      // Vérifier si l'autre utilisateur a déjà supprimé la conversation
-      const { data: existingDeletion, error: fetchError } = await supabase
-        .from('deleted_conversations')
-        .select('*')
-        .or(`user_id.eq.${receiver.id},conversation_partner_id.eq.${receiver.id}`)
-        .maybeSingle();
+      if (receiver.id === 'assistant') {
+        // Delete AI conversation using the dedicated function
+        const { error: aiError } = await supabase.rpc('delete_ai_conversation', {
+          p_user_id: user.id
+        });
 
-      if (fetchError) {
-        console.error('Error checking existing deletion:', fetchError);
-        throw fetchError;
-      }
+        if (aiError) throw aiError;
+        toast.success("Conversation avec l'assistant supprimée");
+      } else {
+        // Vérifier si l'autre utilisateur a déjà supprimé la conversation
+        const { data: existingDeletion, error: fetchError } = await supabase
+          .from('deleted_conversations')
+          .select('*')
+          .or(`user_id.eq.${receiver.id},conversation_partner_id.eq.${receiver.id}`)
+          .maybeSingle();
 
-      // Si l'autre utilisateur a déjà supprimé la conversation
-      if (existingDeletion) {
-        // Supprimer définitivement les messages
-        if (receiver.id === 'assistant') {
-          const { error: aiMessagesError } = await supabase
-            .from('messages')
-            .delete()
-            .eq('receiver_id', user.id)
-            .eq('message_type', 'ai');
+        if (fetchError) throw fetchError;
 
-          if (aiMessagesError) throw aiMessagesError;
-        } else {
+        // Si l'autre utilisateur a déjà supprimé la conversation
+        if (existingDeletion) {
           const { error: messagesError } = await supabase
             .from('messages')
             .delete()
             .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
 
           if (messagesError) throw messagesError;
-        }
 
-        // Supprimer toutes les entrées de deleted_conversations liées à cette conversation
-        const { error: deleteError } = await supabase
-          .from('deleted_conversations')
-          .delete()
-          .or(`and(user_id.eq.${user.id},conversation_partner_id.eq.${receiver.id}),and(user_id.eq.${receiver.id},conversation_partner_id.eq.${user.id})`);
+          const { error: deleteError } = await supabase
+            .from('deleted_conversations')
+            .delete()
+            .or(`and(user_id.eq.${user.id},conversation_partner_id.eq.${receiver.id}),and(user_id.eq.${receiver.id},conversation_partner_id.eq.${user.id})`);
 
-        if (deleteError) throw deleteError;
+          if (deleteError) throw deleteError;
 
-        toast.success("Conversation définitivement supprimée");
-      } else {
-        // Tenter d'insérer une nouvelle entrée de suppression
-        const { error: insertError } = await supabase
-          .from('deleted_conversations')
-          .upsert({
-            user_id: user.id,
-            conversation_partner_id: receiver.id
-          }, {
-            onConflict: 'user_id,conversation_partner_id'
-          });
-
-        if (insertError) {
-          if (insertError.code === '23505') { // Conflict error code
-            toast.info("Cette conversation est déjà supprimée");
-          } else {
-            throw insertError;
-          }
+          toast.success("Conversation définitivement supprimée");
         } else {
-          toast.success("Conversation supprimée de votre liste");
+          const { error: insertError } = await supabase
+            .from('deleted_conversations')
+            .upsert({
+              user_id: user.id,
+              conversation_partner_id: receiver.id
+            });
+
+          if (insertError) {
+            if (insertError.code === '23505') { // Conflict error code
+              toast.info("Cette conversation est déjà supprimée");
+            } else {
+              throw insertError;
+            }
+          } else {
+            toast.success("Conversation supprimée de votre liste");
+          }
         }
       }
 
