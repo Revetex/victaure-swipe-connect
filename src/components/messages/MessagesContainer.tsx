@@ -10,6 +10,7 @@ import { useConversationDelete } from "@/hooks/useConversationDelete";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Message } from "@/types/messages";
 
 export function MessagesContainer() {
   const { receiver, setReceiver, showConversation, setShowConversation } = useReceiver();
@@ -34,13 +35,16 @@ export function MessagesContainer() {
       handleAISendMessage(inputMessage);
       setAIInputMessage('');
     } else {
-      // Envoyer le message à l'utilisateur
-      const { error } = await supabase.from('messages').insert({
+      const messageData = {
         content: inputMessage,
         receiver_id: receiver.id,
         is_assistant: false,
-        message_type: 'user'
-      });
+        message_type: 'user' as const,
+        status: 'sent' as const,
+        metadata: {}
+      };
+
+      const { error } = await supabase.from('messages').insert(messageData);
 
       if (error) {
         toast.error("Erreur lors de l'envoi du message");

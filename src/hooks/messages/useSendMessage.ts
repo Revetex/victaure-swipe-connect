@@ -27,8 +27,7 @@ export function useSendMessage() {
         created_at: now,
         updated_at: now,
         timestamp: now,
-        metadata: {} as Record<string, any>,
-        receiver: receiver,
+        metadata: {},
         reaction: null,
         is_assistant: receiver.id === 'assistant'
       };
@@ -54,7 +53,9 @@ export function useSendMessage() {
           status: 'sent',
           message_type: messageData.is_assistant ? 'assistant' : 'user',
           metadata: messageData.metadata || {},
-          reaction: messageData.reaction || null
+          reaction: messageData.reaction || null,
+          thinking: false,
+          is_assistant: messageData.is_assistant || false
         };
         addMessage(formattedMessage);
         queryClient.invalidateQueries({ queryKey: ["messages"] });

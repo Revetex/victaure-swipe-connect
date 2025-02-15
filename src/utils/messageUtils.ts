@@ -32,7 +32,7 @@ export const formatChatMessages = (messages: ChatMessage[]): Message[] => {
     timestamp: msg.created_at,
     thinking: msg.thinking || false,
     sender: typeof msg.sender === 'string' ? defaultSender : msg.sender,
-    receiver: msg.receiver || defaultReceiver,
+    receiver: defaultReceiver,
     message_type: 'user',
     status: 'sent',
     metadata: {},
