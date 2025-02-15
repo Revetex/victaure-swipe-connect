@@ -9,7 +9,23 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useUser } from "@/hooks/useUser";
 import { PageLayout } from "@/components/layout/PageLayout";
-import type { Message } from "@/types/messages";
+import type { Message, MessageSender } from "@/types/messages";
+
+// Define the database message type
+interface DatabaseMessage {
+  id: string;
+  content: string;
+  sender_id: string;
+  receiver_id: string;
+  created_at: string;
+  updated_at: string | null;
+  read: boolean;
+  is_assistant: boolean;
+  status?: 'sent' | 'delivered' | 'read';
+  metadata?: Record<string, any>;
+  reaction?: string;
+  sender?: MessageSender;
+}
 
 export function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -87,28 +103,40 @@ export function ChatPage() {
         (payload) => {
           if (payload.new) {
             setMessages((prevMessages) => {
+              const newMsg = payload.new as DatabaseMessage;
+              
               // Vérifier si le message existe déjà
-              const messageExists = prevMessages.some(msg => msg.id === payload.new.id);
+              const messageExists = prevMessages.some(msg => msg.id === newMsg.id);
               if (messageExists) {
                 return prevMessages;
               }
+
               // Transformer le nouveau message
-              const newMessage: Message = {
-                ...payload.new,
-                timestamp: payload.new.created_at,
-                message_type: payload.new.is_assistant ? 'assistant' : 'user',
-                status: payload.new.status || 'sent',
-                metadata: payload.new.metadata || {},
-                thinking: false,
-                sender: payload.new.sender || {
-                  id: payload.new.sender_id,
+              const transformedMessage: Message = {
+                id: newMsg.id,
+                content: newMsg.content,
+                sender_id: newMsg.sender_id,
+                receiver_id: newMsg.receiver_id,
+                created_at: newMsg.created_at,
+                updated_at: newMsg.updated_at || newMsg.created_at,
+                read: newMsg.read ?? false,
+                sender: newMsg.sender || {
+                  id: newMsg.sender_id,
                   full_name: "Unknown",
                   avatar_url: "",
                   online_status: false,
                   last_seen: new Date().toISOString()
-                }
+                },
+                timestamp: newMsg.created_at,
+                message_type: newMsg.is_assistant ? 'assistant' : 'user',
+                status: newMsg.status || 'sent',
+                metadata: newMsg.metadata || {},
+                is_assistant: newMsg.is_assistant || false,
+                thinking: false,
+                reaction: newMsg.reaction
               };
-              return [...prevMessages, newMessage];
+
+              return [...prevMessages, transformedMessage];
             });
           }
         }
