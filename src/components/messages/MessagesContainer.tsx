@@ -14,16 +14,16 @@ import { Message, DatabaseMessage, transformDatabaseMessage } from "@/types/mess
 import { Json } from "@/types/database/auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, Bot } from "lucide-react";
+import { Search, Plus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FriendSelector } from "./conversation/FriendSelector";
+import { AssistantMessage } from "./conversation/AssistantMessage";
 
 export function MessagesContainer() {
   const { receiver, setReceiver, showConversation, setShowConversation } = useReceiver();
   const [inputMessage, setInputMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
   
   const { data: conversations = [], isLoading: isLoadingConversations } = useMessageQuery();
   const { data: currentMessages = [], isLoading: isLoadingMessages } = useConversationMessages(receiver);
@@ -37,7 +37,6 @@ export function MessagesContainer() {
   
   const { handleDeleteConversation } = useConversationDelete();
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -117,7 +116,7 @@ export function MessagesContainer() {
         {showConversation && receiver ? (
           <ConversationView
             receiver={receiver}
-            messages={messages.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())}
+            messages={messages}
             inputMessage={inputMessage}
             isThinking={isThinking}
             onInputChange={setInputMessage}
@@ -148,37 +147,34 @@ export function MessagesContainer() {
                   </Button>
                 </FriendSelector>
               </div>
-              
-              <Button
-                variant="outline"
-                className="w-full flex items-center gap-2 h-auto p-4"
-                onClick={() => {
-                  setReceiver({
-                    id: 'assistant',
-                    full_name: 'M. Victaure',
-                    avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-                    online_status: true,
-                    last_seen: new Date().toISOString()
-                  });
-                  setShowConversation(true);
-                }}
-              >
-                <Bot className="h-5 w-5 text-primary" />
-                <div className="flex-1 text-left">
-                  <h3 className="font-medium">M. Victaure</h3>
-                  <p className="text-sm text-muted-foreground">Assistant virtuel</p>
-                </div>
-              </Button>
             </div>
 
-            <ScrollArea className="flex-1">
-              <ConversationList
-                conversations={filteredConversations}
-                onSelectConversation={(receiver) => {
-                  setReceiver(receiver);
-                  setShowConversation(true);
-                }}
-              />
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-4">
+                <AssistantMessage 
+                  chatMessages={aiMessages}
+                  onSelectConversation={() => {
+                    setReceiver({
+                      id: 'assistant',
+                      full_name: 'M. Victaure',
+                      avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+                      online_status: true,
+                      last_seen: new Date().toISOString()
+                    });
+                    setShowConversation(true);
+                  }}
+                />
+                
+                <div className="pt-2">
+                  <ConversationList
+                    conversations={filteredConversations}
+                    onSelectConversation={(receiver) => {
+                      setReceiver(receiver);
+                      setShowConversation(true);
+                    }}
+                  />
+                </div>
+              </div>
             </ScrollArea>
           </div>
         )}
