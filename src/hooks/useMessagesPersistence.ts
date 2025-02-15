@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Message } from '@/types/messages';
+import { Message, transformDatabaseMessage, DatabaseMessage } from '@/types/messages';
 import { useProfile } from './useProfile';
 import { toast } from 'sonner';
 
@@ -28,37 +28,7 @@ export function useMessagesPersistence(receiverId: string | undefined) {
 
         if (error) throw error;
         
-        const formattedMessages: Message[] = (data || []).map(msg => ({
-          id: msg.id,
-          content: msg.content,
-          sender_id: msg.sender_id,
-          receiver_id: msg.receiver_id,
-          created_at: msg.created_at,
-          updated_at: msg.updated_at || msg.created_at,
-          read: msg.read || false,
-          sender: msg.sender || {
-            id: msg.sender_id,
-            full_name: 'Unknown User',
-            avatar_url: null,
-            online_status: false,
-            last_seen: new Date().toISOString()
-          },
-          receiver: msg.receiver || {
-            id: msg.receiver_id,
-            full_name: 'Unknown User',
-            avatar_url: null,
-            online_status: false,
-            last_seen: new Date().toISOString()
-          },
-          timestamp: msg.created_at,
-          thinking: false,
-          message_type: msg.is_assistant ? 'assistant' : 'user',
-          status: (msg.status as 'sent' | 'delivered' | 'read') || 'sent',
-          metadata: msg.metadata || {},
-          reaction: msg.reaction || null,
-          is_assistant: msg.is_assistant || false
-        }));
-
+        const formattedMessages = (data || []).map(msg => transformDatabaseMessage(msg as DatabaseMessage));
         setLocalMessages(formattedMessages);
       } catch (error) {
         console.error('Error loading messages:', error);

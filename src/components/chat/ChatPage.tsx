@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,8 @@ import { useReceiver } from "@/hooks/useReceiver";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { ChatMessage } from "./ChatMessage";
 import { toast } from "sonner";
-import type { Message, MessageSender } from "@/types/messages";
+import { Message, MessageSender, transformDatabaseMessage } from "@/types/messages";
+import { Json } from "@/types/database/auth";
 
 export function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -65,36 +65,7 @@ export function ChatPage() {
         if (error) throw error;
 
         if (data) {
-          const transformedMessages: Message[] = data.map(msg => ({
-            id: msg.id || crypto.randomUUID(),
-            content: msg.content,
-            sender_id: msg.sender_id,
-            receiver_id: msg.receiver_id,
-            created_at: msg.created_at,
-            updated_at: msg.updated_at || msg.created_at,
-            read: msg.read ?? false,
-            sender: msg.sender || {
-              id: msg.sender_id,
-              full_name: 'Unknown User',
-              avatar_url: null,
-              online_status: false,
-              last_seen: new Date().toISOString()
-            },
-            receiver: msg.receiver || {
-              id: msg.receiver_id,
-              full_name: 'Unknown User',
-              avatar_url: null,
-              online_status: false,
-              last_seen: new Date().toISOString()
-            },
-            timestamp: msg.created_at,
-            message_type: msg.is_assistant ? 'assistant' : 'user',
-            status: (msg.status as 'sent' | 'delivered' | 'read') || 'sent',
-            metadata: msg.metadata || {},
-            reaction: msg.reaction || null,
-            is_assistant: msg.is_assistant || false,
-            thinking: false
-          }));
+          const transformedMessages = data.map(msg => transformDatabaseMessage(msg));
           setMessages(transformedMessages);
         }
       } catch (error) {
@@ -106,72 +77,6 @@ export function ChatPage() {
     };
 
     fetchMessages();
-
-    const messagesSubscription = supabase
-      .channel('public:messages')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'messages' },
-        (payload) => {
-          if (payload.new) {
-            setMessages((prevMessages) => {
-              const newMsg = payload.new as any;
-              
-              if (prevMessages.some(msg => msg.id === newMsg.id)) {
-                return prevMessages;
-              }
-
-              if (receiver?.id === 'assistant') {
-                if (!newMsg.is_assistant && newMsg.sender_id !== user?.id) {
-                  return prevMessages;
-                }
-              } else {
-                if (newMsg.sender_id !== user?.id && newMsg.sender_id !== receiver?.id) {
-                  return prevMessages;
-                }
-              }
-
-              const transformedMessage: Message = {
-                id: newMsg.id,
-                content: newMsg.content,
-                sender_id: newMsg.sender_id,
-                receiver_id: newMsg.receiver_id,
-                created_at: newMsg.created_at,
-                updated_at: newMsg.updated_at || newMsg.created_at,
-                read: newMsg.read ?? false,
-                sender: newMsg.sender || {
-                  id: newMsg.sender_id,
-                  full_name: 'Unknown User',
-                  avatar_url: null,
-                  online_status: false,
-                  last_seen: new Date().toISOString()
-                },
-                receiver: newMsg.receiver || {
-                  id: newMsg.receiver_id,
-                  full_name: 'Unknown User',
-                  avatar_url: null,
-                  online_status: false,
-                  last_seen: new Date().toISOString()
-                },
-                timestamp: newMsg.created_at,
-                message_type: newMsg.is_assistant ? 'assistant' : 'user',
-                status: 'sent',
-                metadata: newMsg.metadata || {},
-                reaction: newMsg.reaction || null,
-                is_assistant: newMsg.is_assistant || false,
-                thinking: false
-              };
-
-              return [...prevMessages, transformedMessage];
-            });
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(messagesSubscription);
-    };
   }, [user, receiver]);
 
   useEffect(() => {
@@ -191,7 +96,11 @@ export function ChatPage() {
         read: false,
         is_assistant: receiver.id === 'assistant',
         status: 'sent' as const,
-        message_type: receiver.id === 'assistant' ? 'assistant' as const : 'user' as const
+        message_type: receiver.id === 'assistant' ? 'assistant' as const : 'user' as const,
+        metadata: {
+          timestamp: new Date().toISOString(),
+          type: 'chat'
+        } as Record<string, Json>
       };
 
       const { error } = await supabase

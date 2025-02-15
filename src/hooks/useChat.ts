@@ -32,7 +32,7 @@ export function useChat() {
 
     const sender: MessageSender = {
       id: profile.id,
-      full_name: profile.full_name,
+      full_name: profile.full_name || 'Unknown',
       avatar_url: profile.avatar_url,
       online_status: true,
       last_seen: new Date().toISOString()
@@ -45,8 +45,8 @@ export function useChat() {
       receiver_id: receiver.id,
       sender,
       receiver,
-      message_type: receiver.id === 'assistant' ? 'assistant' : 'user',
-      is_assistant: receiver.id === 'assistant'
+      message_type: 'user',
+      is_assistant: false
     });
 
     setState(prev => ({

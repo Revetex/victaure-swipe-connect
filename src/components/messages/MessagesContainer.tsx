@@ -61,7 +61,11 @@ export function MessagesContainer() {
     setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
   };
 
-  const messages = receiver?.id === 'assistant' ? aiMessages : currentMessages;
+  const messages = receiver?.id === 'assistant' 
+    ? aiMessages 
+    : Array.isArray(currentMessages) 
+      ? currentMessages.map(msg => transformDatabaseMessage(msg as DatabaseMessage))
+      : [];
 
   return (
     <Card className="h-[calc(100vh-4rem)]">
