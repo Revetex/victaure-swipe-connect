@@ -8,12 +8,13 @@ export const saveMessage = async (message: Message) => {
     if (!user) throw new Error("User not authenticated");
 
     const { error } = await supabase
-      .from('ai_messages')
+      .from('messages')
       .insert({
         id: message.id,
-        user_id: user.id,
+        sender_id: user.id,
+        receiver_id: user.id,
         content: message.content,
-        sender: message.sender_id === 'assistant' ? 'assistant' : 'user',
+        is_assistant: message.sender_id === 'assistant',
         created_at: message.created_at,
         updated_at: message.updated_at
       });
@@ -31,9 +32,10 @@ export const deleteAllMessages = async () => {
     if (!user) throw new Error("User not authenticated");
 
     const { error } = await supabase
-      .from('ai_messages')
+      .from('messages')
       .delete()
-      .eq('user_id', user.id);
+      .eq('receiver_id', user.id)
+      .eq('is_assistant', true);
 
     if (error) throw error;
   } catch (error) {
@@ -48,9 +50,10 @@ export const loadMessages = async (): Promise<Message[]> => {
     if (!user) throw new Error("User not authenticated");
 
     const { data: messages, error } = await supabase
-      .from('ai_messages')
+      .from('messages')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('receiver_id', user.id)
+      .eq('is_assistant', true)
       .order('created_at', { ascending: true });
 
     if (error) throw error;
@@ -58,12 +61,12 @@ export const loadMessages = async (): Promise<Message[]> => {
     return messages.map(msg => ({
       id: msg.id,
       content: msg.content,
-      sender: msg.sender,
+      sender: msg.is_assistant ? 'assistant' : 'user',
       timestamp: msg.created_at,
       created_at: msg.created_at,
       updated_at: msg.updated_at,
-      sender_id: msg.sender === 'assistant' ? 'assistant' : user.id,
-      receiver_id: msg.sender === 'assistant' ? user.id : 'assistant',
+      sender_id: msg.is_assistant ? 'assistant' : user.id,
+      receiver_id: user.id,
       read: msg.read
     }));
   } catch (error) {
