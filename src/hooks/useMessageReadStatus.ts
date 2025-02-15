@@ -13,13 +13,22 @@ export const useMessageReadStatus = (showConversation: boolean, receiver: Receiv
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        // First update the messages table
-        const { error: messagesError } = await supabase
+        let query = supabase
           .from('messages')
           .update({ read: true, updated_at: new Date().toISOString() })
-          .eq('sender_id', receiver.id)
           .eq('receiver_id', user.id)
           .eq('read', false);
+
+        // Si le receiver est l'assistant, utiliser is_assistant
+        if (receiver.id === 'assistant') {
+          query = query.eq('is_assistant', true);
+        } else {
+          // Sinon, utiliser sender_id pour les messages normaux
+          query = query.eq('sender_id', receiver.id)
+            .eq('is_assistant', false);
+        }
+
+        const { error: messagesError } = await query;
 
         if (messagesError) {
           console.error('Error marking messages as read:', messagesError);
