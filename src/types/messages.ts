@@ -23,7 +23,7 @@ export interface Message {
   thinking?: boolean;
   message_type: 'system' | 'user' | 'assistant';
   status: 'sent' | 'delivered' | 'read';
-  metadata?: Record<string, any>;
+  metadata: Record<string, any>;
   reaction?: string | null;
   is_assistant?: boolean;
 }

@@ -22,15 +22,17 @@ export const formatChatMessages = (messages: ChatMessage[]): Message[] => {
       online_status: true,
       last_seen: new Date().toISOString()
     } : msg.sender,
-    receiver: typeof msg.sender === 'string' ? {
+    receiver: msg.receiver || {
       id: msg.receiver_id,
       full_name: 'Utilisateur',
       avatar_url: null,
       online_status: true,
       last_seen: new Date().toISOString()
-    } : msg.receiver,
+    },
     message_type: 'user',
     status: 'sent',
-    metadata: {}
+    metadata: {},
+    reaction: null,
+    is_assistant: false
   }));
 };

@@ -16,7 +16,6 @@ interface ChatMessageProps {
 export function ChatMessage({ message }: ChatMessageProps) {
   const { user } = useUser();
   
-  // Vérification que le message et l'utilisateur existent
   if (!message || !user) return null;
   
   const isOwnMessage = message.sender_id === user.id;

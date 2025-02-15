@@ -44,13 +44,7 @@ export function ChatMessagesList({
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.2 }}
             >
-              <ChatMessage
-                content={message.content}
-                sender={message.sender_id === 'assistant' ? 'assistant' : 'user'}
-                timestamp={message.created_at}
-                status={message.status}
-                reaction={message.reaction}
-              />
+              <ChatMessage message={message} />
             </motion.div>
           ))}
         </AnimatePresence>
