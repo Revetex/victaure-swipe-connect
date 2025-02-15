@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -33,6 +34,14 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceRoleKey)
 
+    // Récupérer l'historique des messages récents
+    const { data: recentMessages } = await supabase
+      .from('ai_messages')
+      .select('content, is_assistant')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(5);
+
     const systemPrompt = `Tu es M. Victaure, un assistant virtuel chaleureux et naturel spécialisé dans l'orientation professionnelle au Québec.
 
     Ton rôle est d'être:
@@ -40,29 +49,29 @@ serve(async (req) => {
     - Empathique et compréhensif
     - À l'écoute des besoins de l'utilisateur
     - Expert en construction et emploi au Québec
-    - Capable de maintenir une conversation fluide
+    - Capable de maintenir une conversation fluide et cohérente
     
-    Règles importantes:
+    DIRECTIVES IMPORTANTES:
     - Réponds toujours en français de manière naturelle
     - Adapte ton langage au niveau de formalité de l'utilisateur
+    - Assure une continuité logique avec les messages précédents
+    - Fais référence aux éléments mentionnés précédemment dans la conversation
+    - Évite les répétitions inutiles
     - Pose des questions de suivi pertinentes
-    - Montre que tu comprends le contexte de la conversation
-    - Évite les réponses trop formelles ou robotiques
-    - Utilise le contexte des messages précédents pour personnaliser tes réponses
+    - N'hésite pas à rebondir sur les sujets abordés précédemment
     
     Contexte de l'utilisateur:
     ${JSON.stringify(context?.userProfile || {})}
     
     Messages précédents:
-    ${context?.previousMessages?.slice(-10).map(m => `${m.sender}: ${m.content}`).join('\n') || 'Aucun message précédent'}
+    ${recentMessages?.map(m => `${m.is_assistant ? 'M. Victaure' : 'Utilisateur'}: ${m.content}`).join('\n') || 'Aucun message précédent'}
     
-    User: ${message}
+    Message actuel: ${message}
     
-    Assistant:`
+    Réponse de M. Victaure:`
 
     console.log('Sending prompt to Hugging Face:', systemPrompt)
 
-    // Using Mixtral model for better French language support
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
       {
@@ -103,32 +112,53 @@ serve(async (req) => {
       throw new Error('Invalid response format from Hugging Face API')
     }
 
-    let assistantResponse = data[0].generated_text.split('Assistant:').pop()?.trim()
+    let assistantResponse = data[0].generated_text.trim();
     
-    if (assistantResponse) {
-      const sentences = assistantResponse.match(/[^.!?]+[.!?]+/g) || []
-      if (sentences.length > 0) {
-        assistantResponse = sentences.join(' ').trim()
-      }
+    // Stocker le message dans l'historique
+    const { error: messageError } = await supabase
+      .from('ai_messages')
+      .insert({
+        user_id: userId,
+        content: message,
+        is_assistant: false,
+        timestamp: new Date().toISOString()
+      });
+
+    if (messageError) {
+      console.error('Error storing user message:', messageError);
     }
 
-    // Store conversation in learning data
+    // Stocker la réponse de l'assistant
+    const { error: responseError } = await supabase
+      .from('ai_messages')
+      .insert({
+        user_id: userId,
+        content: assistantResponse,
+        is_assistant: true,
+        timestamp: new Date().toISOString()
+      });
+
+    if (responseError) {
+      console.error('Error storing assistant response:', responseError);
+    }
+
+    // Analyser la réponse pour le context learning
     const { error: learningError } = await supabase
       .from('ai_learning_data')
       .insert({
         user_id: userId,
         question: message,
-        response: assistantResponse || data[0].generated_text,
+        response: assistantResponse,
         context: context || {},
         tags: ['chat', 'career-advice']
-      })
+      });
 
     if (learningError) {
-      console.error('Error storing learning data:', learningError)
+      console.error('Error storing learning data:', learningError);
     }
 
     return new Response(
-      JSON.stringify({ response: assistantResponse || data[0].generated_text }),
+      JSON.stringify({ response: assistantResponse }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
