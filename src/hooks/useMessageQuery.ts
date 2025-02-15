@@ -6,111 +6,58 @@ import { toast } from "sonner";
 
 const MESSAGES_PER_PAGE = 20;
 
-export interface UseMessageQueryOptions {
-  staleTime?: number;
-  cacheTime?: number;
-  refetchOnWindowFocus?: boolean;
-}
-
-export function useMessageQuery(
-  receiver: Receiver | null, 
-  lastCursor: string | null, 
-  hasMore: boolean,
-  options: UseMessageQueryOptions = {}
-) {
+export function useMessageQuery() {
+  const { data: { user } } = await supabase.auth.getUser();
+  
   return useQuery({
-    queryKey: ["messages", receiver?.id, lastCursor],
+    queryKey: ["conversations"],
     queryFn: async () => {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
-      if (authError) {
-        console.error("Erreur d'authentification:", authError);
-        throw new Error("Erreur d'authentification");
-      }
-
-      if (!user) {
-        throw new Error("Non authentifié");
-      }
-
-      if (!receiver) {
-        return [];
-      }
+      if (!user?.id) throw new Error("Non authentifié");
 
       try {
-        let query = supabase
-          .from("messages")
+        // Récupérer d'abord les conversations existantes
+        const { data: conversations, error: convError } = await supabase
+          .from('messages')
           .select(`
-            *,
+            distinct on (LEAST(sender_id, receiver_id), GREATEST(sender_id, receiver_id))
+            id,
+            content,
+            created_at,
             sender:profiles!messages_sender_id_fkey(
-              id,
-              full_name,
-              avatar_url,
-              online_status,
-              last_seen
+              id, full_name, avatar_url, online_status, last_seen
             ),
             receiver:profiles!messages_receiver_id_fkey(
-              id,
-              full_name,
-              avatar_url,
-              online_status,
-              last_seen
+              id, full_name, avatar_url, online_status, last_seen
             )
           `)
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
           .order('created_at', { ascending: false })
-          .limit(MESSAGES_PER_PAGE);
+          .not('is_assistant', 'eq', true);
 
-        if (lastCursor) {
-          query = query.lt('created_at', lastCursor);
-        }
+        if (convError) throw convError;
 
-        if (receiver.id === 'assistant') {
-          query = query
-            .eq('receiver_id', user.id)
-            .eq('is_assistant', true);
-        } else {
-          query = query
-            .eq('is_assistant', false)
-            .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
-        }
+        // Récupérer les conversations supprimées
+        const { data: deletedConvs } = await supabase
+          .from('deleted_conversations')
+          .select('conversation_partner_id')
+          .eq('user_id', user.id)
+          .eq('keep_pinned', false);
 
-        const { data: messages, error: queryError } = await query;
+        const deletedIds = new Set(deletedConvs?.map(dc => dc.conversation_partner_id) || []);
 
-        if (queryError) {
-          console.error("Erreur de requête:", queryError);
-          throw queryError;
-        }
+        // Filtrer les conversations supprimées
+        const activeConversations = conversations?.filter(conv => {
+          const partnerId = conv.sender_id === user.id ? conv.receiver_id : conv.sender_id;
+          return !deletedIds.has(partnerId);
+        }) || [];
 
-        if (!messages) {
-          return [];
-        }
-
-        return messages.map(msg => ({
-          ...msg,
-          timestamp: msg.created_at,
-          status: msg.status || 'sent',
-          message_type: msg.is_assistant ? 'assistant' : 'user',
-          metadata: msg.metadata || {},
-          sender: msg.sender || {
-            id: msg.sender_id,
-            full_name: 'Utilisateur inconnu',
-            avatar_url: '',
-            online_status: false,
-            last_seen: new Date().toISOString()
-          },
-          receiver: msg.receiver || receiver
-        })) as Message[];
+        return activeConversations;
       } catch (error) {
-        console.error("Erreur chargement messages:", error);
+        console.error("Erreur chargement conversations:", error);
         throw error;
       }
     },
-    enabled: !!receiver && hasMore,
-    staleTime: options.staleTime || 1000 * 30,
-    gcTime: options.cacheTime || 1000 * 60 * 5,
-    refetchOnWindowFocus: options.refetchOnWindowFocus ?? false,
-    retry: (failureCount, error) => {
-      console.error(`Tentative ${failureCount} échouée:`, error);
-      return failureCount < 3;
-    }
+    staleTime: 30000,
+    retry: 1
   });
 }
