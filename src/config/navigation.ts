@@ -1,53 +1,65 @@
 
-import { MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, User, Users, Search } from "lucide-react";
+import { Briefcase, MessageCircle, LayoutGrid, Users, Bell, Settings, Calculator, ChessKnight, Globe, StickyNote, ChevronRight } from "lucide-react";
 
 export const navigationItems = [
-  // Section principale
-  { id: 1, icon: User, name: "Mon profil" },
-  { id: 4, icon: Newspaper, name: "Actualité" },
-  { id: 2, icon: MessageSquare, name: "Messages" },
-  { id: 3, icon: BriefcaseIcon, name: "Emplois" },
-  
-  // Section réseau
-  { id: 9, icon: Bell, name: "Notifications" },
-  { id: 12, icon: Users, name: "Connections" },
-  
-  // Outils
-  { id: 7, icon: ListTodo, name: "Tâches" },
-  { id: 8, icon: Calculator, name: "Calculatrice" },
-  { id: 14, icon: Languages, name: "Traducteur" },
-  { id: 15, icon: SwordIcon, name: "Échecs" },
-  { id: 16, icon: StickyNote, name: "Notes" },
-  { id: 10, icon: Settings, name: "Paramètres" }
-] as const;
-
-export const getPageTitle = (currentPage: number): string => {
-  switch (currentPage) {
-    case 1:
-      return "Mon profil";
-    case 2:
-      return "Messages";
-    case 3:
-      return "Emplois";
-    case 4:
-      return "Actualité";
-    case 7:
-      return "Tâches";
-    case 8:
-      return "Calculatrice";
-    case 9:
-      return "Notifications";
-    case 10:
-      return "Paramètres";
-    case 12:
-      return "Connections";
-    case 14:
-      return "Traducteur";
-    case 15:
-      return "Échecs";
-    case 16:
-      return "Notes";
-    default:
-      return "Actualité";
+  {
+    id: 1,
+    name: "Profil",
+    icon: Users
+  },
+  {
+    id: 2,
+    name: "Messages",
+    icon: MessageCircle
+  },
+  {
+    id: 3,
+    name: "Marketplace",
+    icon: LayoutGrid
+  },
+  {
+    id: 4,
+    name: "Feed",
+    icon: Users
+  },
+  {
+    id: 5,
+    name: "Emplois",
+    icon: Briefcase
+  },
+  {
+    id: 7,
+    name: "Tâches",
+    icon: ChevronRight
+  },
+  {
+    id: 8,
+    name: "Calculatrice",
+    icon: Calculator
+  },
+  {
+    id: 9,
+    name: "Notifications",
+    icon: Bell
+  },
+  {
+    id: 10,
+    name: "Paramètres",
+    icon: Settings
+  },
+  {
+    id: 14,
+    name: "Traducteur",
+    icon: Globe
+  },
+  {
+    id: 15,
+    name: "Échecs",
+    icon: ChessKnight
+  },
+  {
+    id: 16,
+    name: "Notes",
+    icon: StickyNote
   }
-};
+];
