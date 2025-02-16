@@ -17,23 +17,23 @@ import {
 
 export const navigationItems = [
   // Section principale
-  { id: 1, icon: User, name: "Mon profil" },
-  { id: 4, icon: Newspaper, name: "Actualité" },
-  { id: 2, icon: MessageSquare, name: "Messages" },
-  { id: 3, icon: BriefcaseIcon, name: "Emplois" },
-  { id: 17, icon: ShoppingBag, name: "Marketplace" },
+  { id: 1, icon: User, name: "Mon profil", route: "/profile" },
+  { id: 4, icon: Newspaper, name: "Actualité", route: "/feed" },
+  { id: 2, icon: MessageSquare, name: "Messages", route: "/messages" },
+  { id: 3, icon: BriefcaseIcon, name: "Emplois", route: "/jobs" },
+  { id: 17, icon: ShoppingBag, name: "Marketplace", route: "/marketplace" }, // Assurez-vous que cette route est active
   
   // Section réseau
-  { id: 9, icon: Bell, name: "Notifications" },
-  { id: 12, icon: Users, name: "Connections" },
+  { id: 9, icon: Bell, name: "Notifications", route: "/notifications" },
+  { id: 12, icon: Users, name: "Connections", route: "/connections" },
   
   // Outils
-  { id: 7, icon: ListTodo, name: "Tâches" },
-  { id: 8, icon: Calculator, name: "Calculatrice" },
-  { id: 14, icon: Languages, name: "Traducteur" },
-  { id: 15, icon: SwordIcon, name: "Échecs" },
-  { id: 16, icon: StickyNote, name: "Notes" },
-  { id: 10, icon: Settings, name: "Paramètres" }
+  { id: 7, icon: ListTodo, name: "Tâches", route: "/tasks" },
+  { id: 8, icon: Calculator, name: "Calculatrice", route: "/calculator" },
+  { id: 14, icon: Languages, name: "Traducteur", route: "/translator" },
+  { id: 15, icon: SwordIcon, name: "Échecs", route: "/chess" },
+  { id: 16, icon: StickyNote, name: "Notes", route: "/notes" },
+  { id: 10, icon: Settings, name: "Paramètres", route: "/settings" }
 ] as const;
 
 export const getPageTitle = (currentPage: number): string => {

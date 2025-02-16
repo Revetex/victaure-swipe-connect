@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loader2, Plus, ShieldCheck } from "lucide-react";
-import { PaymentTypeSelector } from "@/components/dashboard/payment/PaymentTypeSelector";
+import { PaymentForm } from "@/components/payment/PaymentForm";
+import { PaymentTypeSelector } from "./payment/PaymentTypeSelector";
 import { PaymentMethodsList } from "./payment/PaymentMethodsList";
 import { TransactionsList } from "./payment/TransactionsList";
 import { usePaymentMethods } from "./payment/usePaymentMethods";
@@ -16,7 +17,7 @@ import { toast } from "sonner";
 const stripeElementsOptions: StripeElementsOptions = {
   mode: 'payment',
   currency: 'cad',
-  amount: 1000, // Montant minimal de 10$ en centimes
+  amount: 1000,
   appearance: {
     theme: 'stripe',
     variables: {
@@ -28,6 +29,7 @@ const stripeElementsOptions: StripeElementsOptions = {
 export function PaymentSection() {
   const [stripePromise, setStripePromise] = useState<Promise<any> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   const {
     paymentMethods,
@@ -74,25 +76,9 @@ export function PaymentSection() {
     );
   }
 
-  if (!stripePromise) {
-    return (
-      <Card className="p-6">
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground text-center">
-            Le système de paiement n'a pas pu être initialisé.
-          </p>
-          <Button onClick={() => window.location.reload()} className="w-full">
-            Réessayer
-          </Button>
-        </div>
-      </Card>
-    );
-  }
-
   return (
     <Elements stripe={stripePromise} options={stripeElementsOptions}>
       <Card className="p-6 space-y-8">
-        {/* Section Méthodes de paiement */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
@@ -116,15 +102,25 @@ export function PaymentSection() {
                 onDelete={deletePaymentMethod}
               />
 
-              <div className="pt-4 space-y-4">
-                <PaymentTypeSelector
-                  selectedPaymentType={selectedType}
-                  onSelect={setSelectedType}
-                />
-                
+              {showPaymentForm ? (
+                <div className="space-y-4">
+                  <PaymentTypeSelector
+                    selectedPaymentType={selectedType}
+                    onSelect={setSelectedType}
+                  />
+                  <PaymentForm />
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => setShowPaymentForm(false)}
+                  >
+                    Annuler
+                  </Button>
+                </div>
+              ) : (
                 <Button 
                   className="w-full"
-                  onClick={addPaymentMethod}
+                  onClick={() => setShowPaymentForm(true)}
                   disabled={addingPayment}
                 >
                   {addingPayment ? (
@@ -134,12 +130,11 @@ export function PaymentSection() {
                   )}
                   Ajouter une méthode de paiement
                 </Button>
-              </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Section Transactions */}
         <div className="space-y-4">
           <div className="space-y-1">
             <h2 className="text-2xl font-semibold tracking-tight">Historique des transactions</h2>
