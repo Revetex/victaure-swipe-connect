@@ -1502,9 +1502,11 @@ export type Database = {
       }
       marketplace_items: {
         Row: {
+          availability: Json | null
           category_id: string | null
           condition: string | null
           created_at: string | null
+          currency: string
           description: string | null
           favorites_count: number | null
           id: string
@@ -1514,15 +1516,20 @@ export type Database = {
           price: number
           searchable_text: unknown | null
           seller_id: string
+          service_duration: string | null
           status: string
           title: string
+          type: string
           updated_at: string | null
+          user_rating: number | null
           views_count: number | null
         }
         Insert: {
+          availability?: Json | null
           category_id?: string | null
           condition?: string | null
           created_at?: string | null
+          currency?: string
           description?: string | null
           favorites_count?: number | null
           id?: string
@@ -1532,15 +1539,20 @@ export type Database = {
           price: number
           searchable_text?: unknown | null
           seller_id: string
+          service_duration?: string | null
           status?: string
           title: string
+          type?: string
           updated_at?: string | null
+          user_rating?: number | null
           views_count?: number | null
         }
         Update: {
+          availability?: Json | null
           category_id?: string | null
           condition?: string | null
           created_at?: string | null
+          currency?: string
           description?: string | null
           favorites_count?: number | null
           id?: string
@@ -1550,9 +1562,12 @@ export type Database = {
           price?: number
           searchable_text?: unknown | null
           seller_id?: string
+          service_duration?: string | null
           status?: string
           title?: string
+          type?: string
           updated_at?: string | null
+          user_rating?: number | null
           views_count?: number | null
         }
         Relationships: [
