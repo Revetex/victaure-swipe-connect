@@ -19,21 +19,6 @@ export function useProfile() {
   useEffect(() => {
     let mounted = true;
 
-    async function fetchWithRetry<T>(fn: () => Promise<PostgrestResponse<T>>, retries = MAX_RETRIES): Promise<PostgrestResponse<T>> {
-      try {
-        const result = await fn();
-        if (result.error) throw result.error;
-        return result;
-      } catch (error) {
-        if (retries > 0) {
-          console.log(`Retrying... ${retries} attempts left`);
-          await wait(RETRY_DELAY);
-          return fetchWithRetry(fn, retries - 1);
-        }
-        return { data: null, error, count: null, status: 400, statusText: 'error' };
-      }
-    }
-
     async function fetchProfile() {
       try {
         const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -47,38 +32,30 @@ export function useProfile() {
 
         console.log("Fetching profile for user:", user.id);
 
-        const { data: profileData, error: profileError } = await fetchWithRetry(() =>
-          supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .maybeSingle()
-        );
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
 
         if (profileError) {
           throw profileError;
         }
 
-        const { data: certifications } = await fetchWithRetry(() =>
-          supabase
-            .from('certifications')
-            .select('*')
-            .eq('profile_id', user.id)
-        );
+        const { data: certifications } = await supabase
+          .from('certifications')
+          .select('*')
+          .eq('profile_id', user.id);
 
-        const { data: education } = await fetchWithRetry(() =>
-          supabase
-            .from('education')
-            .select('*')
-            .eq('profile_id', user.id)
-        );
+        const { data: education } = await supabase
+          .from('education')
+          .select('*')
+          .eq('profile_id', user.id);
 
-        const { data: experiences } = await fetchWithRetry(() =>
-          supabase
-            .from('experiences')
-            .select('*')
-            .eq('profile_id', user.id)
-        );
+        const { data: experiences } = await supabase
+          .from('experiences')
+          .select('*')
+          .eq('profile_id', user.id);
 
         if (!profileData) {
           const defaultProfile: UserProfile = {
