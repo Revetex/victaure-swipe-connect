@@ -1,4 +1,3 @@
-
 import { useState, useRef, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,6 +17,11 @@ interface AIAssistantProps {
   onClose: () => void;
 }
 
+interface AIResponse {
+  response: string;
+  suggestedJobs?: any[];
+}
+
 export function AIAssistant({ onClose }: AIAssistantProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +35,6 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
   const { profile } = useProfile();
   const abortController = useRef<AbortController | null>(null);
 
-  // Speech recognition setup
   const { isListening, startListening, stopListening, hasRecognitionSupport } = 
     useSpeechRecognition({
       onResult: (transcript) => {
@@ -149,10 +152,10 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       
       // Call AI assistant function with timeout
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Timeout')), 30000); // 30 seconds timeout
+        setTimeout(() => reject(new Error('Timeout')), 30000);
       });
 
-      const functionResponse = await supabase.functions.invoke('ai-chat', {
+      const response = await supabase.functions.invoke<AIResponse>('ai-chat', {
         body: { 
           message: input,
           userId: user.id,
@@ -163,18 +166,17 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
         }
       });
 
-      const response = await Promise.race([Promise.resolve(functionResponse), timeoutPromise]);
+      const result = await Promise.race([Promise.resolve(response), timeoutPromise]);
       
-      // Vérifier que la réponse est bien formatée
-      if (!response || !response.data || !response.data.response) {
+      if (!result?.data?.response) {
         throw new Error('Invalid response format from AI');
       }
 
       const assistantMessage = { 
         type: 'assistant', 
         content: {
-          message: response.data.response,
-          suggestedJobs: response.data.suggestedJobs || []
+          message: result.data.response,
+          suggestedJobs: result.data.suggestedJobs || []
         }
       };
 
@@ -286,4 +288,3 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
     </motion.div>
   );
 }
-

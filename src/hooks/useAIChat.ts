@@ -13,6 +13,11 @@ const defaultAssistant = {
   last_seen: new Date().toISOString()
 };
 
+interface AIResponse {
+  response: string;
+  suggestedJobs?: any[];
+}
+
 export function useAIChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isThinking, setIsThinking] = useState(false);
@@ -36,7 +41,11 @@ export function useAIChat() {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         read: false,
-        sender: profile,
+        sender: {
+          ...profile,
+          online_status: profile.online_status ?? false,
+          last_seen: profile.last_seen ?? new Date().toISOString()
+        },
         receiver: defaultAssistant,
         timestamp: new Date().toISOString(),
         message_type: 'user',
@@ -51,7 +60,7 @@ export function useAIChat() {
       setIsThinking(true);
 
       // Appeler l'assistant
-      const { data, error } = await supabase.functions.invoke('ai-chat', {
+      const { data, error } = await supabase.functions.invoke<AIResponse>('ai-chat', {
         body: { 
           message: content,
           userId: profile.id,
@@ -63,6 +72,7 @@ export function useAIChat() {
       });
 
       if (error) throw error;
+      if (!data?.response) throw new Error('Invalid response format from AI');
 
       // Ajouter la réponse de l'assistant
       const assistantMessage: Message = {
@@ -74,7 +84,11 @@ export function useAIChat() {
         updated_at: new Date().toISOString(),
         read: false,
         sender: defaultAssistant,
-        receiver: profile,
+        receiver: {
+          ...profile,
+          online_status: profile.online_status ?? false,
+          last_seen: profile.last_seen ?? new Date().toISOString()
+        },
         timestamp: new Date().toISOString(),
         message_type: 'assistant',
         status: 'sent',

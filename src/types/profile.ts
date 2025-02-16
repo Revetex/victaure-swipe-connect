@@ -1,4 +1,3 @@
-
 export interface UserProfile {
   id: string;
   email: string;
@@ -27,8 +26,8 @@ export interface UserProfile {
   sections_order?: string[] | null;
   privacy_enabled?: boolean;
   friends?: Friend[];
-  online_status?: boolean;
-  last_seen?: string;
+  online_status: boolean;
+  last_seen: string;
   created_at?: string;
   auto_update_enabled?: boolean;
 }
