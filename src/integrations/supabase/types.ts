@@ -112,30 +112,39 @@ export type Database = {
         Row: {
           content: string
           created_at: string | null
+          depth: number | null
           id: string
           metadata: Json | null
+          parent_id: string | null
           read: boolean | null
           sender: string | null
+          thread_id: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
           content: string
           created_at?: string | null
+          depth?: number | null
           id?: string
           metadata?: Json | null
+          parent_id?: string | null
           read?: boolean | null
           sender?: string | null
+          thread_id?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
           content?: string
           created_at?: string | null
+          depth?: number | null
           id?: string
           metadata?: Json | null
+          parent_id?: string | null
           read?: boolean | null
           sender?: string | null
+          thread_id?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -3589,6 +3598,22 @@ export type Database = {
       }
     }
     Views: {
+      recent_ai_messages: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          depth: number | null
+          id: string | null
+          metadata: Json | null
+          parent_id: string | null
+          read: boolean | null
+          sender: string | null
+          thread_id: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
       relevant_jobs: {
         Row: {
           budget: number | null
