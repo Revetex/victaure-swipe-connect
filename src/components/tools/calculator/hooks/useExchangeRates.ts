@@ -19,13 +19,12 @@ export function useExchangeRates() {
           rate: rate,
           type: type,
           last_updated: new Date().toISOString()
-        }, {
-          onConflict: 'from_currency,to_currency,type'
         });
 
       if (error) throw error;
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde du taux:', error);
+      console.error('Error saving rate:', error);
+      // Don't show error to user as this is a background operation
     }
   };
 
@@ -48,7 +47,7 @@ export function useExchangeRates() {
       }
       return null;
     } catch (error) {
-      console.error('Erreur lors de la récupération des taux:', error);
+      console.error('Error fetching saved rates:', error);
       return null;
     }
   };
@@ -65,12 +64,13 @@ export function useExchangeRates() {
         const data = await response.json();
         setExchangeRates(data.rates);
         
-        Object.entries(data.rates).forEach(([currency, rate]) => {
-          saveRate('CAD', currency, rate as number, 'currency');
-        });
+        // Save each rate individually
+        for (const [currency, rate] of Object.entries(data.rates)) {
+          await saveRate('CAD', currency, rate as number, 'currency');
+        }
       } catch (error) {
-        console.error('Erreur lors de la récupération des taux de change:', error);
-        toast.error("Erreur lors de la récupération des taux de change");
+        console.error('Error fetching currency rates:', error);
+        toast.error("Error fetching currency rates");
       }
     }
     setLoading(false);
@@ -98,12 +98,13 @@ export function useExchangeRates() {
         
         setCryptoRates(rates);
         
-        Object.entries(rates).forEach(([currency, rate]) => {
-          saveRate('CAD', currency, rate, 'crypto');
-        });
+        // Save each rate individually
+        for (const [currency, rate] of Object.entries(rates)) {
+          await saveRate('CAD', currency, rate, 'crypto');
+        }
       } catch (error) {
-        console.error('Erreur lors de la récupération des taux crypto:', error);
-        toast.error("Erreur lors de la récupération des taux crypto");
+        console.error('Error fetching crypto rates:', error);
+        toast.error("Error fetching crypto rates");
       }
     }
     setLoading(false);
