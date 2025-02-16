@@ -18,12 +18,12 @@ export const navigationItems = [
   // Menu principal
   { id: 4, icon: Home, name: "Accueil" },
   { id: 3, icon: BriefcaseIcon, name: "Emplois" },
-  { id: 17, icon: ShoppingBag, name: "Marketplace" },
   { id: 2, icon: MessageSquare, name: "Messages" },
-  
-  // Communication
-  { id: 9, icon: Bell, name: "Notifications" },
   { id: 12, icon: Users, name: "Réseau" },
+  { id: 17, icon: ShoppingBag, name: "Marketplace" },
+  
+  // Notifications
+  { id: 9, icon: Bell, name: "Notifications" },
   
   // Outils
   { id: 7, icon: ListTodo, name: "Tâches" },
