@@ -1,9 +1,8 @@
 
 import { 
-  User, 
-  Newspaper, 
+  Home,
+  BriefcaseIcon,
   MessageSquare, 
-  BriefcaseIcon, 
   Bell, 
   Users, 
   ListTodo, 
@@ -16,16 +15,15 @@ import {
 } from "lucide-react";
 
 export const navigationItems = [
-  // Section principale
-  { id: 1, icon: User, name: "Mon profil" },
-  { id: 4, icon: Newspaper, name: "Actualité" },
-  { id: 2, icon: MessageSquare, name: "Messages" },
+  // Menu principal
+  { id: 4, icon: Home, name: "Accueil" },
   { id: 3, icon: BriefcaseIcon, name: "Emplois" },
   { id: 17, icon: ShoppingBag, name: "Marketplace" },
+  { id: 2, icon: MessageSquare, name: "Messages" },
   
-  // Section réseau
+  // Communication
   { id: 9, icon: Bell, name: "Notifications" },
-  { id: 12, icon: Users, name: "Connections" },
+  { id: 12, icon: Users, name: "Réseau" },
   
   // Outils
   { id: 7, icon: ListTodo, name: "Tâches" },
@@ -38,14 +36,12 @@ export const navigationItems = [
 
 export const getPageTitle = (currentPage: number): string => {
   switch (currentPage) {
-    case 1:
-      return "Mon profil";
     case 2:
       return "Messages";
     case 3:
       return "Emplois";
     case 4:
-      return "Actualité";
+      return "Accueil";
     case 7:
       return "Tâches";
     case 8:
@@ -55,7 +51,7 @@ export const getPageTitle = (currentPage: number): string => {
     case 10:
       return "Paramètres";
     case 12:
-      return "Connections";
+      return "Réseau";
     case 14:
       return "Traducteur";
     case 15:
@@ -65,6 +61,6 @@ export const getPageTitle = (currentPage: number): string => {
     case 17:
       return "Marketplace";
     default:
-      return "Actualité";
+      return "Accueil";
   }
 };
