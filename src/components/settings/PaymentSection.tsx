@@ -9,10 +9,8 @@ import { TransactionsList } from "./payment/TransactionsList";
 import { usePaymentMethods } from "./payment/usePaymentMethods";
 import { useTransactions } from "./payment/useTransactions";
 import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+import { initializeStripe } from "@/hooks/useStripePayment";
 import type { StripeElementsOptions } from '@stripe/stripe-js';
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const stripeElementsOptions: StripeElementsOptions = {
   mode: 'payment',
@@ -46,7 +44,7 @@ export function PaymentSection() {
   }, []);
 
   return (
-    <Elements stripe={stripePromise} options={stripeElementsOptions}>
+    <Elements stripe={initializeStripe()} options={stripeElementsOptions}>
       <Card className="p-6 space-y-8">
         {/* Section Méthodes de paiement */}
         <div className="space-y-6">
