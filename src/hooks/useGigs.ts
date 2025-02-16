@@ -10,7 +10,7 @@ interface ProfileResponse {
 }
 
 interface GigWithProfile extends Omit<Gig, 'creator'> {
-  profiles: ProfileResponse | null;
+  creator: ProfileResponse | null;
 }
 
 export function useGigs() {
@@ -33,7 +33,7 @@ export function useGigs() {
           creator_id,
           created_at,
           updated_at,
-          profiles (
+          creator:profiles (
             full_name,
             avatar_url
           )
@@ -45,9 +45,9 @@ export function useGigs() {
       
       return (data || []).map(gig => ({
         ...gig,
-        creator: gig.profiles ? {
-          full_name: gig.profiles.full_name,
-          avatar_url: gig.profiles.avatar_url
+        creator: gig.creator ? {
+          full_name: gig.creator.full_name,
+          avatar_url: gig.creator.avatar_url
         } : undefined
       }));
     }

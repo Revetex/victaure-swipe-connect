@@ -10,7 +10,7 @@ interface ProfileResponse {
 }
 
 interface ListingWithProfile extends Omit<MarketplaceListing, 'seller'> {
-  profiles: ProfileResponse | null;
+  seller: ProfileResponse | null;
 }
 
 export function useMarketplace() {
@@ -33,7 +33,7 @@ export function useMarketplace() {
           created_at,
           updated_at,
           images,
-          profiles (
+          seller:profiles (
             full_name,
             avatar_url
           )
@@ -45,9 +45,9 @@ export function useMarketplace() {
       
       return (data || []).map(listing => ({
         ...listing,
-        seller: listing.profiles ? {
-          full_name: listing.profiles.full_name,
-          avatar_url: listing.profiles.avatar_url
+        seller: listing.seller ? {
+          full_name: listing.seller.full_name,
+          avatar_url: listing.seller.avatar_url
         } : undefined
       }));
     }
