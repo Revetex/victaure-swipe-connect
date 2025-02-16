@@ -43,8 +43,8 @@ export function ChatHeader({
         <div className="flex items-center gap-3">
           <div className="relative">
             <UserAvatar
-              src={avatarUrl}
-              fallback={title[0]}
+              imageUrl={avatarUrl}
+              name={title}
               className="h-10 w-10"
             />
             {isOnline !== undefined && (

@@ -19,6 +19,9 @@ export interface UserProfile {
   style_id?: string;
   sections_order?: string[];
   privacy_enabled?: boolean;
+  custom_font?: string | null;
+  custom_background?: string | null;
+  custom_text_color?: string | null;
   // Additional fields
   website?: string | null;
   company_name?: string | null;
@@ -71,13 +74,7 @@ export interface Certification {
   updated_at?: string;
 }
 
-export interface FriendPreview {
-  id: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  online_status: boolean;
-  last_seen: string;
-}
+export interface FriendPreview extends Pick<UserProfile, 'id' | 'full_name' | 'avatar_url' | 'online_status' | 'last_seen'> {}
 
 export interface PendingRequest {
   id: string;
@@ -85,11 +82,14 @@ export interface PendingRequest {
   receiver_id: string;
   status: 'pending' | 'accepted' | 'rejected';
   created_at: string;
-  sender?: {
+  type?: 'incoming' | 'outgoing';
+  sender: {
+    id: string;
     full_name: string | null;
     avatar_url: string | null;
   };
-  receiver?: {
+  receiver: {
+    id: string;
     full_name: string | null;
     avatar_url: string | null;
   };
