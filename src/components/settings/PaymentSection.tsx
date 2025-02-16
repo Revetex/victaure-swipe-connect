@@ -12,11 +12,13 @@ import { useTransactions } from "./payment/useTransactions";
 import { toast } from "sonner";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import type { StripeElementsOptions } from '@stripe/stripe-js';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
-const stripeElementsOptions = {
-  locale: 'fr',
+const stripeElementsOptions: StripeElementsOptions = {
+  mode: 'payment',
+  currency: 'cad',
   appearance: {
     theme: 'stripe',
     variables: {
