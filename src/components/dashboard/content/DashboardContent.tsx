@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
+import { Marketplace } from "@/components/marketplace/Marketplace";
 import { Feed } from "@/components/feed/Feed";
 import { Settings } from "@/components/Settings";
 import { NotesSection } from "@/components/notes/NotesSection";
@@ -15,7 +16,6 @@ import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
 import { JobsPage } from "@/components/jobs/JobsPage";
-import { Marketplace } from "@/components/marketplace/Marketplace";
 import { cn } from "@/lib/utils";
 
 interface DashboardContentProps {
@@ -62,7 +62,7 @@ export function DashboardContent({
       case 2:
         return <Messages />;
       case 3:
-        return <JobsPage />;
+        return <JobsPage />; // Page des emplois complète avec ScrapedJobs
       case 4:
         return <Feed />;
       case 7:
