@@ -15,6 +15,7 @@ import { TasksPage } from "@/components/tools/TasksPage";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { ChessPage } from "@/components/tools/ChessPage";
+import { Marketplace } from "@/components/marketplace/Marketplace";
 
 export function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -91,6 +92,14 @@ export function AppRoutes() {
         element={
           <ProtectedRoute>
             <ChessPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/marketplace"
+        element={
+          <ProtectedRoute>
+            <Marketplace />
           </ProtectedRoute>
         }
       />

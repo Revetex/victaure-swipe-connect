@@ -1,5 +1,19 @@
 
-import { MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, User, Users, Search } from "lucide-react";
+import { 
+  User, 
+  Newspaper, 
+  MessageSquare, 
+  BriefcaseIcon, 
+  Bell, 
+  Users, 
+  ListTodo, 
+  Calculator, 
+  Languages, 
+  Settings, 
+  SwordIcon, 
+  StickyNote,
+  ShoppingBag
+} from "lucide-react";
 
 export const navigationItems = [
   // Section principale
@@ -7,6 +21,7 @@ export const navigationItems = [
   { id: 4, icon: Newspaper, name: "Actualité" },
   { id: 2, icon: MessageSquare, name: "Messages" },
   { id: 3, icon: BriefcaseIcon, name: "Emplois" },
+  { id: 17, icon: ShoppingBag, name: "Marketplace" },
   
   // Section réseau
   { id: 9, icon: Bell, name: "Notifications" },
@@ -47,6 +62,8 @@ export const getPageTitle = (currentPage: number): string => {
       return "Échecs";
     case 16:
       return "Notes";
+    case 17:
+      return "Marketplace";
     default:
       return "Actualité";
   }
