@@ -16,7 +16,6 @@ import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
 import { ScrapedJobs } from "@/components/dashboard/ScrapedJobs";
-import { JobsPage } from "@/components/jobs/JobsPage";
 import { cn } from "@/lib/utils";
 
 interface DashboardContentProps {
@@ -63,7 +62,7 @@ export function DashboardContent({
       case 2:
         return <Messages />;
       case 3:
-        return <JobsPage />;
+        return <ScrapedJobs />;
       case 4:
         return <Feed />;
       case 7:
@@ -96,7 +95,7 @@ export function DashboardContent({
       animate="animate"
       exit="exit"
       className={cn(
-        "relative bg-background min-h-screen w-full"
+        "relative bg-background min-h-screen w-full p-4"
       )}
     >
       {getPageContent()}
