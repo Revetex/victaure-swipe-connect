@@ -1,8 +1,25 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Gig, GigBid } from "@/types/marketplace";
 import { toast } from "sonner";
+
+type GigResponse = {
+  id: string;
+  title: string;
+  description: string | null;
+  budget: number | null;
+  location: string | null;
+  duration: string | null;
+  required_skills: string[];
+  status: string;
+  creator_id: string;
+  created_at: string;
+  updated_at: string;
+  creator: {
+    full_name: string | null;
+    avatar_url: string | null;
+  } | null;
+}
 
 export function useGigs() {
   const queryClient = useQueryClient();
@@ -10,17 +27,23 @@ export function useGigs() {
   const { data: gigs, isLoading } = useQuery({
     queryKey: ['gigs'],
     queryFn: async () => {
-      const { data: gigs, error } = await supabase
+      const { data, error } = await supabase
         .from('gigs')
         .select(`
           *,
-          creator:profiles!gigs_creator_id_fkey(full_name, avatar_url)
+          creator:profiles!gigs_creator_id_fkey(
+            full_name,
+            avatar_url
+          )
         `)
         .eq('status', 'open')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return gigs as Gig[];
+      return (data as GigResponse[]).map(gig => ({
+        ...gig,
+        creator: gig.creator || undefined
+      })) as Gig[];
     }
   });
 

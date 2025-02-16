@@ -1,8 +1,25 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { MarketplaceListing, MarketplaceOffer } from "@/types/marketplace";
 import { toast } from "sonner";
+
+type ListingResponse = {
+  id: string;
+  title: string;
+  description: string | null;
+  price: number;
+  currency: string;
+  type: 'vente' | 'location' | 'service';
+  status: string;
+  seller_id: string;
+  created_at: string;
+  updated_at: string;
+  images: string[];
+  seller: {
+    full_name: string | null;
+    avatar_url: string | null;
+  } | null;
+}
 
 export function useMarketplace() {
   const queryClient = useQueryClient();
@@ -10,17 +27,23 @@ export function useMarketplace() {
   const { data: listings, isLoading } = useQuery({
     queryKey: ['marketplace-listings'],
     queryFn: async () => {
-      const { data: listings, error } = await supabase
+      const { data, error } = await supabase
         .from('marketplace_listings')
         .select(`
           *,
-          seller:profiles!marketplace_listings_seller_id_fkey(full_name, avatar_url)
+          seller:profiles!marketplace_listings_seller_id_fkey(
+            full_name,
+            avatar_url
+          )
         `)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return listings as MarketplaceListing[];
+      return (data as ListingResponse[]).map(listing => ({
+        ...listing,
+        seller: listing.seller || undefined
+      })) as MarketplaceListing[];
     }
   });
 
