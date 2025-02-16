@@ -1,5 +1,5 @@
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, RouteProps } from "react-router-dom";
 import { Feed } from "./components/feed/Feed";
 import { Messages } from "./components/Messages";
 import { Marketplace } from "./components/marketplace/Marketplace";
@@ -23,20 +23,22 @@ export function AppRoutes() {
       <Route path="/auth/callback" element={<AuthCallback />} />
       
       {/* Routes protégées */}
-      <Route element={<PrivateRoute />}>
-        <Route path="/feed" element={<Feed />} />
-        <Route path="/messages" element={<Messages />} />
-        <Route path="/marketplace" element={<Marketplace />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/jobs" element={<JobsPage />} />
-        <Route path="/notes" element={<NotesPage />} />
-        <Route path="/chess" element={<ChessPage />} />
-        <Route path="/calculator" element={<CalculatorPage />} />
-        <Route path="/translator" element={<TranslatorPage />} />
-        <Route path="/friends" element={<FriendsPage />} />
-        <Route path="/search" element={<ProfileSearchPage />} />
-        <Route path="/requests" element={<FriendRequestsPage />} />
-      </Route>
+      <Route element={<PrivateRoute>
+        <Routes>
+          <Route path="/feed" element={<Feed />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/jobs" element={<JobsPage />} />
+          <Route path="/notes" element={<NotesPage />} />
+          <Route path="/chess" element={<ChessPage />} />
+          <Route path="/calculator" element={<CalculatorPage />} />
+          <Route path="/translator" element={<TranslatorPage />} />
+          <Route path="/friends" element={<FriendsPage />} />
+          <Route path="/search" element={<ProfileSearchPage />} />
+          <Route path="/requests" element={<FriendRequestsPage />} />
+        </Routes>
+      </PrivateRoute>} />
     </Routes>
   );
 }

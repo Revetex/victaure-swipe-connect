@@ -20,7 +20,14 @@ export function useTransactions() {
 
       if (error) throw error;
 
-      setTransactions(data || []);
+      const typedTransactions: PaymentTransaction[] = (data || []).map(transaction => ({
+        ...transaction,
+        status: transaction.status as PaymentTransaction['status'],
+        transaction_type: transaction.transaction_type as PaymentTransaction['transaction_type'],
+        payment_method: transaction.payment_method as PaymentTransaction['payment_method']
+      }));
+
+      setTransactions(typedTransactions);
     } catch (error) {
       console.error('Error loading transactions:', error);
       toast.error("Erreur lors du chargement des transactions");
