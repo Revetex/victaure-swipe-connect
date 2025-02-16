@@ -84,20 +84,28 @@ export default defineConfig(({ mode }) => ({
             '@radix-ui/react-switch',
             '@radix-ui/react-tabs'
           ],
+          'ai': [
+            '@huggingface/transformers'
+          ],
+          'maps': [
+            'mapbox-gl'
+          ],
+          'pdf': [
+            'jspdf',
+            'html2canvas'
+          ],
+          'charts': [
+            'recharts'
+          ],
           'utils': [
             'clsx',
             'tailwind-merge',
             'zustand',
             'date-fns'
-          ],
-          'pdf-core': [
-            'jspdf'
-          ],
-          'pdf-render': [
-            'html2canvas'
           ]
         }
       }
     }
   }
 }));
+
