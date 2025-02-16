@@ -1,44 +1,46 @@
 
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { PendingRequest } from "./PendingRequest";
+import { useEffect } from "react";
+import { motion } from "framer-motion";
+import { PendingRequest } from "@/types/profile";
+import { PendingRequest as PendingRequestComponent } from "./PendingRequest";
 import { EmptyRequestsState } from "./EmptyRequestsState";
-import { useFriendRequests } from "@/hooks/useFriendRequests";
-import { motion, AnimatePresence } from "framer-motion";
 
-export function FriendRequestsSection() {
-  const {
-    pendingRequests,
-    handleAcceptRequest,
-    handleRejectRequest,
-    handleCancelRequest
-  } = useFriendRequests();
+interface FriendRequestsSectionProps {
+  requests: PendingRequest[];
+  onAccept: (requestId: string, senderId: string, senderName: string) => Promise<void>;
+  onReject: (requestId: string, senderName: string) => Promise<void>;
+  onCancel: (requestId: string, receiverName: string) => Promise<void>;
+}
 
-  if (!pendingRequests.length) {
+export function FriendRequestsSection({
+  requests,
+  onAccept,
+  onReject,
+  onCancel
+}: FriendRequestsSectionProps) {
+  useEffect(() => {
+    console.log('Requests updated:', requests);
+  }, [requests]);
+
+  if (!requests || requests.length === 0) {
     return <EmptyRequestsState />;
   }
 
   return (
-    <ScrollArea className="h-[300px] pr-4">
-      <AnimatePresence>
-        <div className="space-y-3">
-          {pendingRequests.map((request, index) => (
-            <motion.div
-              key={request.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <PendingRequest
-                request={request}
-                onAccept={handleAcceptRequest}
-                onReject={handleRejectRequest}
-                onCancel={handleCancelRequest}
-              />
-            </motion.div>
-          ))}
-        </div>
-      </AnimatePresence>
-    </ScrollArea>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="space-y-4"
+    >
+      {requests.map((request) => (
+        <PendingRequestComponent
+          key={request.id}
+          request={request}
+          onAccept={onAccept}
+          onReject={onReject}
+          onCancel={onCancel}
+        />
+      ))}
+    </motion.div>
   );
 }

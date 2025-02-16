@@ -35,7 +35,11 @@ export async function initializeStripe() {
       if (!publicKey) {
         throw new Error('No Stripe public key available');
       }
-      stripePromise = loadStripe(publicKey);
+      const stripe = await loadStripe(publicKey);
+      if (!stripe) {
+        throw new Error('Failed to initialize Stripe');
+      }
+      stripePromise = Promise.resolve(stripe);
       return stripePromise;
     } catch (error) {
       console.error('Error initializing Stripe:', error);
@@ -60,14 +64,13 @@ export function useStripePayment() {
   const createPaymentIntent = useMutation({
     mutationFn: async ({ amount, currency = 'cad' }: { amount: number; currency: string }) => {
       try {
-        // Vérifier que le montant est un nombre valide
         if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
           throw new Error('Le montant doit être un nombre positif');
         }
 
         const { data, error } = await supabase.functions.invoke('create-payment-intent', {
           body: { 
-            amount: Math.round(amount * 100), // Convertir en centimes
+            amount: Math.round(amount * 100),
             currency: currency.toLowerCase()
           }
         });
