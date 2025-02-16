@@ -1,8 +1,16 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Gig, GigBid } from "@/types/marketplace";
 import { toast } from "sonner";
+
+interface ProfileResponse {
+  full_name: string | null;
+  avatar_url: string | null;
+}
+
+interface GigWithProfile extends Omit<Gig, 'creator'> {
+  creator: ProfileResponse | null;
+}
 
 export function useGigs() {
   const queryClient = useQueryClient();
@@ -30,21 +38,17 @@ export function useGigs() {
           )
         `)
         .eq('status', 'open')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) as { data: GigWithProfile[] | null; error: any };
 
       if (error) throw error;
       
-      // Transform the data to match our Gig type
-      return (data || []).map(gig => {
-        const creator = gig.creator as { full_name: string | null; avatar_url: string | null } | null;
-        return {
-          ...gig,
-          creator: creator ? {
-            full_name: creator.full_name || null,
-            avatar_url: creator.avatar_url || null
-          } : undefined
-        };
-      });
+      return (data || []).map(gig => ({
+        ...gig,
+        creator: gig.creator ? {
+          full_name: gig.creator.full_name,
+          avatar_url: gig.creator.avatar_url
+        } : undefined
+      }));
     }
   });
 

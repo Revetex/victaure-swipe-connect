@@ -1,8 +1,16 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { MarketplaceListing, MarketplaceOffer } from "@/types/marketplace";
 import { toast } from "sonner";
+
+interface ProfileResponse {
+  full_name: string | null;
+  avatar_url: string | null;
+}
+
+interface ListingWithProfile extends Omit<MarketplaceListing, 'seller'> {
+  seller: ProfileResponse | null;
+}
 
 export function useMarketplace() {
   const queryClient = useQueryClient();
@@ -30,21 +38,17 @@ export function useMarketplace() {
           )
         `)
         .eq('status', 'active')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) as { data: ListingWithProfile[] | null; error: any };
 
       if (error) throw error;
       
-      // Transform the data to match our MarketplaceListing type
-      return (data || []).map(listing => {
-        const seller = listing.seller as { full_name: string | null; avatar_url: string | null } | null;
-        return {
-          ...listing,
-          seller: seller ? {
-            full_name: seller.full_name || null,
-            avatar_url: seller.avatar_url || null
-          } : undefined
-        };
-      });
+      return (data || []).map(listing => ({
+        ...listing,
+        seller: listing.seller ? {
+          full_name: listing.seller.full_name,
+          avatar_url: listing.seller.avatar_url
+        } : undefined
+      }));
     }
   });
 
