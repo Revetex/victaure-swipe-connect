@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGigs } from "@/hooks/useGigs";
 import { useMarketplace } from "@/hooks/useMarketplace";
+import { PageLayout } from "@/components/layout/PageLayout";
 
 export function Marketplace() {
   const { gigs, isLoading: gigsLoading } = useGigs();
@@ -16,8 +17,8 @@ export function Marketplace() {
   console.log("Listings:", listings);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container relative py-20 space-y-8">
+    <PageLayout>
+      <div className="container py-6 space-y-8">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -122,6 +123,6 @@ export function Marketplace() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </PageLayout>
   );
 }
