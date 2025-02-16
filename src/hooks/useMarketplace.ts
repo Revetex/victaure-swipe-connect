@@ -1,25 +1,8 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { MarketplaceListing, MarketplaceOffer } from "@/types/marketplace";
 import { toast } from "sonner";
-
-type ListingResponse = {
-  id: string;
-  title: string;
-  description: string | null;
-  price: number;
-  currency: string;
-  type: 'vente' | 'location' | 'service';
-  status: string;
-  seller_id: string;
-  created_at: string;
-  updated_at: string;
-  images: string[];
-  seller: {
-    full_name: string | null;
-    avatar_url: string | null;
-  } | null;
-}
 
 export function useMarketplace() {
   const queryClient = useQueryClient();
@@ -41,21 +24,27 @@ export function useMarketplace() {
           created_at,
           updated_at,
           images,
-          seller:profiles(full_name, avatar_url)
+          seller:profiles (
+            full_name,
+            avatar_url
+          )
         `)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       
-      // First cast to unknown, then to our expected type
-      const typedData = (data as unknown as ListingResponse[]);
-
       // Transform the data to match our MarketplaceListing type
-      return typedData.map(listing => ({
-        ...listing,
-        seller: listing.seller || undefined
-      }));
+      return (data || []).map(listing => {
+        const seller = listing.seller as { full_name: string | null; avatar_url: string | null } | null;
+        return {
+          ...listing,
+          seller: seller ? {
+            full_name: seller.full_name || null,
+            avatar_url: seller.avatar_url || null
+          } : undefined
+        };
+      });
     }
   });
 

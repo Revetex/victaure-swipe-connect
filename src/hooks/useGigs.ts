@@ -1,25 +1,8 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Gig, GigBid } from "@/types/marketplace";
 import { toast } from "sonner";
-
-type GigResponse = {
-  id: string;
-  title: string;
-  description: string | null;
-  budget: number | null;
-  location: string | null;
-  duration: string | null;
-  required_skills: string[];
-  status: string;
-  creator_id: string;
-  created_at: string;
-  updated_at: string;
-  creator: {
-    full_name: string | null;
-    avatar_url: string | null;
-  } | null;
-}
 
 export function useGigs() {
   const queryClient = useQueryClient();
@@ -41,21 +24,27 @@ export function useGigs() {
           creator_id,
           created_at,
           updated_at,
-          creator:profiles(full_name, avatar_url)
+          creator:profiles (
+            full_name,
+            avatar_url
+          )
         `)
         .eq('status', 'open')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       
-      // First cast to unknown, then to our expected type
-      const typedData = (data as unknown as GigResponse[]);
-
       // Transform the data to match our Gig type
-      return typedData.map(gig => ({
-        ...gig,
-        creator: gig.creator || undefined
-      }));
+      return (data || []).map(gig => {
+        const creator = gig.creator as { full_name: string | null; avatar_url: string | null } | null;
+        return {
+          ...gig,
+          creator: creator ? {
+            full_name: creator.full_name || null,
+            avatar_url: creator.avatar_url || null
+          } : undefined
+        };
+      });
     }
   });
 
