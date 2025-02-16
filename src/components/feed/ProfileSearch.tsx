@@ -1,101 +1,119 @@
 
-import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { UserProfile } from "@/types/profile";
+"use client";
+
 import {
   Command,
+  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList
+  CommandList,
 } from "@/components/ui/command";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserRound } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { ProfilePreview } from "@/components/ProfilePreview";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useProfile } from "@/hooks/useProfile";
+import { UserAvatar } from "@/components/UserAvatar";
+import { useNavigate } from "react-router-dom";
 
-interface ProfileSearchProps {
-  onSelect: (profile: UserProfile) => void;
-  placeholder?: string;
-  className?: string;
-}
+export function ProfileSearch() {
+  const [open, setOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const { profile } = useProfile();
+  const navigate = useNavigate();
 
-export function ProfileSearch({ onSelect, placeholder, className }: ProfileSearchProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
+  const handleSearch = async (value: string) => {
+    if (!value) {
+      setSearchResults([]);
+      return;
+    }
 
-  const { data: profiles } = useQuery({
-    queryKey: ["profiles"],
-    queryFn: async () => {
+    try {
       const { data, error } = await supabase
-        .from("profiles")
-        .select("id, full_name, avatar_url")
-        .neq("id", (await supabase.auth.getUser()).data.user?.id || "");
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .neq('id', profile?.id)
+        .ilike('full_name', `%${value}%`)
+        .limit(5);
 
       if (error) throw error;
-      return data as UserProfile[];
+      setSearchResults(data || []);
+    } catch (error) {
+      console.error('Error searching profiles:', error);
+      setSearchResults([]);
     }
-  });
-
-  const filteredProfiles = useMemo(() => {
-    if (!profiles || !searchQuery.trim()) return [];
-    
-    const normalizedQuery = searchQuery.toLowerCase().trim();
-    return profiles.filter(
-      (profile) => profile.full_name?.toLowerCase().includes(normalizedQuery)
-    );
-  }, [profiles, searchQuery]);
-
-  const handleProfileSelect = (profile: UserProfile) => {
-    setSelectedProfile(profile);
   };
 
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setOpen((open) => !open);
+      }
+    };
+
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
+
   return (
-    <Command className={cn("rounded-lg border shadow-sm", className)}>
-      <CommandInput
-        value={searchQuery}
-        onValueChange={setSearchQuery}
-        placeholder={placeholder || "Rechercher un utilisateur..."}
-        className="h-11"
-      />
-      {searchQuery.trim() && (
+    <div>
+      <Command className="rounded-lg border shadow-md">
+        <CommandInput 
+          placeholder="Rechercher un profil..." 
+          onValueChange={handleSearch}
+        />
         <CommandList>
           <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
-          <CommandGroup>
-            {filteredProfiles.map((profile) => (
+          <CommandGroup heading="Profils">
+            {searchResults.map((result: any) => (
               <CommandItem
-                key={profile.id}
-                value={profile.full_name || ""}
-                onSelect={() => handleProfileSelect(profile)}
-                className="flex items-center gap-3 p-3"
+                key={result.id}
+                onSelect={() => {
+                  navigate(`/profile/${result.id}`);
+                }}
+                className="flex items-center gap-2 cursor-pointer"
               >
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={profile.avatar_url || ""} />
-                  <AvatarFallback>
-                    <UserRound className="h-4 w-4" />
-                  </AvatarFallback>
-                </Avatar>
-                <span className="font-medium">
-                  {profile.full_name || "Utilisateur"}
-                </span>
+                <UserAvatar
+                  user={{
+                    avatar_url: result.avatar_url,
+                    full_name: result.full_name,
+                  }}
+                  className="h-8 w-8"
+                />
+                <span>{result.full_name}</span>
               </CommandItem>
             ))}
           </CommandGroup>
         </CommandList>
-      )}
-
-      {selectedProfile && (
-        <ProfilePreview
-          profile={selectedProfile}
-          isOpen={!!selectedProfile}
-          onClose={() => {
-            setSelectedProfile(null);
-            onSelect(selectedProfile);
-          }}
-        />
-      )}
-    </Command>
+      </Command>
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandInput placeholder="Rechercher un profil..." onValueChange={handleSearch} />
+        <CommandList>
+          <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+          <CommandGroup heading="Profils">
+            {searchResults.map((result: any) => (
+              <CommandItem
+                key={result.id}
+                onSelect={() => {
+                  navigate(`/profile/${result.id}`);
+                  setOpen(false);
+                }}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <UserAvatar
+                  user={{
+                    avatar_url: result.avatar_url,
+                    full_name: result.full_name,
+                  }}
+                  className="h-8 w-8"
+                />
+                <span>{result.full_name}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
+    </div>
   );
 }
