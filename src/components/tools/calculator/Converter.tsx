@@ -1,3 +1,4 @@
+
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,39 @@ export function Converter({
 }: ConverterProps) {
   const getUnitOptions = (type: string) => {
     switch (type) {
+      case "currency":
+        return [
+          ["CAD", "Dollar Canadien"],
+          ["USD", "Dollar Américain"],
+          ["EUR", "Euro"],
+          ["GBP", "Livre Sterling"],
+          ["JPY", "Yen Japonais"],
+          ["CHF", "Franc Suisse"],
+          ["AUD", "Dollar Australien"],
+          ["NZD", "Dollar Néo-Zélandais"]
+        ];
+      case "crypto":
+        return [
+          ["BTC", "Bitcoin"],
+          ["ETH", "Ethereum"],
+          ["USDT", "Tether"],
+          ["BNB", "Binance Coin"],
+          ["XRP", "Ripple"],
+          ["ADA", "Cardano"],
+          ["SOL", "Solana"],
+          ["DOGE", "Dogecoin"]
+        ];
+      case "stocks":
+        return [
+          ["AAPL", "Apple"],
+          ["MSFT", "Microsoft"],
+          ["GOOGL", "Google"],
+          ["AMZN", "Amazon"],
+          ["TSLA", "Tesla"],
+          ["META", "Meta"],
+          ["NVDA", "NVIDIA"],
+          ["TSX", "TSX Composite"]
+        ];
       case "length":
         return [
           ["m", "Mètres"],
@@ -66,6 +100,9 @@ export function Converter({
           <SelectValue placeholder="Type de conversion" />
         </SelectTrigger>
         <SelectContent>
+          <SelectItem value="currency">Devises</SelectItem>
+          <SelectItem value="crypto">Cryptomonnaies</SelectItem>
+          <SelectItem value="stocks">Actions</SelectItem>
           <SelectItem value="length">Longueur</SelectItem>
           <SelectItem value="weight">Poids</SelectItem>
           <SelectItem value="temperature">Température</SelectItem>
@@ -75,7 +112,7 @@ export function Converter({
       <div className="grid grid-cols-[1fr,auto,1fr] gap-2 items-center">
         <Select value={fromUnit} onValueChange={onFromUnitChange}>
           <SelectTrigger>
-            <SelectValue />
+            <SelectValue placeholder="De" />
           </SelectTrigger>
           <SelectContent>
             {getUnitOptions(conversionType).map(([value, label]) => (
@@ -88,7 +125,7 @@ export function Converter({
 
         <Select value={toUnit} onValueChange={onToUnitChange}>
           <SelectTrigger>
-            <SelectValue />
+            <SelectValue placeholder="Vers" />
           </SelectTrigger>
           <SelectContent>
             {getUnitOptions(conversionType).map(([value, label]) => (

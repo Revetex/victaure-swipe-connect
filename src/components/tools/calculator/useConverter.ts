@@ -1,7 +1,38 @@
+
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 const conversionRates = {
+  currency: {
+    CAD: 1,
+    USD: 0.74,
+    EUR: 0.68,
+    GBP: 0.58,
+    JPY: 109.82,
+    CHF: 0.64,
+    AUD: 1.12,
+    NZD: 1.19
+  },
+  crypto: {
+    BTC: 0.000017,
+    ETH: 0.00031,
+    USDT: 1,
+    BNB: 0.0041,
+    XRP: 1.67,
+    ADA: 2.31,
+    SOL: 0.025,
+    DOGE: 14.27
+  },
+  stocks: {
+    AAPL: 0.0047,
+    MSFT: 0.0029,
+    GOOGL: 0.0067,
+    AMZN: 0.0051,
+    TSLA: 0.0041,
+    META: 0.0032,
+    NVDA: 0.0022,
+    TSX: 0.000058
+  },
   length: {
     m: 1,
     km: 0.001,
@@ -25,9 +56,9 @@ const conversionRates = {
 };
 
 export function useConverter() {
-  const [conversionType, setConversionType] = useState("length");
-  const [fromUnit, setFromUnit] = useState("m");
-  const [toUnit, setToUnit] = useState("km");
+  const [conversionType, setConversionType] = useState("currency");
+  const [fromUnit, setFromUnit] = useState("CAD");
+  const [toUnit, setToUnit] = useState("USD");
   const [conversionValue, setConversionValue] = useState("");
   const [conversionResult, setConversionResult] = useState("");
 
@@ -56,8 +87,14 @@ export function useConverter() {
       const fromRate = rates[fromUnit as keyof typeof rates] as number;
       const toRate = rates[toUnit as keyof typeof rates] as number;
       
-      result = (value / fromRate) * toRate;
-      setConversionResult(result.toFixed(2));
+      // Conversion via CAD comme monnaie de base
+      if (conversionType === "currency" || conversionType === "crypto" || conversionType === "stocks") {
+        result = (value / fromRate) * toRate;
+      } else {
+        result = (value / fromRate) * toRate;
+      }
+      
+      setConversionResult(result.toFixed(4));
     }
   };
 
