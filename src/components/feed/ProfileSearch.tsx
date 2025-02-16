@@ -38,7 +38,7 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher un profil...
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, avatar_url')
+        .select('*')
         .neq('id', profile?.id)
         .ilike('full_name', `%${value}%`)
         .limit(5);
