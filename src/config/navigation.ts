@@ -1,72 +1,53 @@
 
-import { 
-  Users, 
-  MessageCircle, 
-  LayoutGrid, 
-  Briefcase, 
-  ListTodo, 
-  Calculator, 
-  Bell, 
-  Settings,
-  Globe,
-  StickyNote,
-  Sword
-} from "lucide-react";
+import { MessageSquare, BriefcaseIcon, ListTodo, Bell, UserPlus, Calculator, Languages, Settings, Newspaper, SwordIcon, StickyNote, User, Users, Search } from "lucide-react";
 
 export const navigationItems = [
-  {
-    id: 1,
-    name: "Feed",
-    icon: Users
-  },
-  {
-    id: 2,
-    name: "Messages",
-    icon: MessageCircle
-  },
-  {
-    id: 3,
-    name: "Marketplace",
-    icon: LayoutGrid
-  },
-  {
-    id: 4,
-    name: "Emplois",
-    icon: Briefcase
-  },
-  {
-    id: 5,
-    name: "Tâches",
-    icon: ListTodo
-  },
-  {
-    id: 6,
-    name: "Notes",
-    icon: StickyNote
-  },
-  {
-    id: 7,
-    name: "Calculatrice",
-    icon: Calculator
-  },
-  {
-    id: 8,
-    name: "Traducteur",
-    icon: Globe
-  },
-  {
-    id: 9,
-    name: "Échecs",
-    icon: Sword
-  },
-  {
-    id: 10,
-    name: "Notifications",
-    icon: Bell
-  },
-  {
-    id: 11,
-    name: "Paramètres",
-    icon: Settings
+  // Section principale
+  { id: 1, icon: User, name: "Mon profil" },
+  { id: 4, icon: Newspaper, name: "Actualité" },
+  { id: 2, icon: MessageSquare, name: "Messages" },
+  { id: 3, icon: BriefcaseIcon, name: "Emplois" },
+  
+  // Section réseau
+  { id: 9, icon: Bell, name: "Notifications" },
+  { id: 12, icon: Users, name: "Connections" },
+  
+  // Outils
+  { id: 7, icon: ListTodo, name: "Tâches" },
+  { id: 8, icon: Calculator, name: "Calculatrice" },
+  { id: 14, icon: Languages, name: "Traducteur" },
+  { id: 15, icon: SwordIcon, name: "Échecs" },
+  { id: 16, icon: StickyNote, name: "Notes" },
+  { id: 10, icon: Settings, name: "Paramètres" }
+] as const;
+
+export const getPageTitle = (currentPage: number): string => {
+  switch (currentPage) {
+    case 1:
+      return "Mon profil";
+    case 2:
+      return "Messages";
+    case 3:
+      return "Emplois";
+    case 4:
+      return "Actualité";
+    case 7:
+      return "Tâches";
+    case 8:
+      return "Calculatrice";
+    case 9:
+      return "Notifications";
+    case 10:
+      return "Paramètres";
+    case 12:
+      return "Connections";
+    case 14:
+      return "Traducteur";
+    case 15:
+      return "Échecs";
+    case 16:
+      return "Notes";
+    default:
+      return "Actualité";
   }
-];
+};
