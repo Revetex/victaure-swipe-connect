@@ -1,4 +1,3 @@
-
 import { Logo } from "@/components/Logo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -39,7 +38,9 @@ export function DashboardMobileNav({
     country: 'Canada',
     skills: [],
     latitude: null,
-    longitude: null
+    longitude: null,
+    online_status: false,
+    last_seen: new Date().toISOString()
   };
 
   return (

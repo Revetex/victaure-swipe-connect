@@ -122,9 +122,11 @@ export function useProfile() {
             skills: [],
             latitude: null,
             longitude: null,
+            online_status: false,
+            last_seen: new Date().toISOString(),
             certifications: [],
             education: [],
-            experiences: [],
+            experiences: []
           };
 
           const { error: insertError } = await supabase

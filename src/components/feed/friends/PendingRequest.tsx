@@ -31,7 +31,9 @@ export function PendingRequest({ request, onAccept, onReject, onCancel }: Pendin
     country: 'Canada',
     skills: [],
     latitude: null,
-    longitude: null
+    longitude: null,
+    online_status: false,
+    last_seen: new Date().toISOString()
   };
 
   return (

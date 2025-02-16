@@ -1,4 +1,3 @@
-
 import { cn } from "@/lib/utils";
 import { navigationItems } from "@/config/navigation";
 import { User } from "lucide-react";
@@ -38,7 +37,9 @@ export function DashboardNavigation({
     country: 'Canada',
     skills: [],
     latitude: null,
-    longitude: null
+    longitude: null,
+    online_status: false,
+    last_seen: new Date().toISOString()
   };
 
   return (

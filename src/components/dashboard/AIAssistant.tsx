@@ -135,22 +135,18 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
         return;
       }
 
-      // Cancel any previous ongoing request
       if (abortController.current) {
         abortController.current.abort();
       }
 
-      // Create a new abort controller for this request
       abortController.current = new AbortController();
 
-      // Add user message to the conversation
       const userMessage = { type: 'user', content: { message: input } };
       setMessages(prev => [...prev, userMessage]);
       setInput("");
       setIsTyping(true);
       scrollToBottom();
       
-      // Call AI assistant function with timeout
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('Timeout')), 30000);
       });
@@ -168,20 +164,20 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
 
       const result = await Promise.race([Promise.resolve(response), timeoutPromise]);
       
-      if (!result?.data?.response) {
+      if (result && 'data' in result && result.data && 'response' in result.data) {
+        const assistantMessage = { 
+          type: 'assistant', 
+          content: {
+            message: result.data.response,
+            suggestedJobs: (result.data as AIResponse).suggestedJobs || []
+          }
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+        scrollToBottom();
+      } else {
         throw new Error('Invalid response format from AI');
       }
-
-      const assistantMessage = { 
-        type: 'assistant', 
-        content: {
-          message: result.data.response,
-          suggestedJobs: result.data.suggestedJobs || []
-        }
-      };
-
-      setMessages(prev => [...prev, assistantMessage]);
-      scrollToBottom();
 
     } catch (error: any) {
       console.error('Error:', error);

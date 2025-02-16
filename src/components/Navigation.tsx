@@ -1,4 +1,3 @@
-
 import { MessageSquare, Settings } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
@@ -21,7 +20,6 @@ export function Navigation() {
     return null;
   }
 
-  // Convert User to UserProfile type
   const userProfile: UserProfile = {
     id: user.id,
     email: user.email || '',
@@ -35,12 +33,13 @@ export function Navigation() {
     country: 'Canada',
     skills: [],
     latitude: null,
-    longitude: null
+    longitude: null,
+    online_status: false,
+    last_seen: new Date().toISOString()
   };
 
   return (
     <div className="h-full flex flex-col">
-      {/* Logo Section */}
       <div className="h-16 border-b flex items-center px-4">
         <motion.div 
           className="flex items-center gap-3 group cursor-pointer"
@@ -52,7 +51,6 @@ export function Navigation() {
         </motion.div>
       </div>
 
-      {/* Navigation Content */}
       <ScrollArea className="flex-1 p-4">
         <nav className="space-y-6">
           <div className="space-y-2">
@@ -75,7 +73,6 @@ export function Navigation() {
         </nav>
       </ScrollArea>
 
-      {/* Footer Actions */}
       <div className="h-16 border-t bg-background/50 backdrop-blur flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <NotificationsBox />
@@ -83,7 +80,6 @@ export function Navigation() {
         </div>
       </div>
 
-      {/* Profile Preview */}
       {userProfile && (
         <ProfilePreview
           profile={userProfile}
