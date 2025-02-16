@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { Loader2, CreditCard, Lock } from 'lucide-react';
 
 export function PaymentInterface() {
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState("");
   const { createPaymentIntent, loading } = useStripePayment();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,7 +22,7 @@ export function PaymentInterface() {
 
     try {
       await createPaymentIntent.mutateAsync({
-        amount: Number(amount) * 100, // Conversion en cents pour Stripe
+        amount: Number(amount) * 100,
         currency: 'CAD'
       });
     } catch (error) {

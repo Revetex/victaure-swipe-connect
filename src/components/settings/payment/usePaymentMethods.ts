@@ -82,7 +82,7 @@ export function usePaymentMethods() {
           payment_type: selectedType,
           stripe_payment_method_id: result.setupIntent.payment_method,
           is_default: paymentMethods.length === 0
-        });
+        } as any);  // Using type assertion here to resolve the type mismatch
 
       if (error) throw error;
       
