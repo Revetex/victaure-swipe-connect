@@ -60,9 +60,13 @@ export function useStripeElements() {
   };
 }
 
+interface PaymentIntentResponse {
+  clientSecret: string;
+}
+
 export function useStripePayment() {
-  const createPaymentIntent = useMutation({
-    mutationFn: async ({ amount, currency = 'cad' }: { amount: number; currency: string }) => {
+  const createPaymentIntent = useMutation<PaymentIntentResponse, Error, { amount: number; currency: string }>({
+    mutationFn: async ({ amount, currency = 'cad' }) => {
       try {
         if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
           throw new Error('Le montant doit être un nombre positif');
@@ -83,7 +87,7 @@ export function useStripePayment() {
         }
 
         console.log('Payment intent created:', data);
-        return data;
+        return data as PaymentIntentResponse;
       } catch (error) {
         console.error('Payment error:', error);
         toast.error('Erreur lors de la création du paiement');
