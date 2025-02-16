@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { UserProfile } from "@/types/profile";
+import { PostgrestResponse } from "@supabase/supabase-js";
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
@@ -18,7 +19,7 @@ export function useProfile() {
   useEffect(() => {
     let mounted = true;
 
-    async function fetchWithRetry<T>(fn: () => Promise<{ data: T | null; error: any }>, retries = MAX_RETRIES): Promise<{ data: T | null; error: any }> {
+    async function fetchWithRetry<T>(fn: () => Promise<PostgrestResponse<T>>, retries = MAX_RETRIES): Promise<PostgrestResponse<T>> {
       try {
         const result = await fn();
         if (result.error) throw result.error;
@@ -29,7 +30,7 @@ export function useProfile() {
           await wait(RETRY_DELAY);
           return fetchWithRetry(fn, retries - 1);
         }
-        return { data: null, error };
+        return { data: null, error, count: null, status: 400, statusText: 'error' };
       }
     }
 
@@ -114,14 +115,14 @@ export function useProfile() {
             setTempProfile(defaultProfile);
           }
         } else {
-          const fullProfile: UserProfile = {
-            ...profileData,
-            certifications: certifications || [],
-            education: education || [],
-            experiences: experiences || []
-          };
-
           if (mounted) {
+            const fullProfile: UserProfile = {
+              ...profileData as Partial<UserProfile>,
+              certifications: certifications || [],
+              education: education || [],
+              experiences: experiences || []
+            } as UserProfile;
+
             setProfile(fullProfile);
             setTempProfile(fullProfile);
           }
