@@ -6,6 +6,14 @@ import { toast } from "sonner";
 import { loadStripe } from "@stripe/stripe-js";
 import { useElements } from "@stripe/react-stripe-js";
 
+type PaymentMethodInsert = {
+  user_id: string;
+  payment_type: 'credit_card' | 'interac';
+  stripe_payment_method_id: string;
+  is_default: boolean;
+  is_active?: boolean;
+};
+
 export function usePaymentMethods() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,14 +83,17 @@ export function usePaymentMethods() {
       }
 
       // Sauvegarder la méthode de paiement
+      const newPaymentMethod: PaymentMethodInsert = {
+        user_id: user.id,
+        payment_type: selectedType,
+        stripe_payment_method_id: result.setupIntent.payment_method as string,
+        is_default: paymentMethods.length === 0,
+        is_active: true
+      };
+
       const { error } = await supabase
         .from('payment_methods')
-        .insert({
-          user_id: user.id,
-          payment_type: selectedType,
-          stripe_payment_method_id: result.setupIntent.payment_method,
-          is_default: paymentMethods.length === 0
-        });
+        .insert(newPaymentMethod);
 
       if (error) throw error;
       
