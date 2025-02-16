@@ -68,8 +68,7 @@ export default defineConfig(({ mode }) => ({
             'react-dom',
             'react-router-dom',
             '@tanstack/react-query',
-            'framer-motion',
-            'date-fns'
+            'framer-motion'
           ],
           'ui': [
             '@radix-ui/react-dialog',
@@ -99,10 +98,10 @@ export default defineConfig(({ mode }) => ({
             'recharts'
           ],
           'utils': [
-            'date-fns',
             'clsx',
             'tailwind-merge',
-            'zustand'
+            'zustand',
+            'date-fns'
           ]
         }
       }
