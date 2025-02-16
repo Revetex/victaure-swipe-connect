@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { UserProfile, Certification, Experience, Education } from "@/types/profile";
+import { UserProfile } from "@/types/profile";
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
@@ -18,22 +18,23 @@ export function useProfile() {
   useEffect(() => {
     let mounted = true;
 
-    async function fetchWithRetry(fn: () => Promise<any>, retries = MAX_RETRIES): Promise<any> {
+    async function fetchWithRetry<T>(fn: () => Promise<{ data: T | null; error: any }>, retries = MAX_RETRIES): Promise<{ data: T | null; error: any }> {
       try {
-        return await fn();
+        const result = await fn();
+        if (result.error) throw result.error;
+        return result;
       } catch (error) {
         if (retries > 0) {
           console.log(`Retrying... ${retries} attempts left`);
           await wait(RETRY_DELAY);
           return fetchWithRetry(fn, retries - 1);
         }
-        throw error;
+        return { data: null, error };
       }
     }
 
     async function fetchProfile() {
       try {
-        // D'abord, vérifiez si nous avons un utilisateur authentifié
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError) throw userError;
         
@@ -45,7 +46,6 @@ export function useProfile() {
 
         console.log("Fetching profile for user:", user.id);
 
-        // Récupérer le profil avec retry
         const { data: profileData, error: profileError } = await fetchWithRetry(() =>
           supabase
             .from('profiles')
@@ -55,42 +55,31 @@ export function useProfile() {
         );
 
         if (profileError) {
-          console.error("Profile fetch error:", profileError);
           throw profileError;
         }
 
-        // Récupérer les certifications avec retry
-        const { data: certifications, error: certError } = await fetchWithRetry(() =>
+        const { data: certifications } = await fetchWithRetry(() =>
           supabase
             .from('certifications')
             .select('*')
             .eq('profile_id', user.id)
         );
 
-        if (certError) throw certError;
-
-        // Récupérer l'éducation avec retry
-        const { data: education, error: eduError } = await fetchWithRetry(() =>
+        const { data: education } = await fetchWithRetry(() =>
           supabase
             .from('education')
             .select('*')
             .eq('profile_id', user.id)
         );
 
-        if (eduError) throw eduError;
-
-        // Récupérer les expériences avec retry
-        const { data: experiences, error: expError } = await fetchWithRetry(() =>
+        const { data: experiences } = await fetchWithRetry(() =>
           supabase
             .from('experiences')
             .select('*')
             .eq('profile_id', user.id)
         );
 
-        if (expError) throw expError;
-
         if (!profileData) {
-          // Créer un profil par défaut si aucun n'existe
           const defaultProfile: UserProfile = {
             id: user.id,
             email: user.email || '',
@@ -117,7 +106,6 @@ export function useProfile() {
             .insert(defaultProfile);
 
           if (insertError) {
-            console.error('Error creating default profile:', insertError);
             throw insertError;
           }
 
@@ -126,7 +114,6 @@ export function useProfile() {
             setTempProfile(defaultProfile);
           }
         } else {
-          // Combiner toutes les données
           const fullProfile: UserProfile = {
             ...profileData,
             certifications: certifications || [],

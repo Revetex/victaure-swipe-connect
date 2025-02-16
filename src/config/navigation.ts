@@ -1,5 +1,5 @@
 
-import { Briefcase, MessageCircle, LayoutGrid, Users, Bell, Settings, Calculator, Chess, Globe, StickyNote, ChevronRight } from "lucide-react";
+import { Briefcase, MessageCircle, LayoutGrid, Users, Bell, Settings, Calculator, Globe, StickyNote, ChevronRight } from "lucide-react";
 
 export const navigationItems = [
   {
@@ -55,7 +55,7 @@ export const navigationItems = [
   {
     id: 15,
     name: "Échecs",
-    icon: Chess
+    icon: Users // Temporarily using Users icon instead of Chess
   },
   {
     id: 16,
