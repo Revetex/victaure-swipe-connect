@@ -94,7 +94,10 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="relative bg-background"
+      className={cn(
+        "relative min-h-screen w-full",
+        currentPage === 17 ? "bg-background" : ""
+      )}
     >
       {getPageContent()}
     </motion.div>
