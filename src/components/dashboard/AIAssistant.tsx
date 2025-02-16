@@ -29,6 +29,7 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { profile } = useProfile();
+  const abortController = useRef<AbortController | null>(null);
 
   // Speech recognition setup
   const { isListening, startListening, stopListening, hasRecognitionSupport } = 
@@ -64,7 +65,6 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
 
       if (dbError) throw dbError;
 
-      // Add file message to chat
       setMessages(prev => [...prev, {
         type: 'user',
         content: { 
@@ -120,26 +120,39 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() && !isLoading) return;
+    if (!input.trim() || isLoading) return;
 
     try {
       setIsLoading(true);
       setIsThinking(true);
       
       const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) {
         toast.error("Vous devez être connecté pour utiliser l'assistant");
         return;
       }
 
+      // Cancel any previous ongoing request
+      if (abortController.current) {
+        abortController.current.abort();
+      }
+
+      // Create a new abort controller for this request
+      abortController.current = new AbortController();
+
       // Add user message to the conversation
       const userMessage = { type: 'user', content: { message: input } };
       setMessages(prev => [...prev, userMessage]);
+      setInput("");
       setIsTyping(true);
+      scrollToBottom();
       
-      // Call AI assistant function
-      const { data, error } = await supabase.functions.invoke('ai-career-assistant', {
+      // Call AI assistant function with timeout
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout')), 30000); // 30 seconds timeout
+      });
+
+      const responsePromise = supabase.functions.invoke('ai-chat', {
         body: { 
           message: input,
           userId: user.id,
@@ -147,46 +160,39 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
             previousMessages: messages.slice(-5),
             userProfile: profile,
           }
-        }
+        },
+        signal: abortController.current.signal
       });
+
+      const { data, error } = await Promise.race([responsePromise, timeoutPromise]);
 
       if (error) throw error;
 
-      // Store the interaction in ai_learning_data
-      const serializedContext = {
-        profile: profile ? JSON.parse(JSON.stringify(profile)) : null,
-        previousMessages: messages.slice(-5).map(m => ({
-          type: m.type,
-          content: m.content
-        }))
-      };
-
-      await supabase.from('ai_learning_data').insert({
-        user_id: user.id,
-        question: input,
-        response: data.message,
-        context: serializedContext
-      });
-
-      // Add AI response to the conversation
-      setMessages(prev => [...prev, { 
+      const assistantMessage = { 
         type: 'assistant', 
         content: {
-          message: data.message,
+          message: data.response,
           suggestedJobs: data.suggestedJobs || []
         }
-      }]);
+      };
 
-      setInput("");
+      setMessages(prev => [...prev, assistantMessage]);
       scrollToBottom();
-      
-    } catch (error) {
+
+    } catch (error: any) {
       console.error('Error:', error);
-      toast.error("Une erreur est survenue lors de la communication avec l'assistant");
+      if (error.name === 'AbortError') {
+        toast.error("La requête a été annulée");
+      } else if (error.message === 'Timeout') {
+        toast.error("La requête a pris trop de temps, veuillez réessayer");
+      } else {
+        toast.error("Une erreur est survenue lors de la communication avec l'assistant");
+      }
     } finally {
       setIsLoading(false);
       setIsThinking(false);
       setIsTyping(false);
+      abortController.current = null;
     }
   }, [input, isLoading, messages, profile, scrollToBottom]);
 
