@@ -60,7 +60,7 @@ export function useConverter() {
           type: type,
           last_updated: new Date().toISOString()
         }, {
-          onConflict: 'from_currency,to_currency'
+          onConflict: 'from_currency,to_currency,type'
         });
 
       if (error) throw error;
