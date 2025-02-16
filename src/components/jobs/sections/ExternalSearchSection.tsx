@@ -22,6 +22,7 @@ export function ExternalSearchSection({
       showFilters={false}
       filterType="regular"
       jobs={jobs}
+      viewMode="grid"
     />
   );
 }

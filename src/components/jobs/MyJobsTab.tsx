@@ -18,6 +18,7 @@ export function MyJobsTab() {
       showFilters={false}
       filterType="regular"
       onJobDeleted={fetchJobs} 
+      viewMode="grid"
     />
   );
 }

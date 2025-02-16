@@ -15,6 +15,7 @@ export function ScrapedJobsList({ jobs, filters }: ScrapedJobsListProps) {
       showFilters={true}
       filterType="regular"
       jobs={jobs}
+      viewMode="grid"
     />
   );
 }

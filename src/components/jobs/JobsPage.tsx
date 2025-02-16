@@ -6,20 +6,34 @@ import { FilterSection } from "./filters/FilterSection";
 import { useJobFilters } from "@/hooks/useJobFilters";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
-import { Plus, Briefcase, List, Grid3X3, LayoutGrid } from "lucide-react";
+import { Plus, List, Grid3X3, LayoutGrid } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { JobStats } from "./sections/JobStats";
+import { JobHeader } from "./sections/JobHeader";
 
 export function JobsPage() {
   const { filters, updateFilter, resetFilters } = useJobFilters();
   const [showFilters, setShowFilters] = useState(true);
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'cards'>('grid');
 
+  // Exemple de données pour JobStats - à remplacer par des données réelles
+  const statsData = {
+    totalJobs: 1234,
+    newToday: 56,
+    topLocation: "Montréal",
+    topCompany: "Victaure Inc."
+  };
+
   return (
     <PageLayout>
       <div className="flex flex-col gap-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <JobHeader onSearch={(value) => updateFilter("searchTerm", value)} totalJobs={statsData.totalJobs} />
+        
+        <JobStats {...statsData} />
+
         <Tabs defaultValue="regular" className="w-full">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
             <TabsList className="w-full sm:w-auto">
