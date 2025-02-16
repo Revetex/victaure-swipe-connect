@@ -917,6 +917,27 @@ export type Database = {
           },
         ]
       }
+      job_analyses: {
+        Row: {
+          ai_analysis: Json
+          created_at: string
+          id: string
+          original_description: string
+        }
+        Insert: {
+          ai_analysis: Json
+          created_at?: string
+          id?: string
+          original_description: string
+        }
+        Update: {
+          ai_analysis?: Json
+          created_at?: string
+          id?: string
+          original_description?: string
+        }
+        Relationships: []
+      }
       job_applications: {
         Row: {
           application_date: string
