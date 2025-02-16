@@ -62,11 +62,9 @@ export function DashboardContent({
       case 2:
         return <Messages />;
       case 3:
-        return <Marketplace />;
+        return <ScrapedJobs />;
       case 4:
         return <Feed />;
-      case 5:
-        return <ScrapedJobs />;
       case 7:
         return <TasksPage />;
       case 8:
