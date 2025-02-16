@@ -16,6 +16,8 @@ serve(async (req) => {
   try {
     const { amount, currency = 'CAD' } = await req.json();
 
+    console.log('Received payment intent request:', { amount, currency });
+
     if (!amount || amount < 0) {
       throw new Error('Invalid amount');
     }
@@ -30,13 +32,16 @@ serve(async (req) => {
       httpClient: Stripe.createFetchHttpClient(),
     });
 
+    // Amount should already be in cents from the frontend
     const paymentIntent = await stripe.paymentIntents.create({
-      amount,
+      amount: Math.round(amount), // Ensure it's a whole number
       currency: currency.toLowerCase(),
       automatic_payment_methods: {
         enabled: true,
       },
     });
+
+    console.log('Created payment intent:', paymentIntent.id);
 
     return new Response(
       JSON.stringify(paymentIntent),
@@ -50,7 +55,7 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error creating payment intent:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 

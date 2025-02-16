@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useStripePayment } from '@/hooks/useStripePayment';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function PaymentForm() {
   const [amount, setAmount] = useState('');
@@ -13,14 +14,22 @@ export function PaymentForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!amount || isNaN(Number(amount))) {
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      toast.error('Veuillez entrer un montant valide');
       return;
     }
 
-    await createPaymentIntent.mutateAsync({
-      amount: Number(amount) * 100, // Convert to cents for Stripe
-      currency: 'CAD'
-    });
+    try {
+      console.log('Submitting payment with amount:', numericAmount);
+      await createPaymentIntent.mutateAsync({
+        amount: numericAmount,
+        currency: 'CAD'
+      });
+      setAmount('');
+    } catch (error) {
+      console.error('Payment submission error:', error);
+    }
   };
 
   return (
@@ -39,6 +48,7 @@ export function PaymentForm() {
             min="0"
             step="0.01"
             required
+            className="relative"
           />
         </div>
 

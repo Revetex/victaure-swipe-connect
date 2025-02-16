@@ -68,14 +68,21 @@ export function useStripePayment() {
           throw new Error('Le montant doit être un nombre positif');
         }
 
+        console.log('Creating payment intent with amount:', amount, 'currency:', currency);
+
         const { data, error } = await supabase.functions.invoke('create-payment-intent', {
           body: { 
-            amount: Math.round(amount * 100),
+            amount: Math.round(amount * 100), // Convert to cents
             currency: currency.toLowerCase()
           }
         });
         
-        if (error) throw error;
+        if (error) {
+          console.error('Payment intent creation error:', error);
+          throw error;
+        }
+
+        console.log('Payment intent created:', data);
         return data;
       } catch (error) {
         console.error('Payment error:', error);
