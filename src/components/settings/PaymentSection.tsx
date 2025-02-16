@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loader2, Plus, ShieldCheck } from "lucide-react";
@@ -11,10 +11,12 @@ import { useTransactions } from "./payment/useTransactions";
 import { Elements } from "@stripe/react-stripe-js";
 import { initializeStripe } from "@/hooks/useStripePayment";
 import type { StripeElementsOptions } from '@stripe/stripe-js';
+import { toast } from "sonner";
 
 const stripeElementsOptions: StripeElementsOptions = {
   mode: 'payment',
   currency: 'cad',
+  amount: 0, // Montant par défaut
   appearance: {
     theme: 'stripe',
     variables: {
@@ -24,6 +26,8 @@ const stripeElementsOptions: StripeElementsOptions = {
 };
 
 export function PaymentSection() {
+  const [stripeReady, setStripeReady] = useState(false);
+
   const {
     paymentMethods,
     loading,
@@ -39,9 +43,30 @@ export function PaymentSection() {
   const { transactions, loadTransactions } = useTransactions();
 
   useEffect(() => {
+    const initStripe = async () => {
+      try {
+        await initializeStripe();
+        setStripeReady(true);
+      } catch (error) {
+        console.error('Failed to initialize Stripe:', error);
+        toast.error('Erreur lors de l\'initialisation du système de paiement');
+      }
+    };
+
+    initStripe();
     loadPaymentMethods();
     loadTransactions();
   }, []);
+
+  if (!stripeReady) {
+    return (
+      <Card className="p-6">
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Elements stripe={initializeStripe()} options={stripeElementsOptions}>
