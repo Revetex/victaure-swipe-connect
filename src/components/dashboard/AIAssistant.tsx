@@ -1,3 +1,4 @@
+
 import { useState, useRef, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,6 +21,11 @@ interface AIAssistantProps {
 interface AIResponse {
   response: string;
   suggestedJobs?: any[];
+}
+
+interface FunctionResponse {
+  data: AIResponse | null;
+  error: Error | null;
 }
 
 export function AIAssistant({ onClose }: AIAssistantProps) {
@@ -147,11 +153,11 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       setIsTyping(true);
       scrollToBottom();
       
-      const timeoutPromise = new Promise((_, reject) => {
+      const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => reject(new Error('Timeout')), 30000);
       });
 
-      const response = await supabase.functions.invoke<AIResponse>('ai-chat', {
+      const functionResponse = await supabase.functions.invoke<AIResponse>('ai-chat', {
         body: { 
           message: input,
           userId: user.id,
@@ -162,14 +168,16 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
         }
       });
 
-      const result = await Promise.race([Promise.resolve(response), timeoutPromise]);
+      const result = await Promise.race([Promise.resolve(functionResponse), timeoutPromise]);
       
-      if (result && 'data' in result && result.data && 'response' in result.data) {
+      if (result && typeof result === 'object' && result !== null && 'data' in result && result.data) {
+        const responseData = result.data as AIResponse;
+        
         const assistantMessage = { 
           type: 'assistant', 
           content: {
-            message: result.data.response,
-            suggestedJobs: (result.data as AIResponse).suggestedJobs || []
+            message: responseData.response,
+            suggestedJobs: responseData.suggestedJobs || []
           }
         };
 
