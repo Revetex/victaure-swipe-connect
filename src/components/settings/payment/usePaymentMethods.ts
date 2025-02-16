@@ -3,12 +3,15 @@ import { useState } from "react";
 import { PaymentMethod } from "@/types/payment";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { loadStripe } from "@stripe/stripe-js";
+import { useStripeElements } from "@/hooks/useStripePayment";
 
 export function usePaymentMethods() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState<'credit_card' | 'interac'>('credit_card');
   const [addingPayment, setAddingPayment] = useState(false);
+  const { elements } = useStripeElements();
 
   const loadPaymentMethods = async () => {
     try {
@@ -34,6 +37,11 @@ export function usePaymentMethods() {
   };
 
   const addPaymentMethod = async () => {
+    if (!elements) {
+      toast.error("Impossible d'initialiser le formulaire de paiement");
+      return;
+    }
+
     try {
       setAddingPayment(true);
       const { data: { user } } = await supabase.auth.getUser();
@@ -47,10 +55,15 @@ export function usePaymentMethods() {
       const { data: setupIntent, error: setupError } = await supabase.functions.invoke('create-setup-intent');
       if (setupError) throw setupError;
 
+      const cardElement = elements.getElement('card');
+      if (!cardElement) {
+        throw new Error('Élément de carte non trouvé');
+      }
+
       // Ouvrir la modal Stripe pour la saisie de la carte
       const result = await stripe.confirmCardSetup(setupIntent.client_secret, {
         payment_method: {
-          card: elements.getElement('card'),
+          card: cardElement,
           billing_details: {
             email: user.email
           }
