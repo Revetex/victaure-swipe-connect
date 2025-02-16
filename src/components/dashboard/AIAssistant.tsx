@@ -1,4 +1,3 @@
-
 import { useState, useRef, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
@@ -164,15 +163,12 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
         signal: abortController.current.signal
       });
 
-      const { data, error } = await Promise.race([responsePromise, timeoutPromise]);
-
-      if (error) throw error;
-
+      const response = await Promise.race([responsePromise, timeoutPromise]);
       const assistantMessage = { 
         type: 'assistant', 
         content: {
-          message: data.response,
-          suggestedJobs: data.suggestedJobs || []
+          message: response.data.response,
+          suggestedJobs: response.data.suggestedJobs || []
         }
       };
 
