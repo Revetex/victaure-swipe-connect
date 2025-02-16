@@ -15,6 +15,10 @@ export const useFriendRequests = () => {
         .from("friend_requests")
         .select(`
           id,
+          sender_id,
+          receiver_id,
+          status,
+          created_at,
           sender:profiles!friend_requests_sender_id_fkey(
             id,
             full_name,
@@ -33,6 +37,10 @@ export const useFriendRequests = () => {
         .from("friend_requests")
         .select(`
           id,
+          sender_id,
+          receiver_id,
+          status,
+          created_at,
           sender:profiles!friend_requests_sender_id_fkey(
             id,
             full_name,

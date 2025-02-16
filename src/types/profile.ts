@@ -1,4 +1,3 @@
-
 export interface UserProfile {
   id: string;
   email: string;
@@ -22,6 +21,7 @@ export interface UserProfile {
   custom_font?: string | null;
   custom_background?: string | null;
   custom_text_color?: string | null;
+  auto_update_enabled?: boolean;
   // Additional fields
   website?: string | null;
   company_name?: string | null;
@@ -74,7 +74,7 @@ export interface Certification {
   updated_at?: string;
 }
 
-export interface FriendPreview extends Pick<UserProfile, 'id' | 'full_name' | 'avatar_url' | 'online_status' | 'last_seen'> {}
+export type FriendPreview = Pick<UserProfile, 'id' | 'full_name' | 'avatar_url' | 'online_status' | 'last_seen'>;
 
 export interface PendingRequest {
   id: string;

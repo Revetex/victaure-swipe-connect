@@ -72,6 +72,24 @@ export function FriendItem({ friend }: FriendItemProps) {
     }
   };
 
+  const userProfile = {
+    id: friend.id,
+    email: '',
+    full_name: friend.full_name,
+    avatar_url: friend.avatar_url,
+    role: '',
+    bio: null,
+    phone: null,
+    city: null,
+    state: null,
+    country: 'Canada',
+    skills: [],
+    latitude: null,
+    longitude: null,
+    online_status: friend.online_status,
+    last_seen: friend.last_seen
+  };
+
   return (
     <>
       <div 
@@ -129,7 +147,7 @@ export function FriendItem({ friend }: FriendItemProps) {
       </div>
 
       <ProfilePreview
-        profile={friend}
+        profile={userProfile}
         isOpen={showProfile}
         onClose={() => setShowProfile(false)}
       />
