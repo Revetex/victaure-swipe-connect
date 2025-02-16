@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -15,6 +16,8 @@ export function useProfile() {
   const [tempProfile, setTempProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
+    let mounted = true;
+
     async function fetchWithRetry(fn: () => Promise<any>, retries = MAX_RETRIES): Promise<any> {
       try {
         return await fn();
@@ -30,84 +33,64 @@ export function useProfile() {
 
     async function fetchProfile() {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        // D'abord, vérifiez si nous avons un utilisateur authentifié
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
+        
         if (!user) {
-          throw new Error("No authenticated user");
+          console.log("No authenticated user found");
+          setIsLoading(false);
+          return;
         }
 
-        // Convert Supabase queries to proper Promises
+        console.log("Fetching profile for user:", user.id);
+
+        // Récupérer le profil avec retry
         const { data: profileData, error: profileError } = await fetchWithRetry(() =>
-          Promise.resolve(
-            supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', user.id)
-              .maybeSingle()
-          ).then(result => result)
+          supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .maybeSingle()
         );
 
-        if (profileError) throw profileError;
+        if (profileError) {
+          console.error("Profile fetch error:", profileError);
+          throw profileError;
+        }
 
+        // Récupérer les certifications avec retry
         const { data: certifications, error: certError } = await fetchWithRetry(() =>
-          Promise.resolve(
-            supabase
-              .from('certifications')
-              .select('*')
-              .eq('profile_id', user.id)
-          ).then(result => result)
+          supabase
+            .from('certifications')
+            .select('*')
+            .eq('profile_id', user.id)
         );
 
         if (certError) throw certError;
 
+        // Récupérer l'éducation avec retry
         const { data: education, error: eduError } = await fetchWithRetry(() =>
-          Promise.resolve(
-            supabase
-              .from('education')
-              .select('*')
-              .eq('profile_id', user.id)
-          ).then(result => result)
+          supabase
+            .from('education')
+            .select('*')
+            .eq('profile_id', user.id)
         );
 
         if (eduError) throw eduError;
 
+        // Récupérer les expériences avec retry
         const { data: experiences, error: expError } = await fetchWithRetry(() =>
-          Promise.resolve(
-            supabase
-              .from('experiences')
-              .select('*')
-              .eq('profile_id', user.id)
-          ).then(result => result)
+          supabase
+            .from('experiences')
+            .select('*')
+            .eq('profile_id', user.id)
         );
 
         if (expError) throw expError;
 
-        // Map certifications to match our interface
-        const mappedCertifications: Certification[] = (certifications || []).map(cert => ({
-          id: cert.id,
-          profile_id: cert.profile_id,
-          title: cert.title,
-          institution: cert.issuer,
-          year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : "",
-          created_at: cert.created_at,
-          updated_at: cert.updated_at,
-          credential_url: cert.credential_url,
-          issue_date: cert.issue_date,
-          expiry_date: cert.expiry_date,
-          issuer: cert.issuer
-        }));
-
-        const mappedEducation: Education[] = (education || []).map(edu => ({
-          id: edu.id,
-          school_name: edu.school_name,
-          degree: edu.degree,
-          field_of_study: edu.field_of_study,
-          start_date: edu.start_date,
-          end_date: edu.end_date,
-          description: edu.description
-        }));
-
         if (!profileData) {
-          // Create a default profile if none exists
+          // Créer un profil par défaut si aucun n'existe
           const defaultProfile: UserProfile = {
             id: user.id,
             email: user.email || '',
@@ -135,38 +118,46 @@ export function useProfile() {
 
           if (insertError) {
             console.error('Error creating default profile:', insertError);
-            toast({
-              variant: "destructive",
-              title: "Erreur",
-              description: "Impossible de créer votre profil",
-            });
-          } else {
+            throw insertError;
+          }
+
+          if (mounted) {
             setProfile(defaultProfile);
             setTempProfile(defaultProfile);
           }
         } else {
+          // Combiner toutes les données
           const fullProfile: UserProfile = {
             ...profileData,
-            certifications: mappedCertifications,
-            education: mappedEducation,
-            experiences: experiences || [],
+            certifications: certifications || [],
+            education: education || [],
+            experiences: experiences || []
           };
-          setProfile(fullProfile);
-          setTempProfile(fullProfile);
+
+          if (mounted) {
+            setProfile(fullProfile);
+            setTempProfile(fullProfile);
+          }
         }
       } catch (error) {
-        console.error('Error fetching profile:', error);
+        console.error('Error in fetchProfile:', error);
         toast({
           variant: "destructive",
           title: "Erreur",
           description: "Impossible de charger votre profil. Réessayez dans quelques instants.",
         });
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     }
 
     fetchProfile();
+
+    return () => {
+      mounted = false;
+    };
   }, [toast]);
 
   return { profile, setProfile, tempProfile, setTempProfile, isLoading };
