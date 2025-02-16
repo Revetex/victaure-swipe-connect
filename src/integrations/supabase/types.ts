@@ -1705,6 +1705,7 @@ export type Database = {
           auction_end_date: string | null
           category_id: string | null
           created_at: string | null
+          currency: string
           current_price: number | null
           description: string | null
           id: string
@@ -1720,6 +1721,7 @@ export type Database = {
           auction_end_date?: string | null
           category_id?: string | null
           created_at?: string | null
+          currency?: string
           current_price?: number | null
           description?: string | null
           id?: string
@@ -1735,6 +1737,7 @@ export type Database = {
           auction_end_date?: string | null
           category_id?: string | null
           created_at?: string | null
+          currency?: string
           current_price?: number | null
           description?: string | null
           id?: string
