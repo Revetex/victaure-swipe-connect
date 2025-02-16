@@ -57,22 +57,24 @@ export const useFriendRequests = () => {
 
       const formattedIncoming = (incomingRequests || []).map(request => ({
         ...request,
-        type: 'incoming' as const
+        type: 'incoming' as const,
+        status: request.status as "pending" | "accepted" | "rejected"
       }));
 
       const formattedOutgoing = (outgoingRequests || []).map(request => ({
         ...request,
-        type: 'outgoing' as const
+        type: 'outgoing' as const,
+        status: request.status as "pending" | "accepted" | "rejected"
       }));
 
-      return [...formattedIncoming, ...formattedOutgoing];
+      return [...formattedIncoming, ...formattedOutgoing] as PendingRequest[];
     }
   });
 
   const handleAcceptRequest = async (requestId: string, senderId: string, senderName: string) => {
     const { error } = await supabase
       .from("friend_requests")
-      .update({ status: "accepted" })
+      .update({ status: "accepted" as const })
       .eq("id", requestId);
 
     if (error) {
