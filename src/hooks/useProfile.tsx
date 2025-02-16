@@ -2,13 +2,38 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, Experience, Education, Certification } from "@/types/profile";
 import { PostgrestResponse } from "@supabase/supabase-js";
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Helper function to transform dates
+const transformExperience = (exp: any): Experience => ({
+  ...exp,
+  created_at: exp.created_at ? new Date(exp.created_at) : undefined,
+  updated_at: exp.updated_at ? new Date(exp.updated_at) : undefined,
+  start_date: exp.start_date ? new Date(exp.start_date) : null,
+  end_date: exp.end_date ? new Date(exp.end_date) : null
+});
+
+const transformEducation = (edu: any): Education => ({
+  ...edu,
+  created_at: edu.created_at ? new Date(edu.created_at) : undefined,
+  updated_at: edu.updated_at ? new Date(edu.updated_at) : undefined,
+  start_date: edu.start_date ? new Date(edu.start_date) : null,
+  end_date: edu.end_date ? new Date(edu.end_date) : null
+});
+
+const transformCertification = (cert: any): Certification => ({
+  ...cert,
+  created_at: cert.created_at ? new Date(cert.created_at) : undefined,
+  updated_at: cert.updated_at ? new Date(cert.updated_at) : undefined,
+  issue_date: cert.issue_date ? new Date(cert.issue_date) : null,
+  expiry_date: cert.expiry_date ? new Date(cert.expiry_date) : null
+});
 
 export function useProfile() {
   const { toast } = useToast();
@@ -95,9 +120,9 @@ export function useProfile() {
           if (mounted) {
             const fullProfile: UserProfile = {
               ...profileData as Partial<UserProfile>,
-              certifications: certifications || [],
-              education: education || [],
-              experiences: experiences || []
+              certifications: (certifications || []).map(transformCertification),
+              education: (education || []).map(transformEducation),
+              experiences: (experiences || []).map(transformExperience)
             } as UserProfile;
 
             setProfile(fullProfile);
