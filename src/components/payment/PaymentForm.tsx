@@ -1,18 +1,40 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useStripePayment } from '@/hooks/useStripePayment';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Elements, useStripe, useElements } from '@stripe/react-stripe-js';
+import { Elements, useStripe, useElements, type StripeElementsOptions } from '@stripe/react-stripe-js';
 
 export function PaymentForm() {
   const [amount, setAmount] = useState('');
   const { createPaymentIntent, loading } = useStripePayment();
   const stripe = useStripe();
   const elements = useElements();
+  
+  const [elementsOptions, setElementsOptions] = useState<StripeElementsOptions>({
+    mode: 'payment',
+    currency: 'cad',
+    amount: 1000, // Default minimum amount of 10 CAD (in cents)
+    appearance: {
+      theme: 'stripe',
+      variables: {
+        colorPrimary: '#0F172A',
+      },
+    },
+  });
+
+  useEffect(() => {
+    const numericAmount = parseFloat(amount);
+    if (!isNaN(numericAmount) && numericAmount > 0) {
+      setElementsOptions(prev => ({
+        ...prev,
+        amount: Math.round(numericAmount * 100), // Convert to cents
+      }));
+    }
+  }, [amount]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

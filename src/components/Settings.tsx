@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 const stripeElementsOptions: StripeElementsOptions = {
   mode: 'payment',
   currency: 'cad',
-  amount: 0, // Initialize with 0, will be updated when making a payment
+  amount: 1000, // Set a default minimum amount of 10 CAD (in cents)
   appearance: {
     theme: 'stripe',
     variables: {
