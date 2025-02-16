@@ -881,6 +881,86 @@ export type Database = {
           },
         ]
       }
+      gig_bids: {
+        Row: {
+          amount: number
+          bidder_id: string
+          created_at: string | null
+          gig_id: string
+          id: string
+          proposal: string | null
+          status: string | null
+        }
+        Insert: {
+          amount: number
+          bidder_id: string
+          created_at?: string | null
+          gig_id: string
+          id?: string
+          proposal?: string | null
+          status?: string | null
+        }
+        Update: {
+          amount?: number
+          bidder_id?: string
+          created_at?: string | null
+          gig_id?: string
+          id?: string
+          proposal?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gig_bids_gig_id_fkey"
+            columns: ["gig_id"]
+            isOneToOne: false
+            referencedRelation: "gigs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gigs: {
+        Row: {
+          budget: number | null
+          created_at: string | null
+          creator_id: string
+          description: string | null
+          duration: string | null
+          id: string
+          location: string | null
+          required_skills: string[] | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          budget?: number | null
+          created_at?: string | null
+          creator_id: string
+          description?: string | null
+          duration?: string | null
+          id?: string
+          location?: string | null
+          required_skills?: string[] | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          budget?: number | null
+          created_at?: string | null
+          creator_id?: string
+          description?: string | null
+          duration?: string | null
+          id?: string
+          location?: string | null
+          required_skills?: string[] | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       hidden_posts: {
         Row: {
           created_at: string | null
@@ -1696,6 +1776,86 @@ export type Database = {
             columns: ["employer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_listings: {
+        Row: {
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          id: string
+          images: string[] | null
+          price: number
+          seller_id: string
+          status: string | null
+          title: string
+          type: Database["public"]["Enums"]["marketplace_listing_type"]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          price: number
+          seller_id: string
+          status?: string | null
+          title: string
+          type: Database["public"]["Enums"]["marketplace_listing_type"]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          price?: number
+          seller_id?: string
+          status?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["marketplace_listing_type"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      marketplace_offers: {
+        Row: {
+          amount: number
+          bidder_id: string
+          created_at: string | null
+          id: string
+          listing_id: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          bidder_id: string
+          created_at?: string | null
+          id?: string
+          listing_id: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          bidder_id?: string
+          created_at?: string | null
+          id?: string
+          listing_id?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_offers_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_listings"
             referencedColumns: ["id"]
           },
         ]
@@ -3771,6 +3931,7 @@ export type Database = {
         | "customer_service"
         | "other"
       job_source: "linkedin" | "indeed" | "direct"
+      marketplace_listing_type: "vente" | "location" | "service"
       message_delivery_status: "pending" | "delivered" | "read"
       message_sender_type: "user" | "assistant" | "system"
       mission_type: "company" | "individual"
