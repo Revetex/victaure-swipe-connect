@@ -10,10 +10,8 @@ import { LogoutSection } from "./settings/LogoutSection";
 import { PaymentSection } from "./settings/PaymentSection";
 import { ScrollArea } from "./ui/scroll-area";
 import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+import { initializeStripe } from "@/hooks/useStripePayment";
 import type { StripeElementsOptions } from '@stripe/stripe-js';
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const stripeElementsOptions: StripeElementsOptions = {
   mode: 'payment',
@@ -38,9 +36,15 @@ const settingsSections = [
 
 export function Settings() {
   const [mounted, setMounted] = useState(false);
+  const [stripePromise, setStripePromise] = useState<Promise<any> | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    const initStripe = async () => {
+      const stripe = await initializeStripe();
+      setStripePromise(stripe);
+    };
+    initStripe();
   }, []);
 
   if (!mounted) return null;

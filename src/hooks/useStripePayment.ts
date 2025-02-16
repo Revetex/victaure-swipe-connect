@@ -36,11 +36,7 @@ export async function initializeStripe() {
         throw new Error('No Stripe public key available');
       }
       stripePromise = loadStripe(publicKey);
-      const stripe = await stripePromise;
-      if (!stripe) {
-        throw new Error('Failed to initialize Stripe');
-      }
-      return stripe;
+      return stripePromise;
     } catch (error) {
       console.error('Error initializing Stripe:', error);
       toast.error('Erreur lors de l\'initialisation de Stripe');
