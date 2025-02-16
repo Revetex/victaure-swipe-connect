@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
-import { Marketplace } from "@/components/Marketplace";
+import { Marketplace } from "@/components/marketplace/Marketplace";
 import { Feed } from "@/components/feed/Feed";
 import { Settings } from "@/components/Settings";
 import { NotesSection } from "@/components/notes/NotesSection";
@@ -81,6 +81,8 @@ export function DashboardContent({
         return <ChessPage />;
       case 16:
         return <NotesSection />;
+      case 17:
+        return <Marketplace />;
       default:
         return null;
     }

@@ -1,3 +1,4 @@
+
 import { Job } from "@/types/job";
 import { JobBadge } from "./JobBadge";
 import { Globe, MapPin, DollarSign, Briefcase, Clock, GraduationCap } from "lucide-react";
