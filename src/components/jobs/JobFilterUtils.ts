@@ -1,4 +1,3 @@
-
 export interface JobFilters {
   category?: string;
   location?: string;
@@ -11,6 +10,7 @@ export interface JobFilters {
   postedWithin?: string;
   salaryMin?: number;
   salaryMax?: number;
+  salary?: [number, number];
   remote?: boolean;
   urgent?: boolean;
   paymentSchedule?: string;
@@ -24,7 +24,8 @@ export const defaultFilters: JobFilters = {
   experienceLevel: "all",
   remote: false,
   postedWithin: "all",
-  source: "regular"
+  source: "regular",
+  salary: [30000, 200000]
 };
 
 export const filterLabels = {

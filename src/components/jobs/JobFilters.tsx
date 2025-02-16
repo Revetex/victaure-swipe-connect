@@ -6,14 +6,14 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { JobFilters } from "./JobFilterUtils";
+import type { JobFilters as JobFiltersType } from "./JobFilterUtils";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
 interface JobFiltersProps {
-  filters: JobFilters;
-  onFilterChange: (key: keyof JobFilters, value: any) => void;
+  filters: JobFiltersType;
+  onFilterChange: (key: keyof JobFiltersType, value: any) => void;
   onReset?: () => void;
 }
 

@@ -14,9 +14,10 @@ export interface JobListProps {
   jobs?: Job[];
   onJobDeleted?: () => void;
   filterType: "regular" | "contract" | "marketplace";
+  viewMode: 'list' | 'grid' | 'cards';  // Add this prop
 }
 
-export function JobList({ filters, showFilters, jobs: propJobs, onJobDeleted, filterType }: JobListProps) {
+export function JobList({ filters, showFilters, jobs: propJobs, onJobDeleted, filterType, viewMode }: JobListProps) {
   const { jobs: fetchedJobs, loading } = useSwipeJobs({ ...filters, source: filterType });
   const jobs = propJobs || fetchedJobs;
 

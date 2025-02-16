@@ -3,14 +3,15 @@ import { JobFilters } from "./JobFilters";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Filter } from "lucide-react";
-import { JobFilters as JobFiltersType } from "./JobFilterUtils";
+import type { JobFilters as JobFiltersType } from "./JobFilterUtils";
 
 interface JobFiltersPanelProps {
   filters: JobFiltersType;
   onFilterChange: (key: keyof JobFiltersType, value: any) => void;
+  onReset?: () => void;  // Add this prop
 }
 
-export function JobFiltersPanel({ filters, onFilterChange }: JobFiltersPanelProps) {
+export function JobFiltersPanel({ filters, onFilterChange, onReset }: JobFiltersPanelProps) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -27,6 +28,7 @@ export function JobFiltersPanel({ filters, onFilterChange }: JobFiltersPanelProp
           <JobFilters 
             filters={filters}
             onFilterChange={onFilterChange}
+            onReset={onReset}
           />
         </div>
       </SheetContent>
