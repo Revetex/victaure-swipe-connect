@@ -71,36 +71,38 @@ export function ConversationView({
         />
       </header>
 
-      <ScrollArea 
-        className="flex-1 px-4 flex flex-col-reverse"
-        onScrollCapture={handleScroll}
-      >
-        <div className="min-h-full space-y-4 py-4 max-w-2xl mx-auto w-full">
-          {messages.map((message) => (
-            <motion.div
-              key={message.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.2 }}
-            >
-              <ChatMessage message={message} />
-            </motion.div>
-          ))}
-          
-          {isThinking && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <ChatThinking />
-            </motion.div>
-          )}
-          
-          <div ref={messagesEndRef} className="h-4" />
-        </div>
-      </ScrollArea>
+      <div className="flex-1 flex flex-col justify-end overflow-hidden">
+        <ScrollArea 
+          className="w-full px-4"
+          onScrollCapture={handleScroll}
+        >
+          <div className="min-h-full space-y-4 py-4 max-w-2xl mx-auto w-full flex flex-col justify-end">
+            {messages.map((message) => (
+              <motion.div
+                key={message.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ChatMessage message={message} />
+              </motion.div>
+            ))}
+            
+            {isThinking && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <ChatThinking />
+              </motion.div>
+            )}
+            
+            <div ref={messagesEndRef} className="h-4" />
+          </div>
+        </ScrollArea>
+      </div>
 
       {showScrollButton && (
         <Button
