@@ -3637,6 +3637,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      get_auth_user: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_secret: {
         Args: {
           secret_name: string
