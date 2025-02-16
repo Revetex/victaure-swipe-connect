@@ -39,11 +39,35 @@ export function usePaymentMethods() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Non authentifié');
 
+      // Initialiser Stripe
+      const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+      if (!stripe) throw new Error('Stripe non initialisé');
+
+      // Créer l'intention de configuration
+      const { data: setupIntent, error: setupError } = await supabase.functions.invoke('create-setup-intent');
+      if (setupError) throw setupError;
+
+      // Ouvrir la modal Stripe pour la saisie de la carte
+      const result = await stripe.confirmCardSetup(setupIntent.client_secret, {
+        payment_method: {
+          card: elements.getElement('card'),
+          billing_details: {
+            email: user.email
+          }
+        }
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      // Sauvegarder la méthode de paiement
       const { error } = await supabase
         .from('payment_methods')
         .insert({
-          payment_type: selectedType,
           user_id: user.id,
+          payment_type: selectedType,
+          stripe_payment_method_id: result.setupIntent.payment_method,
           is_default: paymentMethods.length === 0
         });
 
@@ -53,7 +77,7 @@ export function usePaymentMethods() {
       loadPaymentMethods();
     } catch (error) {
       console.error('Error adding payment method:', error);
-      toast.error("Erreur lors de l'ajout de la méthode de paiement");
+      toast.error(error.message || "Erreur lors de l'ajout de la méthode de paiement");
     } finally {
       setAddingPayment(false);
     }

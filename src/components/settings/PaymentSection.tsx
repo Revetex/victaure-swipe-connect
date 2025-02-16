@@ -2,13 +2,14 @@
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Loader2, Plus, AlertTriangle } from "lucide-react";
+import { Loader2, Plus, AlertTriangle, ShieldCheck } from "lucide-react";
 import { PaymentTypeSelector } from "@/components/dashboard/payment/PaymentTypeSelector";
 import { Badge } from "@/components/ui/badge";
 import { PaymentMethodsList } from "./payment/PaymentMethodsList";
 import { TransactionsList } from "./payment/TransactionsList";
 import { usePaymentMethods } from "./payment/usePaymentMethods";
 import { useTransactions } from "./payment/useTransactions";
+import { toast } from "sonner";
 
 export function PaymentSection() {
   const {
@@ -35,21 +36,21 @@ export function PaymentSection() {
       {/* Section Méthodes de paiement */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold tracking-tight">Méthodes de paiement</h2>
-          {paymentMethods.length === 0 && (
-            <Badge variant="outline" className="gap-1">
-              <AlertTriangle className="h-3 w-3" />
-              Aucune méthode de paiement
-            </Badge>
-          )}
+          <div className="space-y-1">
+            <h2 className="text-2xl font-semibold tracking-tight">Méthodes de paiement</h2>
+            <p className="text-sm text-muted-foreground">
+              Gérez vos méthodes de paiement en toute sécurité
+            </p>
+          </div>
+          <ShieldCheck className="h-5 w-5 text-green-500" />
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-4">
+          <div className="flex items-center justify-center py-8">
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <PaymentMethodsList
               methods={paymentMethods}
               onSetDefault={setDefaultPaymentMethod}
@@ -81,7 +82,12 @@ export function PaymentSection() {
 
       {/* Section Transactions */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold tracking-tight">Historique des transactions</h2>
+        <div className="space-y-1">
+          <h2 className="text-2xl font-semibold tracking-tight">Historique des transactions</h2>
+          <p className="text-sm text-muted-foreground">
+            Consultez l'historique de vos transactions
+          </p>
+        </div>
         <TransactionsList transactions={transactions} />
       </div>
     </Card>
