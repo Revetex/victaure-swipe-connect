@@ -7,8 +7,8 @@ import {
 } from "@/components/ui/card";
 
 interface PaymentTypeSelectorProps {
-  selectedPaymentType: 'interac' | 'credit_card';
-  onSelect: (type: 'interac' | 'credit_card') => void;
+  selectedPaymentType: 'credit_card' | 'interac';
+  onSelect: (type: 'credit_card' | 'interac') => void;
 }
 
 export function PaymentTypeSelector({ selectedPaymentType, onSelect }: PaymentTypeSelectorProps) {
