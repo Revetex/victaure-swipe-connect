@@ -4,14 +4,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { ArrowRightLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { ConversionType } from "./types";
 
 interface ConverterProps {
-  conversionType: string;
+  conversionType: ConversionType;
   fromUnit: string;
   toUnit: string;
   conversionValue: string;
   conversionResult: string;
-  onConversionTypeChange: (value: string) => void;
+  onConversionTypeChange: (value: ConversionType) => void;
   onFromUnitChange: (value: string) => void;
   onToUnitChange: (value: string) => void;
   onValueChange: (value: string) => void;
@@ -30,7 +31,7 @@ export function Converter({
   onValueChange,
   onConvert
 }: ConverterProps) {
-  const getUnitOptions = (type: string) => {
+  const getUnitOptions = (type: ConversionType) => {
     switch (type) {
       case "currency":
         return [
@@ -53,17 +54,6 @@ export function Converter({
           ["ADA", "Cardano"],
           ["SOL", "Solana"],
           ["DOGE", "Dogecoin"]
-        ];
-      case "stocks":
-        return [
-          ["AAPL", "Apple"],
-          ["MSFT", "Microsoft"],
-          ["GOOGL", "Google"],
-          ["AMZN", "Amazon"],
-          ["TSLA", "Tesla"],
-          ["META", "Meta"],
-          ["NVDA", "NVIDIA"],
-          ["TSX", "TSX Composite"]
         ];
       case "length":
         return [
@@ -102,7 +92,6 @@ export function Converter({
         <SelectContent>
           <SelectItem value="currency">Devises</SelectItem>
           <SelectItem value="crypto">Cryptomonnaies</SelectItem>
-          <SelectItem value="stocks">Actions</SelectItem>
           <SelectItem value="length">Longueur</SelectItem>
           <SelectItem value="weight">Poids</SelectItem>
           <SelectItem value="temperature">Température</SelectItem>
