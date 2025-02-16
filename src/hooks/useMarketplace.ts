@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { MarketplaceListing, MarketplaceOffer } from "@/types/marketplace";
@@ -9,7 +10,7 @@ interface ProfileResponse {
 }
 
 interface ListingWithProfile extends Omit<MarketplaceListing, 'seller'> {
-  seller: ProfileResponse | null;
+  profiles: ProfileResponse | null;
 }
 
 export function useMarketplace() {
@@ -32,7 +33,7 @@ export function useMarketplace() {
           created_at,
           updated_at,
           images,
-          seller:profiles (
+          profiles (
             full_name,
             avatar_url
           )
@@ -44,9 +45,9 @@ export function useMarketplace() {
       
       return (data || []).map(listing => ({
         ...listing,
-        seller: listing.seller ? {
-          full_name: listing.seller.full_name,
-          avatar_url: listing.seller.avatar_url
+        seller: listing.profiles ? {
+          full_name: listing.profiles.full_name,
+          avatar_url: listing.profiles.avatar_url
         } : undefined
       }));
     }

@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Gig, GigBid } from "@/types/marketplace";
@@ -9,7 +10,7 @@ interface ProfileResponse {
 }
 
 interface GigWithProfile extends Omit<Gig, 'creator'> {
-  creator: ProfileResponse | null;
+  profiles: ProfileResponse | null;
 }
 
 export function useGigs() {
@@ -32,7 +33,7 @@ export function useGigs() {
           creator_id,
           created_at,
           updated_at,
-          creator:profiles (
+          profiles (
             full_name,
             avatar_url
           )
@@ -44,9 +45,9 @@ export function useGigs() {
       
       return (data || []).map(gig => ({
         ...gig,
-        creator: gig.creator ? {
-          full_name: gig.creator.full_name,
-          avatar_url: gig.creator.avatar_url
+        creator: gig.profiles ? {
+          full_name: gig.profiles.full_name,
+          avatar_url: gig.profiles.avatar_url
         } : undefined
       }));
     }
