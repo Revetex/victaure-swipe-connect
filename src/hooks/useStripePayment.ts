@@ -1,23 +1,16 @@
 
 import { loadStripe } from '@stripe/stripe-js';
-import {
-  Elements,
-  useStripe,
-  useElements,
-} from '@stripe/react-stripe-js';
+import { useElements, useStripe } from '@stripe/react-stripe-js';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 export function useStripeElements() {
-  const stripe = useStripe();
-  const elements = useElements();
-
   return {
-    stripe,
-    elements,
-    stripePromise
+    stripePromise,
+    stripe: useStripe(),
+    elements: useElements()
   };
 }
 

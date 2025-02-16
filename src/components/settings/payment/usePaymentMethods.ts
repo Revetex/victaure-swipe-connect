@@ -4,14 +4,14 @@ import { PaymentMethod } from "@/types/payment";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { loadStripe } from "@stripe/stripe-js";
-import { useStripeElements } from "@/hooks/useStripePayment";
+import { useElements } from "@stripe/react-stripe-js";
 
 export function usePaymentMethods() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState<'credit_card' | 'interac'>('credit_card');
   const [addingPayment, setAddingPayment] = useState(false);
-  const { elements } = useStripeElements();
+  const elements = useElements();
 
   const loadPaymentMethods = async () => {
     try {
@@ -82,7 +82,7 @@ export function usePaymentMethods() {
           payment_type: selectedType,
           stripe_payment_method_id: result.setupIntent.payment_method,
           is_default: paymentMethods.length === 0
-        } as any);  // Using type assertion here to resolve the type mismatch
+        });
 
       if (error) throw error;
       
