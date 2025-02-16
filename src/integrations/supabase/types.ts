@@ -3931,6 +3931,7 @@ export type Database = {
         | "customer_service"
         | "other"
       job_source: "linkedin" | "indeed" | "direct"
+      listing_type: "vente" | "location" | "service"
       marketplace_listing_type: "vente" | "location" | "service"
       message_delivery_status: "pending" | "delivered" | "read"
       message_sender_type: "user" | "assistant" | "system"
