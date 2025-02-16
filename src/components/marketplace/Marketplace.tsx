@@ -5,8 +5,16 @@ import { motion } from "framer-motion";
 import { Search, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useGigs } from "@/hooks/useGigs";
+import { useMarketplace } from "@/hooks/useMarketplace";
 
 export function Marketplace() {
+  const { gigs, isLoading: gigsLoading } = useGigs();
+  const { listings, isLoading: listingsLoading } = useMarketplace();
+
+  console.log("Gigs:", gigs);
+  console.log("Listings:", listings);
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container relative py-20 space-y-8">
@@ -60,15 +68,57 @@ export function Marketplace() {
           </TabsContent>
 
           <TabsContent value="marketplace">
-            <div className="text-center text-muted-foreground py-12">
-              Section en cours de développement
-            </div>
+            {listingsLoading ? (
+              <div className="text-center text-muted-foreground py-12">
+                Chargement...
+              </div>
+            ) : !listings?.length ? (
+              <div className="text-center text-muted-foreground py-12">
+                Aucune annonce disponible
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {listings.map((listing) => (
+                  <div key={listing.id} className="bg-card/50 backdrop-blur-sm rounded-lg p-4 border">
+                    <h3 className="font-semibold">{listing.title}</h3>
+                    <p className="text-muted-foreground text-sm mt-2">{listing.description}</p>
+                    <div className="mt-4 flex justify-between items-center">
+                      <span className="text-primary font-medium">{listing.price} {listing.currency}</span>
+                      <span className="text-sm text-muted-foreground">
+                        Par {listing.seller?.full_name || 'Anonyme'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="gigs">
-            <div className="text-center text-muted-foreground py-12">
-              Section en cours de développement
-            </div>
+            {gigsLoading ? (
+              <div className="text-center text-muted-foreground py-12">
+                Chargement...
+              </div>
+            ) : !gigs?.length ? (
+              <div className="text-center text-muted-foreground py-12">
+                Aucune jobine disponible
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {gigs.map((gig) => (
+                  <div key={gig.id} className="bg-card/50 backdrop-blur-sm rounded-lg p-4 border">
+                    <h3 className="font-semibold">{gig.title}</h3>
+                    <p className="text-muted-foreground text-sm mt-2">{gig.description}</p>
+                    <div className="mt-4 flex justify-between items-center">
+                      <span className="text-primary font-medium">{gig.budget} CAD</span>
+                      <span className="text-sm text-muted-foreground">
+                        Par {gig.creator?.full_name || 'Anonyme'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>
