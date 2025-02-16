@@ -7,28 +7,34 @@ import { toast } from "sonner";
 export function useMarketplace() {
   const queryClient = useQueryClient();
 
-  const { data: listings, isLoading } = useQuery<MarketplaceListing[]>({
+  const { data: listings, isLoading } = useQuery({
     queryKey: ['marketplace-listings'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: listings, error } = await supabase
         .from('marketplace_listings')
         .select(`
           *,
-          seller:profiles(full_name, avatar_url)
+          seller:profiles!marketplace_listings_seller_id_fkey(full_name, avatar_url)
         `)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return listings as MarketplaceListing[];
     }
   });
 
   const createListing = useMutation({
-    mutationFn: async (listing: Partial<MarketplaceListing>) => {
+    mutationFn: async (listingData: Omit<MarketplaceListing, 'id' | 'created_at' | 'updated_at' | 'seller'>) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Vous devez être connecté pour créer une annonce");
+
       const { data, error } = await supabase
         .from('marketplace_listings')
-        .insert(listing)
+        .insert({
+          ...listingData,
+          seller_id: user.id
+        })
         .select()
         .single();
 

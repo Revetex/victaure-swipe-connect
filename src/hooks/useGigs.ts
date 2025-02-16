@@ -7,28 +7,34 @@ import { toast } from "sonner";
 export function useGigs() {
   const queryClient = useQueryClient();
 
-  const { data: gigs, isLoading } = useQuery<Gig[]>({
+  const { data: gigs, isLoading } = useQuery({
     queryKey: ['gigs'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: gigs, error } = await supabase
         .from('gigs')
         .select(`
           *,
-          creator:profiles(full_name, avatar_url)
+          creator:profiles!gigs_creator_id_fkey(full_name, avatar_url)
         `)
         .eq('status', 'open')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return gigs as Gig[];
     }
   });
 
   const createGig = useMutation({
-    mutationFn: async (gig: Partial<Gig>) => {
+    mutationFn: async (gigData: Omit<Gig, 'id' | 'created_at' | 'updated_at' | 'creator'>) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Vous devez être connecté pour créer une jobine");
+
       const { data, error } = await supabase
         .from('gigs')
-        .insert(gig)
+        .insert({
+          ...gigData,
+          creator_id: user.id
+        })
         .select()
         .single();
 
