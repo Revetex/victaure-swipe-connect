@@ -2,11 +2,9 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader } from "./ui/loader";
 import { toast } from "sonner";
-
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000; // 1 second delay between retries
+import { motion } from "framer-motion";
+import { Loader } from "./ui/loader";
 
 export function PrivateRoute({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -16,6 +14,8 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
     let retryCount = 0;
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000; // 1 second delay between retries
 
     const checkAuth = async () => {
       try {
@@ -30,14 +30,15 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
             setTimeout(checkAuth, RETRY_DELAY);
             return;
           }
-          toast.error("Erreur d'authentification");
-          setIsAuthenticated(false);
-          return;
+          throw sessionError;
         }
 
         if (!session) {
           console.log("No active session");
-          setIsAuthenticated(false);
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsCheckingAuth(false);
+          }
           return;
         }
 
@@ -85,7 +86,6 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
             }
           } catch (error) {
             console.error("User verification error:", error);
-            toast.error("Erreur de vérification utilisateur");
             await supabase.auth.signOut();
             setIsAuthenticated(false);
           }
@@ -133,8 +133,33 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
 
   if (isCheckingAuth) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader className="w-8 h-8" />
+      <div className="h-[100vh] h-[calc(var(--vh,1vh)*100)] w-full flex items-center justify-center bg-background/80 backdrop-blur-sm">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-4"
+        >
+          <div className="relative">
+            <Loader className="w-8 h-8 text-primary" />
+            <motion.div 
+              className="absolute inset-0"
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.7, 0.3] 
+              }}
+              transition={{ 
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              <Loader className="w-8 h-8 text-primary/20" />
+            </motion.div>
+          </div>
+          <p className="text-sm text-muted-foreground animate-pulse">
+            Vérification de vos accès...
+          </p>
+        </motion.div>
       </div>
     );
   }
@@ -142,8 +167,27 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
   if (!isAuthenticated) {
     // Store the attempted URL
     sessionStorage.setItem('redirectTo', location.pathname);
-    return <Navigate to="/auth" state={{ from: location }} replace />;
+    
+    return (
+      <motion.div
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 0 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Navigate to="/auth" replace state={{ from: location }} />
+      </motion.div>
+    );
   }
 
-  return <>{children}</>;
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      {children}
+    </motion.div>
+  );
 }
