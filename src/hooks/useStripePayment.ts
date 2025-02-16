@@ -4,7 +4,7 @@ import { useElements, useStripe } from '@stripe/react-stripe-js';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || '');
 
 export function useStripeElements() {
   return {
@@ -17,6 +17,10 @@ export function useStripeElements() {
 export function useStripePayment() {
   const createPaymentIntent = useMutation({
     mutationFn: async ({ amount, currency }: { amount: number; currency: string }) => {
+      if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+        throw new Error('Stripe public key is not configured');
+      }
+
       const { data, error } = await supabase.functions.invoke('create-payment-intent', {
         body: { amount, currency }
       });
