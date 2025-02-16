@@ -15,10 +15,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/useProfile";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useNavigate } from "react-router-dom";
+import { UserProfile } from "@/types/profile";
 
-export function ProfileSearch() {
+interface ProfileSearchProps {
+  onSelect?: (profile: UserProfile) => void;
+  placeholder?: string;
+  className?: string;
+}
+
+export function ProfileSearch({ onSelect, placeholder = "Rechercher un profil...", className }: ProfileSearchProps) {
   const [open, setOpen] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
   const { profile } = useProfile();
   const navigate = useNavigate();
 
@@ -44,6 +51,15 @@ export function ProfileSearch() {
     }
   };
 
+  const handleProfileSelect = (result: UserProfile) => {
+    if (onSelect) {
+      onSelect(result);
+    } else {
+      navigate(`/profile/${result.id}`);
+    }
+    setOpen(false);
+  };
+
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
@@ -57,28 +73,24 @@ export function ProfileSearch() {
   }, []);
 
   return (
-    <div>
+    <div className={className}>
       <Command className="rounded-lg border shadow-md">
         <CommandInput 
-          placeholder="Rechercher un profil..." 
+          placeholder={placeholder}
           onValueChange={handleSearch}
         />
         <CommandList>
           <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
           <CommandGroup heading="Profils">
-            {searchResults.map((result: any) => (
+            {searchResults.map((result) => (
               <CommandItem
                 key={result.id}
-                onSelect={() => {
-                  navigate(`/profile/${result.id}`);
-                }}
+                onSelect={() => handleProfileSelect(result)}
                 className="flex items-center gap-2 cursor-pointer"
               >
                 <UserAvatar
-                  user={{
-                    avatar_url: result.avatar_url,
-                    full_name: result.full_name,
-                  }}
+                  imageUrl={result.avatar_url}
+                  name={result.full_name}
                   className="h-8 w-8"
                 />
                 <span>{result.full_name}</span>
@@ -88,24 +100,19 @@ export function ProfileSearch() {
         </CommandList>
       </Command>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Rechercher un profil..." onValueChange={handleSearch} />
+        <CommandInput placeholder={placeholder} onValueChange={handleSearch} />
         <CommandList>
           <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
           <CommandGroup heading="Profils">
-            {searchResults.map((result: any) => (
+            {searchResults.map((result) => (
               <CommandItem
                 key={result.id}
-                onSelect={() => {
-                  navigate(`/profile/${result.id}`);
-                  setOpen(false);
-                }}
+                onSelect={() => handleProfileSelect(result)}
                 className="flex items-center gap-2 cursor-pointer"
               >
                 <UserAvatar
-                  user={{
-                    avatar_url: result.avatar_url,
-                    full_name: result.full_name,
-                  }}
+                  imageUrl={result.avatar_url}
+                  name={result.full_name}
                   className="h-8 w-8"
                 />
                 <span>{result.full_name}</span>
