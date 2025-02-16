@@ -13,9 +13,6 @@ export function Marketplace() {
   const { gigs, isLoading: gigsLoading } = useGigs();
   const { listings, isLoading: listingsLoading } = useMarketplace();
 
-  console.log("Gigs:", gigs);
-  console.log("Listings:", listings);
-
   return (
     <PageLayout>
       <div className="container py-6 space-y-8">
