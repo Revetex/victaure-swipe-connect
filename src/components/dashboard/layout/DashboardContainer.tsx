@@ -1,61 +1,36 @@
 
-import { useCallback, useState } from "react";
-import { DashboardContent } from "../content/DashboardContent";
-import { DashboardSidebar } from "./DashboardSidebar";
-import { DashboardMobileNav } from "./DashboardMobileNav";
-import { AIAssistant } from "../AIAssistant";
-import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { ReactNode } from "react";
 
-export function DashboardContainer() {
-  const [currentPage, setCurrentPage] = useState(4); // Défaut sur l'accueil
-  const [isEditing, setIsEditing] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showAIAssistant, setShowAIAssistant] = useState(false);
+interface DashboardContainerProps {
+  children: ReactNode;
+}
 
-  const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page);
-    setIsEditing(false);
-    setShowMobileMenu(false);
-  }, []);
+const containerVariants = {
+  initial: { opacity: 0 },
+  animate: { 
+    opacity: 1,
+    transition: {
+      duration: 0.3,
+      staggerChildren: 0.1
+    }
+  },
+  exit: { 
+    opacity: 0,
+    transition: { duration: 0.2 }
+  }
+};
 
-  const handleEditStateChange = useCallback((state: boolean) => {
-    setIsEditing(state);
-  }, []);
-
-  const handleRequestChat = useCallback(() => {
-    setShowAIAssistant(true);
-  }, []);
-
+export function DashboardContainer({ children }: DashboardContainerProps) {
   return (
-    <div className="min-h-screen bg-background relative">
-      <DashboardSidebar 
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-      />
-
-      <DashboardMobileNav
-        currentPage={currentPage}
-        showMobileMenu={showMobileMenu}
-        setShowMobileMenu={setShowMobileMenu}
-        onPageChange={handlePageChange}
-      />
-
-      <main className={cn(
-        "lg:ml-64 min-h-screen",
-        "transition-all duration-300 ease-in-out",
-        "glass-panel"
-      )}>
-        <DashboardContent
-          currentPage={currentPage}
-          isEditing={isEditing}
-          onEditStateChange={handleEditStateChange}
-          onRequestChat={handleRequestChat}
-        />
-      </main>
-
-      {showAIAssistant && (
-        <AIAssistant onClose={() => setShowAIAssistant(false)} />
-      )}
-    </div>
+    <motion.div
+      variants={containerVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="min-h-screen bg-background pt-16" // Added pt-16 for header spacing
+    >
+      {children}
+    </motion.div>
   );
 }

@@ -13,13 +13,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { JobStats } from "./sections/JobStats";
 import { JobHeader } from "./sections/JobHeader";
-import { ScrapedJobs } from "@/components/dashboard/ScrapedJobs";
 
 export function JobsPage() {
   const { filters, updateFilter, resetFilters } = useJobFilters();
   const [showFilters, setShowFilters] = useState(true);
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'cards'>('grid');
 
+  // Exemple de données pour JobStats - à remplacer par des données réelles
   const statsData = {
     totalJobs: 1234,
     newToday: 56,
@@ -111,7 +111,12 @@ export function JobsPage() {
               />
 
               <TabsContent value="regular">
-                <ScrapedJobs />
+                <JobList 
+                  filters={filters}
+                  filterType="regular"
+                  showFilters={showFilters}
+                  viewMode={viewMode}
+                />
               </TabsContent>
 
               <TabsContent value="contract">

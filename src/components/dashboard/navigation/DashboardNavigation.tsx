@@ -1,4 +1,3 @@
-
 import { cn } from "@/lib/utils";
 import { navigationItems } from "@/config/navigation";
 import { User } from "lucide-react";
