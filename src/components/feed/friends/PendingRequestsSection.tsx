@@ -4,6 +4,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { FriendRequestsSection } from "./FriendRequestsSection";
+import { useFriendRequests } from "@/hooks/useFriendRequests";
 
 interface PendingRequestsSectionProps {
   showPendingRequests: boolean;
@@ -14,6 +15,13 @@ export function PendingRequestsSection({
   showPendingRequests, 
   onToggle 
 }: PendingRequestsSectionProps) {
+  const {
+    pendingRequests,
+    handleAcceptRequest,
+    handleRejectRequest,
+    handleCancelRequest
+  } = useFriendRequests();
+
   return (
     <motion.div 
       className="bg-muted/20 rounded-xl shadow-sm backdrop-blur-sm overflow-hidden border border-border/50"
@@ -48,7 +56,12 @@ export function PendingRequestsSection({
             className="overflow-hidden"
           >
             <div className="p-3 pt-0">
-              <FriendRequestsSection />
+              <FriendRequestsSection
+                requests={pendingRequests}
+                onAccept={handleAcceptRequest}
+                onReject={handleRejectRequest}
+                onCancel={handleCancelRequest}
+              />
             </div>
           </motion.div>
         )}

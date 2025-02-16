@@ -6,9 +6,16 @@ import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useFriendRequests } from "@/hooks/useFriendRequests";
 
 export function FriendRequestsPage() {
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
+  const {
+    pendingRequests,
+    handleAcceptRequest,
+    handleRejectRequest,
+    handleCancelRequest
+  } = useFriendRequests();
 
   const handleProfileSelect = async (profile: UserProfile) => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -59,7 +66,12 @@ export function FriendRequestsPage() {
 
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">Demandes d'amis</h2>
-          <FriendRequestsSection />
+          <FriendRequestsSection
+            requests={pendingRequests}
+            onAccept={handleAcceptRequest}
+            onReject={handleRejectRequest}
+            onCancel={handleCancelRequest}
+          />
         </div>
       </div>
     </ScrollArea>

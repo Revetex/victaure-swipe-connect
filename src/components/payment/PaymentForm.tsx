@@ -6,7 +6,15 @@ import { Card } from "@/components/ui/card";
 import { useStripePayment } from '@/hooks/useStripePayment';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Elements, useStripe, useElements, type StripeElementsOptions } from '@stripe/react-stripe-js';
+import { Elements, useStripe, useElements } from '@stripe/react-stripe-js';
+import type { Appearance } from '@stripe/stripe-js';
+
+type ElementsOptions = {
+  mode: 'payment';
+  currency: string;
+  amount: number;
+  appearance: Appearance;
+};
 
 export function PaymentForm() {
   const [amount, setAmount] = useState('');
@@ -14,7 +22,7 @@ export function PaymentForm() {
   const stripe = useStripe();
   const elements = useElements();
   
-  const [elementsOptions, setElementsOptions] = useState<StripeElementsOptions>({
+  const [elementsOptions, setElementsOptions] = useState<ElementsOptions>({
     mode: 'payment',
     currency: 'cad',
     amount: 1000, // Default minimum amount of 10 CAD (in cents)
