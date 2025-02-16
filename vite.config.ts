@@ -59,11 +59,18 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         manualChunks: {
-          'vendor': ['react', 'react-dom'],
-          'router': ['react-router-dom'],
+          'vendor': [
+            'react', 
+            'react-dom',
+            'react-router-dom',
+            '@tanstack/react-query',
+            'framer-motion',
+            'date-fns'
+          ],
           'ui': [
             '@radix-ui/react-dialog',
             '@radix-ui/react-popover',
@@ -71,22 +78,31 @@ export default defineConfig(({ mode }) => ({
             '@radix-ui/react-toast',
             '@radix-ui/react-toggle',
             '@radix-ui/react-tooltip',
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-label',
+            '@radix-ui/react-checkbox',
+            '@radix-ui/react-select',
+            '@radix-ui/react-switch',
+            '@radix-ui/react-tabs'
           ],
-          'form': [
-            'react-hook-form',
-            '@hookform/resolvers',
-            'zod'
+          'ai': [
+            '@huggingface/transformers'
+          ],
+          'maps': [
+            'mapbox-gl'
+          ],
+          'pdf': [
+            'jspdf',
+            'html2canvas'
+          ],
+          'charts': [
+            'recharts'
           ],
           'utils': [
             'date-fns',
             'clsx',
-            'tailwind-merge'
-          ],
-          'animations': [
-            'framer-motion'
-          ],
-          'data': [
-            '@tanstack/react-query'
+            'tailwind-merge',
+            'zustand'
           ]
         }
       }
