@@ -1,10 +1,22 @@
 
-import { Briefcase, MessageCircle, LayoutGrid, Users, Bell, Settings, Calculator, Globe, StickyNote, ChevronRight } from "lucide-react";
+import { 
+  Users, 
+  MessageCircle, 
+  LayoutGrid, 
+  Briefcase, 
+  ListTodo, 
+  Calculator, 
+  Bell, 
+  Settings,
+  Globe,
+  StickyNote,
+  Sword
+} from "lucide-react";
 
 export const navigationItems = [
   {
     id: 1,
-    name: "Profil",
+    name: "Feed",
     icon: Users
   },
   {
@@ -19,47 +31,42 @@ export const navigationItems = [
   },
   {
     id: 4,
-    name: "Feed",
-    icon: Users
-  },
-  {
-    id: 5,
     name: "Emplois",
     icon: Briefcase
   },
   {
-    id: 7,
+    id: 5,
     name: "Tâches",
-    icon: ChevronRight
+    icon: ListTodo
   },
   {
-    id: 8,
+    id: 6,
+    name: "Notes",
+    icon: StickyNote
+  },
+  {
+    id: 7,
     name: "Calculatrice",
     icon: Calculator
   },
   {
-    id: 9,
-    name: "Notifications",
-    icon: Bell
-  },
-  {
-    id: 10,
-    name: "Paramètres",
-    icon: Settings
-  },
-  {
-    id: 14,
+    id: 8,
     name: "Traducteur",
     icon: Globe
   },
   {
-    id: 15,
+    id: 9,
     name: "Échecs",
-    icon: Users // Temporarily using Users icon instead of Chess
+    icon: Sword
   },
   {
-    id: 16,
-    name: "Notes",
-    icon: StickyNote
+    id: 10,
+    name: "Notifications",
+    icon: Bell
+  },
+  {
+    id: 11,
+    name: "Paramètres",
+    icon: Settings
   }
 ];
