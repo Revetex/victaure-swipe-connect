@@ -2554,6 +2554,93 @@ export type Database = {
           },
         ]
       }
+      payment_settings: {
+        Row: {
+          allow_installments: boolean | null
+          created_at: string
+          currency: string | null
+          default_payment_method: string | null
+          id: string
+          installment_fee_percentage: number | null
+          interac_answer: string | null
+          interac_auto_deposit: boolean | null
+          interac_email: string | null
+          interac_enabled: boolean | null
+          interac_question: string | null
+          max_installments: number | null
+          maximum_payment_amount: number | null
+          minimum_payment_amount: number | null
+          payment_email_notifications: boolean | null
+          payment_notifications_enabled: boolean | null
+          payment_sms_notifications: boolean | null
+          refund_period_days: number | null
+          refund_policy: string | null
+          stripe_account_id: string | null
+          stripe_account_status: string | null
+          stripe_account_type: string | null
+          stripe_enabled: boolean | null
+          stripe_onboarding_completed: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allow_installments?: boolean | null
+          created_at?: string
+          currency?: string | null
+          default_payment_method?: string | null
+          id?: string
+          installment_fee_percentage?: number | null
+          interac_answer?: string | null
+          interac_auto_deposit?: boolean | null
+          interac_email?: string | null
+          interac_enabled?: boolean | null
+          interac_question?: string | null
+          max_installments?: number | null
+          maximum_payment_amount?: number | null
+          minimum_payment_amount?: number | null
+          payment_email_notifications?: boolean | null
+          payment_notifications_enabled?: boolean | null
+          payment_sms_notifications?: boolean | null
+          refund_period_days?: number | null
+          refund_policy?: string | null
+          stripe_account_id?: string | null
+          stripe_account_status?: string | null
+          stripe_account_type?: string | null
+          stripe_enabled?: boolean | null
+          stripe_onboarding_completed?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allow_installments?: boolean | null
+          created_at?: string
+          currency?: string | null
+          default_payment_method?: string | null
+          id?: string
+          installment_fee_percentage?: number | null
+          interac_answer?: string | null
+          interac_auto_deposit?: boolean | null
+          interac_email?: string | null
+          interac_enabled?: boolean | null
+          interac_question?: string | null
+          max_installments?: number | null
+          maximum_payment_amount?: number | null
+          minimum_payment_amount?: number | null
+          payment_email_notifications?: boolean | null
+          payment_notifications_enabled?: boolean | null
+          payment_sms_notifications?: boolean | null
+          refund_period_days?: number | null
+          refund_policy?: string | null
+          stripe_account_id?: string | null
+          stripe_account_status?: string | null
+          stripe_account_type?: string | null
+          stripe_enabled?: boolean | null
+          stripe_onboarding_completed?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payment_transactions: {
         Row: {
           amount: number

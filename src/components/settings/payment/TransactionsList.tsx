@@ -1,86 +1,62 @@
 
 import { PaymentTransaction } from "@/types/payment";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { format } from "date-fns";
+import { Card } from "@/components/ui/card";
+import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Badge } from "@/components/ui/badge";
 
 interface TransactionsListProps {
   transactions: PaymentTransaction[];
 }
 
 export function TransactionsList({ transactions }: TransactionsListProps) {
-  const getStatusBadge = (status: PaymentTransaction['status']) => {
-    const statusConfig = {
-      pending: { className: "bg-yellow-500", text: "En attente" },
-      frozen: { className: "bg-blue-500", text: "Gelé" },
-      confirmed: { className: "bg-green-500", text: "Confirmé" },
-      cancelled: { className: "bg-red-500", text: "Annulé" }
-    };
-
-    const config = statusConfig[status];
+  if (transactions.length === 0) {
     return (
-      <Badge className={config.className}>
-        {config.text}
-      </Badge>
+      <Card className="p-6">
+        <p className="text-sm text-muted-foreground text-center">
+          Aucune transaction
+        </p>
+      </Card>
     );
-  };
+  }
 
   return (
-    <div className="border rounded-lg">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Montant</TableHead>
-            <TableHead>Méthode</TableHead>
-            <TableHead>Statut</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {transactions.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={5} className="text-center text-muted-foreground">
-                Aucune transaction
-              </TableCell>
-            </TableRow>
-          ) : (
-            transactions.map((transaction) => (
-              <TableRow key={transaction.id}>
-                <TableCell>
-                  {format(new Date(transaction.created_at), 'PPP', { locale: fr })}
-                </TableCell>
-                <TableCell>
-                  {transaction.transaction_type === 'job_posting' 
-                    ? 'Publication d\'offre' 
-                    : transaction.transaction_type === 'subscription'
-                    ? 'Abonnement'
-                    : 'Autre'}
-                </TableCell>
-                <TableCell>
-                  {transaction.amount} {transaction.currency}
-                </TableCell>
-                <TableCell>
-                  {transaction.payment_method === 'credit_card' 
-                    ? 'Carte de crédit' 
-                    : 'Interac'}
-                </TableCell>
-                <TableCell>
-                  {getStatusBadge(transaction.status)}
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+    <div className="space-y-4">
+      {transactions.map((transaction) => (
+        <Card key={transaction.id} className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">
+                {transaction.amount} {transaction.currency}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {formatDistanceToNow(new Date(transaction.created_at), {
+                  addSuffix: true,
+                  locale: fr,
+                })}
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className={`text-sm px-2 py-1 rounded-full ${
+                transaction.status === 'confirmed' 
+                  ? 'bg-green-100 text-green-700'
+                  : transaction.status === 'pending'
+                  ? 'bg-yellow-100 text-yellow-700'
+                  : transaction.status === 'cancelled'
+                  ? 'bg-red-100 text-red-700'
+                  : 'bg-blue-100 text-blue-700'
+              }`}>
+                {transaction.status === 'confirmed' && 'Confirmé'}
+                {transaction.status === 'pending' && 'En attente'}
+                {transaction.status === 'cancelled' && 'Annulé'}
+                {transaction.status === 'frozen' && 'Gelé'}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                {transaction.payment_method === 'credit_card' ? 'Carte' : 'Interac'}
+              </span>
+            </div>
+          </div>
+        </Card>
+      ))}
     </div>
   );
 }
