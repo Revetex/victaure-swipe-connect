@@ -1,38 +1,12 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
+interface ExchangeRates {
+  [key: string]: number;
+}
+
 const conversionRates = {
-  currency: {
-    CAD: 1,
-    USD: 0.74,
-    EUR: 0.68,
-    GBP: 0.58,
-    JPY: 109.82,
-    CHF: 0.64,
-    AUD: 1.12,
-    NZD: 1.19
-  },
-  crypto: {
-    BTC: 0.000017,
-    ETH: 0.00031,
-    USDT: 1,
-    BNB: 0.0041,
-    XRP: 1.67,
-    ADA: 2.31,
-    SOL: 0.025,
-    DOGE: 14.27
-  },
-  stocks: {
-    AAPL: 0.0047,
-    MSFT: 0.0029,
-    GOOGL: 0.0067,
-    AMZN: 0.0051,
-    TSLA: 0.0041,
-    META: 0.0032,
-    NVDA: 0.0022,
-    TSX: 0.000058
-  },
   length: {
     m: 1,
     km: 0.001,
@@ -61,6 +35,51 @@ export function useConverter() {
   const [toUnit, setToUnit] = useState("USD");
   const [conversionValue, setConversionValue] = useState("");
   const [conversionResult, setConversionResult] = useState("");
+  const [exchangeRates, setExchangeRates] = useState<ExchangeRates>({});
+  const [cryptoRates, setCryptoRates] = useState<ExchangeRates>({});
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        // Exchange Rates API (gratuite)
+        const response = await fetch('https://api.exchangerate-api.com/v4/latest/CAD');
+        const data = await response.json();
+        setExchangeRates(data.rates);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des taux de change:', error);
+        toast.error("Erreur lors de la récupération des taux de change");
+      }
+    };
+
+    const fetchCryptoRates = async () => {
+      try {
+        // CoinGecko API (gratuite, sans clé API requise)
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,ripple,cardano,solana,dogecoin&vs_currencies=cad');
+        const data = await response.json();
+        
+        const rates: ExchangeRates = {
+          BTC: 1 / data.bitcoin.cad,
+          ETH: 1 / data.ethereum.cad,
+          XRP: 1 / data.ripple.cad,
+          ADA: 1 / data.cardano.cad,
+          SOL: 1 / data.solana.cad,
+          DOGE: 1 / data.dogecoin.cad,
+        };
+        
+        setCryptoRates(rates);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des taux crypto:', error);
+        toast.error("Erreur lors de la récupération des taux crypto");
+      }
+    };
+
+    if (conversionType === "currency") {
+      fetchExchangeRates();
+    } else if (conversionType === "crypto") {
+      fetchCryptoRates();
+    }
+  }, [conversionType]);
 
   const handleConversion = () => {
     if (!conversionValue || isNaN(Number(conversionValue))) {
@@ -82,18 +101,22 @@ export function useConverter() {
       }
       
       setConversionResult(toTemp.toFixed(2));
+    } else if (conversionType === "currency" && exchangeRates[fromUnit] && exchangeRates[toUnit]) {
+      // Conversion de devises en utilisant les taux en direct
+      result = (value / exchangeRates[fromUnit]) * exchangeRates[toUnit];
+      setConversionResult(result.toFixed(4));
+    } else if (conversionType === "crypto" && cryptoRates[fromUnit] && cryptoRates[toUnit]) {
+      // Conversion de crypto en utilisant les taux en direct
+      result = (value / cryptoRates[fromUnit]) * cryptoRates[toUnit];
+      setConversionResult(result.toFixed(8));
     } else {
       const rates = conversionRates[conversionType as keyof typeof conversionRates];
+      if (!rates) return;
+      
       const fromRate = rates[fromUnit as keyof typeof rates] as number;
       const toRate = rates[toUnit as keyof typeof rates] as number;
       
-      // Conversion via CAD comme monnaie de base
-      if (conversionType === "currency" || conversionType === "crypto" || conversionType === "stocks") {
-        result = (value / fromRate) * toRate;
-      } else {
-        result = (value / fromRate) * toRate;
-      }
-      
+      result = (value / fromRate) * toRate;
       setConversionResult(result.toFixed(4));
     }
   };
@@ -104,6 +127,7 @@ export function useConverter() {
     toUnit,
     conversionValue,
     conversionResult,
+    loading,
     setConversionType,
     setFromUnit,
     setToUnit,
