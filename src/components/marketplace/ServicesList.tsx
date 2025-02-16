@@ -3,13 +3,14 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useServicesData } from "@/hooks/useServicesData";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Clock, DollarSign } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "sonner";
 
 export function ServicesList() {
   const { services, isLoading, createBid } = useServicesData();
@@ -25,7 +26,7 @@ export function ServicesList() {
     );
   }
 
-  if (!services) {
+  if (!services || services.length === 0) {
     return (
       <div className="text-center text-muted-foreground">
         Aucun service disponible pour le moment.
@@ -34,6 +35,11 @@ export function ServicesList() {
   }
 
   const handleBid = async (serviceId: string) => {
+    if (!bidAmount || isNaN(parseFloat(bidAmount))) {
+      toast.error("Veuillez entrer un montant valide");
+      return;
+    }
+
     try {
       setIsPlacingBid(true);
       await createBid.mutateAsync({
@@ -99,87 +105,91 @@ export function ServicesList() {
             </div>
           )}
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button 
-                className="mt-4" 
-                onClick={() => setSelectedService(service)}
-                variant={service.type === 'auction' ? 'secondary' : 'default'}
-              >
-                {service.type === 'auction' ? 'Placer une enchère' : 'Voir les détails'}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>
-                  {service.type === 'auction' ? 'Placer une enchère' : 'Détails du service'}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="mt-4 space-y-4">
-                <h4 className="font-medium">{service.title}</h4>
-                <p className="text-sm text-muted-foreground">{service.description}</p>
-                
-                {service.type === 'auction' && (
-                  <>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Montant de l'enchère ({service.currency})</label>
-                      <Input
-                        type="number"
-                        value={bidAmount}
-                        onChange={(e) => setBidAmount(e.target.value)}
-                        min={service.current_price || service.price}
-                        step="0.01"
-                      />
-                    </div>
-                    <Button 
-                      className="w-full" 
-                      onClick={() => handleBid(service.id)}
-                      disabled={isPlacingBid || !bidAmount || parseFloat(bidAmount) <= (service.current_price || service.price)}
-                    >
-                      {isPlacingBid ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Placement de l'enchère...
-                        </>
-                      ) : (
-                        'Confirmer l\'enchère'
-                      )}
-                    </Button>
-                  </>
-                )}
-
-                {service.bids && service.bids.length > 0 && (
-                  <div className="mt-4">
-                    <h5 className="font-medium mb-2">Historique des enchères</h5>
-                    <div className="space-y-2">
-                      {service.bids.map((bid: any) => (
-                        <div key={bid.id} className="flex items-center justify-between text-sm">
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-6 w-6">
-                              <AvatarImage src={bid.bidder?.avatar_url || ''} />
-                              <AvatarFallback>{bid.bidder?.full_name?.[0] || '?'}</AvatarFallback>
-                            </Avatar>
-                            <span>{bid.bidder?.full_name}</span>
-                          </div>
-                          <div className="text-right">
-                            <span className="font-medium">{bid.amount} {service.currency}</span>
-                            <p className="text-xs text-muted-foreground">
-                              {formatDistanceToNow(new Date(bid.created_at), {
-                                addSuffix: true,
-                                locale: fr
-                              })}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button 
+            className="mt-4 w-full" 
+            onClick={() => setSelectedService(service)}
+            variant={service.type === 'auction' ? 'secondary' : 'default'}
+          >
+            {service.type === 'auction' ? 'Placer une enchère' : 'Voir les détails'}
+          </Button>
         </Card>
       ))}
+
+      <Dialog open={!!selectedService} onOpenChange={() => setSelectedService(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {selectedService?.type === 'auction' ? 'Placer une enchère' : 'Détails du service'}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <h4 className="font-medium">{selectedService?.title}</h4>
+            <p className="text-sm text-muted-foreground">{selectedService?.description}</p>
+
+            {selectedService?.type === 'auction' && (
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium">
+                    Montant de l'enchère ({selectedService?.currency})
+                  </label>
+                  <Input
+                    type="number"
+                    value={bidAmount}
+                    onChange={(e) => setBidAmount(e.target.value)}
+                    min={selectedService?.current_price || selectedService?.price}
+                    step="0.01"
+                    className="mt-1"
+                  />
+                </div>
+                
+                <Button 
+                  className="w-full" 
+                  onClick={() => handleBid(selectedService.id)}
+                  disabled={isPlacingBid || !bidAmount || parseFloat(bidAmount) <= (selectedService.current_price || selectedService.price)}
+                >
+                  {isPlacingBid ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Placement de l'enchère...
+                    </>
+                  ) : (
+                    'Confirmer l\'enchère'
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {selectedService?.bids && selectedService.bids.length > 0 && (
+              <div className="mt-4">
+                <h5 className="font-medium mb-2">Historique des enchères</h5>
+                <div className="space-y-2">
+                  {selectedService.bids.map((bid) => (
+                    <div key={bid.id} className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-6 w-6">
+                          <AvatarImage src={bid.bidder?.avatar_url || ''} />
+                          <AvatarFallback>{bid.bidder?.full_name?.[0] || '?'}</AvatarFallback>
+                        </Avatar>
+                        <span>{bid.bidder?.full_name}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-medium">{bid.amount} {selectedService.currency}</span>
+                        <p className="text-xs text-muted-foreground">
+                          {formatDistanceToNow(new Date(bid.created_at), {
+                            addSuffix: true,
+                            locale: fr
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
