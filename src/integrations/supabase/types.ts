@@ -705,18 +705,21 @@ export type Database = {
           conversation_partner_id: string
           created_at: string
           id: string
+          keep_pinned: boolean | null
           user_id: string
         }
         Insert: {
           conversation_partner_id: string
           created_at?: string
           id?: string
+          keep_pinned?: boolean | null
           user_id: string
         }
         Update: {
           conversation_partner_id?: string
           created_at?: string
           id?: string
+          keep_pinned?: boolean | null
           user_id?: string
         }
         Relationships: [
@@ -3656,13 +3659,22 @@ export type Database = {
         }
         Returns: undefined
       }
-      mark_conversation_deleted: {
-        Args: {
-          p_user_id: string
-          p_conversation_partner_id: string
-        }
-        Returns: undefined
-      }
+      mark_conversation_deleted:
+        | {
+            Args: {
+              p_user_id: string
+              p_conversation_partner_id: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_user_id: string
+              p_conversation_partner_id: string
+              p_keep_pinned?: boolean
+            }
+            Returns: undefined
+          }
       mark_messages_as_read: {
         Args: {
           conversation_partner_id: string
