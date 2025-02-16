@@ -1,78 +1,86 @@
-
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { DashboardLayout } from "@/components/DashboardLayout";
-import { VCardCreationForm } from "@/components/VCardCreationForm";
-import { toast } from "sonner";
+import { useState } from "react";
+import { PageLayout } from "@/components/layout/PageLayout";
+import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { DashboardAuth } from "@/components/dashboard/core/DashboardAuth";
+import { ToolsNavigation } from "@/components/tools/navigation/ToolsNavigation";
+import { Tool } from "@/components/tools/navigation/types";
+import { tools } from "@/components/tools/navigation/toolsConfig";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import { FriendsList } from "@/components/friends/FriendsList";
+import { cn } from "@/lib/utils";
 
 export default function Dashboard() {
-  const navigate = useNavigate();
-  const [hasProfile, setHasProfile] = useState<boolean | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [showFriendsList, setShowFriendsList] = useState(false);
+  const [activeTool, setActiveTool] = useState<Tool>("notes");
+  const [isEditing, setIsEditing] = useState(false);
+  const [toolsOrder, setToolsOrder] = useLocalStorage<Tool[]>(
+    "dashboard-tools-order",
+    tools.map(t => t.id)
+  );
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+  const handleToolChange = (tool: Tool) => {
+    setActiveTool(tool);
+    setIsEditing(false);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setIsEditing(false);
+  };
+
+  const toggleFriendsList = () => {
+    setShowFriendsList(!showFriendsList);
+  };
+
+  const ActiveTool = tools.find(t => t.id === activeTool)?.component;
+
+  return (
+    <PageLayout>
+      <DashboardAuth />
       
-      console.log("Session check:", session ? "Active" : "No session");
-      
-      if (!session) {
-        console.log("No session found, redirecting to auth");
-        toast.info("Veuillez vous connecter pour accéder au tableau de bord");
-        navigate("/auth");
-        return;
-      }
+      <div className="flex flex-col min-h-screen">
+        <DashboardHeader
+          title="Tableau de bord"
+          showFriendsList={showFriendsList}
+          onToggleFriendsList={toggleFriendsList}
+          isEditing={isEditing}
+        />
 
-      const { data: profile, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", session.user.id)
-        .maybeSingle();
+        <div className="flex-1 flex">
+          <main className={cn(
+            "flex-1 transition-all duration-300",
+            showFriendsList ? "mr-[300px]" : ""
+          )}>
+            <div className="container mx-auto p-4 space-y-8">
+              <ToolsNavigation
+                activeTool={activeTool}
+                onToolChange={handleToolChange}
+                toolsOrder={toolsOrder}
+                onReorderTools={setToolsOrder}
+              />
 
-      if (error) {
-        console.error("Error checking profile:", error);
-        toast.error("Erreur lors de la vérification du profil");
-        return;
-      }
+              <div className="relative min-h-[300px]">
+                {ActiveTool && (
+                  <ActiveTool onLoad={() => {}} />
+                )}
+              </div>
+            </div>
+          </main>
 
-      console.log("Profile check:", profile);
-      setHasProfile(!!profile && !!profile.full_name);
-    };
-
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event);
-      if (!session) {
-        navigate("/auth");
-      } else {
-        checkAuth();
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate]);
-
-  if (hasProfile === null) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2">Chargement...</p>
+          <FriendsList
+            isOpen={showFriendsList}
+            onClose={() => setShowFriendsList(false)}
+          />
         </div>
-      </div>
-    );
-  }
 
-  if (!hasProfile) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <VCardCreationForm />
+        <DashboardNavigation
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+          isEditing={isEditing}
+        />
       </div>
-    );
-  }
-
-  return <DashboardLayout />;
+    </PageLayout>
+  );
 }
