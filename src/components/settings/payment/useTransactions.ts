@@ -20,11 +20,13 @@ export function useTransactions() {
 
       if (error) throw error;
 
+      // Conversion explicite du type Json pour metadata
       const typedTransactions: PaymentTransaction[] = (data || []).map(transaction => ({
         ...transaction,
         status: transaction.status as PaymentTransaction['status'],
         transaction_type: transaction.transaction_type as PaymentTransaction['transaction_type'],
-        payment_method: transaction.payment_method as PaymentTransaction['payment_method']
+        payment_method: transaction.payment_method as PaymentTransaction['payment_method'],
+        metadata: transaction.metadata || {}
       }));
 
       setTransactions(typedTransactions);

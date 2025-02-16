@@ -6,6 +6,14 @@ import { toast } from "sonner";
 import { loadStripe } from "@stripe/stripe-js";
 import { useElements } from "@stripe/react-stripe-js";
 
+type PaymentMethodInsert = {
+  user_id: string;
+  payment_type: 'credit_card' | 'interac';
+  stripe_payment_method_id: string;
+  is_default: boolean;
+  is_active?: boolean;
+};
+
 export function usePaymentMethods() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,11 +55,11 @@ export function usePaymentMethods() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Non authentifié');
 
-      // Initialize Stripe
+      // Initialiser Stripe
       const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
       if (!stripe) throw new Error('Stripe non initialisé');
 
-      // Create setup intent
+      // Créer l'intention de configuration
       const { data: setupIntent, error: setupError } = await supabase.functions.invoke('create-setup-intent');
       if (setupError) throw setupError;
 
@@ -60,7 +68,7 @@ export function usePaymentMethods() {
         throw new Error('Élément de carte non trouvé');
       }
 
-      // Open Stripe modal for card input
+      // Ouvrir la modal Stripe pour la saisie de la carte
       const result = await stripe.confirmCardSetup(setupIntent.client_secret, {
         payment_method: {
           card: cardElement,
@@ -74,16 +82,18 @@ export function usePaymentMethods() {
         throw result.error;
       }
 
-      // Save payment method
+      // Sauvegarder la méthode de paiement
+      const newPaymentMethod: PaymentMethodInsert = {
+        user_id: user.id,
+        payment_type: selectedType,
+        stripe_payment_method_id: result.setupIntent.payment_method as string,
+        is_default: paymentMethods.length === 0,
+        is_active: true
+      };
+
       const { error } = await supabase
         .from('payment_methods')
-        .insert({
-          user_id: user.id,
-          payment_type: selectedType,
-          stripe_payment_method_id: result.setupIntent.payment_method,
-          is_default: paymentMethods.length === 0,
-          is_active: true,
-        });
+        .insert(newPaymentMethod);
 
       if (error) throw error;
       
@@ -116,13 +126,11 @@ export function usePaymentMethods() {
 
   const setDefaultPaymentMethod = async (id: string) => {
     try {
-      // First, unset all default methods
       await supabase
         .from('payment_methods')
         .update({ is_default: false })
         .neq('id', id);
 
-      // Then set the new default
       const { error } = await supabase
         .from('payment_methods')
         .update({ is_default: true })

@@ -1,4 +1,6 @@
 
+import { Json } from "@/types/database/auth";
+
 export interface PaymentTransaction {
   id: string;
   amount: number;
@@ -6,9 +8,10 @@ export interface PaymentTransaction {
   status: 'pending' | 'frozen' | 'confirmed' | 'cancelled';
   transaction_type: 'job_posting' | 'subscription' | 'other';
   payment_method: 'credit_card' | 'interac';
-  metadata: Record<string, any>;
+  metadata: Json;
   created_at: string;
   updated_at: string;
+  user_id: string;
 }
 
 export interface PaymentMethod {
@@ -20,4 +23,7 @@ export interface PaymentMethod {
   card_brand?: string;
   created_at: string;
   updated_at: string;
+  user_id: string;
+  stripe_payment_method_id?: string;
+  last_used_at?: string;
 }
