@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoginForm } from "./LoginForm";
 import { SignupForm } from "./SignupForm";
+import { BusinessSignupForm } from "./BusinessSignupForm";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface AuthFormProps {
@@ -82,7 +83,7 @@ export function AuthForm({ redirectTo = '/dashboard' }: AuthFormProps) {
       className="w-full max-w-md mx-auto backdrop-blur-xl bg-white/80 dark:bg-zinc-900/80 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800"
     >
       <Tabs defaultValue="login" className="w-full p-1">
-        <TabsList className="grid w-full grid-cols-2 mb-6">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger 
             value="login" 
             className="data-[state=active]:bg-zinc-900 data-[state=active]:text-white dark:data-[state=active]:bg-zinc-100 dark:data-[state=active]:text-zinc-900"
@@ -94,6 +95,12 @@ export function AuthForm({ redirectTo = '/dashboard' }: AuthFormProps) {
             className="data-[state=active]:bg-zinc-900 data-[state=active]:text-white dark:data-[state=active]:bg-zinc-100 dark:data-[state=active]:text-zinc-900"
           >
             Inscription
+          </TabsTrigger>
+          <TabsTrigger 
+            value="business"
+            className="data-[state=active]:bg-zinc-900 data-[state=active]:text-white dark:data-[state=active]:bg-zinc-100 dark:data-[state=active]:text-zinc-900"
+          >
+            Entreprise
           </TabsTrigger>
         </TabsList>
 
@@ -122,6 +129,10 @@ export function AuthForm({ redirectTo = '/dashboard' }: AuthFormProps) {
               onPhoneChange={setPhone}
               onSubmit={() => handleAuth('signup')}
             />
+          </TabsContent>
+
+          <TabsContent value="business" className="p-6">
+            <BusinessSignupForm />
           </TabsContent>
         </AnimatePresence>
       </Tabs>
