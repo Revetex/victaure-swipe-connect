@@ -43,7 +43,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
       )}
       
       <div className={cn(
-        "group flex flex-col gap-1",
+        "group flex flex-col gap-1 max-w-[75%]",
         isOwnMessage ? "items-end" : "items-start"
       )}>
         {!isOwnMessage && (
@@ -53,7 +53,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
         )}
         
         <div className={cn(
-          "px-4 py-2.5 rounded-2xl text-sm break-words max-w-[80%] shadow-sm",
+          "px-4 py-2.5 rounded-2xl text-sm whitespace-normal break-words w-fit max-w-full",
           isOwnMessage 
             ? "bg-primary text-primary-foreground rounded-tr-sm" 
             : "bg-muted rounded-tl-sm"

@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
@@ -137,8 +136,8 @@ export function MessagesContainer() {
           />
         ) : (
           <div className="flex flex-col h-full">
-            <div className="p-4 border-b space-y-4">
-              <div className="flex gap-2">
+            <div className="p-4 border-b space-y-4 sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
+              <div className="flex items-center justify-between gap-2">
                 <div className="relative flex-1">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -149,15 +148,15 @@ export function MessagesContainer() {
                   />
                 </div>
                 <FriendSelector onSelectFriend={handleStartNewChat}>
-                  <Button variant="outline" size="icon">
+                  <Button variant="default" size="icon" className="shrink-0">
                     <Plus className="h-4 w-4" />
                   </Button>
                 </FriendSelector>
               </div>
             </div>
 
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
+            <ScrollArea className="flex-1">
+              <div className="p-4 space-y-4">
                 <AssistantMessage 
                   chatMessages={aiMessages}
                   onSelectConversation={() => {
