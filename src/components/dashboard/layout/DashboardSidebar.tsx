@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { ProfilePreview } from "@/components/ProfilePreview";
-import { useNavigate } from "react-router-dom";
 
 interface DashboardSidebarProps {
   currentPage: number;
@@ -19,15 +18,6 @@ interface DashboardSidebarProps {
 export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebarProps) {
   const { profile } = useProfile();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
-  const navigate = useNavigate();
-
-  const handleNavigation = (itemId: number, itemName: string) => {
-    onPageChange(itemId);
-    // Rediriger vers la page des emplois si l'élément est "Emplois"
-    if (itemName === "Emplois") {
-      navigate("/jobs");
-    }
-  };
 
   return (
     <motion.aside 
@@ -54,7 +44,7 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
                   "hover:bg-primary/10 hover:text-primary",
                   currentPage === item.id && "bg-primary/15 text-primary"
                 )}
-                onClick={() => handleNavigation(item.id, item.name)}
+                onClick={() => onPageChange(item.id)}
               >
                 <Icon className="h-4 w-4" />
                 <span>{item.name}</span>
