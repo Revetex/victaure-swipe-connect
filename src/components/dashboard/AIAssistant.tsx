@@ -1,3 +1,4 @@
+
 import { useState, useRef, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
@@ -151,7 +152,7 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
         setTimeout(() => reject(new Error('Timeout')), 30000); // 30 seconds timeout
       });
 
-      const responsePromise = supabase.functions.invoke('ai-chat', {
+      const functionResponse = await supabase.functions.invoke('ai-chat', {
         body: { 
           message: input,
           userId: user.id,
@@ -159,11 +160,16 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
             previousMessages: messages.slice(-5),
             userProfile: profile,
           }
-        },
-        signal: abortController.current.signal
+        }
       });
 
-      const response = await Promise.race([responsePromise, timeoutPromise]);
+      const response = await Promise.race([Promise.resolve(functionResponse), timeoutPromise]);
+      
+      // Vérifier que la réponse est bien formatée
+      if (!response || !response.data || !response.data.response) {
+        throw new Error('Invalid response format from AI');
+      }
+
       const assistantMessage = { 
         type: 'assistant', 
         content: {
@@ -280,3 +286,4 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
     </motion.div>
   );
 }
+
