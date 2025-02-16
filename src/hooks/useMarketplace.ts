@@ -40,10 +40,31 @@ export function useMarketplace() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return (data as ListingResponse[]).map(listing => ({
+      
+      // First cast to unknown, then to our expected type
+      const typedData = (data as unknown) as Array<{
+        id: string;
+        title: string;
+        description: string | null;
+        price: number;
+        currency: string;
+        type: 'vente' | 'location' | 'service';
+        status: string;
+        seller_id: string;
+        created_at: string;
+        updated_at: string;
+        images: string[];
+        seller: {
+          full_name: string | null;
+          avatar_url: string | null;
+        } | null;
+      }>;
+
+      // Transform the data to match our MarketplaceListing type
+      return typedData.map(listing => ({
         ...listing,
         seller: listing.seller || undefined
-      })) as MarketplaceListing[];
+      }));
     }
   });
 
