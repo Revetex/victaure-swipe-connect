@@ -30,11 +30,18 @@ export function useGigs() {
       const { data, error } = await supabase
         .from('gigs')
         .select(`
-          *,
-          creator:profiles!gigs_creator_id_fkey(
-            full_name,
-            avatar_url
-          )
+          id,
+          title,
+          description,
+          budget,
+          location,
+          duration,
+          required_skills,
+          status,
+          creator_id,
+          created_at,
+          updated_at,
+          creator:profiles(full_name, avatar_url)
         `)
         .eq('status', 'open')
         .order('created_at', { ascending: false });
@@ -42,23 +49,7 @@ export function useGigs() {
       if (error) throw error;
       
       // First cast to unknown, then to our expected type
-      const typedData = (data as unknown) as Array<{
-        id: string;
-        title: string;
-        description: string | null;
-        budget: number | null;
-        location: string | null;
-        duration: string | null;
-        required_skills: string[];
-        status: string;
-        creator_id: string;
-        created_at: string;
-        updated_at: string;
-        creator: {
-          full_name: string | null;
-          avatar_url: string | null;
-        } | null;
-      }>;
+      const typedData = (data as unknown as GigResponse[]);
 
       // Transform the data to match our Gig type
       return typedData.map(gig => ({

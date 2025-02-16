@@ -30,11 +30,18 @@ export function useMarketplace() {
       const { data, error } = await supabase
         .from('marketplace_listings')
         .select(`
-          *,
-          seller:profiles!marketplace_listings_seller_id_fkey(
-            full_name,
-            avatar_url
-          )
+          id,
+          title,
+          description,
+          price,
+          currency,
+          type,
+          status,
+          seller_id,
+          created_at,
+          updated_at,
+          images,
+          seller:profiles(full_name, avatar_url)
         `)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
@@ -42,23 +49,7 @@ export function useMarketplace() {
       if (error) throw error;
       
       // First cast to unknown, then to our expected type
-      const typedData = (data as unknown) as Array<{
-        id: string;
-        title: string;
-        description: string | null;
-        price: number;
-        currency: string;
-        type: 'vente' | 'location' | 'service';
-        status: string;
-        seller_id: string;
-        created_at: string;
-        updated_at: string;
-        images: string[];
-        seller: {
-          full_name: string | null;
-          avatar_url: string | null;
-        } | null;
-      }>;
+      const typedData = (data as unknown as ListingResponse[]);
 
       // Transform the data to match our MarketplaceListing type
       return typedData.map(listing => ({
