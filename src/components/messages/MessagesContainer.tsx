@@ -119,7 +119,7 @@ export function MessagesContainer() {
 
   return (
     <Card className="h-[calc(100vh-4rem)] flex flex-col">
-      <div className="flex-1 flex flex-col h-full relative">
+      <div className="flex-1 flex flex-col h-full relative bg-gradient-to-b from-background to-muted/20">
         {showConversation && receiver ? (
           <ConversationView
             receiver={receiver}
