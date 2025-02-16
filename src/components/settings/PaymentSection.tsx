@@ -16,7 +16,7 @@ import { toast } from "sonner";
 const stripeElementsOptions: StripeElementsOptions = {
   mode: 'payment',
   currency: 'cad',
-  amount: 0, // Montant par défaut
+  amount: 1000, // Montant minimal de 10$ en centimes
   appearance: {
     theme: 'stripe',
     variables: {
@@ -26,7 +26,8 @@ const stripeElementsOptions: StripeElementsOptions = {
 };
 
 export function PaymentSection() {
-  const [stripeReady, setStripeReady] = useState(false);
+  const [stripePromise, setStripePromise] = useState<Promise<any> | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const {
     paymentMethods,
@@ -45,11 +46,16 @@ export function PaymentSection() {
   useEffect(() => {
     const initStripe = async () => {
       try {
-        await initializeStripe();
-        setStripeReady(true);
+        const stripe = await initializeStripe();
+        if (!stripe) {
+          throw new Error('Failed to initialize Stripe');
+        }
+        setStripePromise(Promise.resolve(stripe));
       } catch (error) {
         console.error('Failed to initialize Stripe:', error);
         toast.error('Erreur lors de l\'initialisation du système de paiement');
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -58,7 +64,7 @@ export function PaymentSection() {
     loadTransactions();
   }, []);
 
-  if (!stripeReady) {
+  if (isLoading) {
     return (
       <Card className="p-6">
         <div className="flex items-center justify-center py-8">
@@ -68,8 +74,23 @@ export function PaymentSection() {
     );
   }
 
+  if (!stripePromise) {
+    return (
+      <Card className="p-6">
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground text-center">
+            Le système de paiement n'a pas pu être initialisé.
+          </p>
+          <Button onClick={() => window.location.reload()} className="w-full">
+            Réessayer
+          </Button>
+        </div>
+      </Card>
+    );
+  }
+
   return (
-    <Elements stripe={initializeStripe()} options={stripeElementsOptions}>
+    <Elements stripe={stripePromise} options={stripeElementsOptions}>
       <Card className="p-6 space-y-8">
         {/* Section Méthodes de paiement */}
         <div className="space-y-6">

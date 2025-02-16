@@ -1,13 +1,16 @@
 
 import { loadStripe } from '@stripe/stripe-js';
 import { useElements, useStripe } from '@stripe/react-stripe-js';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 let stripePromise: Promise<any> | null = null;
+let stripePublicKey: string | null = null;
 
 const getStripePublicKey = async () => {
+  if (stripePublicKey) return stripePublicKey;
+
   try {
     const { data: { secret }, error } = await supabase.functions.invoke('get-secret', {
       body: { secretName: 'STRIPE_PUBLIC_KEY' }
@@ -16,6 +19,7 @@ const getStripePublicKey = async () => {
     if (error) throw error;
     if (!secret) throw new Error('No Stripe public key found');
 
+    stripePublicKey = secret;
     return secret;
   } catch (error) {
     console.error('Error fetching Stripe public key:', error);
@@ -32,6 +36,11 @@ export async function initializeStripe() {
         throw new Error('No Stripe public key available');
       }
       stripePromise = loadStripe(publicKey);
+      const stripe = await stripePromise;
+      if (!stripe) {
+        throw new Error('Failed to initialize Stripe');
+      }
+      return stripe;
     } catch (error) {
       console.error('Error initializing Stripe:', error);
       toast.error('Erreur lors de l\'initialisation de Stripe');
@@ -46,7 +55,6 @@ export function useStripeElements() {
   const elements = useElements();
 
   return {
-    stripePromise: initializeStripe(),
     stripe,
     elements
   };
