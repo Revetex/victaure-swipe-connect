@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Message } from '@/types/messages';
 import { UserAvatar } from '@/components/UserAvatar';
@@ -10,7 +9,7 @@ import { Json } from '@/types/database/auth';
 
 interface ChatMessageProps {
   message: Message;
-  onReply?: (content: string) => void;
+  onReply: (content: string) => void;
   onJobAccept?: (jobId: string) => void;
   onJobReject?: (jobId: string) => void;
 }
@@ -131,7 +130,7 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
         {message.is_assistant && quickReplies.length > 0 && (
           <QuickReplies
             suggestions={quickReplies}
-            onSelect={onReply!}
+            onSelect={onReply}
           />
         )}
       </div>
