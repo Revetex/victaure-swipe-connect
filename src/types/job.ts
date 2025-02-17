@@ -1,6 +1,4 @@
 
-import { ValidCategory } from './jobCategories';
-
 export interface Job {
   id: string;
   title: string;
