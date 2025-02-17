@@ -2,7 +2,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { UserProfile, Certification, Experience, Education, Friend } from "@/types/profile";
+import { 
+  UserProfile, 
+  transformDatabaseProfile,
+  transformExperience,
+  transformEducation,
+  transformCertification
+} from "@/types/profile";
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
@@ -57,7 +63,7 @@ export function useProfile() {
 
         if (friendsError) throw friendsError;
 
-        // Fetch other related data (certifications, education, experiences)
+        // Fetch certifications
         const { data: certifications, error: certError } = await fetchWithRetry(() =>
           supabase
             .from('certifications')
@@ -67,6 +73,7 @@ export function useProfile() {
 
         if (certError) throw certError;
 
+        // Fetch education
         const { data: education, error: eduError } = await fetchWithRetry(() =>
           supabase
             .from('education')
@@ -76,6 +83,7 @@ export function useProfile() {
 
         if (eduError) throw eduError;
 
+        // Fetch experiences
         const { data: experiences, error: expError } = await fetchWithRetry(() =>
           supabase
             .from('experiences')
@@ -85,51 +93,12 @@ export function useProfile() {
 
         if (expError) throw expError;
 
-        // Map data to match our interfaces
-        const mappedCertifications: Certification[] = certifications?.map(cert => ({
-          id: cert.id,
-          profile_id: cert.profile_id,
-          title: cert.title,
-          institution: cert.issuer,
-          year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : "",
-          created_at: cert.created_at,
-          updated_at: cert.updated_at,
-          credential_url: cert.credential_url,
-          issue_date: cert.issue_date,
-          expiry_date: cert.expiry_date,
-          issuer: cert.issuer
-        })) || [];
-
-        const mappedFriends: Friend[] = friendsData?.map(friend => ({
-          id: friend.id,
-          full_name: friend.full_name,
-          avatar_url: friend.avatar_url,
-          online_status: friend.online_status,
-          last_seen: friend.last_seen
-        })) || [];
-
         if (!profileData) {
-          const defaultProfile: UserProfile = {
+          const defaultProfile = transformDatabaseProfile({
             id: user.id,
-            email: user.email || '',
-            full_name: null,
-            avatar_url: null,
-            role: 'professional',
-            bio: null,
-            phone: null,
-            city: null,
-            state: null,
-            country: 'Canada',
-            skills: [],
-            latitude: null,
-            longitude: null,
-            online_status: false,
-            last_seen: new Date().toISOString(),
-            friends: [],
-            certifications: [],
-            education: [],
-            experiences: []
-          };
+            email: user.email,
+            role: 'professional'
+          });
 
           const { error: insertError } = await supabase
             .from('profiles')
@@ -148,11 +117,17 @@ export function useProfile() {
           }
         } else {
           const fullProfile: UserProfile = {
-            ...profileData,
-            friends: mappedFriends,
-            certifications: mappedCertifications,
-            education: education || [],
-            experiences: experiences || [],
+            ...transformDatabaseProfile(profileData),
+            friends: friendsData?.map(friend => ({
+              id: friend.id,
+              full_name: friend.full_name,
+              avatar_url: friend.avatar_url,
+              online_status: friend.online_status,
+              last_seen: friend.last_seen
+            })) || [],
+            certifications: certifications?.map(cert => transformCertification(cert)) || [],
+            education: education?.map(edu => transformEducation(edu)) || [],
+            experiences: experiences?.map(exp => transformExperience(exp)) || [],
           };
           setProfile(fullProfile);
           setTempProfile(fullProfile);
