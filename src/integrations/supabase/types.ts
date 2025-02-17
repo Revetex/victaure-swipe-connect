@@ -3190,13 +3190,20 @@ export type Database = {
       }
       scraped_jobs: {
         Row: {
+          application_url: string | null
           benefits: string[] | null
           company: string
           created_at: string | null
           description: string | null
+          education_requirement: string | null
+          employment_type: string | null
           experience_level: string | null
+          external_company_id: string | null
+          external_id: string | null
+          external_url: string | null
           id: string
           industry: string | null
+          is_remote: boolean | null
           job_type: string | null
           location: string
           match_score: number | null
@@ -3205,6 +3212,7 @@ export type Database = {
           remote_type: string | null
           requirements: string[] | null
           salary_range: string | null
+          salary_type: string | null
           skills: string[] | null
           source_platform: string | null
           title: string
@@ -3212,13 +3220,20 @@ export type Database = {
           url: string
         }
         Insert: {
+          application_url?: string | null
           benefits?: string[] | null
           company: string
           created_at?: string | null
           description?: string | null
+          education_requirement?: string | null
+          employment_type?: string | null
           experience_level?: string | null
+          external_company_id?: string | null
+          external_id?: string | null
+          external_url?: string | null
           id?: string
           industry?: string | null
+          is_remote?: boolean | null
           job_type?: string | null
           location: string
           match_score?: number | null
@@ -3227,6 +3242,7 @@ export type Database = {
           remote_type?: string | null
           requirements?: string[] | null
           salary_range?: string | null
+          salary_type?: string | null
           skills?: string[] | null
           source_platform?: string | null
           title: string
@@ -3234,13 +3250,20 @@ export type Database = {
           url: string
         }
         Update: {
+          application_url?: string | null
           benefits?: string[] | null
           company?: string
           created_at?: string | null
           description?: string | null
+          education_requirement?: string | null
+          employment_type?: string | null
           experience_level?: string | null
+          external_company_id?: string | null
+          external_id?: string | null
+          external_url?: string | null
           id?: string
           industry?: string | null
+          is_remote?: boolean | null
           job_type?: string | null
           location?: string
           match_score?: number | null
@@ -3249,6 +3272,7 @@ export type Database = {
           remote_type?: string | null
           requirements?: string[] | null
           salary_range?: string | null
+          salary_type?: string | null
           skills?: string[] | null
           source_platform?: string | null
           title?: string
