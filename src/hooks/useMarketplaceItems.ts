@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PaymentTypes } from "@/types/database/payments";
+import { toast } from "sonner";
 
 type MarketplaceItem = PaymentTypes['Tables']['marketplace_items']['Row'];
 
@@ -55,15 +56,33 @@ export function useMarketplaceItems() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['marketplace-items'] });
+      toast.success("Votre annonce a été créée avec succès");
     },
-    onError: (error) => {
-      console.error('Error creating item:', error);
+    onError: (error: any) => {
+      toast.error(error.message || "Une erreur est survenue lors de la création de l'annonce");
+    }
+  });
+
+  const search = useMutation({
+    mutationFn: async (query: string) => {
+      const { data, error } = await supabase
+        .from('marketplace_items')
+        .select(`
+          *,
+          seller:profiles(full_name, avatar_url)
+        `)
+        .textSearch('searchable_text', query)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data as ItemWithSeller[];
     }
   });
 
   return {
     items,
     isLoading,
-    createItem
+    createItem,
+    search
   };
 }

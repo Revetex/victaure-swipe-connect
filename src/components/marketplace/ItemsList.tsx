@@ -14,17 +14,6 @@ export function ItemsList() {
   const { items, isLoading } = useMarketplaceItems();
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
-  const getSourceBadge = (item: any) => {
-    if (item.external_source === 'kijiji') {
-      return (
-        <Badge variant="secondary" className="ml-2">
-          Kijiji
-        </Badge>
-      );
-    }
-    return null;
-  };
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[200px]">
@@ -60,10 +49,7 @@ export function ItemsList() {
           <div className="p-4 space-y-4">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="flex items-center">
-                  <h3 className="font-semibold text-lg line-clamp-2">{item.title}</h3>
-                  {getSourceBadge(item)}
-                </div>
+                <h3 className="font-semibold text-lg line-clamp-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
                   {item.description}
                 </p>
@@ -119,7 +105,6 @@ export function ItemsList() {
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold mb-4">
               {selectedItem?.title}
-              {getSourceBadge(selectedItem)}
             </DialogTitle>
           </DialogHeader>
           
