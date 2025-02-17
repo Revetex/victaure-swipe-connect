@@ -82,6 +82,9 @@ export function ConversationView({
     const saveConversation = async () => {
       if (!profile || !receiver || messages.length === 0) return;
       
+      // Ne pas sauvegarder les conversations avec l'assistant
+      if (receiver.id === 'assistant') return;
+      
       try {
         const { error } = await supabase
           .from('conversations')
@@ -93,7 +96,10 @@ export function ConversationView({
             updated_at: new Date().toISOString()
           });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Erreur lors de la sauvegarde de la conversation:", error);
+          throw error;
+        }
       } catch (error) {
         console.error("Erreur lors de la sauvegarde de la conversation:", error);
       }
