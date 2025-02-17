@@ -1,126 +1,78 @@
-
-"use client";
-
-import {
-  Command,
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useProfile } from "@/hooks/useProfile";
-import { UserAvatar } from "@/components/UserAvatar";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { UserProfile } from "@/types/profile";
+import { supabase } from "@/integrations/supabase/client";
+import { Input } from "@/components/ui/input";
+import { transformToFullProfile } from "@/utils/profileTransformers";
+import { SearchResults } from "./SearchResults";
+import { useDebounce } from "@/hooks/use-debounce";
+import { Loader2 } from "lucide-react";
 
-interface ProfileSearchProps {
-  onSelect?: (profile: UserProfile) => void;
-  placeholder?: string;
-  className?: string;
-}
-
-export function ProfileSearch({ onSelect, placeholder = "Rechercher un profil...", className }: ProfileSearchProps) {
-  const [open, setOpen] = useState(false);
+export function ProfileSearch() {
   const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
-  const { profile } = useProfile();
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 300);
 
-  const handleSearch = async (value: string) => {
-    if (!value) {
+  const handleSearch = async (query: string) => {
+    if (!query) {
       setSearchResults([]);
       return;
     }
 
+    setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .neq('id', profile?.id)
-        .ilike('full_name', `%${value}%`)
+        .ilike('full_name', `%${query}%`)
         .limit(5);
 
       if (error) throw error;
-      setSearchResults(data || []);
+
+      const transformedResults = (data || []).map(profile => 
+        transformToFullProfile({
+          ...profile,
+          certifications: [],
+          education: [],
+          experiences: []
+        })
+      );
+      
+      setSearchResults(transformedResults);
     } catch (error) {
       console.error('Error searching profiles:', error);
-      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleProfileSelect = (result: UserProfile) => {
-    if (onSelect) {
-      onSelect(result);
-    } else {
-      navigate(`/profile/${result.id}`);
-    }
-    setOpen(false);
-  };
-
+  // Effect for debounced search
   useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((open) => !open);
-      }
-    };
-
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, []);
+    handleSearch(debouncedSearch);
+  }, [debouncedSearch]);
 
   return (
-    <div className={className}>
-      <Command className="rounded-lg border shadow-md">
-        <CommandInput 
-          placeholder={placeholder}
-          onValueChange={handleSearch}
+    <div className="w-full max-w-sm">
+      <div className="relative">
+        <Input
+          type="search"
+          placeholder="Rechercher des profils..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full pr-10"
         />
-        <CommandList>
-          <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
-          <CommandGroup heading="Profils">
-            {searchResults.map((result) => (
-              <CommandItem
-                key={result.id}
-                onSelect={() => handleProfileSelect(result)}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <UserAvatar
-                  imageUrl={result.avatar_url}
-                  name={result.full_name}
-                  className="h-8 w-8"
-                />
-                <span>{result.full_name}</span>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </CommandList>
-      </Command>
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder={placeholder} onValueChange={handleSearch} />
-        <CommandList>
-          <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
-          <CommandGroup heading="Profils">
-            {searchResults.map((result) => (
-              <CommandItem
-                key={result.id}
-                onSelect={() => handleProfileSelect(result)}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <UserAvatar
-                  imageUrl={result.avatar_url}
-                  name={result.full_name}
-                  className="h-8 w-8"
-                />
-                <span>{result.full_name}</span>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </CommandList>
-      </CommandDialog>
+        {isLoading && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          </div>
+        )}
+      </div>
+      
+      {searchResults.length > 0 && (
+        <div className="relative mt-2">
+          <SearchResults results={searchResults} />
+        </div>
+      )}
     </div>
   );
 }

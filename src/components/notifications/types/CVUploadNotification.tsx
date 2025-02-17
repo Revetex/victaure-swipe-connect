@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { UserProfile } from "@/types/profile";
+import { transformToFullProfile } from "@/utils/profileTransformers";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Upload, User } from "lucide-react";
 import { VProfile } from "@/components/VProfile";
-import { UserProfile } from "@/types/profile";
 
 interface CVUploadNotificationProps {
   id: string;
@@ -78,6 +79,16 @@ export function CVUploadNotification({ id, message, onDelete }: CVUploadNotifica
       console.error('Error fetching profile:', error);
       toast.error("Erreur lors du chargement du profil");
     }
+  };
+
+  const handleProfileUpdate = (newProfileData: any) => {
+    const transformedProfile = transformToFullProfile({
+      ...newProfileData,
+      certifications: [],
+      education: [],
+      experiences: []
+    });
+    setProfile(transformedProfile);
   };
 
   return (

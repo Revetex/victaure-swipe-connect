@@ -8,6 +8,8 @@ import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { navigationItems } from "@/config/navigation";
 import { cn } from "@/lib/utils";
+import { useProfile } from "@/hooks/useProfile";
+import { createEmptyProfile } from "@/types/profile";
 
 interface DashboardMobileNavProps {
   currentPage: number;
@@ -23,25 +25,14 @@ export function DashboardMobileNav({
   onPageChange
 }: DashboardMobileNavProps) {
   const { user } = useAuth();
-  const [showProfilePreview, setShowProfilePreview] = useState(false);
+  const { profile } = useProfile();
+  
+  const completeProfile = profile ? {
+    ...createEmptyProfile(profile.id, profile.email || ''),
+    ...profile
+  } : null;
 
-  const userProfile: UserProfile = {
-    id: user?.id || '',
-    email: user?.email || '',
-    full_name: user?.user_metadata?.full_name || null,
-    avatar_url: user?.user_metadata?.avatar_url || null,
-    role: 'professional',
-    bio: null,
-    phone: null,
-    city: null,
-    state: null,
-    country: 'Canada',
-    skills: [],
-    latitude: null,
-    longitude: null,
-    online_status: false,
-    last_seen: new Date().toISOString()
-  };
+  const [showProfilePreview, setShowProfilePreview] = useState(false);
 
   return (
     <header className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur shadow-sm">
@@ -96,9 +87,9 @@ export function DashboardMobileNav({
         </SheetContent>
       </Sheet>
 
-      {userProfile && (
+      {completeProfile && (
         <ProfilePreview
-          profile={userProfile}
+          profile={completeProfile}
           isOpen={showProfilePreview}
           onClose={() => setShowProfilePreview(false)}
         />

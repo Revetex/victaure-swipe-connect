@@ -1,24 +1,25 @@
 
-import { UserProfile, Experience } from "@/types/profile";
+import { UserProfile } from "@/types/profile";
 import { VCardAvatar } from "./vcard/header/VCardAvatar";
 import { VCardExperiences } from "./vcard/VCardExperiences";
-import { transformExperience } from "@/types/profile";
+import { useState } from "react";
 
 interface PublicProfileProps {
   profile: UserProfile;
 }
 
 export function PublicProfile({ profile }: PublicProfileProps) {
-  // Assurons-nous que les expériences ont le bon format
-  const formattedExperiences = profile.experiences.map(exp => transformExperience({
-    ...exp,
-    profile_id: profile.id
-  }));
+  const [isAvatarDeleted, setIsAvatarDeleted] = useState(false);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <VCardAvatar profile={profile} isEditing={false} setProfile={() => {}} />
+        <VCardAvatar 
+          profile={profile} 
+          isEditing={false} 
+          setProfile={() => {}} 
+          setIsAvatarDeleted={setIsAvatarDeleted}
+        />
         <div>
           <h2 className="text-xl font-semibold">{profile.full_name}</h2>
           <p className="text-muted-foreground">{profile.role}</p>
@@ -32,12 +33,13 @@ export function PublicProfile({ profile }: PublicProfileProps) {
         </div>
       )}
 
-      {formattedExperiences.length > 0 && (
+      {profile.experiences.length > 0 && (
         <div>
           <h3 className="text-lg font-medium mb-2">Expérience</h3>
           <VCardExperiences 
-            experiences={formattedExperiences}
+            experiences={profile.experiences}
             isEditing={false}
+            onUpdate={() => {}}
           />
         </div>
       )}

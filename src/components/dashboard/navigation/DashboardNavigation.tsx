@@ -5,6 +5,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
+import { useProfile } from "@/hooks/useProfile";
+import { createEmptyProfile } from "@/types/profile";
 
 interface DashboardNavigationProps {
   currentPage: number;
@@ -20,9 +22,15 @@ export function DashboardNavigation({
   className 
 }: DashboardNavigationProps) {
   const { user } = useAuth();
+  const { profile } = useProfile();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
 
   if (isEditing) return null;
+
+  const completeProfile = profile ? {
+    ...createEmptyProfile(profile.id, profile.email || ''),
+    ...profile
+  } : null;
 
   const userProfile: UserProfile = {
     id: user?.id || '',
@@ -81,9 +89,9 @@ export function DashboardNavigation({
         </button>
       </div>
 
-      {userProfile && (
+      {completeProfile && (
         <ProfilePreview
-          profile={userProfile}
+          profile={completeProfile}
           isOpen={showProfilePreview}
           onClose={() => setShowProfilePreview(false)}
         />
