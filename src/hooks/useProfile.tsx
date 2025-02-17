@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, Friend } from "@/types/profile";
 import { transformDatabaseProfile, transformEducation, transformCertification, transformExperience } from "@/types/profile";
 
 export function useProfile() {
@@ -27,24 +27,6 @@ export function useProfile() {
 
         if (profileError) throw profileError;
 
-        if (!profileData) {
-          const defaultProfile = transformDatabaseProfile({
-            id: user.id,
-            email: user.email,
-            role: 'professional',
-            certifications: [],
-            education: [],
-            experiences: [],
-            friends: []
-          });
-
-          await supabase.from('profiles').insert(defaultProfile);
-          setProfile(defaultProfile);
-          setTempProfile(defaultProfile);
-          return;
-        }
-
-        // Fetch related data
         const [{ data: friendsData }, { data: certifications }, { data: education }, { data: experiences }] = 
           await Promise.all([
             supabase
@@ -65,9 +47,17 @@ export function useProfile() {
               .eq('profile_id', user.id)
           ]);
 
+        const friends: Friend[] = friendsData?.map((friend: any) => ({
+          id: friend.id,
+          full_name: friend.full_name,
+          avatar_url: friend.avatar_url,
+          online_status: friend.online_status,
+          last_seen: friend.last_seen
+        })) || [];
+
         const fullProfile = transformDatabaseProfile({
           ...profileData,
-          friends: friendsData || [],
+          friends,
           certifications: (certifications || []).map(cert => transformCertification(cert)),
           education: (education || []).map(edu => transformEducation(edu)),
           experiences: (experiences || []).map(exp => transformExperience(exp))

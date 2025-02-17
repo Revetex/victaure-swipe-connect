@@ -8,6 +8,7 @@ import { fr } from "date-fns/locale";
 import { MoreHorizontal, ArrowLeft } from "lucide-react";
 import { DeleteConversationDialog } from "./DeleteConversationDialog";
 import { Badge } from "@/components/ui/badge";
+import { createEmptyProfile } from "@/types/profile";
 
 interface ChatHeaderProps {
   title: string;
@@ -28,23 +29,22 @@ export function ChatHeader({
   isOnline,
   lastSeen,
 }: ChatHeaderProps) {
+  const mockUser = createEmptyProfile("temp-id", "");
+  mockUser.full_name = title;
+  mockUser.avatar_url = avatarUrl || null;
+
   return (
     <div className="flex items-center justify-between p-4 border-b mt-16 bg-background/95 backdrop-blur-sm z-50">
       <div className="flex items-center gap-4">
         {onBack && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBack}
-          >
+          <Button variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
         )}
         <div className="flex items-center gap-3">
           <div className="relative">
             <UserAvatar
-              imageUrl={avatarUrl}
-              name={title}
+              user={mockUser}
               className="h-10 w-10"
             />
             {isOnline !== undefined && (

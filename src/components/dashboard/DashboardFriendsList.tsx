@@ -6,6 +6,7 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { createEmptyProfile } from "@/types/profile";
 
 export interface DashboardFriendsListProps {
   show: boolean;
@@ -27,30 +28,35 @@ export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProp
       <CardContent className="space-y-4">
         {profile?.friends && profile.friends.length > 0 ? (
           <div className="space-y-3">
-            {profile.friends.slice(0, 5).map((friend) => (
-              <motion.div
-                key={friend.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <UserAvatar
-                  imageUrl={friend.avatar_url}
-                  name={friend.full_name}
-                  className="h-8 w-8"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{friend.full_name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {friend.online_status ? "En ligne" : friend.last_seen ? getLastSeenText(friend.last_seen) : "Hors ligne"}
-                  </p>
-                </div>
-                <div className={cn(
-                  "w-2 h-2 rounded-full",
-                  friend.online_status ? "bg-green-500" : "bg-gray-300"
-                )} />
-              </motion.div>
-            ))}
+            {profile.friends.slice(0, 5).map((friend) => {
+              const friendProfile = createEmptyProfile(friend.id, "");
+              friendProfile.full_name = friend.full_name;
+              friendProfile.avatar_url = friend.avatar_url;
+
+              return (
+                <motion.div
+                  key={friend.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                >
+                  <UserAvatar
+                    user={friendProfile}
+                    className="h-8 w-8"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{friend.full_name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {friend.online_status ? "En ligne" : friend.last_seen ? getLastSeenText(friend.last_seen) : "Hors ligne"}
+                    </p>
+                  </div>
+                  <div className={cn(
+                    "w-2 h-2 rounded-full",
+                    friend.online_status ? "bg-green-500" : "bg-gray-300"
+                  )} />
+                </motion.div>
+              );
+            })}
           </div>
         ) : (
           <div className="text-center text-muted-foreground py-4">
