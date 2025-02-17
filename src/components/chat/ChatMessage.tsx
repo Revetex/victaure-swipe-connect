@@ -9,6 +9,8 @@ import { Loader2 } from 'lucide-react';
 interface ChatMessageProps {
   message: Message;
   onReply?: (content: string) => void;
+  onJobAccept?: (jobId: string) => Promise<void>;
+  onJobReject?: (jobId: string) => void;
 }
 
 function getQuickReplies(messageContent: string): string[] {
@@ -31,8 +33,9 @@ function getQuickReplies(messageContent: string): string[] {
   return [];
 }
 
-export function ChatMessage({ message, onReply }: ChatMessageProps) {
+export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: ChatMessageProps) {
   const quickReplies = getQuickReplies(message.content);
+  const suggestedJobs = message.metadata?.suggestedJobs as any[] || [];
 
   return (
     <motion.div
@@ -80,6 +83,32 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
             <p className="text-sm whitespace-pre-wrap">{message.content}</p>
           )}
         </div>
+
+        {message.is_assistant && suggestedJobs.length > 0 && onJobAccept && onJobReject && (
+          <div className="space-y-2 mt-2 w-full">
+            {suggestedJobs.map((job: any) => (
+              <div key={job.id} className="bg-muted p-3 rounded-lg">
+                <h4 className="font-medium">{job.title}</h4>
+                <p className="text-sm text-muted-foreground">{job.company}</p>
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onJobReject(job.id)}
+                  >
+                    Pas intéressé
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => onJobAccept(job.id)}
+                  >
+                    Intéressé
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {message.is_assistant && quickReplies.length > 0 && onReply && (
           <div className="flex flex-wrap gap-2 mt-2">
