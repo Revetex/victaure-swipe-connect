@@ -30,8 +30,12 @@ export function ChatInterface() {
     setIsSpeaking(speaking);
   }, []);
 
+  // Modifier la signature pour correspondre exactement au type attendu
   const handleReply = useCallback((content: string) => {
-    void handleSendMessage(content);
+    if (content) {
+      // Utiliser void pour ignorer la promesse retournée par handleSendMessage
+      void handleSendMessage(content);
+    }
   }, [handleSendMessage]);
 
   return (
@@ -55,7 +59,7 @@ export function ChatInterface() {
           <ChatInput
             value={inputMessage}
             onChange={setInputMessage}
-            onSend={handleSendMessage}
+            onSend={() => void handleSendMessage(inputMessage)}
             isThinking={isThinking || isSpeaking}
             disabled={isSpeaking}
             placeholder={isSpeaking ? "Synthèse vocale en cours..." : "Écrivez votre message..."}
