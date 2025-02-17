@@ -16,6 +16,10 @@ const defaultAssistant = {
 interface AIResponse {
   response: string;
   suggestedJobs?: any[];
+  context?: {
+    intent: string;
+    lastQuery: string;
+  };
 }
 
 export function useAIChat() {
@@ -23,7 +27,11 @@ export function useAIChat() {
   const [isThinking, setIsThinking] = useState(false);
   const [inputMessage, setInputMessage] = useState('');
   const { profile } = useProfile();
-  const [conversationContext, setConversationContext] = useState<string[]>([]);
+  const [conversationContext, setConversationContext] = useState<{
+    lastIntent?: string;
+    lastQuery?: string;
+    messageCount: number;
+  }>({ messageCount: 0 });
 
   const handleSendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
@@ -54,7 +62,6 @@ export function useAIChat() {
 
       setMessages(prev => [...prev, userMessage]);
       setIsThinking(true);
-      setConversationContext(prev => [...prev, content]);
 
       const { data, error } = await supabase.functions.invoke<AIResponse>('chat-ai', {
         body: { 
@@ -63,7 +70,7 @@ export function useAIChat() {
           context: {
             previousMessages: messages.slice(-5),
             userProfile: profile,
-            conversationContext: conversationContext
+            conversationState: conversationContext
           }
         }
       });
@@ -84,13 +91,26 @@ export function useAIChat() {
         timestamp: new Date().toISOString(),
         message_type: 'assistant',
         status: 'sent',
-        metadata: { suggestedJobs: data.suggestedJobs },
+        metadata: { 
+          suggestedJobs: data.suggestedJobs,
+          context: data.context
+        },
         reaction: null,
         is_assistant: true,
         thinking: false
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+      
+      // Mettre à jour le contexte de la conversation
+      if (data.context) {
+        setConversationContext(prev => ({
+          lastIntent: data.context?.intent,
+          lastQuery: data.context?.lastQuery,
+          messageCount: prev.messageCount + 1
+        }));
+      }
+
     } catch (error) {
       console.error('Error in AI chat:', error);
       toast.error("Une erreur est survenue avec l'assistant");
