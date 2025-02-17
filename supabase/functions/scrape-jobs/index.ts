@@ -2,9 +2,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 import { corsHeaders } from '../_shared/cors.ts'
+import FirecrawlApp from 'https://esm.sh/@mendable/firecrawl-js@latest'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
+const FIRECRAWL_API_KEY = Deno.env.get('FIRECRAWL_API_KEY')!
 
 interface JobListing {
   title: string
@@ -22,52 +24,99 @@ interface JobListing {
   requirements?: string[]
 }
 
-async function scrapeLinkedInJobs(query: string, location: string): Promise<JobListing[]> {
+async function scrapeJobsFromWebsite(url: string): Promise<JobListing[]> {
   try {
-    // Simulation de données pour le moment
-    // À remplacer par une véritable intégration avec l'API LinkedIn
-    console.log(`Simulating LinkedIn scraping for ${query} in ${location}`)
+    console.log('Initializing Firecrawl for URL:', url)
+    const firecrawl = new FirecrawlApp({ apiKey: FIRECRAWL_API_KEY })
+
+    const response = await firecrawl.crawlUrl(url, {
+      limit: 25,
+      scrapeOptions: {
+        formats: ['markdown', 'html'],
+        selectors: {
+          // Sélecteurs CSS spécifiques pour les offres d'emploi
+          jobTitle: '.job-title, .jobs-unified-top-card__job-title',
+          company: '.company-name, .jobs-unified-top-card__company-name',
+          location: '.location, .jobs-unified-top-card__workplace-type',
+          description: '.description, .jobs-description__content',
+          salary: '.salary, .jobs-unified-top-card__salary-range',
+          jobType: '.job-type, .jobs-unified-top-card__job-type',
+        }
+      }
+    })
+
+    if (!response.success) {
+      console.error('Firecrawl scraping failed:', response)
+      return []
+    }
+
+    console.log('Scraping successful, processing results...')
     
-    return [{
-      title: "Développeur Full Stack",
-      company: "Tech Company Inc",
-      location: "Montréal, QC",
-      description: "Nous recherchons un développeur Full Stack expérimenté...",
-      url: "https://linkedin.com/jobs/view/123",
-      source_platform: "linkedin",
-      job_type: "Temps plein",
-      experience_level: "Intermédiaire",
-      skills: ["JavaScript", "React", "Node.js"],
-      requirements: ["3+ ans d'expérience", "Baccalauréat en informatique"],
-    }]
+    // Traitement des résultats
+    const jobs: JobListing[] = response.data.map((item: any) => {
+      const sourcePlatform = url.includes('linkedin.com') ? 'linkedin' : 
+                            url.includes('workopolis.com') ? 'workopolis' : 
+                            'glassdoor'
+      
+      return {
+        title: item.jobTitle || 'Titre non disponible',
+        company: item.company || 'Entreprise non disponible',
+        location: item.location || 'Lieu non disponible',
+        description: item.description || '',
+        url: item.url || url,
+        source_platform: sourcePlatform,
+        salary_range: item.salary || undefined,
+        job_type: item.jobType || undefined,
+        application_url: item.url || url,
+        skills: extractSkills(item.description || ''),
+        requirements: extractRequirements(item.description || '')
+      }
+    })
+
+    console.log(`Successfully extracted ${jobs.length} jobs from ${url}`)
+    return jobs
   } catch (error) {
-    console.error('Error scraping LinkedIn jobs:', error)
+    console.error('Error scraping website:', error)
     return []
   }
 }
 
-async function scrapeWorkopolisJobs(query: string, location: string): Promise<JobListing[]> {
-  try {
-    // Simulation de données pour le moment
-    // À remplacer par une véritable intégration avec l'API Workopolis
-    console.log(`Simulating Workopolis scraping for ${query} in ${location}`)
-    
-    return [{
-      title: "Développeur Backend Senior",
-      company: "Digital Solutions Ltd",
-      location: "Québec, QC",
-      description: "Notre équipe recherche un développeur backend expérimenté...",
-      url: "https://workopolis.com/jobs/456",
-      source_platform: "workopolis",
-      job_type: "Temps plein",
-      experience_level: "Senior",
-      skills: ["Python", "Django", "PostgreSQL"],
-      requirements: ["5+ ans d'expérience", "Expérience en architecture logicielle"],
-    }]
-  } catch (error) {
-    console.error('Error scraping Workopolis jobs:', error)
-    return []
-  }
+function extractSkills(description: string): string[] {
+  const commonSkills = [
+    'javascript', 'python', 'java', 'react', 'angular', 'vue', 'node.js',
+    'sql', 'nosql', 'mongodb', 'aws', 'docker', 'kubernetes', 'git',
+    'html', 'css', 'typescript', 'php', 'ruby', 'c++', 'c#', '.net',
+  ]
+
+  const skills = new Set<string>()
+  const descLower = description.toLowerCase()
+
+  commonSkills.forEach(skill => {
+    if (descLower.includes(skill)) {
+      skills.add(skill)
+    }
+  })
+
+  return Array.from(skills)
+}
+
+function extractRequirements(description: string): string[] {
+  const requirements: string[] = []
+  const lines = description.split(/[.•\n]/)
+
+  lines.forEach(line => {
+    line = line.trim()
+    if (
+      line.toLowerCase().includes('required') ||
+      line.toLowerCase().includes('requirement') ||
+      line.toLowerCase().includes('must have') ||
+      line.toLowerCase().includes('qualifi')
+    ) {
+      requirements.push(line)
+    }
+  })
+
+  return requirements
 }
 
 async function saveJobsToDatabase(jobs: JobListing[], supabase: any) {
@@ -104,18 +153,21 @@ serve(async (req) => {
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     
-    const { query = 'developer', location = 'Montreal' } = await req.json()
+    const { urls } = await req.json()
+    if (!Array.isArray(urls) || urls.length === 0) {
+      throw new Error('No URLs provided')
+    }
     
-    console.log(`Scraping jobs for query: ${query}, location: ${location}`)
+    console.log('Starting job scraping for URLs:', urls)
     
-    // Scrape jobs from multiple sources
-    const linkedInJobs = await scrapeLinkedInJobs(query, location)
-    const workopolisJobs = await scrapeWorkopolisJobs(query, location)
+    const allJobs: JobListing[] = []
+    for (const url of urls) {
+      const jobs = await scrapeJobsFromWebsite(url)
+      allJobs.push(...jobs)
+    }
     
-    const allJobs = [...linkedInJobs, ...workopolisJobs]
     console.log(`Found ${allJobs.length} jobs in total`)
     
-    // Save jobs to database
     if (allJobs.length > 0) {
       await saveJobsToDatabase(allJobs, supabase)
     }
@@ -124,10 +176,7 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         jobsFound: allJobs.length,
-        sources: {
-          linkedin: linkedInJobs.length,
-          workopolis: workopolisJobs.length,
-        }
+        sources: urls
       }),
       {
         headers: {
