@@ -1,9 +1,14 @@
 
-import { cn } from "@/lib/utils";
+import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Menu, Layout, MessageCircle, Briefcase, Settings, Users, ShoppingBag } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Separator } from "@/components/ui/separator";
+import { navigationItems } from "@/config/navigation";
+import { useProfile } from "@/hooks/useProfile";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { ProfilePreview } from "@/components/ProfilePreview";
 
 interface DashboardSidebarProps {
   currentPage: number;
@@ -11,102 +16,51 @@ interface DashboardSidebarProps {
 }
 
 export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebarProps) {
-  const navigate = useNavigate();
+  const { profile } = useProfile();
+  const [showProfilePreview, setShowProfilePreview] = useState(false);
 
   return (
-    <div className={cn(
-      "fixed left-0 top-0 z-50 h-full w-64 border-r",
-      "hidden lg:block",
-      "bg-background/80 backdrop-blur-sm",
-      "supports-[backdrop-filter]:bg-background/60"
-    )}>
-      <div className="flex h-full flex-col">
-        <div className="flex h-16 items-center border-b px-6">
-          <Button 
-            variant="ghost" 
-            className="p-0 hover:bg-transparent"
-            onClick={() => navigate('/')}
-          >
-            <Menu className="h-6 w-6" />
-          </Button>
-        </div>
-
-        <ScrollArea className="flex-1 py-6">
-          <nav className="grid gap-2 px-4">
-            <Button
-              variant={currentPage === 1 ? "default" : "ghost"}
-              className={cn(
-                "w-full justify-start gap-3",
-                "data-[state=open]:bg-muted"
-              )}
-              onClick={() => onPageChange(1)}
-            >
-              <Layout className="h-5 w-5" />
-              Tableau de bord
-            </Button>
-
-            <Button
-              variant={currentPage === 2 ? "default" : "ghost"}
-              className={cn(
-                "w-full justify-start gap-3",
-                "data-[state=open]:bg-muted"
-              )}
-              onClick={() => onPageChange(2)}
-            >
-              <MessageCircle className="h-5 w-5" />
-              Messages
-            </Button>
-
-            <Button
-              variant={currentPage === 3 ? "default" : "ghost"}
-              className={cn(
-                "w-full justify-start gap-3",
-                "data-[state=open]:bg-muted"
-              )}
-              onClick={() => onPageChange(3)}
-            >
-              <Briefcase className="h-5 w-5" />
-              Emplois
-            </Button>
-
-            <Button
-              variant={currentPage === 4 ? "default" : "ghost"}
-              className={cn(
-                "w-full justify-start gap-3",
-                "data-[state=open]:bg-muted"
-              )}
-              onClick={() => onPageChange(4)}
-            >
-              <ShoppingBag className="h-5 w-5" />
-              Marketplace
-            </Button>
-
-            <Button
-              variant={currentPage === 5 ? "default" : "ghost"}
-              className={cn(
-                "w-full justify-start gap-3",
-                "data-[state=open]:bg-muted"
-              )}
-              onClick={() => onPageChange(5)}
-            >
-              <Users className="h-5 w-5" />
-              Amis
-            </Button>
-
-            <Button
-              variant={currentPage === 6 ? "default" : "ghost"}
-              className={cn(
-                "w-full justify-start gap-3",
-                "data-[state=open]:bg-muted"
-              )}
-              onClick={() => onPageChange(6)}
-            >
-              <Settings className="h-5 w-5" />
-              Paramètres
-            </Button>
-          </nav>
-        </ScrollArea>
+    <motion.aside 
+      initial={{ x: -280 }}
+      animate={{ x: 0 }}
+      className="hidden lg:flex flex-col w-64 border-r fixed h-screen glass-panel"
+    >
+      <div className="p-4">
+        <Logo />
       </div>
-    </div>
+      
+      <Separator />
+      
+      <ScrollArea className="flex-1">
+        <nav className="p-4 space-y-1">
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Button
+                key={item.id}
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start gap-2 font-normal",
+                  "hover:bg-primary/10 hover:text-primary",
+                  currentPage === item.id && "bg-primary/15 text-primary"
+                )}
+                onClick={() => onPageChange(item.id)}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{item.name}</span>
+              </Button>
+            );
+          })}
+        </nav>
+      </ScrollArea>
+
+      {profile && (
+        <ProfilePreview
+          profile={profile}
+          isOpen={showProfilePreview}
+          onClose={() => setShowProfilePreview(false)}
+        />
+      )}
+    </motion.aside>
   );
 }

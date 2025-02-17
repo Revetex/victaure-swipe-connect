@@ -7,7 +7,7 @@ import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
 import { cn } from "@/lib/utils";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
-  const [currentPage, setCurrentPage] = useState(3); // Défaut sur la page des emplois
+  const [currentPage, setCurrentPage] = useState(4);
   const [isEditing, setIsEditing] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { profile } = useProfile();
@@ -40,12 +40,14 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "flex-1 lg:ml-64 min-h-screen",
         "glass-panel"
       )}>
-        <DashboardContent
-          currentPage={currentPage}
-          isEditing={isEditing}
-          onEditStateChange={handleEditStateChange}
-          onRequestChat={() => handlePageChange(2)}
-        />
+        {children || (
+          <DashboardContent
+            currentPage={currentPage}
+            isEditing={isEditing}
+            onEditStateChange={handleEditStateChange}
+            onRequestChat={() => handlePageChange(2)}
+          />
+        )}
       </main>
     </div>
   );
