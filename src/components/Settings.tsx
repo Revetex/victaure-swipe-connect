@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { AppearanceSection } from "./settings/AppearanceSection";
@@ -7,7 +6,6 @@ import { PrivacySection } from "./settings/PrivacySection";
 import { SecuritySection } from "./settings/SecuritySection";
 import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
-import { PaymentSection } from "./settings/PaymentSection";
 import { ScrollArea } from "./ui/scroll-area";
 import { Elements } from "@stripe/react-stripe-js";
 import { initializeStripe } from "@/hooks/useStripePayment";
@@ -17,7 +15,7 @@ import { toast } from 'sonner';
 const stripeElementsOptions: StripeElementsOptions = {
   mode: 'payment',
   currency: 'cad',
-  amount: 1000, // Set a default minimum amount of 10 CAD (in cents)
+  amount: 1000,
   appearance: {
     theme: 'stripe',
     variables: {
@@ -31,7 +29,6 @@ const settingsSections = [
   { id: 'notifications', Component: NotificationsSection },
   { id: 'privacy', Component: PrivacySection },
   { id: 'security', Component: SecuritySection },
-  { id: 'payments', Component: PaymentSection },
   { id: 'blocked', Component: BlockedUsersSection },
   { id: 'logout', Component: LogoutSection }
 ];

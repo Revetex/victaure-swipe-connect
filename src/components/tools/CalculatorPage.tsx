@@ -6,7 +6,6 @@ import { CalculatorHistory } from "./calculator/CalculatorHistory";
 import { Converter } from "./calculator/Converter";
 import { useCalculator } from "./calculator/useCalculator";
 import { Card } from "@/components/ui/card";
-import { PaymentSection } from "@/components/settings/PaymentSection";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { ConversionType } from "./calculator/types";
 import { Elements } from "@stripe/react-stripe-js";
@@ -97,8 +96,6 @@ export function CalculatorPage() {
               onConvert={handleConvert}
             />
           </div>
-          
-          <PaymentSection />
         </div>
       </ScrollArea>
     </Elements>
