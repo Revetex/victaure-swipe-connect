@@ -1,4 +1,3 @@
-
 export interface Friend {
   id: string;
   full_name: string;
@@ -6,6 +5,21 @@ export interface Friend {
   online_status?: boolean;
   last_seen?: string;
   status?: string;
+}
+
+export interface FriendPreview extends Friend {
+  email?: string;
+}
+
+export interface PendingRequest {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  created_at: string;
+  type: 'incoming' | 'outgoing';
+  sender: Friend;
+  receiver: Friend;
 }
 
 export interface UserProfile {
@@ -93,14 +107,12 @@ export interface Education {
   updated_at?: string;
 }
 
-// Ajout d'un type utilitaire pour les données brutes de Supabase
 export type DatabaseProfile = Omit<UserProfile, 'friends' | 'certifications' | 'education' | 'experiences'> & {
   friends?: string[];
 };
 
-// Helper function pour transformer les données de la base en UserProfile
 export function transformDatabaseProfile(data: any): UserProfile {
-  const baseProfile: UserProfile = {
+  return {
     id: data.id || '',
     email: data.email || '',
     full_name: data.full_name || null,
@@ -116,10 +128,10 @@ export function transformDatabaseProfile(data: any): UserProfile {
     longitude: data.longitude || null,
     online_status: data.online_status || false,
     last_seen: data.last_seen || new Date().toISOString(),
-    certifications: [],
-    education: [],
-    experiences: [],
-    friends: [],
+    certifications: data.certifications || [],
+    education: data.education || [],
+    experiences: data.experiences || [],
+    friends: data.friends || [],
     company_name: data.company_name || undefined,
     company_size: data.company_size || undefined,
     industry: data.industry || undefined,
@@ -134,9 +146,9 @@ export function transformDatabaseProfile(data: any): UserProfile {
     custom_font: data.custom_font || null,
     custom_background: data.custom_background || null,
     custom_text_color: data.custom_text_color || null,
-    sections_order: data.sections_order || undefined,
+    sections_order: data.sections_order || [],
     style_id: data.style_id || undefined,
-    tools_order: data.tools_order || undefined,
+    tools_order: data.tools_order || [],
     push_notifications_enabled: data.push_notifications_enabled || true,
     push_token: data.push_token || undefined,
     location_enabled: data.location_enabled || false,
@@ -144,8 +156,6 @@ export function transformDatabaseProfile(data: any): UserProfile {
     privacy_enabled: data.privacy_enabled || false,
     website: data.website || undefined
   };
-
-  return baseProfile;
 }
 
 export function createEmptyProfile(id: string, email: string): UserProfile {

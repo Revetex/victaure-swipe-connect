@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { UserProfile } from "@/types/profile";
-import { transformDatabaseProfile, transformExperience } from "@/utils/profileTransformers";
+import { transformDatabaseProfile, transformEducation, transformCertification, transformExperience } from "@/types/profile";
 
 export function useProfile() {
   const { toast } = useToast();
@@ -68,8 +68,8 @@ export function useProfile() {
         const fullProfile = transformDatabaseProfile({
           ...profileData,
           friends: friendsData || [],
-          certifications: certifications || [],
-          education: education || [],
+          certifications: (certifications || []).map(cert => transformCertification(cert)),
+          education: (education || []).map(edu => transformEducation(edu)),
           experiences: (experiences || []).map(exp => transformExperience(exp))
         });
 
