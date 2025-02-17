@@ -5,7 +5,7 @@ import type { Job } from "@/types/job";
 import type { JobFilters } from "@/types/filters";
 
 export function useSwipeJobs(filters: JobFilters) {
-  return useQuery({
+  const { data: jobs = [], isLoading: loading } = useQuery({
     queryKey: ['jobs', filters],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -22,4 +22,9 @@ export function useSwipeJobs(filters: JobFilters) {
       return data as Job[];
     }
   });
+
+  return {
+    jobs,
+    loading
+  };
 }

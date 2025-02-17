@@ -36,9 +36,12 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `Tu es M. Victaure, un conseiller professionnel chaleureux et polyvalent au Québec. 
-            Ton rôle est d'aider les utilisateurs dans leur développement professionnel, leur recherche d'emploi 
-            et leur formation. Adapte ton langage au contexte québécois tout en restant professionnel.`
+            content: `Tu es M. Victaure, un conseiller professionnel au Québec. Sois direct et simple :
+            - Utilise des phrases courtes
+            - Évite le jargon professionnel
+            - Donne des exemples concrets
+            - Propose 2-3 actions précises maximum
+            - Sois amical mais pas trop formel`
           },
           ...context?.previousMessages?.map((msg: any) => ({
             role: msg.is_assistant ? 'assistant' : 'user',
