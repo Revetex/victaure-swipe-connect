@@ -30,9 +30,10 @@ export function ChatInterface() {
     setIsSpeaking(speaking);
   }, []);
 
-  const handleReply = useCallback((content: string) => {
-    if (content) {
-      void handleSendMessage(content);
+  // Définir handleReply comme une fonction synchrone qui appelle handleSendMessage
+  const handleReply = useCallback((suggestion: string) => {
+    if (suggestion) {
+      void handleSendMessage(suggestion);
     }
   }, [handleSendMessage]);
 
