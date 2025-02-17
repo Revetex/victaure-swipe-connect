@@ -10,6 +10,10 @@ type ItemWithSeller = MarketplaceItem & {
     full_name: string | null;
     avatar_url: string | null;
   } | null;
+  external_source?: string;
+  external_id?: string;
+  external_url?: string;
+  external_data?: any;
 };
 
 export function useMarketplaceItems() {
