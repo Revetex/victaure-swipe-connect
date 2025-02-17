@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { JobFilters } from "./jobs/JobFilterUtils";
 import { AnimatedJobCard } from "./jobs/AnimatedJobCard";
@@ -28,7 +29,7 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
     handleButtonSwipe,
     fetchJobs,
     setCurrentIndex
-  } = useSwipeMatch(filters, onMatchSuccess);
+  } = useSwipeMatch();
 
   if (loading) {
     return (

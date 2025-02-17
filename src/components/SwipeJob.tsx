@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useJobFilters } from "@/hooks/useJobFilters";
 import { useSwipeMatch } from "@/hooks/useSwipeMatch";
@@ -11,14 +10,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
 import { PlusCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { MotionValue } from "framer-motion";
-
-interface SwipeMotionValues {
-  x: MotionValue<number>;
-  rotate: MotionValue<number>;
-  opacity: MotionValue<number>;
-  scale: MotionValue<number>;
-}
 
 export function SwipeJob() {
   const navigate = useNavigate();
@@ -64,7 +55,7 @@ export function SwipeJob() {
     handleButtonSwipe,
     fetchJobs,
     setCurrentIndex,
-  } = useSwipeMatch(filters, handleMatchSuccess);
+  } = useSwipeMatch();
 
   return (
     <div className="relative min-h-[600px] flex flex-col lg:flex-row gap-6">
@@ -112,10 +103,10 @@ export function SwipeJob() {
                   <AnimatedJobCard
                     key={job.id}
                     job={job}
-                    x={isTop ? x as MotionValue<number> : undefined}
-                    rotate={isTop ? rotate as MotionValue<number> : undefined}
-                    opacity={isTop ? opacity as MotionValue<number> : undefined}
-                    scale={isTop ? scale as MotionValue<number> : undefined}
+                    x={isTop ? x : undefined}
+                    rotate={isTop ? rotate : undefined}
+                    opacity={isTop ? opacity : undefined}
+                    scale={isTop ? scale : undefined}
                     onDragStart={isDraggable ? handleDragStart : undefined}
                     onDragEnd={isDraggable ? handleDragEnd : undefined}
                     isDragging={isDragging}
