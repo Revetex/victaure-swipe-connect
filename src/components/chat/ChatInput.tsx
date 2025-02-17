@@ -12,6 +12,7 @@ interface ChatInputProps {
   isListening?: boolean;
   onVoiceInput?: () => void;
   placeholder?: string;
+  disabled?: boolean; // Ajout de la prop disabled
 }
 
 export function ChatInput({
@@ -21,7 +22,8 @@ export function ChatInput({
   isThinking,
   isListening,
   onVoiceInput,
-  placeholder = "Écrivez votre message..."
+  placeholder = "Écrivez votre message...",
+  disabled = false // Valeur par défaut pour disabled
 }: ChatInputProps) {
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -38,10 +40,12 @@ export function ChatInput({
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
+          disabled={disabled}
           rows={1}
           className={cn(
             "w-full resize-none bg-muted rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary",
-            "min-h-[44px] max-h-[200px]"
+            "min-h-[44px] max-h-[200px]",
+            disabled && "opacity-50 cursor-not-allowed"
           )}
           style={{
             height: 'auto',
@@ -58,7 +62,7 @@ export function ChatInput({
             variant={isListening ? "default" : "ghost"}
             onClick={onVoiceInput}
             className="rounded-full h-10 w-10"
-            disabled={isThinking}
+            disabled={isThinking || disabled}
           >
             <Mic className={cn("h-5 w-5", isListening && "text-white")} />
           </Button>
@@ -67,7 +71,7 @@ export function ChatInput({
         <Button
           size="icon"
           onClick={onSend}
-          disabled={!value.trim() || isThinking}
+          disabled={!value.trim() || isThinking || disabled}
           className="rounded-full h-10 w-10"
         >
           {isThinking ? (
