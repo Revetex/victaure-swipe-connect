@@ -23,6 +23,7 @@ export function useAIChat() {
   const [isThinking, setIsThinking] = useState(false);
   const [inputMessage, setInputMessage] = useState('');
   const { profile } = useProfile();
+  const [conversationContext, setConversationContext] = useState<string[]>([]);
 
   const handleSendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
@@ -32,7 +33,6 @@ export function useAIChat() {
     }
 
     try {
-      // Ajouter le message de l'utilisateur
       const userMessage: Message = {
         id: crypto.randomUUID(),
         content,
@@ -54,15 +54,16 @@ export function useAIChat() {
 
       setMessages(prev => [...prev, userMessage]);
       setIsThinking(true);
+      setConversationContext(prev => [...prev, content]);
 
-      // Appeler l'assistant via OpenRouter
       const { data, error } = await supabase.functions.invoke<AIResponse>('chat-ai', {
         body: { 
           message: content,
           userId: profile.id,
           context: {
             previousMessages: messages.slice(-5),
-            userProfile: profile
+            userProfile: profile,
+            conversationContext: conversationContext
           }
         }
       });
@@ -70,7 +71,6 @@ export function useAIChat() {
       if (error) throw error;
       if (!data?.response) throw new Error('Invalid response format from AI');
 
-      // Ajouter la réponse de l'assistant
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
         content: data.response,
@@ -84,7 +84,7 @@ export function useAIChat() {
         timestamp: new Date().toISOString(),
         message_type: 'assistant',
         status: 'sent',
-        metadata: {},
+        metadata: { suggestedJobs: data.suggestedJobs },
         reaction: null,
         is_assistant: true,
         thinking: false
@@ -98,7 +98,7 @@ export function useAIChat() {
       setIsThinking(false);
       setInputMessage('');
     }
-  }, [messages, profile]);
+  }, [messages, profile, conversationContext]);
 
   return {
     messages,
