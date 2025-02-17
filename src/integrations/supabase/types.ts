@@ -72,6 +72,30 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_interactions: {
+        Row: {
+          context: string | null
+          created_at: string | null
+          id: string
+          interaction_type: string
+          user_id: string | null
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string | null
+          id?: string
+          interaction_type: string
+          user_id?: string | null
+        }
+        Update: {
+          context?: string | null
+          created_at?: string | null
+          id?: string
+          interaction_type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_learning_data: {
         Row: {
           context: Json | null
@@ -147,6 +171,33 @@ export type Database = {
           thread_id?: string | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      ai_settings: {
+        Row: {
+          created_at: string | null
+          enabled: boolean | null
+          feature: string
+          id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          enabled?: boolean | null
+          feature: string
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          enabled?: boolean | null
+          feature?: string
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
