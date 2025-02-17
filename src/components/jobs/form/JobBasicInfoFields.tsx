@@ -55,7 +55,6 @@ export function JobBasicInfoFields() {
                 apiKey={process.env.GOOGLE_MAPS_API_KEY || ""}
                 placeholder="Entrez l'adresse du poste"
                 onPlaceSelected={handlePlaceSelected}
-                className={field.className}
               />
             </FormControl>
             <FormMessage />

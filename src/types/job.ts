@@ -67,6 +67,7 @@ export interface Job {
   salary_max?: number;
   salary_currency?: string;
   salary_period?: string;
+  city?: string;
 }
 
 export * from './jobCategories';
