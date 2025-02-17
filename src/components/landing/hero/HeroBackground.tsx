@@ -31,6 +31,7 @@ export function HeroBackground() {
             delay: Math.random() * 5
           }}
           className="absolute w-1 h-1 bg-purple-500 rounded-full"
+          aria-hidden="true"
         />
       ))}
     </div>

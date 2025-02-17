@@ -15,6 +15,7 @@ export function HeroHeader() {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5 }}
+        role="banner"
       >
         <Logo size="xl" />
       </motion.div>
@@ -23,16 +24,17 @@ export function HeroHeader() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        className="space-y-6"
       >
         <h1 
-          className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 tracking-tight"
+          className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight"
           style={{ textWrap: "balance" }}
         >
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="bg-gradient-to-r from-[#9b87f5] via-[#D6BCFA] to-[#9b87f5] dark:from-[#D6BCFA] dark:via-[#9b87f5] dark:to-[#D6BCFA] bg-clip-text text-transparent"
+            className="bg-gradient-to-r from-purple-500 via-purple-400 to-purple-500 dark:from-purple-400 dark:via-purple-500 dark:to-purple-400 bg-clip-text text-transparent"
           >
             L'IA au Service de Votre Succès
           </motion.span>
@@ -51,31 +53,38 @@ export function HeroHeader() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed"
+          className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
           style={{ textWrap: "balance" }}
         >
           Découvrez une plateforme révolutionnaire où l'IA optimise chaque aspect de votre activité : 
           réseaux sociaux, services professionnels et orientation stratégique.
         </motion.p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+        <motion.div 
+          className="flex flex-col sm:flex-row gap-4 justify-center pt-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+        >
           <Button
             size="lg"
             onClick={() => navigate("/auth?mode=signin")}
-            className="bg-[#9b87f5] hover:bg-[#8B5CF6] text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group focus:ring-2 focus:ring-offset-2 focus:ring-[#9b87f5]"
+            className="bg-purple-500 hover:bg-purple-600 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+            aria-label="Commencer avec Victaure"
           >
             Commencer maintenant
-            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
           </Button>
           <Button
             size="lg"
             onClick={() => navigate("/auth?mode=signup")}
             variant="outline"
-            className="border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10 px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 focus:ring-2 focus:ring-offset-2 focus:ring-[#9b87f5]"
+            className="border-purple-500 text-purple-500 hover:bg-purple-50 dark:hover:bg-purple-500/10 px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+            aria-label="Accéder à l'espace entreprise"
           >
             Pour les entreprises
           </Button>
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   );
