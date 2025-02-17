@@ -31,7 +31,13 @@ export function useAIChat() {
     lastIntent?: string;
     lastQuery?: string;
     messageCount: number;
-  }>({ messageCount: 0 });
+    acceptedJobs: string[];
+    rejectedJobs: string[];
+  }>({ 
+    messageCount: 0,
+    acceptedJobs: [],
+    rejectedJobs: []
+  });
 
   const handleSendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
@@ -61,6 +67,19 @@ export function useAIChat() {
       };
 
       setMessages(prev => [...prev, userMessage]);
+      
+      // Ajouter un message "thinking" temporaire
+      const thinkingMessage: Message = {
+        ...userMessage,
+        id: crypto.randomUUID(),
+        content: "Recherche en cours...",
+        sender_id: 'assistant',
+        receiver_id: profile.id,
+        is_assistant: true,
+        thinking: true
+      };
+      
+      setMessages(prev => [...prev, thinkingMessage]);
       setIsThinking(true);
 
       const { data, error } = await supabase.functions.invoke<AIResponse>('chat-ai', {
@@ -78,6 +97,7 @@ export function useAIChat() {
       if (error) throw error;
       if (!data?.response) throw new Error('Invalid response format from AI');
 
+      // Remplacer le message "thinking" par la vraie réponse
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
         content: data.response,
@@ -100,11 +120,11 @@ export function useAIChat() {
         thinking: false
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages(prev => [...prev.filter(m => !m.thinking), assistantMessage]);
       
-      // Mettre à jour le contexte de la conversation
       if (data.context) {
         setConversationContext(prev => ({
+          ...prev,
           lastIntent: data.context?.intent,
           lastQuery: data.context?.lastQuery,
           messageCount: prev.messageCount + 1
@@ -114,17 +134,54 @@ export function useAIChat() {
     } catch (error) {
       console.error('Error in AI chat:', error);
       toast.error("Une erreur est survenue avec l'assistant");
+      // Retirer le message "thinking" en cas d'erreur
+      setMessages(prev => prev.filter(m => !m.thinking));
     } finally {
       setIsThinking(false);
       setInputMessage('');
     }
   }, [messages, profile, conversationContext]);
 
+  const handleJobAccept = useCallback(async (jobId: string) => {
+    try {
+      // Sauvegarder l'intérêt pour le job
+      await supabase
+        .from('job_applications')
+        .insert({
+          job_id: jobId,
+          user_id: profile?.id,
+          status: 'interested'
+        });
+
+      setConversationContext(prev => ({
+        ...prev,
+        acceptedJobs: [...prev.acceptedJobs, jobId]
+      }));
+
+      toast.success("Votre intérêt a été enregistré!");
+      
+      // Demander à l'assistant de l'aide pour postuler
+      handleSendMessage("Je suis intéressé par ce poste, pouvez-vous m'aider à postuler ?");
+    } catch (error) {
+      console.error('Error accepting job:', error);
+      toast.error("Erreur lors de l'enregistrement de votre intérêt");
+    }
+  }, [profile, handleSendMessage]);
+
+  const handleJobReject = useCallback((jobId: string) => {
+    setConversationContext(prev => ({
+      ...prev,
+      rejectedJobs: [...prev.rejectedJobs, jobId]
+    }));
+  }, []);
+
   return {
     messages,
     isThinking,
     inputMessage,
     setInputMessage,
-    handleSendMessage
+    handleSendMessage,
+    handleJobAccept,
+    handleJobReject
   };
 }

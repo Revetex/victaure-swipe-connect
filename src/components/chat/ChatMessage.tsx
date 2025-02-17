@@ -1,81 +1,90 @@
 
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { motion } from "framer-motion";
-import { Check, CheckCheck } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Message } from "@/types/messages";
-import { useUser } from "@/hooks/useUser";
+import React from 'react';
+import { Message } from '@/types/messages';
+import { UserAvatar } from '@/components/UserAvatar';
+import { JobSuggestion } from './JobSuggestion';
+import { QuickReplies } from './QuickReplies';
+import { motion } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 
 interface ChatMessageProps {
   message: Message;
+  onReply?: (content: string) => void;
+  onJobAccept?: (jobId: string) => void;
+  onJobReject?: (jobId: string) => void;
 }
 
-export function ChatMessage({ message }: ChatMessageProps) {
-  const { user } = useUser();
-  
-  if (!message || !user) return null;
-  
-  const isOwnMessage = message.sender_id === user.id;
+function getQuickReplies(messageContent: string): string[] {
+  if (messageContent.includes('emploi') || messageContent.includes('job')) {
+    return [
+      "Montrez-moi les offres récentes",
+      "Je cherche dans un autre domaine",
+      "Aidez-moi avec mon CV",
+      "Quelles sont les entreprises qui recrutent?"
+    ];
+  }
+  if (messageContent.includes('cv') || messageContent.includes('curriculum')) {
+    return [
+      "Comment améliorer mon CV?",
+      "Vérifiez mon CV",
+      "Créer un nouveau CV",
+      "Exemples de CV"
+    ];
+  }
+  return [];
+}
+
+export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: ChatMessageProps) {
+  const quickReplies = getQuickReplies(message.content);
+  const suggestedJobs = message.metadata?.suggestedJobs || [];
+  const isSearching = message.thinking;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-      className={cn(
-        "flex w-full gap-3 items-start mb-3",
-        isOwnMessage ? "flex-row-reverse" : "flex-row"
-      )}
+      className={`flex gap-3 ${message.is_assistant ? 'flex-row' : 'flex-row-reverse'}`}
     >
-      {!isOwnMessage && (
-        <Avatar className="h-8 w-8 flex-shrink-0">
-          <AvatarImage 
-            src={message.sender?.avatar_url || "/user-icon.svg"}
-            alt={message.sender?.full_name || "User"}
-          />
-          <AvatarFallback>
-            {message.sender?.full_name?.charAt(0) || "U"}
-          </AvatarFallback>
-        </Avatar>
-      )}
+      <UserAvatar
+        user={message.is_assistant ? message.sender : message.receiver}
+        className="h-8 w-8 mt-1"
+      />
       
-      <div className={cn(
-        "group flex flex-col gap-1 max-w-[75%]",
-        isOwnMessage ? "items-end" : "items-start"
-      )}>
-        {!isOwnMessage && (
-          <span className="text-xs text-muted-foreground px-3">
-            {message.sender?.full_name}
-          </span>
-        )}
-        
-        <div className={cn(
-          "px-4 py-2.5 rounded-2xl text-sm whitespace-normal break-words w-fit max-w-full",
-          isOwnMessage 
-            ? "bg-primary text-primary-foreground rounded-tr-sm" 
-            : "bg-muted rounded-tl-sm"
-        )}>
-          {message.content}
-        </div>
-        
-        <div className={cn(
-          "flex items-center gap-1.5 px-3",
-          isOwnMessage ? "flex-row" : "flex-row-reverse"
-        )}>
-          <time className="text-[10px] text-muted-foreground">
-            {format(new Date(message.created_at), "HH:mm", { locale: fr })}
-          </time>
-          {isOwnMessage && (
-            <span className="text-primary">
-              {message.status === 'sent' && <Check className="h-3 w-3" />}
-              {message.status === 'delivered' && <CheckCheck className="h-3 w-3" />}
-              {message.status === 'read' && <CheckCheck className="h-3 w-3" />}
-            </span>
+      <div className={`flex flex-col space-y-2 ${message.is_assistant ? 'items-start' : 'items-end'}`}>
+        <div className={`px-4 py-2 rounded-lg max-w-[80%] ${
+          message.is_assistant 
+            ? 'bg-muted text-foreground' 
+            : 'bg-primary text-primary-foreground'
+        }`}>
+          {isSearching ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Recherche des offres pertinentes...</span>
+            </div>
+          ) : (
+            <p className="text-sm whitespace-pre-wrap">{message.content}</p>
           )}
         </div>
+
+        {message.is_assistant && suggestedJobs.length > 0 && (
+          <div className="w-full space-y-2">
+            {suggestedJobs.map((job) => (
+              <JobSuggestion
+                key={job.id}
+                job={job}
+                onAccept={onJobAccept!}
+                onReject={onJobReject!}
+              />
+            ))}
+          </div>
+        )}
+
+        {message.is_assistant && quickReplies.length > 0 && (
+          <QuickReplies
+            suggestions={quickReplies}
+            onSelect={onReply!}
+          />
+        )}
       </div>
     </motion.div>
   );
