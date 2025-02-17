@@ -2,11 +2,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 import { corsHeaders } from '../_shared/cors.ts'
-import FirecrawlApp from 'https://esm.sh/@mendable/firecrawl-js@latest'
+import { chromium } from 'https://deno.land/x/puppeteer@16.2.0/mod.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
-const FIRECRAWL_API_KEY = Deno.env.get('FIRECRAWL_API_KEY')!
 
 interface JobListing {
   title: string
@@ -20,65 +19,66 @@ interface JobListing {
   application_url?: string
   experience_level?: string
   skills?: string[]
-  benefits?: string[]
   requirements?: string[]
 }
 
-async function scrapeJobsFromWebsite(url: string): Promise<JobListing[]> {
-  try {
-    console.log('Initializing Firecrawl for URL:', url)
-    const firecrawl = new FirecrawlApp({ apiKey: FIRECRAWL_API_KEY })
+async function scrapeLinkedInJobs(page: any, searchUrl: string): Promise<JobListing[]> {
+  console.log('Scraping LinkedIn jobs from:', searchUrl)
+  
+  await page.goto(searchUrl)
+  await page.waitForSelector('.jobs-search__results-list')
 
-    const response = await firecrawl.crawlUrl(url, {
-      limit: 25,
-      scrapeOptions: {
-        formats: ['markdown', 'html'],
-        selectors: {
-          // Sélecteurs CSS spécifiques pour les offres d'emploi
-          jobTitle: '.job-title, .jobs-unified-top-card__job-title',
-          company: '.company-name, .jobs-unified-top-card__company-name',
-          location: '.location, .jobs-unified-top-card__workplace-type',
-          description: '.description, .jobs-description__content',
-          salary: '.salary, .jobs-unified-top-card__salary-range',
-          jobType: '.job-type, .jobs-unified-top-card__job-type',
-        }
-      }
-    })
-
-    if (!response.success) {
-      console.error('Firecrawl scraping failed:', response)
-      return []
-    }
-
-    console.log('Scraping successful, processing results...')
-    
-    // Traitement des résultats
-    const jobs: JobListing[] = response.data.map((item: any) => {
-      const sourcePlatform = url.includes('linkedin.com') ? 'linkedin' : 
-                            url.includes('workopolis.com') ? 'workopolis' : 
-                            'glassdoor'
+  const jobs = await page.evaluate(() => {
+    const listings = document.querySelectorAll('.jobs-search__results-list > li')
+    return Array.from(listings).map(listing => {
+      const titleEl = listing.querySelector('.job-card-list__title')
+      const companyEl = listing.querySelector('.job-card-container__company-name')
+      const locationEl = listing.querySelector('.job-card-container__metadata-item')
+      const urlEl = listing.querySelector('a.job-card-list__title')
       
       return {
-        title: item.jobTitle || 'Titre non disponible',
-        company: item.company || 'Entreprise non disponible',
-        location: item.location || 'Lieu non disponible',
-        description: item.description || '',
-        url: item.url || url,
-        source_platform: sourcePlatform,
-        salary_range: item.salary || undefined,
-        job_type: item.jobType || undefined,
-        application_url: item.url || url,
-        skills: extractSkills(item.description || ''),
-        requirements: extractRequirements(item.description || '')
+        title: titleEl?.textContent?.trim() || '',
+        company: companyEl?.textContent?.trim() || '',
+        location: locationEl?.textContent?.trim() || '',
+        url: urlEl?.href || '',
+        source_platform: 'linkedin' as const
       }
     })
+  })
 
-    console.log(`Successfully extracted ${jobs.length} jobs from ${url}`)
-    return jobs
-  } catch (error) {
-    console.error('Error scraping website:', error)
-    return []
+  // Pour chaque job, récupérer les détails
+  const detailedJobs: JobListing[] = []
+  for (const job of jobs.slice(0, 25)) { // Limite à 25 jobs pour des raisons de performance
+    try {
+      await page.goto(job.url)
+      await page.waitForSelector('.jobs-description')
+      
+      const details = await page.evaluate(() => {
+        const descriptionEl = document.querySelector('.jobs-description')
+        const jobTypeEl = document.querySelector('.jobs-unified-top-card__job-insight span')
+        const salaryEl = document.querySelector('.jobs-unified-top-card__salary-range')
+        
+        return {
+          description: descriptionEl?.textContent?.trim() || '',
+          job_type: jobTypeEl?.textContent?.trim(),
+          salary_range: salaryEl?.textContent?.trim()
+        }
+      })
+      
+      detailedJobs.push({
+        ...job,
+        ...details,
+        skills: extractSkills(details.description),
+        requirements: extractRequirements(details.description)
+      })
+      
+    } catch (error) {
+      console.error(`Error scraping details for job ${job.url}:`, error)
+      detailedJobs.push(job as JobListing)
+    }
   }
+
+  return detailedJobs
 }
 
 function extractSkills(description: string): string[] {
@@ -150,33 +150,43 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  let browser
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     
-    const { urls } = await req.json()
-    if (!Array.isArray(urls) || urls.length === 0) {
-      throw new Error('No URLs provided')
+    const { searchTerms, location } = await req.json()
+    if (!searchTerms || !location) {
+      throw new Error('Search terms and location are required')
     }
     
-    console.log('Starting job scraping for URLs:', urls)
+    console.log(`Starting job search for "${searchTerms}" in ${location}`)
     
-    const allJobs: JobListing[] = []
-    for (const url of urls) {
-      const jobs = await scrapeJobsFromWebsite(url)
-      allJobs.push(...jobs)
-    }
+    // Initialiser le navigateur
+    browser = await chromium.launch({ 
+      headless: true,
+      args: ['--no-sandbox']
+    })
+    const page = await browser.newPage()
     
-    console.log(`Found ${allJobs.length} jobs in total`)
+    // Construire l'URL de recherche LinkedIn
+    const encodedSearchTerms = encodeURIComponent(searchTerms)
+    const encodedLocation = encodeURIComponent(location)
+    const linkedInUrl = `https://www.linkedin.com/jobs/search/?keywords=${encodedSearchTerms}&location=${encodedLocation}`
     
-    if (allJobs.length > 0) {
-      await saveJobsToDatabase(allJobs, supabase)
+    // Scraper les jobs
+    const linkedInJobs = await scrapeLinkedInJobs(page, linkedInUrl)
+    console.log(`Found ${linkedInJobs.length} LinkedIn jobs`)
+    
+    // Sauvegarder dans la base de données
+    if (linkedInJobs.length > 0) {
+      await saveJobsToDatabase(linkedInJobs, supabase)
     }
     
     return new Response(
       JSON.stringify({
         success: true,
-        jobsFound: allJobs.length,
-        sources: urls
+        jobsFound: linkedInJobs.length,
+        message: `Successfully scraped ${linkedInJobs.length} jobs`
       }),
       {
         headers: {
@@ -200,5 +210,9 @@ serve(async (req) => {
         },
       }
     )
+  } finally {
+    if (browser) {
+      await browser.close()
+    }
   }
 })
