@@ -5,7 +5,6 @@ import { corsHeaders } from '../_shared/cors.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
-const INDEED_API_KEY = Deno.env.get('INDEED_API_KEY')!
 
 interface JobListing {
   title: string
@@ -13,7 +12,7 @@ interface JobListing {
   location: string
   description: string
   url: string
-  source_platform: 'indeed' | 'linkedin' | 'glassdoor' | 'workopolis'
+  source_platform: 'linkedin' | 'glassdoor' | 'workopolis'
   salary_range?: string
   job_type?: string
   application_url?: string
@@ -23,81 +22,52 @@ interface JobListing {
   requirements?: string[]
 }
 
-async function scrapeIndeedJobs(query: string, location: string): Promise<JobListing[]> {
+async function scrapeLinkedInJobs(query: string, location: string): Promise<JobListing[]> {
   try {
-    const response = await fetch(
-      `https://api.indeed.com/ads/apisearch?` +
-      `publisher=${INDEED_API_KEY}&` +
-      `q=${encodeURIComponent(query)}&` +
-      `l=${encodeURIComponent(location)}&` +
-      `format=json&` +
-      `limit=25&` +
-      `co=ca`
-    )
-
-    if (!response.ok) {
-      console.error('Indeed API error:', await response.text())
-      return []
-    }
-
-    const data = await response.json()
-    return data.results.map((job: any) => ({
-      title: job.jobtitle,
-      company: job.company,
-      location: job.formattedLocation,
-      description: job.snippet,
-      url: job.url,
-      source_platform: 'indeed',
-      salary_range: job.salary,
-      job_type: job.jobtype,
-      application_url: job.url,
-      // Extraire les compétences et exigences de la description
-      skills: extractSkills(job.snippet),
-      requirements: extractRequirements(job.snippet),
-    }))
+    // Simulation de données pour le moment
+    // À remplacer par une véritable intégration avec l'API LinkedIn
+    console.log(`Simulating LinkedIn scraping for ${query} in ${location}`)
+    
+    return [{
+      title: "Développeur Full Stack",
+      company: "Tech Company Inc",
+      location: "Montréal, QC",
+      description: "Nous recherchons un développeur Full Stack expérimenté...",
+      url: "https://linkedin.com/jobs/view/123",
+      source_platform: "linkedin",
+      job_type: "Temps plein",
+      experience_level: "Intermédiaire",
+      skills: ["JavaScript", "React", "Node.js"],
+      requirements: ["3+ ans d'expérience", "Baccalauréat en informatique"],
+    }]
   } catch (error) {
-    console.error('Error scraping Indeed jobs:', error)
+    console.error('Error scraping LinkedIn jobs:', error)
     return []
   }
 }
 
-function extractSkills(description: string): string[] {
-  // Liste de compétences techniques courantes
-  const commonSkills = [
-    'javascript', 'python', 'java', 'react', 'angular', 'vue', 'node.js',
-    'sql', 'nosql', 'mongodb', 'aws', 'docker', 'kubernetes', 'git',
-    'html', 'css', 'typescript', 'php', 'ruby', 'c++', 'c#', '.net',
-  ]
-
-  const skills = new Set<string>()
-  const descLower = description.toLowerCase()
-
-  commonSkills.forEach(skill => {
-    if (descLower.includes(skill)) {
-      skills.add(skill)
-    }
-  })
-
-  return Array.from(skills)
-}
-
-function extractRequirements(description: string): string[] {
-  const requirements: string[] = []
-  const lines = description.split(/[.•\n]/)
-
-  lines.forEach(line => {
-    line = line.trim()
-    if (
-      line.toLowerCase().includes('required') ||
-      line.toLowerCase().includes('requirement') ||
-      line.toLowerCase().includes('must have') ||
-      line.toLowerCase().includes('qualifi')
-    ) {
-      requirements.push(line)
-    }
-  })
-
-  return requirements
+async function scrapeWorkopolisJobs(query: string, location: string): Promise<JobListing[]> {
+  try {
+    // Simulation de données pour le moment
+    // À remplacer par une véritable intégration avec l'API Workopolis
+    console.log(`Simulating Workopolis scraping for ${query} in ${location}`)
+    
+    return [{
+      title: "Développeur Backend Senior",
+      company: "Digital Solutions Ltd",
+      location: "Québec, QC",
+      description: "Notre équipe recherche un développeur backend expérimenté...",
+      url: "https://workopolis.com/jobs/456",
+      source_platform: "workopolis",
+      job_type: "Temps plein",
+      experience_level: "Senior",
+      skills: ["Python", "Django", "PostgreSQL"],
+      requirements: ["5+ ans d'expérience", "Expérience en architecture logicielle"],
+    }]
+  } catch (error) {
+    console.error('Error scraping Workopolis jobs:', error)
+    return []
+  }
 }
 
 async function saveJobsToDatabase(jobs: JobListing[], supabase: any) {
@@ -138,19 +108,26 @@ serve(async (req) => {
     
     console.log(`Scraping jobs for query: ${query}, location: ${location}`)
     
-    // Scrape jobs from Indeed
-    const indeedJobs = await scrapeIndeedJobs(query, location)
-    console.log(`Found ${indeedJobs.length} jobs from Indeed`)
+    // Scrape jobs from multiple sources
+    const linkedInJobs = await scrapeLinkedInJobs(query, location)
+    const workopolisJobs = await scrapeWorkopolisJobs(query, location)
+    
+    const allJobs = [...linkedInJobs, ...workopolisJobs]
+    console.log(`Found ${allJobs.length} jobs in total`)
     
     // Save jobs to database
-    if (indeedJobs.length > 0) {
-      await saveJobsToDatabase(indeedJobs, supabase)
+    if (allJobs.length > 0) {
+      await saveJobsToDatabase(allJobs, supabase)
     }
     
     return new Response(
       JSON.stringify({
         success: true,
-        jobsFound: indeedJobs.length,
+        jobsFound: allJobs.length,
+        sources: {
+          linkedin: linkedInJobs.length,
+          workopolis: workopolisJobs.length,
+        }
       }),
       {
         headers: {
