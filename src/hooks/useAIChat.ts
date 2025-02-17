@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { Message } from '@/types/messages';
 import { supabase } from '@/integrations/supabase/client';
