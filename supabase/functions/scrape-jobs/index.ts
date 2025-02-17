@@ -13,7 +13,7 @@ interface JobListing {
   location: string
   description: string
   url: string
-  source_platform: 'linkedin' | 'glassdoor' | 'workopolis'
+  source_platform: string
   salary_range?: string
   job_type?: string
   application_url?: string
@@ -22,63 +22,124 @@ interface JobListing {
   requirements?: string[]
 }
 
-async function scrapeLinkedInJobs(page: any, searchUrl: string): Promise<JobListing[]> {
-  console.log('Scraping LinkedIn jobs from:', searchUrl)
-  
-  await page.goto(searchUrl)
-  await page.waitForSelector('.jobs-search__results-list')
-
-  const jobs = await page.evaluate(() => {
-    const listings = document.querySelectorAll('.jobs-search__results-list > li')
-    return Array.from(listings).map(listing => {
-      const titleEl = listing.querySelector('.job-card-list__title')
-      const companyEl = listing.querySelector('.job-card-container__company-name')
-      const locationEl = listing.querySelector('.job-card-container__metadata-item')
-      const urlEl = listing.querySelector('a.job-card-list__title')
-      
-      return {
-        title: titleEl?.textContent?.trim() || '',
-        company: companyEl?.textContent?.trim() || '',
-        location: locationEl?.textContent?.trim() || '',
-        url: urlEl?.href || '',
-        source_platform: 'linkedin' as const
-      }
-    })
-  })
-
-  // Pour chaque job, récupérer les détails
-  const detailedJobs: JobListing[] = []
-  for (const job of jobs.slice(0, 25)) { // Limite à 25 jobs pour des raisons de performance
-    try {
-      await page.goto(job.url)
-      await page.waitForSelector('.jobs-description')
-      
-      const details = await page.evaluate(() => {
-        const descriptionEl = document.querySelector('.jobs-description')
-        const jobTypeEl = document.querySelector('.jobs-unified-top-card__job-insight span')
-        const salaryEl = document.querySelector('.jobs-unified-top-card__salary-range')
-        
-        return {
-          description: descriptionEl?.textContent?.trim() || '',
-          job_type: jobTypeEl?.textContent?.trim(),
-          salary_range: salaryEl?.textContent?.trim()
-        }
-      })
-      
-      detailedJobs.push({
-        ...job,
-        ...details,
-        skills: extractSkills(details.description),
-        requirements: extractRequirements(details.description)
-      })
-      
-    } catch (error) {
-      console.error(`Error scraping details for job ${job.url}:`, error)
-      detailedJobs.push(job as JobListing)
+const jobSources = {
+  jobbank: {
+    baseUrl: 'https://www.guichetemplois.gc.ca/jobsearch/rechercheemplois',
+    selectors: {
+      jobList: '.results-jobs article',
+      title: '.noctitle',
+      company: '.business',
+      location: '.location',
+      description: '#job-details-content',
+      salary: '.salary-info'
+    }
+  },
+  jobboom: {
+    baseUrl: 'https://www.jobboom.com/fr/emploi',
+    selectors: {
+      jobList: '.job-list-item',
+      title: '.job-title',
+      company: '.company-name',
+      location: '.location',
+      description: '.job-description',
+      salary: '.salary'
+    }
+  },
+  jobillico: {
+    baseUrl: 'https://www.jobillico.com/recherche-emploi',
+    selectors: {
+      jobList: '.job-item',
+      title: '.job-title',
+      company: '.company',
+      location: '.location',
+      description: '.description',
+      salary: '.salary'
+    }
+  },
+  randstad: {
+    baseUrl: 'https://www.randstad.ca/fr/emplois',
+    selectors: {
+      jobList: '.job-listing',
+      title: '.job-title',
+      company: '.client-name',
+      location: '.location',
+      description: '.job-description',
+      salary: '.salary-range'
     }
   }
+}
 
-  return detailedJobs
+async function scrapeJobs(page: any, source: string, searchUrl: string): Promise<JobListing[]> {
+  console.log(`Scraping jobs from ${source}: ${searchUrl}`)
+  
+  const sourceConfig = jobSources[source]
+  if (!sourceConfig) {
+    console.error(`No configuration found for source: ${source}`)
+    return []
+  }
+
+  try {
+    await page.goto(searchUrl, { waitUntil: 'networkidle0' })
+    await page.waitForSelector(sourceConfig.selectors.jobList, { timeout: 10000 })
+
+    const jobs = await page.evaluate((selectors) => {
+      const listings = document.querySelectorAll(selectors.jobList)
+      return Array.from(listings).map(listing => {
+        const titleEl = listing.querySelector(selectors.title)
+        const companyEl = listing.querySelector(selectors.company)
+        const locationEl = listing.querySelector(selectors.location)
+        const urlEl = listing.querySelector('a')
+        const salaryEl = listing.querySelector(selectors.salary)
+        
+        return {
+          title: titleEl?.textContent?.trim() || '',
+          company: companyEl?.textContent?.trim() || '',
+          location: locationEl?.textContent?.trim() || '',
+          url: urlEl?.href || '',
+          salary_range: salaryEl?.textContent?.trim() || '',
+          description: '',  // Will be filled in detail scraping
+          source_platform: source
+        }
+      })
+    }, sourceConfig.selectors)
+
+    // Limit to first 10 jobs per source for performance
+    const limitedJobs = jobs.slice(0, 10)
+
+    // Get details for each job
+    const detailedJobs = []
+    for (const job of limitedJobs) {
+      try {
+        await page.goto(job.url, { waitUntil: 'networkidle0' })
+        await page.waitForSelector(sourceConfig.selectors.description, { timeout: 5000 })
+
+        const details = await page.evaluate((selectors) => {
+          const descriptionEl = document.querySelector(selectors.description)
+          return {
+            description: descriptionEl?.textContent?.trim() || '',
+          }
+        }, sourceConfig.selectors)
+
+        detailedJobs.push({
+          ...job,
+          description: details.description,
+          skills: extractSkills(details.description),
+          requirements: extractRequirements(details.description)
+        })
+
+        // Petit délai pour éviter de surcharger les serveurs
+        await page.waitForTimeout(1000)
+      } catch (error) {
+        console.error(`Error scraping details for job ${job.url}:`, error)
+        detailedJobs.push(job)
+      }
+    }
+
+    return detailedJobs
+  } catch (error) {
+    console.error(`Error scraping ${source}:`, error)
+    return []
+  }
 }
 
 function extractSkills(description: string): string[] {
@@ -86,6 +147,7 @@ function extractSkills(description: string): string[] {
     'javascript', 'python', 'java', 'react', 'angular', 'vue', 'node.js',
     'sql', 'nosql', 'mongodb', 'aws', 'docker', 'kubernetes', 'git',
     'html', 'css', 'typescript', 'php', 'ruby', 'c++', 'c#', '.net',
+    'excel', 'word', 'powerpoint', 'français', 'anglais', 'bilingue'
   ]
 
   const skills = new Set<string>()
@@ -104,14 +166,16 @@ function extractRequirements(description: string): string[] {
   const requirements: string[] = []
   const lines = description.split(/[.•\n]/)
 
+  const requirementKeywords = [
+    'required', 'requirement', 'must have', 'qualifi',
+    'requis', 'exigence', 'obligatoire', 'nécessaire'
+  ]
+
   lines.forEach(line => {
     line = line.trim()
-    if (
-      line.toLowerCase().includes('required') ||
-      line.toLowerCase().includes('requirement') ||
-      line.toLowerCase().includes('must have') ||
-      line.toLowerCase().includes('qualifi')
-    ) {
+    if (requirementKeywords.some(keyword => 
+      line.toLowerCase().includes(keyword)
+    )) {
       requirements.push(line)
     }
   })
@@ -145,6 +209,27 @@ async function saveJobsToDatabase(jobs: JobListing[], supabase: any) {
   }
 }
 
+function buildSearchUrl(source: string, searchTerms: string, location: string): string {
+  const config = jobSources[source]
+  if (!config) return ''
+
+  const encodedTerms = encodeURIComponent(searchTerms)
+  const encodedLocation = encodeURIComponent(location)
+
+  switch (source) {
+    case 'jobbank':
+      return `${config.baseUrl}?searchstring=${encodedTerms}&location=${encodedLocation}`
+    case 'jobboom':
+      return `${config.baseUrl}?keywords=${encodedTerms}&location=${encodedLocation}`
+    case 'jobillico':
+      return `${config.baseUrl}?q=${encodedTerms}&l=${encodedLocation}`
+    case 'randstad':
+      return `${config.baseUrl}/search/${encodedTerms}/${encodedLocation}`
+    default:
+      return ''
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -156,37 +241,52 @@ serve(async (req) => {
     
     const { searchTerms, location } = await req.json()
     if (!searchTerms || !location) {
-      throw new Error('Search terms and location are required')
+      throw new Error('Les termes de recherche et la localisation sont requis')
     }
     
-    console.log(`Starting job search for "${searchTerms}" in ${location}`)
+    console.log(`Démarrage de la recherche d'emploi pour "${searchTerms}" à ${location}`)
     
-    // Initialiser le navigateur
     browser = await chromium.launch({ 
       headless: true,
-      args: ['--no-sandbox']
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
     })
     const page = await browser.newPage()
     
-    // Construire l'URL de recherche LinkedIn
-    const encodedSearchTerms = encodeURIComponent(searchTerms)
-    const encodedLocation = encodeURIComponent(location)
-    const linkedInUrl = `https://www.linkedin.com/jobs/search/?keywords=${encodedSearchTerms}&location=${encodedLocation}`
+    // Configurer le navigateur pour paraître plus humain
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+    await page.setViewport({ width: 1920, height: 1080 })
     
-    // Scraper les jobs
-    const linkedInJobs = await scrapeLinkedInJobs(page, linkedInUrl)
-    console.log(`Found ${linkedInJobs.length} LinkedIn jobs`)
+    const allJobs: JobListing[] = []
     
-    // Sauvegarder dans la base de données
-    if (linkedInJobs.length > 0) {
-      await saveJobsToDatabase(linkedInJobs, supabase)
+    // Scraper chaque source
+    for (const source of Object.keys(jobSources)) {
+      try {
+        const searchUrl = buildSearchUrl(source, searchTerms, location)
+        if (!searchUrl) continue
+
+        console.log(`Scraping ${source} with URL: ${searchUrl}`)
+        const jobs = await scrapeJobs(page, source, searchUrl)
+        allJobs.push(...jobs)
+        
+        // Petit délai entre les sources
+        await page.waitForTimeout(2000)
+      } catch (error) {
+        console.error(`Error scraping ${source}:`, error)
+        continue
+      }
+    }
+    
+    console.log(`Total des emplois trouvés: ${allJobs.length}`)
+    
+    if (allJobs.length > 0) {
+      await saveJobsToDatabase(allJobs, supabase)
     }
     
     return new Response(
       JSON.stringify({
         success: true,
-        jobsFound: linkedInJobs.length,
-        message: `Successfully scraped ${linkedInJobs.length} jobs`
+        jobsFound: allJobs.length,
+        message: `${allJobs.length} emplois trouvés sur les différentes plateformes`
       }),
       {
         headers: {
@@ -196,7 +296,7 @@ serve(async (req) => {
       }
     )
   } catch (error) {
-    console.error('Error in scrape-jobs function:', error)
+    console.error('Erreur dans la fonction de scraping:', error)
     return new Response(
       JSON.stringify({
         success: false,
