@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { UserProfile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -7,7 +8,13 @@ import { SearchResults } from "./SearchResults";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Loader2 } from "lucide-react";
 
-export function ProfileSearch() {
+interface ProfileSearchProps {
+  onSelect?: (profile: UserProfile) => Promise<void>;
+  placeholder?: string;
+  className?: string;
+}
+
+export function ProfileSearch({ onSelect, placeholder = "Rechercher des profils...", className }: ProfileSearchProps) {
   const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -46,17 +53,16 @@ export function ProfileSearch() {
     }
   };
 
-  // Effect for debounced search
   useEffect(() => {
     handleSearch(debouncedSearch);
   }, [debouncedSearch]);
 
   return (
-    <div className="w-full max-w-sm">
+    <div className={className}>
       <div className="relative">
         <Input
           type="search"
-          placeholder="Rechercher des profils..."
+          placeholder={placeholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pr-10"
@@ -70,7 +76,9 @@ export function ProfileSearch() {
       
       {searchResults.length > 0 && (
         <div className="relative mt-2">
-          <SearchResults results={searchResults} />
+          <SearchResults 
+            results={searchResults}
+          />
         </div>
       )}
     </div>

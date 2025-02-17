@@ -1,23 +1,20 @@
 
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserProfile } from "@/types/profile";
+import { User } from "lucide-react";
 
-export interface UserAvatarProps {
-  imageUrl?: string | null;
-  name?: string | null;
+interface UserAvatarProps {
+  user: UserProfile;
   className?: string;
 }
 
-export function UserAvatar({ imageUrl, name, className }: UserAvatarProps) {
+export function UserAvatar({ user, className }: UserAvatarProps) {
   return (
-    <Avatar className={cn("relative w-8 h-8", className)}>
-      {imageUrl ? (
-        <AvatarImage src={imageUrl} alt={name || 'Avatar'} />
-      ) : (
-        <AvatarFallback>
-          {name ? name.charAt(0).toUpperCase() : 'U'}
-        </AvatarFallback>
-      )}
+    <Avatar className={className}>
+      <AvatarImage src={user.avatar_url || undefined} alt={user.full_name || ''} />
+      <AvatarFallback>
+        <User className="h-4 w-4" />
+      </AvatarFallback>
     </Avatar>
   );
 }
