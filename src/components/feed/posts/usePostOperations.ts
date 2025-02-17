@@ -22,12 +22,14 @@ export const usePostOperations = () => {
 
       if (existingReaction) {
         if (existingReaction.reaction_type === type) {
+          // Si même réaction, on la supprime
           await supabase
             .from('post_reactions')
             .delete()
             .eq('post_id', postId)
             .eq('user_id', userId);
         } else {
+          // Si réaction différente, on met à jour
           await supabase
             .from('post_reactions')
             .update({ reaction_type: type })
@@ -35,6 +37,7 @@ export const usePostOperations = () => {
             .eq('user_id', userId);
         }
       } else {
+        // Si pas de réaction existante, on insère
         await supabase
           .from('post_reactions')
           .insert({
