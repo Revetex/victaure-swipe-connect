@@ -59,6 +59,7 @@ export function useProfile() {
         const fullProfile: UserProfile = {
           ...baseProfile,
           ...profileData,
+          role: (profileData.role as 'professional' | 'business' | 'admin') || 'professional',
           friends,
           certifications: (certifications || []).map(cert => transformCertification(cert)),
           education: (education || []).map(edu => transformEducation(edu)),

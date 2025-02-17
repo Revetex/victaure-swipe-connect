@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { UserProfile, createEmptyProfile } from "@/types/profile";
-import { transformToFullProfile } from "@/utils/profileTransformers";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,19 @@ export function CVUploadNotification({ id, message, onDelete }: CVUploadNotifica
   const [isUploading, setIsUploading] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+
+  const handleProfileUpdate = (newProfileData: any) => {
+    const baseProfile = createEmptyProfile(newProfileData.id || '', newProfileData.email || '');
+    const updatedProfile: UserProfile = {
+      ...baseProfile,
+      ...newProfileData,
+      certifications: newProfileData.certifications || [],
+      education: newProfileData.education || [],
+      experiences: newProfileData.experiences || [],
+      role: newProfileData.role || 'professional'
+    };
+    setProfile(updatedProfile);
+  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -79,17 +91,6 @@ export function CVUploadNotification({ id, message, onDelete }: CVUploadNotifica
       console.error('Error fetching profile:', error);
       toast.error("Erreur lors du chargement du profil");
     }
-  };
-
-  const handleProfileUpdate = (newProfileData: any) => {
-    const updatedProfile = {
-      ...createEmptyProfile(newProfileData.id || '', newProfileData.email || ''),
-      ...newProfileData,
-      certifications: newProfileData.certifications || [],
-      education: newProfileData.education || [],
-      experiences: newProfileData.experiences || []
-    };
-    setProfile(updatedProfile);
   };
 
   return (

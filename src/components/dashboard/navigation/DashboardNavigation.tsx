@@ -4,9 +4,8 @@ import { User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import { ProfilePreview } from "@/components/ProfilePreview";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, createEmptyProfile } from "@/types/profile";
 import { useProfile } from "@/hooks/useProfile";
-import { createEmptyProfile } from "@/types/profile";
 
 interface DashboardNavigationProps {
   currentPage: number;
@@ -27,27 +26,11 @@ export function DashboardNavigation({
 
   if (isEditing) return null;
 
-  const completeProfile = profile ? {
-    ...createEmptyProfile(profile.id, profile.email || ''),
-    ...profile
-  } : null;
-
-  const userProfile: UserProfile = {
-    id: user?.id || '',
-    email: user?.email || '',
-    full_name: user?.user_metadata?.full_name || null,
-    avatar_url: user?.user_metadata?.avatar_url || null,
-    role: 'professional',
-    bio: null,
-    phone: null,
-    city: null,
-    state: null,
-    country: 'Canada',
-    skills: [],
-    latitude: null,
-    longitude: null,
-    online_status: false,
-    last_seen: new Date().toISOString()
+  const userProfile: UserProfile = profile || {
+    ...createEmptyProfile(user?.id || '', user?.email || ''),
+    certifications: [],
+    education: [],
+    experiences: []
   };
 
   return (
@@ -89,9 +72,9 @@ export function DashboardNavigation({
         </button>
       </div>
 
-      {completeProfile && (
+      {userProfile && (
         <ProfilePreview
-          profile={completeProfile}
+          profile={userProfile}
           isOpen={showProfilePreview}
           onClose={() => setShowProfilePreview(false)}
         />
