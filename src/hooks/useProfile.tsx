@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { UserProfile, Friend } from "@/types/profile";
+import { UserProfile, Friend, createEmptyProfile } from "@/types/profile";
 import { transformDatabaseProfile, transformEducation, transformCertification, transformExperience } from "@/types/profile";
 
 export function useProfile() {
@@ -55,8 +55,10 @@ export function useProfile() {
           last_seen: friend.last_seen
         })) || [];
 
-        const fullProfile = {
-          ...transformDatabaseProfile(profileData),
+        const baseProfile = createEmptyProfile(user.id, profileData.email);
+        const fullProfile: UserProfile = {
+          ...baseProfile,
+          ...profileData,
           friends,
           certifications: (certifications || []).map(cert => transformCertification(cert)),
           education: (education || []).map(edu => transformEducation(edu)),

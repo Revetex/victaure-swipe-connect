@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { UserProfile } from "@/types/profile";
-import { createEmptyProfile } from "@/types/profile";
+import { UserProfile, createEmptyProfile } from "@/types/profile";
 import { transformToFullProfile } from "@/utils/profileTransformers";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -83,10 +82,12 @@ export function CVUploadNotification({ id, message, onDelete }: CVUploadNotifica
   };
 
   const handleProfileUpdate = (newProfileData: any) => {
-    const baseProfile = createEmptyProfile(newProfileData.id || "temp-id", newProfileData.email || "");
     const updatedProfile = {
-      ...baseProfile,
+      ...createEmptyProfile(newProfileData.id || '', newProfileData.email || ''),
       ...newProfileData,
+      certifications: newProfileData.certifications || [],
+      education: newProfileData.education || [],
+      experiences: newProfileData.experiences || []
     };
     setProfile(updatedProfile);
   };
