@@ -1,11 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Message } from '@/types/messages';
 import { UserAvatar } from '@/components/UserAvatar';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { Loader2, Volume2, VolumeX } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface ChatMessageProps {
@@ -45,10 +44,25 @@ function getQuickReplies(messageContent: string): string[] {
 
 export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: ChatMessageProps) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const quickReplies = getQuickReplies(message.content);
   const suggestedJobs = message.metadata?.suggestedJobs as any[] || [];
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setSpeechSynthesis(window.speechSynthesis);
+      
+      // Charger les voix disponibles
+      const loadVoices = () => {
+        const availableVoices = window.speechSynthesis.getVoices();
+        setVoices(availableVoices);
+      };
+
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }, []);
 
   const handleReply = (reply: string) => {
     if (onReply) {
@@ -56,43 +70,54 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
     }
   };
 
-  const playMessage = async () => {
+  const playMessage = () => {
+    if (!speechSynthesis) {
+      toast.error("La synthèse vocale n'est pas supportée par votre navigateur");
+      return;
+    }
+
+    if (isPlaying) {
+      speechSynthesis.cancel();
+      setIsPlaying(false);
+      return;
+    }
+
     try {
-      if (isPlaying && audio) {
-        audio.pause();
-        setIsPlaying(false);
-        return;
+      // Arrêter toute lecture en cours
+      speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(message.content);
+      
+      // Sélectionner une voix française si disponible
+      const frenchVoice = voices.find(voice => 
+        voice.lang.startsWith('fr') || 
+        voice.lang.includes('FR')
+      );
+      
+      if (frenchVoice) {
+        utterance.voice = frenchVoice;
       }
 
-      setIsLoading(true);
-      const { data, error } = await supabase.functions.invoke('text-to-speech', {
-        body: { text: message.content, voice: 'alloy' }
-      });
+      utterance.lang = 'fr-FR';
+      utterance.rate = 1;
+      utterance.pitch = 1;
 
-      if (error) throw error;
-
-      const audioContent = data.audioContent;
-      const audioBlob = new Blob(
-        [Uint8Array.from(atob(audioContent), c => c.charCodeAt(0))],
-        { type: 'audio/mp3' }
-      );
-      const audioUrl = URL.createObjectURL(audioBlob);
-      
-      const newAudio = new Audio(audioUrl);
-      setAudio(newAudio);
-      
-      newAudio.onended = () => {
+      utterance.onend = () => {
         setIsPlaying(false);
-        URL.revokeObjectURL(audioUrl);
       };
-      
-      await newAudio.play();
+
+      utterance.onerror = (event) => {
+        console.error('Erreur de synthèse vocale:', event);
+        toast.error("Erreur lors de la lecture du message");
+        setIsPlaying(false);
+      };
+
+      speechSynthesis.speak(utterance);
       setIsPlaying(true);
     } catch (error) {
       console.error('Error playing message:', error);
       toast.error("Erreur lors de la lecture du message");
-    } finally {
-      setIsLoading(false);
+      setIsPlaying(false);
     }
   };
 
@@ -150,11 +175,8 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
               variant="ghost"
               className="h-8 w-8"
               onClick={playMessage}
-              disabled={isLoading}
             >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : isPlaying ? (
+              {isPlaying ? (
                 <VolumeX className="h-4 w-4" />
               ) : (
                 <Volume2 className="h-4 w-4" />
