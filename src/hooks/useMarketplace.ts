@@ -1,68 +1,43 @@
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { MarketplaceListing, MarketplaceOffer } from "@/types/marketplace";
-import { toast } from "sonner";
-
-interface ProfileResponse {
-  full_name: string | null;
-  avatar_url: string | null;
-}
-
-interface ListingWithProfile extends Omit<MarketplaceListing, 'seller'> {
-  seller: ProfileResponse | null;
-}
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { MarketplaceListing, MarketplaceOffer } from '@/types/marketplace';
 
 export function useMarketplace() {
-  const queryClient = useQueryClient();
-
-  const { data: listings, isLoading } = useQuery({
+  const { data: listings = [], isLoading } = useQuery({
     queryKey: ['marketplace-listings'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('marketplace_listings')
         .select(`
-          id,
-          title,
-          description,
-          price,
-          currency,
-          type,
-          status,
-          seller_id,
-          created_at,
-          updated_at,
-          images,
-          seller:profiles (
+          *,
+          seller:seller_id(
             full_name,
             avatar_url
           )
         `)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false }) as { data: ListingWithProfile[] | null; error: any };
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
-      return (data || []).map(listing => ({
-        ...listing,
-        seller: listing.seller ? {
-          full_name: listing.seller.full_name,
-          avatar_url: listing.seller.avatar_url
-        } : undefined
-      }));
-    }
+      return data as MarketplaceListing[];
+    },
   });
 
-  const createListing = useMutation({
-    mutationFn: async (listingData: Omit<MarketplaceListing, 'id' | 'created_at' | 'updated_at' | 'seller'>) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Vous devez être connecté pour créer une annonce");
+  const createListingMutation = useMutation({
+    mutationFn: async (listingData: Partial<MarketplaceListing>) => {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('marketplace_listings')
         .insert({
           ...listingData,
-          seller_id: user.id
+          seller_id: user.user.id,
+          status: 'active',
+          title: listingData.title || 'New Listing',
+          price: listingData.price || 0,
+          type: listingData.type || 'vente'
         })
         .select()
         .single();
@@ -71,45 +46,17 @@ export function useMarketplace() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['marketplace-listings'] });
-      toast.success("Votre annonce a été publiée avec succès");
+      toast.success('Listing created successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.message || "Une erreur est survenue lors de la publication de l'annonce");
-    }
-  });
-
-  const createOffer = useMutation({
-    mutationFn: async ({ listing_id, amount }: { listing_id: string; amount: number }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Vous devez être connecté pour faire une offre");
-
-      const { data, error } = await supabase
-        .from('marketplace_offers')
-        .insert({
-          listing_id,
-          bidder_id: user.id,
-          amount
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['marketplace-listings'] });
-      toast.success("Votre offre a été placée avec succès");
-    },
-    onError: (error: any) => {
-      toast.error(error.message || "Une erreur est survenue lors du placement de l'offre");
+    onError: (error) => {
+      toast.error('Error creating listing');
+      console.error('Error:', error);
     }
   });
 
   return {
     listings,
     isLoading,
-    createListing,
-    createOffer
+    createListing: createListingMutation.mutate
   };
 }

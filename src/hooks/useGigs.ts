@@ -1,68 +1,42 @@
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Gig, GigBid } from "@/types/marketplace";
-import { toast } from "sonner";
-
-interface ProfileResponse {
-  full_name: string | null;
-  avatar_url: string | null;
-}
-
-interface GigWithProfile extends Omit<Gig, 'creator'> {
-  creator: ProfileResponse | null;
-}
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Gig, GigBid } from '@/types/marketplace';
 
 export function useGigs() {
-  const queryClient = useQueryClient();
-
-  const { data: gigs, isLoading } = useQuery({
+  const { data: gigs = [], isLoading } = useQuery({
     queryKey: ['gigs'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('gigs')
         .select(`
-          id,
-          title,
-          description,
-          budget,
-          location,
-          duration,
-          required_skills,
-          status,
-          creator_id,
-          created_at,
-          updated_at,
-          creator:profiles (
+          *,
+          creator:creator_id(
             full_name,
             avatar_url
           )
         `)
-        .eq('status', 'open')
-        .order('created_at', { ascending: false }) as { data: GigWithProfile[] | null; error: any };
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
-      return (data || []).map(gig => ({
-        ...gig,
-        creator: gig.creator ? {
-          full_name: gig.creator.full_name,
-          avatar_url: gig.creator.avatar_url
-        } : undefined
-      }));
-    }
+      return data as Gig[];
+    },
   });
 
-  const createGig = useMutation({
-    mutationFn: async (gigData: Omit<Gig, 'id' | 'created_at' | 'updated_at' | 'creator'>) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Vous devez être connecté pour créer une jobine");
+  const createGigMutation = useMutation({
+    mutationFn: async (gigData: Partial<Gig>) => {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('gigs')
         .insert({
           ...gigData,
-          creator_id: user.id
+          creator_id: user.user.id,
+          status: 'open',
+          required_skills: gigData.required_skills || [],
+          title: gigData.title || 'New Gig',
         })
         .select()
         .single();
@@ -71,46 +45,17 @@ export function useGigs() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['gigs'] });
-      toast.success("Votre jobine a été publiée avec succès");
+      toast.success('Gig created successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.message || "Une erreur est survenue lors de la publication de la jobine");
-    }
-  });
-
-  const createBid = useMutation({
-    mutationFn: async ({ gig_id, amount, proposal }: { gig_id: string; amount: number; proposal?: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Vous devez être connecté pour faire une offre");
-
-      const { data, error } = await supabase
-        .from('gig_bids')
-        .insert({
-          gig_id,
-          bidder_id: user.id,
-          amount,
-          proposal
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['gigs'] });
-      toast.success("Votre offre a été placée avec succès");
-    },
-    onError: (error: any) => {
-      toast.error(error.message || "Une erreur est survenue lors du placement de l'offre");
+    onError: (error) => {
+      toast.error('Error creating gig');
+      console.error('Error:', error);
     }
   });
 
   return {
     gigs,
     isLoading,
-    createGig,
-    createBid
+    createGig: createGigMutation.mutate
   };
 }
