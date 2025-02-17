@@ -1,5 +1,5 @@
 
-import { UserProfile } from "@/types/profile";
+import { UserProfile, Experience } from "@/types/profile";
 import { VCardExperiences } from "../VCardExperiences";
 
 interface VCardExperienceSectionProps {

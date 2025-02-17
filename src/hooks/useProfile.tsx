@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { UserProfile } from "@/types/profile";
-import { transformToFullProfile } from "@/utils/profileTransformers";
+import { transformToFullProfile, transformToExperience } from "@/utils/profileTransformers";
 
 export function useProfile() {
   const { toast } = useToast();
@@ -19,70 +19,62 @@ export function useProfile() {
           throw new Error("No authenticated user");
         }
 
-        const fetchData = async () => {
-          const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single();
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
 
-          if (profileError) throw profileError;
+        if (profileError) throw profileError;
 
-          const friends = profileData?.friends || [];
-          
-          const [{ data: friendsData }, { data: certifications }, { data: education }, { data: experiences }] = 
-            await Promise.all([
-              supabase
-                .from('profiles')
-                .select('id, full_name, avatar_url, online_status, last_seen')
-                .in('id', friends),
-              supabase
-                .from('certifications')
-                .select('*')
-                .eq('profile_id', user.id),
-              supabase
-                .from('education')
-                .select('*')
-                .eq('profile_id', user.id),
-              supabase
-                .from('experiences')
-                .select('*')
-                .eq('profile_id', user.id)
-            ]);
-
-          return {
-            profile: profileData,
-            friends: friendsData || [],
-            certifications: certifications || [],
-            education: education || [],
-            experiences: experiences || []
-          };
-        };
-
-        const data = await fetchData();
-        
-        if (!data.profile) {
+        if (!profileData) {
           const defaultProfile = transformToFullProfile({
             id: user.id,
             email: user.email,
-            role: 'professional'
+            role: 'professional',
+            certifications: [],
+            education: [],
+            experiences: [],
+            friends: []
           });
 
           await supabase.from('profiles').insert(defaultProfile);
           setProfile(defaultProfile);
           setTempProfile(defaultProfile);
-        } else {
-          const fullProfile = transformToFullProfile({
-            ...data.profile,
-            friends: data.friends,
-            certifications: data.certifications,
-            education: data.education,
-            experiences: data.experiences
-          });
-
-          setProfile(fullProfile);
-          setTempProfile(fullProfile);
+          return;
         }
+
+        // Fetch related data
+        const [{ data: friendsData }, { data: certifications }, { data: education }, { data: experiences }] = 
+          await Promise.all([
+            supabase
+              .from('profiles')
+              .select('id, full_name, avatar_url, online_status, last_seen')
+              .in('id', profileData.friends || []),
+            supabase
+              .from('certifications')
+              .select('*')
+              .eq('profile_id', user.id),
+            supabase
+              .from('education')
+              .select('*')
+              .eq('profile_id', user.id),
+            supabase
+              .from('experiences')
+              .select('*')
+              .eq('profile_id', user.id)
+          ]);
+
+        const fullProfile = transformToFullProfile({
+          ...profileData,
+          friends: friendsData || [],
+          certifications: certifications || [],
+          education: education || [],
+          experiences: (experiences || []).map(exp => transformToExperience(exp))
+        });
+
+        setProfile(fullProfile);
+        setTempProfile(fullProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast({

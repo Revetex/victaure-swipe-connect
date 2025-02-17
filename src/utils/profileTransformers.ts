@@ -2,7 +2,7 @@
 import { UserProfile, Experience, Education, Certification } from "@/types/profile";
 
 export function transformToFullProfile(data: any): UserProfile {
-  return {
+  const baseProfile: UserProfile = {
     id: data.id || '',
     email: data.email || '',
     full_name: data.full_name || null,
@@ -18,10 +18,10 @@ export function transformToFullProfile(data: any): UserProfile {
     longitude: data.longitude || null,
     online_status: data.online_status || false,
     last_seen: data.last_seen || new Date().toISOString(),
-    certifications: [],
-    education: [],
-    experiences: [],
-    friends: [],
+    certifications: data.certifications || [],
+    education: data.education || [],
+    experiences: data.experiences || [],
+    friends: data.friends || [],
     company_name: data.company_name || undefined,
     company_size: data.company_size || undefined,
     industry: data.industry || undefined,
@@ -46,19 +46,34 @@ export function transformToFullProfile(data: any): UserProfile {
     privacy_enabled: data.privacy_enabled || false,
     website: data.website || undefined
   };
+
+  return baseProfile;
 }
 
 export function transformToExperience(data: any): Experience {
   return {
-    id: data.id,
+    id: data.id || crypto.randomUUID(),
     profile_id: data.profile_id || '',
-    position: data.position,
-    company: data.company,
+    position: data.position || '',
+    company: data.company || '',
     start_date: data.start_date ? new Date(data.start_date).toISOString() : undefined,
     end_date: data.end_date ? new Date(data.end_date).toISOString() : undefined,
-    description: data.description,
+    description: data.description || '',
     created_at: data.created_at ? new Date(data.created_at).toISOString() : new Date().toISOString(),
     updated_at: data.updated_at ? new Date(data.updated_at).toISOString() : new Date().toISOString()
   };
 }
 
+export function transformExperienceForDatabase(experience: Experience) {
+  return {
+    id: experience.id,
+    profile_id: experience.profile_id,
+    position: experience.position,
+    company: experience.company,
+    start_date: experience.start_date,
+    end_date: experience.end_date,
+    description: experience.description,
+    created_at: experience.created_at,
+    updated_at: experience.updated_at
+  };
+}
