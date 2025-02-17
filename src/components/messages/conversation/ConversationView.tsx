@@ -64,9 +64,8 @@ export function ConversationView({
   const startVoiceChat = async () => {
     try {
       setIsVoiceChatActive(true);
-      // Demander la permission du microphone
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(track => track.stop()); // Arrêter le stream test
+      stream.getTracks().forEach(track => track.stop());
       
       toast.success("Chat vocal activé! Cliquez sur le microphone pour parler.");
       if (onVoiceInput) {
@@ -80,7 +79,6 @@ export function ConversationView({
   };
 
   useEffect(() => {
-    // Sauvegarder la conversation dans Supabase
     const saveConversation = async () => {
       if (!profile || !receiver || messages.length === 0) return;
       
@@ -88,9 +86,10 @@ export function ConversationView({
         const { error } = await supabase
           .from('conversations')
           .upsert({
-            user_id: profile.id,
-            receiver_id: receiver.id,
+            participant1_id: profile.id,
+            participant2_id: receiver.id,
             last_message: messages[messages.length - 1].content,
+            last_message_time: new Date().toISOString(),
             updated_at: new Date().toISOString()
           });
 
