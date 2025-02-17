@@ -1,3 +1,4 @@
+
 export interface ScrapedJob {
   external_id: string;
   title: string;

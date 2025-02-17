@@ -3214,10 +3214,12 @@ export type Database = {
           salary_range: string | null
           salary_type: string | null
           skills: string[] | null
+          source_api: string | null
           source_platform: string | null
           title: string
           updated_at: string | null
           url: string
+          xml_data: unknown | null
         }
         Insert: {
           application_url?: string | null
@@ -3244,10 +3246,12 @@ export type Database = {
           salary_range?: string | null
           salary_type?: string | null
           skills?: string[] | null
+          source_api?: string | null
           source_platform?: string | null
           title: string
           updated_at?: string | null
           url: string
+          xml_data?: unknown | null
         }
         Update: {
           application_url?: string | null
@@ -3274,10 +3278,12 @@ export type Database = {
           salary_range?: string | null
           salary_type?: string | null
           skills?: string[] | null
+          source_api?: string | null
           source_platform?: string | null
           title?: string
           updated_at?: string | null
           url?: string
+          xml_data?: unknown | null
         }
         Relationships: []
       }
