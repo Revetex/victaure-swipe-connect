@@ -27,12 +27,15 @@ export function useProfile() {
 
         if (profileError) throw profileError;
 
+        // Récupérer les amis même si profileData.friends est undefined
+        const friendsIds = profileData?.friends || [];
+        
         const [{ data: friendsData }, { data: certifications }, { data: education }, { data: experiences }] = 
           await Promise.all([
             supabase
               .from('profiles')
               .select('id, full_name, avatar_url, online_status, last_seen')
-              .in('id', profileData.friends || []),
+              .in('id', friendsIds),
             supabase
               .from('certifications')
               .select('*')

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { UserProfile, createEmptyProfile } from "@/types/profile";
 import { toast } from "sonner";
@@ -17,17 +18,38 @@ export function CVUploadNotification({ id, message, onDelete }: CVUploadNotifica
   const [showProfile, setShowProfile] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
-  const handleProfileUpdate = (newProfileData: any) => {
-    const baseProfile = createEmptyProfile(newProfileData.id || '', newProfileData.email || '');
-    const updatedProfile: UserProfile = {
-      ...baseProfile,
-      ...newProfileData,
-      certifications: newProfileData.certifications || [],
-      education: newProfileData.education || [],
-      experiences: newProfileData.experiences || [],
-      role: newProfileData.role || 'professional'
-    };
-    setProfile(updatedProfile);
+  const handleProfileUpdate = async (newProfileData: any) => {
+    try {
+      const { data: certifications } = await supabase
+        .from('certifications')
+        .select('*')
+        .eq('profile_id', newProfileData.id);
+
+      const { data: education } = await supabase
+        .from('education')
+        .select('*')
+        .eq('profile_id', newProfileData.id);
+
+      const { data: experiences } = await supabase
+        .from('experiences')
+        .select('*')
+        .eq('profile_id', newProfileData.id);
+
+      const updatedProfile: UserProfile = {
+        ...createEmptyProfile(newProfileData.id || '', newProfileData.email || ''),
+        ...newProfileData,
+        role: (newProfileData.role as 'professional' | 'business' | 'admin') || 'professional',
+        certifications: certifications || [],
+        education: education || [],
+        experiences: experiences || [],
+        friends: []
+      };
+
+      setProfile(updatedProfile);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error("Erreur lors de la mise à jour du profil");
+    }
   };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,7 +107,7 @@ export function CVUploadNotification({ id, message, onDelete }: CVUploadNotifica
 
       if (error) throw error;
 
-      setProfile(data);
+      await handleProfileUpdate(data);
       setShowProfile(true);
     } catch (error) {
       console.error('Error fetching profile:', error);
