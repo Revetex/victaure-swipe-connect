@@ -1,8 +1,8 @@
 
-import { UserProfile, Experience, Education, Certification } from "@/types/profile";
+import { UserProfile, Experience } from "@/types/profile";
 
 export function transformToFullProfile(data: any): UserProfile {
-  const baseProfile: UserProfile = {
+  return {
     id: data.id || '',
     email: data.email || '',
     full_name: data.full_name || null,
@@ -46,8 +46,6 @@ export function transformToFullProfile(data: any): UserProfile {
     privacy_enabled: data.privacy_enabled || false,
     website: data.website || undefined
   };
-
-  return baseProfile;
 }
 
 export function transformToExperience(data: any): Experience {
@@ -64,16 +62,6 @@ export function transformToExperience(data: any): Experience {
   };
 }
 
-export function transformExperienceForDatabase(experience: Experience) {
-  return {
-    id: experience.id,
-    profile_id: experience.profile_id,
-    position: experience.position,
-    company: experience.company,
-    start_date: experience.start_date,
-    end_date: experience.end_date,
-    description: experience.description,
-    created_at: experience.created_at,
-    updated_at: experience.updated_at
-  };
+export function transformSearchResults(results: any[]): UserProfile[] {
+  return results.map(result => transformToFullProfile(result));
 }
