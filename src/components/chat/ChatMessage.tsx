@@ -2,21 +2,17 @@
 import React from 'react';
 import { Message } from '@/types/messages';
 import { UserAvatar } from '@/components/UserAvatar';
-import { JobSuggestion } from './JobSuggestion';
-import { QuickReplies } from './QuickReplies';
+import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
-import { Json } from '@/types/database/auth';
 
 interface ChatMessageProps {
   message: Message;
-  onReply?: (content: string) => void;  // Remis en optionnel
-  onJobAccept?: (jobId: string) => void;
-  onJobReject?: (jobId: string) => void;
+  onReply?: (content: string) => void;
 }
 
 function getQuickReplies(messageContent: string): string[] {
-  if (messageContent.includes('emploi') || messageContent.includes('job')) {
+  if (messageContent.toLowerCase().includes('emploi') || messageContent.toLowerCase().includes('job')) {
     return [
       "Montrez-moi les offres récentes",
       "Je cherche dans un autre domaine",
@@ -24,7 +20,7 @@ function getQuickReplies(messageContent: string): string[] {
       "Quelles sont les entreprises qui recrutent?"
     ];
   }
-  if (messageContent.includes('cv') || messageContent.includes('curriculum')) {
+  if (messageContent.toLowerCase().includes('cv') || messageContent.toLowerCase().includes('curriculum')) {
     return [
       "Comment améliorer mon CV?",
       "Vérifiez mon CV",
@@ -35,18 +31,8 @@ function getQuickReplies(messageContent: string): string[] {
   return [];
 }
 
-function getSuggestedJobs(metadata: Record<string, Json>): any[] {
-  const suggestedJobs = metadata?.suggestedJobs;
-  if (Array.isArray(suggestedJobs)) {
-    return suggestedJobs;
-  }
-  return [];
-}
-
-export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: ChatMessageProps) {
+export function ChatMessage({ message, onReply }: ChatMessageProps) {
   const quickReplies = getQuickReplies(message.content);
-  const suggestedJobs = getSuggestedJobs(message.metadata);
-  const isSearching = message.thinking;
 
   return (
     <motion.div
@@ -55,10 +41,10 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
       className={`flex gap-3 ${message.is_assistant ? 'flex-row' : 'flex-row-reverse'}`}
     >
       <UserAvatar
-        user={message.is_assistant ? {
-          id: message.sender.id,
-          full_name: message.sender.full_name,
-          avatar_url: message.sender.avatar_url,
+        user={{
+          id: message.is_assistant ? message.sender.id : message.receiver.id,
+          full_name: message.is_assistant ? message.sender.full_name : message.receiver.full_name,
+          avatar_url: message.is_assistant ? message.sender.avatar_url : message.receiver.avatar_url,
           email: null,
           role: 'professional',
           bio: null,
@@ -69,28 +55,8 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
           skills: [],
           latitude: null,
           longitude: null,
-          online_status: message.sender.online_status,
-          last_seen: message.sender.last_seen,
-          certifications: [],
-          education: [],
-          experiences: [],
-          friends: []
-        } : {
-          id: message.receiver.id,
-          full_name: message.receiver.full_name,
-          avatar_url: message.receiver.avatar_url,
-          email: null,
-          role: 'professional',
-          bio: null,
-          phone: null,
-          city: null,
-          state: null,
-          country: 'Canada',
-          skills: [],
-          latitude: null,
-          longitude: null,
-          online_status: message.receiver.online_status,
-          last_seen: message.receiver.last_seen,
+          online_status: message.is_assistant ? message.sender.online_status : message.receiver.online_status,
+          last_seen: message.is_assistant ? message.sender.last_seen : message.receiver.last_seen,
           certifications: [],
           education: [],
           experiences: [],
@@ -99,40 +65,36 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
         className="h-8 w-8 mt-1"
       />
       
-      <div className={`flex flex-col space-y-2 ${message.is_assistant ? 'items-start' : 'items-end'}`}>
-        <div className={`px-4 py-2 rounded-lg max-w-[80%] ${
+      <div className={`flex flex-col space-y-2 ${message.is_assistant ? 'items-start' : 'items-end'} max-w-[80%]`}>
+        <div className={`px-4 py-2 rounded-lg ${
           message.is_assistant 
             ? 'bg-muted text-foreground' 
             : 'bg-primary text-primary-foreground'
         }`}>
-          {isSearching ? (
+          {message.thinking ? (
             <div className="flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Recherche des offres pertinentes...</span>
+              <span>En train de réfléchir...</span>
             </div>
           ) : (
             <p className="text-sm whitespace-pre-wrap">{message.content}</p>
           )}
         </div>
 
-        {message.is_assistant && suggestedJobs.length > 0 && (
-          <div className="w-full space-y-2">
-            {suggestedJobs.map((job) => (
-              <JobSuggestion
-                key={job.id}
-                job={job}
-                onAccept={onJobAccept!}
-                onReject={onJobReject!}
-              />
+        {message.is_assistant && quickReplies.length > 0 && onReply && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {quickReplies.map((reply) => (
+              <Button
+                key={reply}
+                variant="outline"
+                size="sm"
+                onClick={() => onReply(reply)}
+                className="bg-background/80 backdrop-blur-sm hover:bg-primary/10"
+              >
+                {reply}
+              </Button>
             ))}
           </div>
-        )}
-
-        {message.is_assistant && quickReplies.length > 0 && onReply && (
-          <QuickReplies
-            suggestions={quickReplies}
-            onSelect={onReply}
-          />
         )}
       </div>
     </motion.div>

@@ -64,6 +64,13 @@ export function ChatInput({
     }
   };
 
+  const handleTextareaInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const textarea = e.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
+    onChange(textarea.value);
+  };
+
   return (
     <div className="flex items-end gap-2 bg-background rounded-lg p-2">
       <input 
@@ -80,6 +87,7 @@ export function ChatInput({
         onClick={() => fileInputRef.current?.click()}
         className="rounded-full h-10 w-10"
         disabled={isThinking || disabled}
+        title="Joindre un fichier"
       >
         <Paperclip className="h-5 w-5" />
       </Button>
@@ -87,11 +95,10 @@ export function ChatInput({
       <div className="flex-1 relative">
         <textarea
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={handleTextareaInput}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           disabled={disabled}
-          rows={1}
           className={cn(
             "w-full resize-none bg-muted rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary",
             "min-h-[44px] max-h-[200px]",
@@ -106,21 +113,25 @@ export function ChatInput({
       </div>
 
       <div className="flex items-center gap-2">
-        <Button
-          size="icon"
-          variant={isListening ? "default" : "ghost"}
-          onClick={onVoiceInput}
-          className="rounded-full h-10 w-10"
-          disabled={isThinking || disabled}
-        >
-          <Mic className={cn("h-5 w-5", isListening && "text-white")} />
-        </Button>
+        {onVoiceInput && (
+          <Button
+            size="icon"
+            variant={isListening ? "default" : "ghost"}
+            onClick={onVoiceInput}
+            className="rounded-full h-10 w-10"
+            disabled={isThinking || disabled}
+            title="Entrée vocale"
+          >
+            <Mic className={cn("h-5 w-5", isListening && "text-white")} />
+          </Button>
+        )}
 
         <Button
           size="icon"
           onClick={onSend}
           disabled={!value.trim() || isThinking || disabled}
           className="rounded-full h-10 w-10"
+          title="Envoyer"
         >
           {isThinking ? (
             <Loader2 className="h-5 w-5 animate-spin" />
