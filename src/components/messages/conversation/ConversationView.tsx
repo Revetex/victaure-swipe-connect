@@ -63,8 +63,8 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-background relative">
-      <header className="flex-shrink-0 sticky top-0 left-0 right-0 bg-background/95 backdrop-blur z-[49] border-b">
+    <div className="flex flex-col h-full bg-background">
+      <header className="flex-none">
         <ChatHeader
           title={receiver.full_name}
           subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
@@ -76,12 +76,12 @@ export function ConversationView({
         />
       </header>
 
-      <div className="flex-1 flex flex-col justify-end overflow-hidden">
-        <ScrollArea 
-          className="w-full px-4"
-          onScrollCapture={handleScroll}
-        >
-          <div className="min-h-full space-y-4 py-4 max-w-2xl mx-auto w-full flex flex-col justify-end">
+      <ScrollArea 
+        className="flex-1 h-[calc(100vh-8rem)]"
+        onScrollCapture={handleScroll}
+      >
+        <div className="px-4">
+          <div className="space-y-4 py-4 max-w-2xl mx-auto">
             {messages.map((message) => (
               <motion.div
                 key={message.id}
@@ -107,10 +107,10 @@ export function ConversationView({
               </motion.div>
             )}
             
-            <div ref={messagesEndRef} className="h-4" />
+            <div ref={messagesEndRef} />
           </div>
-        </ScrollArea>
-      </div>
+        </div>
+      </ScrollArea>
 
       {showScrollButton && (
         <Button
@@ -123,7 +123,7 @@ export function ConversationView({
         </Button>
       )}
 
-      <footer className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t z-[48] p-4">
+      <footer className="flex-none p-4 bg-background border-t">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}
@@ -131,6 +131,10 @@ export function ConversationView({
           isThinking={isThinking}
           isListening={isListening}
           onVoiceInput={onVoiceInput}
+          onFileAttach={(file) => {
+            toast.success(`Fichier ${file.name} attaché`);
+            // Implement file handling logic here
+          }}
           placeholder="Écrivez votre message..."
         />
       </footer>
