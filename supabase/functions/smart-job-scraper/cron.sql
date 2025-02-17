@@ -1,3 +1,4 @@
+
 -- Activer l'extension pg_cron si ce n'est pas déjà fait
 CREATE EXTENSION IF NOT EXISTS pg_cron;
 CREATE EXTENSION IF NOT EXISTS pg_net;

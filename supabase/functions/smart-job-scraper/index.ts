@@ -21,8 +21,26 @@ serve(async (req) => {
       throw new Error('Google Search API key not configured');
     }
 
-    // Faire la recherche via l'API Google Custom Search
-    const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=jobs`;
+    // Créer la requête de recherche avec des sites spécifiques
+    const sites = [
+      "jobbank.gc.ca",
+      "lespac.com",
+      "kijiji.ca",
+      "jobs-bear.com",
+      "jobrapido.com",
+      "jooble.org",
+      "randstad.ca",
+      "jobboom.com",
+      "jobillico.com",
+      "joblist.com",
+      "guichetemplois.gc.ca",
+      "freecash.com"
+    ];
+
+    const siteQuery = sites.map(site => `site:${site}`).join(" OR ");
+    const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=jobs ${siteQuery}`;
+    
+    console.log('Searching jobs with URL:', searchUrl);
     const response = await fetch(searchUrl);
     const data = await response.json();
 
@@ -34,12 +52,17 @@ serve(async (req) => {
 
     // Traiter les résultats et les sauvegarder dans Supabase
     if (data.items) {
+      console.log(`Found ${data.items.length} job listings`);
+      
       for (const item of data.items) {
+        // Déterminer la source basée sur l'URL
+        const source = sites.find(site => item.link.includes(site)) || 'unknown';
+        
         const jobData = {
           title: item.title,
           description: item.snippet,
           url: item.link,
-          source: 'google_search',
+          source: source,
           posted_at: new Date().toISOString(),
           raw_data: item,
         };
