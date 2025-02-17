@@ -1,10 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Message } from '@/types/messages';
 import { UserAvatar } from '@/components/UserAvatar';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Volume2, VolumeX } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface ChatMessageProps {
   message: Message;
@@ -30,7 +32,6 @@ function getQuickReplies(messageContent: string): string[] {
       "Exemples de CV"
     ];
   }
-  // Ajout de réponses rapides pour plus de cas
   if (messageContent.toLowerCase().includes('salaire') || messageContent.toLowerCase().includes('paie')) {
     return [
       "Quel est le salaire moyen?",
@@ -43,12 +44,55 @@ function getQuickReplies(messageContent: string): string[] {
 }
 
 export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: ChatMessageProps) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const quickReplies = getQuickReplies(message.content);
   const suggestedJobs = message.metadata?.suggestedJobs as any[] || [];
 
   const handleReply = (reply: string) => {
     if (onReply) {
       onReply(reply);
+    }
+  };
+
+  const playMessage = async () => {
+    try {
+      if (isPlaying && audio) {
+        audio.pause();
+        setIsPlaying(false);
+        return;
+      }
+
+      setIsLoading(true);
+      const { data, error } = await supabase.functions.invoke('text-to-speech', {
+        body: { text: message.content, voice: 'alloy' }
+      });
+
+      if (error) throw error;
+
+      const audioContent = data.audioContent;
+      const audioBlob = new Blob(
+        [Uint8Array.from(atob(audioContent), c => c.charCodeAt(0))],
+        { type: 'audio/mp3' }
+      );
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      const newAudio = new Audio(audioUrl);
+      setAudio(newAudio);
+      
+      newAudio.onended = () => {
+        setIsPlaying(false);
+        URL.revokeObjectURL(audioUrl);
+      };
+      
+      await newAudio.play();
+      setIsPlaying(true);
+    } catch (error) {
+      console.error('Error playing message:', error);
+      toast.error("Erreur lors de la lecture du message");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -84,18 +128,38 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
       />
       
       <div className={`flex flex-col space-y-2 ${message.is_assistant ? 'items-start' : 'items-end'} max-w-[80%]`}>
-        <div className={`px-4 py-2 rounded-lg ${
-          message.is_assistant 
-            ? 'bg-muted text-foreground' 
-            : 'bg-primary text-primary-foreground'
-        }`}>
-          {message.thinking ? (
-            <div className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>En train de réfléchir...</span>
-            </div>
-          ) : (
-            <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+        <div className="flex items-start gap-2">
+          <div className={`px-4 py-2 rounded-lg ${
+            message.is_assistant 
+              ? 'bg-muted text-foreground' 
+              : 'bg-primary text-primary-foreground'
+          }`}>
+            {message.thinking ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>En train de réfléchir...</span>
+              </div>
+            ) : (
+              <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+            )}
+          </div>
+          
+          {message.is_assistant && (
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8"
+              onClick={playMessage}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : isPlaying ? (
+                <VolumeX className="h-4 w-4" />
+              ) : (
+                <Volume2 className="h-4 w-4" />
+              )}
+            </Button>
           )}
         </div>
 
