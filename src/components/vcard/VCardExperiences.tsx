@@ -1,112 +1,70 @@
-import { useState } from "react";
-import { motion, Reorder } from "framer-motion";
-import { VCardSection } from "@/components/VCardSection";
-import { Briefcase } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { UserProfile, Experience } from "@/types/profile";
-import { ExperienceForm } from "./experiences/ExperienceForm";
+
+import { Experience } from "@/types/profile";
+import { transformToExperience } from "@/utils/profileTransformers";
 import { ExperienceCard } from "./experiences/ExperienceCard";
-import { toast } from "sonner";
+import { ExperienceForm } from "./experiences/ExperienceForm";
 
 interface VCardExperiencesProps {
-  profile: UserProfile;
+  experiences: Experience[];
   isEditing: boolean;
-  setProfile: (profile: UserProfile) => void;
+  onUpdate?: (experiences: Experience[]) => void;
 }
 
-export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperiencesProps) {
-  const handleAddExperience = () => {
-    setProfile({
-      ...profile,
-      experiences: [
-        ...(profile.experiences || []),
-        { 
-          id: crypto.randomUUID(), 
-          company: "", 
-          position: "", 
-          start_date: null, 
-          end_date: null, 
-          description: null,
-          created_at: new Date(),
-          updated_at: new Date()
-        }
-      ],
-    });
-    toast.success("Expérience ajoutée");
-  };
-
-  const handleUpdateExperience = (updatedExp: Experience) => {
-    const newExperiences = [...(profile.experiences || [])];
-    const expIndex = newExperiences.findIndex(e => e.id === updatedExp.id);
-    newExperiences[expIndex] = updatedExp;
-    setProfile({ ...profile, experiences: newExperiences });
+export function VCardExperiences({ experiences, isEditing, onUpdate }: VCardExperiencesProps) {
+  const handleUpdateExperience = (exp: Experience) => {
+    if (!onUpdate) return;
+    
+    const updatedExperiences = experiences.map(e => 
+      e.id === exp.id ? transformToExperience(exp) : e
+    );
+    onUpdate(updatedExperiences);
   };
 
   const handleRemoveExperience = (id: string) => {
-    const newExperiences = [...(profile.experiences || [])].filter(exp => exp.id !== id);
-    setProfile({ ...profile, experiences: newExperiences });
-    toast.success("Expérience supprimée");
+    if (!onUpdate) return;
+    onUpdate(experiences.filter(exp => exp.id !== id));
   };
 
-  const handleReorder = (newOrder: Experience[]) => {
-    setProfile({ ...profile, experiences: newOrder });
+  const handleAddExperience = () => {
+    if (!onUpdate) return;
+    
+    const newExperience = transformToExperience({
+      id: crypto.randomUUID(),
+      company: '',
+      position: '',
+      profile_id: '',
+      start_date: null,
+      end_date: null,
+      description: null
+    });
+
+    onUpdate([...experiences, newExperience]);
   };
 
   return (
-    <VCardSection 
-      title="Expériences professionnelles"
-      icon={<Briefcase className="h-4 w-4" />}
-      variant="education"
-    >
-      <div className="w-full space-y-4">
-        {isEditing ? (
-          <Reorder.Group axis="y" values={profile.experiences || []} onReorder={handleReorder}>
-            {(profile.experiences || []).map((exp: Experience) => (
-              <Reorder.Item key={exp.id} value={exp}>
-                <motion.div 
-                  className="relative w-full bg-card/5 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-border/20"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                >
-                  <ExperienceForm
-                    exp={exp}
-                    onUpdate={handleUpdateExperience}
-                    onRemove={handleRemoveExperience}
-                  />
-                </motion.div>
-              </Reorder.Item>
-            ))}
-          </Reorder.Group>
-        ) : (
-          (profile.experiences || []).map((exp: Experience) => (
-            <motion.div 
-              key={exp.id}
-              className="relative w-full bg-card/5 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-border/20"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <ExperienceCard exp={exp} />
-            </motion.div>
-          ))
-        )}
-        
-        {isEditing && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Button 
-              onClick={handleAddExperience} 
-              className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] text-white transition-colors duration-200 min-h-[44px]"
-            >
-              Ajouter une expérience
-            </Button>
-          </motion.div>
-        )}
-      </div>
-    </VCardSection>
+    <div className="space-y-6">
+      {experiences.map((exp) => (
+        <div key={exp.id} className="relative">
+          {isEditing ? (
+            <ExperienceForm
+              exp={exp}
+              onUpdate={handleUpdateExperience}
+              onRemove={handleRemoveExperience}
+            />
+          ) : (
+            <ExperienceCard exp={exp} />
+          )}
+        </div>
+      ))}
+      
+      {isEditing && (
+        <button
+          onClick={handleAddExperience}
+          className="w-full p-4 text-sm text-center text-muted-foreground hover:text-primary hover:bg-muted/50 rounded-lg transition-colors"
+        >
+          Ajouter une expérience
+        </button>
+      )}
+    </div>
   );
 }
