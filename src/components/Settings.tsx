@@ -62,7 +62,7 @@ export function Settings() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center min-h-screen pt-16">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
@@ -70,7 +70,7 @@ export function Settings() {
 
   if (!stripePromise) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen p-4">
+      <div className="flex flex-col items-center justify-center min-h-screen pt-16 p-4">
         <p className="text-center text-muted-foreground mb-4">
           Le système de paiement n'a pas pu être initialisé.
         </p>
@@ -86,12 +86,8 @@ export function Settings() {
 
   return (
     <Elements stripe={stripePromise} options={stripeElementsOptions}>
-      <ScrollArea className="h-[calc(100vh-4rem)]">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="max-w-2xl mx-auto px-4 py-6 mt-16 space-y-6"
-        >
+      <ScrollArea className="min-h-[calc(100vh-4rem)] pt-16">
+        <div className="container max-w-2xl mx-auto px-4 py-6 pb-20 space-y-6">
           {settingsSections.map(({ id, Component }) => (
             <motion.div
               key={id}
@@ -102,7 +98,7 @@ export function Settings() {
               <Component />
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </ScrollArea>
     </Elements>
   );
