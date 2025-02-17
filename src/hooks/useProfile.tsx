@@ -55,13 +55,13 @@ export function useProfile() {
           last_seen: friend.last_seen
         })) || [];
 
-        const fullProfile = transformDatabaseProfile({
-          ...profileData,
+        const fullProfile = {
+          ...transformDatabaseProfile(profileData),
           friends,
           certifications: (certifications || []).map(cert => transformCertification(cert)),
           education: (education || []).map(edu => transformEducation(edu)),
           experiences: (experiences || []).map(exp => transformExperience(exp))
-        });
+        };
 
         setProfile(fullProfile);
         setTempProfile(fullProfile);

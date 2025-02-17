@@ -64,8 +64,7 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
             onClick={() => setShowProfilePreview(true)}
           >
             <UserAvatar
-              imageUrl={profile.avatar_url}
-              name={profile.full_name}
+              user={profile}
               className="h-8 w-8"
             />
             <div className="flex flex-col items-start">
