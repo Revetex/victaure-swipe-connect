@@ -25,7 +25,7 @@ export const defaultFilters: JobFilters = {
   experienceLevel: "all",
   remote: false,
   postedWithin: "all",
-  source: "regular",
+  source: "marketplace",
   salary: [30000, 200000]
 };
 

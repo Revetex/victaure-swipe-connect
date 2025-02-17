@@ -39,7 +39,23 @@ export function useSwipeJobs(filters: JobFilters): SwipeJobsResult {
   const { data: jobs = [], isLoading: loading } = useQuery({
     queryKey: ['jobs', filters],
     queryFn: async () => {
-      if (filters.source === 'external') {
+      let query;
+      
+      if (filters.source === 'marketplace') {
+        // Pour le marketplace, utiliser la table marketplace_jobs
+        const { data, error } = await supabase
+          .from('marketplace_jobs')
+          .select(`
+            *,
+            employer:profiles(full_name, avatar_url)
+          `)
+          .eq('status', 'active')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data as unknown as Job[];
+      } else if (filters.source === 'external') {
+        // Pour les jobs externes, utiliser scraped_jobs
         const { data, error } = await supabase
           .from('scraped_jobs')
           .select('*')
@@ -48,6 +64,7 @@ export function useSwipeJobs(filters: JobFilters): SwipeJobsResult {
         if (error) throw error;
         return data as unknown as Job[];
       } else {
+        // Pour les jobs réguliers, utiliser la table jobs
         const { data, error } = await supabase
           .from('jobs')
           .select('*')
