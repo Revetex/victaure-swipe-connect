@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { JobBadges } from "./badges/JobBadges";
@@ -9,6 +8,8 @@ import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useJobBids } from "@/hooks/useJobBids";
+import { MapPin } from "@/components/ui/map-pin";
+import { GoogleMap } from "@/components/ui/google-map";
 
 interface JobCardProps {
   job: Job;
@@ -19,6 +20,21 @@ export function JobCard({ job, onDeleted }: JobCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [bidAmount, setBidAmount] = useState("");
   const { bids, placeBid } = useJobBids(job.id);
+  const [markers, setMarkers] = useState<Array<{
+    position: google.maps.LatLngLiteral;
+    title?: string;
+  }>>([]);
+
+  useEffect(() => {
+    if (job.latitude && job.longitude) {
+      setMarkers([
+        {
+          position: { lat: job.latitude, lng: job.longitude },
+          title: job.title
+        }
+      ]);
+    }
+  }, [job]);
 
   const handleBidSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,8 +80,9 @@ export function JobCard({ job, onDeleted }: JobCardProps) {
             </p>
           </div>
           
-          <div className="flex items-center gap-2">
-            <p className="text-lg font-semibold">{job.budget} CAD</p>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <MapPin className="h-4 w-4" />
+            <span>{job.city || job.location || "Lieu non spécifié"}</span>
           </div>
         </div>
 
@@ -80,6 +97,15 @@ export function JobCard({ job, onDeleted }: JobCardProps) {
             <p className="text-sm text-muted-foreground whitespace-pre-wrap">
               {job.description}
             </p>
+
+            {job.latitude && job.longitude && (
+              <GoogleMap
+                apiKey={process.env.GOOGLE_MAPS_API_KEY || ""}
+                markers={markers}
+                center={{ lat: job.latitude, lng: job.longitude }}
+                className="h-[200px] mt-4"
+              />
+            )}
 
             {job.accept_bids && (
               <div className="space-y-4 pt-4 border-t">

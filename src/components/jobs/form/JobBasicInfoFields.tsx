@@ -1,19 +1,32 @@
 
+import { useFormContext } from "react-hook-form";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useFormContext } from "react-hook-form";
+import { LocationAutocomplete } from "@/components/map/LocationAutocomplete";
+import { useGeolocation } from "@/hooks/useGeolocation";
 
-export interface JobBasicInfoFieldsProps {
-  title?: string;
-  description?: string;
-  budget?: string;
-  location?: string;
-  onChange?: (values: { [key: string]: string }) => void;
-}
+export function JobBasicInfoFields() {
+  const { control, setValue } = useFormContext();
+  const { getAddressFromCoordinates } = useGeolocation();
 
-export function JobBasicInfoFields({ onChange }: JobBasicInfoFieldsProps) {
-  const { control } = useFormContext();
+  const handlePlaceSelected = async (place: google.maps.places.PlaceResult) => {
+    if (place.geometry?.location) {
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
+      
+      setValue('latitude', lat);
+      setValue('longitude', lng);
+      
+      if (place.formatted_address) {
+        setValue('location', place.formatted_address);
+      }
+      
+      const addressInfo = await getAddressFromCoordinates(lat, lng);
+      if (addressInfo.city) {
+        setValue('city', addressInfo.city);
+      }
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -22,63 +35,9 @@ export function JobBasicInfoFields({ onChange }: JobBasicInfoFieldsProps) {
         name="title"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Titre de la mission</FormLabel>
+            <FormLabel>Titre de l'offre</FormLabel>
             <FormControl>
-              <Input 
-                placeholder="Ex: Développeur Full Stack React/Node.js" 
-                {...field}
-                value={field.value || ""}
-                onChange={(e) => {
-                  field.onChange(e);
-                  onChange?.({ title: e.target.value });
-                }}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={control}
-        name="description"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Description</FormLabel>
-            <FormControl>
-              <Textarea
-                placeholder="Décrivez la mission en détail..."
-                className="min-h-[100px]"
-                {...field}
-                value={field.value || ""}
-                onChange={(e) => {
-                  field.onChange(e);
-                  onChange?.({ description: e.target.value });
-                }}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={control}
-        name="budget"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Budget (CAD)</FormLabel>
-            <FormControl>
-              <Input 
-                type="number" 
-                placeholder="Ex: 500" 
-                {...field}
-                value={field.value || ""}
-                onChange={(e) => {
-                  field.onChange(e);
-                  onChange?.({ budget: e.target.value });
-                }}
-              />
+              <Input placeholder="Ex: Développeur Full Stack React/Node.js" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -92,14 +51,11 @@ export function JobBasicInfoFields({ onChange }: JobBasicInfoFieldsProps) {
           <FormItem>
             <FormLabel>Localisation</FormLabel>
             <FormControl>
-              <Input 
-                placeholder="Ex: Montréal, QC" 
-                {...field}
-                value={field.value || ""}
-                onChange={(e) => {
-                  field.onChange(e);
-                  onChange?.({ location: e.target.value });
-                }}
+              <LocationAutocomplete
+                apiKey={process.env.GOOGLE_MAPS_API_KEY || ""}
+                placeholder="Entrez l'adresse du poste"
+                onPlaceSelected={handlePlaceSelected}
+                className={field.className}
               />
             </FormControl>
             <FormMessage />
