@@ -15,6 +15,13 @@ import { TasksPage } from "@/components/tools/TasksPage";
 import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
+import { DashboardStats } from "./DashboardStats";
+import { QuickActions } from "./QuickActions";
+import { RecentActivity } from "./RecentActivity";
+import { DashboardFriendsList } from "./DashboardFriendsList";
+import { JobActions } from "./JobActions";
+import { DashboardChart } from "./DashboardChart";
+import { cn } from "@/lib/utils";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -53,6 +60,25 @@ export function DashboardContent({
     }
   };
 
+  // Fonction pour rendre le contenu principal du dashboard
+  const renderDashboardHome = () => {
+    return (
+      <div className="container mx-auto p-4 space-y-6 max-w-7xl">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <DashboardStats />
+          <DashboardChart />
+          <QuickActions onRequestChat={onRequestChat} />
+        </div>
+        
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <RecentActivity />
+          <JobActions />
+          <DashboardFriendsList />
+        </div>
+      </div>
+    );
+  };
+
   const renderContent = () => {
     switch (currentPage) {
       case 1:
@@ -80,7 +106,7 @@ export function DashboardContent({
       case 16:
         return <NotesSection />;
       default:
-        return null;
+        return renderDashboardHome();
     }
   };
 
@@ -90,7 +116,10 @@ export function DashboardContent({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="min-h-screen w-full"
+      className={cn(
+        "min-h-screen w-full",
+        "bg-gradient-to-b from-background to-background/95"
+      )}
     >
       {renderContent()}
     </motion.div>
