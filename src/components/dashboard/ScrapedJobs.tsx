@@ -48,13 +48,13 @@ export function ScrapedJobs() {
         description: "Recherche de nouveaux emplois en cours...",
       });
 
-      const { error } = await supabase.functions.invoke('smart-job-scraper');
+      const { error } = await supabase.functions.invoke('fetch-jobs');
       if (error) throw error;
       
       await fetchJobs();
       toast({
         title: "Succès",
-        description: "Les emplois ont été mis à jour avec l'IA"
+        description: "Les emplois ont été mis à jour"
       });
     } catch (error) {
       console.error('Error refreshing jobs:', error);
