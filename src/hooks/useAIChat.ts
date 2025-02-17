@@ -60,7 +60,7 @@ export function useAIChat() {
       setIsThinking(true);
 
       // Appeler l'assistant
-      const { data, error } = await supabase.functions.invoke<AIResponse>('ai-chat', {
+      const { data, error } = await supabase.functions.invoke<AIResponse>('chat-ai', {
         body: { 
           message: content,
           userId: profile.id,
@@ -104,6 +104,7 @@ export function useAIChat() {
       toast.error("Une erreur est survenue avec l'assistant");
     } finally {
       setIsThinking(false);
+      setInputMessage('');
     }
   }, [messages, profile]);
 
