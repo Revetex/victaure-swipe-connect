@@ -2192,6 +2192,33 @@ export type Database = {
           },
         ]
       }
+      message_privacy_settings: {
+        Row: {
+          auto_delete_after: unknown | null
+          created_at: string | null
+          encrypt_messages: boolean | null
+          id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          auto_delete_after?: unknown | null
+          created_at?: string | null
+          encrypt_messages?: boolean | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          auto_delete_after?: unknown | null
+          created_at?: string | null
+          encrypt_messages?: boolean | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       message_status: {
         Row: {
           created_at: string
