@@ -78,7 +78,7 @@ export function PaymentSection() {
 
   return (
     <Elements stripe={stripePromise} options={stripeElementsOptions}>
-      <Card className="p-6 space-y-8">
+      <Card className="p-6 space-y-6">
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-1">

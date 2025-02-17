@@ -6,6 +6,7 @@ import { PaymentInterface } from "./payment/PaymentInterface";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./ui/button";
 import { CreditCard } from "lucide-react";
+import { ScrollArea } from "./ui/scroll-area";
 
 export function Chat() {
   const [showWelcome, setShowWelcome] = useState(true);
@@ -29,14 +30,14 @@ export function Chat() {
   return (
     <AnimatePresence>
       {(showWelcome || showChat || showPayment) && (
-        <>
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm isolate z-50"
-          >
-            <div className="h-full w-full flex items-center justify-center p-8 relative">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
+        >
+          <ScrollArea className="h-full w-full">
+            <div className="container max-w-4xl mx-auto p-8 relative min-h-screen">
               {showWelcome && (
                 <MrVictaureWelcome 
                   onDismiss={() => setShowWelcome(false)}
@@ -45,7 +46,7 @@ export function Chat() {
               )}
               
               {showChat && (
-                <div className="w-full h-full max-w-4xl mx-auto pb-8 relative">
+                <div className="w-full h-full relative">
                   <AIAssistant onClose={handleCloseChat} />
                   <Button
                     variant="outline"
@@ -64,7 +65,7 @@ export function Chat() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="absolute inset-0 flex items-center justify-center p-4 z-50"
+                  className="fixed inset-0 flex items-center justify-center p-4 z-50"
                 >
                   <div className="relative w-full max-w-md">
                     <Button
@@ -80,8 +81,8 @@ export function Chat() {
                 </motion.div>
               )}
             </div>
-          </motion.div>
-        </>
+          </ScrollArea>
+        </motion.div>
       )}
     </AnimatePresence>
   );
