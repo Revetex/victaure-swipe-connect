@@ -1,3 +1,4 @@
+
 export interface JobFilters {
   category?: string;
   location?: string;
@@ -14,7 +15,7 @@ export interface JobFilters {
   remote?: boolean;
   urgent?: boolean;
   paymentSchedule?: string;
-  source?: "regular" | "contract" | "marketplace";
+  source?: 'internal' | 'external' | 'regular' | 'contract' | 'marketplace';
 }
 
 export const defaultFilters: JobFilters = {

@@ -18,8 +18,6 @@ export function useSwipeJobs(filters: JobFilters): SwipeJobsResult {
   const { data: jobs = [], isLoading: loading } = useQuery({
     queryKey: ['jobs', filters],
     queryFn: async () => {
-      let query;
-
       if (filters.source === 'external') {
         const { data, error } = await supabase
           .from('scraped_jobs')

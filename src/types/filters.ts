@@ -14,10 +14,12 @@ export interface JobFilters {
   postedWithin?: string;
   remote?: boolean;
   urgent?: boolean;
-  source?: 'regular' | 'contract' | 'marketplace' | 'internal' | 'external';
+  // Unified source type to include all possible values
+  source?: 'internal' | 'external' | 'regular' | 'contract' | 'marketplace';
   paymentSchedule?: string;
   contractType?: string;
   missionType?: 'company' | 'individual';
+  // Add date filter properties
   createdAfter?: string;
   createdBefore?: string;
   deadlineBefore?: string;
