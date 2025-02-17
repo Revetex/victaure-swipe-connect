@@ -4,8 +4,9 @@ import { Message } from '@/types/messages';
 import { UserAvatar } from '@/components/UserAvatar';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Loader2, Volume2, VolumeX } from 'lucide-react';
+import { Loader2, Volume2, VolumeX, Send, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { toast } from 'sonner';
+import { Card } from '@/components/ui/card';
 
 interface ChatMessageProps {
   message: Message;
@@ -14,46 +15,40 @@ interface ChatMessageProps {
   onJobReject?: (jobId: string) => void;
 }
 
-function getQuickReplies(messageContent: string): string[] {
-  if (messageContent.toLowerCase().includes('emploi') || messageContent.toLowerCase().includes('job')) {
-    return [
-      "Montrez-moi les offres récentes",
-      "Je cherche dans un autre domaine",
-      "Aidez-moi avec mon CV",
-      "Quelles sont les entreprises qui recrutent?"
-    ];
+// L'assistant ne propose plus de réponses prédéfinies, mais analyse le contexte
+function analyzeContext(message: Message): string[] {
+  // Analyse le contenu du message pour des suggestions contextuelles
+  const content = message.content.toLowerCase();
+  const suggestions: string[] = [];
+
+  if (content.includes('merci') || content.includes('d\'accord')) {
+    return []; // Pas de suggestions pour les messages de remerciement
   }
-  if (messageContent.toLowerCase().includes('cv') || messageContent.toLowerCase().includes('curriculum')) {
-    return [
-      "Comment améliorer mon CV?",
-      "Vérifiez mon CV",
-      "Créer un nouveau CV",
-      "Exemples de CV"
-    ];
+
+  // Analyse dynamique du contexte
+  if (content.includes('emploi') || content.includes('travail')) {
+    suggestions.push(
+      "Pouvez-vous me parler de votre expérience professionnelle ?",
+      "Dans quel domaine souhaitez-vous travailler ?",
+      "Quelles sont vos compétences principales ?"
+    );
   }
-  if (messageContent.toLowerCase().includes('salaire') || messageContent.toLowerCase().includes('paie')) {
-    return [
-      "Quel est le salaire moyen?",
-      "Négocier mon salaire",
-      "Comparer les salaires",
-      "Avantages sociaux"
-    ];
-  }
-  return [];
+
+  return suggestions;
 }
 
 export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: ChatMessageProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const quickReplies = getQuickReplies(message.content);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const contextualSuggestions = analyzeContext(message);
   const suggestedJobs = message.metadata?.suggestedJobs as any[] || [];
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setSpeechSynthesis(window.speechSynthesis);
       
-      // Charger les voix disponibles
       const loadVoices = () => {
         const availableVoices = window.speechSynthesis.getVoices();
         setVoices(availableVoices);
@@ -83,12 +78,9 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
     }
 
     try {
-      // Arrêter toute lecture en cours
       speechSynthesis.cancel();
-
       const utterance = new SpeechSynthesisUtterance(message.content);
       
-      // Sélectionner une voix française si disponible
       const frenchVoice = voices.find(voice => 
         voice.lang.startsWith('fr') || 
         voice.lang.includes('FR')
@@ -102,10 +94,7 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
       utterance.rate = 1;
       utterance.pitch = 1;
 
-      utterance.onend = () => {
-        setIsPlaying(false);
-      };
-
+      utterance.onend = () => setIsPlaying(false);
       utterance.onerror = (event) => {
         console.error('Erreur de synthèse vocale:', event);
         toast.error("Erreur lors de la lecture du message");
@@ -153,78 +142,104 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
       />
       
       <div className={`flex flex-col space-y-2 ${message.is_assistant ? 'items-start' : 'items-end'} max-w-[80%]`}>
-        <div className="flex items-start gap-2">
-          <div className={`px-4 py-2 rounded-lg ${
-            message.is_assistant 
-              ? 'bg-muted text-foreground' 
-              : 'bg-primary text-primary-foreground'
-          }`}>
+        <motion.div 
+          className="flex items-start gap-2"
+          layout
+        >
+          <Card
+            className={`px-4 py-2 ${
+              message.is_assistant 
+                ? 'bg-muted/50 backdrop-blur-sm border-primary/10' 
+                : 'bg-primary text-primary-foreground'
+            }`}
+          >
             {message.thinking ? (
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span>En train de réfléchir...</span>
               </div>
             ) : (
-              <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+              <div className="space-y-2">
+                <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                
+                {message.is_assistant && suggestedJobs.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    <p className="text-sm font-medium text-primary">Offres d'emploi pertinentes :</p>
+                    {suggestedJobs.map((job: any) => (
+                      <Card key={job.id} className="p-3 bg-background/50">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h4 className="font-medium text-sm">{job.title}</h4>
+                            <p className="text-xs text-muted-foreground">{job.company}</p>
+                            {job.location && (
+                              <p className="text-xs text-muted-foreground mt-1">{job.location}</p>
+                            )}
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => onJobReject?.(job.id)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <ThumbsDown className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => onJobAccept?.(job.id)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <ThumbsUp className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
-          </div>
+          </Card>
           
           {message.is_assistant && (
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8"
-              onClick={playMessage}
-            >
-              {isPlaying ? (
-                <VolumeX className="h-4 w-4" />
-              ) : (
-                <Volume2 className="h-4 w-4" />
-              )}
-            </Button>
-          )}
-        </div>
-
-        {message.is_assistant && suggestedJobs && suggestedJobs.length > 0 && onJobAccept && onJobReject && (
-          <div className="space-y-2 mt-2 w-full">
-            {suggestedJobs.map((job: any) => (
-              <div key={job.id} className="bg-muted p-3 rounded-lg">
-                <h4 className="font-medium">{job.title}</h4>
-                <p className="text-sm text-muted-foreground">{job.company}</p>
-                <div className="flex gap-2 mt-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onJobReject(job.id)}
-                  >
-                    Pas intéressé
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => onJobAccept(job.id)}
-                  >
-                    Intéressé
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {message.is_assistant && quickReplies.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2">
-            {quickReplies.map((reply) => (
+            <div className="flex flex-col gap-2">
               <Button
-                key={reply}
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8"
+                onClick={playMessage}
+              >
+                {isPlaying ? (
+                  <VolumeX className="h-4 w-4" />
+                ) : (
+                  <Volume2 className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          )}
+        </motion.div>
+
+        {message.is_assistant && contextualSuggestions.length > 0 && (
+          <motion.div 
+            className="flex flex-wrap gap-2 mt-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            {contextualSuggestions.map((suggestion) => (
+              <Button
+                key={suggestion}
                 variant="outline"
                 size="sm"
-                onClick={() => handleReply(reply)}
-                className="bg-background/80 backdrop-blur-sm hover:bg-primary/10 text-sm"
+                onClick={() => handleReply(suggestion)}
+                className="bg-background/80 backdrop-blur-sm hover:bg-primary/10 text-sm flex items-center gap-2"
               >
-                {reply}
+                <Send className="h-3 w-3" />
+                {suggestion}
               </Button>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </motion.div>
