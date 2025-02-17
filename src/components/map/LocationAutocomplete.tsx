@@ -1,8 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader } from '@googlemaps/js-api-loader';
 
 interface LocationAutocompleteProps {
   apiKey: string;
@@ -24,8 +23,9 @@ export function LocationAutocomplete({
   useEffect(() => {
     const initAutocomplete = async () => {
       try {
-        const loader = new google.maps.plugins.loader.Loader({
+        const loader = new Loader({
           apiKey,
+          version: "weekly",
           libraries: ["places"]
         });
 
@@ -57,7 +57,7 @@ export function LocationAutocomplete({
   }, [apiKey, onPlaceSelected]);
 
   if (loading) {
-    return <Loader2 className="h-4 w-4 animate-spin" />;
+    return <div className="h-4 w-4 animate-spin" />;
   }
 
   return (
