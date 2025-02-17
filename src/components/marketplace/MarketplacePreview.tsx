@@ -1,4 +1,5 @@
-
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -11,8 +12,19 @@ interface MarketplacePreviewProps {
 }
 
 export function MarketplacePreview({ onAuthRequired }: MarketplacePreviewProps) {
-  const { services, isLoading } = useServicesData();
-  const navigate = useNavigate();
+  const { data: services = [], isLoading } = useQuery({
+    queryKey: ['marketplace-services-preview'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('marketplace_services')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+      return data as MarketplaceService[];
+    }
+  });
 
   const previewServices = (services || []).slice(0, 3);
 

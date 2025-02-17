@@ -14,6 +14,11 @@ export interface JobFilters {
   postedWithin?: string;
   remote?: boolean;
   urgent?: boolean;
-  source?: 'internal' | 'external';
+  source?: 'regular' | 'contract' | 'marketplace' | 'internal' | 'external';
   paymentSchedule?: string;
+  contractType?: string;
+  missionType?: 'company' | 'individual';
+  createdAfter?: string;
+  createdBefore?: string;
+  deadlineBefore?: string;
 }

@@ -1,4 +1,5 @@
 
+import { useState } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Job } from "@/types/job";
@@ -17,27 +18,26 @@ export function useSwipeJobs(filters: JobFilters): SwipeJobsResult {
   const { data: jobs = [], isLoading: loading } = useQuery({
     queryKey: ['jobs', filters],
     queryFn: async () => {
-      let query = supabase
-        .from('jobs')
-        .select('*')
-        .eq('status', 'open')
-        .order('created_at', { ascending: false });
+      let query;
 
       if (filters.source === 'external') {
-        query = supabase
+        const { data, error } = await supabase
           .from('scraped_jobs')
           .select('*')
           .order('posted_at', { ascending: false });
+
+        if (error) throw error;
+        return data as unknown as Job[];
+      } else {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select('*')
+          .eq('status', 'open')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data as Job[];
       }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error('Error fetching jobs:', error);
-        throw error;
-      }
-
-      return data as Job[];
     }
   });
 
@@ -45,7 +45,6 @@ export function useSwipeJobs(filters: JobFilters): SwipeJobsResult {
 
   const handleSwipe = (direction: string) => {
     if (direction === 'right') {
-      // Logic for right swipe
       console.log('Swiped right on job:', jobs[currentIndex]);
     }
     setCurrentIndex(prev => Math.min(prev + 1, jobs.length - 1));
