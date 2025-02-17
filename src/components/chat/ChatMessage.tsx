@@ -55,7 +55,47 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
       className={`flex gap-3 ${message.is_assistant ? 'flex-row' : 'flex-row-reverse'}`}
     >
       <UserAvatar
-        user={message.is_assistant ? message.sender : message.receiver}
+        user={message.is_assistant ? {
+          id: message.sender.id,
+          full_name: message.sender.full_name,
+          avatar_url: message.sender.avatar_url,
+          email: null,
+          role: 'professional',
+          bio: null,
+          phone: null,
+          city: null,
+          state: null,
+          country: 'Canada',
+          skills: [],
+          latitude: null,
+          longitude: null,
+          online_status: message.sender.online_status,
+          last_seen: message.sender.last_seen,
+          certifications: [],
+          education: [],
+          experiences: [],
+          friends: []
+        } : {
+          id: message.receiver.id,
+          full_name: message.receiver.full_name,
+          avatar_url: message.receiver.avatar_url,
+          email: null,
+          role: 'professional',
+          bio: null,
+          phone: null,
+          city: null,
+          state: null,
+          country: 'Canada',
+          skills: [],
+          latitude: null,
+          longitude: null,
+          online_status: message.receiver.online_status,
+          last_seen: message.receiver.last_seen,
+          certifications: [],
+          education: [],
+          experiences: [],
+          friends: []
+        }}
         className="h-8 w-8 mt-1"
       />
       
