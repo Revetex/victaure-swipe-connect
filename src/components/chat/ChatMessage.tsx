@@ -6,6 +6,7 @@ import { JobSuggestion } from './JobSuggestion';
 import { QuickReplies } from './QuickReplies';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
+import { Json } from '@/types/database/auth';
 
 interface ChatMessageProps {
   message: Message;
@@ -34,9 +35,17 @@ function getQuickReplies(messageContent: string): string[] {
   return [];
 }
 
+function getSuggestedJobs(metadata: Record<string, Json>): any[] {
+  const suggestedJobs = metadata?.suggestedJobs;
+  if (Array.isArray(suggestedJobs)) {
+    return suggestedJobs;
+  }
+  return [];
+}
+
 export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: ChatMessageProps) {
   const quickReplies = getQuickReplies(message.content);
-  const suggestedJobs = message.metadata?.suggestedJobs || [];
+  const suggestedJobs = getSuggestedJobs(message.metadata);
   const isSearching = message.thinking;
 
   return (
