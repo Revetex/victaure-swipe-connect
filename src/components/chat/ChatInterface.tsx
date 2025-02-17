@@ -30,6 +30,10 @@ export function ChatInterface() {
     setIsSpeaking(speaking);
   }, []);
 
+  const handleOnReply = useCallback((content: string) => {
+    handleSendMessage(content);
+  }, [handleSendMessage]);
+
   return (
     <div className="flex flex-col h-full relative">
       <ScrollArea className="flex-1 p-4">
@@ -38,7 +42,7 @@ export function ChatInterface() {
             <ChatMessage
               key={message.id}
               message={message}
-              onReply={handleSendMessage}
+              onReply={handleOnReply}
               onJobAccept={handleJobAccept}
               onJobReject={handleJobReject}
             />
