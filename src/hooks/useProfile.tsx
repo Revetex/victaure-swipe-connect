@@ -5,6 +5,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { UserProfile, Friend, createEmptyProfile } from "@/types/profile";
 import { transformDatabaseProfile, transformEducation, transformCertification, transformExperience } from "@/types/profile";
 
+// Définir le type de la réponse de la base de données
+interface DatabaseProfile extends Omit<UserProfile, 'friends' | 'certifications' | 'education' | 'experiences'> {
+  friends?: string[];
+}
+
 export function useProfile() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
@@ -27,8 +32,9 @@ export function useProfile() {
 
         if (profileError) throw profileError;
 
-        // Récupérer les amis même si profileData.friends est undefined
-        const friendsIds = profileData?.friends || [];
+        // Type assertion pour profileData
+        const typedProfileData = profileData as DatabaseProfile;
+        const friendsIds = typedProfileData?.friends || [];
         
         const [{ data: friendsData }, { data: certifications }, { data: education }, { data: experiences }] = 
           await Promise.all([
@@ -58,11 +64,11 @@ export function useProfile() {
           last_seen: friend.last_seen
         })) || [];
 
-        const baseProfile = createEmptyProfile(user.id, profileData.email);
+        const baseProfile = createEmptyProfile(user.id, typedProfileData.email);
         const fullProfile: UserProfile = {
           ...baseProfile,
-          ...profileData,
-          role: (profileData.role as 'professional' | 'business' | 'admin') || 'professional',
+          ...typedProfileData,
+          role: (typedProfileData.role as 'professional' | 'business' | 'admin') || 'professional',
           friends,
           certifications: (certifications || []).map(cert => transformCertification(cert)),
           education: (education || []).map(edu => transformEducation(edu)),
