@@ -27,7 +27,17 @@ export function MarketplaceList() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setItems(data || []);
+      
+      // Transform the data to match MarketplaceService interface
+      const transformedData: MarketplaceService[] = (data || []).map(item => ({
+        ...item,
+        owner_id: item.provider_id, // Set owner_id to provider_id
+        category: item.category_id || '', // Use category_id as category or empty string
+        provider: item.provider,
+        bids: [], // Initialize empty bids array
+      }));
+
+      setItems(transformedData);
     } catch (error) {
       console.error('Error fetching items:', error);
     } finally {
