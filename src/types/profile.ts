@@ -1,3 +1,4 @@
+
 export interface Friend {
   id: string;
   full_name: string;
@@ -5,21 +6,6 @@ export interface Friend {
   online_status?: boolean;
   last_seen?: string;
   status?: string;
-}
-
-export interface FriendPreview extends Friend {
-  email?: string;
-}
-
-export interface PendingRequest {
-  id: string;
-  sender_id: string;
-  receiver_id: string;
-  status: 'pending' | 'accepted' | 'rejected';
-  created_at: string;
-  type: 'incoming' | 'outgoing';
-  sender: Friend;
-  receiver: Friend;
 }
 
 export interface UserProfile {

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { UserProfile } from "@/types/profile";
-import { transformToFullProfile, transformToExperience } from "@/utils/profileTransformers";
+import { transformDatabaseProfile, transformExperience } from "@/utils/profileTransformers";
 
 export function useProfile() {
   const { toast } = useToast();
@@ -28,7 +28,7 @@ export function useProfile() {
         if (profileError) throw profileError;
 
         if (!profileData) {
-          const defaultProfile = transformToFullProfile({
+          const defaultProfile = transformDatabaseProfile({
             id: user.id,
             email: user.email,
             role: 'professional',
@@ -65,12 +65,12 @@ export function useProfile() {
               .eq('profile_id', user.id)
           ]);
 
-        const fullProfile = transformToFullProfile({
+        const fullProfile = transformDatabaseProfile({
           ...profileData,
           friends: friendsData || [],
           certifications: certifications || [],
           education: education || [],
-          experiences: (experiences || []).map(exp => transformToExperience(exp))
+          experiences: (experiences || []).map(exp => transformExperience(exp))
         });
 
         setProfile(fullProfile);
