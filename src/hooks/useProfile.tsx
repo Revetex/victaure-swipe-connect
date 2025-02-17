@@ -1,10 +1,11 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { UserProfile, Certification, Experience, Education } from "@/types/profile";
+import { UserProfile, Certification, Experience, Education, Friend } from "@/types/profile";
 
 const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000; // 1 second
+const RETRY_DELAY = 1000;
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -35,54 +36,57 @@ export function useProfile() {
           throw new Error("No authenticated user");
         }
 
-        // Convert Supabase queries to proper Promises
+        // Fetch profile data
         const { data: profileData, error: profileError } = await fetchWithRetry(() =>
-          Promise.resolve(
-            supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', user.id)
-              .maybeSingle()
-          ).then(result => result)
+          supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .maybeSingle()
         );
 
         if (profileError) throw profileError;
 
+        // Fetch friends data
+        const { data: friendsData, error: friendsError } = await fetchWithRetry(() =>
+          supabase
+            .from('profiles')
+            .select('id, full_name, avatar_url, online_status, last_seen')
+            .in('id', profileData?.friends || [])
+        );
+
+        if (friendsError) throw friendsError;
+
+        // Fetch other related data (certifications, education, experiences)
         const { data: certifications, error: certError } = await fetchWithRetry(() =>
-          Promise.resolve(
-            supabase
-              .from('certifications')
-              .select('*')
-              .eq('profile_id', user.id)
-          ).then(result => result)
+          supabase
+            .from('certifications')
+            .select('*')
+            .eq('profile_id', user.id)
         );
 
         if (certError) throw certError;
 
         const { data: education, error: eduError } = await fetchWithRetry(() =>
-          Promise.resolve(
-            supabase
-              .from('education')
-              .select('*')
-              .eq('profile_id', user.id)
-          ).then(result => result)
+          supabase
+            .from('education')
+            .select('*')
+            .eq('profile_id', user.id)
         );
 
         if (eduError) throw eduError;
 
         const { data: experiences, error: expError } = await fetchWithRetry(() =>
-          Promise.resolve(
-            supabase
-              .from('experiences')
-              .select('*')
-              .eq('profile_id', user.id)
-          ).then(result => result)
+          supabase
+            .from('experiences')
+            .select('*')
+            .eq('profile_id', user.id)
         );
 
         if (expError) throw expError;
 
-        // Map certifications to match our interface
-        const mappedCertifications: Certification[] = (certifications || []).map(cert => ({
+        // Map data to match our interfaces
+        const mappedCertifications: Certification[] = certifications?.map(cert => ({
           id: cert.id,
           profile_id: cert.profile_id,
           title: cert.title,
@@ -94,20 +98,17 @@ export function useProfile() {
           issue_date: cert.issue_date,
           expiry_date: cert.expiry_date,
           issuer: cert.issuer
-        }));
+        })) || [];
 
-        const mappedEducation: Education[] = (education || []).map(edu => ({
-          id: edu.id,
-          school_name: edu.school_name,
-          degree: edu.degree,
-          field_of_study: edu.field_of_study,
-          start_date: edu.start_date,
-          end_date: edu.end_date,
-          description: edu.description
-        }));
+        const mappedFriends: Friend[] = friendsData?.map(friend => ({
+          id: friend.id,
+          full_name: friend.full_name,
+          avatar_url: friend.avatar_url,
+          online_status: friend.online_status,
+          last_seen: friend.last_seen
+        })) || [];
 
         if (!profileData) {
-          // Create a default profile if none exists
           const defaultProfile: UserProfile = {
             id: user.id,
             email: user.email || '',
@@ -124,6 +125,7 @@ export function useProfile() {
             longitude: null,
             online_status: false,
             last_seen: new Date().toISOString(),
+            friends: [],
             certifications: [],
             education: [],
             experiences: []
@@ -147,8 +149,9 @@ export function useProfile() {
         } else {
           const fullProfile: UserProfile = {
             ...profileData,
+            friends: mappedFriends,
             certifications: mappedCertifications,
-            education: mappedEducation,
+            education: education || [],
             experiences: experiences || [],
           };
           setProfile(fullProfile);
@@ -159,7 +162,7 @@ export function useProfile() {
         toast({
           variant: "destructive",
           title: "Erreur",
-          description: "Impossible de charger votre profil. Réessayez dans quelques instants.",
+          description: "Impossible de charger votre profil",
         });
       } finally {
         setIsLoading(false);
