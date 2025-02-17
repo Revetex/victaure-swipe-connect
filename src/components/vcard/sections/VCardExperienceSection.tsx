@@ -1,6 +1,6 @@
+
 import { UserProfile } from "@/types/profile";
 import { VCardExperiences } from "../VCardExperiences";
-import { motion } from "framer-motion";
 
 interface VCardExperienceSectionProps {
   profile: UserProfile;
@@ -13,17 +13,17 @@ export function VCardExperienceSection({
   isEditing,
   setProfile,
 }: VCardExperienceSectionProps) {
+  const handleUpdateExperiences = (experiences: Experience[]) => {
+    setProfile({ ...profile, experiences });
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full"
-    >
+    <div className="w-full">
       <VCardExperiences
-        profile={profile}
+        experiences={profile.experiences}
         isEditing={isEditing}
-        setProfile={setProfile}
+        onUpdate={handleUpdateExperiences}
       />
-    </motion.div>
+    </div>
   );
 }

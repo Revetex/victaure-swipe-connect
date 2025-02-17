@@ -61,3 +61,4 @@ export function transformToExperience(data: any): Experience {
     updated_at: data.updated_at ? new Date(data.updated_at).toISOString() : new Date().toISOString()
   };
 }
+

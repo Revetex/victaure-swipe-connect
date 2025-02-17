@@ -28,12 +28,14 @@ export function useProfile() {
 
           if (profileError) throw profileError;
 
-          const [{ data: friends }, { data: certifications }, { data: education }, { data: experiences }] = 
+          const friends = profileData?.friends || [];
+          
+          const [{ data: friendsData }, { data: certifications }, { data: education }, { data: experiences }] = 
             await Promise.all([
               supabase
                 .from('profiles')
                 .select('id, full_name, avatar_url, online_status, last_seen')
-                .in('id', profileData?.friends || []),
+                .in('id', friends),
               supabase
                 .from('certifications')
                 .select('*')
@@ -50,7 +52,7 @@ export function useProfile() {
 
           return {
             profile: profileData,
-            friends: friends || [],
+            friends: friendsData || [],
             certifications: certifications || [],
             education: education || [],
             experiences: experiences || []
