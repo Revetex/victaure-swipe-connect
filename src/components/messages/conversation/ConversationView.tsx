@@ -1,4 +1,3 @@
-
 import { Message, Receiver } from "@/types/messages"; 
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
@@ -8,7 +7,7 @@ import { ChatThinking } from "@/components/chat/ChatThinking";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useProfile } from "@/hooks/useProfile";
 
 export interface ConversationViewProps {
@@ -51,6 +50,12 @@ export function ConversationView({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleReply = useCallback((content: string) => {
+    if (content && onSendMessage) {
+      onSendMessage();
+    }
+  }, [onSendMessage]);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -85,7 +90,10 @@ export function ConversationView({
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.2 }}
               >
-                <ChatMessage message={message} />
+                <ChatMessage 
+                  message={message} 
+                  onReply={handleReply}
+                />
               </motion.div>
             ))}
             
