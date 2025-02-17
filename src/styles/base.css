@@ -1,57 +1,85 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 7%;  /* #121212 */
-    --foreground: 0 0% 92%;  /* #EAEAEA */
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 92%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 92%;
-    --primary: 25 100% 50%;  /* Orange vif pour le bouton principal */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 15%;  /* Gris foncé pour les boutons secondaires */
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 65%;  /* Gris clair pour les infos secondaires */
-    --accent: 267 100% 25%;  /* Violet foncé pour les nouveautés */
-    --accent-foreground: 0 0% 100%;
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 267 100% 75%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --radius: 0.75rem;
+  }
+
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 267 100% 75%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 25 100% 50%;
-    --radius: 0.5rem;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 267 100% 75%;
   }
-}
-
-body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  font-family: 'Inter', 'Roboto', -apple-system, sans-serif;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer base {
-  h1, h2, h3, h4, h5, h6 {
-    font-weight: 600;  /* semi-bold pour les titres */
+  * {
+    @apply border-border selection:bg-primary/10;
+  }
+  
+  body {
+    @apply bg-background text-foreground antialiased overflow-x-hidden font-sans;
+    text-transform: none;
   }
 
-  p, span, div {
-    font-weight: 400;  /* regular pour le texte principal */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-normal tracking-tight;
+    text-transform: none;
+  }
+
+  button, a {
+    text-transform: none;
   }
 }
 
-.glass-card {
-  background: rgba(18, 18, 18, 0.8);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+@layer components {
+  .glass-panel {
+    @apply bg-white/80 dark:bg-zinc-900/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-zinc-900/60;
+  }
+
+  .glass-card {
+    @apply bg-white/80 dark:bg-zinc-900/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 
+           dark:supports-[backdrop-filter]:bg-zinc-900/60 
+           border border-zinc-200 dark:border-zinc-800 
+           shadow-lg rounded-xl p-8;
+  }
 }
 
 @layer utilities {
