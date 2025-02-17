@@ -1683,6 +1683,10 @@ export type Database = {
           created_at: string | null
           currency: string
           description: string | null
+          external_data: Json | null
+          external_id: string | null
+          external_source: string | null
+          external_url: string | null
           favorites_count: number | null
           id: string
           images: string[] | null
@@ -1706,6 +1710,10 @@ export type Database = {
           created_at?: string | null
           currency?: string
           description?: string | null
+          external_data?: Json | null
+          external_id?: string | null
+          external_source?: string | null
+          external_url?: string | null
           favorites_count?: number | null
           id?: string
           images?: string[] | null
@@ -1729,6 +1737,10 @@ export type Database = {
           created_at?: string | null
           currency?: string
           description?: string | null
+          external_data?: Json | null
+          external_id?: string | null
+          external_source?: string | null
+          external_url?: string | null
           favorites_count?: number | null
           id?: string
           images?: string[] | null

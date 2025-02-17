@@ -14,6 +14,17 @@ export function ItemsList() {
   const { items, isLoading } = useMarketplaceItems();
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
+  const getSourceBadge = (item: any) => {
+    if (item.external_source === 'kijiji') {
+      return (
+        <Badge variant="secondary" className="ml-2">
+          Kijiji
+        </Badge>
+      );
+    }
+    return null;
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[200px]">
@@ -49,7 +60,10 @@ export function ItemsList() {
           <div className="p-4 space-y-4">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="font-semibold text-lg line-clamp-2">{item.title}</h3>
+                <div className="flex items-center">
+                  <h3 className="font-semibold text-lg line-clamp-2">{item.title}</h3>
+                  {getSourceBadge(item)}
+                </div>
                 <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
                   {item.description}
                 </p>
@@ -72,7 +86,9 @@ export function ItemsList() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <p className="text-sm font-medium">{item.seller?.full_name}</p>
+                <p className="text-sm font-medium">
+                  {item.seller?.full_name || (item.external_source ? 'Vendeur externe' : 'Anonyme')}
+                </p>
                 <p className="text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(item.created_at), {
                     addSuffix: true,
@@ -103,6 +119,7 @@ export function ItemsList() {
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold mb-4">
               {selectedItem?.title}
+              {getSourceBadge(selectedItem)}
             </DialogTitle>
           </DialogHeader>
           
@@ -134,7 +151,7 @@ export function ItemsList() {
               <div>
                 <h4 className="font-medium mb-1">Prix</h4>
                 <p className="text-sm text-muted-foreground">
-                  {selectedItem?.price} CAD
+                  {selectedItem?.price} {selectedItem?.currency}
                 </p>
               </div>
             </div>
@@ -149,11 +166,17 @@ export function ItemsList() {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium">{selectedItem?.seller?.full_name}</p>
+                  <p className="font-medium">
+                    {selectedItem?.seller?.full_name || (selectedItem?.external_source ? 'Vendeur externe' : 'Anonyme')}
+                  </p>
                   <p className="text-sm text-muted-foreground">
-                    Membre depuis {formatDistanceToNow(new Date(selectedItem?.seller?.created_at), {
-                      locale: fr
-                    })}
+                    {selectedItem?.external_source ? (
+                      `Annonce de ${selectedItem.external_source}`
+                    ) : (
+                      `Membre depuis ${formatDistanceToNow(new Date(selectedItem?.seller?.created_at), {
+                        locale: fr
+                      })}`
+                    )}
                   </p>
                 </div>
               </div>
@@ -166,8 +189,14 @@ export function ItemsList() {
               >
                 Fermer
               </Button>
-              <Button>
-                Contacter le vendeur
+              <Button onClick={() => {
+                if (selectedItem?.external_url) {
+                  window.open(selectedItem.external_url, '_blank');
+                } else {
+                  // Contact logic for internal listings
+                }
+              }}>
+                {selectedItem?.external_url ? 'Voir sur Kijiji' : 'Contacter le vendeur'}
               </Button>
             </div>
           </div>
