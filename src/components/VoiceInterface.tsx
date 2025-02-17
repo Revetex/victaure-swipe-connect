@@ -1,76 +1,103 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { RealtimeChat } from '@/utils/RealtimeAudio';
-import { Mic, MicOff } from 'lucide-react';
+import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
+import { speechService } from '@/services/speechRecognitionService';
+import { cn } from '@/lib/utils';
 
 interface VoiceInterfaceProps {
   onMessageReceived: (message: string) => void;
   onSpeakingChange: (speaking: boolean) => void;
+  className?: string;
 }
 
-export function VoiceInterface({ onMessageReceived, onSpeakingChange }: VoiceInterfaceProps) {
+export function VoiceInterface({ 
+  onMessageReceived, 
+  onSpeakingChange,
+  className 
+}: VoiceInterfaceProps) {
   const { toast } = useToast();
-  const [isConnected, setIsConnected] = useState(false);
-  const chatRef = useRef<RealtimeChat | null>(null);
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(true);
 
-  const handleMessage = (event: any) => {
-    console.log('Message reçu:', event);
-    
-    if (event.type === 'response.audio.delta') {
-      onSpeakingChange(true);
-    } else if (event.type === 'response.audio.done') {
-      onSpeakingChange(false);
-    } else if (event.type === 'response.text.delta') {
-      onMessageReceived(event.delta);
-    }
-  };
+  const handleSpeechResult = useCallback((text: string) => {
+    console.log('Texte reconnu:', text);
+    onMessageReceived(text);
+  }, [onMessageReceived]);
 
-  const startConversation = async () => {
+  const toggleListening = useCallback(async () => {
     try {
-      chatRef.current = new RealtimeChat(handleMessage);
-      await chatRef.current.init();
-      setIsConnected(true);
-      
-      toast({
-        title: "Connecté",
-        description: "L'interface vocale est prête",
-      });
+      if (isListening) {
+        speechService.stop();
+        setIsListening(false);
+        onSpeakingChange(false);
+      } else {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        speechService.start(handleSpeechResult);
+        setIsListening(true);
+        toast({
+          title: "Mode vocal activé",
+          description: "Je vous écoute...",
+        });
+      }
     } catch (error) {
-      console.error('Erreur démarrage conversation:', error);
+      console.error('Erreur accès micro:', error);
       toast({
         title: "Erreur",
-        description: error instanceof Error ? error.message : 'Impossible de démarrer la conversation',
+        description: "Impossible d'accéder au microphone",
         variant: "destructive",
       });
     }
-  };
+  }, [isListening, handleSpeechResult, onSpeakingChange, toast]);
 
-  const endConversation = () => {
-    chatRef.current?.disconnect();
-    setIsConnected(false);
-    onSpeakingChange(false);
-  };
+  const toggleAudio = useCallback(() => {
+    setAudioEnabled(!audioEnabled);
+    toast({
+      title: audioEnabled ? "Audio désactivé" : "Audio activé",
+      description: audioEnabled ? "Les réponses seront textuelles" : "Les réponses seront vocales",
+    });
+  }, [audioEnabled, toast]);
 
+  // Nettoyage à la fermeture
   useEffect(() => {
     return () => {
-      chatRef.current?.disconnect();
+      if (isListening) {
+        speechService.stop();
+      }
     };
-  }, []);
+  }, [isListening]);
 
   return (
-    <div className="fixed bottom-8 right-8 flex items-center gap-4">
-      <Button 
+    <div className={cn("fixed z-50 flex items-center gap-2", className)}>
+      <Button
         size="lg"
-        variant={isConnected ? "secondary" : "default"}
-        onClick={isConnected ? endConversation : startConversation}
-        className="rounded-full h-14 w-14 shadow-lg hover:shadow-xl transition-all"
+        variant="outline"
+        onClick={toggleAudio}
+        className={cn(
+          "rounded-full w-12 h-12",
+          "transition-colors duration-200",
+          audioEnabled ? "bg-primary text-primary-foreground" : "bg-muted"
+        )}
       >
-        {isConnected ? (
-          <MicOff className="h-6 w-6" />
+        {audioEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+      </Button>
+
+      <Button
+        size="lg"
+        variant={isListening ? "destructive" : "default"}
+        onClick={toggleListening}
+        className={cn(
+          "rounded-full w-12 h-12",
+          "transition-all duration-200",
+          isListening && "animate-pulse"
+        )}
+      >
+        {isListening ? (
+          <MicOff className="h-5 w-5" />
         ) : (
-          <Mic className="h-6 w-6" />
+          <Mic className="h-5 w-5" />
         )}
       </Button>
     </div>

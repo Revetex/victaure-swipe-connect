@@ -1,110 +1,69 @@
 
-import { useState, useRef, useEffect } from "react";
-import { useProfile } from "@/hooks/useProfile";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { ChatContainer } from "./ChatContainer";
-import { ChatMessagesList } from "./ChatMessagesList";
-import { ChatScrollButton } from "./ChatScrollButton";
-import { ChatInput } from "./ChatInput";
-import { useUserChat } from "@/hooks/useUserChat";
+import React, { useState, useCallback } from 'react';
+import { ChatInput } from './ChatInput';
+import { ChatMessage } from './ChatMessage';
+import { VoiceInterface } from '../VoiceInterface';
+import { useAIChat } from '@/hooks/useAIChat';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { toast } from 'sonner';
 
 export function ChatInterface() {
-  const [input, setInput] = useState("");
-  const [isThinking, setIsThinking] = useState(false);
-  const [showScrollButton, setShowScrollButton] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { profile } = useProfile();
-  const { messages, handleSendMessage: sendMessage } = useUserChat();
+  const {
+    messages,
+    isThinking,
+    inputMessage,
+    setInputMessage,
+    handleSendMessage,
+    handleJobAccept,
+    handleJobReject
+  } = useAIChat();
 
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const handleVoiceMessage = useCallback((message: string) => {
+    if (message.trim()) {
+      handleSendMessage(message);
     }
-  }, [messages]);
+  }, [handleSendMessage]);
 
-  const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const target = event.target as HTMLDivElement;
-    const isNearBottom = 
-      target.scrollHeight - target.scrollTop - target.clientHeight < 100;
-    setShowScrollButton(!isNearBottom);
-  };
-
-  const handleSendMessage = async () => {
-    if (!input.trim() || isThinking) return;
-
-    try {
-      setIsThinking(true);
-      
-      const userMessage = {
-        id: crypto.randomUUID(),
-        content: input,
-        sender_id: profile?.id || '',
-        receiver_id: 'assistant',
-        created_at: new Date().toISOString(),
-        timestamp: new Date().toISOString(),
-        message_type: 'user',
-        read: false,
-        status: 'sent',
-        metadata: {}
-      };
-
-      sendMessage(input, {
-        id: 'assistant',
-        full_name: 'M. Victaure',
-        avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-        online_status: true,
-        last_seen: new Date().toISOString()
-      });
-
-      setInput("");
-      scrollToBottom();
-
-    } catch (error) {
-      console.error('Erreur:', error);
-      toast.error("Une erreur est survenue");
-    } finally {
-      setIsThinking(false);
-    }
-  };
+  const handleSpeakingChange = useCallback((speaking: boolean) => {
+    setIsSpeaking(speaking);
+  }, []);
 
   return (
-    <ChatContainer>
-      <div 
-        className="fixed top-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b"
-      >
-        <div className="p-4">
-          <h2 className="text-xl font-semibold">Chat avec M. Victaure</h2>
-          <p className="text-sm text-muted-foreground">
-            Votre assistant personnel
-          </p>
+    <div className="flex flex-col h-full relative">
+      <ScrollArea className="flex-1 p-4">
+        <div className="space-y-4 max-w-3xl mx-auto">
+          {messages.map((message) => (
+            <ChatMessage
+              key={message.id}
+              message={message}
+              onReply={handleSendMessage}
+              onJobAccept={handleJobAccept}
+              onJobReject={handleJobReject}
+            />
+          ))}
+        </div>
+      </ScrollArea>
+
+      <div className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="max-w-3xl mx-auto relative">
+          <ChatInput
+            value={inputMessage}
+            onChange={setInputMessage}
+            onSend={handleSendMessage}
+            isThinking={isThinking || isSpeaking}
+            disabled={isSpeaking}
+            placeholder={isSpeaking ? "Synthèse vocale en cours..." : "Écrivez votre message..."}
+          />
+          
+          <VoiceInterface
+            onMessageReceived={handleVoiceMessage}
+            onSpeakingChange={handleSpeakingChange}
+            className="absolute right-2 bottom-16"
+          />
         </div>
       </div>
-
-      <div className="pt-36 pb-20">
-        <ChatMessagesList
-          messages={messages}
-          isThinking={isThinking}
-          onScroll={handleScroll}
-          messagesEndRef={messagesEndRef}
-        />
-      </div>
-
-      <div className="fixed bottom-0 left-0 right-0 p-4 border-t bg-background/95 backdrop-blur-sm">
-        <ChatInput
-          value={input}
-          onChange={setInput}
-          onSend={handleSendMessage}
-          isThinking={isThinking}
-          placeholder="Posez vos questions à M. Victaure..."
-        />
-      </div>
-    </ChatContainer>
+    </div>
   );
 }
