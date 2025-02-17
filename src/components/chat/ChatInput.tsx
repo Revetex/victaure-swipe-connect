@@ -1,7 +1,7 @@
 
-import React, { KeyboardEvent, useRef } from "react";
+import React, { KeyboardEvent, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Mic, Send, Paperclip } from "lucide-react";
+import { Loader2, Mic, Send, Paperclip, MicOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -29,6 +29,7 @@ export function ChatInput({
   disabled = false
 }: ChatInputProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isVoiceSupported] = useState(() => 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -61,6 +62,17 @@ export function ChatInput({
       }
 
       onFileAttach?.(file);
+    }
+  };
+
+  const handleVoiceInput = () => {
+    if (!isVoiceSupported) {
+      toast.error("La reconnaissance vocale n'est pas supportée par votre navigateur");
+      return;
+    }
+    
+    if (onVoiceInput) {
+      onVoiceInput();
     }
   };
 
@@ -98,11 +110,12 @@ export function ChatInput({
           onChange={handleTextareaInput}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          disabled={disabled}
+          disabled={disabled || isListening}
           className={cn(
             "w-full resize-none bg-muted rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary",
             "min-h-[44px] max-h-[200px]",
-            disabled && "opacity-50 cursor-not-allowed"
+            (disabled || isListening) && "opacity-50 cursor-not-allowed",
+            isListening && "bg-primary/10"
           )}
           style={{
             height: 'auto',
@@ -110,19 +123,28 @@ export function ChatInput({
             maxHeight: '200px'
           }}
         />
+        {isListening && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-primary animate-pulse">Écoute en cours...</span>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-2">
-        {onVoiceInput && (
+        {isVoiceSupported && (
           <Button
             size="icon"
             variant={isListening ? "default" : "ghost"}
-            onClick={onVoiceInput}
+            onClick={handleVoiceInput}
             className="rounded-full h-10 w-10"
             disabled={isThinking || disabled}
-            title="Entrée vocale"
+            title={isListening ? "Arrêter l'écoute" : "Commencer l'écoute"}
           >
-            <Mic className={cn("h-5 w-5", isListening && "text-white")} />
+            {isListening ? (
+              <MicOff className="h-5 w-5 text-white" />
+            ) : (
+              <Mic className="h-5 w-5" />
+            )}
           </Button>
         )}
 

@@ -30,12 +30,27 @@ function getQuickReplies(messageContent: string): string[] {
       "Exemples de CV"
     ];
   }
+  // Ajout de réponses rapides pour plus de cas
+  if (messageContent.toLowerCase().includes('salaire') || messageContent.toLowerCase().includes('paie')) {
+    return [
+      "Quel est le salaire moyen?",
+      "Négocier mon salaire",
+      "Comparer les salaires",
+      "Avantages sociaux"
+    ];
+  }
   return [];
 }
 
 export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: ChatMessageProps) {
   const quickReplies = getQuickReplies(message.content);
   const suggestedJobs = message.metadata?.suggestedJobs as any[] || [];
+
+  const handleReply = (reply: string) => {
+    if (onReply) {
+      onReply(reply);
+    }
+  };
 
   return (
     <motion.div
@@ -84,7 +99,7 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
           )}
         </div>
 
-        {message.is_assistant && suggestedJobs.length > 0 && onJobAccept && onJobReject && (
+        {message.is_assistant && suggestedJobs && suggestedJobs.length > 0 && onJobAccept && onJobReject && (
           <div className="space-y-2 mt-2 w-full">
             {suggestedJobs.map((job: any) => (
               <div key={job.id} className="bg-muted p-3 rounded-lg">
@@ -110,15 +125,15 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
           </div>
         )}
 
-        {message.is_assistant && quickReplies.length > 0 && onReply && (
+        {message.is_assistant && quickReplies.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-2">
             {quickReplies.map((reply) => (
               <Button
                 key={reply}
                 variant="outline"
                 size="sm"
-                onClick={() => onReply(reply)}
-                className="bg-background/80 backdrop-blur-sm hover:bg-primary/10"
+                onClick={() => handleReply(reply)}
+                className="bg-background/80 backdrop-blur-sm hover:bg-primary/10 text-sm"
               >
                 {reply}
               </Button>
