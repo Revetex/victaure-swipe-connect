@@ -12,10 +12,10 @@ interface JobsPreviewProps {
 
 export function JobsPreview({ onAuthRequired }: JobsPreviewProps) {
   const navigate = useNavigate();
-  const { jobs, isLoading } = useSwipeJobs(defaultFilters);
+  const { jobs, loading } = useSwipeJobs(defaultFilters);
   const previewJobs = (jobs || []).slice(0, 3);
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[200px]">
         <Loader2 className="h-8 w-8 animate-spin" />
