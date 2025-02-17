@@ -6,9 +6,10 @@ import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatThinking } from "@/components/chat/ChatThinking";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
 import { useProfile } from "@/hooks/useProfile";
+import { toast } from "sonner";
 
 export interface ConversationViewProps {
   messages: Message[];
