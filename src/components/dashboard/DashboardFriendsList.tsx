@@ -1,48 +1,49 @@
+
 import { motion } from "framer-motion";
-import { FriendsContent } from "@/components/feed/friends/FriendsContent";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { X } from "lucide-react";
-import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useProfile } from "@/hooks/useProfile";
+import { UserAvatar } from "@/components/UserAvatar";
 import { cn } from "@/lib/utils";
 
-interface DashboardFriendsListProps {
+export interface DashboardFriendsListProps {
   show: boolean;
   onClose: () => void;
 }
 
 export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProps) {
-  const isMobile = useIsMobile();
-  
-  if (!show) return null;
+  const { profile } = useProfile();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.2 }}
-      className={cn(
-        "fixed inset-x-0 top-[4rem] z-[100] bg-background/95 backdrop-blur-sm border-b",
-        "overflow-hidden shadow-lg",
-        isMobile ? "h-[calc(100vh-4rem)]" : "h-[70vh]"
-      )}
-    >
-      <div className="container mx-auto px-4 h-full">
-        <div className="max-w-3xl mx-auto relative h-full py-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="absolute right-0 top-0"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-          
-          <div className="h-full overflow-y-auto">
-            <FriendsContent />
-          </div>
+    <Card className="hover:shadow-lg transition-shadow duration-200">
+      <CardHeader>
+        <CardTitle className="text-lg font-medium">Amis en ligne</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-3">
+          {profile?.friends?.slice(0, 5).map((friend) => (
+            <motion.div
+              key={friend.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <UserAvatar
+                imageUrl={friend.avatar_url}
+                name={friend.full_name}
+                className="h-8 w-8"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{friend.full_name}</p>
+                <p className="text-xs text-muted-foreground">{friend.status || "En ligne"}</p>
+              </div>
+              <div className={cn(
+                "w-2 h-2 rounded-full",
+                friend.online_status ? "bg-green-500" : "bg-gray-300"
+              )} />
+            </motion.div>
+          ))}
         </div>
-      </div>
-    </motion.div>
+      </CardContent>
+    </Card>
   );
 }

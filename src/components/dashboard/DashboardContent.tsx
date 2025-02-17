@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
@@ -6,7 +5,7 @@ import { Marketplace } from "@/components/Marketplace";
 import { Feed } from "@/components/feed/Feed";
 import { Settings } from "@/components/Settings";
 import { NotesSection } from "@/components/notes/NotesSection";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
 import { NotificationsTab } from "@/components/notifications/NotificationsTab";
@@ -37,6 +36,7 @@ export function DashboardContent({
   onRequestChat
 }: DashboardContentProps) {
   const { user } = useAuth();
+  const [showFriendsList, setShowFriendsList] = useState(false);
 
   useEffect(() => {
     if (currentPage === 5) {
@@ -60,7 +60,6 @@ export function DashboardContent({
     }
   };
 
-  // Fonction pour rendre le contenu principal du dashboard
   const renderDashboardHome = () => {
     return (
       <div className="container mx-auto p-4 space-y-6 max-w-7xl">
@@ -73,7 +72,10 @@ export function DashboardContent({
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <RecentActivity />
           <JobActions />
-          <DashboardFriendsList />
+          <DashboardFriendsList 
+            show={showFriendsList} 
+            onClose={() => setShowFriendsList(false)} 
+          />
         </div>
       </div>
     );

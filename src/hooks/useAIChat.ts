@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { Message } from '@/types/messages';
 import { supabase } from '@/integrations/supabase/client';
@@ -41,11 +40,7 @@ export function useAIChat() {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         read: false,
-        sender: {
-          ...profile,
-          online_status: profile.online_status ?? false,
-          last_seen: profile.last_seen ?? new Date().toISOString()
-        },
+        sender: profile,
         receiver: defaultAssistant,
         timestamp: new Date().toISOString(),
         message_type: 'user',
@@ -59,7 +54,7 @@ export function useAIChat() {
       setMessages(prev => [...prev, userMessage]);
       setIsThinking(true);
 
-      // Appeler l'assistant
+      // Appeler l'assistant via OpenRouter
       const { data, error } = await supabase.functions.invoke<AIResponse>('chat-ai', {
         body: { 
           message: content,
@@ -84,11 +79,7 @@ export function useAIChat() {
         updated_at: new Date().toISOString(),
         read: false,
         sender: defaultAssistant,
-        receiver: {
-          ...profile,
-          online_status: profile.online_status ?? false,
-          last_seen: profile.last_seen ?? new Date().toISOString()
-        },
+        receiver: profile,
         timestamp: new Date().toISOString(),
         message_type: 'assistant',
         status: 'sent',
