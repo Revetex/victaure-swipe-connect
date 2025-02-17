@@ -2,8 +2,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ArrowLeft, ChevronLeft, Menu, Layout, MessageCircle, BriefCase, Settings, Users, ShoppingBag } from "lucide-react";
-import { motion } from "framer-motion";
+import { Menu, Layout, MessageCircle, Briefcase, Settings, Users, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface DashboardSidebarProps {
@@ -66,7 +65,7 @@ export function DashboardSidebar({ currentPage, onPageChange }: DashboardSidebar
               )}
               onClick={() => onPageChange(3)}
             >
-              <BriefCase className="h-5 w-5" />
+              <Briefcase className="h-5 w-5" />
               Emplois
             </Button>
 
