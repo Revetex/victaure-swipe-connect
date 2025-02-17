@@ -1,9 +1,10 @@
 
-import React, { KeyboardEvent, useRef, useState } from "react";
+import React, { KeyboardEvent, useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Mic, Send, Paperclip, MicOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { speechService } from "@/services/speechRecognitionService";
 
 interface ChatInputProps {
   value: string;
@@ -29,7 +30,80 @@ export function ChatInput({
   disabled = false
 }: ChatInputProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isVoiceSupported] = useState(() => 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+  const [localIsListening, setLocalIsListening] = useState(false);
+  const [isVoiceSupported] = useState(() => speechService.isSupported());
+  const [audioLevel, setAudioLevel] = useState(0);
+  const animationFrameRef = useRef<number>();
+
+  useEffect(() => {
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
+
+  const handleVoiceInput = () => {
+    if (!isVoiceSupported) {
+      toast.error("La reconnaissance vocale n'est pas supportée par votre navigateur");
+      return;
+    }
+
+    if (localIsListening) {
+      speechService.stop();
+      setLocalIsListening(false);
+      setAudioLevel(0);
+    } else {
+      try {
+        speechService.start(
+          (text) => {
+            onChange(value + ' ' + text);
+          },
+          () => {
+            setLocalIsListening(false);
+            setAudioLevel(0);
+          }
+        );
+        setLocalIsListening(true);
+        startAudioLevelDetection();
+      } catch (error) {
+        toast.error("Erreur lors de l'activation de la reconnaissance vocale");
+      }
+    }
+    
+    if (onVoiceInput) {
+      onVoiceInput();
+    }
+  };
+
+  const startAudioLevelDetection = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const audioContext = new AudioContext();
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      source.connect(analyser);
+
+      const updateAudioLevel = () => {
+        if (!localIsListening) {
+          stream.getTracks().forEach(track => track.stop());
+          return;
+        }
+
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(dataArray);
+        const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+        setAudioLevel(average / 128); // Normalize to 0-1
+
+        animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
+      };
+
+      updateAudioLevel();
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+    }
+  };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -41,7 +115,7 @@ export function ChatInput({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const maxSize = 10 * 1024 * 1024; // 10MB
+      const maxSize = 10 * 1024 * 1024;
       if (file.size > maxSize) {
         toast.error("Le fichier est trop volumineux (max 10MB)");
         return;
@@ -62,17 +136,6 @@ export function ChatInput({
       }
 
       onFileAttach?.(file);
-    }
-  };
-
-  const handleVoiceInput = () => {
-    if (!isVoiceSupported) {
-      toast.error("La reconnaissance vocale n'est pas supportée par votre navigateur");
-      return;
-    }
-    
-    if (onVoiceInput) {
-      onVoiceInput();
     }
   };
 
@@ -110,12 +173,12 @@ export function ChatInput({
           onChange={handleTextareaInput}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          disabled={disabled || isListening}
+          disabled={disabled || localIsListening}
           className={cn(
             "w-full resize-none bg-muted rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary",
             "min-h-[44px] max-h-[200px]",
-            (disabled || isListening) && "opacity-50 cursor-not-allowed",
-            isListening && "bg-primary/10"
+            (disabled || localIsListening) && "opacity-50 cursor-not-allowed",
+            localIsListening && "bg-primary/10"
           )}
           style={{
             height: 'auto',
@@ -123,8 +186,13 @@ export function ChatInput({
             maxHeight: '200px'
           }}
         />
-        {isListening && (
-          <div className="absolute inset-0 flex items-center justify-center">
+        {localIsListening && (
+          <div 
+            className="absolute inset-0 flex items-center justify-center"
+            style={{
+              background: `radial-gradient(circle, rgba(var(--primary-rgb), ${audioLevel * 0.2}) 0%, transparent 70%)`
+            }}
+          >
             <span className="text-primary animate-pulse">Écoute en cours...</span>
           </div>
         )}
@@ -134,13 +202,16 @@ export function ChatInput({
         {isVoiceSupported && (
           <Button
             size="icon"
-            variant={isListening ? "default" : "ghost"}
+            variant={localIsListening ? "default" : "ghost"}
             onClick={handleVoiceInput}
-            className="rounded-full h-10 w-10"
+            className={cn(
+              "rounded-full h-10 w-10",
+              localIsListening && "animate-pulse bg-primary"
+            )}
             disabled={isThinking || disabled}
-            title={isListening ? "Arrêter l'écoute" : "Commencer l'écoute"}
+            title={localIsListening ? "Arrêter l'écoute" : "Commencer l'écoute"}
           >
-            {isListening ? (
+            {localIsListening ? (
               <MicOff className="h-5 w-5 text-white" />
             ) : (
               <Mic className="h-5 w-5" />
