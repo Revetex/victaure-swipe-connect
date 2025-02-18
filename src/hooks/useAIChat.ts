@@ -7,6 +7,9 @@ import { useAIMessages } from './chat/useAIMessages';
 import { useJobActions } from './chat/useJobActions';
 import { ConversationContext } from './chat/types';
 
+// UUID constant pour l'assistant
+const ASSISTANT_ID = '00000000-0000-0000-0000-000000000000';
+
 export function useAIChat() {
   const [isThinking, setIsThinking] = useState(false);
   const [inputMessage, setInputMessage] = useState('');
@@ -43,7 +46,7 @@ export function useAIChat() {
         .insert({
           content,
           sender_id: profile.id,
-          receiver_id: 'assistant',
+          receiver_id: ASSISTANT_ID,
           message_type: 'user',
           is_assistant: false,
           status: 'sent',
@@ -80,7 +83,7 @@ export function useAIChat() {
         .from('messages')
         .insert({
           content: data.response,
-          sender_id: 'assistant',
+          sender_id: ASSISTANT_ID,
           receiver_id: profile.id,
           message_type: 'assistant',
           is_assistant: true,
