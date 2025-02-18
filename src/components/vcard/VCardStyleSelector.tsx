@@ -85,13 +85,13 @@ export function VCardStyleSelector() {
   };
 
   return (
-    <div className="flex items-center gap-2 p-4 sm:p-0">
+    <div className="flex items-center gap-2 p-2 sm:p-0">
       <Palette className="h-4 w-4 text-purple-600 dark:text-purple-400" />
       <Select value={selectedStyle.id} onValueChange={handleStyleChange}>
-        <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800">
+        <SelectTrigger className="w-[150px] sm:w-[180px] bg-white/90 dark:bg-gray-800/90 text-sm sm:text-base">
           <SelectValue placeholder="Choisir un style" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="bg-white/95 dark:bg-gray-800/95">
           {styles.map((style) => (
             <SelectItem key={style.id} value={style.id}>
               <div className="flex items-center gap-2">
@@ -99,7 +99,7 @@ export function VCardStyleSelector() {
                   className="w-3 h-3 rounded-full" 
                   style={{ backgroundColor: style.color }}
                 />
-                {style.name}
+                <span className="text-sm">{style.name}</span>
               </div>
             </SelectItem>
           ))}

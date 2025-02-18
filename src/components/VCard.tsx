@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
@@ -81,12 +82,12 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-3xl mx-auto bg-white/90 dark:bg-gray-900/90 rounded-xl shadow-xl overflow-hidden backdrop-blur-sm relative z-10 mt-16 sm:mt-6"
+        className="w-full bg-white/90 dark:bg-gray-900/90 rounded-xl shadow-xl overflow-hidden backdrop-blur-sm relative z-10"
       >
-        <div className="relative p-6 sm:p-8">
+        <div className="relative p-3 sm:p-6">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5" />
           
-          <div className="relative space-y-8">
+          <div className="relative space-y-6">
             {isEditing && !isPublic && (
               <div className="flex justify-end">
                 <VCardStyleSelector />
@@ -105,7 +106,7 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
               onGenerateBio={handleGenerateBio}
             />
 
-            <div className="space-y-8">
+            <div className="space-y-6">
               <VCardContact
                 profile={activeProfile}
                 isEditing={isEditing && !isPublic}
