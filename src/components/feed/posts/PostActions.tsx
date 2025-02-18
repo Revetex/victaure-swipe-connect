@@ -83,14 +83,9 @@ export function PostActions({
     };
   }, [postId, onReaction]);
 
-  const handleReactionClick = (type: 'like' | 'dislike') => {
-    handleReaction(type);
-    onReaction?.(postId, type);
-  };
-
   const calculateReactionPercentage = () => {
     const total = likes + dislikes;
-    if (total === 0) return { likes: 50, dislikes: 50 }; // Si pas de réactions, on affiche 50/50
+    if (total === 0) return { likes: 0, dislikes: 0 }; // Si pas de réactions, on affiche 0/0
     
     const likePercentage = Math.round((likes / total) * 100);
     const dislikePercentage = 100 - likePercentage;
@@ -105,18 +100,16 @@ export function PostActions({
       <div className="flex items-center gap-2">
         <ReactionButton
           icon={ThumbsUp}
-          count={percentages.likes}
-          suffix="%"
+          count={likes}
           isActive={userReaction === 'like'}
-          onClick={() => handleReactionClick('like')}
+          onClick={() => handleReaction('like')}
           activeClassName="bg-green-500 hover:bg-green-600 text-white shadow-lg"
         />
         <ReactionButton
           icon={ThumbsDown}
-          count={percentages.dislikes}
-          suffix="%"
+          count={dislikes}
           isActive={userReaction === 'dislike'}
-          onClick={() => handleReactionClick('dislike')}
+          onClick={() => handleReaction('dislike')}
           activeClassName="bg-red-500 hover:bg-red-600 text-white shadow-lg"
         />
       </div>
