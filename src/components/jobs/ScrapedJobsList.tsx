@@ -1,5 +1,4 @@
-import { Job } from "@/types/job";
-lov-code>
+
 import { Job } from "@/types/job";
 import { JobList } from "./JobList";
 import { JobFilters } from "./JobFilterUtils";
