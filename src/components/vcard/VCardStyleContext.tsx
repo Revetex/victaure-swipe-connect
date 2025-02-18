@@ -1,6 +1,8 @@
 
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { StyleOption } from './types';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const defaultStyle: StyleOption = {
   id: 'modern',
@@ -37,6 +39,60 @@ export function VCardStyleProvider({ children }: { children: ReactNode }) {
   const [selectedStyle, setSelectedStyle] = useState<StyleOption>(defaultStyle);
 
   useEffect(() => {
+    // Charger le style depuis le profil au montage
+    const loadProfileStyle = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('style_id')
+          .eq('id', user.id)
+          .single();
+
+        if (error) throw error;
+        if (profile?.style_id) {
+          const style = styles.find(s => s.id === profile.style_id);
+          if (style) {
+            setSelectedStyle(style);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading profile style:', error);
+      }
+    };
+
+    loadProfileStyle();
+  }, []);
+
+  const handleStyleChange = async (style: StyleOption) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Vous devez être connecté pour changer le style");
+        return;
+      }
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          style_id: style.id,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setSelectedStyle(style);
+      toast.success("Style mis à jour avec succès");
+    } catch (error) {
+      console.error('Error updating style:', error);
+      toast.error("Erreur lors de la mise à jour du style");
+    }
+  };
+
+  useEffect(() => {
     // Appliquer les styles globaux
     const root = document.documentElement;
     root.style.setProperty('--primary-color', selectedStyle.colors.primary);
@@ -49,7 +105,7 @@ export function VCardStyleProvider({ children }: { children: ReactNode }) {
   }, [selectedStyle]);
 
   return (
-    <VCardStyleContext.Provider value={{ selectedStyle, setSelectedStyle }}>
+    <VCardStyleContext.Provider value={{ selectedStyle, setSelectedStyle: handleStyleChange }}>
       {children}
     </VCardStyleContext.Provider>
   );
