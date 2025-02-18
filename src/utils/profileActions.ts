@@ -72,7 +72,10 @@ export const updateProfile = async (tempProfile: UserProfile) => {
         .from('certifications')
         .insert(certifications);
 
-      if (certError) throw certError;
+      if (certError) {
+        console.error("Error inserting certifications:", certError);
+        throw certError;
+      }
     }
 
     // Mettre à jour l'éducation si elle existe
@@ -97,7 +100,10 @@ export const updateProfile = async (tempProfile: UserProfile) => {
         .from('education')
         .insert(education);
 
-      if (eduError) throw eduError;
+      if (eduError) {
+        console.error("Error inserting education:", eduError);
+        throw eduError;
+      }
     }
 
     // Mettre à jour les expériences si elles existent
@@ -121,7 +127,10 @@ export const updateProfile = async (tempProfile: UserProfile) => {
         .from('experiences')
         .insert(experiences);
 
-      if (expError) throw expError;
+      if (expError) {
+        console.error("Error inserting experiences:", expError);
+        throw expError;
+      }
     }
 
     toast.success("Profil mis à jour avec succès");
