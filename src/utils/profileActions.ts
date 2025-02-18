@@ -20,7 +20,10 @@ END:VCARD`;
 export const updateProfile = async (tempProfile: UserProfile) => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("No authenticated user");
+    if (!user) {
+      toast.error("Vous devez être connecté pour sauvegarder votre profil");
+      throw new Error("No authenticated user");
+    }
 
     console.log("Updating profile with data:", tempProfile);
 
@@ -55,7 +58,8 @@ export const updateProfile = async (tempProfile: UserProfile) => {
       industry: tempProfile.industry || null,
       role: tempProfile.role || existingProfile?.role || 'professional',
       avatar_url: tempProfile.avatar_url || existingProfile?.avatar_url,
-      style_id: tempProfile.style_id || existingProfile?.style_id
+      style_id: tempProfile.style_id || existingProfile?.style_id,
+      updated_at: new Date().toISOString()
     };
 
     console.log("Profile data to be saved:", profileData);
@@ -63,15 +67,18 @@ export const updateProfile = async (tempProfile: UserProfile) => {
     // Update profile
     const { error: upsertError } = await supabase
       .from('profiles')
-      .upsert(profileData);
+      .upsert(profileData, {
+        returning: 'minimal',
+        onConflict: 'id'
+      });
 
     if (upsertError) {
       console.error("Error upserting profile:", upsertError);
       throw upsertError;
     }
 
-    // Update certifications if they exist
-    if (tempProfile.certifications) {
+    // Update certifications
+    if (tempProfile.certifications && tempProfile.certifications.length > 0) {
       // Delete existing certifications
       const { error: deleteError } = await supabase
         .from('certifications')
@@ -83,28 +90,27 @@ export const updateProfile = async (tempProfile: UserProfile) => {
         throw deleteError;
       }
 
-      // Insert new certifications if any exist
-      if (tempProfile.certifications.length > 0) {
-        const { error: certError } = await supabase
-          .from('certifications')
-          .insert(tempProfile.certifications.map(cert => ({
-            profile_id: user.id,
-            title: cert.title,
-            issuer: cert.institution,
-            issue_date: cert.year ? `${cert.year}-01-01` : null,
-            credential_url: cert.credential_url || null,
-            description: cert.description || null
-          })));
+      // Insert new certifications
+      const { error: certError } = await supabase
+        .from('certifications')
+        .insert(tempProfile.certifications.map(cert => ({
+          profile_id: user.id,
+          title: cert.title,
+          institution: cert.institution,
+          year: cert.year,
+          credential_url: cert.credential_url || null,
+          description: cert.description || null,
+          issuer: cert.institution
+        })));
 
-        if (certError) {
-          console.error("Error inserting certifications:", certError);
-          throw certError;
-        }
+      if (certError) {
+        console.error("Error inserting certifications:", certError);
+        throw certError;
       }
     }
 
-    // Update education records if they exist
-    if (tempProfile.education) {
+    // Update education records
+    if (tempProfile.education && tempProfile.education.length > 0) {
       // Delete existing education records
       const { error: deleteError } = await supabase
         .from('education')
@@ -116,29 +122,27 @@ export const updateProfile = async (tempProfile: UserProfile) => {
         throw deleteError;
       }
 
-      // Insert new education records if any exist
-      if (tempProfile.education.length > 0) {
-        const { error: eduError } = await supabase
-          .from('education')
-          .insert(tempProfile.education.map(edu => ({
-            profile_id: user.id,
-            school_name: edu.school_name,
-            degree: edu.degree,
-            field_of_study: edu.field_of_study || null,
-            start_date: edu.start_date || null,
-            end_date: edu.end_date || null,
-            description: edu.description || null
-          })));
+      // Insert new education records
+      const { error: eduError } = await supabase
+        .from('education')
+        .insert(tempProfile.education.map(edu => ({
+          profile_id: user.id,
+          school_name: edu.school_name,
+          degree: edu.degree,
+          field_of_study: edu.field_of_study || null,
+          start_date: edu.start_date || null,
+          end_date: edu.end_date || null,
+          description: edu.description || null
+        })));
 
-        if (eduError) {
-          console.error("Error inserting education:", eduError);
-          throw eduError;
-        }
+      if (eduError) {
+        console.error("Error inserting education:", eduError);
+        throw eduError;
       }
     }
 
-    // Update experiences if they exist
-    if (tempProfile.experiences) {
+    // Update experiences
+    if (tempProfile.experiences && tempProfile.experiences.length > 0) {
       // Delete existing experiences
       const { error: deleteError } = await supabase
         .from('experiences')
@@ -150,31 +154,36 @@ export const updateProfile = async (tempProfile: UserProfile) => {
         throw deleteError;
       }
 
-      // Insert new experiences if any exist
-      if (tempProfile.experiences.length > 0) {
-        const { error: expError } = await supabase
-          .from('experiences')
-          .insert(tempProfile.experiences.map(exp => ({
-            profile_id: user.id,
-            company: exp.company,
-            position: exp.position,
-            start_date: exp.start_date || null,
-            end_date: exp.end_date || null,
-            description: exp.description || null
-          })));
+      // Insert new experiences
+      const { error: expError } = await supabase
+        .from('experiences')
+        .insert(tempProfile.experiences.map(exp => ({
+          profile_id: user.id,
+          company: exp.company,
+          position: exp.position,
+          start_date: exp.start_date || null,
+          end_date: exp.end_date || null,
+          description: exp.description || null
+        })));
 
-        if (expError) {
-          console.error("Error inserting experiences:", expError);
-          throw expError;
-        }
+      if (expError) {
+        console.error("Error inserting experiences:", expError);
+        throw expError;
       }
     }
 
     console.log("Profile updated successfully");
+    toast.success("Profil mis à jour avec succès");
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in updateProfile:', error);
-    toast.error("Erreur lors de la mise à jour du profil");
+    if (error.code === '23505') {
+      toast.error("Un profil avec cet email existe déjà");
+    } else if (error.code === '23503') {
+      toast.error("Erreur de référence. Veuillez vérifier vos données");
+    } else {
+      toast.error(error.message || "Erreur lors de la mise à jour du profil");
+    }
     throw error;
   }
 };
