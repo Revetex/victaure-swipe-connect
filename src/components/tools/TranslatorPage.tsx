@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Languages, ArrowLeftRight } from "lucide-react";
+import { Languages, ArrowLeftRight, VolumeHigh } from "lucide-react";
 import { motion } from "framer-motion";
 import { TranslatorLanguageSelect } from "./translator/TranslatorLanguageSelect";
 import { TranslatorTextArea } from "./translator/TranslatorTextArea";
@@ -20,7 +20,8 @@ export function TranslatorPage() {
     handleTranslate,
     copyToClipboard,
     speakText,
-    swapLanguages
+    swapLanguages,
+    playTranslation
   } = useTranslator();
 
   useEffect(() => {
@@ -60,7 +61,7 @@ export function TranslatorPage() {
       >
         <div className="flex items-center gap-2 mb-6">
           <Languages className="h-6 w-6" />
-          <h1 className="text-2xl font-bold">Translator</h1>
+          <h1 className="text-2xl font-bold">Traducteur</h1>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -73,7 +74,7 @@ export function TranslatorPage() {
             <TranslatorTextArea
               value={sourceText}
               onChange={(e) => setSourceText(e.target.value)}
-              placeholder="Enter text to translate..."
+              placeholder="Entrez le texte à traduire..."
               onSpeak={() => speakText(sourceText, sourceLang)}
             />
           </div>
@@ -90,7 +91,7 @@ export function TranslatorPage() {
                 size="icon"
                 onClick={swapLanguages}
                 className="flex-shrink-0"
-                title="Swap languages (Ctrl+S)"
+                title="Inverser les langues (Ctrl+S)"
               >
                 <ArrowLeftRight className="h-4 w-4" />
               </Button>
@@ -98,17 +99,30 @@ export function TranslatorPage() {
 
             <TranslatorTextArea
               value={translatedText}
-              placeholder="Translation..."
+              placeholder="Traduction..."
               readOnly
-              onSpeak={() => speakText(translatedText, targetLang)}
+              onSpeak={playTranslation}
               onCopy={() => copyToClipboard(translatedText)}
             />
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end">
-          <Button onClick={handleTranslate} disabled={isLoading} title="Translate (Ctrl+Enter)">
-            {isLoading ? "Translating..." : "Translate"}
+        <div className="mt-6 flex justify-end gap-2">
+          <Button 
+            variant="outline"
+            onClick={() => handleTranslate(true)}
+            disabled={isLoading}
+            className="gap-2"
+          >
+            <VolumeHigh className="h-4 w-4" />
+            Traduire et écouter
+          </Button>
+          <Button 
+            onClick={() => handleTranslate(false)} 
+            disabled={isLoading}
+            title="Traduire (Ctrl+Enter)"
+          >
+            {isLoading ? "Traduction en cours..." : "Traduire"}
           </Button>
         </div>
       </motion.div>
