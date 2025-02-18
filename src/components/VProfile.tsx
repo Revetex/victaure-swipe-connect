@@ -4,13 +4,11 @@ import { VCard } from "./VCard";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { Button } from "./ui/button";
 import { useConnectionStatus } from "./profile/preview/hooks/useConnectionStatus";
 import { useConnectionActions } from "./profile/preview/hooks/useConnectionActions";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Edit, UserPlus, UserMinus, UserX } from "lucide-react";
-import { toast } from "sonner";
+import { ProfilePreviewButtons } from "./profile/preview/ProfilePreviewButtons";
 import { ScrollArea } from "./ui/scroll-area";
 
 interface VProfileProps {
@@ -35,7 +33,8 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
     handleAddFriend,
     handleAcceptFriend,
     handleRemoveFriend,
-    handleToggleBlock
+    handleToggleBlock,
+    handleRequestCV
   } = useConnectionActions(profile.id);
 
   const handleEditProfile = () => {
@@ -43,19 +42,8 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
     onClose();
   };
 
-  const handleAction = async (action: () => Promise<void>, successMessage: string) => {
-    try {
-      await action();
-      toast.success(successMessage);
-    } catch (error) {
-      console.error("Action error:", error);
-      toast.error("Une erreur est survenue");
-    }
-  };
-
-  if (!profile) {
-    return null;
-  }
+  // Détermine si l'utilisateur peut voir le profil complet
+  const canViewFullProfile = isOwnProfile || isFriend || !profile.privacy_enabled;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -69,63 +57,20 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
           </DialogDescription>
         </VisuallyHidden>
         
-        <div className="sticky top-0 z-10 p-4 bg-background/95 backdrop-blur border-b flex justify-end gap-2">
-          {isOwnProfile ? (
-            <Button
-              onClick={handleEditProfile}
-              variant="outline"
-              className="gap-2"
-            >
-              <Edit className="h-4 w-4" />
-              Modifier mon profil
-            </Button>
-          ) : (
-            <>
-              {!isFriend && !isFriendRequestSent && !isFriendRequestReceived && !isBlocked && (
-                <Button
-                  onClick={() => handleAction(handleAddFriend, "Demande d'ami envoyée")}
-                  variant="outline"
-                  className="gap-2"
-                >
-                  <UserPlus className="h-4 w-4" />
-                  Ajouter en ami
-                </Button>
-              )}
-
-              {isFriendRequestReceived && (
-                <Button
-                  onClick={() => handleAction(handleAcceptFriend, "Demande d'ami acceptée")}
-                  variant="default"
-                  className="gap-2"
-                >
-                  <UserPlus className="h-4 w-4" />
-                  Accepter la demande
-                </Button>
-              )}
-
-              {(isFriend || isFriendRequestSent) && (
-                <Button
-                  onClick={() => handleAction(handleRemoveFriend, 
-                    isFriend ? "Ami retiré" : "Demande annulée")}
-                  variant="outline"
-                  className="gap-2 text-destructive hover:text-destructive"
-                >
-                  <UserMinus className="h-4 w-4" />
-                  {isFriend ? "Retirer des amis" : "Annuler la demande"}
-                </Button>
-              )}
-
-              <Button
-                onClick={() => handleAction(handleToggleBlock, 
-                  isBlocked ? "Utilisateur débloqué" : "Utilisateur bloqué")}
-                variant="outline"
-                className="gap-2"
-              >
-                <UserX className="h-4 w-4" />
-                {isBlocked ? "Débloquer" : "Bloquer"}
-              </Button>
-            </>
-          )}
+        <div className="sticky top-0 z-10 p-4 bg-background/95 backdrop-blur border-b">
+          <ProfilePreviewButtons 
+            profile={profile}
+            onClose={onClose}
+            canViewFullProfile={canViewFullProfile}
+            onRequestChat={() => navigate(`/messages?receiver=${profile.id}`)}
+            onViewProfile={() => {
+              if (isOwnProfile) {
+                handleEditProfile();
+              } else {
+                navigate(`/profile/${profile.id}`);
+              }
+            }}
+          />
         </div>
 
         <ScrollArea className="h-[calc(100vh-10rem)]">
