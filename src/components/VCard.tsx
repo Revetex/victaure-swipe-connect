@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
@@ -13,6 +12,7 @@ import { motion } from "framer-motion";
 import { useVCardHandlers } from "./vcard/handlers/useVCardHandlers";
 import { UserProfile } from "@/types/profile";
 import { generateBio } from "./vcard/bio/VCardBioGenerator";
+import { VCardStyleSelector } from "./vcard/VCardStyleSelector";
 
 interface VCardProps {
   profile?: UserProfile;
@@ -87,6 +87,12 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5" />
           
           <div className="relative space-y-8">
+            {isEditing && !isPublic && (
+              <div className="flex justify-end">
+                <VCardStyleSelector />
+              </div>
+            )}
+            
             <VCardHeader 
               profile={activeProfile}
               isEditing={isEditing && !isPublic}
