@@ -78,50 +78,56 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
   }
 
   return (
-    <VCardContainer isEditing={isEditing}>
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full bg-white/90 dark:bg-gray-900/90 rounded-xl shadow-xl overflow-hidden backdrop-blur-sm relative z-10"
-      >
-        <div className="relative p-3 sm:p-6">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5" />
-          
-          <div className="relative space-y-6">
-            {isEditing && !isPublic && (
-              <div className="flex justify-end">
-                <VCardStyleSelector />
-              </div>
-            )}
+    <div className="w-full min-h-screen overflow-x-hidden">
+      <VCardContainer isEditing={isEditing}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full bg-white/90 dark:bg-gray-900/90 rounded-xl shadow-xl backdrop-blur-sm"
+          style={{
+            color: selectedStyle.colors.text.primary,
+            backgroundColor: selectedStyle.colors.background.card
+          }}
+        >
+          <div className="relative p-3 sm:p-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5" />
             
-            <VCardHeader 
-              profile={activeProfile}
-              isEditing={isEditing && !isPublic}
-              setProfile={setProfile}
-              isPdfGenerating={isPdfGenerating}
-              isProcessing={isProcessing}
-              onEditToggle={!isPublic ? handleEditToggle : undefined}
-              onSave={handleSave}
-              onDownloadBusinessCard={handleDownloadBusinessCard}
-              onGenerateBio={handleGenerateBio}
-            />
+            <div className="relative space-y-6">
+              {isEditing && !isPublic && (
+                <div className="flex justify-end">
+                  <VCardStyleSelector />
+                </div>
+              )}
+              
+              <VCardHeader 
+                profile={activeProfile}
+                isEditing={isEditing && !isPublic}
+                setProfile={setProfile}
+                isPdfGenerating={isPdfGenerating}
+                isProcessing={isProcessing}
+                onEditToggle={!isPublic ? handleEditToggle : undefined}
+                onSave={handleSave}
+                onDownloadBusinessCard={handleDownloadBusinessCard}
+                onGenerateBio={handleGenerateBio}
+              />
 
-            <div className="space-y-6">
-              <VCardContact
-                profile={activeProfile}
-                isEditing={isEditing && !isPublic}
-                setProfile={setProfile}
-              />
-              <VCardSectionsManager
-                profile={activeProfile}
-                isEditing={isEditing && !isPublic}
-                setProfile={setProfile}
-                selectedStyle={selectedStyle}
-              />
+              <div className="space-y-6">
+                <VCardContact
+                  profile={activeProfile}
+                  isEditing={isEditing && !isPublic}
+                  setProfile={setProfile}
+                />
+                <VCardSectionsManager
+                  profile={activeProfile}
+                  isEditing={isEditing && !isPublic}
+                  setProfile={setProfile}
+                  selectedStyle={selectedStyle}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </motion.div>
-    </VCardContainer>
+        </motion.div>
+      </VCardContainer>
+    </div>
   );
 }
