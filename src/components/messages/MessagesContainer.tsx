@@ -40,6 +40,20 @@ export function MessagesContainer() {
   
   const { handleDeleteConversation } = useConversationDelete();
 
+  const findExistingConversation = async (userId: string, partnerId: string) => {
+    const { data, error } = await supabase
+      .from('conversations')
+      .select('*')
+      .or(
+        `and(participant1_id.eq.${userId},participant2_id.eq.${partnerId}),` +
+        `and(participant1_id.eq.${partnerId},participant2_id.eq.${userId})`
+      )
+      .maybeSingle();
+
+    if (error) throw error;
+    return data;
+  };
+
   const handleSendMessage = async () => {
     if (!receiver || !inputMessage.trim() || !user) {
       toast.error("Une erreur est survenue");
@@ -64,22 +78,8 @@ export function MessagesContainer() {
           }
         };
 
-        // Insérer le message
-        const { error: messageError } = await supabase
-          .from('messages')
-          .insert(messageData);
-
-        if (messageError) throw messageError;
-
         // Vérifier si une conversation existe déjà
-        const { data: existingConversation, error: fetchError } = await supabase
-          .from('conversations')
-          .select('*')
-          .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
-          .or(`participant1_id.eq.${receiver.id},participant2_id.eq.${receiver.id}`)
-          .maybeSingle();
-
-        if (fetchError) throw fetchError;
+        const existingConversation = await findExistingConversation(user.id, receiver.id);
 
         // Si aucune conversation n'existe, en créer une nouvelle
         if (!existingConversation) {
@@ -90,8 +90,7 @@ export function MessagesContainer() {
               participant2_id: receiver.id,
               last_message: inputMessage,
               last_message_time: new Date().toISOString()
-            })
-            .single();
+            });
 
           if (conversationError && conversationError.code !== '23505') {
             throw conversationError;
@@ -104,10 +103,17 @@ export function MessagesContainer() {
               last_message: inputMessage,
               last_message_time: new Date().toISOString()
             })
-            .match({ id: existingConversation.id });
+            .eq('id', existingConversation.id);
 
           if (updateError) throw updateError;
         }
+
+        // Insérer le message
+        const { error: messageError } = await supabase
+          .from('messages')
+          .insert(messageData);
+
+        if (messageError) throw messageError;
 
       } catch (error) {
         console.error("Error sending message:", error);
@@ -127,14 +133,7 @@ export function MessagesContainer() {
 
     try {
       // Vérifier si une conversation existe déjà
-      const { data: existingConversation, error: fetchError } = await supabase
-        .from('conversations')
-        .select('*')
-        .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
-        .or(`participant1_id.eq.${friendId},participant2_id.eq.${friendId}`)
-        .maybeSingle();
-
-      if (fetchError) throw fetchError;
+      const existingConversation = await findExistingConversation(user.id, friendId);
 
       // Si aucune conversation n'existe, en créer une nouvelle
       if (!existingConversation) {
@@ -143,8 +142,7 @@ export function MessagesContainer() {
           .insert({
             participant1_id: user.id,
             participant2_id: friendId
-          })
-          .single();
+          });
 
         if (conversationError && conversationError.code !== '23505') {
           throw conversationError;
