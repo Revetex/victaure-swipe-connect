@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
 import { useReceiver } from "@/hooks/useReceiver";
@@ -40,6 +40,12 @@ export function MessagesContainer() {
   } = useAIChat();
   
   const { handleDeleteConversation } = useConversationDelete();
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [currentMessages, aiMessages]);
 
   const handleSendMessage = async () => {
     if (!receiver || !inputMessage.trim() || !user) {

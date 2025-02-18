@@ -6,7 +6,7 @@ import { ChatThinking } from "@/components/chat/ChatThinking";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface ConversationMessagesProps {
   messages: Message[];
@@ -22,21 +22,51 @@ export function ConversationMessages({
   messagesEndRef 
 }: ConversationMessagesProps) {
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const isAutoScrollingRef = useRef(false);
+
+  useEffect(() => {
+    const scrollToBottom = (smooth = true) => {
+      if (messagesEndRef.current) {
+        isAutoScrollingRef.current = true;
+        messagesEndRef.current.scrollIntoView({ 
+          behavior: smooth ? "smooth" : "auto",
+          block: "end"
+        });
+        setTimeout(() => {
+          isAutoScrollingRef.current = false;
+        }, 100);
+      }
+    };
+
+    // Scroll to bottom when new messages arrive
+    if (messages.length > 0) {
+      scrollToBottom();
+    }
+
+    // Initial scroll without smooth behavior
+    scrollToBottom(false);
+  }, [messages]);
 
   const handleScroll = (event: any) => {
+    if (isAutoScrollingRef.current) return;
+
     const target = event.target as HTMLDivElement;
     const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
     setShowScrollButton(!isNearBottom);
   };
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
-    <>
+    <div className="relative flex-1 overflow-hidden">
       <ScrollArea 
-        className="flex-1 h-[calc(100vh-8rem)]"
+        ref={scrollAreaRef}
+        className="h-[calc(100vh-8rem)]"
         onScrollCapture={handleScroll}
       >
         <div className="px-4">
@@ -66,21 +96,28 @@ export function ConversationMessages({
               </motion.div>
             )}
             
-            <div ref={messagesEndRef} />
+            <div ref={messagesEndRef} className="h-4" />
           </div>
         </div>
       </ScrollArea>
 
       {showScrollButton && (
-        <Button
-          size="icon"
-          variant="secondary"
-          onClick={scrollToBottom}
-          className="absolute bottom-20 right-4 rounded-full shadow-lg hover:shadow-xl transition-shadow z-10"
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          className="absolute bottom-6 right-6 z-10"
         >
-          <ChevronDown className="h-4 w-4" />
-        </Button>
+          <Button
+            size="icon"
+            variant="secondary"
+            onClick={scrollToBottom}
+            className="rounded-full shadow-lg hover:shadow-xl transition-all"
+          >
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+        </motion.div>
       )}
-    </>
+    </div>
   );
 }
