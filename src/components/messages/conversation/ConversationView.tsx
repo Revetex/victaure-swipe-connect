@@ -1,17 +1,12 @@
-
 import { Message, Receiver } from "@/types/messages"; 
-import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChatMessage } from "@/components/chat/ChatMessage";
-import { ChatThinking } from "@/components/chat/ChatThinking";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, Mic } from "lucide-react";
-import { motion } from "framer-motion";
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { ConversationHeader } from "./components/ConversationHeader";
+import { ConversationMessages } from "./components/ConversationMessages";
+import { VoiceChatActivator } from "./components/VoiceChatActivator";
 
 export interface ConversationViewProps {
   messages: Message[];
@@ -40,19 +35,8 @@ export function ConversationView({
   onDeleteConversation,
   messagesEndRef
 }: ConversationViewProps) {
-  const [showScrollButton, setShowScrollButton] = useState(false);
-  const { profile } = useProfile();
   const [isVoiceChatActive, setIsVoiceChatActive] = useState(false);
-
-  const handleScroll = (event: any) => {
-    const target = event.target as HTMLDivElement;
-    const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
-    setShowScrollButton(!isNearBottom);
-  };
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const { profile } = useProfile();
 
   const handleReply = useCallback(async (content: string) => {
     onInputChange(content);
@@ -60,23 +44,6 @@ export function ConversationView({
       onSendMessage();
     }, 100);
   }, [onInputChange, onSendMessage]);
-
-  const startVoiceChat = async () => {
-    try {
-      setIsVoiceChatActive(true);
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(track => track.stop());
-      
-      toast.success("Chat vocal activé! Cliquez sur le microphone pour parler.");
-      if (onVoiceInput) {
-        onVoiceInput();
-      }
-    } catch (error) {
-      console.error("Erreur d'accès au microphone:", error);
-      toast.error("Impossible d'accéder au microphone. Vérifiez vos permissions.");
-      setIsVoiceChatActive(false);
-    }
-  };
 
   useEffect(() => {
     const saveConversation = async () => {
@@ -112,77 +79,28 @@ export function ConversationView({
 
   return (
     <div className="flex flex-col h-full bg-background">
-      <header className="flex-none">
-        <ChatHeader
-          title={receiver.full_name}
-          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
-          avatarUrl={receiver.avatar_url}
-          onBack={onBack}
-          onDelete={onDeleteConversation}
-          isOnline={receiver.online_status}
-          lastSeen={receiver.last_seen}
-        />
-      </header>
+      <ConversationHeader 
+        receiver={receiver}
+        onBack={onBack}
+        onDelete={onDeleteConversation}
+      />
 
-      <ScrollArea 
-        className="flex-1 h-[calc(100vh-8rem)]"
-        onScrollCapture={handleScroll}
-      >
-        <div className="px-4">
-          <div className="space-y-4 py-4 max-w-2xl mx-auto">
-            {messages.map((message) => (
-              <motion.div
-                key={message.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ChatMessage 
-                  message={message} 
-                  onReply={handleReply}
-                />
-              </motion.div>
-            ))}
-            
-            {isThinking && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <ChatThinking />
-              </motion.div>
-            )}
-            
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
-      </ScrollArea>
-
-      {showScrollButton && (
-        <Button
-          size="icon"
-          variant="secondary"
-          onClick={scrollToBottom}
-          className="absolute bottom-20 right-4 rounded-full shadow-lg hover:shadow-xl transition-shadow z-10"
-        >
-          <ChevronDown className="h-4 w-4" />
-        </Button>
-      )}
+      <ConversationMessages
+        messages={messages}
+        isThinking={isThinking}
+        onReply={handleReply}
+        messagesEndRef={messagesEndRef}
+      />
 
       <footer className="flex-none p-4 bg-background border-t">
         <div className="max-w-2xl mx-auto">
-          {!isVoiceChatActive && (
-            <Button
-              onClick={startVoiceChat}
-              className="w-full mb-4 gap-2"
-              variant="outline"
-            >
-              <Mic className="w-4 h-4" />
-              Activer le chat vocal
-            </Button>
-          )}
+          <VoiceChatActivator 
+            isActive={isVoiceChatActive}
+            onActivate={() => {
+              setIsVoiceChatActive(true);
+              if (onVoiceInput) onVoiceInput();
+            }}
+          />
           <ChatInput
             value={inputMessage}
             onChange={onInputChange}
