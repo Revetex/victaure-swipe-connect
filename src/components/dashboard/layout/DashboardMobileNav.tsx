@@ -1,3 +1,4 @@
+
 import { Logo } from "@/components/Logo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -37,7 +38,7 @@ export function DashboardMobileNav({
   return (
     <header className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur shadow-sm">
       <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
-        <div className="flex h-16 items-center px-4 pt-safe-top">
+        <div className="flex h-16 items-center gap-2 px-4 pt-safe-top">
           <SheetTrigger asChild>
             <Button 
               variant="ghost" 
@@ -50,10 +51,26 @@ export function DashboardMobileNav({
               <span className="sr-only">Ouvrir le menu</span>
             </Button>
           </SheetTrigger>
+
+          {completeProfile && (
+            <Button
+              variant="ghost"
+              onClick={() => setShowProfilePreview(true)}
+              className="w-8 h-8 p-0 rounded-full overflow-hidden"
+            >
+              <img
+                src={completeProfile.avatar_url || "/user-icon.svg"}
+                alt={completeProfile.full_name || ""}
+                className="w-full h-full object-cover"
+              />
+            </Button>
+          )}
+
           <div className="flex-1 flex justify-center">
             <Logo />
           </div>
         </div>
+
         <SheetContent side="left" className="w-64 p-0">
           <div className="p-4">
             <Logo />
