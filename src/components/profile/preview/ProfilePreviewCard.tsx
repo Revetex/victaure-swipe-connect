@@ -29,15 +29,6 @@ export function ProfilePreviewCard({
   const { user } = useAuth();
   const isOwnProfile = user?.id === profile.id;
 
-  const handleViewProfile = () => {
-    if (!canViewFullProfile) {
-      toast.error("Ce profil est privé");
-      return;
-    }
-    navigate(`/profile/${profile.id}`);
-    if (onClose) onClose();
-  };
-
   return (
     <div className={cn(
       "relative w-full max-w-md mx-auto",
@@ -52,7 +43,7 @@ export function ProfilePreviewCard({
             onRequestChat={onRequestChat}
             onFlip={() => setIsFlipped(true)}
             canViewFullProfile={canViewFullProfile}
-            onViewProfile={handleViewProfile}
+            onClose={onClose}
           />
         ) : (
           <ProfilePreviewBack
