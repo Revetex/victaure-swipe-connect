@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PostSkeleton } from "./PostSkeleton";
 import { EmptyPostState } from "./EmptyPostState";
 import { DeletePostDialog } from "./DeletePostDialog";
+import type { Post } from "@/types/posts";
 
 interface PostListProps {
   onPostDeleted: () => void;
@@ -21,7 +22,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
   const { handleDelete, handleHide, handleUpdate } = usePostOperations();
 
-  const { data: posts, isLoading } = useQuery({
+  const { data: posts, isLoading } = useQuery<Post[]>({
     queryKey: ["posts"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -106,25 +107,36 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   return (
     <div className="space-y-3">
       <AnimatePresence mode="popLayout">
-        {posts.map((post) => (
-          <motion.div
-            key={post.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            layout
-          >
-            <PostCard
-              post={post}
-              currentUserId={user?.id}
-              userEmail={user?.email}
-              onDelete={() => post.user_id === user?.id && setPostToDelete(post.id)}
-              onHide={(postId) => handleHide(postId, user?.id)}
-              onUpdate={handleUpdatePost}
-            />
-          </motion.div>
-        ))}
+        {posts.map((post) => {
+          // Assurons-nous que toutes les propriétés requises sont présentes
+          const postWithDefaults: Post = {
+            ...post,
+            likes: post.likes || 0,
+            dislikes: post.dislikes || 0,
+            comments: post.comments || [],
+            reactions: post.reactions || []
+          };
+
+          return (
+            <motion.div
+              key={post.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              layout
+            >
+              <PostCard
+                post={postWithDefaults}
+                currentUserId={user?.id}
+                userEmail={user?.email}
+                onDelete={() => post.user_id === user?.id && setPostToDelete(post.id)}
+                onHide={(postId) => handleHide(postId, user?.id)}
+                onUpdate={handleUpdatePost}
+              />
+            </motion.div>
+          );
+        })}
       </AnimatePresence>
 
       <DeletePostDialog 

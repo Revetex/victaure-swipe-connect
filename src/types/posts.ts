@@ -25,10 +25,10 @@ export interface Post {
     full_name: string;
     avatar_url?: string;
   };
-  comments?: Comment[];
   reactions?: {
     id: string;
     user_id: string;
     reaction_type: 'like' | 'dislike';
   }[];
+  comments?: Comment[];
 }
