@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { motion } from "framer-motion";
@@ -15,6 +16,7 @@ interface VCardHeaderProps {
   onEditToggle?: () => void;
   onSave?: () => void;
   onDownloadBusinessCard?: () => Promise<void>;
+  onGenerateBio?: () => Promise<void>; // Ajout de la nouvelle prop
 }
 
 export function VCardHeader({ 
@@ -25,6 +27,7 @@ export function VCardHeader({
   onEditToggle,
   onSave,
   onDownloadBusinessCard,
+  onGenerateBio, // Ajout du destructuring de la nouvelle prop
 }: VCardHeaderProps) {
   const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
   const [isAvatarDeleted, setIsAvatarDeleted] = useState(false);
@@ -75,6 +78,7 @@ export function VCardHeader({
               setIsEditing={onEditToggle}
               onSave={handleSave}
               onDownloadBusinessCard={onDownloadBusinessCard}
+              onGenerateBio={onGenerateBio}
             />
           </div>
         </div>
