@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { CreatePost } from "./posts/CreatePost";
 import { PostList } from "./posts/PostList";
 import { useQueryClient } from "@tanstack/react-query";
@@ -7,7 +8,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { ChevronUp } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useCallback } from "react";
 
 export function Feed() {
   const queryClient = useQueryClient();
