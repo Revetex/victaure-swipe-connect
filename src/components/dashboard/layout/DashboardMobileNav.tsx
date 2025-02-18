@@ -1,3 +1,4 @@
+
 import { Logo } from "@/components/Logo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -42,7 +43,7 @@ export function DashboardMobileNav({
             <Button 
               variant="ghost" 
               size="icon" 
-              className="lg:hidden"
+              className="md:flex"
               aria-label="Ouvrir le menu"
               title="Ouvrir le menu"
             >
@@ -62,25 +63,24 @@ export function DashboardMobileNav({
             {navigationItems.map((item) => {
               const Icon = item.icon;
               return (
-                <button
+                <Button
                   key={item.id}
-                  onClick={() => {
-                    onPageChange(item.id);
-                    setShowMobileMenu(false);
-                  }}
+                  variant="ghost"
                   className={cn(
-                    "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm",
+                    "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm justify-start",
                     "transition-colors",
                     currentPage === item.id 
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-muted"
                   )}
-                  aria-label={item.name}
-                  title={item.name}
+                  onClick={() => {
+                    onPageChange(item.id);
+                    setShowMobileMenu(false);
+                  }}
                 >
                   <Icon className="h-4 w-4" aria-hidden="true" />
                   <span>{item.name}</span>
-                </button>
+                </Button>
               );
             })}
           </nav>
