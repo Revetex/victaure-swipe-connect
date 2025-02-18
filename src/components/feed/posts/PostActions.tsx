@@ -88,10 +88,9 @@ export function PostActions({
     onReaction?.(postId, type);
   };
 
-  const total = likes + dislikes;
-  
   const calculateReactionPercentage = () => {
-    if (total === 0) return { likes: 0, dislikes: 0 };
+    const total = likes + dislikes;
+    if (total === 0) return { likes: 50, dislikes: 50 }; // Si pas de réactions, on affiche 50/50
     
     const likePercentage = Math.round((likes / total) * 100);
     const dislikePercentage = 100 - likePercentage;
