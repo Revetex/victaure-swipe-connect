@@ -33,11 +33,43 @@ export function useAIChat() {
     messageCount: number;
     acceptedJobs: string[];
     rejectedJobs: string[];
+    lastSearchTerms?: string;
+    lastLocation?: string;
   }>({ 
     messageCount: 0,
     acceptedJobs: [],
     rejectedJobs: []
   });
+
+  const handleScrapeJobs = async (searchTerms: string, location: string) => {
+    try {
+      const { data: scrapingResult, error } = await supabase.functions.invoke<{
+        success: boolean;
+        jobsFound: number;
+        jobs: any[];
+        message: string;
+      }>('scrape-jobs', {
+        body: {
+          searchTerms,
+          location,
+          isAssistantRequest: true
+        }
+      });
+
+      if (error) throw error;
+      
+      setConversationContext(prev => ({
+        ...prev,
+        lastSearchTerms: searchTerms,
+        lastLocation: location
+      }));
+
+      return scrapingResult;
+    } catch (error) {
+      console.error('Error scraping jobs:', error);
+      throw error;
+    }
+  };
 
   const handleSendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
@@ -81,6 +113,48 @@ export function useAIChat() {
       
       setMessages(prev => [...prev, thinkingMessage]);
       setIsThinking(true);
+
+      // Si le message demande une recherche d'emploi spécifique
+      if (content.toLowerCase().includes('cherche') && content.toLowerCase().includes('emploi')) {
+        try {
+          const searchTerms = conversationContext.lastSearchTerms || "développeur";
+          const location = conversationContext.lastLocation || "Québec";
+          
+          const scrapingResult = await handleScrapeJobs(searchTerms, location);
+          
+          if (scrapingResult.success) {
+            const assistantMessage: Message = {
+              id: crypto.randomUUID(),
+              content: scrapingResult.message,
+              sender_id: 'assistant',
+              receiver_id: profile.id,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              read: false,
+              sender: defaultAssistant,
+              receiver: profile,
+              timestamp: new Date().toISOString(),
+              message_type: 'assistant',
+              status: 'sent',
+              metadata: { 
+                suggestedJobs: scrapingResult.jobs,
+                context: {
+                  intent: 'job_search',
+                  lastQuery: content
+                }
+              },
+              reaction: null,
+              is_assistant: true,
+              thinking: false
+            };
+
+            setMessages(prev => [...prev.filter(m => !m.thinking), assistantMessage]);
+            return;
+          }
+        } catch (error) {
+          console.error('Error in job scraping:', error);
+        }
+      }
 
       const { data, error } = await supabase.functions.invoke<AIResponse>('chat-ai', {
         body: { 
