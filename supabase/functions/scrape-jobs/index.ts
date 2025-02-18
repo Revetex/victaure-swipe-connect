@@ -2,7 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 import { corsHeaders } from '../_shared/cors.ts'
-import { chromium } from 'https://deno.land/x/puppeteer@16.2.0/mod.ts'
+import * as puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
@@ -269,9 +269,14 @@ serve(async (req) => {
     
     console.log(`Starting job search for "${searchTerms}" in ${location}`)
     
-    browser = await chromium.launch({ 
+    browser = await puppeteer.launch({ 
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--single-process'
+      ]
     })
     const page = await browser.newPage()
     
