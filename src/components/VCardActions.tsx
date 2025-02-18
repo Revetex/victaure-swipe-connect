@@ -1,5 +1,6 @@
+
 import { Button } from "@/components/ui/button";
-import { FileText, Pencil, Save, X } from "lucide-react";
+import { FileText, Pencil, Save, X, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { memo } from "react";
 
@@ -10,6 +11,7 @@ interface VCardActionsProps {
   setIsEditing: (isEditing: boolean) => void;
   onSave?: () => void;
   onDownloadBusinessCard?: () => Promise<void>;
+  onGenerateBio?: () => Promise<void>;
 }
 
 export const VCardActions = memo(function VCardActions({
@@ -19,6 +21,7 @@ export const VCardActions = memo(function VCardActions({
   setIsEditing,
   onSave,
   onDownloadBusinessCard,
+  onGenerateBio,
 }: VCardActionsProps) {
   const handleEditToggle = () => {
     if (typeof setIsEditing === 'function') {
@@ -82,6 +85,17 @@ export const VCardActions = memo(function VCardActions({
       >
         <FileText className="h-4 w-4" />
         <span className="sr-only">Télécharger la carte de visite</span>
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onGenerateBio}
+        className={cn("shrink-0", isProcessing && "opacity-50 pointer-events-none")}
+        title="Générer une bio avec l'IA"
+        disabled={isProcessing}
+      >
+        <Wand2 className="h-4 w-4" />
+        <span className="sr-only">Générer une bio</span>
       </Button>
     </div>
   );
