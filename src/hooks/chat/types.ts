@@ -6,6 +6,7 @@ export interface ConversationContext {
   messageCount: number;
   acceptedJobs: string[];
   rejectedJobs: string[];
+  hasGreeted?: boolean;
 }
 
 export interface AIResponse {

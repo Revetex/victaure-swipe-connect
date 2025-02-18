@@ -14,7 +14,8 @@ export function useAIChat() {
   const [conversationContext, setConversationContext] = useState<ConversationContext>({ 
     messageCount: 0,
     acceptedJobs: [],
-    rejectedJobs: []
+    rejectedJobs: [],
+    hasGreeted: false
   });
 
   const {
@@ -49,7 +50,8 @@ export function useAIChat() {
           context: {
             previousMessages: messages.slice(-5),
             userProfile: profile,
-            conversationState: conversationContext
+            conversationState: conversationContext,
+            hasGreeted: conversationContext.hasGreeted
           }
         }
       });
@@ -59,12 +61,11 @@ export function useAIChat() {
 
       addAssistantMessage(data.response, profile);
       
-      if (data.context) {
-        setConversationContext(prev => ({
-          ...prev,
-          messageCount: prev.messageCount + 1
-        }));
-      }
+      setConversationContext(prev => ({
+        ...prev,
+        messageCount: prev.messageCount + 1,
+        hasGreeted: true
+      }));
 
     } catch (error) {
       console.error('Error in AI chat:', error);

@@ -4,6 +4,8 @@ import { useNotificationsData } from "./hooks/useNotificationsData";
 import { NotificationsLoader } from "./NotificationsLoader";
 import { NotificationsHeader } from "./NotificationsHeader";
 import { NotificationsContent } from "./NotificationsContent";
+import { useNotifications } from "@/hooks/useNotifications";
+import { useEffect } from "react";
 
 export function NotificationsTab() {
   const {
@@ -13,6 +15,13 @@ export function NotificationsTab() {
     markAllAsRead,
     deleteAllNotifications
   } = useNotificationsData();
+
+  const { markAllAsRead: markAllNotificationsAsRead } = useNotifications();
+
+  useEffect(() => {
+    // Marquer toutes les notifications comme lues à l'ouverture
+    markAllNotificationsAsRead();
+  }, []);
 
   if (isLoading) {
     return <NotificationsLoader />;
@@ -49,4 +58,3 @@ export function NotificationsTab() {
     </motion.div>
   );
 }
-

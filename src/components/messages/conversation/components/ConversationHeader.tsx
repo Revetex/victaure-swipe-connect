@@ -1,5 +1,7 @@
 
 import { ChatHeader } from "@/components/chat/ChatHeader";
+import { Phone } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Receiver } from "@/types/messages";
 
 interface ConversationHeaderProps {
@@ -19,6 +21,19 @@ export function ConversationHeader({ receiver, onBack, onDelete }: ConversationH
         onDelete={onDelete}
         isOnline={receiver.online_status}
         lastSeen={receiver.last_seen}
+        actions={
+          <Button
+            variant="ghost"
+            size="icon"
+            className="ml-2"
+            onClick={() => {
+              // Activation du chat vocal à implémenter
+              console.log('Chat vocal activé');
+            }}
+          >
+            <Phone className="h-4 w-4" />
+          </Button>
+        }
       />
     </header>
   );
