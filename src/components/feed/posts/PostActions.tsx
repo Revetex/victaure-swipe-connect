@@ -63,15 +63,14 @@ export function PostActions({
         },
         (payload: RealtimePostgresChangesPayload<PostPayload>) => {
           if (payload.new && onReaction) {
-            // Nous recalculons directement les pourcentages à partir des nouvelles valeurs
-            const newLikes = payload.new.likes;
-            const newDislikes = payload.new.dislikes;
-            const total = newLikes + newDislikes;
+            const oldLikes = (payload.old as PostPayload)?.likes ?? 0;
+            const oldDislikes = (payload.old as PostPayload)?.dislikes ?? 0;
+            const newLikes = (payload.new as PostPayload).likes;
+            const newDislikes = (payload.new as PostPayload).dislikes;
             
-            // On met à jour avec le type approprié basé sur les nouvelles valeurs
-            if (newLikes > (payload.old?.likes || 0)) {
+            if (newLikes > oldLikes) {
               onReaction(postId, 'like');
-            } else if (newDislikes > (payload.old?.dislikes || 0)) {
+            } else if (newDislikes > oldDislikes) {
               onReaction(postId, 'dislike');
             }
           }
