@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { Message } from '@/types/messages';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,96 +13,23 @@ const defaultAssistant = {
   last_seen: new Date().toISOString()
 };
 
-interface AIResponse {
-  response: string;
-  suggestedJobs?: any[];
-  context?: {
-    intent: string;
-    lastQuery: string;
-  };
-}
-
 export function useAIChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isThinking, setIsThinking] = useState(false);
   const [inputMessage, setInputMessage] = useState('');
   const { profile } = useProfile();
   const [conversationContext, setConversationContext] = useState<{
-    lastIntent?: string;
-    lastQuery?: string;
     messageCount: number;
     acceptedJobs: string[];
     rejectedJobs: string[];
-    lastSearchTerms?: string;
-    lastLocation?: string;
   }>({ 
     messageCount: 0,
     acceptedJobs: [],
     rejectedJobs: []
   });
 
-  const handleScrapeJobs = async (searchTerms: string, location: string, sourcesToTry?: string[]) => {
-    try {
-      const { data: scrapingResult, error } = await supabase.functions.invoke<{
-        success: boolean;
-        jobsFound: number;
-        jobs: any[];
-        message: string;
-      }>('scrape-jobs', {
-        body: {
-          searchTerms,
-          location,
-          isAssistantRequest: true,
-          sources: sourcesToTry
-        }
-      });
-
-      if (error) throw error;
-      
-      setConversationContext(prev => ({
-        ...prev,
-        lastSearchTerms: searchTerms,
-        lastLocation: location
-      }));
-
-      return scrapingResult;
-    } catch (error) {
-      console.error('Error scraping jobs:', error);
-      throw error;
-    }
-  };
-
-  const tryAlternativeSearch = async (originalTerms: string, location: string) => {
-    const alternatives = [
-      { terms: originalTerms, sources: ['jobbank', 'indeed'] },
-      { terms: `${originalTerms} construction`, sources: ['jobillico', 'jobboom'] },
-      { terms: 'surintendant chantier', sources: ['randstad', 'ziprecruiter'] },
-      { terms: 'superviseur construction', sources: ['jobbank', 'indeed'] },
-      { terms: 'contremaître', sources: ['jobillico', 'jobboom'] }
-    ];
-
-    let allJobs: any[] = [];
-    let totalFound = 0;
-
-    for (const alt of alternatives) {
-      const result = await handleScrapeJobs(alt.terms, location, alt.sources);
-      if (result.success && result.jobs.length > 0) {
-        allJobs = [...allJobs, ...result.jobs];
-        totalFound += result.jobsFound;
-      }
-    }
-
-    return {
-      success: totalFound > 0,
-      jobsFound: totalFound,
-      jobs: allJobs.slice(0, 5),
-      message: `J'ai trouvé ${totalFound} emplois potentiels en élargissant la recherche. Voici les plus pertinents pour votre profil.`
-    };
-  };
-
   const handleSendMessage = useCallback(async (content: string) => {
-    if (!content.trim()) return;
-    if (!profile) {
+    if (!content.trim() || !profile) {
       toast.error("Vous devez être connecté pour utiliser l'assistant");
       return;
     }
@@ -130,7 +58,7 @@ export function useAIChat() {
       
       const thinkingMessage: Message = {
         id: crypto.randomUUID(),
-        content: "Analyse en cours...",
+        content: "En train de réfléchir...",
         sender_id: 'assistant',
         receiver_id: profile.id,
         created_at: new Date().toISOString(),
@@ -150,60 +78,13 @@ export function useAIChat() {
       setMessages(prev => [...prev, thinkingMessage]);
       setIsThinking(true);
 
-      if (content.toLowerCase().includes('cherche') || 
-          content.toLowerCase().includes('emploi') || 
-          content.toLowerCase().includes('travail')) {
-        try {
-          const searchTerms = content.toLowerCase().includes('surintendant') ? 'surintendant' :
-                            content.toLowerCase().includes('superviseur') ? 'superviseur' :
-                            conversationContext.lastSearchTerms || "surintendant chantier";
-          
-          const location = content.toLowerCase().includes('montréal') ? 'Montréal' :
-                          content.toLowerCase().includes('québec') ? 'Québec' :
-                          content.toLowerCase().includes('trois-rivières') ? 'Trois-Rivières' :
-                          conversationContext.lastLocation || "Trois-Rivières";
-          
-          let scrapingResult = await handleScrapeJobs(searchTerms, location);
-          
-          if (!scrapingResult.success || scrapingResult.jobsFound === 0) {
-            scrapingResult = await tryAlternativeSearch(searchTerms, location);
-          }
-          
-          if (scrapingResult.success) {
-            const assistantMessage: Message = {
-              id: crypto.randomUUID(),
-              content: scrapingResult.message,
-              sender_id: 'assistant',
-              receiver_id: profile.id,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-              read: false,
-              sender: defaultAssistant,
-              receiver: profile,
-              timestamp: new Date().toISOString(),
-              message_type: 'assistant',
-              status: 'sent',
-              metadata: { 
-                suggestedJobs: scrapingResult.jobs,
-                context: {
-                  intent: 'job_search',
-                  lastQuery: content
-                }
-              },
-              reaction: null,
-              is_assistant: true,
-              thinking: false
-            };
-
-            setMessages(prev => [...prev.filter(m => !m.thinking), assistantMessage]);
-            return;
-          }
-        } catch (error) {
-          console.error('Error in job scraping:', error);
-        }
-      }
-
-      const { data, error } = await supabase.functions.invoke<AIResponse>('chat-ai', {
+      const { data, error } = await supabase.functions.invoke<{
+        response: string;
+        context?: {
+          intent: string;
+          lastQuery: string;
+        };
+      }>('chat-ai', {
         body: { 
           message: content,
           userId: profile.id,
@@ -231,10 +112,7 @@ export function useAIChat() {
         timestamp: new Date().toISOString(),
         message_type: 'assistant',
         status: 'sent',
-        metadata: { 
-          suggestedJobs: data.suggestedJobs,
-          context: data.context
-        },
+        metadata: {},
         reaction: null,
         is_assistant: true,
         thinking: false
@@ -245,8 +123,6 @@ export function useAIChat() {
       if (data.context) {
         setConversationContext(prev => ({
           ...prev,
-          lastIntent: data.context?.intent,
-          lastQuery: data.context?.lastQuery,
           messageCount: prev.messageCount + 1
         }));
       }

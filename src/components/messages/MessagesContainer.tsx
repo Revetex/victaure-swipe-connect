@@ -11,7 +11,6 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Message, DatabaseMessage, transformDatabaseMessage } from "@/types/messages";
-import { Json } from "@/types/database/auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Plus } from "lucide-react";
@@ -34,16 +33,12 @@ export function MessagesContainer() {
     messages: aiMessages, 
     handleSendMessage: handleAISendMessage,
     isThinking,
-    setInputMessage: setAIInputMessage
+    setInputMessage: setAIInputMessage,
+    handleJobAccept,
+    handleJobReject
   } = useAIChat();
   
   const { handleDeleteConversation } = useConversationDelete();
-
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [currentMessages, aiMessages]);
 
   const handleSendMessage = async () => {
     if (!receiver || !inputMessage.trim() || !user) {
@@ -65,12 +60,13 @@ export function MessagesContainer() {
         metadata: {
           timestamp: new Date().toISOString(),
           type: 'chat'
-        } as Record<string, Json>
+        }
       };
 
-      const { error } = await supabase.from('messages').insert(messageData);
-
-      if (error) {
+      try {
+        const { error } = await supabase.from('messages').insert(messageData);
+        if (error) throw error;
+      } catch (error) {
         console.error("Error sending message:", error);
         toast.error("Erreur lors de l'envoi du message");
         return;
@@ -78,7 +74,6 @@ export function MessagesContainer() {
     }
     
     setInputMessage('');
-    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
   };
 
   const handleStartNewChat = async (friendId: string) => {
