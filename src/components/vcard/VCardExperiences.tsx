@@ -1,5 +1,5 @@
 
-import { Experience } from "@/types/profile";
+import { Experience, UserProfile } from "@/types/profile";
 import { transformToExperience } from "@/utils/profileTransformers";
 import { ExperienceCard } from "./experiences/ExperienceCard";
 import { ExperienceForm } from "./experiences/ExperienceForm";
@@ -9,40 +9,43 @@ import { Button } from "@/components/ui/button";
 import { Wand2 } from "lucide-react";
 
 interface VCardExperiencesProps {
-  experiences: Experience[];
+  profile: UserProfile;
   isEditing: boolean;
-  onUpdate?: (experiences: Experience[]) => void;
+  setProfile: (profile: UserProfile) => void;
 }
 
-export function VCardExperiences({ experiences, isEditing, onUpdate }: VCardExperiencesProps) {
+export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperiencesProps) {
+  const experiences = profile.experiences || [];
+
   const handleUpdateExperience = (exp: Experience) => {
-    if (!onUpdate) return;
-    
     const updatedExperiences = experiences.map(e => 
       e.id === exp.id ? transformToExperience(exp) : e
     );
-    onUpdate(updatedExperiences);
+    setProfile({ ...profile, experiences: updatedExperiences });
   };
 
   const handleRemoveExperience = (id: string) => {
-    if (!onUpdate) return;
-    onUpdate(experiences.filter(exp => exp.id !== id));
+    setProfile({
+      ...profile,
+      experiences: experiences.filter(exp => exp.id !== id)
+    });
   };
 
   const handleAddExperience = () => {
-    if (!onUpdate) return;
-    
     const newExperience = transformToExperience({
       id: crypto.randomUUID(),
       company: '',
       position: '',
-      profile_id: '',
+      profile_id: profile.id,
       start_date: null,
       end_date: null,
       description: null
     });
 
-    onUpdate([...experiences, newExperience]);
+    setProfile({
+      ...profile,
+      experiences: [...experiences, newExperience]
+    });
   };
 
   const handleGenerateDescription = async (exp: Experience) => {
