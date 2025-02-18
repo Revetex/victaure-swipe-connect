@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { StyleOption } from './types';
 import { supabase } from '@/integrations/supabase/client';
@@ -79,8 +80,9 @@ export function VCardStyleProvider({ children }: { children: ReactNode }) {
   const handleStyleChange = async (style: StyleOption) => {
     if (isUpdating) return;
     
+    setIsUpdating(true);
+    
     try {
-      setIsUpdating(true);
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -88,10 +90,16 @@ export function VCardStyleProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      // Simplification de la requête de mise à jour
       const { error } = await supabase
         .from('profiles')
-        .update({ style_id: style.id })
-        .eq('id', user.id);
+        .upsert({ 
+          id: user.id,
+          style_id: style.id,
+        }, { 
+          onConflict: 'id',
+          ignoreDuplicates: false 
+        });
 
       if (error) throw error;
 
@@ -108,18 +116,13 @@ export function VCardStyleProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const root = document.documentElement;
-    
-    const updateRootStyles = () => {
-      root.style.setProperty('--primary-color', selectedStyle.colors.primary);
-      root.style.setProperty('--secondary-color', selectedStyle.colors.secondary);
-      root.style.setProperty('--text-primary', selectedStyle.colors.text.primary);
-      root.style.setProperty('--text-secondary', selectedStyle.colors.text.secondary);
-      root.style.setProperty('--bg-card', selectedStyle.colors.background.card);
-      root.style.setProperty('--bg-section', selectedStyle.colors.background.section);
-      root.style.setProperty('--font-family', selectedStyle.font);
-    };
-
-    updateRootStyles();
+    root.style.setProperty('--primary-color', selectedStyle.colors.primary);
+    root.style.setProperty('--secondary-color', selectedStyle.colors.secondary);
+    root.style.setProperty('--text-primary', selectedStyle.colors.text.primary);
+    root.style.setProperty('--text-secondary', selectedStyle.colors.text.secondary);
+    root.style.setProperty('--bg-card', selectedStyle.colors.background.card);
+    root.style.setProperty('--bg-section', selectedStyle.colors.background.section);
+    root.style.setProperty('--font-family', selectedStyle.font);
   }, [selectedStyle]);
 
   return (
