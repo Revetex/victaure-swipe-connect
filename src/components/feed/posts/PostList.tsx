@@ -2,8 +2,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useState, memo } from "react";
-import { PostCard, PostCardProps } from "./PostCard";
+import { useState } from "react";
+import { PostCard } from "./PostCard";
 import { usePostOperations } from "./usePostOperations";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,8 +15,6 @@ interface PostListProps {
   onPostDeleted: () => void;
   onPostUpdated: () => void;
 }
-
-const MemoizedPostCard = memo(PostCard);
 
 export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   const { user } = useAuth();
@@ -117,7 +115,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
             transition={{ duration: 0.2 }}
             layout
           >
-            <MemoizedPostCard
+            <PostCard
               post={post}
               currentUserId={user?.id}
               userEmail={user?.email}
