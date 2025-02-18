@@ -50,22 +50,65 @@ export function MessagesContainer() {
       handleAISendMessage(inputMessage);
       setAIInputMessage('');
     } else {
-      const messageData = {
-        content: inputMessage,
-        sender_id: user.id,
-        receiver_id: receiver.id,
-        is_assistant: false,
-        message_type: 'user' as const,
-        status: 'sent' as const,
-        metadata: {
-          timestamp: new Date().toISOString(),
-          type: 'chat'
-        }
-      };
-
       try {
-        const { error } = await supabase.from('messages').insert(messageData);
-        if (error) throw error;
+        const messageData = {
+          content: inputMessage,
+          sender_id: user.id,
+          receiver_id: receiver.id,
+          is_assistant: false,
+          message_type: 'user' as const,
+          status: 'sent' as const,
+          metadata: {
+            timestamp: new Date().toISOString(),
+            type: 'chat'
+          }
+        };
+
+        // Insérer le message
+        const { error: messageError } = await supabase
+          .from('messages')
+          .insert(messageData);
+
+        if (messageError) throw messageError;
+
+        // Vérifier si une conversation existe déjà
+        const { data: existingConversation, error: fetchError } = await supabase
+          .from('conversations')
+          .select('*')
+          .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
+          .or(`participant1_id.eq.${receiver.id},participant2_id.eq.${receiver.id}`)
+          .maybeSingle();
+
+        if (fetchError) throw fetchError;
+
+        // Si aucune conversation n'existe, en créer une nouvelle
+        if (!existingConversation) {
+          const { error: conversationError } = await supabase
+            .from('conversations')
+            .insert({
+              participant1_id: user.id,
+              participant2_id: receiver.id,
+              last_message: inputMessage,
+              last_message_time: new Date().toISOString()
+            })
+            .single();
+
+          if (conversationError && conversationError.code !== '23505') {
+            throw conversationError;
+          }
+        } else {
+          // Mettre à jour la conversation existante
+          const { error: updateError } = await supabase
+            .from('conversations')
+            .update({
+              last_message: inputMessage,
+              last_message_time: new Date().toISOString()
+            })
+            .match({ id: existingConversation.id });
+
+          if (updateError) throw updateError;
+        }
+
       } catch (error) {
         console.error("Error sending message:", error);
         toast.error("Erreur lors de l'envoi du message");
@@ -77,7 +120,38 @@ export function MessagesContainer() {
   };
 
   const handleStartNewChat = async (friendId: string) => {
+    if (!user) {
+      toast.error("Vous devez être connecté");
+      return;
+    }
+
     try {
+      // Vérifier si une conversation existe déjà
+      const { data: existingConversation, error: fetchError } = await supabase
+        .from('conversations')
+        .select('*')
+        .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
+        .or(`participant1_id.eq.${friendId},participant2_id.eq.${friendId}`)
+        .maybeSingle();
+
+      if (fetchError) throw fetchError;
+
+      // Si aucune conversation n'existe, en créer une nouvelle
+      if (!existingConversation) {
+        const { error: conversationError } = await supabase
+          .from('conversations')
+          .insert({
+            participant1_id: user.id,
+            participant2_id: friendId
+          })
+          .single();
+
+        if (conversationError && conversationError.code !== '23505') {
+          throw conversationError;
+        }
+      }
+
+      // Récupérer les informations de l'ami
       const { data: friend, error: friendError } = await supabase
         .from('profiles')
         .select('*')
@@ -85,8 +159,7 @@ export function MessagesContainer() {
         .single();
 
       if (friendError || !friend) {
-        toast.error("Impossible de trouver cet utilisateur");
-        return;
+        throw new Error("Impossible de trouver cet utilisateur");
       }
 
       setReceiver(friend);
