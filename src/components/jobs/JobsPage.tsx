@@ -8,8 +8,8 @@ import { useJobFilters } from "@/hooks/useJobFilters";
 
 export function JobsPage() {
   const [selectedJobId, setSelectedJobId] = useState<string | undefined>();
-  const { jobs, isLoading } = useJobsData();
-  const { filters, setFilters } = useJobFilters();
+  const { data: jobs = [], isLoading } = useJobsData();
+  const { filters, updateFilter } = useJobFilters();
 
   const handleJobSelect = (job: Job) => {
     setSelectedJobId(job.id);

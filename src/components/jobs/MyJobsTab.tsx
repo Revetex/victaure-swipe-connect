@@ -5,7 +5,7 @@ import { useMyJobs } from "@/hooks/useMyJobs";
 import { Job } from "@/types/job";
 
 export function MyJobsTab() {
-  const { jobs, onJobDeleted } = useMyJobs();
+  const { jobs, fetchJobs } = useMyJobs();
   const [selectedJobId, setSelectedJobId] = useState<string | undefined>();
 
   const handleJobSelect = (job: Job) => {
