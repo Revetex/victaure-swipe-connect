@@ -46,33 +46,45 @@ export function DashboardContent({
   }, [currentPage, onEditStateChange]);
 
   if (!user) {
-    return <Loader className="w-8 h-8" />;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader className="w-8 h-8" />
+      </div>
+    );
   }
 
   const variants = {
-    initial: { opacity: 0 },
+    initial: { opacity: 0, y: 20 },
     animate: { 
       opacity: 1,
-      transition: { duration: 0.2 }
+      y: 0,
+      transition: { 
+        duration: 0.4,
+        ease: "easeOut"
+      }
     },
     exit: { 
       opacity: 0,
-      transition: { duration: 0.15 }
+      y: -20,
+      transition: { 
+        duration: 0.3,
+        ease: "easeIn"
+      }
     }
   };
 
   const renderDashboardHome = () => {
     return (
-      <div className="container mx-auto p-6 space-y-8 max-w-7xl">
+      <div className="container mx-auto p-8 space-y-10 max-w-7xl">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-10 md:grid-cols-2 lg:grid-cols-3"
         >
           <motion.div 
             initial={{ scale: 0.95 }}
             animate={{ scale: 1 }}
-            className="col-span-full lg:col-span-2"
+            className="col-span-full lg:col-span-2 glass-panel rounded-2xl shadow-xl border border-primary/10"
           >
             <DashboardStats />
           </motion.div>
@@ -81,16 +93,18 @@ export function DashboardContent({
             initial={{ scale: 0.95 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.1 }}
+            className="glass-panel rounded-2xl shadow-xl border border-primary/10 p-6"
           >
             <DashboardChart />
           </motion.div>
         </motion.div>
         
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
+            className="glass-panel rounded-2xl shadow-xl border border-primary/10 p-6"
           >
             <QuickActions onRequestChat={onRequestChat} />
           </motion.div>
@@ -99,6 +113,7 @@ export function DashboardContent({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
+            className="glass-panel rounded-2xl shadow-xl border border-primary/10 p-6"
           >
             <RecentActivity />
           </motion.div>
@@ -107,7 +122,7 @@ export function DashboardContent({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="md:col-span-2 lg:col-span-1"
+            className="md:col-span-2 lg:col-span-1 glass-panel rounded-2xl shadow-xl border border-primary/10 p-6"
           >
             <JobActions />
           </motion.div>
