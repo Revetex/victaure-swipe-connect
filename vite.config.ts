@@ -11,7 +11,10 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  base: '',
+  base: '/victaure/',
+  server: {
+    port: 8080
+  },
   build: {
     outDir: 'dist',
     sourcemap: false,
