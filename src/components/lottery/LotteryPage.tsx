@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,7 +10,7 @@ import { ChessPage } from "../tools/ChessPage";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { usePaymentHandler } from "@/hooks/usePaymentHandler";
-import { toast } from "@/components/ui/toast";
+import { toast } from "@/hooks/use-toast";
 
 interface GameLegalInfo {
   id: string;
@@ -90,9 +91,16 @@ export function LotteryPage() {
   const handleGamePayment = async (amount: number, gameTitle: string) => {
     try {
       await handlePayment(amount, `Paiement pour ${gameTitle}`);
-      toast.success("Paiement traité avec succès !");
+      toast({
+        title: "Succès",
+        description: "Paiement traité avec succès !",
+      });
     } catch (error) {
-      toast.error("Erreur lors du paiement");
+      toast({
+        title: "Erreur",
+        description: "Erreur lors du paiement",
+        variant: "destructive",
+      });
       console.error("Payment error:", error);
     }
   };
@@ -282,9 +290,9 @@ export function LotteryPage() {
                 </div>
                 
                 {key === "chess" && <ChessPage />}
-                {key === "pyramid" && <PyramidRush onPayment={handleGamePayment} />}
-                {key === "zodiac" && <ZodiacFortune onPayment={handleGamePayment} />}
-                {key === "sphere" && <LotoSphere onPayment={handleGamePayment} />}
+                {key === "pyramid" && <PyramidRush onPaymentRequested={handleGamePayment} />}
+                {key === "zodiac" && <ZodiacFortune onPaymentRequested={handleGamePayment} />}
+                {key === "sphere" && <LotoSphere onPaymentRequested={handleGamePayment} />}
               </Card>
             </TabsContent>
           ))}
