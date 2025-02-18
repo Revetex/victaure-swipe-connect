@@ -1,5 +1,5 @@
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, memo } from "react";
@@ -20,7 +20,6 @@ const MemoizedPostCard = memo<PostCardProps>(PostCard);
 
 export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
   const { handleDelete, handleHide, handleUpdate } = usePostOperations();
 
