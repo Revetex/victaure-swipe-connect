@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNotifications } from "./useNotifications";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface UseReactionsProps {
   postId: string;
@@ -10,8 +11,6 @@ interface UseReactionsProps {
   currentUserId?: string;
   userEmail?: string;
   userReaction?: string;
-  onLike: () => void;
-  onDislike: () => void;
 }
 
 export const useReactions = ({
@@ -20,12 +19,11 @@ export const useReactions = ({
   currentUserId,
   userEmail,
   userReaction,
-  onLike,
-  onDislike,
 }: UseReactionsProps) => {
   const { toast } = useToast();
   const { createNotification } = useNotifications();
   const [isProcessing, setIsProcessing] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleReaction = async (type: 'like' | 'dislike') => {
     if (!currentUserId) {
@@ -43,22 +41,28 @@ export const useReactions = ({
     try {
       // Si la même réaction existe, on la supprime
       if (userReaction === type) {
-        await supabase.from('post_reactions')
+        const { error } = await supabase
+          .from('post_reactions')
           .delete()
           .eq('post_id', postId)
           .eq('user_id', currentUserId);
-          
-        type === 'like' ? onDislike() : onLike();
+
+        if (error) throw error;
       } else {
         // Sinon, on ajoute/met à jour la réaction
-        const { error } = await supabase.rpc('handle_post_reaction', {
-          p_post_id: postId,
-          p_user_id: currentUserId,
-          p_reaction_type: type
-        });
+        const { error } = await supabase
+          .from('post_reactions')
+          .upsert({
+            post_id: postId,
+            user_id: currentUserId,
+            reaction_type: type
+          }, {
+            onConflict: 'post_id,user_id'
+          });
 
         if (error) throw error;
 
+        // Envoyer une notification seulement pour les likes sur les posts d'autres utilisateurs
         if (type === 'like' && postAuthorId !== currentUserId) {
           await createNotification(
             postAuthorId,
@@ -67,9 +71,10 @@ export const useReactions = ({
             'like'
           );
         }
-
-        type === 'like' ? onLike() : onDislike();
       }
+
+      // Rafraîchir les données
+      await queryClient.invalidateQueries({ queryKey: ["posts"] });
 
     } catch (error) {
       console.error('Error handling reaction:', error);

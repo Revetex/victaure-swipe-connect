@@ -13,8 +13,6 @@ interface PostActionsProps {
   postAuthorId: string;
   currentUserId?: string;
   userEmail?: string;
-  onLike: () => void;
-  onDislike: () => void;
   onToggleComments: () => void;
 }
 
@@ -28,8 +26,6 @@ export function PostActions({
   postAuthorId,
   currentUserId,
   userEmail,
-  onLike,
-  onDislike,
   onToggleComments,
 }: PostActionsProps) {
   const { handleReaction } = useReactions({
@@ -37,8 +33,7 @@ export function PostActions({
     postAuthorId,
     currentUserId,
     userEmail,
-    onLike,
-    onDislike
+    userReaction
   });
 
   return (

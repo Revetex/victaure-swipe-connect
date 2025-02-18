@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Post } from "@/types/posts";
@@ -16,8 +15,6 @@ interface PostCardProps {
   userEmail?: string;
   onDelete?: () => void;
   onHide?: (postId: string) => void;
-  onReaction?: (postId: string, type: 'like' | 'dislike') => void;
-  onCommentAdded?: () => void;
   onUpdate?: (postId: string, content: string) => void;
 }
 
@@ -27,18 +24,12 @@ export function PostCard({
   userEmail,
   onDelete, 
   onHide,
-  onReaction,
-  onCommentAdded,
   onUpdate
 }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
   const isMobile = useIsMobile();
-
-  const handleReaction = (type: 'like' | 'dislike') => {
-    onReaction?.(post.id, type);
-  };
 
   const handleToggleComments = () => {
     setShowComments(!showComments);
@@ -80,7 +71,7 @@ export function PostCard({
           onEdit={() => setIsEditing(true)}
           onSave={handleSaveEdit}
           onCancel={handleCancelEdit}
-          onDelete={onDelete!}
+          onDelete={onDelete}
         />
 
         <PostCardContent 
@@ -101,8 +92,6 @@ export function PostCard({
           postAuthorId={post.user_id}
           currentUserId={currentUserId}
           userEmail={userEmail}
-          onLike={() => handleReaction('like')}
-          onDislike={() => handleReaction('dislike')}
           onToggleComments={handleToggleComments}
         />
 
@@ -113,7 +102,6 @@ export function PostCard({
             currentUserId={currentUserId}
             userEmail={userEmail}
             comments={post.comments}
-            onCommentAdded={onCommentAdded}
           />
         )}
       </Card>
