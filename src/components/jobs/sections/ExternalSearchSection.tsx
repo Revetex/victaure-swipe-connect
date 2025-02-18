@@ -1,35 +1,26 @@
-import { Job } from "@/types/job";
+
+import { useState } from "react";
 import { JobList } from "../JobList";
-import { JobFilters } from "../JobFilterUtils";
+import { Job } from "@/types/job";
 
 interface ExternalSearchSectionProps {
   jobs: Job[];
-  filters: JobFilters;
-  queryString?: string;
-  onFilterChange?: (key: keyof JobFilters, value: any) => void;
 }
 
-interface JobListProps {
-  filters: any;
-  showFilters: boolean;
-  filterType: string;
-  viewMode: 'list' | 'grid' | 'cards';
-  jobs?: Job[];
-}
+export function ExternalSearchSection({ jobs }: ExternalSearchSectionProps) {
+  const [selectedJobId, setSelectedJobId] = useState<string | undefined>();
 
-export function ExternalSearchSection({ 
-  jobs, 
-  filters,
-  queryString,
-  onFilterChange 
-}: ExternalSearchSectionProps) {
+  const handleJobSelect = (job: Job) => {
+    setSelectedJobId(job.id);
+  };
+
   return (
-    <JobList 
-      filters={filters}
-      showFilters={false}
-      filterType="regular"
-      jobs={jobs}
-      viewMode="grid"
-    />
+    <div className="space-y-4">
+      <JobList 
+        jobs={jobs}
+        onJobSelect={handleJobSelect}
+        selectedJobId={selectedJobId}
+      />
+    </div>
   );
 }
