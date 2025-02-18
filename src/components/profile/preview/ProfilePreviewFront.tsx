@@ -1,15 +1,15 @@
+
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
-import { FileText, UserPlus, UserMinus, Ban } from "lucide-react";
+import { FileText, UserPlus, UserMinus, Ban, MessageCircle, Lock, User, ExternalLink } from "lucide-react";
 import { useConnectionStatus } from "./hooks/useConnectionStatus";
 import { useConnectionActions } from "./hooks/useConnectionActions";
 import { ProfilePreviewHeader } from "./ProfilePreviewHeader";
 import { ProfilePreviewContact } from "./ProfilePreviewContact";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { ProfilePreviewButtons } from "./ProfilePreviewButtons";
 
 interface ProfilePreviewFrontProps {
   profile: UserProfile;
@@ -26,7 +26,9 @@ export function ProfilePreviewFront({
   canViewFullProfile,
   onViewProfile,
 }: ProfilePreviewFrontProps) {
-  const navigate = useNavigate();
+  const { user } = useAuth();
+  const isOwnProfile = user?.id === profile.id;
+  
   const {
     isFriend,
     isBlocked,
@@ -41,44 +43,119 @@ export function ProfilePreviewFront({
     handleToggleBlock,
   } = useConnectionActions(profile.id);
 
-  const handleViewFullProfile = () => {
-    navigate(`/profile/${profile.id}`);
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        duration: 0.3,
-        ease: "easeOut"
-      }
+  const handleMessageClick = () => {
+    if (!user) {
+      toast.error("Vous devez être connecté pour envoyer un message");
+      return;
+    }
+    if (onRequestChat) {
+      onRequestChat();
     }
   };
 
   return (
     <div className="space-y-6">
       <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.2)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]" />
-        </div>
-        
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative bg-card rounded-xl shadow-lg overflow-hidden"
+      >        
         <div className="relative p-6">
-          <ProfilePreviewHeader profile={profile} onRequestChat={onRequestChat} />
+          <ProfilePreviewHeader profile={profile} />
+          
+          <div className="mt-6 space-y-4">
+            {isOwnProfile ? (
+              <Button 
+                onClick={onViewProfile}
+                variant="default" 
+                className="w-full flex items-center gap-2"
+              >
+                <User className="h-4 w-4" />
+                Voir mon profil
+              </Button>
+            ) : (
+              <>
+                <Button 
+                  onClick={onViewProfile}
+                  variant={canViewFullProfile ? "default" : "secondary"}
+                  className="w-full flex items-center gap-2"
+                >
+                  {canViewFullProfile ? (
+                    <>
+                      <ExternalLink className="h-4 w-4" />
+                      Voir le profil
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="h-4 w-4" />
+                      Profil privé
+                    </>
+                  )}
+                </Button>
+
+                {!isBlocked && (
+                  <Button
+                    variant="outline"
+                    className="w-full flex items-center gap-2"
+                    onClick={handleMessageClick}
+                    disabled={!isFriend}
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    {isFriend ? "Envoyer un message" : "Connectez-vous d'abord"}
+                  </Button>
+                )}
+
+                {!isFriend && !isFriendRequestSent && !isFriendRequestReceived && !isBlocked && (
+                  <Button 
+                    onClick={handleAddFriend}
+                    variant="default" 
+                    className="w-full flex items-center gap-2"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    Ajouter
+                  </Button>
+                )}
+
+                {isFriendRequestReceived && (
+                  <Button
+                    onClick={handleAcceptFriend}
+                    variant="default"
+                    className="w-full flex items-center gap-2"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    Accepter la demande
+                  </Button>
+                )}
+
+                {(isFriend || isFriendRequestSent) && (
+                  <Button
+                    onClick={handleRemoveFriend}
+                    variant="outline"
+                    className="w-full flex items-center gap-2 text-destructive hover:text-destructive"
+                  >
+                    <UserMinus className="h-4 w-4" />
+                    {isFriend ? "Retirer des amis" : "Annuler la demande"}
+                  </Button>
+                )}
+
+                <Button
+                  onClick={handleToggleBlock}
+                  variant="outline"
+                  className="w-full flex items-center gap-2"
+                >
+                  <Ban className="h-4 w-4" />
+                  {isBlocked ? "Débloquer" : "Bloquer"}
+                </Button>
+              </>
+            )}
+          </div>
           
           {isFriend && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               transition={{ duration: 0.3 }}
-              className="mt-6 space-y-6 border-t border-gray-200/10 pt-6"
+              className="mt-6 pt-6 border-t border-border/10"
             >
               <ProfilePreviewContact profile={profile} />
             </motion.div>
@@ -86,17 +163,9 @@ export function ProfilePreviewFront({
         </div>
       </motion.div>
 
-      <ProfilePreviewButtons
-        profile={profile}
-        onRequestChat={onRequestChat}
-        onClose={onFlip}
-        canViewFullProfile={canViewFullProfile}
-        onViewProfile={handleViewFullProfile}
-      />
-
       <Button
         variant="ghost"
-        className="w-full mt-2"
+        className="w-full"
         onClick={onFlip}
       >
         Voir le dos de la carte
