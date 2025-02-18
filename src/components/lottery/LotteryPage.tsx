@@ -1,9 +1,8 @@
-
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trophy, Diamond, Star, Crown } from "lucide-react";
+import { PyramidRush } from "./pyramid/PyramidRush";
 
 export function LotteryPage() {
   return (
@@ -36,42 +35,9 @@ export function LotteryPage() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="pyramid" className="mt-6 space-y-6">
+          <TabsContent value="pyramid" className="mt-6">
             <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">IMPERIUM PYRAMID RUSH</h2>
-              <p className="text-muted-foreground mb-6">
-                Le Jeu de Loterie Progressive qui vous fera grimper vers les cieux !
-              </p>
-              
-              <div className="space-y-6">
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {[1, 2, 3, 4, 5, 6, 7].map((level) => (
-                    <Card key={level} className="p-4 border-2 relative overflow-hidden">
-                      <div className="absolute top-0 right-0">
-                        <Badge variant="secondary" className="m-2">
-                          Niveau {level}
-                        </Badge>
-                      </div>
-                      <div className="pt-8">
-                        <h3 className="font-semibold mb-2">
-                          {getLevelName(level)}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {getLevelDescription(level)}
-                        </p>
-                        <div className="mt-4">
-                          <Badge variant="default" className="mr-2">
-                            {getLevelPrize(level)}
-                          </Badge>
-                          <Badge variant="outline">
-                            x{getLevelMultiplier(level)}
-                          </Badge>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </div>
+              <PyramidRush />
             </Card>
           </TabsContent>
 
@@ -158,56 +124,4 @@ export function LotteryPage() {
       </motion.div>
     </div>
   );
-}
-
-function getLevelName(level: number): string {
-  const names = {
-    1: "BASE",
-    2: "BRONZE",
-    3: "ARGENT",
-    4: "OR",
-    5: "PLATINE",
-    6: "DIAMANT",
-    7: "IMPERIAL"
-  };
-  return names[level as keyof typeof names];
-}
-
-function getLevelDescription(level: number): string {
-  const descriptions = {
-    1: "3 numéros parmi 30 disponibles",
-    2: "2 numéros parmi 20",
-    3: "2 numéros parmi 25",
-    4: "1 numéro parmi 15",
-    5: "1 symbole parmi 10",
-    6: "1 couleur parmi 5",
-    7: "1 choix parmi 3"
-  };
-  return descriptions[level as keyof typeof descriptions];
-}
-
-function getLevelPrize(level: number): string {
-  const prizes = {
-    1: "50 CAD$",
-    2: "200 CAD$",
-    3: "1 000 CAD$",
-    4: "5 000 CAD$",
-    5: "20 000 CAD$",
-    6: "100 000 CAD$",
-    7: "1 000 000 CAD$"
-  };
-  return prizes[level as keyof typeof prizes];
-}
-
-function getLevelMultiplier(level: number): number {
-  const multipliers = {
-    1: 1,
-    2: 2,
-    3: 3,
-    4: 5,
-    5: 10,
-    6: 20,
-    7: 50
-  };
-  return multipliers[level as keyof typeof multipliers];
 }
