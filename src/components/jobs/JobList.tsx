@@ -1,153 +1,149 @@
 
-import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { MapPin, Briefcase, Clock, Building2, ChevronRight } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { Job } from "@/types/job";
+import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Building2, 
+  MapPin, 
+  Clock, 
+  DollarSign,
+  Briefcase,
+  CalendarDays
+} from "lucide-react";
+import { formatDistance } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface JobListProps {
-  filters: any;
-  showFilters: boolean;
-  filterType: string;
-  viewMode: 'list' | 'grid' | 'cards';
-  jobs?: Job[];
-  onJobDeleted?: () => void;
+  jobs: Job[];
+  onJobSelect?: (job: Job) => void;
+  selectedJobId?: string;
 }
 
-interface DbJob extends Omit<Job, 'status'> {
-  status: string;
-  salary_min?: number;
-  salary_max?: number;
-}
+export function JobList({ jobs, onJobSelect, selectedJobId }: JobListProps) {
+  const isMobile = useIsMobile();
 
-export function JobList({ filters, showFilters, filterType, viewMode, jobs: propJobs, onJobDeleted }: JobListProps) {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (propJobs) {
-      setJobs(propJobs);
-      setLoading(false);
-      return;
-    }
-
-    async function fetchJobs() {
-      try {
-        const { data, error } = await supabase
-          .from('jobs')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        const formattedJobs: Job[] = (data as DbJob[]).map(job => ({
-          ...job,
-          company_name: job.company_name || 'Entreprise',
-          contract_type: job.contract_type || 'Temps plein',
-          status: (job.status === 'open' || job.status === 'closed' || job.status === 'in-progress' 
-            ? job.status 
-            : 'open') as 'open' | 'closed' | 'in-progress'
-        }));
-
-        setJobs(formattedJobs);
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
-        toast.error("Impossible de charger les offres d'emploi");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchJobs();
-  }, [propJobs]);
-
-  if (loading) {
+  if (!jobs.length) {
     return (
-      <div className="space-y-4">
-        {[...Array(3)].map((_, i) => (
-          <Card key={i} className="p-6 animate-pulse">
-            <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-          </Card>
-        ))}
+      <div className="flex flex-col items-center justify-center p-8 text-center space-y-4">
+        <Briefcase className="h-12 w-12 text-muted-foreground/50" />
+        <div className="space-y-2">
+          <h3 className="text-lg font-medium">Aucun emploi trouvé</h3>
+          <p className="text-sm text-muted-foreground">
+            Essayez de modifier vos filtres ou revenez plus tard.
+          </p>
+        </div>
       </div>
     );
   }
 
-  if (jobs.length === 0) {
-    return (
-      <Card className="p-8 text-center">
-        <h3 className="text-xl font-semibold mb-2">Aucune offre disponible</h3>
-        <p className="text-muted-foreground">
-          Revenez plus tard pour voir les nouvelles offres
-        </p>
-      </Card>
-    );
-  }
-
-  const getSalaryRange = (job: Job) => {
-    if (job.salary_min && job.salary_max) {
-      return `${job.salary_min} - ${job.salary_max}`;
-    }
-    return null;
-  };
-
   return (
     <div className="space-y-4">
-      {jobs.map((job) => (
-        <Card 
+      {jobs.map((job, index) => (
+        <motion.div
           key={job.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1 }}
           className={cn(
-            "p-6 transition-all duration-200 hover:shadow-lg cursor-pointer",
-            "border-l-4 border-l-primary"
+            "group relative bg-card hover:bg-muted/50",
+            "border rounded-lg overflow-hidden transition-all",
+            "cursor-pointer shadow-sm hover:shadow-md",
+            selectedJobId === job.id && "ring-2 ring-primary",
+            isMobile ? "p-4" : "p-6"
           )}
+          onClick={() => onJobSelect?.(job)}
         >
-          <div className="flex justify-between items-start gap-4">
-            <div className="space-y-3 flex-1">
-              <div>
-                <h3 className="text-lg font-semibold text-foreground/90 mb-1">
+          <div className="space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <h3 className="font-medium leading-none group-hover:text-primary transition-colors">
                   {job.title}
                 </h3>
-                <div className="flex items-center gap-2 text-muted-foreground">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Building2 className="h-4 w-4" />
-                  <span>{job.company_name || 'Entreprise'}</span>
+                  <span>{job.company_name}</span>
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  <MapPin className="h-3 w-3" />
-                  {job.location}
+              <div className="shrink-0">
+                <Badge variant={job.contract_type === 'FULL_TIME' ? 'default' : 'secondary'}>
+                  {job.contract_type === 'FULL_TIME' ? 'Temps plein' : 'Temps partiel'}
                 </Badge>
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  <Briefcase className="h-3 w-3" />
-                  {job.contract_type || 'Temps plein'}
-                </Badge>
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  {new Date(job.created_at).toLocaleDateString('fr-FR', {
-                    day: 'numeric',
-                    month: 'short'
-                  })}
-                </Badge>
-                {getSalaryRange(job) && (
-                  <Badge variant="secondary">
-                    {getSalaryRange(job)}
-                  </Badge>
-                )}
               </div>
-
-              <p className="text-muted-foreground line-clamp-2">
-                {job.description}
-              </p>
             </div>
 
-            <ChevronRight className="h-5 w-5 text-muted-foreground/50" />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <MapPin className="h-4 w-4" />
+                <span>{job.location}</span>
+              </div>
+
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>
+                  {formatDistance(new Date(job.created_at), new Date(), {
+                    addSuffix: true,
+                    locale: fr
+                  })}
+                </span>
+              </div>
+
+              {job.salary_range && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <DollarSign className="h-4 w-4" />
+                  <span>{job.salary_range}</span>
+                </div>
+              )}
+
+              {job.experience_level && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <CalendarDays className="h-4 w-4" />
+                  <span>{job.experience_level}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {job.skills?.slice(0, isMobile ? 3 : 5).map((skill) => (
+                <Badge key={skill} variant="outline">
+                  {skill}
+                </Badge>
+              ))}
+              {job.skills?.length > (isMobile ? 3 : 5) && (
+                <Badge variant="outline">
+                  +{job.skills.length - (isMobile ? 3 : 5)}
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full sm:w-auto"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Implémenter la logique de sauvegarde
+                }}
+              >
+                Sauvegarder
+              </Button>
+              <Button
+                size="sm"
+                className="w-full sm:w-auto"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Implémenter la logique de postulation
+                }}
+              >
+                Postuler
+              </Button>
+            </div>
           </div>
-        </Card>
+        </motion.div>
       ))}
     </div>
   );
