@@ -1,5 +1,5 @@
 
-import { ArrowLeft, MoreVertical, Phone, PhoneCall, PhoneOff } from "lucide-react";
+import { MoreVertical, PhoneCall, PhoneOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Receiver } from "@/types/messages";
@@ -21,11 +21,8 @@ export function ConversationHeader({ receiver, onBack, onDelete }: ConversationH
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
       
-      // Pour l'instant, nous simulons juste un appel
       setIsInCall(true);
       toast.success("Appel en cours avec " + receiver.full_name);
-      
-      // Dans un cas réel, nous établirions ici une connexion WebRTC
       
       // Nettoyage après "l'appel"
       setTimeout(() => {
@@ -48,10 +45,6 @@ export function ConversationHeader({ receiver, onBack, onDelete }: ConversationH
   return (
     <div className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={onBack} className="md:hidden">
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        
         <Avatar className="h-8 w-8">
           {receiver.avatar_url ? (
             <AvatarImage src={receiver.avatar_url} alt={receiver.full_name} />
@@ -75,7 +68,7 @@ export function ConversationHeader({ receiver, onBack, onDelete }: ConversationH
       </div>
 
       <div className="flex items-center gap-2">
-        {receiver.id !== 'assistant' && (
+        {receiver.id !== 'assistant' && receiver.id !== 'victaure' && (
           <Button
             variant={isInCall ? "destructive" : "ghost"}
             size="icon"
