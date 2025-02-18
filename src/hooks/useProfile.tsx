@@ -29,24 +29,24 @@ export function useProfile() {
 
         if (profileError) throw profileError;
 
-        // Get friendships from both perspectives (as user_id or friend_id)
-        const [userFriendships, friendUserFriendships] = await Promise.all([
+        // Get friend requests from both perspectives where status is accepted
+        const [sentRequests, receivedRequests] = await Promise.all([
           supabase
-            .from('friendships')
-            .select('friend_id')
-            .eq('user_id', user.id)
+            .from('friend_requests')
+            .select('receiver_id')
+            .eq('sender_id', user.id)
             .eq('status', 'accepted'),
           supabase
-            .from('friendships')
-            .select('user_id')
-            .eq('friend_id', user.id)
+            .from('friend_requests')
+            .select('sender_id')
+            .eq('receiver_id', user.id)
             .eq('status', 'accepted')
         ]);
 
         // Combine friend IDs from both queries
         const friendIds = [
-          ...(userFriendships.data?.map(f => f.friend_id) || []),
-          ...(friendUserFriendships.data?.map(f => f.user_id) || [])
+          ...(sentRequests.data?.map(r => r.receiver_id) || []),
+          ...(receivedRequests.data?.map(r => r.sender_id) || [])
         ];
 
         // Remove duplicates
