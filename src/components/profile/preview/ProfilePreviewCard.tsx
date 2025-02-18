@@ -5,6 +5,9 @@ import { motion } from "framer-motion";
 import { ProfilePreviewFront } from "./ProfilePreviewFront";
 import { ProfilePreviewBack } from "./ProfilePreviewBack";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 interface ProfilePreviewCardProps {
   profile: UserProfile;
@@ -22,6 +25,18 @@ export function ProfilePreviewCard({
   onImageClick
 }: ProfilePreviewCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const isOwnProfile = user?.id === profile.id;
+
+  const handleViewProfile = () => {
+    if (!canViewFullProfile) {
+      toast.error("Ce profil est privé");
+      return;
+    }
+    navigate(`/profile/${profile.id}`);
+    if (onClose) onClose();
+  };
 
   return (
     <div className={cn(
@@ -36,6 +51,8 @@ export function ProfilePreviewCard({
             profile={profile}
             onRequestChat={onRequestChat}
             onFlip={() => setIsFlipped(true)}
+            canViewFullProfile={canViewFullProfile}
+            onViewProfile={handleViewProfile}
           />
         ) : (
           <ProfilePreviewBack
