@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile } from "@/types/profile";
 import { toast } from "sonner";
@@ -61,7 +62,10 @@ export const updateProfile = async (tempProfile: UserProfile) => {
         profile_id: user.id,
         title: cert.title,
         institution: cert.institution,
-        year: cert.year
+        issuer: cert.institution, // Utiliser l'institution comme issuer
+        year: cert.year,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }));
 
       const { error: certError } = await supabase
@@ -84,7 +88,9 @@ export const updateProfile = async (tempProfile: UserProfile) => {
         degree: edu.degree,
         field_of_study: edu.field_of_study || null,
         start_date: edu.start_date || null,
-        end_date: edu.end_date || null
+        end_date: edu.end_date || null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }));
 
       const { error: eduError } = await supabase
@@ -106,7 +112,9 @@ export const updateProfile = async (tempProfile: UserProfile) => {
         company: exp.company,
         position: exp.position,
         start_date: exp.start_date || null,
-        end_date: exp.end_date || null
+        end_date: exp.end_date || null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }));
 
       const { error: expError } = await supabase
