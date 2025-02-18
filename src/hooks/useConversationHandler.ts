@@ -1,93 +1,82 @@
 
-import { useReceiver } from "@/hooks/useReceiver";
-import { Receiver } from "@/types/messages";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { UserProfile } from "@/types/profile";
 
 export const useConversationHandler = () => {
-  const { setShowConversation, setReceiver } = useReceiver();
+  const findExistingConversation = async (userId: string, partnerId: string) => {
+    const { data, error } = await supabase
+      .from('conversations')
+      .select('*')
+      .or(
+        `and(participant1_id.eq.${userId},participant2_id.eq.${partnerId}),` +
+        `and(participant1_id.eq.${partnerId},participant2_id.eq.${userId})`
+      )
+      .maybeSingle();
 
-  const handleBack = () => {
-    setShowConversation(false);
-    setReceiver(null);
+    if (error) throw error;
+    return data;
   };
 
-  const handleSelectConversation = async (selectedReceiver: Receiver) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("Vous devez être connecté pour envoyer des messages");
-        return;
+  const createOrUpdateConversation = async (userId: string, partnerId: string, lastMessage?: string) => {
+    const existingConversation = await findExistingConversation(userId, partnerId);
+
+    if (!existingConversation) {
+      const { error: conversationError } = await supabase
+        .from('conversations')
+        .insert({
+          participant1_id: userId,
+          participant2_id: partnerId,
+          ...(lastMessage ? {
+            last_message: lastMessage,
+            last_message_time: new Date().toISOString()
+          } : {})
+        });
+
+      if (conversationError && conversationError.code !== '23505') {
+        throw conversationError;
       }
+    } else if (lastMessage) {
+      const { error: updateError } = await supabase
+        .from('conversations')
+        .update({
+          last_message: lastMessage,
+          last_message_time: new Date().toISOString()
+        })
+        .eq('id', existingConversation.id);
 
-      // Check if this is Mr. Victaure, allow conversation with special handling
-      if (selectedReceiver.id === 'assistant') {
-        setReceiver(selectedReceiver);
-        setShowConversation(true);
-
-        // Get or create AI conversation thread
-        const { data: existingMessages, error: msgError } = await supabase
-          .from('messages')
-          .select('*')
-          .eq('receiver_id', user.id)
-          .eq('is_assistant', true)
-          .limit(1);
-
-        if (msgError) {
-          console.error("Error fetching AI messages:", msgError);
-          return;
-        }
-
-        if (!existingMessages || existingMessages.length === 0) {
-          // Create initial welcome message if no conversation exists
-          const { error: welcomeError } = await supabase
-            .from('messages')
-            .insert({
-              content: "Bonjour ! Je suis M. Victaure, votre assistant personnel. Comment puis-je vous aider aujourd'hui ?",
-              sender_id: 'assistant',
-              receiver_id: user.id,
-              is_assistant: true
-            });
-
-          if (welcomeError) {
-            console.error("Error creating welcome message:", welcomeError);
-            return;
-          }
-        }
-        return;
-      }
-
-      // For other users, prevent conversation with yourself
-      if (selectedReceiver.id === user.id) {
-        toast.error("Vous ne pouvez pas démarrer une conversation avec vous-même");
-        return;
-      }
-
-      // Check if they are friends
-      const { data: friendRequest, error: friendError } = await supabase
-        .from('friend_requests')
-        .select('*')
-        .eq('status', 'accepted')
-        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${selectedReceiver.id}),and(sender_id.eq.${selectedReceiver.id},receiver_id.eq.${user.id})`)
-        .single();
-
-      if (friendError || !friendRequest) {
-        toast.error("Vous devez être amis pour démarrer une conversation");
-        return;
-      }
-
-      // Set the receiver and show conversation
-      setReceiver(selectedReceiver);
-      setShowConversation(true);
-
-    } catch (error) {
-      console.error('Error selecting conversation:', error);
-      toast.error("Une erreur est survenue lors de la sélection de la conversation");
+      if (updateError) throw updateError;
     }
+
+    return existingConversation;
+  };
+
+  const sendMessage = async (content: string, senderId: string, receiverId: string) => {
+    const messageData = {
+      content,
+      sender_id: senderId,
+      receiver_id: receiverId,
+      is_assistant: false,
+      message_type: 'user' as const,
+      status: 'sent' as const,
+      metadata: {
+        timestamp: new Date().toISOString(),
+        type: 'chat'
+      }
+    };
+
+    await createOrUpdateConversation(senderId, receiverId, content);
+
+    const { error: messageError } = await supabase
+      .from('messages')
+      .insert(messageData);
+
+    if (messageError) throw messageError;
   };
 
   return {
-    handleBack,
-    handleSelectConversation
+    findExistingConversation,
+    createOrUpdateConversation,
+    sendMessage
   };
 };

@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
 import { useReceiver } from "@/hooks/useReceiver";
@@ -7,16 +7,16 @@ import { useMessageQuery } from "@/hooks/useMessageQuery";
 import { useConversationMessages } from "@/hooks/useConversationMessages";
 import { useAIChat } from "@/hooks/useAIChat";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
+import { useConversationHandler } from "@/hooks/useConversationHandler";
 import { Card } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Message, DatabaseMessage, transformDatabaseMessage } from "@/types/messages";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FriendSelector } from "./conversation/FriendSelector";
 import { AssistantMessage } from "./conversation/AssistantMessage";
+import { SearchBar } from "./conversation/SearchBar";
 import { useUser } from "@/hooks/useUser";
 
 export function MessagesContainer() {
@@ -25,9 +25,10 @@ export function MessagesContainer() {
   const [searchQuery, setSearchQuery] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useUser();
+  const { sendMessage, createOrUpdateConversation } = useConversationHandler();
   
-  const { data: conversations = [], isLoading: isLoadingConversations } = useMessageQuery();
-  const { data: currentMessages = [], isLoading: isLoadingMessages } = useConversationMessages(receiver);
+  const { data: conversations = [] } = useMessageQuery();
+  const { data: currentMessages = [] } = useConversationMessages(receiver);
   
   const { 
     messages: aiMessages, 
@@ -40,89 +41,24 @@ export function MessagesContainer() {
   
   const { handleDeleteConversation } = useConversationDelete();
 
-  const findExistingConversation = async (userId: string, partnerId: string) => {
-    const { data, error } = await supabase
-      .from('conversations')
-      .select('*')
-      .or(
-        `and(participant1_id.eq.${userId},participant2_id.eq.${partnerId}),` +
-        `and(participant1_id.eq.${partnerId},participant2_id.eq.${userId})`
-      )
-      .maybeSingle();
-
-    if (error) throw error;
-    return data;
-  };
-
   const handleSendMessage = async () => {
     if (!receiver || !inputMessage.trim() || !user) {
       toast.error("Une erreur est survenue");
       return;
     }
 
-    if (receiver.id === 'assistant') {
-      handleAISendMessage(inputMessage);
-      setAIInputMessage('');
-    } else {
-      try {
-        const messageData = {
-          content: inputMessage,
-          sender_id: user.id,
-          receiver_id: receiver.id,
-          is_assistant: false,
-          message_type: 'user' as const,
-          status: 'sent' as const,
-          metadata: {
-            timestamp: new Date().toISOString(),
-            type: 'chat'
-          }
-        };
-
-        // Vérifier si une conversation existe déjà
-        const existingConversation = await findExistingConversation(user.id, receiver.id);
-
-        // Si aucune conversation n'existe, en créer une nouvelle
-        if (!existingConversation) {
-          const { error: conversationError } = await supabase
-            .from('conversations')
-            .insert({
-              participant1_id: user.id,
-              participant2_id: receiver.id,
-              last_message: inputMessage,
-              last_message_time: new Date().toISOString()
-            });
-
-          if (conversationError && conversationError.code !== '23505') {
-            throw conversationError;
-          }
-        } else {
-          // Mettre à jour la conversation existante
-          const { error: updateError } = await supabase
-            .from('conversations')
-            .update({
-              last_message: inputMessage,
-              last_message_time: new Date().toISOString()
-            })
-            .eq('id', existingConversation.id);
-
-          if (updateError) throw updateError;
-        }
-
-        // Insérer le message
-        const { error: messageError } = await supabase
-          .from('messages')
-          .insert(messageData);
-
-        if (messageError) throw messageError;
-
-      } catch (error) {
-        console.error("Error sending message:", error);
-        toast.error("Erreur lors de l'envoi du message");
-        return;
+    try {
+      if (receiver.id === 'assistant') {
+        handleAISendMessage(inputMessage);
+        setAIInputMessage('');
+      } else {
+        await sendMessage(inputMessage, user.id, receiver.id);
       }
+      setInputMessage('');
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Erreur lors de l'envoi du message");
     }
-    
-    setInputMessage('');
   };
 
   const handleStartNewChat = async (friendId: string) => {
@@ -132,24 +68,8 @@ export function MessagesContainer() {
     }
 
     try {
-      // Vérifier si une conversation existe déjà
-      const existingConversation = await findExistingConversation(user.id, friendId);
+      await createOrUpdateConversation(user.id, friendId);
 
-      // Si aucune conversation n'existe, en créer une nouvelle
-      if (!existingConversation) {
-        const { error: conversationError } = await supabase
-          .from('conversations')
-          .insert({
-            participant1_id: user.id,
-            participant2_id: friendId
-          });
-
-        if (conversationError && conversationError.code !== '23505') {
-          throw conversationError;
-        }
-      }
-
-      // Récupérer les informations de l'ami
       const { data: friend, error: friendError } = await supabase
         .from('profiles')
         .select('*')
@@ -205,15 +125,7 @@ export function MessagesContainer() {
           <div className="flex flex-col h-full">
             <div className="p-4 border-b space-y-4 sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
               <div className="flex items-center justify-between gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Rechercher une conversation..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8"
-                  />
-                </div>
+                <SearchBar value={searchQuery} onChange={setSearchQuery} />
                 <FriendSelector onSelectFriend={handleStartNewChat}>
                   <Button variant="default" size="icon" className="shrink-0">
                     <Plus className="h-4 w-4" />
