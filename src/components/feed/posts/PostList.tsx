@@ -16,7 +16,7 @@ interface PostListProps {
   onPostUpdated: () => void;
 }
 
-const MemoizedPostCard = memo<PostCardProps>(PostCard);
+const MemoizedPostCard = memo(PostCard);
 
 export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   const { user } = useAuth();
