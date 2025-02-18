@@ -29,16 +29,28 @@ export function useProfile() {
 
         if (profileError) throw profileError;
 
-        // Récupérer la liste d'amis depuis les relations d'amitié
-        const { data: friendships, error: friendshipsError } = await supabase
-          .from('friendships')
-          .select('friend_id')
-          .eq('user_id', user.id)
-          .eq('status', 'accepted');
+        // Get friendships from both perspectives (as user_id or friend_id)
+        const [userFriendships, friendUserFriendships] = await Promise.all([
+          supabase
+            .from('friendships')
+            .select('friend_id')
+            .eq('user_id', user.id)
+            .eq('status', 'accepted'),
+          supabase
+            .from('friendships')
+            .select('user_id')
+            .eq('friend_id', user.id)
+            .eq('status', 'accepted')
+        ]);
 
-        if (friendshipsError) throw friendshipsError;
+        // Combine friend IDs from both queries
+        const friendIds = [
+          ...(userFriendships.data?.map(f => f.friend_id) || []),
+          ...(friendUserFriendships.data?.map(f => f.user_id) || [])
+        ];
 
-        const friendIds = friendships?.map(f => f.friend_id) || [];
+        // Remove duplicates
+        const uniqueFriendIds = [...new Set(friendIds)];
         
         // Requêtes parallèles pour de meilleures performances
         const [friendsResponse, certificationsResponse, educationResponse, experiencesResponse] = 
@@ -46,7 +58,7 @@ export function useProfile() {
             supabase
               .from('profiles')
               .select('id, full_name, avatar_url, online_status, last_seen')
-              .in('id', friendIds),
+              .in('id', uniqueFriendIds),
             supabase
               .from('certifications')
               .select('*')
@@ -75,7 +87,7 @@ export function useProfile() {
         const fullProfile: UserProfile = {
           ...baseProfile,
           ...profileData,
-          role: profileData.role as "professional" | "business" | "admin",
+          role: (profileData.role || 'professional') as "professional" | "business" | "admin",
           friends,
           certifications: (certificationsResponse.data || []).map(cert => transformCertification(cert)),
           education: (educationResponse.data || []).map(edu => transformEducation(edu)),
