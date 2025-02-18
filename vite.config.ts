@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  base: '/',
+  base: './',
   server: {
     host: '0.0.0.0',
     port: 8080,
@@ -59,7 +59,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false,
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
@@ -107,13 +107,6 @@ export default defineConfig(({ mode }) => ({
         }
       }
     },
-    assetsDir: 'assets',
-    emptyOutDir: true,
-    modulePreload: {
-      polyfill: true
-    }
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom']
+    emptyOutDir: true
   }
 }));
