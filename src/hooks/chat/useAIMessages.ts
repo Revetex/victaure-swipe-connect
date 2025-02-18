@@ -5,7 +5,7 @@ import { UserProfile } from '@/types/profile';
 import { ConversationContext } from './types';
 
 const defaultAssistant = {
-  id: 'assistant',
+  id: '00000000-0000-0000-0000-000000000000',
   full_name: 'M. Victaure',
   avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
   online_status: true,
@@ -22,7 +22,7 @@ export function useAIMessages(profile: UserProfile | null) {
       id: crypto.randomUUID(),
       content,
       sender_id: profile.id,
-      receiver_id: 'assistant',
+      receiver_id: defaultAssistant.id,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       read: false,
@@ -45,7 +45,7 @@ export function useAIMessages(profile: UserProfile | null) {
     const thinkingMessage: Message = {
       id: crypto.randomUUID(),
       content: "En train de réfléchir...",
-      sender_id: 'assistant',
+      sender_id: defaultAssistant.id,
       receiver_id: profile.id,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -69,7 +69,7 @@ export function useAIMessages(profile: UserProfile | null) {
     const assistantMessage: Message = {
       id: crypto.randomUUID(),
       content,
-      sender_id: 'assistant',
+      sender_id: defaultAssistant.id,
       receiver_id: profile.id,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
