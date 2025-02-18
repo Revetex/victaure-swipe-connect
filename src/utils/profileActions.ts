@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile } from "@/types/profile";
 import { toast } from "sonner";

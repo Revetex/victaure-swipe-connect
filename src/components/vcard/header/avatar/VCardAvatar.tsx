@@ -2,6 +2,7 @@
 import { UserProfile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { AvatarImage } from "./AvatarImage";
 import { AvatarControls } from "./AvatarControls";
