@@ -1,10 +1,10 @@
-
 import { Card } from "@/components/ui/card";
 import { Briefcase, MessageSquare, DollarSign, Calendar } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { DashboardStats as DashboardStatsType } from "@/types/dashboard";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 const containerVariants = {
   hidden: {
