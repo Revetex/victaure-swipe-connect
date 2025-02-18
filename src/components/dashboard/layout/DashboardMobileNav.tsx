@@ -43,9 +43,7 @@ export function DashboardMobileNav({
             </Button>
           </SheetTrigger>
 
-          {completeProfile && <Button variant="ghost" onClick={() => setShowProfilePreview(true)} className="w-8 h-8 p-0 rounded-full overflow-hidden">
-              
-            </Button>}
+          {completeProfile}
 
           <div className="flex-1 flex justify-center">
             <Logo />
