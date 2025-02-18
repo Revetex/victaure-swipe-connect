@@ -2,6 +2,7 @@
 import { Avatar, AvatarImage as UIAvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { UserCircle2, ImageOff, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface AvatarImageProps {
   url: string | null;
@@ -13,6 +14,12 @@ interface AvatarImageProps {
 }
 
 export function AvatarImage({ url, fullName, onError, hasError, isLoading, className }: AvatarImageProps) {
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    console.error("Erreur de chargement de l'image:", e);
+    onError();
+    toast.error("Impossible de charger l'image");
+  };
+
   return (
     <Avatar className={cn(
       "h-24 w-24 sm:h-28 sm:w-28 ring-2 ring-primary/20 shadow-lg",
@@ -36,7 +43,7 @@ export function AvatarImage({ url, fullName, onError, hasError, isLoading, class
           src={url}
           alt={fullName || ''}
           className="object-cover w-full h-full"
-          onError={onError}
+          onError={handleImageError}
         />
       )}
     </Avatar>
