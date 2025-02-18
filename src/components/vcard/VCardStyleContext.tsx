@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { StyleOption } from './types';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,18 +27,17 @@ const styles: StyleOption[] = [
       }
     },
   },
-  // Add more styles as needed
 ];
 
 const defaultStyle: StyleOption = styles[0];
 
 const VCardStyleContext = createContext<{
   selectedStyle: StyleOption;
-  setSelectedStyle: (style: StyleOption) => void;
+  setSelectedStyle: (style: StyleOption) => Promise<void>;
   styles: StyleOption[];
 }>({
   selectedStyle: defaultStyle,
-  setSelectedStyle: () => {},
+  setSelectedStyle: async () => {},
   styles: styles,
 });
 
@@ -45,6 +45,7 @@ export function VCardStyleProvider({ children }: { children: ReactNode }) {
   const [selectedStyle, setSelectedStyle] = useState<StyleOption>(defaultStyle);
   const [isUpdating, setIsUpdating] = useState(false);
 
+  // Charger le style initial
   useEffect(() => {
     const loadProfileStyle = async () => {
       try {
@@ -76,7 +77,8 @@ export function VCardStyleProvider({ children }: { children: ReactNode }) {
     loadProfileStyle();
   }, []);
 
-  const handleStyleChange = async (style: StyleOption) => {
+  // Gérer le changement de style de manière asynchrone
+  const handleStyleChange = async (style: StyleOption): Promise<void> => {
     if (isUpdating) return;
     
     setIsUpdating(true);
@@ -94,7 +96,10 @@ export function VCardStyleProvider({ children }: { children: ReactNode }) {
         .update({ style_id: style.id })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating style:', error);
+        throw error;
+      }
 
       setSelectedStyle(style);
       toast.success("Style mis à jour avec succès");
@@ -107,15 +112,22 @@ export function VCardStyleProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Mettre à jour les variables CSS lors du changement de style
   useEffect(() => {
     const root = document.documentElement;
-    root.style.setProperty('--primary-color', selectedStyle.colors.primary);
-    root.style.setProperty('--secondary-color', selectedStyle.colors.secondary);
-    root.style.setProperty('--text-primary', selectedStyle.colors.text.primary);
-    root.style.setProperty('--text-secondary', selectedStyle.colors.text.secondary);
-    root.style.setProperty('--bg-card', selectedStyle.colors.background.card);
-    root.style.setProperty('--bg-section', selectedStyle.colors.background.section);
-    root.style.setProperty('--font-family', selectedStyle.font);
+    const variables = {
+      '--primary-color': selectedStyle.colors.primary,
+      '--secondary-color': selectedStyle.colors.secondary,
+      '--text-primary': selectedStyle.colors.text.primary,
+      '--text-secondary': selectedStyle.colors.text.secondary,
+      '--bg-card': selectedStyle.colors.background.card,
+      '--bg-section': selectedStyle.colors.background.section,
+      '--font-family': selectedStyle.font,
+    };
+
+    Object.entries(variables).forEach(([key, value]) => {
+      root.style.setProperty(key, value);
+    });
   }, [selectedStyle]);
 
   return (
