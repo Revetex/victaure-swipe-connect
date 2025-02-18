@@ -29,6 +29,19 @@ export function useAIChat() {
     removeThinkingMessages
   } = useAIMessages(profile);
 
+  const handleFileAttach = useCallback(async (file: File, messageId: string) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('messageId', messageId);
+
+    const { data, error } = await supabase.functions.invoke('upload-chat-file', {
+      body: formData,
+    });
+
+    if (error) throw error;
+    return data;
+  }, []);
+
   const handleSendMessage = useCallback(async (content: string) => {
     if (!content.trim() || !profile) {
       toast.error("Vous devez être connecté pour utiliser l'assistant");
@@ -125,6 +138,7 @@ export function useAIChat() {
     setInputMessage,
     handleSendMessage,
     handleJobAccept,
-    handleJobReject
+    handleJobReject,
+    handleFileAttach
   };
 }

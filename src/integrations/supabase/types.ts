@@ -452,6 +452,47 @@ export type Database = {
           },
         ]
       }
+      chat_attachments: {
+        Row: {
+          content_type: string
+          created_at: string
+          file_name: string
+          file_path: string
+          id: string
+          message_id: string | null
+          size: number
+          updated_at: string
+        }
+        Insert: {
+          content_type: string
+          created_at?: string
+          file_name: string
+          file_path: string
+          id?: string
+          message_id?: string | null
+          size: number
+          updated_at?: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          message_id?: string | null
+          size?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_attachments_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           content: string
@@ -2288,6 +2329,7 @@ export type Database = {
           edited_at: string | null
           encrypted: boolean | null
           encryption_key: string | null
+          has_attachment: boolean | null
           id: string
           is_assistant: boolean | null
           is_deleted: boolean | null
@@ -2315,6 +2357,7 @@ export type Database = {
           edited_at?: string | null
           encrypted?: boolean | null
           encryption_key?: string | null
+          has_attachment?: boolean | null
           id?: string
           is_assistant?: boolean | null
           is_deleted?: boolean | null
@@ -2342,6 +2385,7 @@ export type Database = {
           edited_at?: string | null
           encrypted?: boolean | null
           encryption_key?: string | null
+          has_attachment?: boolean | null
           id?: string
           is_assistant?: boolean | null
           is_deleted?: boolean | null
