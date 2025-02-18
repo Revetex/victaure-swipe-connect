@@ -37,6 +37,22 @@ export function useAIChat() {
       addThinkingMessage(profile);
       setIsThinking(true);
 
+      // Insert the user message into Supabase
+      const { error: userMessageError } = await supabase
+        .from('messages')
+        .insert({
+          content,
+          sender_id: profile.id,
+          receiver_id: 'assistant',
+          message_type: 'user',
+          is_assistant: false,
+          status: 'sent',
+          metadata: {},
+          read: false
+        });
+
+      if (userMessageError) throw userMessageError;
+
       const { data, error } = await supabase.functions.invoke<{
         response: string;
         context?: {
@@ -58,6 +74,22 @@ export function useAIChat() {
 
       if (error) throw error;
       if (!data?.response) throw new Error('Invalid response format from AI');
+
+      // Insert the assistant's response into Supabase
+      const { error: assistantMessageError } = await supabase
+        .from('messages')
+        .insert({
+          content: data.response,
+          sender_id: 'assistant',
+          receiver_id: profile.id,
+          message_type: 'assistant',
+          is_assistant: true,
+          status: 'sent',
+          metadata: {},
+          read: false
+        });
+
+      if (assistantMessageError) throw assistantMessageError;
 
       addAssistantMessage(data.response, profile);
       
