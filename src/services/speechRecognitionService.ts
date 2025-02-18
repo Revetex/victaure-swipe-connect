@@ -1,21 +1,25 @@
 
-class SpeechRecognitionService {
+export class SpeechRecognitionService {
   private recognition: any;
   private isListening: boolean = false;
 
   constructor() {
-    const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      throw new Error("La reconnaissance vocale n'est pas supportée par ce navigateur");
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        this.recognition = new SpeechRecognition();
+        this.recognition.continuous = true;
+        this.recognition.interimResults = true;
+        this.recognition.lang = 'fr-FR';
+      }
     }
-
-    this.recognition = new SpeechRecognition();
-    this.recognition.continuous = true;
-    this.recognition.interimResults = true;
-    this.recognition.lang = 'fr-FR';
   }
 
   start(onResult: (text: string) => void, onEnd?: () => void) {
+    if (!this.recognition) {
+      throw new Error("La reconnaissance vocale n'est pas supportée par ce navigateur");
+    }
+
     if (this.isListening) return;
 
     this.recognition.onresult = (event: any) => {
@@ -34,13 +38,13 @@ class SpeechRecognitionService {
   }
 
   stop() {
-    if (!this.isListening) return;
+    if (!this.isListening || !this.recognition) return;
     this.recognition.stop();
     this.isListening = false;
   }
 
   isSupported() {
-    return !!(window.SpeechRecognition || (window as any).webkitSpeechRecognition);
+    return !!this.recognition;
   }
 }
 

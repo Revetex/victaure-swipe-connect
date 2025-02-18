@@ -50,9 +50,11 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
 
   const handleGenerateDescription = async (exp: Experience) => {
     try {
-      const prompt = `Génère une description professionnelle et détaillée pour le poste de ${exp.position} chez ${exp.company}. 
-        La description doit inclure les responsabilités principales et les réalisations, en utilisant des verbes d'action.
-        La description doit faire environ 3-4 phrases.`;
+      const dateDebut = new Date(exp.start_date || '').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+      const dateFin = exp.end_date ? new Date(exp.end_date).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) : 'présent';
+      
+      const prompt = `Génère une description concise et professionnelle pour un poste de ${exp.position} chez ${exp.company} 
+        occupé de ${dateDebut} à ${dateFin}. Mets l'accent sur les responsabilités clés et réalisations principales.`;
 
       const description = await generateWithAI(prompt);
       handleUpdateExperience({ ...exp, description });

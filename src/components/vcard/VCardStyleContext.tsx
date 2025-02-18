@@ -1,5 +1,5 @@
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { StyleOption } from './types';
 
 const defaultStyle: StyleOption = {
@@ -35,6 +35,12 @@ const VCardStyleContext = createContext<{
 
 export function VCardStyleProvider({ children }: { children: ReactNode }) {
   const [selectedStyle, setSelectedStyle] = useState<StyleOption>(defaultStyle);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--primary-color', selectedStyle.color);
+    document.documentElement.style.setProperty('--secondary-color', selectedStyle.secondaryColor);
+    document.documentElement.style.fontFamily = selectedStyle.font;
+  }, [selectedStyle]);
 
   return (
     <VCardStyleContext.Provider value={{ selectedStyle, setSelectedStyle }}>

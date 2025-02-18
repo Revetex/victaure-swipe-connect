@@ -1,45 +1,35 @@
 
 export async function generateWithAI(prompt: string, style: "professional" | "creative" | "friendly" | "academic" = "professional") {
-  const API_KEY = process.env.OPEN_ROUTER_API_KEY;
-  
-  if (!API_KEY) {
-    throw new Error("Clé API OpenRouter manquante");
-  }
-
-  const systemPrompts = {
-    professional: "Tu es un rédacteur professionnel spécialisé dans les profils LinkedIn et les CV. Ton style est formel et orienté business.",
-    creative: "Tu es un rédacteur créatif qui aime raconter des histoires captivantes. Ton style est dynamique et engageant.",
-    friendly: "Tu es un rédacteur qui adopte un ton chaleureux et personnel. Tu mets l'accent sur l'humain et les relations.",
-    academic: "Tu es un rédacteur académique qui met l'accent sur les réalisations éducatives et la rigueur intellectuelle."
-  };
-
   try {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const systemPrompt = `En tant que rédacteur professionnel, génère une description courte et percutante en français. 
+    Utilise des verbes d'action au passé composé. Limite la description à 2 phrases maximum.
+    Concentre-toi sur les réalisations clés et l'impact.`;
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${API_KEY}`,
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': window.location.origin,
       },
       body: JSON.stringify({
-        model: 'anthropic/claude-2',
+        model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: systemPrompts[style] },
+          { role: 'system', content: systemPrompt },
           { role: 'user', content: prompt }
         ],
         temperature: 0.7,
+        max_tokens: 150,
       }),
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Erreur lors de la génération du texte");
+      throw new Error("Erreur lors de la génération de la description");
     }
 
     const data = await response.json();
     return data.choices[0].message.content;
   } catch (error) {
-    console.error('Erreur OpenRouter:', error);
+    console.error('Erreur OpenAI:', error);
     throw new Error("Erreur lors de la génération du texte. Veuillez réessayer.");
   }
 }
