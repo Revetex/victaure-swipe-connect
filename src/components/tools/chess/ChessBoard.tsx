@@ -51,9 +51,9 @@ export function ChessBoard({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className={cn(
-                  "aspect-square relative flex items-center justify-center text-3xl sm:text-4xl font-chess transition-colors",
+                  "aspect-square relative flex items-center justify-center text-2xl sm:text-3xl md:text-4xl font-chess transition-colors",
                   "rounded border border-primary/10",
-                  isLight ? "bg-white/80" : "bg-primary/10",
+                  isLight ? "bg-white/90" : "bg-primary/20",
                   isSelected && "ring-2 ring-primary ring-offset-2",
                   isPossibleMove && "ring-2 ring-yellow-400",
                   !gameOver && "hover:bg-primary/5",
@@ -64,9 +64,11 @@ export function ChessBoard({
               >
                 {piece && (
                   <span className={cn(
-                    "transition-transform",
-                    piece.isWhite ? "text-zinc-900" : "text-zinc 900 drop-shadow-[0_0_3px_rgba(255,255,255,0.8)]",
-                    isSelected && "scale 110"
+                    "transition-transform select-none",
+                    piece.isWhite 
+                      ? "text-zinc 900" 
+                      : "text-zinc 900 drop-shadow-[0_0_2px_rgba(0,0,0,0.5)]",
+                    isSelected && "scale-110"
                   )}>
                     {getPieceIcon(piece)}
                   </span>
