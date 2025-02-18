@@ -4,6 +4,7 @@ import { useReactions } from "./actions/useReactions";
 import { ReactionButton } from "./actions/ReactionButton";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 interface PostActionsProps {
   likes: number;
@@ -17,6 +18,15 @@ interface PostActionsProps {
   userEmail?: string;
   onToggleComments: () => void;
   onReaction?: (postId: string, type: 'like' | 'dislike') => void;
+}
+
+interface PostPayload {
+  id: string;
+  likes: number;
+  dislikes: number;
+  user_id: string;
+  content: string;
+  created_at: string;
 }
 
 export function PostActions({
@@ -51,9 +61,19 @@ export function PostActions({
           table: 'posts',
           filter: `id=eq.${postId}`
         },
-        (payload) => {
-          if (payload.new) {
-            onReaction?.(postId, payload.new.reaction_type);
+        (payload: RealtimePostgresChangesPayload<PostPayload>) => {
+          if (payload.new && onReaction) {
+            // Nous recalculons directement les pourcentages à partir des nouvelles valeurs
+            const newLikes = payload.new.likes;
+            const newDislikes = payload.new.dislikes;
+            const total = newLikes + newDislikes;
+            
+            // On met à jour avec le type approprié basé sur les nouvelles valeurs
+            if (newLikes > (payload.old?.likes || 0)) {
+              onReaction(postId, 'like');
+            } else if (newDislikes > (payload.old?.dislikes || 0)) {
+              onReaction(postId, 'dislike');
+            }
           }
         }
       )
