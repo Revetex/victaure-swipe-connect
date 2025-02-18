@@ -4,42 +4,63 @@ export class SpeechRecognitionService {
   private isListening: boolean = false;
 
   constructor() {
-    if (typeof window !== 'undefined') {
-      const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        this.recognition = new SpeechRecognition();
-        this.recognition.continuous = true;
-        this.recognition.interimResults = true;
-        this.recognition.lang = 'fr-FR';
+    try {
+      if (typeof window !== 'undefined') {
+        const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+        if (SpeechRecognition) {
+          this.recognition = new SpeechRecognition();
+          this.recognition.continuous = true;
+          this.recognition.interimResults = true;
+          this.recognition.lang = 'fr-FR';
+        }
       }
+    } catch (error) {
+      console.warn("La reconnaissance vocale n'est pas supportée par ce navigateur");
+      this.recognition = null;
     }
   }
 
   start(onResult: (text: string) => void, onEnd?: () => void) {
     if (!this.recognition) {
-      throw new Error("La reconnaissance vocale n'est pas supportée par ce navigateur");
+      console.warn("La reconnaissance vocale n'est pas supportée par ce navigateur");
+      return;
     }
 
     if (this.isListening) return;
 
-    this.recognition.onresult = (event: any) => {
-      const result = event.results[event.results.length - 1];
-      const text = result[0].transcript;
-      onResult(text);
-    };
+    try {
+      this.recognition.onresult = (event: any) => {
+        const result = event.results[event.results.length - 1];
+        const text = result[0].transcript;
+        onResult(text);
+      };
 
-    this.recognition.onend = () => {
-      this.isListening = false;
+      this.recognition.onend = () => {
+        this.isListening = false;
+        if (onEnd) onEnd();
+      };
+
+      this.recognition.onerror = (event: any) => {
+        console.error('Erreur de reconnaissance vocale:', event.error);
+        this.isListening = false;
+        if (onEnd) onEnd();
+      };
+
+      this.recognition.start();
+      this.isListening = true;
+    } catch (error) {
+      console.error('Erreur lors du démarrage de la reconnaissance vocale:', error);
       if (onEnd) onEnd();
-    };
-
-    this.recognition.start();
-    this.isListening = true;
+    }
   }
 
   stop() {
     if (!this.isListening || !this.recognition) return;
-    this.recognition.stop();
+    try {
+      this.recognition.stop();
+    } catch (error) {
+      console.error('Erreur lors de l\'arrêt de la reconnaissance vocale:', error);
+    }
     this.isListening = false;
   }
 
