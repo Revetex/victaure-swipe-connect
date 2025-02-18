@@ -1,7 +1,7 @@
 
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
-import { FileText, UserPlus, UserMinus, Ban, MessageCircle, Lock, User, ExternalLink } from "lucide-react";
+import { UserPlus, UserMinus, Ban, MessageCircle, Lock, User, ExternalLink } from "lucide-react";
 import { useConnectionStatus } from "./hooks/useConnectionStatus";
 import { useConnectionActions } from "./hooks/useConnectionActions";
 import { ProfilePreviewHeader } from "./ProfilePreviewHeader";
@@ -10,13 +10,14 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface ProfilePreviewFrontProps {
   profile: UserProfile;
   onRequestChat?: () => void;
   onFlip: () => void;
   canViewFullProfile: boolean;
-  onViewProfile: () => void;
+  onClose?: () => void;
 }
 
 export function ProfilePreviewFront({
@@ -24,9 +25,10 @@ export function ProfilePreviewFront({
   onRequestChat,
   onFlip,
   canViewFullProfile,
-  onViewProfile,
+  onClose
 }: ProfilePreviewFrontProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const isOwnProfile = user?.id === profile.id;
   
   const {
@@ -48,9 +50,27 @@ export function ProfilePreviewFront({
       toast.error("Vous devez être connecté pour envoyer un message");
       return;
     }
-    if (onRequestChat) {
-      onRequestChat();
+    
+    // Fermer la preview avant de naviguer
+    if (onClose) {
+      onClose();
     }
+    
+    navigate(`/messages?receiver=${profile.id}`);
+  };
+
+  const handleViewProfile = () => {
+    if (!canViewFullProfile) {
+      toast.error("Ce profil est privé");
+      return;
+    }
+    
+    // Fermer la preview avant de naviguer
+    if (onClose) {
+      onClose();
+    }
+    
+    navigate(`/profile/${profile.id}`);
   };
 
   return (
@@ -66,7 +86,7 @@ export function ProfilePreviewFront({
           <div className="mt-6 space-y-4">
             {isOwnProfile ? (
               <Button 
-                onClick={onViewProfile}
+                onClick={handleViewProfile}
                 variant="default" 
                 className="w-full flex items-center gap-2"
               >
@@ -76,7 +96,7 @@ export function ProfilePreviewFront({
             ) : (
               <>
                 <Button 
-                  onClick={onViewProfile}
+                  onClick={handleViewProfile}
                   variant={canViewFullProfile ? "default" : "secondary"}
                   className="w-full flex items-center gap-2"
                 >
