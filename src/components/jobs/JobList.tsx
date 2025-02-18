@@ -84,17 +84,17 @@ export function JobList({ jobs, onJobSelect, selectedJobId }: JobListProps) {
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
                 <span>
-                  {formatDistance(new Date(job.created_at), new Date(), {
+                  {formatDistance(new Date(job.created_at || new Date()), new Date(), {
                     addSuffix: true,
                     locale: fr
                   })}
                 </span>
               </div>
 
-              {job.salary_range && (
+              {job.salary && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <DollarSign className="h-4 w-4" />
-                  <span>{job.salary_range}</span>
+                  <span>{job.salary}</span>
                 </div>
               )}
 
@@ -126,7 +126,6 @@ export function JobList({ jobs, onJobSelect, selectedJobId }: JobListProps) {
                 className="w-full sm:w-auto"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // Implémenter la logique de sauvegarde
                 }}
               >
                 Sauvegarder
@@ -136,7 +135,6 @@ export function JobList({ jobs, onJobSelect, selectedJobId }: JobListProps) {
                 className="w-full sm:w-auto"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // Implémenter la logique de postulation
                 }}
               >
                 Postuler

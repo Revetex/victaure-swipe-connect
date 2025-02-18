@@ -29,7 +29,16 @@ export function useProfile() {
 
         if (profileError) throw profileError;
 
-        const friendsIds = profileData?.friends || [];
+        // Récupérer la liste d'amis depuis les relations d'amitié
+        const { data: friendships, error: friendshipsError } = await supabase
+          .from('friendships')
+          .select('friend_id')
+          .eq('user_id', user.id)
+          .eq('status', 'accepted');
+
+        if (friendshipsError) throw friendshipsError;
+
+        const friendIds = friendships?.map(f => f.friend_id) || [];
         
         // Requêtes parallèles pour de meilleures performances
         const [friendsResponse, certificationsResponse, educationResponse, experiencesResponse] = 
@@ -37,7 +46,7 @@ export function useProfile() {
             supabase
               .from('profiles')
               .select('id, full_name, avatar_url, online_status, last_seen')
-              .in('id', friendsIds),
+              .in('id', friendIds),
             supabase
               .from('certifications')
               .select('*')
@@ -66,7 +75,7 @@ export function useProfile() {
         const fullProfile: UserProfile = {
           ...baseProfile,
           ...profileData,
-          role: profileData.role || 'professional',
+          role: profileData.role as "professional" | "business" | "admin",
           friends,
           certifications: (certificationsResponse.data || []).map(cert => transformCertification(cert)),
           education: (educationResponse.data || []).map(edu => transformEducation(edu)),
