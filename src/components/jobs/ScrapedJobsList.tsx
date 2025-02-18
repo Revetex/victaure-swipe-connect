@@ -1,7 +1,16 @@
-
+import { Job } from "@/types/job";
+lov-code>
 import { Job } from "@/types/job";
 import { JobList } from "./JobList";
 import { JobFilters } from "./JobFilterUtils";
+
+interface JobListProps {
+  filters: any;
+  showFilters: boolean;
+  filterType: string;
+  viewMode: 'list' | 'grid' | 'cards';
+  jobs?: Job[];
+}
 
 interface ScrapedJobsListProps {
   jobs: Job[];

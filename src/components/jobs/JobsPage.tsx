@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { JobList } from "./JobList";
 import { JobFiltersPanel } from "./JobFiltersPanel";
@@ -13,6 +12,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { JobStats } from "./sections/JobStats";
 import { JobHeader } from "./sections/JobHeader";
+
+interface JobListProps {
+  filters: any;
+  showFilters: boolean;
+  filterType: string;
+  viewMode: 'list' | 'grid' | 'cards';
+}
 
 export function JobsPage() {
   const { filters, updateFilter, resetFilters } = useJobFilters();

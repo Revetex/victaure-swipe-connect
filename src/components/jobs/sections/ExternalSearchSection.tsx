@@ -1,4 +1,3 @@
-
 import { Job } from "@/types/job";
 import { JobList } from "../JobList";
 import { JobFilters } from "../JobFilterUtils";
@@ -8,6 +7,14 @@ interface ExternalSearchSectionProps {
   filters: JobFilters;
   queryString?: string;
   onFilterChange?: (key: keyof JobFilters, value: any) => void;
+}
+
+interface JobListProps {
+  filters: any;
+  showFilters: boolean;
+  filterType: string;
+  viewMode: 'list' | 'grid' | 'cards';
+  jobs?: Job[];
 }
 
 export function ExternalSearchSection({ 

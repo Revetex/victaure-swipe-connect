@@ -10,19 +10,42 @@ import { cn } from "@/lib/utils";
 interface Job {
   id: string;
   title: string;
-  company: string;
+  company_name: string;
   location: string;
-  type: string;
+  contract_type: string;
   created_at: string;
   salary_range?: string;
   description: string;
+  budget?: number;
+  accept_bids?: boolean;
+  application_deadline?: string;
+  application_steps?: any;
+  benefits?: string[];
+  bid_end_date?: string;
+  category?: string;
+  certifications_required?: string[];
 }
 
-export function JobList() {
+interface JobListProps {
+  filters: any;
+  showFilters: boolean;
+  filterType: string;
+  viewMode: 'list' | 'grid' | 'cards';
+  jobs?: Job[];
+  onJobDeleted?: () => void;
+}
+
+export function JobList({ filters, showFilters, filterType, viewMode, jobs: propJobs, onJobDeleted }: JobListProps) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (propJobs) {
+      setJobs(propJobs);
+      setLoading(false);
+      return;
+    }
+
     async function fetchJobs() {
       try {
         const { data, error } = await supabase
@@ -32,7 +55,13 @@ export function JobList() {
 
         if (error) throw error;
 
-        setJobs(data || []);
+        const formattedJobs = data.map(job => ({
+          ...job,
+          company: job.company_name || 'Entreprise',
+          type: job.contract_type || 'Temps plein'
+        }));
+
+        setJobs(formattedJobs);
       } catch (error) {
         console.error('Error fetching jobs:', error);
         toast.error("Impossible de charger les offres d'emploi");
@@ -42,7 +71,7 @@ export function JobList() {
     }
 
     fetchJobs();
-  }, []);
+  }, [propJobs]);
 
   if (loading) {
     return (
@@ -86,7 +115,7 @@ export function JobList() {
                 </h3>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Building2 className="h-4 w-4" />
-                  <span>{job.company}</span>
+                  <span>{job.company_name}</span>
                 </div>
               </div>
 
@@ -97,7 +126,7 @@ export function JobList() {
                 </Badge>
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Briefcase className="h-3 w-3" />
-                  {job.type}
+                  {job.contract_type}
                 </Badge>
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
