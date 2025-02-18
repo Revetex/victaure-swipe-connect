@@ -1,9 +1,9 @@
 
 import { Building2, GraduationCap, Calendar } from "lucide-react";
-import { EducationEntry } from "@/types/profile";
+import { Education } from "@/types/profile";
 
 interface EducationDisplayProps {
-  education: EducationEntry;
+  education: Education;
   formatDate: (date: string | undefined) => string;
 }
 

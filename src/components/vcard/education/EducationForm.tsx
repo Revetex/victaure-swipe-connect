@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Building2, GraduationCap, Calendar, X } from "lucide-react";
-import { EducationEntry } from "@/types/profile";
+import { Education } from "@/types/profile";
 
 interface EducationFormProps {
-  education: EducationEntry;
+  education: Education;
   onEducationChange: (id: string, field: string, value: string) => void;
   onRemoveEducation: (id: string) => void;
 }
