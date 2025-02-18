@@ -20,7 +20,7 @@ interface PostListProps {
 export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   const { user } = useAuth();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
-  const { handleDelete, handleHide, handleUpdate } = usePostOperations();
+  const { handleDelete, handleHide, handleUpdate, handleReaction } = usePostOperations();
 
   const { data: posts, isLoading, refetch } = useQuery<Post[]>({
     queryKey: ["posts"],
@@ -96,6 +96,16 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
     }
   };
 
+  const handleReactionUpdate = async (postId: string, type: 'like' | 'dislike') => {
+    try {
+      await handleReaction(postId, user?.id, type);
+      refetch(); // Rafraîchit immédiatement les données
+    } catch (error) {
+      console.error('Error handling reaction:', error);
+      toast.error("Erreur lors de la réaction");
+    }
+  };
+
   if (isLoading) {
     return <PostSkeleton />;
   }
@@ -132,6 +142,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
                 onDelete={() => post.user_id === user?.id && setPostToDelete(post.id)}
                 onHide={(postId) => handleHide(postId, user?.id)}
                 onUpdate={handleUpdatePost}
+                onReaction={handleReactionUpdate}
                 onCommentAdded={refetch}
               />
             </motion.div>
