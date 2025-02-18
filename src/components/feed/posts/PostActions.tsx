@@ -2,6 +2,7 @@
 import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import { useReactions } from "./actions/useReactions";
 import { ReactionButton } from "./actions/ReactionButton";
+import { Badge } from "@/components/ui/badge";
 
 interface PostActionsProps {
   likes: number;
@@ -43,31 +44,53 @@ export function PostActions({
     onReaction?.(postId, type);
   };
 
+  const calculateReactionPercentage = () => {
+    const total = likes + dislikes;
+    if (total === 0) return { likes: 0, dislikes: 0 };
+    
+    const likePercentage = Math.round((likes / total) * 100);
+    const dislikePercentage = 100 - likePercentage;
+    
+    return { likes: likePercentage, dislikes: dislikePercentage };
+  };
+
+  const percentages = calculateReactionPercentage();
+
   return (
     <div className="flex gap-2 items-center py-2">
-      <ReactionButton
-        icon={ThumbsUp}
-        count={likes || 0}
-        isActive={userReaction === 'like'}
-        onClick={() => handleReactionClick('like')}
-        activeClassName="bg-green-500 hover:bg-green-600 text-white shadow-lg"
-      />
+      <div className="flex items-center gap-2">
+        <ReactionButton
+          icon={ThumbsUp}
+          count={percentages.likes}
+          suffix="%"
+          isActive={userReaction === 'like'}
+          onClick={() => handleReactionClick('like')}
+          activeClassName="bg-green-500 hover:bg-green-600 text-white shadow-lg"
+        />
+        <ReactionButton
+          icon={ThumbsDown}
+          count={percentages.dislikes}
+          suffix="%"
+          isActive={userReaction === 'dislike'}
+          onClick={() => handleReactionClick('dislike')}
+          activeClassName="bg-red-500 hover:bg-red-600 text-white shadow-lg"
+        />
+      </div>
 
-      <ReactionButton
-        icon={ThumbsDown}
-        count={dislikes || 0}
-        isActive={userReaction === 'dislike'}
-        onClick={() => handleReactionClick('dislike')}
-        activeClassName="bg-red-500 hover:bg-red-600 text-white shadow-lg"
-      />
-
-      <ReactionButton
-        icon={MessageSquare}
-        count={commentCount}
-        isActive={isExpanded}
-        onClick={onToggleComments}
-        activeClassName="bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
-      />
+      <div className="flex items-center gap-2">
+        <ReactionButton
+          icon={MessageSquare}
+          count={commentCount}
+          isActive={isExpanded}
+          onClick={onToggleComments}
+          activeClassName="bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
+        />
+        {total > 0 && (
+          <Badge variant="secondary" className="text-xs">
+            {total} votes
+          </Badge>
+        )}
+      </div>
     </div>
   );
 }

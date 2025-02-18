@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 interface ReactionButtonProps {
   icon: LucideIcon;
   count: number;
+  suffix?: string;
   isActive?: boolean;
   onClick: () => void;
   activeClassName?: string;
@@ -14,6 +15,7 @@ interface ReactionButtonProps {
 export function ReactionButton({
   icon: Icon,
   count,
+  suffix,
   isActive,
   onClick,
   activeClassName,
@@ -29,7 +31,7 @@ export function ReactionButton({
       )}
     >
       <Icon className="w-4 h-4" />
-      <span>{count}</span>
+      <span>{count}{suffix}</span>
     </Button>
   );
 }
