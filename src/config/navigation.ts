@@ -13,7 +13,8 @@ import {
   SwordIcon, 
   StickyNote,
   ShoppingBag,
-  Diamond
+  Diamond,
+  Gift
 } from "lucide-react";
 
 export const navigationItems = [
@@ -23,7 +24,7 @@ export const navigationItems = [
   { id: 2, icon: MessageSquare, name: "Messages", route: "/messages" },
   { id: 3, icon: BriefcaseIcon, name: "Emplois", route: "/jobs" },
   { id: 17, icon: ShoppingBag, name: "Marketplace", route: "/marketplace" },
-  { id: 18, icon: Diamond, name: "Loterie Imperium", route: "/lottery" },
+  { id: 18, icon: Gift, name: "Loterie", route: "/lottery" },
   
   // Section réseau
   { id: 9, icon: Bell, name: "Notifications", route: "/notifications" },
@@ -67,7 +68,7 @@ export const getPageTitle = (currentPage: number): string => {
     case 17:
       return "Marketplace";
     case 18:
-      return "Loterie Imperium";
+      return "Loterie";
     default:
       return "Actualité";
   }
