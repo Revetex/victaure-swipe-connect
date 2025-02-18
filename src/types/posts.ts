@@ -7,7 +7,7 @@ export interface Comment {
   profiles: {
     id: string;
     full_name: string;
-    avatar_url?: string;  // Made optional to match database schema
+    avatar_url?: string;
   };
 }
 
@@ -23,7 +23,7 @@ export interface Post {
   profiles: {
     id: string;
     full_name: string;
-    avatar_url?: string;  // Made optional to match database schema
+    avatar_url?: string;
   };
   comments?: Comment[];
   reactions?: {

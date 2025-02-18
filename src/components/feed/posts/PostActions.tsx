@@ -7,7 +7,7 @@ interface PostActionsProps {
   likes: number;
   dislikes: number;
   commentCount: number;
-  userReaction?: string;
+  userReaction?: 'like' | 'dislike';
   isExpanded: boolean;
   postId: string;
   postAuthorId: string;
