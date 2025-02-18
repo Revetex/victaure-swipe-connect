@@ -3,31 +3,96 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useVCardStyle } from "./VCardStyleContext";
 import { Palette } from "lucide-react";
+import { StyleOption } from "./types";
 
-const styles = [
+const styles: StyleOption[] = [
   {
     id: "modern",
     name: "Moderne",
     color: "#047857",
+    secondaryColor: "#10B981",
+    font: "Inter, sans-serif",
     bgGradient: "bg-gradient-to-br from-emerald-50 via-teal-100 to-emerald-200",
+    colors: {
+      primary: "#065F46",
+      secondary: "#10B981",
+      text: {
+        primary: "#064E3B",
+        secondary: "#065F46",
+        muted: "#047857",
+      },
+      background: {
+        card: "#FFFFFF",
+        section: "#F9FAFB",
+        button: "#065F46"
+      }
+    }
   },
   {
     id: "elegant",
     name: "Élégant",
     color: "#7C3AED",
+    secondaryColor: "#8B5CF6",
+    font: "Playfair Display, serif",
     bgGradient: "bg-gradient-to-br from-purple-50 via-purple-100 to-purple-200",
+    colors: {
+      primary: "#6D28D9",
+      secondary: "#8B5CF6",
+      text: {
+        primary: "#5B21B6",
+        secondary: "#6D28D9",
+        muted: "#7C3AED",
+      },
+      background: {
+        card: "#FFFFFF",
+        section: "#F9FAFB",
+        button: "#6D28D9"
+      }
+    }
   },
   {
     id: "bold",
     name: "Audacieux",
     color: "#BE185D",
+    secondaryColor: "#DB2777",
+    font: "Oswald, sans-serif",
     bgGradient: "bg-gradient-to-br from-pink-50 via-pink-100 to-pink-200",
+    colors: {
+      primary: "#9D174D",
+      secondary: "#DB2777",
+      text: {
+        primary: "#831843",
+        secondary: "#9D174D",
+        muted: "#BE185D",
+      },
+      background: {
+        card: "#FFFFFF",
+        section: "#F9FAFB",
+        button: "#9D174D"
+      }
+    }
   },
   {
     id: "minimal",
     name: "Minimaliste",
     color: "#374151",
+    secondaryColor: "#4B5563",
+    font: "Montserrat, sans-serif",
     bgGradient: "bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200",
+    colors: {
+      primary: "#1F2937",
+      secondary: "#4B5563",
+      text: {
+        primary: "#111827",
+        secondary: "#1F2937",
+        muted: "#374151",
+      },
+      background: {
+        card: "#FFFFFF",
+        section: "#F9FAFB",
+        button: "#1F2937"
+      }
+    }
   }
 ];
 
