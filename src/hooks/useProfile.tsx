@@ -52,7 +52,7 @@ export function useProfile() {
         // Remove duplicates
         const uniqueFriendIds = [...new Set(friendIds)];
         
-        // Requêtes parallèles pour de meilleures performances
+        // Parallel queries for better performance
         const [friendsResponse, certificationsResponse, educationResponse, experiencesResponse] = 
           await Promise.all([
             supabase
