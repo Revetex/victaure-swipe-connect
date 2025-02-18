@@ -4,12 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { DashboardStats as DashboardStatsType } from "@/types/dashboard";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
 
 const containerVariants = {
-  hidden: {
-    opacity: 0
-  },
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
@@ -19,10 +16,7 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: {
-    opacity: 0,
-    y: 20
-  },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
@@ -59,6 +53,7 @@ export function DashboardStats() {
         .from('payments')
         .select('amount')
         .eq('status', 'pending');
+      
       const pendingPayments = payments?.reduce((sum, payment) => sum + Number(payment.amount), 0) || 0;
 
       // Fetch next job
@@ -102,49 +97,52 @@ export function DashboardStats() {
       value: stats?.activeJobs.toString() || "0",
       icon: Briefcase,
       color: "text-blue-500",
-      bgColor: "bg-blue-500/10"
+      bgColor: "bg-blue-500/10",
     },
     {
       title: "Messages non lus",
       value: stats?.unreadMessages.toString() || "0",
       icon: MessageSquare,
       color: "text-green-500",
-      bgColor: "bg-green-500/10"
+      bgColor: "bg-green-500/10",
     },
     {
       title: "Paiements en attente",
       value: stats?.pendingPayments || "CAD 0",
       icon: DollarSign,
       color: "text-yellow-500",
-      bgColor: "bg-yellow-500/10"
+      bgColor: "bg-yellow-500/10",
     },
     {
       title: "Prochaine mission",
       value: stats?.nextJob || "Aucune",
       icon: Calendar,
       color: "text-purple-500",
-      bgColor: "bg-purple-500/10"
-    }
+      bgColor: "bg-purple-500/10",
+    },
   ];
 
   return (
     <motion.div 
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" 
-      variants={containerVariants} 
-      initial="hidden" 
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+      variants={containerVariants}
+      initial="hidden"
       animate="visible"
     >
       {quickActions.map((action, index) => (
         <motion.div key={index} variants={itemVariants}>
-          <Card className={cn("p-6 overflow-hidden relative group cursor-pointer")}>
-            <div className={cn("absolute inset-0 opacity-50", action.bgColor)} />
-            <div className="relative">
-              <div className={cn("p-2 w-fit rounded-lg", action.bgColor)}>
-                <action.icon className={cn("h-5 w-5", action.color)} />
+          <Card className="p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] bg-gradient-to-br from-white/80 to-white/40 dark:from-gray-900/80 dark:to-gray-900/40 backdrop-blur-sm">
+            <div className="flex items-center gap-4">
+              <div className={`p-3 rounded-xl ${action.bgColor} transition-colors duration-300`}>
+                <action.icon className={`h-6 w-6 ${action.color}`} />
               </div>
-              <div className="mt-4">
-                <p className="text-sm text-muted-foreground">{action.title}</p>
-                <p className="text-2xl font-semibold mt-1">{action.value}</p>
+              <div>
+                <p className="text-sm text-muted-foreground font-medium">
+                  {action.title}
+                </p>
+                <h3 className="text-2xl font-bold mt-1 tracking-tight">
+                  {action.value}
+                </h3>
               </div>
             </div>
           </Card>
