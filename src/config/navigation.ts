@@ -12,7 +12,8 @@ import {
   Settings, 
   SwordIcon, 
   StickyNote,
-  ShoppingBag
+  ShoppingBag,
+  Diamond
 } from "lucide-react";
 
 export const navigationItems = [
@@ -21,7 +22,8 @@ export const navigationItems = [
   { id: 4, icon: Newspaper, name: "Actualité", route: "/feed" },
   { id: 2, icon: MessageSquare, name: "Messages", route: "/messages" },
   { id: 3, icon: BriefcaseIcon, name: "Emplois", route: "/jobs" },
-  { id: 17, icon: ShoppingBag, name: "Marketplace", route: "/marketplace" }, // Assurez-vous que cette route est active
+  { id: 17, icon: ShoppingBag, name: "Marketplace", route: "/marketplace" },
+  { id: 18, icon: Diamond, name: "Loterie Imperium", route: "/lottery" },
   
   // Section réseau
   { id: 9, icon: Bell, name: "Notifications", route: "/notifications" },
@@ -64,6 +66,8 @@ export const getPageTitle = (currentPage: number): string => {
       return "Notes";
     case 17:
       return "Marketplace";
+    case 18:
+      return "Loterie Imperium";
     default:
       return "Actualité";
   }
