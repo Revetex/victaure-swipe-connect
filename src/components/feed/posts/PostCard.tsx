@@ -17,6 +17,7 @@ export interface PostCardProps {
   onDelete?: () => void;
   onHide?: (postId: string) => void;
   onUpdate?: (postId: string, content: string) => void;
+  onReaction?: (postId: string, type: 'like' | 'dislike') => void;
 }
 
 export function PostCard({ 
@@ -25,7 +26,8 @@ export function PostCard({
   userEmail,
   onDelete, 
   onHide,
-  onUpdate
+  onUpdate,
+  onReaction
 }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -94,6 +96,7 @@ export function PostCard({
           currentUserId={currentUserId}
           userEmail={userEmail}
           onToggleComments={handleToggleComments}
+          onReaction={onReaction}
         />
 
         {showComments && post.comments && (
