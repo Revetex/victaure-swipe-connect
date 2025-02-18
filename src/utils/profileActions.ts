@@ -59,7 +59,15 @@ export const updateProfile = async (tempProfile: UserProfile) => {
       role: tempProfile.role || existingProfile?.role || 'professional',
       avatar_url: tempProfile.avatar_url || existingProfile?.avatar_url,
       style_id: tempProfile.style_id || existingProfile?.style_id,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
+      online_status: false,
+      last_seen: new Date().toISOString(),
+      account_locked: false,
+      auto_update_enabled: true,
+      location_enabled: false,
+      search_enabled: true,
+      privacy_enabled: false,
+      push_notifications_enabled: true
     };
 
     console.log("Profile data to be saved:", profileData);
@@ -68,7 +76,6 @@ export const updateProfile = async (tempProfile: UserProfile) => {
     const { error: upsertError } = await supabase
       .from('profiles')
       .upsert(profileData, {
-        returning: 'minimal',
         onConflict: 'id'
       });
 
@@ -77,7 +84,7 @@ export const updateProfile = async (tempProfile: UserProfile) => {
       throw upsertError;
     }
 
-    // Update certifications
+    // Update certifications if they exist
     if (tempProfile.certifications && tempProfile.certifications.length > 0) {
       // Delete existing certifications
       const { error: deleteError } = await supabase
@@ -109,7 +116,7 @@ export const updateProfile = async (tempProfile: UserProfile) => {
       }
     }
 
-    // Update education records
+    // Update education records if they exist
     if (tempProfile.education && tempProfile.education.length > 0) {
       // Delete existing education records
       const { error: deleteError } = await supabase
@@ -141,7 +148,7 @@ export const updateProfile = async (tempProfile: UserProfile) => {
       }
     }
 
-    // Update experiences
+    // Update experiences if they exist
     if (tempProfile.experiences && tempProfile.experiences.length > 0) {
       // Delete existing experiences
       const { error: deleteError } = await supabase
