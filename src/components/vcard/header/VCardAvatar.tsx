@@ -1,4 +1,3 @@
-
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Upload, Trash2, UserCircle2, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,20 +21,17 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
   const [showFullscreen, setShowFullscreen] = useState(false);
 
   const validateImage = (file: File) => {
-    // Vérifier le type de fichier
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
       toast.error("Format non supporté. Utilisez JPG, PNG ou WEBP");
       return false;
     }
 
-    // Vérifier la taille (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("L'image ne doit pas dépasser 5MB");
       return false;
     }
 
-    // Vérifier les dimensions
     return new Promise((resolve) => {
       const img = new Image();
       img.src = URL.createObjectURL(file);
@@ -67,11 +63,9 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
       setIsLoading(true);
       setImageError(false);
 
-      // Valider l'image
       const isValid = await validateImage(file);
       if (!isValid) return;
 
-      // Supprimer l'ancienne image si elle existe
       if (profile.avatar_url) {
         const oldFileName = profile.avatar_url.split('/').pop();
         if (oldFileName) {
@@ -146,7 +140,7 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
               <AvatarImage 
                 src={profile.avatar_url} 
                 alt={profile.full_name || ''}
-                className="object-cover"
+                className="object-contain w-full h-full"
                 onError={handleImageError}
               />
             ) : (
@@ -166,6 +160,7 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
             </div>
           )}
         </div>
+
         {isEditing && !isLoading && (
           <div className="absolute inset-0 flex items-center justify-center gap-2">
             <label 
@@ -199,11 +194,12 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
 
       <Dialog open={showFullscreen} onOpenChange={setShowFullscreen}>
         <DialogContent className="max-w-3xl w-full p-0">
-          <div className="relative aspect-square w-full">
+          <div className="relative w-full h-full max-h-[80vh] overflow-hidden">
             <img
               src={profile.avatar_url || ''}
               alt={profile.full_name || ''}
-              className="w-full h-full object-cover rounded-lg"
+              className="w-full h-full object-contain"
+              onClick={() => setShowFullscreen(false)}
             />
           </div>
         </DialogContent>

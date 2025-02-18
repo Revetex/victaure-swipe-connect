@@ -1,4 +1,3 @@
-
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
 import { FileText, UserPlus, UserMinus, Ban } from "lucide-react";
@@ -10,17 +9,22 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { ProfilePreviewButtons } from "./ProfilePreviewButtons";
 
 interface ProfilePreviewFrontProps {
   profile: UserProfile;
   onRequestChat?: () => void;
   onFlip: () => void;
+  canViewFullProfile: boolean;
+  onViewProfile: () => void;
 }
 
 export function ProfilePreviewFront({
   profile,
   onRequestChat,
   onFlip,
+  canViewFullProfile,
+  onViewProfile,
 }: ProfilePreviewFrontProps) {
   const navigate = useNavigate();
   const {
@@ -82,75 +86,21 @@ export function ProfilePreviewFront({
         </div>
       </motion.div>
 
-      <div className="flex flex-col gap-3">
-        <div className="grid grid-cols-2 gap-3">
-          {isFriend ? (
-            <>
-              <Button
-                variant="default"
-                className="bg-primary/10 hover:bg-primary/20 text-primary flex items-center gap-2"
-                onClick={handleViewFullProfile}
-              >
-                <FileText className="h-4 w-4" />
-                Voir profil complet
-              </Button>
-              <Button
-                variant="destructive"
-                className="flex items-center gap-2"
-                onClick={handleRemoveFriend}
-              >
-                <UserMinus className="h-4 w-4" />
-                Supprimer
-              </Button>
-            </>
-          ) : isFriendRequestReceived ? (
-            <Button
-              variant="default"
-              className="flex items-center gap-2 col-span-2"
-              onClick={handleAcceptFriend}
-            >
-              <UserPlus className="h-4 w-4" />
-              Accepter la demande
-            </Button>
-          ) : !isFriendRequestSent ? (
-            <Button
-              variant="default"
-              className="flex items-center gap-2 col-span-2"
-              onClick={handleAddFriend}
-            >
-              <UserPlus className="h-4 w-4" />
-              Se connecter
-            </Button>
-          ) : (
-            <Button
-              variant="secondary"
-              className="flex items-center gap-2 col-span-2"
-              disabled
-            >
-              Demande envoyée
-            </Button>
-          )}
-        </div>
+      <ProfilePreviewButtons
+        profile={profile}
+        onRequestChat={onRequestChat}
+        onClose={onFlip}
+        canViewFullProfile={canViewFullProfile}
+        onViewProfile={handleViewFullProfile}
+      />
 
-        <div className="grid grid-cols-2 gap-3">
-          <Button
-            variant={isBlocked ? "destructive" : "outline"}
-            onClick={handleToggleBlock}
-            className="flex items-center gap-2 col-span-2"
-          >
-            <Ban className="h-4 w-4" />
-            {isBlocked ? "Débloquer" : "Bloquer"}
-          </Button>
-        </div>
-
-        <Button
-          variant="ghost"
-          className="w-full mt-2"
-          onClick={onFlip}
-        >
-          Voir le dos de la carte
-        </Button>
-      </div>
+      <Button
+        variant="ghost"
+        className="w-full mt-2"
+        onClick={onFlip}
+      >
+        Voir le dos de la carte
+      </Button>
     </div>
   );
 }
