@@ -108,9 +108,20 @@ export function ConversationView({
             isThinking={isThinking}
             isListening={isListening}
             onVoiceInput={onVoiceInput}
-            onFileAttach={(file) => {
-              toast.success(`Fichier ${file.name} attaché`);
-              // Implement file handling logic here
+            onFileAttach={async (file: File, messageId: string) => {
+              try {
+                const response = await fetch('/api/upload', {
+                  method: 'POST',
+                  body: JSON.stringify({ file, messageId }),
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                });
+                if (!response.ok) throw new Error('Upload failed');
+              } catch (error) {
+                console.error('Upload error:', error);
+                toast.error("Erreur lors de l'upload du fichier");
+              }
             }}
             placeholder="Écrivez votre message..."
           />

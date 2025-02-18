@@ -128,7 +128,12 @@ export function ChatInput({
           content: `Fichier: ${file.name}`,
           has_attachment: true,
           message_type: 'user',
-          status: 'sending'
+          status: 'sending',
+          receiver_id: '00000000-0000-0000-0000-000000000000', // Assistant ID
+          sender_id: (await supabase.auth.getUser()).data.user?.id,
+          is_assistant: false,
+          metadata: {},
+          read: false
         })
         .select()
         .single();
