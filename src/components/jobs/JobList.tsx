@@ -1,70 +1,127 @@
 
-import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, Search } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { JobCard } from "./JobCard";
-import { useSwipeJobs } from "./swipe/useSwipeJobs";
-import { JobFilters } from "./JobFilterUtils";
-import { Job } from "@/types/job";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { MapPin, Briefcase, Clock, Building2, ChevronRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
-export interface JobListProps {
-  filters: JobFilters;
-  showFilters: boolean;
-  jobs?: Job[];
-  onJobDeleted?: () => void;
-  filterType: "regular" | "contract" | "marketplace";
-  viewMode: 'list' | 'grid' | 'cards';  // Add this prop
+interface Job {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  type: string;
+  created_at: string;
+  salary_range?: string;
+  description: string;
 }
 
-export function JobList({ filters, showFilters, jobs: propJobs, onJobDeleted, filterType, viewMode }: JobListProps) {
-  const { jobs: fetchedJobs, loading } = useSwipeJobs({ ...filters, source: filterType });
-  const jobs = propJobs || fetchedJobs;
+export function JobList() {
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchJobs() {
+      try {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        setJobs(data || []);
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+        toast.error("Impossible de charger les offres d'emploi");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchJobs();
+  }, []);
 
   if (loading) {
     return (
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col items-center justify-center h-[50vh]"
-      >
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </motion.div>
+      <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
+          <Card key={i} className="p-6 animate-pulse">
+            <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+          </Card>
+        ))}
+      </div>
     );
   }
 
-  if (!jobs?.length) {
+  if (jobs.length === 0) {
     return (
-      <Card className="flex flex-col items-center justify-center p-8 text-center h-[50vh]">
-        <Search className="h-12 w-12 mb-4" />
-        <h3 className="font-semibold text-lg">Aucune offre trouvée</h3>
-        <p className="text-muted-foreground">Essayez de modifier vos critères de recherche</p>
+      <Card className="p-8 text-center">
+        <h3 className="text-xl font-semibold mb-2">Aucune offre disponible</h3>
+        <p className="text-muted-foreground">
+          Revenez plus tard pour voir les nouvelles offres
+        </p>
       </Card>
     );
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-12rem)] px-4 md:px-0">
-      <motion.div 
-        className="grid gap-6 pb-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ staggerChildren: 0.1 }}
-      >
-        <AnimatePresence mode="popLayout">
-          {jobs.map((job) => (
-            <motion.div
-              key={job.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              layout
-            >
-              <JobCard job={job} onDeleted={onJobDeleted} />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </motion.div>
-    </ScrollArea>
+    <div className="space-y-4">
+      {jobs.map((job) => (
+        <Card 
+          key={job.id}
+          className={cn(
+            "p-6 transition-all duration-200 hover:shadow-lg cursor-pointer",
+            "border-l-4 border-l-primary"
+          )}
+        >
+          <div className="flex justify-between items-start gap-4">
+            <div className="space-y-3 flex-1">
+              <div>
+                <h3 className="text-lg font-semibold text-foreground/90 mb-1">
+                  {job.title}
+                </h3>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Building2 className="h-4 w-4" />
+                  <span>{job.company}</span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <MapPin className="h-3 w-3" />
+                  {job.location}
+                </Badge>
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <Briefcase className="h-3 w-3" />
+                  {job.type}
+                </Badge>
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {new Date(job.created_at).toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'short'
+                  })}
+                </Badge>
+                {job.salary_range && (
+                  <Badge variant="secondary">
+                    {job.salary_range}
+                  </Badge>
+                )}
+              </div>
+
+              <p className="text-muted-foreground line-clamp-2">
+                {job.description}
+              </p>
+            </div>
+
+            <ChevronRight className="h-5 w-5 text-muted-foreground/50" />
+          </div>
+        </Card>
+      ))}
+    </div>
   );
 }
