@@ -2,7 +2,8 @@
 import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import { useReactions } from "./actions/useReactions";
 import { ReactionButton } from "./actions/ReactionButton";
-import { Badge } from "@/components/ui/badge";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PostActionsProps {
   likes: number;
@@ -38,6 +39,30 @@ export function PostActions({
     userEmail,
     userReaction
   });
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('post-reactions')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'posts',
+          filter: `id=eq.${postId}`
+        },
+        (payload) => {
+          if (payload.new) {
+            onReaction?.(postId, payload.new.reaction_type);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [postId, onReaction]);
 
   const handleReactionClick = (type: 'like' | 'dislike') => {
     handleReaction(type);
@@ -86,11 +111,6 @@ export function PostActions({
           onClick={onToggleComments}
           activeClassName="bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
         />
-        {total > 0 && (
-          <Badge variant="secondary" className="text-xs">
-            {total} votes
-          </Badge>
-        )}
       </div>
     </div>
   );

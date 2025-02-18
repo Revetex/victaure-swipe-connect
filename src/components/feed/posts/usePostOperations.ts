@@ -21,7 +21,7 @@ export const usePostOperations = () => {
 
       if (error) throw error;
 
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      await queryClient.invalidateQueries({ queryKey: ["posts"] });
     } catch (error) {
       console.error('Error handling reaction:', error);
       toast("Une erreur est survenue lors de la réaction");
