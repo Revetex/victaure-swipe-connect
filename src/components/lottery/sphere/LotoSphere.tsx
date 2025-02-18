@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
@@ -6,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Diamond, Crown, Gift } from "lucide-react";
 import { toast } from "sonner";
+import { PaymentProps } from "@/types/payment";
 
-export function LotoSphere() {
+export function LotoSphere({ onPaymentRequested }: PaymentProps) {
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
 

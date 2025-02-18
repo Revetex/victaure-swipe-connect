@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -7,8 +6,9 @@ import { levels, generateWinningNumbers } from "./utils";
 import { PyramidHeader } from "./components/PyramidHeader";
 import { LevelInfo } from "./components/LevelInfo";
 import { PyramidActions } from "./components/PyramidActions";
+import { PaymentProps } from "@/types/payment";
 
-export function PyramidRush() {
+export function PyramidRush({ onPaymentRequested }: PaymentProps) {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [currentGains, setCurrentGains] = useState(0);
