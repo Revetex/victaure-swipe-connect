@@ -37,9 +37,15 @@ export function VCardStyleProvider({ children }: { children: ReactNode }) {
   const [selectedStyle, setSelectedStyle] = useState<StyleOption>(defaultStyle);
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--primary-color', selectedStyle.color);
-    document.documentElement.style.setProperty('--secondary-color', selectedStyle.secondaryColor);
-    document.documentElement.style.fontFamily = selectedStyle.font;
+    // Appliquer les styles globaux
+    const root = document.documentElement;
+    root.style.setProperty('--primary-color', selectedStyle.colors.primary);
+    root.style.setProperty('--secondary-color', selectedStyle.colors.secondary);
+    root.style.setProperty('--text-primary', selectedStyle.colors.text.primary);
+    root.style.setProperty('--text-secondary', selectedStyle.colors.text.secondary);
+    root.style.setProperty('--bg-card', selectedStyle.colors.background.card);
+    root.style.setProperty('--bg-section', selectedStyle.colors.background.section);
+    root.style.setProperty('--font-family', selectedStyle.font);
   }, [selectedStyle]);
 
   return (

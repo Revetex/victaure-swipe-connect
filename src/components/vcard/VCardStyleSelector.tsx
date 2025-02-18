@@ -51,28 +51,6 @@ const styles: StyleOption[] = [
     }
   },
   {
-    id: "bold",
-    name: "Audacieux",
-    color: "#BE185D",
-    secondaryColor: "#DB2777",
-    font: "Oswald, sans-serif",
-    bgGradient: "bg-gradient-to-br from-pink-50 via-pink-100 to-pink-200",
-    colors: {
-      primary: "#9D174D",
-      secondary: "#DB2777",
-      text: {
-        primary: "#831843",
-        secondary: "#9D174D",
-        muted: "#BE185D",
-      },
-      background: {
-        card: "#FFFFFF",
-        section: "#F9FAFB",
-        button: "#9D174D"
-      }
-    }
-  },
-  {
     id: "minimal",
     name: "Minimaliste",
     color: "#374151",
@@ -107,10 +85,10 @@ export function VCardStyleSelector() {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 p-4 sm:p-0">
       <Palette className="h-4 w-4 text-purple-600 dark:text-purple-400" />
       <Select value={selectedStyle.id} onValueChange={handleStyleChange}>
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800">
           <SelectValue placeholder="Choisir un style" />
         </SelectTrigger>
         <SelectContent>
