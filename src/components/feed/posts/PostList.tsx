@@ -22,7 +22,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
-  const { handleReaction, handleDelete, handleHide, handleUpdate } = usePostOperations();
+  const { handleDelete, handleHide, handleUpdate } = usePostOperations();
 
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
@@ -124,8 +124,6 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
               userEmail={user?.email}
               onDelete={() => post.user_id === user?.id && setPostToDelete(post.id)}
               onHide={(postId) => handleHide(postId, user?.id)}
-              onReaction={(postId, type) => handleReaction(postId, user?.id, type)}
-              onCommentAdded={() => queryClient.invalidateQueries({ queryKey: ["posts"] })}
               onUpdate={handleUpdatePost}
             />
           </motion.div>
