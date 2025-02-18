@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => ({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  base: '/',
   server: {
     host: '0.0.0.0',
     port: 8080,
@@ -105,6 +106,14 @@ export default defineConfig(({ mode }) => ({
           ]
         }
       }
+    },
+    assetsDir: 'assets',
+    emptyOutDir: true,
+    modulePreload: {
+      polyfill: true
     }
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom']
   }
 }));
