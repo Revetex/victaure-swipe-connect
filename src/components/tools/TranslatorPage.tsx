@@ -1,6 +1,5 @@
-
 import { Button } from "@/components/ui/button";
-import { Languages, ArrowLeftRight, VolumeHigh } from "lucide-react";
+import { Languages, ArrowLeftRight, Volume2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { TranslatorLanguageSelect } from "./translator/TranslatorLanguageSelect";
 import { TranslatorTextArea } from "./translator/TranslatorTextArea";
@@ -114,7 +113,7 @@ export function TranslatorPage() {
             disabled={isLoading}
             className="gap-2"
           >
-            <VolumeHigh className="h-4 w-4" />
+            <Volume2 className="h-4 w-4" />
             Traduire et écouter
           </Button>
           <Button 

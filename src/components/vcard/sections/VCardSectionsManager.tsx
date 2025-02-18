@@ -5,6 +5,7 @@ import { StyleOption } from "../types";
 import { VCardSections } from "../VCardSections";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
+import { transformEducation } from "@/types/profile";
 
 interface VCardSectionsManagerProps {
   profile: UserProfile;
@@ -45,15 +46,17 @@ export function VCardSectionsManager({
   };
 
   const addEducation = () => {
-    const newEducation = {
-      school: "",
+    const newEducation = transformEducation({
+      id: crypto.randomUUID(),
+      profile_id: profile.id,
+      school_name: "",
       degree: "",
-      field: "",
-      start_date: "",
-      end_date: "",
-      current: false,
-      description: ""
-    };
+      field_of_study: "",
+      start_date: undefined,
+      end_date: undefined,
+      description: "",
+    });
+
     setProfile({
       ...profile,
       education: [...(profile.education || []), newEducation]
@@ -77,14 +80,21 @@ export function VCardSectionsManager({
   );
 
   return (
-    <VCardSections
-      profile={profile}
-      isEditing={isEditing}
-      setProfile={setProfile}
-      handleRemoveSkill={handleRemoveSkill}
-      selectedStyle={selectedStyle}
-      sectionsOrder={sectionsOrder}
-      renderAddButton={renderAddButton}
-    />
+    <div className="space-y-6">
+      <VCardSections
+        profile={profile}
+        isEditing={isEditing}
+        setProfile={setProfile}
+        handleRemoveSkill={handleRemoveSkill}
+        selectedStyle={selectedStyle}
+        sectionsOrder={sectionsOrder}
+      />
+      {isEditing && (
+        <div className="flex justify-end gap-2">
+          {renderAddButton("education")}
+          {renderAddButton("skill")}
+        </div>
+      )}
+    </div>
   );
 }
