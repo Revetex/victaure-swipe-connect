@@ -1,80 +1,67 @@
+
 import { Button } from "@/components/ui/button";
-import { StyleOption } from "./types";
-import { motion } from "framer-motion";
-import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { styleOptions } from "./styles";
-import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useVCardStyle } from "./VCardStyleContext";
+import { Palette } from "lucide-react";
 
-interface VCardStyleSelectorProps {
-  selectedStyle: StyleOption;
-  onStyleSelect: (style: StyleOption) => Promise<void>;
-  isEditing: boolean;
-}
+const styles = [
+  {
+    id: "modern",
+    name: "Moderne",
+    color: "#047857",
+    bgGradient: "bg-gradient-to-br from-emerald-50 via-teal-100 to-emerald-200",
+  },
+  {
+    id: "elegant",
+    name: "Élégant",
+    color: "#7C3AED",
+    bgGradient: "bg-gradient-to-br from-purple-50 via-purple-100 to-purple-200",
+  },
+  {
+    id: "bold",
+    name: "Audacieux",
+    color: "#BE185D",
+    bgGradient: "bg-gradient-to-br from-pink-50 via-pink-100 to-pink-200",
+  },
+  {
+    id: "minimal",
+    name: "Minimaliste",
+    color: "#374151",
+    bgGradient: "bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200",
+  }
+];
 
-export function VCardStyleSelector({
-  selectedStyle,
-  onStyleSelect,
-  isEditing
-}: VCardStyleSelectorProps) {
-  if (!isEditing) return null;
+export function VCardStyleSelector() {
+  const { selectedStyle, setSelectedStyle } = useVCardStyle();
 
-  const handleStyleSelect = async (style: StyleOption) => {
-    try {
-      await onStyleSelect(style);
-      toast.success(`Style ${style.name} appliqué`);
-    } catch (error) {
-      console.error('Error updating style:', error);
-      toast.error("Erreur lors de l'application du style");
+  const handleStyleChange = (styleId: string) => {
+    const newStyle = styles.find(style => style.id === styleId);
+    if (newStyle) {
+      setSelectedStyle(newStyle);
     }
   };
 
   return (
-    <div className="space-y-4 fade-in">
-      <h3 className="text-lg font-semibold text-white/90">Style</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-        {styleOptions.map((style) => (
-          <motion.div
-            key={style.id}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Button
-              onClick={() => handleStyleSelect(style)}
-              className={cn(
-                "relative w-full h-16 rounded-xl transition-all duration-300 overflow-hidden group",
-                selectedStyle.id === style.id 
-                  ? 'ring-2 ring-white shadow-lg scale-105' 
-                  : 'hover:ring-1 hover:ring-white/50'
-              )}
-              style={{ 
-                background: `linear-gradient(135deg, ${style.color}, ${style.secondaryColor})`,
-                fontFamily: style.font
-              }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-transparent" />
-              <div className="relative z-10 flex flex-col items-center justify-center space-y-1">
-                <span className="text-white text-sm font-medium">
-                  {style.name}
-                </span>
-                {selectedStyle.id === style.id && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  >
-                    <Check className="w-4 h-4 text-white" />
-                  </motion.div>
-                )}
+    <div className="flex items-center gap-2">
+      <Palette className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+      <Select value={selectedStyle.id} onValueChange={handleStyleChange}>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Choisir un style" />
+        </SelectTrigger>
+        <SelectContent>
+          {styles.map((style) => (
+            <SelectItem key={style.id} value={style.id}>
+              <div className="flex items-center gap-2">
+                <div 
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: style.color }}
+                />
+                {style.name}
               </div>
-              <div className="absolute inset-0 bg-white/0 group-hover:bg-white/5 transition-colors duration-300" />
-            </Button>
-          </motion.div>
-        ))}
-      </div>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }
