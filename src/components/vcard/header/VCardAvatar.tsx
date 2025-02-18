@@ -21,6 +21,44 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
   const [imageError, setImageError] = useState(false);
   const [showFullscreen, setShowFullscreen] = useState(false);
 
+  const validateImage = (file: File) => {
+    // Vérifier le type de fichier
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Format non supporté. Utilisez JPG, PNG ou WEBP");
+      return false;
+    }
+
+    // Vérifier la taille (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("L'image ne doit pas dépasser 5MB");
+      return false;
+    }
+
+    // Vérifier les dimensions
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(img.src);
+        if (img.width < 200 || img.height < 200) {
+          toast.error("L'image doit faire au moins 200x200 pixels");
+          resolve(false);
+        }
+        if (img.width > 2000 || img.height > 2000) {
+          toast.error("L'image est trop grande (max 2000x2000 pixels)");
+          resolve(false);
+        }
+        resolve(true);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(img.src);
+        toast.error("Impossible de charger l'image");
+        resolve(false);
+      };
+    });
+  };
+
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -29,16 +67,11 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
       setIsLoading(true);
       setImageError(false);
 
-      if (!file.type.startsWith('image/')) {
-        toast.error("Veuillez sélectionner une image");
-        return;
-      }
+      // Valider l'image
+      const isValid = await validateImage(file);
+      if (!isValid) return;
 
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("L'image ne doit pas dépasser 5MB");
-        return;
-      }
-
+      // Supprimer l'ancienne image si elle existe
       if (profile.avatar_url) {
         const oldFileName = profile.avatar_url.split('/').pop();
         if (oldFileName) {
@@ -143,7 +176,7 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
               <input
                 id="avatar-upload"
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 className="hidden"
                 onChange={handleAvatarUpload}
                 disabled={isLoading}
