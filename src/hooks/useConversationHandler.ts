@@ -8,7 +8,8 @@ export const useConversationHandler = () => {
     const { data, error } = await supabase
       .from('conversations')
       .select('*')
-      .or(`and(participant1_id.eq.${userId},participant2_id.eq.${partnerId}),and(participant1_id.eq.${partnerId},participant2_id.eq.${userId})`)
+      .or(`participant1_id.eq.${userId},participant1_id.eq.${partnerId}`)
+      .or(`participant2_id.eq.${userId},participant2_id.eq.${partnerId}`)
       .maybeSingle();
 
     if (error) throw error;
@@ -17,15 +18,18 @@ export const useConversationHandler = () => {
 
   const createOrUpdateConversation = async (userId: string, partnerId: string, lastMessage?: string) => {
     try {
+      // D'abord, chercher une conversation existante
       const existingConversation = await findExistingConversation(userId, partnerId);
 
       if (existingConversation) {
+        // Si on a un nouveau message, mettre à jour la conversation
         if (lastMessage) {
           const { error: updateError } = await supabase
             .from('conversations')
             .update({
               last_message: lastMessage,
-              last_message_time: new Date().toISOString()
+              last_message_time: new Date().toISOString(),
+              updated_at: new Date().toISOString()
             })
             .eq('id', existingConversation.id);
 
@@ -34,11 +38,13 @@ export const useConversationHandler = () => {
         return existingConversation;
       }
 
+      // Si aucune conversation n'existe, en créer une nouvelle
+      const participants = [userId, partnerId].sort(); // Tri pour assurer la cohérence
       const { data: newConversation, error: createError } = await supabase
         .from('conversations')
         .insert({
-          participant1_id: userId,
-          participant2_id: partnerId,
+          participant1_id: participants[0],
+          participant2_id: participants[1],
           ...(lastMessage ? {
             last_message: lastMessage,
             last_message_time: new Date().toISOString()
@@ -47,16 +53,18 @@ export const useConversationHandler = () => {
         .select()
         .single();
 
-      if (createError) throw createError;
+      if (createError) {
+        // En cas d'erreur de duplication, réessayer de trouver la conversation
+        if (createError.code === '23505') {
+          const retryConversation = await findExistingConversation(userId, partnerId);
+          if (retryConversation) return retryConversation;
+        }
+        throw createError;
+      }
+
       return newConversation;
     } catch (error: any) {
-      // If it's a duplicate key error, try to fetch the existing conversation again
-      if (error.code === '23505') {
-        const existingConversation = await findExistingConversation(userId, partnerId);
-        if (existingConversation) {
-          return existingConversation;
-        }
-      }
+      console.error("Error in createOrUpdateConversation:", error);
       throw error;
     }
   };
@@ -64,6 +72,9 @@ export const useConversationHandler = () => {
   const sendMessage = async (content: string, senderId: string, receiverId: string) => {
     try {
       const conversation = await createOrUpdateConversation(senderId, receiverId, content);
+      if (!conversation) {
+        throw new Error("Impossible de créer ou trouver la conversation");
+      }
 
       const { error: messageError } = await supabase
         .from('messages')
