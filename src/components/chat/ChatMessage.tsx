@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Message } from '@/types/messages';
 import { UserAvatar } from '@/components/UserAvatar';
@@ -17,24 +16,8 @@ interface ChatMessageProps {
 
 // L'assistant ne propose plus de réponses prédéfinies, mais analyse le contexte
 function analyzeContext(message: Message): string[] {
-  // Analyse le contenu du message pour des suggestions contextuelles
-  const content = message.content.toLowerCase();
-  const suggestions: string[] = [];
-
-  if (content.includes('merci') || content.includes('d\'accord')) {
-    return []; // Pas de suggestions pour les messages de remerciement
-  }
-
-  // Analyse dynamique du contexte
-  if (content.includes('emploi') || content.includes('travail')) {
-    suggestions.push(
-      "Pouvez-vous me parler de votre expérience professionnelle ?",
-      "Dans quel domaine souhaitez-vous travailler ?",
-      "Quelles sont vos compétences principales ?"
-    );
-  }
-
-  return suggestions;
+  // Suppression des suggestions prédéfinies
+  return [];
 }
 
 export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: ChatMessageProps) {
@@ -114,13 +97,13 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex gap-3 ${message.is_assistant ? 'flex-row' : 'flex-row-reverse'}`}
+      className={`flex gap-3 ${message.sender_id === 'assistant' ? 'flex-row' : 'flex-row-reverse'}`}
     >
       <UserAvatar
         user={{
-          id: message.is_assistant ? message.sender.id : message.receiver.id,
-          full_name: message.is_assistant ? message.sender.full_name : message.receiver.full_name,
-          avatar_url: message.is_assistant ? message.sender.avatar_url : message.receiver.avatar_url,
+          id: message.sender_id === 'assistant' ? message.sender.id : message.receiver.id,
+          full_name: message.sender_id === 'assistant' ? message.sender.full_name : message.receiver.full_name,
+          avatar_url: message.sender_id === 'assistant' ? message.sender.avatar_url : message.receiver.avatar_url,
           email: null,
           role: 'professional',
           bio: null,
@@ -131,8 +114,8 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
           skills: [],
           latitude: null,
           longitude: null,
-          online_status: message.is_assistant ? message.sender.online_status : message.receiver.online_status,
-          last_seen: message.is_assistant ? message.sender.last_seen : message.receiver.last_seen,
+          online_status: message.sender_id === 'assistant' ? message.sender.online_status : message.receiver.online_status,
+          last_seen: message.sender_id === 'assistant' ? message.sender.last_seen : message.receiver.last_seen,
           certifications: [],
           education: [],
           experiences: [],
@@ -141,14 +124,14 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
         className="h-8 w-8 mt-1"
       />
       
-      <div className={`flex flex-col space-y-2 ${message.is_assistant ? 'items-start' : 'items-end'} max-w-[80%]`}>
+      <div className={`flex flex-col space-y-2 ${message.sender_id === 'assistant' ? 'items-start' : 'items-end'} max-w-[80%]`}>
         <motion.div 
           className="flex items-start gap-2"
           layout
         >
           <Card
             className={`px-4 py-2 ${
-              message.is_assistant 
+              message.sender_id === 'assistant' 
                 ? 'bg-muted/50 backdrop-blur-sm border-primary/10' 
                 : 'bg-primary text-primary-foreground'
             }`}
@@ -162,7 +145,7 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
               <div className="space-y-2">
                 <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
                 
-                {message.is_assistant && suggestedJobs.length > 0 && (
+                {message.sender_id === 'assistant' && suggestedJobs.length > 0 && (
                   <div className="mt-4 space-y-2">
                     <p className="text-sm font-medium text-primary">Offres d'emploi pertinentes :</p>
                     {suggestedJobs.map((job: any) => (
@@ -202,7 +185,7 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
             )}
           </Card>
           
-          {message.is_assistant && (
+          {message.sender_id === 'assistant' && (
             <div className="flex flex-col gap-2">
               <Button
                 size="icon"
@@ -220,7 +203,7 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
           )}
         </motion.div>
 
-        {message.is_assistant && contextualSuggestions.length > 0 && (
+        {message.sender_id === 'assistant' && contextualSuggestions.length > 0 && (
           <motion.div 
             className="flex flex-wrap gap-2 mt-2"
             initial={{ opacity: 0 }}

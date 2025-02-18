@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { Message } from '@/types/messages';
 import { supabase } from '@/integrations/supabase/client';
@@ -41,7 +40,7 @@ export function useAIChat() {
     rejectedJobs: []
   });
 
-  const handleScrapeJobs = async (searchTerms: string, location: string) => {
+  const handleScrapeJobs = async (searchTerms: string, location: string, sourcesToTry?: string[]) => {
     try {
       const { data: scrapingResult, error } = await supabase.functions.invoke<{
         success: boolean;
@@ -52,7 +51,8 @@ export function useAIChat() {
         body: {
           searchTerms,
           location,
-          isAssistantRequest: true
+          isAssistantRequest: true,
+          sources: sourcesToTry
         }
       });
 
@@ -69,6 +69,34 @@ export function useAIChat() {
       console.error('Error scraping jobs:', error);
       throw error;
     }
+  };
+
+  const tryAlternativeSearch = async (originalTerms: string, location: string) => {
+    const alternatives = [
+      { terms: originalTerms, sources: ['jobbank', 'indeed'] },
+      { terms: `${originalTerms} construction`, sources: ['jobillico', 'jobboom'] },
+      { terms: 'surintendant chantier', sources: ['randstad', 'ziprecruiter'] },
+      { terms: 'superviseur construction', sources: ['jobbank', 'indeed'] },
+      { terms: 'contremaître', sources: ['jobillico', 'jobboom'] }
+    ];
+
+    let allJobs: any[] = [];
+    let totalFound = 0;
+
+    for (const alt of alternatives) {
+      const result = await handleScrapeJobs(alt.terms, location, alt.sources);
+      if (result.success && result.jobs.length > 0) {
+        allJobs = [...allJobs, ...result.jobs];
+        totalFound += result.jobsFound;
+      }
+    }
+
+    return {
+      success: totalFound > 0,
+      jobsFound: totalFound,
+      jobs: allJobs.slice(0, 5),
+      message: `J'ai trouvé ${totalFound} emplois potentiels en élargissant la recherche. Voici les plus pertinents pour votre profil.`
+    };
   };
 
   const handleSendMessage = useCallback(async (content: string) => {
@@ -100,13 +128,21 @@ export function useAIChat() {
 
       setMessages(prev => [...prev, userMessage]);
       
-      // Ajouter un message "thinking" temporaire
       const thinkingMessage: Message = {
-        ...userMessage,
         id: crypto.randomUUID(),
-        content: "Recherche en cours...",
+        content: "Analyse en cours...",
         sender_id: 'assistant',
         receiver_id: profile.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        read: false,
+        sender: defaultAssistant,
+        receiver: profile,
+        timestamp: new Date().toISOString(),
+        message_type: 'assistant',
+        status: 'sent',
+        metadata: {},
+        reaction: null,
         is_assistant: true,
         thinking: true
       };
@@ -114,13 +150,24 @@ export function useAIChat() {
       setMessages(prev => [...prev, thinkingMessage]);
       setIsThinking(true);
 
-      // Si le message demande une recherche d'emploi spécifique
-      if (content.toLowerCase().includes('cherche') && content.toLowerCase().includes('emploi')) {
+      if (content.toLowerCase().includes('cherche') || 
+          content.toLowerCase().includes('emploi') || 
+          content.toLowerCase().includes('travail')) {
         try {
-          const searchTerms = conversationContext.lastSearchTerms || "développeur";
-          const location = conversationContext.lastLocation || "Québec";
+          const searchTerms = content.toLowerCase().includes('surintendant') ? 'surintendant' :
+                            content.toLowerCase().includes('superviseur') ? 'superviseur' :
+                            conversationContext.lastSearchTerms || "surintendant chantier";
           
-          const scrapingResult = await handleScrapeJobs(searchTerms, location);
+          const location = content.toLowerCase().includes('montréal') ? 'Montréal' :
+                          content.toLowerCase().includes('québec') ? 'Québec' :
+                          content.toLowerCase().includes('trois-rivières') ? 'Trois-Rivières' :
+                          conversationContext.lastLocation || "Trois-Rivières";
+          
+          let scrapingResult = await handleScrapeJobs(searchTerms, location);
+          
+          if (!scrapingResult.success || scrapingResult.jobsFound === 0) {
+            scrapingResult = await tryAlternativeSearch(searchTerms, location);
+          }
           
           if (scrapingResult.success) {
             const assistantMessage: Message = {
@@ -171,7 +218,6 @@ export function useAIChat() {
       if (error) throw error;
       if (!data?.response) throw new Error('Invalid response format from AI');
 
-      // Remplacer le message "thinking" par la vraie réponse
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
         content: data.response,
@@ -208,7 +254,6 @@ export function useAIChat() {
     } catch (error) {
       console.error('Error in AI chat:', error);
       toast.error("Une erreur est survenue avec l'assistant");
-      // Retirer le message "thinking" en cas d'erreur
       setMessages(prev => prev.filter(m => !m.thinking));
     } finally {
       setIsThinking(false);
@@ -218,7 +263,6 @@ export function useAIChat() {
 
   const handleJobAccept = useCallback(async (jobId: string) => {
     try {
-      // Sauvegarder l'intérêt pour le job
       await supabase
         .from('job_applications')
         .insert({
@@ -234,7 +278,6 @@ export function useAIChat() {
 
       toast.success("Votre intérêt a été enregistré!");
       
-      // Demander à l'assistant de l'aide pour postuler
       handleSendMessage("Je suis intéressé par ce poste, pouvez-vous m'aider à postuler ?");
     } catch (error) {
       console.error('Error accepting job:', error);
