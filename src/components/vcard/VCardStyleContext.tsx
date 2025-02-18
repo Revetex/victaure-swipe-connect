@@ -4,35 +4,85 @@ import { StyleOption } from './types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-const defaultStyle: StyleOption = {
-  id: 'modern',
-  name: 'Modern',
-  color: '#047857',
-  secondaryColor: '#10B981',
-  font: 'Inter, sans-serif',
-  bgGradient: 'bg-gradient-to-br from-emerald-50 via-teal-100 to-emerald-200',
-  colors: {
-    primary: '#065F46',
-    secondary: '#10B981',
-    text: {
-      primary: '#064E3B',
-      secondary: '#065F46',
-      muted: '#047857',
-    },
-    background: {
-      card: '#FFFFFF',
-      section: '#F9FAFB',
-      button: '#065F46'
+const styles: StyleOption[] = [
+  {
+    id: "modern",
+    name: "Moderne",
+    color: "#047857",
+    secondaryColor: "#10B981",
+    font: "Inter, sans-serif",
+    bgGradient: "bg-gradient-to-br from-emerald-50 via-teal-100 to-emerald-200",
+    colors: {
+      primary: "#065F46",
+      secondary: "#10B981",
+      text: {
+        primary: "#064E3B",
+        secondary: "#065F46",
+        muted: "#047857",
+      },
+      background: {
+        card: "#FFFFFF",
+        section: "#F9FAFB",
+        button: "#065F46"
+      }
     }
   },
-};
+  {
+    id: "elegant",
+    name: "Élégant",
+    color: "#7C3AED",
+    secondaryColor: "#8B5CF6",
+    font: "Playfair Display, serif",
+    bgGradient: "bg-gradient-to-br from-purple-50 via-purple-100 to-purple-200",
+    colors: {
+      primary: "#6D28D9",
+      secondary: "#8B5CF6",
+      text: {
+        primary: "#5B21B6",
+        secondary: "#6D28D9",
+        muted: "#7C3AED",
+      },
+      background: {
+        card: "#FFFFFF",
+        section: "#F9FAFB",
+        button: "#6D28D9"
+      }
+    }
+  },
+  {
+    id: "minimal",
+    name: "Minimaliste",
+    color: "#374151",
+    secondaryColor: "#4B5563",
+    font: "Montserrat, sans-serif",
+    bgGradient: "bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200",
+    colors: {
+      primary: "#1F2937",
+      secondary: "#4B5563",
+      text: {
+        primary: "#111827",
+        secondary: "#1F2937",
+        muted: "#374151",
+      },
+      background: {
+        card: "#FFFFFF",
+        section: "#F9FAFB",
+        button: "#1F2937"
+      }
+    }
+  }
+];
+
+const defaultStyle: StyleOption = styles[0];
 
 const VCardStyleContext = createContext<{
   selectedStyle: StyleOption;
   setSelectedStyle: (style: StyleOption) => void;
+  styles: StyleOption[];
 }>({
   selectedStyle: defaultStyle,
   setSelectedStyle: () => {},
+  styles: styles,
 });
 
 export function VCardStyleProvider({ children }: { children: ReactNode }) {
@@ -105,7 +155,7 @@ export function VCardStyleProvider({ children }: { children: ReactNode }) {
   }, [selectedStyle]);
 
   return (
-    <VCardStyleContext.Provider value={{ selectedStyle, setSelectedStyle: handleStyleChange }}>
+    <VCardStyleContext.Provider value={{ selectedStyle, setSelectedStyle: handleStyleChange, styles }}>
       {children}
     </VCardStyleContext.Provider>
   );
