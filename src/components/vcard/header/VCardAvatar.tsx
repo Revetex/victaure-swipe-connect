@@ -1,12 +1,14 @@
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Upload, Trash2, UserCircle2, Maximize2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
+import { UserProfile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { UserProfile } from "@/types/profile";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useState } from "react";
+import { AvatarImage } from "./avatar/AvatarImage";
+import { AvatarControls } from "./avatar/AvatarControls";
+import { AvatarOverlay } from "./avatar/AvatarOverlay";
+import { AvatarLoader } from "./avatar/AvatarLoader";
+import { FullscreenAvatar } from "./avatar/FullscreenAvatar";
 
 interface VCardAvatarProps {
   profile: UserProfile;
@@ -20,7 +22,7 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
   const [imageError, setImageError] = useState(false);
   const [showFullscreen, setShowFullscreen] = useState(false);
 
-  const validateImage = (file: File) => {
+  const validateImage = async (file: File) => {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
       toast.error("Format non supporté. Utilisez JPG, PNG ou WEBP");
@@ -135,75 +137,33 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
         )}
           onClick={() => profile.avatar_url && setShowFullscreen(true)}
         >
-          <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-2 ring-primary/20 shadow-lg">
-            {!imageError && profile.avatar_url ? (
-              <AvatarImage 
-                src={profile.avatar_url} 
-                alt={profile.full_name || ''}
-                className="object-contain w-full h-full"
-                onError={handleImageError}
-              />
-            ) : (
-              <AvatarFallback className="bg-primary/10">
-                <UserCircle2 className="h-12 w-12 text-primary/60" />
-              </AvatarFallback>
-            )}
-          </Avatar>
-          {profile.avatar_url && !isEditing && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
-              <Maximize2 className="h-6 w-6 text-white" />
-            </div>
-          )}
-          {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          )}
+          <AvatarImage
+            url={profile.avatar_url}
+            fullName={profile.full_name}
+            onError={handleImageError}
+            hasError={imageError}
+            isLoading={isLoading}
+          />
+          <AvatarOverlay showOverlay={!!profile.avatar_url && !isEditing} />
+          <AvatarLoader isLoading={isLoading} />
         </div>
 
         {isEditing && !isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center gap-2">
-            <label 
-              className="flex items-center justify-center w-10 h-10 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
-              htmlFor="avatar-upload"
-            >
-              <Upload className="h-5 w-5 text-white/90" />
-              <input
-                id="avatar-upload"
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="hidden"
-                onChange={handleAvatarUpload}
-                disabled={isLoading}
-              />
-            </label>
-            {profile.avatar_url && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="w-10 h-10 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 hover:bg-red-500/40 transition-all duration-200"
-                onClick={handleDeleteAvatar}
-                disabled={isLoading}
-              >
-                <Trash2 className="h-5 w-5 text-white/90" />
-              </Button>
-            )}
-          </div>
+          <AvatarControls
+            hasAvatar={!!profile.avatar_url}
+            isLoading={isLoading}
+            onUpload={handleAvatarUpload}
+            onDelete={handleDeleteAvatar}
+          />
         )}
       </div>
 
-      <Dialog open={showFullscreen} onOpenChange={setShowFullscreen}>
-        <DialogContent className="max-w-3xl w-full p-0">
-          <div className="relative w-full h-full max-h-[80vh] overflow-hidden">
-            <img
-              src={profile.avatar_url || ''}
-              alt={profile.full_name || ''}
-              className="w-full h-full object-contain"
-              onClick={() => setShowFullscreen(false)}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
+      <FullscreenAvatar
+        isOpen={showFullscreen}
+        onOpenChange={setShowFullscreen}
+        imageUrl={profile.avatar_url}
+        fullName={profile.full_name}
+      />
     </>
   );
 }
