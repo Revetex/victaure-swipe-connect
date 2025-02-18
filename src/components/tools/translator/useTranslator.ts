@@ -11,11 +11,10 @@ export function useTranslator() {
   const [targetLang, setTargetLang] = useState("en");
   const [isLoading, setIsLoading] = useState(false);
   const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
-  const handleTranslate = async (withSpeech = false) => {
+  const handleTranslate = async () => {
     if (!sourceText.trim()) {
-      toast.error("Veuillez entrer du texte à traduire");
+      toast.error("Please enter text to translate");
       return;
     }
 
@@ -23,7 +22,7 @@ export function useTranslator() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast.error("Vous devez être connecté pour traduire");
+        toast.error("You must be logged in to translate");
         return;
       }
 
@@ -31,31 +30,12 @@ export function useTranslator() {
         body: { 
           text: sourceText,
           sourceLang,
-          targetLang,
-          tts: withSpeech
+          targetLang
         }
       });
 
       if (error) throw error;
 
-      setTranslatedText(data.translatedText);
-      
-      if (data.detectedLanguage) {
-        setDetectedLanguage(data.detectedLanguage);
-        const langName = languages.find(l => l.code === data.detectedLanguage)?.name;
-        toast.success(`Langue détectée : ${langName}`);
-      }
-
-      if (data.audioContent) {
-        const audioBlob = new Blob(
-          [Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0))],
-          { type: 'audio/mpeg' }
-        );
-        const url = URL.createObjectURL(audioBlob);
-        setAudioUrl(url);
-      }
-
-      // Save translation in database
       const { error: dbError } = await supabase.from('translations').insert({
         source_text: sourceText,
         translated_text: data.translatedText,
@@ -67,9 +47,15 @@ export function useTranslator() {
 
       if (dbError) throw dbError;
 
+      setTranslatedText(data.translatedText);
+      if (data.detectedLanguage) {
+        setDetectedLanguage(data.detectedLanguage);
+        const langName = languages.find(l => l.code === data.detectedLanguage)?.name;
+        toast.success(`Detected language: ${langName}`);
+      }
     } catch (error) {
       console.error('Translation error:', error);
-      toast.error("La traduction a échoué. Veuillez réessayer.");
+      toast.error("Translation failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -78,9 +64,9 @@ export function useTranslator() {
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      toast.success("Copié dans le presse-papier");
+      toast.success("Copied to clipboard");
     } catch (err) {
-      toast.error("Échec de la copie du texte");
+      toast.error("Failed to copy text");
     }
   };
 
@@ -99,15 +85,6 @@ export function useTranslator() {
     setTranslatedText(tempText);
   };
 
-  const playTranslation = () => {
-    if (audioUrl) {
-      const audio = new Audio(audioUrl);
-      audio.play();
-    } else {
-      handleTranslate(true);
-    }
-  };
-
   return {
     sourceText,
     setSourceText,
@@ -121,7 +98,6 @@ export function useTranslator() {
     handleTranslate,
     copyToClipboard,
     speakText,
-    swapLanguages,
-    playTranslation
+    swapLanguages
   };
 }

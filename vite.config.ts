@@ -4,63 +4,17 @@ import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import { componentTagger } from "lovable-tagger";
 
-export default defineConfig(({ mode }) => ({
-  plugins: [
-    react(),
-    mode === 'development' && componentTagger(),
-  ].filter(Boolean),
+export default defineConfig({
+  plugins: [react()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-  base: './',
-  server: {
-    host: '0.0.0.0',
-    port: 8080,
-    hmr: {
-      protocol: 'ws',
-      host: '052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
-      clientPort: 443
-    },
-    watch: {
-      usePolling: true,
-      interval: 1000,
-    },
-    cors: {
-      origin: [
-        'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
-        'https://mfjllillnpleasclqabb.supabase.co',
-        'wss://mfjllillnpleasclqabb.supabase.co',
-        'https://victaure.com'
-      ],
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: [
-        'Content-Type', 
-        'Authorization', 
-        'X-Client-Info', 
-        'apikey', 
-        'Content-Range',
-        'Range',
-        'Prefer',
-        'Accept',
-        'Access-Control-Allow-Origin',
-        'Access-Control-Allow-Credentials',
-        'Access-Control-Allow-Methods',
-        'Access-Control-Allow-Headers',
-        'X-Supabase-Auth',
-        '*'
-      ],
-      exposedHeaders: ['Content-Range', 'Range'],
-      credentials: true,
-      preflightContinue: false,
-      optionsSuccessStatus: 204
-    }
-  },
+  base: '',
   build: {
     outDir: 'dist',
     sourcemap: false,
-    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -84,29 +38,9 @@ export default defineConfig(({ mode }) => ({
             '@radix-ui/react-select',
             '@radix-ui/react-switch',
             '@radix-ui/react-tabs'
-          ],
-          'ai': [
-            '@huggingface/transformers'
-          ],
-          'maps': [
-            'mapbox-gl'
-          ],
-          'pdf': [
-            'jspdf',
-            'html2canvas'
-          ],
-          'charts': [
-            'recharts'
-          ],
-          'utils': [
-            'clsx',
-            'tailwind-merge',
-            'zustand',
-            'date-fns'
           ]
         }
       }
-    },
-    emptyOutDir: true
+    }
   }
-}));
+});

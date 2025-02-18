@@ -1,4 +1,3 @@
-
 import { UserProfile } from "@/types/profile";
 import { VCardEducation } from "@/components/VCardEducation";
 import { motion } from "framer-motion";

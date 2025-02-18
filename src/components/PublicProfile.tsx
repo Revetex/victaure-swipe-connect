@@ -33,13 +33,13 @@ export function PublicProfile({ profile }: PublicProfileProps) {
         </div>
       )}
 
-      {profile.experiences && profile.experiences.length > 0 && (
+      {profile.experiences.length > 0 && (
         <div>
           <h3 className="text-lg font-medium mb-2">Expérience</h3>
           <VCardExperiences 
-            profile={profile}
+            experiences={profile.experiences}
             isEditing={false}
-            setProfile={() => {}}
+            onUpdate={() => {}}
           />
         </div>
       )}

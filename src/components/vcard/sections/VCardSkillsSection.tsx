@@ -1,4 +1,3 @@
-
 import { UserProfile } from "@/types/profile";
 import { VCardContent } from "../VCardContent";
 import { StyleOption } from "../types";

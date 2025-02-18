@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Wand2 } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
