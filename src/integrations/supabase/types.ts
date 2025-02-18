@@ -3119,6 +3119,7 @@ export type Database = {
       profiles: {
         Row: {
           account_locked: boolean | null
+          allowed_file_types: string[] | null
           auto_update_enabled: boolean | null
           availability_date: string | null
           avatar_url: string | null
@@ -3143,11 +3144,14 @@ export type Database = {
           languages: string[] | null
           last_activity: string | null
           last_failed_attempt: string | null
+          last_save_error: string | null
+          last_save_status: string | null
           last_seen: string | null
           last_used_tool: string | null
           latitude: number | null
           location_enabled: boolean | null
           longitude: number | null
+          max_file_size: number | null
           notifications_enabled: boolean | null
           online_status: boolean | null
           phone: string | null
@@ -3170,6 +3174,7 @@ export type Database = {
         }
         Insert: {
           account_locked?: boolean | null
+          allowed_file_types?: string[] | null
           auto_update_enabled?: boolean | null
           availability_date?: string | null
           avatar_url?: string | null
@@ -3194,11 +3199,14 @@ export type Database = {
           languages?: string[] | null
           last_activity?: string | null
           last_failed_attempt?: string | null
+          last_save_error?: string | null
+          last_save_status?: string | null
           last_seen?: string | null
           last_used_tool?: string | null
           latitude?: number | null
           location_enabled?: boolean | null
           longitude?: number | null
+          max_file_size?: number | null
           notifications_enabled?: boolean | null
           online_status?: boolean | null
           phone?: string | null
@@ -3221,6 +3229,7 @@ export type Database = {
         }
         Update: {
           account_locked?: boolean | null
+          allowed_file_types?: string[] | null
           auto_update_enabled?: boolean | null
           availability_date?: string | null
           avatar_url?: string | null
@@ -3245,11 +3254,14 @@ export type Database = {
           languages?: string[] | null
           last_activity?: string | null
           last_failed_attempt?: string | null
+          last_save_error?: string | null
+          last_save_status?: string | null
           last_seen?: string | null
           last_used_tool?: string | null
           latitude?: number | null
           location_enabled?: boolean | null
           longitude?: number | null
+          max_file_size?: number | null
           notifications_enabled?: boolean | null
           online_status?: boolean | null
           phone?: string | null
