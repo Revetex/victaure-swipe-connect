@@ -15,10 +15,6 @@ export function VCardExperienceSection({
   isEditing,
   setProfile,
 }: VCardExperienceSectionProps) {
-  const handleUpdateExperiences = (experiences: Experience[]) => {
-    setProfile({ ...profile, experiences });
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -31,9 +27,9 @@ export function VCardExperienceSection({
       </div>
       
       <VCardExperiences
-        experiences={profile.experiences}
+        profile={profile}
         isEditing={isEditing}
-        onUpdate={handleUpdateExperiences}
+        setProfile={setProfile}
       />
     </motion.div>
   );
