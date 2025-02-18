@@ -1,10 +1,10 @@
 
 import { UserProfile } from "@/types/profile";
-import { VCardBioSection } from "./sections/VCardBioSection";
-import { VCardSkillsSection } from "./sections/VCardSkillsSection";
-import { VCardEducationSection } from "./sections/VCardEducationSection";
-import { VCardExperienceSection } from "./sections/VCardExperienceSection";
-import { StyleOption } from "./types";
+import { VCardBioSection } from "./VCardBioSection";
+import { VCardSkillsSection } from "./VCardSkillsSection";
+import { VCardEducationSection } from "./VCardEducationSection";
+import { VCardExperienceSection } from "./VCardExperienceSection";
+import { StyleOption } from "../types";
 import { motion } from "framer-motion";
 
 interface VCardSectionsProps {

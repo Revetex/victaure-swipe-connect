@@ -1,3 +1,4 @@
+
 export interface StyleOption {
   id: string;
   name: string;
