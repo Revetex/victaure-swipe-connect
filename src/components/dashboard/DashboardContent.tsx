@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
@@ -62,21 +63,71 @@ export function DashboardContent({
 
   const renderDashboardHome = () => {
     return (
-      <div className="container mx-auto p-4 space-y-6 max-w-7xl">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <DashboardStats />
-          <DashboardChart />
-          <QuickActions onRequestChat={onRequestChat} />
-        </div>
+      <div className="container mx-auto p-6 space-y-8 max-w-7xl">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+        >
+          <motion.div 
+            initial={{ scale: 0.95 }}
+            animate={{ scale: 1 }}
+            className="col-span-full lg:col-span-2"
+          >
+            <DashboardStats />
+          </motion.div>
+          
+          <motion.div 
+            initial={{ scale: 0.95 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            <DashboardChart />
+          </motion.div>
+        </motion.div>
         
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <RecentActivity />
-          <JobActions />
-          <DashboardFriendsList 
-            show={showFriendsList} 
-            onClose={() => setShowFriendsList(false)} 
-          />
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <QuickActions onRequestChat={onRequestChat} />
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <RecentActivity />
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="md:col-span-2 lg:col-span-1"
+          >
+            <JobActions />
+          </motion.div>
         </div>
+
+        {showFriendsList && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
+          >
+            <div className="container flex items-center justify-center min-h-screen">
+              <DashboardFriendsList 
+                show={showFriendsList} 
+                onClose={() => setShowFriendsList(false)} 
+              />
+            </div>
+          </motion.div>
+        )}
       </div>
     );
   };
@@ -120,10 +171,13 @@ export function DashboardContent({
       exit="exit"
       className={cn(
         "min-h-screen w-full",
-        "bg-gradient-to-b from-background to-background/95"
+        "bg-gradient-to-b from-background via-background/95 to-background/90",
+        "backdrop-blur-sm"
       )}
     >
-      {renderContent()}
+      <div className="relative">
+        {renderContent()}
+      </div>
     </motion.div>
   );
 }
