@@ -39,7 +39,32 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
   },
   global: {
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+    },
+    fetch: (url, options = {}) => {
+      return fetch(url, {
+        ...options,
+        credentials: 'include',
+        headers: {
+          ...options.headers,
+          'Pragma': 'no-cache',
+          'Cache-Control': 'no-cache'
+        }
+      });
     }
+  },
+  db: {
+    schema: 'public'
+  },
+  queries: {
+    retryInterval: 1000,
+    maxRetries: 3
   }
+});
+
+// Add interceptor for request errors
+supabase.rest.onError((error) => {
+  console.error('Supabase API Error:', error);
+  return Promise.reject(error);
 });
