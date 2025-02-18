@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, memo } from "react";
-import { PostCard } from "./PostCard";
+import { PostCard, PostCardProps } from "./PostCard";
 import { usePostOperations } from "./usePostOperations";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,7 +16,7 @@ interface PostListProps {
   onPostUpdated: () => void;
 }
 
-const MemoizedPostCard = memo(PostCard);
+const MemoizedPostCard = memo<PostCardProps>(PostCard);
 
 export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   const { user } = useAuth();

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Post } from "@/types/posts";
@@ -9,7 +10,7 @@ import { CommentManager } from "@/components/feed/comments/CommentManager";
 import { PostCardHeader } from "./card/PostCardHeader";
 import { PostCardContent } from "./card/PostCardContent";
 
-interface PostCardProps {
+export interface PostCardProps {
   post: Post;
   currentUserId?: string;
   userEmail?: string;
