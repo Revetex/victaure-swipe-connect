@@ -54,6 +54,19 @@ supabase.auth.onAuthStateChange((event, session) => {
     console.log('Token refreshed successfully');
   } else if (event === 'SIGNED_OUT') {
     console.log('User signed out');
+    // Clear any stored tokens on sign out
+    localStorage.removeItem('supabase.auth.token');
+    localStorage.removeItem('supabase.auth.refreshToken');
+  } else if (event === 'SIGNED_IN') {
+    console.log('User signed in successfully');
   }
 });
 
+// Initialize auth state
+supabase.auth.getSession().then(({ data: { session } }) => {
+  if (session) {
+    console.log('Session initialized');
+  }
+}).catch(error => {
+  console.error('Error initializing session:', error);
+});
