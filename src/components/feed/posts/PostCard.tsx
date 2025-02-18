@@ -18,6 +18,7 @@ export interface PostCardProps {
   onHide?: (postId: string) => void;
   onUpdate?: (postId: string, content: string) => void;
   onReaction?: (postId: string, type: 'like' | 'dislike') => void;
+  onCommentAdded?: () => void;
 }
 
 export function PostCard({ 
@@ -27,7 +28,8 @@ export function PostCard({
   onDelete, 
   onHide,
   onUpdate,
-  onReaction
+  onReaction,
+  onCommentAdded
 }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -106,6 +108,7 @@ export function PostCard({
             currentUserId={currentUserId}
             userEmail={userEmail}
             comments={post.comments}
+            onCommentAdded={onCommentAdded}
           />
         )}
       </Card>
