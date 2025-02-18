@@ -10,7 +10,7 @@ interface UseReactionsProps {
   postAuthorId: string;
   currentUserId?: string;
   userEmail?: string;
-  userReaction?: string;
+  userReaction?: 'like' | 'dislike';
 }
 
 export const useReactions = ({
