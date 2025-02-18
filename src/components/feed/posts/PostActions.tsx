@@ -44,8 +44,9 @@ export function PostActions({
     onReaction?.(postId, type);
   };
 
+  const total = likes + dislikes;
+  
   const calculateReactionPercentage = () => {
-    const total = likes + dislikes;
     if (total === 0) return { likes: 0, dislikes: 0 };
     
     const likePercentage = Math.round((likes / total) * 100);
