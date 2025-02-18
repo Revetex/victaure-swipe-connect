@@ -1,94 +1,59 @@
 
-import { UserAvatar } from "@/components/UserAvatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { MoreHorizontal, ArrowLeft } from "lucide-react";
-import { DeleteConversationDialog } from "./DeleteConversationDialog";
-import { Badge } from "@/components/ui/badge";
-import { createEmptyProfile } from "@/types/profile";
 
-interface ChatHeaderProps {
+export interface ChatHeaderProps {
   title: string;
-  subtitle?: string;
-  avatarUrl?: string;
-  onBack?: () => void;
-  onDelete?: () => Promise<void>;
+  subtitle: string;
+  avatarUrl: string;
+  onBack: () => void;
+  onDelete: () => Promise<void>;
   isOnline?: boolean;
   lastSeen?: string;
+  actions?: React.ReactNode;
 }
 
-export function ChatHeader({
-  title,
-  subtitle,
-  avatarUrl,
-  onBack,
+export function ChatHeader({ 
+  title, 
+  subtitle, 
+  avatarUrl, 
+  onBack, 
   onDelete,
   isOnline,
   lastSeen,
+  actions
 }: ChatHeaderProps) {
-  const mockUser = createEmptyProfile("temp-id", "");
-  mockUser.full_name = title;
-  mockUser.avatar_url = avatarUrl || null;
-
   return (
-    <div className="flex items-center justify-between p-4 border-b mt-16 bg-background/95 backdrop-blur-sm z-50">
-      <div className="flex items-center gap-4">
-        {onBack && (
-          <Button variant="ghost" size="icon" onClick={onBack}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        )}
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <UserAvatar
-              user={mockUser}
-              className="h-10 w-10"
-            />
-            {isOnline !== undefined && (
-              <span
-                className={cn(
-                  "absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background",
-                  isOnline ? "bg-green-500" : "bg-zinc-400"
-                )}
-              />
+    <div className="flex items-center justify-between p-4 border-b">
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" size="icon" onClick={onBack}>
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <Avatar className="h-8 w-8">
+          <AvatarImage src={avatarUrl} alt={title} />
+          <AvatarFallback>{title[0]}</AvatarFallback>
+        </Avatar>
+        <div>
+          <h2 className="text-sm font-semibold">{title}</h2>
+          <p className="text-xs text-muted-foreground">
+            {subtitle}
+            {lastSeen && !isOnline && (
+              <span className="ml-1">
+                (Vu {formatDistanceToNow(new Date(lastSeen), { locale: fr, addSuffix: true })})
+              </span>
             )}
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold">{title}</span>
-              {title === "M. Victaure" && (
-                <Badge variant="secondary" className="text-xs">
-                  Assistant IA
-                </Badge>
-              )}
-            </div>
-            <span className="text-sm text-muted-foreground">
-              {isOnline
-                ? "En ligne"
-                : lastSeen
-                ? `Vu ${formatDistanceToNow(new Date(lastSeen), {
-                    addSuffix: true,
-                    locale: fr,
-                  })}`
-                : subtitle}
-            </span>
-          </div>
+          </p>
         </div>
       </div>
-
-      {onDelete && (
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MoreHorizontal className="h-5 w-5" />
-            </Button>
-          </DialogTrigger>
-          <DeleteConversationDialog onConfirm={onDelete} />
-        </Dialog>
-      )}
+      <div className="flex items-center gap-2">
+        {actions}
+        <Button variant="ghost" size="icon" onClick={onDelete}>
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 }

@@ -22,14 +22,12 @@ export function useNotifications() {
         },
         async (payload) => {
           if (payload.eventType === 'INSERT') {
-            // Vérifier si on est sur mobile
             if ('Notification' in window && Notification.permission === 'granted') {
               try {
                 const registration = await navigator.serviceWorker.ready;
                 await registration.showNotification(payload.new.title, {
                   body: payload.new.message,
                   icon: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-                  vibrate: [200, 100, 200],
                   data: {
                     url: window.location.origin + '/notifications'
                   }
@@ -65,5 +63,23 @@ export function useNotifications() {
     }
   };
 
-  return { markAllAsRead };
+  const getUnreadCount = async () => {
+    if (!user) return 0;
+
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('id', { count: 'exact' })
+        .eq('user_id', user.id)
+        .eq('read', false);
+
+      if (error) throw error;
+      return data.length;
+    } catch (error) {
+      console.error('Error getting unread count:', error);
+      return 0;
+    }
+  };
+
+  return { markAllAsRead, getUnreadCount };
 }
