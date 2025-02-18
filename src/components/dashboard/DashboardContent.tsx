@@ -1,4 +1,3 @@
-
 import { motion, AnimatePresence } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
@@ -24,6 +23,7 @@ import { DashboardChart } from "./DashboardChart";
 import { cn } from "@/lib/utils";
 import { useViewport } from "@/hooks/useViewport";
 import { Sparkles, Radio, Zap } from "lucide-react";
+import { LotteryPage } from "@/components/lottery/LotteryPage";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -248,6 +248,10 @@ export function DashboardContent({
         return <ChessPage />;
       case 16:
         return <NotesSection />;
+      case 17:
+        return <Marketplace />;
+      case 18:
+        return <LotteryPage />;
       default:
         return renderDashboardHome();
     }
