@@ -1,4 +1,3 @@
-
 import { UserProfile } from "@/types/profile";
 import { VCard } from "./VCard";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
@@ -96,7 +95,7 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
                     </Badge>
                   )}
                   {profile.online_status ? (
-                    <Badge variant="success" className="bg-green-500">En ligne</Badge>
+                    <Badge variant="secondary" className="bg-green-500 text-white hover:bg-green-600">En ligne</Badge>
                   ) : (
                     <Badge variant="secondary">
                       Vu {format(new Date(profile.last_seen || new Date()), 'PPP', { locale: fr })}
