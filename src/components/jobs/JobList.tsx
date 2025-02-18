@@ -17,6 +17,12 @@ interface JobListProps {
   onJobDeleted?: () => void;
 }
 
+interface DbJob extends Omit<Job, 'status'> {
+  status: string;
+  salary_min?: number;
+  salary_max?: number;
+}
+
 export function JobList({ filters, showFilters, filterType, viewMode, jobs: propJobs, onJobDeleted }: JobListProps) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,10 +43,13 @@ export function JobList({ filters, showFilters, filterType, viewMode, jobs: prop
 
         if (error) throw error;
 
-        const formattedJobs = data.map(job => ({
+        const formattedJobs: Job[] = (data as DbJob[]).map(job => ({
           ...job,
           company_name: job.company_name || 'Entreprise',
-          contract_type: job.contract_type || 'Temps plein'
+          contract_type: job.contract_type || 'Temps plein',
+          status: (job.status === 'open' || job.status === 'closed' || job.status === 'in-progress' 
+            ? job.status 
+            : 'open') as 'open' | 'closed' | 'in-progress'
         }));
 
         setJobs(formattedJobs);
@@ -78,6 +87,13 @@ export function JobList({ filters, showFilters, filterType, viewMode, jobs: prop
       </Card>
     );
   }
+
+  const getSalaryRange = (job: Job) => {
+    if (job.salary_min && job.salary_max) {
+      return `${job.salary_min} - ${job.salary_max}`;
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-4">
@@ -117,9 +133,9 @@ export function JobList({ filters, showFilters, filterType, viewMode, jobs: prop
                     month: 'short'
                   })}
                 </Badge>
-                {job.salary_range && (
+                {getSalaryRange(job) && (
                   <Badge variant="secondary">
-                    {job.salary_range}
+                    {getSalaryRange(job)}
                   </Badge>
                 )}
               </div>
