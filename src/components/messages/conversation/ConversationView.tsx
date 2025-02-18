@@ -1,3 +1,4 @@
+
 import { Message, Receiver } from "@/types/messages"; 
 import { ChatInput } from "@/components/chat/ChatInput";
 import { useCallback, useEffect, useState } from "react";
@@ -6,7 +7,6 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ConversationHeader } from "./components/ConversationHeader";
 import { ConversationMessages } from "./components/ConversationMessages";
-import { VoiceChatActivator } from "./components/VoiceChatActivator";
 
 export interface ConversationViewProps {
   messages: Message[];
@@ -35,7 +35,6 @@ export function ConversationView({
   onDeleteConversation,
   messagesEndRef
 }: ConversationViewProps) {
-  const [isVoiceChatActive, setIsVoiceChatActive] = useState(false);
   const { profile } = useProfile();
 
   const handleReply = useCallback(async (content: string) => {
@@ -94,13 +93,6 @@ export function ConversationView({
 
       <footer className="flex-none p-4 bg-background border-t">
         <div className="max-w-2xl mx-auto">
-          <VoiceChatActivator 
-            isActive={isVoiceChatActive}
-            onActivate={() => {
-              setIsVoiceChatActive(true);
-              if (onVoiceInput) onVoiceInput();
-            }}
-          />
           <ChatInput
             value={inputMessage}
             onChange={onInputChange}

@@ -1,11 +1,12 @@
 
 import { ArrowLeft, MoreVertical, Phone, PhoneCall, PhoneOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { UserAvatar } from "@/components/UserAvatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Receiver } from "@/types/messages";
 import { useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { User } from "lucide-react";
 
 interface ConversationHeaderProps {
   receiver: Receiver;
@@ -51,10 +52,15 @@ export function ConversationHeader({ receiver, onBack, onDelete }: ConversationH
           <ArrowLeft className="h-4 w-4" />
         </Button>
         
-        <UserAvatar 
-          user={receiver}
-          className="h-8 w-8"
-        />
+        <Avatar className="h-8 w-8">
+          {receiver.avatar_url ? (
+            <AvatarImage src={receiver.avatar_url} alt={receiver.full_name} />
+          ) : (
+            <AvatarFallback>
+              <User className="h-4 w-4" />
+            </AvatarFallback>
+          )}
+        </Avatar>
         
         <div className="flex flex-col">
           <span className="font-semibold">
