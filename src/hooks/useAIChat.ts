@@ -7,7 +7,7 @@ import { useAIMessages } from './chat/useAIMessages';
 import { useJobActions } from './chat/useJobActions';
 import { ConversationContext } from './chat/types';
 
-// UUID constant pour l'assistant
+// UUID constant for the assistant
 const ASSISTANT_ID = '00000000-0000-0000-0000-000000000000';
 
 export function useAIChat() {
