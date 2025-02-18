@@ -66,6 +66,28 @@ const jobSources = {
       description: '.job-description',
       salary: '.salary-range'
     }
+  },
+  indeed: {
+    baseUrl: 'https://ca.indeed.com/jobs',
+    selectors: {
+      jobList: '.job_seen_beacon',
+      title: '.jobTitle',
+      company: '.companyName',
+      location: '.companyLocation',
+      description: '.job-snippet',
+      salary: '.salary-snippet'
+    }
+  },
+  ziprecruiter: {
+    baseUrl: 'https://www.ziprecruiter.ca/Jobs',
+    selectors: {
+      jobList: '.job_content',
+      title: '.job_title',
+      company: '.hiring_company',
+      location: '.location',
+      description: '.job_description',
+      salary: '.salary'
+    }
   }
 }
 
@@ -225,6 +247,10 @@ function buildSearchUrl(source: string, searchTerms: string, location: string): 
       return `${config.baseUrl}?q=${encodedTerms}&l=${encodedLocation}`
     case 'randstad':
       return `${config.baseUrl}/search/${encodedTerms}/${encodedLocation}`
+    case 'indeed':
+      return `${config.baseUrl}?q=${encodedTerms}&l=${encodedLocation}`
+    case 'ziprecruiter':
+      return `${config.baseUrl}/Search?search=${encodedTerms}&location=${encodedLocation}`
     default:
       return ''
   }
@@ -239,12 +265,9 @@ serve(async (req) => {
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     
-    const { searchTerms, location } = await req.json()
-    if (!searchTerms || !location) {
-      throw new Error('Les termes de recherche et la localisation sont requis')
-    }
+    const { searchTerms = "développeur", location = "Québec", sources, isAssistantRequest = false } = await req.json()
     
-    console.log(`Démarrage de la recherche d'emploi pour "${searchTerms}" à ${location}`)
+    console.log(`Starting job search for "${searchTerms}" in ${location}`)
     
     browser = await chromium.launch({ 
       headless: true,
@@ -252,14 +275,17 @@ serve(async (req) => {
     })
     const page = await browser.newPage()
     
-    // Configurer le navigateur pour paraître plus humain
+    // Configure browser to appear more human
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
     await page.setViewport({ width: 1920, height: 1080 })
     
     const allJobs: JobListing[] = []
     
-    // Scraper chaque source
-    for (const source of Object.keys(jobSources)) {
+    // Determine which sources to scrape
+    const sourcesToScrape = sources || Object.keys(jobSources)
+    
+    // Scrape each source
+    for (const source of sourcesToScrape) {
       try {
         const searchUrl = buildSearchUrl(source, searchTerms, location)
         if (!searchUrl) continue
@@ -268,7 +294,7 @@ serve(async (req) => {
         const jobs = await scrapeJobs(page, source, searchUrl)
         allJobs.push(...jobs)
         
-        // Petit délai entre les sources
+        // Small delay between sources
         await page.waitForTimeout(2000)
       } catch (error) {
         console.error(`Error scraping ${source}:`, error)
@@ -276,18 +302,26 @@ serve(async (req) => {
       }
     }
     
-    console.log(`Total des emplois trouvés: ${allJobs.length}`)
+    console.log(`Total jobs found: ${allJobs.length}`)
     
     if (allJobs.length > 0) {
       await saveJobsToDatabase(allJobs, supabase)
     }
     
+    // Format response based on request type
+    const response = isAssistantRequest ? {
+      success: true,
+      jobsFound: allJobs.length,
+      jobs: allJobs.slice(0, 5), // Return only first 5 jobs for assistant responses
+      message: `J'ai trouvé ${allJobs.length} emplois correspondant à votre recherche.`
+    } : {
+      success: true,
+      jobsFound: allJobs.length,
+      message: `${allJobs.length} emplois trouvés et sauvegardés dans la base de données`
+    }
+    
     return new Response(
-      JSON.stringify({
-        success: true,
-        jobsFound: allJobs.length,
-        message: `${allJobs.length} emplois trouvés sur les différentes plateformes`
-      }),
+      JSON.stringify(response),
       {
         headers: {
           ...corsHeaders,
@@ -296,7 +330,7 @@ serve(async (req) => {
       }
     )
   } catch (error) {
-    console.error('Erreur dans la fonction de scraping:', error)
+    console.error('Error in scraping function:', error)
     return new Response(
       JSON.stringify({
         success: false,
