@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { StyleOption } from './types';
 import { supabase } from '@/integrations/supabase/client';
@@ -90,16 +89,10 @@ export function VCardStyleProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Simplification de la requête de mise à jour
       const { error } = await supabase
         .from('profiles')
-        .upsert({ 
-          id: user.id,
-          style_id: style.id,
-        }, { 
-          onConflict: 'id',
-          ignoreDuplicates: false 
-        });
+        .update({ style_id: style.id })
+        .eq('id', user.id);
 
       if (error) throw error;
 
