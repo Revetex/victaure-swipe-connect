@@ -6,25 +6,7 @@ import { MapPin, Briefcase, Clock, Building2, ChevronRight } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-
-interface Job {
-  id: string;
-  title: string;
-  company_name: string;
-  location: string;
-  contract_type: string;
-  created_at: string;
-  salary_range?: string;
-  description: string;
-  budget?: number;
-  accept_bids?: boolean;
-  application_deadline?: string;
-  application_steps?: any;
-  benefits?: string[];
-  bid_end_date?: string;
-  category?: string;
-  certifications_required?: string[];
-}
+import { Job } from "@/types/job";
 
 interface JobListProps {
   filters: any;
@@ -57,8 +39,8 @@ export function JobList({ filters, showFilters, filterType, viewMode, jobs: prop
 
         const formattedJobs = data.map(job => ({
           ...job,
-          company: job.company_name || 'Entreprise',
-          type: job.contract_type || 'Temps plein'
+          company_name: job.company_name || 'Entreprise',
+          contract_type: job.contract_type || 'Temps plein'
         }));
 
         setJobs(formattedJobs);
@@ -115,7 +97,7 @@ export function JobList({ filters, showFilters, filterType, viewMode, jobs: prop
                 </h3>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Building2 className="h-4 w-4" />
-                  <span>{job.company_name}</span>
+                  <span>{job.company_name || 'Entreprise'}</span>
                 </div>
               </div>
 
@@ -126,7 +108,7 @@ export function JobList({ filters, showFilters, filterType, viewMode, jobs: prop
                 </Badge>
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Briefcase className="h-3 w-3" />
-                  {job.contract_type}
+                  {job.contract_type || 'Temps plein'}
                 </Badge>
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
