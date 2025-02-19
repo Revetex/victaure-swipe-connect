@@ -27,6 +27,11 @@ export function ConversationMessages({
   const isAutoScrollingRef = useRef(false);
   const prevScrollTop = useRef(0);
 
+  // Éliminer les messages dupliqués en se basant sur l'ID
+  const uniqueMessages = messages.filter((message, index, self) =>
+    index === self.findIndex((m) => m.id === message.id)
+  );
+
   useEffect(() => {
     const scrollToBottom = (smooth = true) => {
       if (messagesEndRef.current) {
@@ -41,12 +46,10 @@ export function ConversationMessages({
       }
     };
 
-    if (messages.length > 0) {
+    if (uniqueMessages.length > 0) {
       scrollToBottom();
     }
-
-    scrollToBottom(false);
-  }, [messages]);
+  }, [uniqueMessages.length]);
 
   const handleScroll = (event: any) => {
     if (isAutoScrollingRef.current) return;
@@ -75,7 +78,7 @@ export function ConversationMessages({
       >
         <div className="px-4 py-4 space-y-4 max-w-2xl mx-auto">
           <AnimatePresence mode="popLayout">
-            {messages.map((message) => (
+            {uniqueMessages.map((message) => (
               <motion.div
                 key={message.id}
                 initial={{ opacity: 0, y: fadeDirection === 'up' ? 20 : -20 }}
