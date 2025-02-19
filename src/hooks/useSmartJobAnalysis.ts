@@ -11,8 +11,8 @@ interface JobMatch {
 }
 
 export function useSmartJobAnalysis() {
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { profile } = useProfile();
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const analyzeJobs = useCallback(async () => {
     if (!profile) {
