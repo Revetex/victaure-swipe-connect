@@ -40,7 +40,7 @@ export const useJobsData = () => {
             company: job.employer?.company_name || "Entreprise non spécifiée",
             url: `/jobs/${job.id}`,
             status: job.status as 'open' | 'closed' | 'in-progress',
-            mission_type: job.mission_type || 'company',
+            mission_type: (job.mission_type || 'company') as 'company' | 'individual',
             salary_min: typeof job.salary_min === 'number' ? job.salary_min : undefined,
             salary_max: typeof job.salary_max === 'number' ? job.salary_max : undefined
           })),
@@ -61,9 +61,10 @@ export const useJobsData = () => {
             url: job.url,
             salary: job.salary_range,
             skills: job.skills || [],
-            mission_type: 'company',
-            salary_min: typeof job.salary_min === 'number' ? job.salary_min : undefined,
-            salary_max: typeof job.salary_max === 'number' ? job.salary_max : undefined
+            mission_type: 'company' as const,
+            // Convertir les salaires depuis salary_range si disponible
+            salary_min: job.salary_range ? parseFloat(job.salary_range.split('-')[0]) || undefined : undefined,
+            salary_max: job.salary_range ? parseFloat(job.salary_range.split('-')[1]) || undefined : undefined
           }))
         ];
 
