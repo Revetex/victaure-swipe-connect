@@ -5,11 +5,13 @@ import { UserProfile } from "@/types/profile";
 
 export const useConversationHandler = () => {
   const findExistingConversation = async (userId: string, partnerId: string) => {
+    const participants = [userId, partnerId].sort(); // Tri pour assurer la cohérence
+    
     const { data, error } = await supabase
       .from('conversations')
       .select('*')
-      .or(`participant1_id.eq.${userId},participant1_id.eq.${partnerId}`)
-      .or(`participant2_id.eq.${userId},participant2_id.eq.${partnerId}`)
+      .eq('participant1_id', participants[0])
+      .eq('participant2_id', participants[1])
       .maybeSingle();
 
     if (error) throw error;
@@ -38,8 +40,10 @@ export const useConversationHandler = () => {
         return existingConversation;
       }
 
+      // Assurons-nous que les participants sont toujours dans le même ordre
+      const participants = [userId, partnerId].sort();
+      
       // Si aucune conversation n'existe, en créer une nouvelle
-      const participants = [userId, partnerId].sort(); // Tri pour assurer la cohérence
       const { data: newConversation, error: createError } = await supabase
         .from('conversations')
         .insert({
@@ -55,6 +59,7 @@ export const useConversationHandler = () => {
 
       if (createError) {
         // En cas d'erreur de duplication, réessayer de trouver la conversation
+        // Cela peut arriver en cas de conditions de concurrence
         if (createError.code === '23505') {
           const retryConversation = await findExistingConversation(userId, partnerId);
           if (retryConversation) return retryConversation;
