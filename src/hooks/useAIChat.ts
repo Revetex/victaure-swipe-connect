@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -6,8 +5,8 @@ import { useProfile } from './useProfile';
 import { useAIMessages } from './chat/useAIMessages';
 import { useJobActions } from './chat/useJobActions';
 import { ConversationContext } from './chat/types';
+import { useSmartJobAnalysis } from './useSmartJobAnalysis';
 
-// UUID constant for the assistant
 const ASSISTANT_ID = '00000000-0000-0000-0000-000000000000';
 
 export function useAIChat() {
@@ -20,6 +19,8 @@ export function useAIChat() {
     rejectedJobs: [],
     hasGreeted: false
   });
+
+  const { analyzeJobs, isAnalyzing } = useSmartJobAnalysis();
 
   const {
     messages,
@@ -53,7 +54,22 @@ export function useAIChat() {
       addThinkingMessage(profile);
       setIsThinking(true);
 
-      // Insert the user message into Supabase
+      const jobSearchKeywords = ['emploi', 'job', 'travail', 'offre', 'poste', 'recherche'];
+      const shouldAnalyzeJobs = jobSearchKeywords.some(keyword => 
+        content.toLowerCase().includes(keyword)
+      );
+
+      if (shouldAnalyzeJobs) {
+        const jobMatches = await analyzeJobs();
+        if (jobMatches) {
+          const matchesContext = {
+            jobMatches,
+            userProfile: profile
+          };
+          console.log('Job matches context:', matchesContext);
+        }
+      }
+
       const { error: userMessageError } = await supabase
         .from('messages')
         .insert({
@@ -83,7 +99,8 @@ export function useAIChat() {
             previousMessages: messages.slice(-5),
             userProfile: profile,
             conversationState: conversationContext,
-            hasGreeted: conversationContext.hasGreeted
+            hasGreeted: conversationContext.hasGreeted,
+            isAnalyzingJobs: isAnalyzing
           }
         }
       });
@@ -91,7 +108,6 @@ export function useAIChat() {
       if (error) throw error;
       if (!data?.response) throw new Error('Invalid response format from AI');
 
-      // Insert the assistant's response into Supabase
       const { error: assistantMessageError } = await supabase
         .from('messages')
         .insert({
@@ -123,7 +139,7 @@ export function useAIChat() {
       setIsThinking(false);
       setInputMessage('');
     }
-  }, [messages, profile, conversationContext, addUserMessage, addThinkingMessage, addAssistantMessage, removeThinkingMessages]);
+  }, [messages, profile, conversationContext, addUserMessage, addThinkingMessage, addAssistantMessage, removeThinkingMessages, analyzeJobs, isAnalyzing]);
 
   const { handleJobAccept, handleJobReject } = useJobActions(
     profile,
