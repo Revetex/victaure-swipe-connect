@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo } from "react";
+
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,8 +16,7 @@ import {
   Image
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { MarketplaceListing } from "@/types/marketplace";
-import { useIsMobile } from "@/hooks/use-mobile";
+import type { MarketplaceListing, MarketplaceFilters } from "@/types/marketplace";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -64,7 +64,7 @@ export function MarketplaceList({
       const from = (page - 1) * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
-      const query = supabase
+      let query = supabase
         .from('marketplace_listings')
         .select(`
           id,
@@ -83,30 +83,30 @@ export function MarketplaceList({
             avatar_url,
             rating
           ),
-          count() over()
-        `)
+          count
+        `, { count: 'exact' })
         .eq('status', 'active')
         .range(from, to);
 
       // Apply filters
       if (type !== "all") {
-        query.eq('type', type);
+        query = query.eq('type', type);
       }
 
       if (searchQuery) {
-        query.ilike('title', `%${searchQuery}%`);
+        query = query.ilike('title', `%${searchQuery}%`);
       }
 
       if (filters.location) {
-        query.ilike('location', `%${filters.location}%`);
+        query = query.ilike('location', `%${filters.location}%`);
       }
 
       if (filters.rating) {
-        query.gte('seller.rating', filters.rating);
+        query = query.gte('seller.rating', filters.rating);
       }
 
       if (filters.priceRange) {
-        query
+        query = query
           .gte('price', filters.priceRange[0])
           .lte('price', filters.priceRange[1]);
       }
@@ -115,16 +115,16 @@ export function MarketplaceList({
       const { sortBy, sortOrder } = filters;
       switch (sortBy) {
         case 'date':
-          query.order('created_at', { ascending: sortOrder === 'asc' });
+          query = query.order('created_at', { ascending: sortOrder === 'asc' });
           break;
         case 'price':
-          query.order('price', { ascending: sortOrder === 'asc' });
+          query = query.order('price', { ascending: sortOrder === 'asc' });
           break;
         case 'rating':
-          query.order('seller(rating)', { ascending: sortOrder === 'asc' });
+          query = query.order('seller(rating)', { ascending: sortOrder === 'asc' });
           break;
         case 'views':
-          query.order('views', { ascending: sortOrder === 'asc' });
+          query = query.order('views', { ascending: sortOrder === 'asc' });
           break;
       }
 
@@ -132,15 +132,17 @@ export function MarketplaceList({
 
       if (error) throw error;
       
-      setListings(data as MarketplaceListing[]);
-      setTotalPages(Math.ceil((count || 0) / ITEMS_PER_PAGE));
+      if (data) {
+        setListings(data as MarketplaceListing[]);
+        setTotalPages(Math.ceil((count || 0) / ITEMS_PER_PAGE));
 
-      // Simuler des vues aléatoires pour la démo
-      const randomViews: Record<string, number> = {};
-      data.forEach(listing => {
-        randomViews[listing.id] = Math.floor(Math.random() * 100) + 20;
-      });
-      setViews(randomViews);
+        // Simuler des vues aléatoires pour la démo
+        const randomViews: Record<string, number> = {};
+        data.forEach(listing => {
+          randomViews[listing.id] = Math.floor(Math.random() * 100) + 20;
+        });
+        setViews(randomViews);
+      }
 
     } catch (error) {
       console.error('Error fetching listings:', error);

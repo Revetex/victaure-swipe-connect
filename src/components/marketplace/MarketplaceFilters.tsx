@@ -19,11 +19,11 @@ import {
   Star,
   Ban
 } from "lucide-react";
-import type { MarketplaceFilters as Filters } from "@/types/marketplace";
+import type { MarketplaceFilters } from "@/types/marketplace";
 
 interface FiltersProps {
-  filters: Filters;
-  onFiltersChange: (filters: Filters) => void;
+  filters: MarketplaceFilters;
+  onFiltersChange: (filters: MarketplaceFilters) => void;
   maxPrice: number;
 }
 
