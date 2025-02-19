@@ -12,6 +12,7 @@ import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
 import { LotteryPage } from "@/components/lottery/LotteryPage";
+import { JobsPage } from "@/components/jobs/JobsPage";
 
 interface ContentRouterProps {
   currentPage: number;
@@ -52,7 +53,7 @@ export function ContentRouter({
     case 16:
       return <NotesSection />;
     case 17:
-      return <Marketplace />;
+      return <JobsPage />; // Ajout de la page emploi
     case 18:
       return <LotteryPage />;
     default:
