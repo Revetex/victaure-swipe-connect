@@ -3,13 +3,26 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from '@/integrations/supabase/client';
-import { MarketplaceService } from "@/types/marketplace";
 import { useSmartJobAnalysis } from "@/hooks/useSmartJobAnalysis";
 import { Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
+
+interface JobListing {
+  id: string;
+  title: string;
+  company: string;
+  description: string | null;
+  location: string | null;
+  salary_range: string | null;
+  url: string;
+  skills: string[] | null;
+  match_score: number | null;
+  posted_at: string;
+}
 
 export function MarketplaceList() {
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<JobListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { analyzeJobs, isAnalyzing } = useSmartJobAnalysis();
 
@@ -20,39 +33,44 @@ export function MarketplaceList() {
   const fetchJobs = async () => {
     try {
       const { data, error } = await supabase
-        .from('scraped_jobs')
+        .from('job_listings')
         .select('*')
         .order('match_score', { ascending: false })
         .order('posted_at', { ascending: false });
 
       if (error) throw error;
       
-      // Dédupliquer les offres en utilisant l'ID
-      const uniqueJobs = data ? Array.from(new Map(data.map(job => [job.id, job])).values()) : [];
-      setJobs(uniqueJobs);
+      setJobs(data || []);
     } catch (error) {
       console.error('Error fetching jobs:', error);
+      toast.error("Erreur lors du chargement des offres d'emploi");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleAnalyzeJobs = async () => {
-    await analyzeJobs();
-    fetchJobs();
+    try {
+      await analyzeJobs();
+      await fetchJobs();
+      toast.success("Analyse des offres terminée");
+    } catch (error) {
+      console.error('Error analyzing jobs:', error);
+      toast.error("Erreur lors de l'analyse des offres");
+    }
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
+      <div className="flex items-center justify-center h-[calc(100vh-12rem)]">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-12rem)] w-full px-4">
-      <div className="max-w-7xl mx-auto">
+    <ScrollArea className="h-[calc(100vh-12rem)] w-full">
+      <div className="max-w-7xl mx-auto px-4 pb-8">
         <div className="flex justify-between items-center mb-6 sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 py-4">
           <h2 className="text-2xl font-bold">Offres d'emploi</h2>
           <Button 
@@ -75,16 +93,18 @@ export function MarketplaceList() {
                 </div>
                 {job.match_score && (
                   <span className="ml-4 px-2 py-1 bg-primary/10 text-primary rounded-full text-sm whitespace-nowrap">
-                    {Math.round(job.match_score)}% match
+                    {job.match_score}% match
                   </span>
                 )}
               </div>
 
               <div className="flex-1 space-y-4">
-                <p className="text-sm line-clamp-3">{job.description}</p>
+                {job.description && (
+                  <p className="text-sm line-clamp-3">{job.description}</p>
+                )}
                 
                 <div className="flex items-center text-sm text-muted-foreground space-x-2">
-                  <span className="truncate">{job.location}</span>
+                  {job.location && <span className="truncate">{job.location}</span>}
                   {job.salary_range && (
                     <>
                       <span>•</span>
@@ -93,9 +113,9 @@ export function MarketplaceList() {
                   )}
                 </div>
 
-                {job.skills?.length > 0 && (
+                {job.skills && job.skills.length > 0 && (
                   <div className="flex flex-wrap gap-2">
-                    {job.skills.slice(0, 3).map((skill: string, index: number) => (
+                    {job.skills.slice(0, 3).map((skill, index) => (
                       <span 
                         key={index}
                         className="px-2 py-1 bg-secondary/10 text-secondary rounded-full text-xs"

@@ -1329,6 +1329,57 @@ export type Database = {
         }
         Relationships: []
       }
+      job_listings: {
+        Row: {
+          company: string
+          created_at: string | null
+          description: string | null
+          external_id: string | null
+          id: string
+          location: string | null
+          match_score: number | null
+          posted_at: string | null
+          salary_range: string | null
+          skills: string[] | null
+          source: string | null
+          title: string
+          updated_at: string | null
+          url: string | null
+        }
+        Insert: {
+          company: string
+          created_at?: string | null
+          description?: string | null
+          external_id?: string | null
+          id?: string
+          location?: string | null
+          match_score?: number | null
+          posted_at?: string | null
+          salary_range?: string | null
+          skills?: string[] | null
+          source?: string | null
+          title: string
+          updated_at?: string | null
+          url?: string | null
+        }
+        Update: {
+          company?: string
+          created_at?: string | null
+          description?: string | null
+          external_id?: string | null
+          id?: string
+          location?: string | null
+          match_score?: number | null
+          posted_at?: string | null
+          salary_range?: string | null
+          skills?: string[] | null
+          source?: string | null
+          title?: string
+          updated_at?: string | null
+          url?: string | null
+        }
+        Relationships: []
+      }
       job_postings: {
         Row: {
           business_id: string
