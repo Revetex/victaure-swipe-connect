@@ -78,7 +78,8 @@ export function MarketplaceList({
           images,
           seller:profiles (
             full_name,
-            avatar_url
+            avatar_url,
+            rating
           )
         `, { count: 'exact' })
         .eq('status', 'active')
@@ -96,6 +97,10 @@ export function MarketplaceList({
         query = query.ilike('location', `%${filters.location}%`);
       }
 
+      if (filters.rating) {
+        query = query.gte('seller.rating', filters.rating);
+      }
+
       if (filters.priceRange) {
         query = query
           .gte('price', filters.priceRange[0])
@@ -109,6 +114,9 @@ export function MarketplaceList({
           break;
         case 'price':
           query = query.order('price', { ascending: sortOrder === 'asc' });
+          break;
+        case 'rating':
+          query = query.order('seller(rating)', { ascending: sortOrder === 'asc' });
           break;
         case 'views':
           query = query.order('views', { ascending: sortOrder === 'asc' });
@@ -135,7 +143,7 @@ export function MarketplaceList({
           seller: {
             full_name: item.seller?.full_name || null,
             avatar_url: item.seller?.avatar_url || null,
-            rating: 0
+            rating: item.seller?.rating || 0
           }
         }));
 

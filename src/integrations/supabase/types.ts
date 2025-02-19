@@ -3255,6 +3255,7 @@ export type Database = {
           privacy_enabled: boolean | null
           push_notifications_enabled: boolean | null
           push_token: string | null
+          rating: number | null
           role: string
           salary_expectations: Json | null
           search_enabled: boolean | null
@@ -3310,6 +3311,7 @@ export type Database = {
           privacy_enabled?: boolean | null
           push_notifications_enabled?: boolean | null
           push_token?: string | null
+          rating?: number | null
           role: string
           salary_expectations?: Json | null
           search_enabled?: boolean | null
@@ -3365,6 +3367,7 @@ export type Database = {
           privacy_enabled?: boolean | null
           push_notifications_enabled?: boolean | null
           push_token?: string | null
+          rating?: number | null
           role?: string
           salary_expectations?: Json | null
           search_enabled?: boolean | null
