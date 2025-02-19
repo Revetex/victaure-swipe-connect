@@ -35,8 +35,8 @@ export function ChessBoard({
   };
 
   return (
-    <div className="aspect-square w-full max-w-2xl mx-auto p-4">
-      <div className="grid grid-cols-8 gap-1 aspect-square w-full border-2 border-primary/20 rounded-lg bg-[#2A2A2A] p-2">
+    <div className="relative aspect-square w-full max-w-2xl mx-auto p-4">
+      <div className="relative grid grid-cols-8 gap-0.5 aspect-square w-full border-2 border-primary/20 rounded-lg bg-[#2A2A2A] p-2">
         {board.map((row, rowIndex) =>
           row.map((piece, colIndex) => {
             const isSelected = selectedPiece?.row === rowIndex && selectedPiece?.col === colIndex;
@@ -48,11 +48,11 @@ export function ChessBoard({
             return (
               <motion.button
                 key={`${rowIndex}-${colIndex}`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                layout
+                layoutId={`square-${rowIndex}-${colIndex}`}
                 className={cn(
                   "aspect-square relative flex items-center justify-center text-2xl sm:text-3xl md:text-4xl font-chess transition-colors",
-                  "rounded border border-primary/10",
+                  "border border-primary/10",
                   isLight ? "bg-[#E8E8E8]" : "bg-[#8B8B8B]",
                   isSelected && "ring-2 ring-primary ring-offset-2",
                   isPossibleMove && "ring-2 ring-yellow-400",
@@ -63,15 +63,18 @@ export function ChessBoard({
                 disabled={isThinking || gameOver}
               >
                 {piece && (
-                  <span className={cn(
-                    "transition-transform select-none",
-                    piece.isWhite 
-                      ? "text-[#FFFFFF] drop-shadow-[0_0_3px_rgba(0,0,0,0.7)]" 
-                      : "text-[#000000] drop-shadow-[0_0_3px_rgba(255,255,255,0.3)]",
-                    isSelected && "scale-110"
-                  )}>
+                  <motion.span 
+                    layoutId={`piece-${rowIndex}-${colIndex}`}
+                    className={cn(
+                      "transition-transform select-none",
+                      piece.isWhite 
+                        ? "text-[#FFFFFF] drop-shadow-[0_0_3px_rgba(0,0,0,0.7)]" 
+                        : "text-[#000000] drop-shadow-[0_0_3px_rgba(255,255,255,0.3)]",
+                      isSelected && "scale-110"
+                    )}
+                  >
                     {getPieceIcon(piece)}
-                  </span>
+                  </motion.span>
                 )}
                 {isPossibleMove && !piece && (
                   <motion.div
