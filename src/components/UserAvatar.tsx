@@ -21,15 +21,22 @@ export function UserAvatar({ user, className }: UserAvatarProps) {
   }
 
   return (
-    <Avatar className={cn("bg-background", className)}>
+    <Avatar className={cn("bg-background relative overflow-hidden", className)}>
       {user.avatar_url ? (
-        <AvatarImage 
-          src={user.avatar_url} 
-          alt={user.full_name || 'Avatar'} 
-          className="object-cover"
-        />
+        <>
+          <AvatarImage 
+            src={user.avatar_url} 
+            alt={user.full_name || 'Avatar'} 
+            className="object-cover w-full h-full"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = '/user-icon.svg';
+            }}
+          />
+          <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors" />
+        </>
       ) : (
-        <AvatarFallback>
+        <AvatarFallback className="bg-primary/5">
           {user.full_name ? user.full_name[0].toUpperCase() : <User className="h-4 w-4" />}
         </AvatarFallback>
       )}

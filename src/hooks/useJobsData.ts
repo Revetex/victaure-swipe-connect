@@ -35,22 +35,32 @@ export const useJobsData = () => {
 
         const formattedJobs: Job[] = [
           ...(jobs || []).map(job => ({
-            ...job,
+            id: job.id,
+            title: job.title,
+            description: job.description || '',
+            budget: job.budget || 0,
+            location: job.location || '',
+            employer_id: job.employer_id || '',
+            status: 'open' as const,
+            category: job.category || 'Technology',
+            contract_type: job.contract_type || 'FULL_TIME',
+            experience_level: job.experience_level || 'mid-level',
+            created_at: job.created_at,
             source: "internal" as const,
             company: job.employer?.company_name || "Entreprise non spécifiée",
             url: `/jobs/${job.id}`,
-            status: job.status as 'open' | 'closed' | 'in-progress',
-            mission_type: (job.mission_type || 'company') as 'company' | 'individual',
-            salary_min: typeof job.salary_min === 'number' ? job.salary_min : undefined,
-            salary_max: typeof job.salary_max === 'number' ? job.salary_max : undefined
+            mission_type: 'company' as const,
+            salary_min: job.salary_min || undefined,
+            salary_max: job.salary_max || undefined,
+            interview_process: job.interview_process as any[] || [],
+            application_steps: job.application_steps as any[] || []
           })),
           ...(scrapedJobs || []).map(job => ({
             id: job.id,
             title: job.title,
-            company: job.company,
-            location: job.location,
             description: job.description || '',
             budget: 0,
+            location: job.location || '',
             employer_id: '',
             status: 'open' as const,
             category: 'Technology',
@@ -58,11 +68,13 @@ export const useJobsData = () => {
             experience_level: job.experience_level || 'mid-level',
             created_at: job.posted_at,
             source: "external" as const,
+            company: job.company,
             url: job.url,
+            mission_type: 'company' as const,
             salary: job.salary_range,
             skills: job.skills || [],
-            mission_type: 'company' as const,
-            // Convertir les salaires depuis salary_range si disponible
+            interview_process: [],
+            application_steps: [],
             salary_min: job.salary_range ? parseFloat(job.salary_range.split('-')[0]) || undefined : undefined,
             salary_max: job.salary_range ? parseFloat(job.salary_range.split('-')[1]) || undefined : undefined
           }))
