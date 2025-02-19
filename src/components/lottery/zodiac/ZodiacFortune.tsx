@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PaymentProps } from "@/types/payment";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ZodiacSign {
   name: string;
@@ -30,16 +32,16 @@ export function ZodiacFortune({ onPaymentRequested }: PaymentProps) {
   const [selectedSign, setSelectedSign] = useState<ZodiacSign | null>(null);
   const [spin, setSpin] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (spin) {
       const timer = setTimeout(() => {
-        // Select a random zodiac sign
         const randomIndex = Math.floor(Math.random() * zodiacSigns.length);
         setSelectedSign(zodiacSigns[randomIndex]);
         setSpin(false);
         setShowResult(true);
-      }, 3000); // Simulate spinning for 3 seconds
+      }, 3000);
 
       return () => clearTimeout(timer);
     }
@@ -51,24 +53,20 @@ export function ZodiacFortune({ onPaymentRequested }: PaymentProps) {
       setSpin(true);
       setShowResult(false);
     } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Erreur lors du paiement",
-        variant: "destructive",
-      });
+      toast.error("Erreur lors du paiement");
       console.error("Payment error:", error);
     }
   };
 
   return (
     <Card className="w-full max-w-md mx-auto">
-      <CardContent className="p-6 flex flex-col items-center">
-        <h2 className="text-2xl font-semibold mb-4">Zodiac Fortune</h2>
-        <p className="text-muted-foreground mb-4">
-          Spin to reveal your zodiac fortune!
+      <CardContent className={`p-4 ${isMobile ? 'sm:p-6' : 'p-6'} flex flex-col items-center`}>
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4">Zodiac Fortune</h2>
+        <p className="text-sm sm:text-base text-muted-foreground mb-4 text-center">
+          Tournez la roue pour découvrir votre fortune zodiacale !
         </p>
 
-        <div className="relative w-48 h-48 mb-4">
+        <div className={`relative ${isMobile ? 'w-36 h-36' : 'w-48 h-48'} mb-4`}>
           {spin ? (
             <motion.img
               src="/zodiac/wheel.png"
@@ -96,16 +94,24 @@ export function ZodiacFortune({ onPaymentRequested }: PaymentProps) {
         </div>
 
         {showResult && selectedSign && (
-          <div className="text-center mt-4">
-            <h3 className="text-xl font-semibold">Your Sign: {selectedSign.name}</h3>
-            <p className="text-muted-foreground">Lucky Numbers: {selectedSign.luckyNumbers.join(", ")}</p>
+          <div className="text-center mt-4 space-y-2">
+            <h3 className="text-lg sm:text-xl font-semibold">{selectedSign.name}</h3>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Numéros chance : {selectedSign.luckyNumbers.join(", ")}
+            </p>
           </div>
         )}
 
-        <Button onClick={handleSpin} disabled={spin} className="mt-4">
-          {spin ? "Spinning..." : "Spin (2 CAD$)"}
+        <Button 
+          onClick={handleSpin} 
+          disabled={spin} 
+          className="mt-4 w-full sm:w-auto"
+          size={isMobile ? "sm" : "default"}
+        >
+          {spin ? "Tirage en cours..." : "Tirer (2 CAD$)"}
         </Button>
       </CardContent>
     </Card>
   );
 }
+

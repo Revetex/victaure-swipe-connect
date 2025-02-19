@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,15 +20,10 @@ export function LotteryPage() {
   const handleGamePayment = async (amount: number, gameTitle: string) => {
     try {
       await handlePayment(amount, `Paiement pour ${gameTitle}`);
-      toast({
-        title: "Succès",
-        description: "Paiement traité avec succès !",
-      });
+      toast("Paiement traité avec succès !");
     } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Erreur lors du paiement",
-        variant: "destructive",
+      toast("Erreur lors du paiement", {
+        description: "Une erreur est survenue lors du traitement du paiement",
       });
       console.error("Payment error:", error);
     }
@@ -203,3 +199,4 @@ export function LotteryPage() {
     </div>
   );
 }
+
