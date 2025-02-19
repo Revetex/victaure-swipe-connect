@@ -67,50 +67,47 @@ export function ConversationMessages({
   };
 
   return (
-    <div className="relative flex-1 overflow-hidden bg-gradient-to-b from-background via-background/80 to-background/50 pt-28 pb-24">
+    <div className="flex-1 mx-auto max-w-2xl relative">
       <ScrollArea 
         ref={scrollAreaRef}
-        className="h-[calc(100vh-8rem)] backdrop-blur-sm"
+        className="h-[calc(100vh-10rem)] px-4"
         onScrollCapture={handleScroll}
       >
-        <div className="px-4">
-          <div className="space-y-4 py-4 max-w-2xl mx-auto">
-            <AnimatePresence mode="popLayout">
-              {messages.map((message) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: fadeDirection === 'up' ? 20 : -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: fadeDirection === 'up' ? -20 : 20 }}
-                  transition={{ 
-                    duration: 0.2,
-                    type: "spring",
-                    stiffness: 500,
-                    damping: 30
-                  }}
-                >
-                  <ChatMessage 
-                    message={message} 
-                    onReply={onReply}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-            
-            {isThinking && (
+        <div className="space-y-4 py-4">
+          <AnimatePresence mode="popLayout">
+            {messages.map((message) => (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
+                key={message.id}
+                initial={{ opacity: 0, y: fadeDirection === 'up' ? 20 : -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="backdrop-blur-sm"
+                exit={{ opacity: 0, y: fadeDirection === 'up' ? -20 : 20 }}
+                transition={{ 
+                  duration: 0.2,
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 30
+                }}
               >
-                <ChatThinking />
+                <ChatMessage 
+                  message={message} 
+                  onReply={onReply}
+                />
               </motion.div>
-            )}
-            
-            <div ref={messagesEndRef} className="h-4" />
-          </div>
+            ))}
+          </AnimatePresence>
+          
+          {isThinking && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ChatThinking />
+            </motion.div>
+          )}
+          
+          <div ref={messagesEndRef} className="h-4" />
         </div>
       </ScrollArea>
 
@@ -120,7 +117,7 @@ export function ConversationMessages({
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            className="absolute bottom-28 right-6 z-10"
+            className="absolute bottom-4 right-6 z-10"
           >
             <Button
               size="icon"
