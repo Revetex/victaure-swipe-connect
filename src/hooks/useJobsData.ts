@@ -52,8 +52,8 @@ export const useJobsData = () => {
             mission_type: 'company' as const,
             salary_min: job.salary_min || undefined,
             salary_max: job.salary_max || undefined,
-            interview_process: job.interview_process as any[] || [],
-            application_steps: job.application_steps as any[] || []
+            interview_process: Array.isArray(job.interview_process) ? job.interview_process : [],
+            application_steps: Array.isArray(job.application_steps) ? job.application_steps : []
           })),
           ...(scrapedJobs || []).map(job => ({
             id: job.id,
