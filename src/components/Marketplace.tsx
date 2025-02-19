@@ -9,6 +9,7 @@ import { Input } from "./ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Calculator, Search, PlusCircle, Filter, SlidersHorizontal } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { motion } from "framer-motion";
 import type { MarketplaceFilters } from "@/types/marketplace";
 
 export function Marketplace() {
@@ -25,7 +26,11 @@ export function Marketplace() {
   const isMobile = useIsMobile();
 
   return (
-    <div className="container mx-auto px-4 py-4 sm:py-8 mt-16">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="container mx-auto px-4 py-4 sm:py-8 mt-16"
+    >
       <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center mb-6">
         <h1 className="text-2xl font-bold">Marketplace</h1>
         <div className="flex flex-col sm:flex-row gap-3">
@@ -123,6 +128,6 @@ export function Marketplace() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </motion.div>
   );
 }

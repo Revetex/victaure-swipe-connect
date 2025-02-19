@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { JobList } from "./JobList";
 import { Job } from "@/types/job";
@@ -76,10 +77,10 @@ export function JobsPage() {
 
   return (
     <motion.div 
-      className="container mx-auto p-4 max-w-7xl"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
+      className="container mx-auto p-4 max-w-7xl"
     >
       <div className="space-y-6">
         {/* Header Section */}
