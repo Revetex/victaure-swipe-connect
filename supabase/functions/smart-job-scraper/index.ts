@@ -61,7 +61,7 @@ serve(async (req) => {
         .eq('id', match.job_id);
     }
 
-    return new Response(JSON.stringify(matches), {
+    return new Response(JSON.stringify({ data: matches }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
