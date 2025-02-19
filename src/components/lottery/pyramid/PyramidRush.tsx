@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -7,12 +8,14 @@ import { PyramidHeader } from "./components/PyramidHeader";
 import { LevelInfo } from "./components/LevelInfo";
 import { PyramidActions } from "./components/PyramidActions";
 import { PaymentProps } from "@/types/payment";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function PyramidRush({ onPaymentRequested }: PaymentProps) {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [currentGains, setCurrentGains] = useState(0);
   const [isRushHour, setIsRushHour] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const checkRushHour = () => {
@@ -71,7 +74,7 @@ export function PyramidRush({ onPaymentRequested }: PaymentProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PyramidHeader
         currentLevel={currentLevel}
         currentGains={currentGains}
@@ -81,14 +84,14 @@ export function PyramidRush({ onPaymentRequested }: PaymentProps) {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="grid grid-cols-5 gap-4"
+        className={`grid ${isMobile ? 'grid-cols-4 gap-2' : 'grid-cols-5 gap-4'}`}
       >
         {Array.from({ length: levels[currentLevel].maxNumbers }, (_, i) => i + 1).map((number) => (
           <Button
             key={number}
             variant={selectedNumbers.includes(number) ? "default" : "outline"}
             onClick={() => handleNumberSelect(number)}
-            className="h-12 w-12 p-0 font-semibold"
+            className={`${isMobile ? 'h-10 w-10 p-0 text-sm' : 'h-12 w-12 p-0'} font-semibold`}
           >
             {number}
           </Button>
@@ -99,6 +102,7 @@ export function PyramidRush({ onPaymentRequested }: PaymentProps) {
         onSecureGains={handleSecureGains}
         onPlay={handlePlay}
         isPlayDisabled={selectedNumbers.length !== levels[currentLevel].maxSelections}
+        isMobile={isMobile}
       />
 
       <LevelInfo currentLevel={currentLevel} />
