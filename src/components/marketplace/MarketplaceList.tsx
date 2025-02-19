@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -60,7 +59,6 @@ export function MarketplaceList({
     try {
       setLoading(true);
       
-      // Calculate range
       const from = (page - 1) * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
@@ -78,16 +76,14 @@ export function MarketplaceList({
           created_at,
           updated_at,
           images,
-          seller:profiles!marketplace_listings_seller_id_fkey (
+          seller:profiles (
             full_name,
-            avatar_url,
-            rating
+            avatar_url
           )
         `, { count: 'exact' })
         .eq('status', 'active')
         .range(from, to);
 
-      // Apply filters
       if (type !== "all") {
         query = query.eq('type', type);
       }
@@ -100,17 +96,12 @@ export function MarketplaceList({
         query = query.ilike('location', `%${filters.location}%`);
       }
 
-      if (filters.rating) {
-        query = query.gte('seller.rating', filters.rating);
-      }
-
       if (filters.priceRange) {
         query = query
           .gte('price', filters.priceRange[0])
           .lte('price', filters.priceRange[1]);
       }
 
-      // Apply sorting
       const { sortBy, sortOrder } = filters;
       switch (sortBy) {
         case 'date':
@@ -118,9 +109,6 @@ export function MarketplaceList({
           break;
         case 'price':
           query = query.order('price', { ascending: sortOrder === 'asc' });
-          break;
-        case 'rating':
-          query = query.order('seller(rating)', { ascending: sortOrder === 'asc' });
           break;
         case 'views':
           query = query.order('views', { ascending: sortOrder === 'asc' });
@@ -147,14 +135,13 @@ export function MarketplaceList({
           seller: {
             full_name: item.seller?.full_name || null,
             avatar_url: item.seller?.avatar_url || null,
-            rating: item.seller?.rating
+            rating: 0
           }
         }));
 
         setListings(formattedData);
         setTotalPages(Math.ceil((count || 0) / ITEMS_PER_PAGE));
 
-        // Simuler des vues aléatoires pour la démo
         const randomViews: Record<string, number> = {};
         formattedData.forEach(listing => {
           randomViews[listing.id] = Math.floor(Math.random() * 100) + 20;
@@ -176,7 +163,6 @@ export function MarketplaceList({
         ? prev.filter(id => id !== listingId)
         : [...prev, listingId];
       
-      // Afficher un toast de confirmation
       toast.success(
         prev.includes(listingId) 
           ? "Retiré des favoris" 
