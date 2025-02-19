@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { usePaymentHandler } from "@/hooks/usePaymentHandler";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 export function LotteryPage() {
   const { handlePayment, loading } = usePaymentHandler();
@@ -37,10 +37,16 @@ export function LotteryPage() {
         className="space-y-4 sm:space-y-6"
       >
         <div className="text-center space-y-4">
-          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+          <h1 className={cn(
+            "font-bold tracking-tight bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent",
+            isMobile ? "text-xl" : "text-2xl sm:text-4xl"
+          )}>
             Espace Jeux Imperium
           </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground">
+          <p className={cn(
+            "text-muted-foreground",
+            isMobile ? "text-sm" : "text-lg sm:text-xl"
+          )}>
             Découvrez nos jeux exceptionnels
           </p>
           
@@ -199,4 +205,3 @@ export function LotteryPage() {
     </div>
   );
 }
-
