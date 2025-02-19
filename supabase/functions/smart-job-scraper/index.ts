@@ -1,81 +1,24 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface SearchJob {
-  title: string;
-  company: string;
-  location: string;
-  description: string;
-  url: string;
-  salary?: string;
-  source: string;
-  posted_at: string;
-  job_type?: string;
-  requirements?: string[];
-  benefits?: string[];
-}
+// Your deployment's URL provided by Supabase
+const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const openrouterApiKey = Deno.env.get('OPENROUTER_API_KEY')!;
 
-async function scrapeIndeed(query: string): Promise<SearchJob[]> {
-  const url = `https://ca.indeed.com/jobs?q=${encodeURIComponent(query)}&l=Quebec&sort=date`;
-  const response = await fetch(url);
-  const html = await response.text();
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  // Extraire les emplois avec regex
-  const jobs: SearchJob[] = [];
-  const jobBlocks = html.match(/<div class="job_seen_beacon">(.*?)<\/div>/gs) || [];
-
-  jobBlocks.forEach(block => {
-    const title = block.match(/title="(.*?)"/)?.[1] || '';
-    const company = block.match(/companyName">(.*?)<\/span>/)?.[1] || '';
-    const location = block.match(/companyLocation">(.*?)<\/div>/)?.[1] || '';
-    const url = 'https://ca.indeed.com' + (block.match(/href="(.*?)"/)?.[1] || '');
-    
-    jobs.push({
-      title,
-      company,
-      location,
-      description: '',
-      url,
-      source: 'indeed',
-      posted_at: new Date().toISOString()
-    });
-  });
-
-  return jobs;
-}
-
-async function scrapeLinkedIn(): Promise<SearchJob[]> {
-  const url = 'https://www.linkedin.com/jobs/search?keywords=&location=Quebec&geoId=105927923&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0';
-  const response = await fetch(url);
-  const html = await response.text();
-  
-  const jobs: SearchJob[] = [];
-  const jobCards = html.match(/<div class="base-card relative.*?<\/div>/gs) || [];
-
-  jobCards.forEach(card => {
-    const title = card.match(/job-title">(.*?)<\/h3>/)?.[1] || '';
-    const company = card.match(/base-search-card__subtitle">(.*?)<\/h4>/)?.[1] || '';
-    const location = card.match(/job-search-card__location">(.*?)<\/span>/)?.[1] || '';
-    const url = card.match(/href="(.*?)"/)?.[1] || '';
-
-    jobs.push({
-      title,
-      company,
-      location,
-      description: '',
-      url,
-      source: 'linkedin',
-      posted_at: new Date().toISOString()
-    });
-  });
-
-  return jobs;
+interface JobMatch {
+  job_id: string;
+  score: number;
+  reasons: string[];
 }
 
 serve(async (req) => {
@@ -84,93 +27,110 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const { user_id } = await req.json();
+    console.log('Analyzing jobs for user:', user_id);
 
-    // Récupérer les jobs de différentes sources
-    const queries = [
-      "développeur",
-      "software engineer",
-      "web developer",
-      "programmeur",
-      "full stack",
-      "frontend",
-      "backend",
-      "devops"
-    ];
+    // 1. Récupérer le profil de l'utilisateur
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user_id)
+      .single();
 
-    let allJobs: SearchJob[] = [];
+    if (profileError) throw profileError;
 
-    // Paralléliser les requêtes pour plus de rapidité
-    await Promise.all([
-      ...queries.map(q => scrapeIndeed(q)),
-      scrapeLinkedIn()
-    ]).then(results => {
-      results.forEach(jobs => {
-        allJobs = [...allJobs, ...jobs];
-      });
-    });
-
-    console.log(`Found ${allJobs.length} total jobs`);
-
-    // Dédupliquer les emplois par URL
-    const uniqueJobs = Array.from(new Map(allJobs.map(job => [job.url, job])).values());
-
-    // Sauvegarder dans Supabase avec plus d'informations
-    for (const job of uniqueJobs) {
-      const { error } = await supabase
-        .from('scraped_jobs')
-        .upsert(
-          {
-            title: job.title,
-            company: job.company,
-            location: job.location,
-            description: job.description,
-            url: job.url,
-            source_platform: job.source,
-            posted_at: job.posted_at,
-            job_type: job.job_type || 'full-time',
-            requirements: job.requirements || [],
-            benefits: job.benefits || [],
-            is_remote: job.location.toLowerCase().includes('remote') || job.location.toLowerCase().includes('télétravail'),
-            relevance_score: 1
-          },
-          { onConflict: 'url' }
-        );
-
-      if (error) {
-        console.error('Error saving job:', error);
-      }
-    }
-
-    // Nettoyer les vieux jobs
-    const { error: cleanupError } = await supabase
+    // 2. Récupérer les emplois récents
+    const { data: jobs, error: jobsError } = await supabase
       .from('scraped_jobs')
-      .delete()
-      .lt('posted_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
+      .select('*')
+      .order('posted_at', { ascending: false })
+      .limit(50);
 
-    if (cleanupError) {
-      console.error('Error cleaning up old jobs:', cleanupError);
+    if (jobsError) throw jobsError;
+
+    console.log(`Analyzing ${jobs.length} jobs for profile match`);
+
+    // 3. Utiliser Gemini pour analyser la correspondance
+    const matches: JobMatch[] = await analyzeJobsWithGemini(profile, jobs);
+
+    // 4. Mettre à jour les scores de correspondance dans la base de données
+    for (const match of matches) {
+      await supabase
+        .from('scraped_jobs')
+        .update({ match_score: match.score })
+        .eq('id', match.job_id);
     }
 
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: `Successfully scraped and saved ${uniqueJobs.length} unique jobs`
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify(matches), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
 
   } catch (error) {
     console.error('Error in smart-job-scraper:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });
+
+async function analyzeJobsWithGemini(profile: any, jobs: any[]): Promise<JobMatch[]> {
+  const systemPrompt = `En tant qu'expert en recrutement, analysez la compatibilité entre le profil du candidat et les offres d'emploi. 
+  Basez votre analyse sur :
+  - Les compétences techniques requises vs acquises
+  - L'expérience professionnelle
+  - La localisation
+  - Le type de contrat
+  - Le niveau d'expérience
+  
+  Pour chaque offre, retournez :
+  - Un score de compatibilité de 0 à 100
+  - Les raisons principales de la compatibilité ou incompatibilité`;
+
+  const messages = [{
+    role: "user",
+    content: `Profil du candidat : ${JSON.stringify(profile, null, 2)}
+    
+    Offres d'emploi à analyser : ${JSON.stringify(jobs, null, 2)}
+    
+    Analysez la compatibilité et retournez un tableau JSON avec les scores et raisons pour chaque offre.`
+  }];
+
+  try {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${openrouterApiKey}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": supabaseUrl,
+        "X-Title": "Job Matching Analysis"
+      },
+      body: JSON.stringify({
+        model: "google/gemini-pro",
+        messages: messages,
+        temperature: 0.7,
+        max_tokens: 1500
+      })
+    });
+
+    const data = await response.json();
+    console.log('Gemini response:', data);
+
+    if (!data.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response from Gemini');
+    }
+
+    // Parser la réponse en JSON
+    const analysisResult = JSON.parse(data.choices[0].message.content);
+    
+    return jobs.map((job: any, index: number) => ({
+      job_id: job.id,
+      score: analysisResult[index].score,
+      reasons: analysisResult[index].reasons
+    }));
+
+  } catch (error) {
+    console.error('Error in Gemini analysis:', error);
+    throw error;
+  }
+}
