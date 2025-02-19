@@ -36,9 +36,9 @@ export function JobsPage() {
       <div className="space-y-6">
         {/* Header Section */}
         <div className="flex flex-col space-y-4">
-          <div className="flex items-center space-x-3">
-            <Briefcase className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold tracking-tight">Offres d'emploi</h1>
+          <div className="flex items-center justify-start gap-3">
+            <Briefcase className="h-8 w-8 text-primary shrink-0" />
+            <h1 className="text-3xl font-bold tracking-tight truncate">Offres d'emploi</h1>
           </div>
           <p className="text-muted-foreground text-lg">
             Trouvez votre prochain emploi parmi nos offres sélectionnées
