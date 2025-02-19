@@ -35,67 +35,103 @@ export const useJobsData = () => {
 
         // Formatter les emplois internes
         const formattedInternalJobs: Job[] = (jobs || []).map(job => {
-          const parsedInterviewProcess = typeof job.interview_process === 'string' 
-            ? JSON.parse(job.interview_process)
-            : (Array.isArray(job.interview_process) ? job.interview_process : []);
+          try {
+            let interviewProcess = [];
+            let applicationSteps = [];
 
-          const parsedApplicationSteps = typeof job.application_steps === 'string'
-            ? JSON.parse(job.application_steps)
-            : (Array.isArray(job.application_steps) ? job.application_steps : []);
+            // Gestion sécurisée de interview_process
+            if (job.interview_process) {
+              if (typeof job.interview_process === 'string') {
+                interviewProcess = JSON.parse(job.interview_process);
+              } else if (Array.isArray(job.interview_process)) {
+                interviewProcess = job.interview_process;
+              }
+            }
 
-          return {
-            id: job.id,
-            title: job.title,
-            description: job.description || '',
-            budget: job.budget || 0,
-            location: job.location || '',
-            employer_id: job.employer_id || '',
-            status: 'open',
-            category: job.category || 'Technology',
-            contract_type: job.contract_type || 'FULL_TIME',
-            experience_level: job.experience_level || 'mid-level',
-            created_at: job.created_at,
-            source: "internal",
-            company: job.employer?.company_name || "Entreprise non spécifiée",
-            url: `/jobs/${job.id}`,
-            mission_type: 'company',
-            salary_min: job.salary_min || undefined,
-            salary_max: job.salary_max || undefined,
-            interview_process: parsedInterviewProcess,
-            application_steps: parsedApplicationSteps
-          };
-        });
+            // Gestion sécurisée de application_steps
+            if (job.application_steps) {
+              if (typeof job.application_steps === 'string') {
+                applicationSteps = JSON.parse(job.application_steps);
+              } else if (Array.isArray(job.application_steps)) {
+                applicationSteps = job.application_steps;
+              }
+            }
+
+            return {
+              id: job.id,
+              title: job.title,
+              description: job.description || '',
+              budget: job.budget || 0,
+              location: job.location || '',
+              employer_id: job.employer_id || '',
+              status: 'open',
+              category: job.category || 'Technology',
+              contract_type: job.contract_type || 'FULL_TIME',
+              experience_level: job.experience_level || 'mid-level',
+              created_at: job.created_at,
+              source: "internal",
+              company: job.employer?.company_name || "Entreprise non spécifiée",
+              url: `/jobs/${job.id}`,
+              mission_type: 'company',
+              salary_min: job.salary_min || undefined,
+              salary_max: job.salary_max || undefined,
+              interview_process: interviewProcess,
+              application_steps: applicationSteps
+            };
+          } catch (error) {
+            console.error('Erreur lors du formatage du job interne:', error);
+            return null;
+          }
+        }).filter(Boolean) as Job[];
 
         // Formatter les emplois scrapés
-        const formattedScrapedJobs: Job[] = (scrapedJobs || []).map(job => ({
-          id: job.id,
-          title: job.title,
-          description: job.description || '',
-          budget: 0,
-          location: job.location || '',
-          employer_id: '',
-          status: 'open',
-          category: 'Technology',
-          contract_type: job.employment_type || 'FULL_TIME',
-          experience_level: job.experience_level || 'mid-level',
-          created_at: job.posted_at,
-          source: "external",
-          company: job.company,
-          url: job.url,
-          mission_type: 'company',
-          salary: job.salary_range,
-          skills: job.skills || [],
-          interview_process: [],
-          application_steps: [],
-          salary_min: job.salary_range ? parseFloat(job.salary_range.split('-')[0]) || undefined : undefined,
-          salary_max: job.salary_range ? parseFloat(job.salary_range.split('-')[1]) || undefined : undefined
-        }));
+        const formattedScrapedJobs: Job[] = (scrapedJobs || []).map(job => {
+          try {
+            let salary_min, salary_max;
+            
+            if (job.salary_range) {
+              const [min, max] = job.salary_range.split('-').map(s => parseFloat(s.trim()));
+              salary_min = !isNaN(min) ? min : undefined;
+              salary_max = !isNaN(max) ? max : undefined;
+            }
+
+            return {
+              id: job.id,
+              title: job.title,
+              description: job.description || '',
+              budget: 0,
+              location: job.location || '',
+              employer_id: '',
+              status: 'open',
+              category: 'Technology',
+              contract_type: job.employment_type || 'FULL_TIME',
+              experience_level: job.experience_level || 'mid-level',
+              created_at: job.posted_at,
+              source: "external",
+              company: job.company || "Entreprise externe",
+              url: job.url,
+              mission_type: 'company',
+              salary: job.salary_range,
+              skills: Array.isArray(job.skills) ? job.skills : [],
+              interview_process: [],
+              application_steps: [],
+              salary_min,
+              salary_max
+            };
+          } catch (error) {
+            console.error('Erreur lors du formatage du job scrapé:', error);
+            return null;
+          }
+        }).filter(Boolean) as Job[];
 
         // Combiner et retourner tous les emplois
         const allJobs = [...formattedInternalJobs, ...formattedScrapedJobs];
-        console.log("Nombre total d'emplois:", allJobs.length);
-        console.log("Emplois internes:", formattedInternalJobs.length);
-        console.log("Emplois scrapés:", formattedScrapedJobs.length);
+        
+        console.log({
+          totalJobs: allJobs.length,
+          internalJobs: formattedInternalJobs.length,
+          scrapedJobs: formattedScrapedJobs.length,
+        });
 
         return allJobs;
       } catch (error) {
@@ -105,6 +141,8 @@ export const useJobsData = () => {
       }
     },
     refetchInterval: 300000, // Rafraîchir toutes les 5 minutes
-    staleTime: 60000 // Considérer les données comme périmées après 1 minute
+    staleTime: 60000, // Considérer les données comme périmées après 1 minute
+    retry: 3, // Réessayer 3 fois en cas d'échec
+    retryDelay: 1000, // Attendre 1 seconde entre chaque tentative
   });
 };
