@@ -12,7 +12,8 @@ import {
   DollarSign,
   Loader2,
   Eye,
-  Star
+  Star,
+  Image
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { MarketplaceListing } from "@/types/marketplace";
@@ -64,11 +65,14 @@ export function MarketplaceList({ type, searchQuery }: MarketplaceListProps) {
       const { data, error } = await query;
 
       if (error) throw error;
-      setListings(data);
+      
+      // Type assertion to ensure data matches MarketplaceListing[]
+      const typedData = data as unknown as MarketplaceListing[];
+      setListings(typedData);
 
       // Simuler des vues aléatoires pour la démo
       const randomViews: Record<string, number> = {};
-      data.forEach(listing => {
+      typedData.forEach(listing => {
         randomViews[listing.id] = Math.floor(Math.random() * 100) + 20;
       });
       setViews(randomViews);
@@ -170,7 +174,7 @@ export function MarketplaceList({ type, searchQuery }: MarketplaceListProps) {
       if (navigator.share) {
         await navigator.share({
           title: listing.title,
-          text: listing.description,
+          text: listing.description || '',
           url: window.location.href
         });
       } else {
@@ -198,7 +202,7 @@ export function MarketplaceList({ type, searchQuery }: MarketplaceListProps) {
               />
             ) : (
               <div className="w-full h-full bg-muted flex items-center justify-center">
-                <ImageIcon className="h-12 w-12 text-muted-foreground/50" />
+                <Image className="h-12 w-12 text-muted-foreground/50" />
               </div>
             )}
             <div className="absolute top-2 right-2 flex gap-2">
@@ -252,7 +256,7 @@ export function MarketplaceList({ type, searchQuery }: MarketplaceListProps) {
                 <Eye className="h-4 w-4" />
                 <span>{views[listing.id] || 0} vues</span>
               </div>
-              {listing.seller?.rating && (
+              {listing.seller?.rating != null && (
                 <div className="flex items-center gap-1">
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   <span>{listing.seller.rating.toFixed(1)}</span>
