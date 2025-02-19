@@ -82,8 +82,7 @@ export function MarketplaceList({
             full_name,
             avatar_url,
             rating
-          ),
-          count
+          )
         `, { count: 'exact' })
         .eq('status', 'active')
         .range(from, to);
@@ -133,12 +132,31 @@ export function MarketplaceList({
       if (error) throw error;
       
       if (data) {
-        setListings(data as MarketplaceListing[]);
+        const formattedData: MarketplaceListing[] = data.map(item => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          price: item.price,
+          currency: item.currency,
+          type: item.type,
+          status: item.status,
+          seller_id: item.seller_id,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+          images: item.images,
+          seller: {
+            full_name: item.seller?.full_name || null,
+            avatar_url: item.seller?.avatar_url || null,
+            rating: item.seller?.rating
+          }
+        }));
+
+        setListings(formattedData);
         setTotalPages(Math.ceil((count || 0) / ITEMS_PER_PAGE));
 
         // Simuler des vues aléatoires pour la démo
         const randomViews: Record<string, number> = {};
-        data.forEach(listing => {
+        formattedData.forEach(listing => {
           randomViews[listing.id] = Math.floor(Math.random() * 100) + 20;
         });
         setViews(randomViews);
