@@ -1,6 +1,5 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
 
 const corsHeaders = {
@@ -8,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Your deployment's URL provided by Supabase
+// Votre URL et clé de service Supabase
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const openrouterApiKey = Deno.env.get('OPENROUTER_API_KEY')!;
@@ -48,10 +47,20 @@ serve(async (req) => {
 
     if (jobsError) throw jobsError;
 
-    console.log(`Analyzing ${jobs.length} jobs for profile match`);
+    console.log(`Analyzing ${jobs?.length || 0} jobs for profile match`);
 
-    // 3. Utiliser Gemini pour analyser la correspondance
-    const matches: JobMatch[] = await analyzeJobsWithGemini(profile, jobs);
+    // Initialiser le tableau de correspondances
+    const matches: JobMatch[] = [];
+
+    // Analyser chaque emploi
+    for (const job of jobs || []) {
+      const score = calculateJobScore(job, profile);
+      matches.push({
+        job_id: job.id,
+        score,
+        reasons: generateMatchReasons(job, profile, score)
+      });
+    }
 
     // 4. Mettre à jour les scores de correspondance dans la base de données
     for (const match of matches) {
@@ -74,63 +83,56 @@ serve(async (req) => {
   }
 });
 
-async function analyzeJobsWithGemini(profile: any, jobs: any[]): Promise<JobMatch[]> {
-  const systemPrompt = `En tant qu'expert en recrutement, analysez la compatibilité entre le profil du candidat et les offres d'emploi. 
-  Basez votre analyse sur :
-  - Les compétences techniques requises vs acquises
-  - L'expérience professionnelle
-  - La localisation
-  - Le type de contrat
-  - Le niveau d'expérience
-  
-  Pour chaque offre, retournez :
-  - Un score de compatibilité de 0 à 100
-  - Les raisons principales de la compatibilité ou incompatibilité`;
+function calculateJobScore(job: any, profile: any): number {
+  let score = 0;
 
-  const messages = [{
-    role: "user",
-    content: `Profil du candidat : ${JSON.stringify(profile, null, 2)}
-    
-    Offres d'emploi à analyser : ${JSON.stringify(jobs, null, 2)}
-    
-    Analysez la compatibilité et retournez un tableau JSON avec les scores et raisons pour chaque offre.`
-  }];
-
-  try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${openrouterApiKey}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": supabaseUrl,
-        "X-Title": "Job Matching Analysis"
-      },
-      body: JSON.stringify({
-        model: "google/gemini-pro",
-        messages: messages,
-        temperature: 0.7,
-        max_tokens: 1500
-      })
-    });
-
-    const data = await response.json();
-    console.log('Gemini response:', data);
-
-    if (!data.choices?.[0]?.message?.content) {
-      throw new Error('Invalid response from Gemini');
-    }
-
-    // Parser la réponse en JSON
-    const analysisResult = JSON.parse(data.choices[0].message.content);
-    
-    return jobs.map((job: any, index: number) => ({
-      job_id: job.id,
-      score: analysisResult[index].score,
-      reasons: analysisResult[index].reasons
-    }));
-
-  } catch (error) {
-    console.error('Error in Gemini analysis:', error);
-    throw error;
+  // Vérifier les compétences
+  if (profile.skills && job.skills) {
+    const profileSkills = profile.skills.map((s: string) => s.toLowerCase());
+    const jobSkills = job.skills.map((s: string) => s.toLowerCase());
+    const matchingSkills = profileSkills.filter((skill: string) => jobSkills.includes(skill));
+    score += (matchingSkills.length / jobSkills.length) * 50;
   }
+
+  // Vérifier la localisation
+  if (profile.city && job.location) {
+    if (job.location.toLowerCase().includes(profile.city.toLowerCase())) {
+      score += 25;
+    }
+  }
+
+  // Vérifier le type de contrat
+  if (profile.preferred_work_type && job.contract_type) {
+    if (job.contract_type.toLowerCase() === profile.preferred_work_type.toLowerCase()) {
+      score += 25;
+    }
+  }
+
+  return Math.min(100, score);
+}
+
+function generateMatchReasons(job: any, profile: any, score: number): string[] {
+  const reasons: string[] = [];
+
+  if (score >= 75) {
+    reasons.push("Excellente correspondance avec votre profil");
+  } else if (score >= 50) {
+    reasons.push("Bonne correspondance avec vos compétences");
+  } else {
+    reasons.push("Quelques compétences correspondent à votre profil");
+  }
+
+  if (profile.city && job.location) {
+    if (job.location.toLowerCase().includes(profile.city.toLowerCase())) {
+      reasons.push("Localisation correspondant à vos préférences");
+    }
+  }
+
+  if (profile.preferred_work_type && job.contract_type) {
+    if (job.contract_type.toLowerCase() === profile.preferred_work_type.toLowerCase()) {
+      reasons.push("Type de contrat correspondant à vos préférences");
+    }
+  }
+
+  return reasons;
 }
