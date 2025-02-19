@@ -6,7 +6,7 @@ import { useJobsData } from "@/hooks/useJobsData";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Briefcase, Filter } from "lucide-react";
 
 export function JobsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,37 +32,77 @@ export function JobsPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <Card className="p-4">
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1">
-            <Input
-              type="text"
-              placeholder="Rechercher un emploi..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+    <div className="container mx-auto p-4 max-w-7xl">
+      <div className="space-y-6">
+        {/* Header Section */}
+        <div className="flex flex-col space-y-4">
+          <div className="flex items-center space-x-3">
+            <Briefcase className="h-8 w-8 text-primary" />
+            <h1 className="text-3xl font-bold tracking-tight">Offres d'emploi</h1>
           </div>
-          <Button variant="outline">Filtres</Button>
-        </div>
-      </Card>
-
-      {filteredJobs.length === 0 ? (
-        <Card className="p-8 text-center">
-          <h3 className="text-xl font-semibold mb-2">Aucun emploi trouvé</h3>
-          <p className="text-muted-foreground">
-            Essayez de modifier vos critères de recherche
+          <p className="text-muted-foreground text-lg">
+            Trouvez votre prochain emploi parmi nos offres sélectionnées
           </p>
+        </div>
+
+        {/* Search Section */}
+        <Card className="p-6 shadow-lg border-primary/10 bg-card/50 backdrop-blur-sm">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Input
+                type="text"
+                placeholder="Rechercher par titre, entreprise ou mot-clé..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-12 text-base bg-background/50 border-primary/20"
+              />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            </div>
+            <Button variant="outline" size="lg" className="gap-2 h-12 border-primary/20 hover:border-primary">
+              <Filter className="h-5 w-5" />
+              Filtres avancés
+            </Button>
+          </div>
         </Card>
-      ) : (
-        <JobList 
-          jobs={filteredJobs} 
-          onJobSelect={handleJobSelect}
-          selectedJobId={selectedJobId}
-        />
-      )}
+
+        {/* Results Section */}
+        <div className="min-h-[60vh]">
+          {filteredJobs.length === 0 ? (
+            <Card className="p-12 text-center border-primary/10 bg-card/50 backdrop-blur-sm">
+              <div className="max-w-md mx-auto space-y-4">
+                <Briefcase className="h-12 w-12 mx-auto text-muted-foreground" />
+                <h3 className="text-2xl font-semibold">Aucun emploi trouvé</h3>
+                <p className="text-muted-foreground text-lg">
+                  Essayez de modifier vos critères de recherche ou revenez plus tard pour voir de nouvelles offres
+                </p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSearchQuery("")}
+                  className="mt-4"
+                >
+                  Réinitialiser la recherche
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <div className="grid gap-6">
+              <div className="flex justify-between items-center">
+                <p className="text-muted-foreground">
+                  {filteredJobs.length} offre{filteredJobs.length > 1 ? 's' : ''} trouvée{filteredJobs.length > 1 ? 's' : ''}
+                </p>
+                <Button variant="ghost" className="text-primary">
+                  Trier par date
+                </Button>
+              </div>
+              <JobList 
+                jobs={filteredJobs} 
+                onJobSelect={handleJobSelect}
+                selectedJobId={selectedJobId}
+              />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
