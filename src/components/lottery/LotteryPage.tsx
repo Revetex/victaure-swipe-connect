@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,83 +9,12 @@ import { ChessPage } from "../tools/ChessPage";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { usePaymentHandler } from "@/hooks/usePaymentHandler";
-import { toast } from "@/hooks/use-toast";
-
-interface GameLegalInfo {
-  id: string;
-  title: string;
-  content: string[];
-  warning?: string;
-  compliance?: string[];
-}
-
-const gamesLegalInfo: Record<string, GameLegalInfo> = {
-  chess: {
-    id: "chess",
-    title: "Règlement des Échecs",
-    content: [
-      "1. Les règles officielles de la FIDE s'appliquent",
-      "2. Le temps de réflexion est limité à 30 secondes par coup",
-      "3. L'abandon est possible à tout moment",
-      "4. Le pat et l'échec et mat sont automatiquement détectés",
-      "5. Les parties ne sont pas sauvegardées"
-    ]
-  },
-  pyramid: {
-    id: "pyramid",
-    title: "Règlement Pyramid Rush",
-    content: [
-      "1. Mise minimale: 5 CAD$",
-      "2. Limite quotidienne: 100 CAD$",
-      "3. Les gains sont versés immédiatement",
-      "4. Le taux de retour théorique est de 95%",
-      "5. Les résultats sont définitifs"
-    ],
-    warning: "Ce jeu implique de l'argent réel. Jouez de manière responsable.",
-    compliance: [
-      "Conforme aux règlements de Loto-Québec",
-      "Licence #LQ-2023-PR",
-      "Vérifié par la Régie des alcools, des courses et des jeux du Québec"
-    ]
-  },
-  zodiac: {
-    id: "zodiac",
-    title: "Règlement Zodiac Fortune",
-    content: [
-      "1. Mise minimale: 2 CAD$",
-      "2. Limite quotidienne: 200 CAD$",
-      "3. Les gains sont cumulables",
-      "4. Le taux de retour théorique est de 92%",
-      "5. Les résultats sont générés aléatoirement"
-    ],
-    warning: "Ce jeu implique de l'argent réel. Jouez de manière responsable.",
-    compliance: [
-      "Conforme aux règlements de Loto-Québec",
-      "Licence #LQ-2023-ZF",
-      "Vérifié par la Régie des alcools, des courses et des jeux du Québec"
-    ]
-  },
-  sphere: {
-    id: "sphere",
-    title: "Règlement LotoSphere",
-    content: [
-      "1. Mise minimale: 3 CAD$",
-      "2. Limite quotidienne: 150 CAD$",
-      "3. Les gains sont versés sous 24h",
-      "4. Le taux de retour théorique est de 94%",
-      "5. Tirage toutes les 5 minutes"
-    ],
-    warning: "Ce jeu implique de l'argent réel. Jouez de manière responsable.",
-    compliance: [
-      "Conforme aux règlements de Loto-Québec",
-      "Licence #LQ-2023-LS",
-      "Vérifié par la Régie des alcools, des courses et des jeux du Québec"
-    ]
-  }
-};
+import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function LotteryPage() {
   const { handlePayment, loading } = usePaymentHandler();
+  const isMobile = useIsMobile();
 
   const handleGamePayment = async (amount: number, gameTitle: string) => {
     try {
@@ -106,24 +34,24 @@ export function LotteryPage() {
   };
 
   return (
-    <div className="container max-w-7xl mx-auto px-4 py-20">
+    <div className="container max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-20 min-h-[calc(100vh-4rem)]">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="space-y-6"
+        className="space-y-4 sm:space-y-6"
       >
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
             Espace Jeux Imperium
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-lg sm:text-xl text-muted-foreground">
             Découvrez nos jeux exceptionnels
           </p>
           
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="gap-2 text-sm">
                   <ScrollText className="h-4 w-4" />
                   Règlement
                 </Button>
@@ -163,12 +91,12 @@ export function LotteryPage() {
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="gap-2 text-sm">
                   <HelpCircle className="h-4 w-4" />
-                  Informations
+                  Infos
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="w-[95vw] max-w-2xl sm:w-full">
                 <DialogHeader>
                   <DialogTitle>Informations sur nos Jeux</DialogTitle>
                 </DialogHeader>
@@ -203,12 +131,12 @@ export function LotteryPage() {
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="gap-2 text-sm">
                   <AlertTriangle className="h-4 w-4" />
-                  Avertissement
+                  Alerte
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="w-[95vw] max-w-2xl sm:w-full">
                 <DialogHeader>
                   <DialogTitle>Jeu Responsable</DialogTitle>
                 </DialogHeader>
@@ -228,74 +156,48 @@ export function LotteryPage() {
         </div>
 
         <Tabs defaultValue="chess" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className={`grid w-full ${isMobile ? 'grid-cols-2 gap-2' : 'grid-cols-4'}`}>
             <TabsTrigger value="chess" className="space-x-2">
               <Sword className="h-4 w-4" />
-              <span>Échecs</span>
+              <span className="truncate">Échecs</span>
             </TabsTrigger>
             <TabsTrigger value="pyramid" className="space-x-2">
               <Trophy className="h-4 w-4" />
-              <span>Pyramid Rush</span>
+              <span className="truncate">Pyramid Rush</span>
             </TabsTrigger>
             <TabsTrigger value="zodiac" className="space-x-2">
               <Star className="h-4 w-4" />
-              <span>Zodiac Fortune</span>
+              <span className="truncate">Zodiac Fortune</span>
             </TabsTrigger>
             <TabsTrigger value="sphere" className="space-x-2">
               <Crown className="h-4 w-4" />
-              <span>LotoSphere</span>
+              <span className="truncate">LotoSphere</span>
             </TabsTrigger>
           </TabsList>
 
-          {Object.entries(gamesLegalInfo).map(([key, info]) => (
-            <TabsContent key={key} value={key} className="mt-6">
-              <Card className="p-6">
-                <div className="mb-6 space-y-4">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="gap-2">
-                        <ScrollText className="h-4 w-4" />
-                        Règlement {info.title}
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl">
-                      <DialogHeader>
-                        <DialogTitle>{info.title}</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <ul className="list-disc pl-4 space-y-2">
-                          {info.content.map((rule, index) => (
-                            <li key={index}>{rule}</li>
-                          ))}
-                        </ul>
-                        {info.warning && (
-                          <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-yellow-500">
-                            <AlertTriangle className="h-4 w-4 inline-block mr-2" />
-                            {info.warning}
-                          </div>
-                        )}
-                        {info.compliance && (
-                          <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg space-y-2">
-                            <h4 className="font-semibold text-blue-500">Conformité réglementaire :</h4>
-                            <ul className="list-disc pl-4 space-y-1 text-sm">
-                              {info.compliance.map((item, index) => (
-                                <li key={index}>{item}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                
-                {key === "chess" && <ChessPage />}
-                {key === "pyramid" && <PyramidRush onPaymentRequested={handleGamePayment} />}
-                {key === "zodiac" && <ZodiacFortune onPaymentRequested={handleGamePayment} />}
-                {key === "sphere" && <LotoSphere onPaymentRequested={handleGamePayment} />}
-              </Card>
-            </TabsContent>
-          ))}
+          <TabsContent value="chess" className="mt-4 sm:mt-6">
+            <Card className="p-2 sm:p-6">
+              <ChessPage />
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="pyramid" className="mt-4 sm:mt-6">
+            <Card className="p-2 sm:p-6">
+              <PyramidRush onPaymentRequested={handleGamePayment} />
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="zodiac" className="mt-4 sm:mt-6">
+            <Card className="p-2 sm:p-6">
+              <ZodiacFortune onPaymentRequested={handleGamePayment} />
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="sphere" className="mt-4 sm:mt-6">
+            <Card className="p-2 sm:p-6">
+              <LotoSphere onPaymentRequested={handleGamePayment} />
+            </Card>
+          </TabsContent>
         </Tabs>
       </motion.div>
     </div>
