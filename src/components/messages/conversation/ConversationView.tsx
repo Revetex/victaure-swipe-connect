@@ -48,7 +48,6 @@ export function ConversationView({
     const saveConversation = async () => {
       if (!profile || !receiver || messages.length === 0) return;
       
-      // Ne pas sauvegarder les conversations avec l'assistant
       if (receiver.id === 'assistant') return;
       
       try {
@@ -77,21 +76,25 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <ConversationHeader 
-        receiver={receiver}
-        onBack={onBack}
-        onDelete={onDeleteConversation}
-      />
+    <div className="flex flex-col h-screen max-h-screen overflow-hidden">
+      <div className="flex-none">
+        <ConversationHeader 
+          receiver={receiver}
+          onBack={onBack}
+          onDelete={onDeleteConversation}
+        />
+      </div>
 
-      <ConversationMessages
-        messages={messages}
-        isThinking={isThinking}
-        onReply={handleReply}
-        messagesEndRef={messagesEndRef}
-      />
+      <div className="flex-1 overflow-hidden">
+        <ConversationMessages
+          messages={messages}
+          isThinking={isThinking}
+          onReply={handleReply}
+          messagesEndRef={messagesEndRef}
+        />
+      </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur border-t z-50">
+      <div className="flex-none p-4 bg-background/95 backdrop-blur border-t">
         <div className="max-w-2xl mx-auto">
           <ChatInput
             value={inputMessage}

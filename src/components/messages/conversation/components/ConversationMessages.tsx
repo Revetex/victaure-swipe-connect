@@ -67,13 +67,13 @@ export function ConversationMessages({
   };
 
   return (
-    <div className="flex-1 mx-auto max-w-2xl relative">
+    <div className="relative h-full">
       <ScrollArea 
         ref={scrollAreaRef}
-        className="h-[calc(100vh-10rem)] px-4"
+        className="h-full"
         onScrollCapture={handleScroll}
       >
-        <div className="space-y-4 py-4">
+        <div className="px-4 py-4 space-y-4 max-w-2xl mx-auto">
           <AnimatePresence mode="popLayout">
             {messages.map((message) => (
               <motion.div
