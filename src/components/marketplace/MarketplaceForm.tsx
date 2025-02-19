@@ -1,39 +1,72 @@
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { MarketplaceService } from "@/types/marketplace";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { MarketplaceListing } from "@/types/marketplace";
+import { Loader2, Image as ImageIcon } from "lucide-react";
 
 export function MarketplaceForm() {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     price: "",
     type: "vente",
     currency: "CAD",
+    images: [] as string[],
   });
+
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setLoading(true);
 
     try {
+      // Upload images first
+      const uploadedImageUrls = await Promise.all(
+        imageFiles.map(async (file) => {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Math.random()}.${fileExt}`;
+          const filePath = `marketplace/${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('listings')
+            .upload(filePath, file);
+
+          if (uploadError) throw uploadError;
+
+          return filePath;
+        })
+      );
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
 
+      const listing: Partial<MarketplaceListing> = {
+        ...formData,
+        price: parseFloat(formData.price),
+        seller_id: user.id,
+        images: uploadedImageUrls,
+        status: 'active',
+      };
+
       const { error } = await supabase
-        .from('marketplace_items')
-        .insert({
-          ...formData,
-          price: parseFloat(formData.price),
-          seller_id: user.id,
-        });
+        .from('marketplace_listings')
+        .insert([listing]);
 
       if (error) throw error;
 
@@ -48,7 +81,9 @@ export function MarketplaceForm() {
         price: "",
         type: "vente",
         currency: "CAD",
+        images: [],
       });
+      setImageFiles([]);
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -57,12 +92,17 @@ export function MarketplaceForm() {
         description: "Impossible de publier l'annonce",
       });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setImageFiles(prev => [...prev, ...files]);
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="title">Titre</Label>
         <Input
@@ -80,38 +120,73 @@ export function MarketplaceForm() {
           value={formData.description}
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
           required
+          className="min-h-[100px]"
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="price">Prix</Label>
-        <Input
-          id="price"
-          type="number"
-          min="0"
-          step="0.01"
-          value={formData.price}
-          onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-          required
-        />
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="price">Prix</Label>
+          <Input
+            id="price"
+            type="number"
+            min="0"
+            step="0.01"
+            value={formData.price}
+            onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="type">Type d'annonce</Label>
+          <Select
+            value={formData.type}
+            onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Sélectionnez un type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="vente">Vente</SelectItem>
+              <SelectItem value="location">Location</SelectItem>
+              <SelectItem value="service">Service</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="type">Type d'annonce</Label>
-        <select
-          id="type"
-          className="w-full p-2 border rounded"
-          value={formData.type}
-          onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
-        >
-          <option value="vente">Vente</option>
-          <option value="location">Location</option>
-          <option value="service">Service</option>
-        </select>
+        <Label htmlFor="images">Images</Label>
+        <div className="flex items-center gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => document.getElementById('images')?.click()}
+            className="gap-2"
+          >
+            <ImageIcon className="h-4 w-4" />
+            Ajouter des images
+          </Button>
+          <input
+            id="images"
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={handleImageChange}
+          />
+          {imageFiles.length > 0 && (
+            <span className="text-sm text-muted-foreground">
+              {imageFiles.length} image(s) sélectionnée(s)
+            </span>
+          )}
+        </div>
       </div>
 
-      <Button type="submit" disabled={isLoading}>
-        {isLoading ? "Publication..." : "Publier l'annonce"}
+      <Button type="submit" disabled={loading} className="w-full">
+        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {loading ? "Publication en cours..." : "Publier l'annonce"}
       </Button>
     </form>
   );

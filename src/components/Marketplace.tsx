@@ -5,20 +5,25 @@ import { MarketplaceList } from "./marketplace/MarketplaceList";
 import { PaymentMethodForm } from "./marketplace/PaymentMethodForm";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "./ui/dialog";
-import { Calculator } from "lucide-react";
+import { Input } from "./ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Calculator, Search, PlusCircle, Filter, SlidersHorizontal } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function Marketplace() {
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [showListingForm, setShowListingForm] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const isMobile = useIsMobile();
 
   return (
-    <div className="container mx-auto px-4 py-8 mt-16">
-      <div className="flex justify-between items-center mb-8">
+    <div className="container mx-auto px-4 py-4 sm:py-8 mt-16">
+      <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center mb-6">
         <h1 className="text-2xl font-bold">Marketplace</h1>
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-3">
           <Dialog open={showPaymentForm} onOpenChange={setShowPaymentForm}>
             <DialogTrigger asChild>
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2" size={isMobile ? "sm" : "default"}>
                 <Calculator className="h-4 w-4" />
                 Mode de paiement
               </Button>
@@ -31,7 +36,8 @@ export function Marketplace() {
 
           <Dialog open={showListingForm} onOpenChange={setShowListingForm}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="gap-2" size={isMobile ? "sm" : "default"}>
+                <PlusCircle className="h-4 w-4" />
                 Publier une annonce
               </Button>
             </DialogTrigger>
@@ -42,7 +48,49 @@ export function Marketplace() {
         </div>
       </div>
 
-      <MarketplaceList />
+      <div className="mb-6 space-y-4">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher dans le marketplace..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Button variant="outline" className="gap-2" size={isMobile ? "sm" : "default"}>
+            <Filter className="h-4 w-4" />
+            Filtres
+          </Button>
+          <Button variant="outline" className="gap-2" size={isMobile ? "sm" : "default"}>
+            <SlidersHorizontal className="h-4 w-4" />
+            Trier
+          </Button>
+        </div>
+
+        <Tabs defaultValue="all" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 sm:w-auto sm:inline-flex">
+            <TabsTrigger value="all">Tout</TabsTrigger>
+            <TabsTrigger value="sale">Vente</TabsTrigger>
+            <TabsTrigger value="rent">Location</TabsTrigger>
+            <TabsTrigger value="services">Services</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="all">
+            <MarketplaceList type="all" searchQuery={searchQuery} />
+          </TabsContent>
+          <TabsContent value="sale">
+            <MarketplaceList type="vente" searchQuery={searchQuery} />
+          </TabsContent>
+          <TabsContent value="rent">
+            <MarketplaceList type="location" searchQuery={searchQuery} />
+          </TabsContent>
+          <TabsContent value="services">
+            <MarketplaceList type="service" searchQuery={searchQuery} />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }
