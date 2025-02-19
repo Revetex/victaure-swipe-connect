@@ -16,6 +16,8 @@ import {
 import { MarketplaceListing } from "@/types/marketplace";
 import { Loader2, Image as ImageIcon } from "lucide-react";
 
+type ListingType = "vente" | "location" | "service";
+
 export function MarketplaceForm() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -23,19 +25,21 @@ export function MarketplaceForm() {
     title: "",
     description: "",
     price: "",
-    type: "vente",
+    type: "vente" as ListingType,
     currency: "CAD",
     images: [] as string[],
   });
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [uploading, setUploading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Non authentifié");
+
       // Upload images first
       const uploadedImageUrls = await Promise.all(
         imageFiles.map(async (file) => {
@@ -53,20 +57,20 @@ export function MarketplaceForm() {
         })
       );
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Non authentifié");
-
-      const listing: Partial<MarketplaceListing> = {
-        ...formData,
+      const listingData = {
+        title: formData.title,
+        description: formData.description,
         price: parseFloat(formData.price),
+        type: formData.type,
+        currency: formData.currency,
         seller_id: user.id,
         images: uploadedImageUrls,
-        status: 'active',
+        status: 'active'
       };
 
       const { error } = await supabase
         .from('marketplace_listings')
-        .insert([listing]);
+        .insert([listingData]);
 
       if (error) throw error;
 
@@ -142,7 +146,7 @@ export function MarketplaceForm() {
           <Label htmlFor="type">Type d'annonce</Label>
           <Select
             value={formData.type}
-            onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
+            onValueChange={(value: ListingType) => setFormData(prev => ({ ...prev, type: value }))}
           >
             <SelectTrigger>
               <SelectValue placeholder="Sélectionnez un type" />
