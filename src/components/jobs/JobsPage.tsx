@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { JobList } from "./JobList";
 import { Job } from "@/types/job";
@@ -22,7 +21,7 @@ export function JobsPage() {
   const filteredJobs = jobs
     .filter(job => {
       const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.company?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         job.description?.toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesLocation = !selectedLocation || 
@@ -37,7 +36,9 @@ export function JobsPage() {
       if (sortOrder === "recent") {
         return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
       }
-      return (b.salary_max || 0) - (a.salary_max || 0);
+      const aMaxSalary = a.salary_max || a.salary_min || 0;
+      const bMaxSalary = b.salary_max || b.salary_min || 0;
+      return bMaxSalary - aMaxSalary;
     });
 
   const locations = Array.from(new Set(jobs.map(job => job.location))).sort();

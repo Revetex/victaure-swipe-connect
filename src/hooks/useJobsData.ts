@@ -33,28 +33,37 @@ export const useJobsData = () => {
 
         if (scrapedError) throw scrapedError;
 
-        const formattedJobs = [
+        const formattedJobs: Job[] = [
           ...(jobs || []).map(job => ({
             ...job,
             source: "internal" as const,
             company: job.employer?.company_name || "Entreprise non spécifiée",
-            url: `/jobs/${job.id}`
+            url: `/jobs/${job.id}`,
+            status: job.status as 'open' | 'closed' | 'in-progress',
+            mission_type: job.mission_type || 'company',
+            salary_min: typeof job.salary_min === 'number' ? job.salary_min : undefined,
+            salary_max: typeof job.salary_max === 'number' ? job.salary_max : undefined
           })),
           ...(scrapedJobs || []).map(job => ({
             id: job.id,
             title: job.title,
             company: job.company,
             location: job.location,
-            description: job.description,
+            description: job.description || '',
+            budget: 0,
+            employer_id: '',
+            status: 'open' as const,
+            category: 'Technology',
+            contract_type: job.employment_type || 'FULL_TIME',
+            experience_level: job.experience_level || 'mid-level',
             created_at: job.posted_at,
             source: "external" as const,
             url: job.url,
             salary: job.salary_range,
-            experience_level: job.experience_level,
             skills: job.skills || [],
-            contract_type: job.employment_type || "FULL_TIME",
-            mission_type: "company",
-            status: "open" as const
+            mission_type: 'company',
+            salary_min: typeof job.salary_min === 'number' ? job.salary_min : undefined,
+            salary_max: typeof job.salary_max === 'number' ? job.salary_max : undefined
           }))
         ];
 
