@@ -9,11 +9,19 @@ import { Input } from "./ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Calculator, Search, PlusCircle, Filter, SlidersHorizontal } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import type { MarketplaceFilters } from "@/types/marketplace";
 
 export function Marketplace() {
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [showListingForm, setShowListingForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState<MarketplaceFilters>({
+    priceRange: [0, 10000],
+    categories: [],
+    sortBy: 'date',
+    sortOrder: 'desc'
+  });
   const isMobile = useIsMobile();
 
   return (
@@ -78,16 +86,40 @@ export function Marketplace() {
           </TabsList>
 
           <TabsContent value="all">
-            <MarketplaceList type="all" searchQuery={searchQuery} />
+            <MarketplaceList 
+              type="all" 
+              searchQuery={searchQuery} 
+              filters={filters}
+              page={currentPage}
+              onPageChange={setCurrentPage}
+            />
           </TabsContent>
           <TabsContent value="sale">
-            <MarketplaceList type="vente" searchQuery={searchQuery} />
+            <MarketplaceList 
+              type="vente" 
+              searchQuery={searchQuery} 
+              filters={filters}
+              page={currentPage}
+              onPageChange={setCurrentPage}
+            />
           </TabsContent>
           <TabsContent value="rent">
-            <MarketplaceList type="location" searchQuery={searchQuery} />
+            <MarketplaceList 
+              type="location" 
+              searchQuery={searchQuery} 
+              filters={filters}
+              page={currentPage}
+              onPageChange={setCurrentPage}
+            />
           </TabsContent>
           <TabsContent value="services">
-            <MarketplaceList type="service" searchQuery={searchQuery} />
+            <MarketplaceList 
+              type="service" 
+              searchQuery={searchQuery} 
+              filters={filters}
+              page={currentPage}
+              onPageChange={setCurrentPage}
+            />
           </TabsContent>
         </Tabs>
       </div>

@@ -64,39 +64,49 @@ export function MarketplaceList({
       const from = (page - 1) * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
-      let query = supabase
+      const query = supabase
         .from('marketplace_listings')
         .select(`
-          *,
-          seller:seller_id (
+          id,
+          title,
+          description,
+          price,
+          currency,
+          type,
+          status,
+          seller_id,
+          created_at,
+          updated_at,
+          images,
+          seller:profiles!marketplace_listings_seller_id_fkey (
             full_name,
             avatar_url,
             rating
           ),
-          count:count(*)
+          count() over()
         `)
         .eq('status', 'active')
         .range(from, to);
 
       // Apply filters
       if (type !== "all") {
-        query = query.eq('type', type);
+        query.eq('type', type);
       }
 
       if (searchQuery) {
-        query = query.ilike('title', `%${searchQuery}%`);
+        query.ilike('title', `%${searchQuery}%`);
       }
 
       if (filters.location) {
-        query = query.ilike('location', `%${filters.location}%`);
+        query.ilike('location', `%${filters.location}%`);
       }
 
       if (filters.rating) {
-        query = query.gte('seller.rating', filters.rating);
+        query.gte('seller.rating', filters.rating);
       }
 
       if (filters.priceRange) {
-        query = query
+        query
           .gte('price', filters.priceRange[0])
           .lte('price', filters.priceRange[1]);
       }
@@ -105,16 +115,16 @@ export function MarketplaceList({
       const { sortBy, sortOrder } = filters;
       switch (sortBy) {
         case 'date':
-          query = query.order('created_at', { ascending: sortOrder === 'asc' });
+          query.order('created_at', { ascending: sortOrder === 'asc' });
           break;
         case 'price':
-          query = query.order('price', { ascending: sortOrder === 'asc' });
+          query.order('price', { ascending: sortOrder === 'asc' });
           break;
         case 'rating':
-          query = query.order('seller.rating', { ascending: sortOrder === 'asc' });
+          query.order('seller(rating)', { ascending: sortOrder === 'asc' });
           break;
         case 'views':
-          query = query.order('views', { ascending: sortOrder === 'asc' });
+          query.order('views', { ascending: sortOrder === 'asc' });
           break;
       }
 
@@ -122,7 +132,7 @@ export function MarketplaceList({
 
       if (error) throw error;
       
-      setListings(data);
+      setListings(data as MarketplaceListing[]);
       setTotalPages(Math.ceil((count || 0) / ITEMS_PER_PAGE));
 
       // Simuler des vues aléatoires pour la démo
