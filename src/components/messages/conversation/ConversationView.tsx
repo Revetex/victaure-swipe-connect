@@ -91,7 +91,7 @@ export function ConversationView({
         messagesEndRef={messagesEndRef}
       />
 
-      <footer className="flex-none p-4 bg-background border-t">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur border-t z-50">
         <div className="max-w-2xl mx-auto">
           <ChatInput
             value={inputMessage}
@@ -118,7 +118,7 @@ export function ConversationView({
             placeholder="Écrivez votre message..."
           />
         </div>
-      </footer>
+      </div>
     </div>
   );
 }

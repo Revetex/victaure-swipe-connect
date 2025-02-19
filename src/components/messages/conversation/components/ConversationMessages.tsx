@@ -67,7 +67,7 @@ export function ConversationMessages({
   };
 
   return (
-    <div className="relative flex-1 overflow-hidden bg-gradient-to-b from-background via-background/80 to-background/50">
+    <div className="relative flex-1 overflow-hidden bg-gradient-to-b from-background via-background/80 to-background/50 pt-28 pb-24">
       <ScrollArea 
         ref={scrollAreaRef}
         className="h-[calc(100vh-8rem)] backdrop-blur-sm"
@@ -120,7 +120,7 @@ export function ConversationMessages({
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            className="absolute bottom-6 right-6 z-10"
+            className="absolute bottom-28 right-6 z-10"
           >
             <Button
               size="icon"
