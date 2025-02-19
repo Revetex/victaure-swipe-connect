@@ -26,7 +26,10 @@ export function MarketplaceList() {
         .order('posted_at', { ascending: false });
 
       if (error) throw error;
-      setJobs(data || []);
+      
+      // Dédupliquer les offres en utilisant l'ID
+      const uniqueJobs = data ? Array.from(new Map(data.map(job => [job.id, job])).values()) : [];
+      setJobs(uniqueJobs);
     } catch (error) {
       console.error('Error fetching jobs:', error);
     } finally {
@@ -48,9 +51,9 @@ export function MarketplaceList() {
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-10rem)] w-full">
-      <div className="space-y-4 p-4">
-        <div className="flex justify-between items-center mb-4 sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 py-4">
+    <ScrollArea className="h-[calc(100vh-12rem)] w-full px-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-6 sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 py-4">
           <h2 className="text-2xl font-bold">Offres d'emploi</h2>
           <Button 
             onClick={handleAnalyzeJobs} 
@@ -62,25 +65,25 @@ export function MarketplaceList() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {jobs.map((job) => (
-            <Card key={job.id} className="p-4 space-y-4 hover:shadow-lg transition-shadow">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold line-clamp-2">{job.title}</h3>
-                  <p className="text-sm text-gray-500">{job.company}</p>
+            <Card key={job.id} className="flex flex-col p-6 hover:shadow-lg transition-shadow">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-semibold line-clamp-2 mb-1">{job.title}</h3>
+                  <p className="text-sm text-muted-foreground">{job.company}</p>
                 </div>
                 {job.match_score && (
-                  <span className="px-2 py-1 bg-primary/10 text-primary rounded-full text-sm whitespace-nowrap">
+                  <span className="ml-4 px-2 py-1 bg-primary/10 text-primary rounded-full text-sm whitespace-nowrap">
                     {Math.round(job.match_score)}% match
                   </span>
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className="flex-1 space-y-4">
                 <p className="text-sm line-clamp-3">{job.description}</p>
                 
-                <div className="flex items-center text-sm text-gray-500 space-x-2">
+                <div className="flex items-center text-sm text-muted-foreground space-x-2">
                   <span className="truncate">{job.location}</span>
                   {job.salary_range && (
                     <>
@@ -91,7 +94,7 @@ export function MarketplaceList() {
                 </div>
 
                 {job.skills?.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
+                  <div className="flex flex-wrap gap-2">
                     {job.skills.slice(0, 3).map((skill: string, index: number) => (
                       <span 
                         key={index}
@@ -104,8 +107,8 @@ export function MarketplaceList() {
                 )}
               </div>
 
-              <div className="pt-4 flex justify-between items-center">
-                <span className="text-xs text-gray-500">
+              <div className="flex justify-between items-center mt-4 pt-4 border-t">
+                <span className="text-xs text-muted-foreground">
                   Publié le {new Date(job.posted_at).toLocaleDateString()}
                 </span>
                 <Button 
@@ -121,11 +124,10 @@ export function MarketplaceList() {
         </div>
 
         {jobs.length === 0 && !isLoading && (
-          <div className="text-center py-8">
-            <p className="text-gray-500">Aucune offre d'emploi trouvée</p>
+          <div className="text-center py-12">
+            <p className="text-muted-foreground mb-4">Aucune offre d'emploi trouvée</p>
             <Button 
-              variant="outline" 
-              className="mt-4"
+              variant="outline"
               onClick={handleAnalyzeJobs}
               disabled={isAnalyzing}
             >
