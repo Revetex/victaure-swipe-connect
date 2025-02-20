@@ -1,28 +1,22 @@
 
-import React, { useState, useCallback } from "react";
+import React from "react";
+import { Outlet } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
-import { DashboardContent } from "./dashboard/DashboardContent";
 import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
 
-export function DashboardLayout({ children }: { children?: React.ReactNode }) {
-  const [currentPage, setCurrentPage] = useState(4);
-  const [isEditing, setIsEditing] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
+export function DashboardLayout() {
+  const [showMobileMenu, setShowMobileMenu] = React.useState(false);
+  const [currentPage, setCurrentPage] = React.useState(1);
   const { profile } = useProfile();
 
-  const handlePageChange = useCallback((page: number) => {
+  const handlePageChange = React.useCallback((page: number) => {
     setCurrentPage(page);
-    setIsEditing(false);
     setShowMobileMenu(false);
   }, []);
 
-  const handleEditStateChange = useCallback((state: boolean) => {
-    setIsEditing(state);
-  }, []);
-
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -35,16 +29,9 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         onPageChange={handlePageChange}
       />
 
-      <main className="flex-1 lg:ml-64">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-          {children || (
-            <DashboardContent
-              currentPage={currentPage}
-              isEditing={isEditing}
-              onEditStateChange={handleEditStateChange}
-              onRequestChat={() => handlePageChange(2)}
-            />
-          )}
+      <main className="lg:pl-64">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+          <Outlet />
         </div>
       </main>
     </div>

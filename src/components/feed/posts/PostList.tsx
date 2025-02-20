@@ -1,15 +1,9 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
-interface PostListProps {
-  onPostDeleted: () => void;
-  onPostUpdated: () => void;
-}
-
-export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
+export function PostList() {
   const { data: posts, isLoading, error } = useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
@@ -32,54 +26,56 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   if (error) {
     console.error("Error fetching posts:", error);
     toast.error("Erreur lors du chargement des publications");
+    return null;
   }
 
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="animate-pulse bg-muted rounded-lg h-32" />
-        <div className="animate-pulse bg-muted rounded-lg h-32" />
+        {[...Array(2)].map((_, i) => (
+          <div key={i} className="animate-pulse bg-muted rounded-lg h-32" />
+        ))}
       </div>
     );
   }
 
   if (!posts?.length) {
     return (
-      <motion.div 
-        className="text-center py-12 text-muted-foreground"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
+      <div className="text-center py-12 text-muted-foreground">
         Pas encore de publications
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div 
-      className="space-y-4"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-    >
+    <div className="space-y-4">
       {posts.map((post) => (
-        <div 
+        <article 
           key={post.id}
           className="bg-card rounded-lg p-4 shadow-sm border"
         >
-          <div className="flex items-center space-x-2 mb-3">
-            <div className="h-8 w-8 rounded-full bg-muted" />
+          <header className="flex items-center space-x-3 mb-4">
+            {post.profiles?.avatar_url ? (
+              <img
+                src={post.profiles.avatar_url}
+                alt={post.profiles.full_name || "Avatar"}
+                className="h-10 w-10 rounded-full object-cover"
+              />
+            ) : (
+              <div className="h-10 w-10 rounded-full bg-muted" />
+            )}
             <div>
-              <div className="font-medium">
+              <h3 className="font-medium">
                 {post.profiles?.full_name || "Utilisateur"}
-              </div>
-              <div className="text-sm text-muted-foreground">
+              </h3>
+              <time className="text-sm text-muted-foreground">
                 {new Date(post.created_at).toLocaleDateString()}
-              </div>
+              </time>
             </div>
-          </div>
-          <p className="text-sm">{post.content}</p>
-        </div>
+          </header>
+          <p className="text-sm leading-relaxed">{post.content}</p>
+        </article>
       ))}
-    </motion.div>
+    </div>
   );
 }
