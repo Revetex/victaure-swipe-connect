@@ -1,53 +1,38 @@
 
-import { cn } from "@/lib/utils";
 import { Message } from "@/types/messages";
 import { UserAvatar } from "@/components/UserAvatar";
-import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface ChatMessageProps {
   message: Message;
-  showAvatar?: boolean;
+  isOwn: boolean;
 }
 
-export function ChatMessage({ message, showAvatar = true }: ChatMessageProps) {
-  const isSentByMe = message.sender_id === 'me';
-  const messageUser = message.sender;
-
+export function ChatMessage({ message, isOwn }: ChatMessageProps) {
   return (
     <div className={cn(
-      "flex items-end gap-2",
-      isSentByMe ? "flex-row-reverse" : "flex-row"
+      "flex gap-3",
+      isOwn ? "flex-row-reverse" : "flex-row"
     )}>
-      {showAvatar ? (
-        <UserAvatar
-          user={messageUser}
-          className="h-8 w-8 flex-shrink-0"
-        />
-      ) : (
-        <div className="w-8 flex-shrink-0" />
-      )}
-      
+      <UserAvatar
+        user={message.sender}
+        className="h-8 w-8 flex-shrink-0"
+      />
       <div className={cn(
-        "flex flex-col space-y-1 max-w-[70%]",
-        isSentByMe ? "items-end" : "items-start"
+        "flex flex-col gap-1 max-w-[70%]",
+        isOwn && "items-end"
       )}>
-        {showAvatar && (
-          <span className="text-xs text-muted-foreground px-2">
-            {messageUser.full_name}
-          </span>
-        )}
-        
-        <Card className={cn(
-          "px-4 py-2",
-          isSentByMe 
-            ? "bg-primary text-primary-foreground rounded-tr-none" 
-            : "bg-muted rounded-tl-none",
-          !showAvatar && "rounded-t-xl"
+        <div className={cn(
+          "rounded-lg px-3 py-2",
+          isOwn ? "bg-primary text-primary-foreground" : "bg-muted"
         )}>
-          <p className="text-sm whitespace-pre-wrap leading-relaxed">
-            {message.content}
-          </p>
-        </Card>
+          <p className="text-sm">{message.content}</p>
+        </div>
+        <span className="text-xs text-muted-foreground">
+          {format(new Date(message.created_at), "HH:mm", { locale: fr })}
+        </span>
       </div>
     </div>
   );

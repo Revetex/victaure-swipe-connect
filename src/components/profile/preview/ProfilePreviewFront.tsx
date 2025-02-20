@@ -1,4 +1,3 @@
-
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
 import { UserPlus, UserMinus, Ban, MessageCircle, Lock, User, ExternalLink } from "lucide-react";
@@ -53,12 +52,8 @@ export function ProfilePreviewFront({
       return;
     }
     
-    if (onRequestChat) {
-      onRequestChat();
-    } else {
-      if (onClose) onClose();
-      navigate(`/messages?receiver=${profile.id}`);
-    }
+    if (onClose) onClose();
+    navigate(`/messages?receiver=${profile.id}`);
   };
 
   return (
