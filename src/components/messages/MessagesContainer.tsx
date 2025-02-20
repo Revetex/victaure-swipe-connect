@@ -104,8 +104,8 @@ export function MessagesContainer() {
         : []);
 
   return (
-    <Card className="h-[calc(100vh-4rem)] flex flex-col mt-16">
-      <div className="flex-1 flex flex-col h-full relative bg-gradient-to-b from-background to-muted/20">
+    <Card className="h-screen flex flex-col mt-16">
+      <div className="flex-1 relative bg-gradient-to-b from-background to-muted/20">
         {showConversation && receiver ? (
           <ConversationView
             messages={messages}
