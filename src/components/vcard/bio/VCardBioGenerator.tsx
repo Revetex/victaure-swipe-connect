@@ -18,7 +18,7 @@ interface BioContext {
   }[];
   certifications: {
     title: string;
-    issuer: string;
+    institution: string;
   }[];
 }
 
@@ -61,7 +61,7 @@ export async function generateBio(profile: UserProfile): Promise<string> {
     })),
     certifications: (profile.certifications || []).map((cert) => ({
       title: cert.title,
-      issuer: cert.issuer
+      institution: cert.institution
     }))
   };
 

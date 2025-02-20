@@ -20,14 +20,15 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
 
   const handleAddEducation = () => {
     try {
-      const newEducation = {
+      const newEducation: Education = {
         id: crypto.randomUUID(),
+        profile_id: profile.id, // Ajout du profile_id
         school_name: "",
         degree: "",
         field_of_study: "",
         start_date: null,
         end_date: null,
-        description: "",
+        description: null
       };
 
       setProfile({
