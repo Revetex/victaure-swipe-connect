@@ -1,9 +1,16 @@
 
 import React, { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { Job } from '@/types/job';
-import { useToast } from '@/components/ui/use-toast';
+
+// Fix for Leaflet default marker icons
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 interface JobsMapProps {
   jobs: Job[];
@@ -12,40 +19,25 @@ interface JobsMapProps {
 
 export function JobsMap({ jobs, onJobSelect }: JobsMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
-  const { toast } = useToast();
+  const map = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
 
   useEffect(() => {
-    if (!mapContainer.current) return;
+    if (!mapContainer.current || map.current) return;
 
-    // Initialize map
-    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
-    
-    if (!mapboxgl.accessToken) {
-      toast({
-        variant: "destructive",
-        title: "Erreur de configuration",
-        description: "La clé d'API Mapbox n'est pas configurée"
-      });
-      return;
-    }
+    // Initialize map centered on Montreal
+    map.current = L.map(mapContainer.current).setView([45.5017, -73.5673], 9);
 
-    // Center on Montreal by default
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v11',
-      center: [-73.5673, 45.5017],
-      zoom: 9
-    });
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map.current);
 
-    // Add navigation controls
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-    // Clean up
     return () => {
-      markersRef.current.forEach(marker => marker.remove());
-      map.current?.remove();
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
     };
   }, []);
 
@@ -57,51 +49,37 @@ export function JobsMap({ jobs, onJobSelect }: JobsMapProps) {
     markersRef.current = [];
 
     // Add markers for each job
+    const bounds = L.latLngBounds([]);
+    
     jobs.forEach(job => {
       if (job.latitude && job.longitude) {
-        // Create custom marker element
-        const el = document.createElement('div');
-        el.className = 'job-marker';
-        el.innerHTML = `
-          <div class="bg-primary text-primary-foreground px-2 py-1 rounded-lg shadow-lg text-sm whitespace-nowrap">
-            ${job.title}
-          </div>
+        // Create custom popup content
+        const popupContent = document.createElement('div');
+        popupContent.className = 'p-2';
+        popupContent.innerHTML = `
+          <h3 class="font-semibold">${job.title}</h3>
+          <p class="text-sm text-muted-foreground">${job.company || ''}</p>
+          <button 
+            class="mt-2 bg-primary text-primary-foreground px-3 py-1 rounded-md text-sm cursor-pointer hover:bg-primary/90 transition-colors"
+            onclick="window.dispatchEvent(new CustomEvent('selectJob', { detail: '${job.id}' }))"
+          >
+            Voir l'offre
+          </button>
         `;
 
-        // Create and add the marker
-        const marker = new mapboxgl.Marker(el)
-          .setLngLat([job.longitude, job.latitude])
-          .setPopup(
-            new mapboxgl.Popup({ offset: 25 })
-              .setHTML(`
-                <div class="p-2">
-                  <h3 class="font-semibold">${job.title}</h3>
-                  <p class="text-sm text-muted-foreground">${job.company}</p>
-                  <button 
-                    class="mt-2 bg-primary text-primary-foreground px-3 py-1 rounded-md text-sm"
-                    onclick="window.dispatchEvent(new CustomEvent('selectJob', { detail: '${job.id}' }))"
-                  >
-                    Voir l'offre
-                  </button>
-                </div>
-              `)
-          )
-          .addTo(map.current);
+        // Create marker
+        const marker = L.marker([job.latitude, job.longitude])
+          .bindPopup(popupContent)
+          .addTo(map.current!);
 
         markersRef.current.push(marker);
+        bounds.extend([job.latitude, job.longitude]);
       }
     });
 
-    // Fit bounds to show all markers if there are any jobs with coordinates
-    const jobsWithCoordinates = jobs.filter(job => job.latitude && job.longitude);
-    if (jobsWithCoordinates.length > 0) {
-      const bounds = new mapboxgl.LngLatBounds();
-      jobsWithCoordinates.forEach(job => {
-        if (job.latitude && job.longitude) {
-          bounds.extend([job.longitude, job.latitude]);
-        }
-      });
-      map.current.fitBounds(bounds, { padding: 50 });
+    // Fit bounds if there are markers
+    if (!bounds.isEmpty()) {
+      map.current.fitBounds(bounds, { padding: [50, 50] });
     }
   }, [jobs]);
 
@@ -119,20 +97,8 @@ export function JobsMap({ jobs, onJobSelect }: JobsMapProps) {
   }, [jobs, onJobSelect]);
 
   return (
-    <div className="relative w-full h-[600px]">
-      <div ref={mapContainer} className="absolute inset-0 rounded-lg" />
-      <style jsx>{`
-        :global(.job-marker) {
-          cursor: pointer;
-          transition: transform 0.2s;
-        }
-        :global(.job-marker:hover) {
-          transform: scale(1.1);
-        }
-        :global(.mapboxgl-popup-content) {
-          border-radius: 0.5rem;
-        }
-      `}</style>
+    <div className="relative w-full h-[600px] rounded-lg overflow-hidden border">
+      <div ref={mapContainer} className="absolute inset-0" />
     </div>
   );
 }
