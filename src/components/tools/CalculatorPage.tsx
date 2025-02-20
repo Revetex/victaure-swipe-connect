@@ -11,6 +11,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { initializeStripe } from "@/hooks/useStripePayment";
 import { Loader2 } from "lucide-react";
 import type { StripeElementsOptions } from '@stripe/stripe-js';
+import type { ConversionType } from './calculator/types';
 
 const stripeElementsOptions: StripeElementsOptions = {
   mode: 'payment',
@@ -48,6 +49,16 @@ export function CalculatorPage() {
     };
     initStripe();
   }, []);
+
+  const handleConvert = () => {
+    // Logique de conversion à implémenter
+    console.log("Converting:", {
+      type: conversionType,
+      from: fromUnit,
+      to: toUnit,
+      value: conversionValue
+    });
+  };
 
   if (isLoading) {
     return (
