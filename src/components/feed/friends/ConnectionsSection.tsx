@@ -9,13 +9,14 @@ import { FriendList } from "./FriendList";
 import { ConnectionsPagination } from "./ConnectionsPagination";
 import { PendingRequestsSection } from "./PendingRequestsSection";
 import { UserProfile } from "@/types/profile";
+import { Card } from "@/components/ui/card";
 
 export function ConnectionsSection() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showPendingRequests, setShowPendingRequests] = useState(false);
   const itemsPerPage = 5;
 
-  const { data: friends } = useQuery({
+  const { data: friends = [], isLoading } = useQuery({
     queryKey: ["friends"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -24,40 +25,8 @@ export function ConnectionsSection() {
       const { data: acceptedRequests } = await supabase
         .from("friend_requests")
         .select(`
-          sender:profiles!friend_requests_sender_id_fkey(
-            id, 
-            full_name, 
-            avatar_url, 
-            online_status, 
-            last_seen,
-            email,
-            role,
-            bio,
-            phone,
-            city,
-            state,
-            country,
-            skills,
-            latitude,
-            longitude
-          ),
-          receiver:profiles!friend_requests_receiver_id_fkey(
-            id, 
-            full_name, 
-            avatar_url, 
-            online_status, 
-            last_seen,
-            email,
-            role,
-            bio,
-            phone,
-            city,
-            state,
-            country,
-            skills,
-            latitude,
-            longitude
-          )
+          sender:profiles!friend_requests_sender_id_fkey(*),
+          receiver:profiles!friend_requests_receiver_id_fkey(*)
         `)
         .eq("status", "accepted")
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
@@ -68,7 +37,7 @@ export function ConnectionsSection() {
         const friend = request.sender.id === user.id ? request.receiver : request.sender;
         return {
           ...friend,
-          country: friend.country || "Canada", // Provide default values for required fields
+          country: friend.country || "Canada",
           role: friend.role || "professional",
           email: friend.email || "",
           skills: friend.skills || [],
@@ -78,6 +47,14 @@ export function ConnectionsSection() {
       });
     }
   });
+
+  if (isLoading) {
+    return (
+      <Card className="p-8 flex items-center justify-center">
+        <div className="animate-pulse">Chargement des connexions...</div>
+      </Card>
+    );
+  }
 
   if (!friends?.length) {
     return <EmptyConnectionsState />;
@@ -101,7 +78,7 @@ export function ConnectionsSection() {
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-medium flex items-center gap-2 bg-gradient-to-br from-foreground/90 via-foreground/80 to-foreground/70 bg-clip-text text-transparent">
             <Users2 className="h-4 w-4" />
-            Mes connections ({friends.length})
+            Mes connexions ({friends.length})
           </h3>
         </div>
         

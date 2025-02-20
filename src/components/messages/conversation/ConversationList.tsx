@@ -24,7 +24,26 @@ interface Conversation {
   participant2_id: string;
   last_message: string;
   last_message_time: string;
-  participant: UserProfile;
+  participant: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+    email: string;
+    role: 'professional' | 'business' | 'admin';
+    bio: string | null;
+    phone: string | null;
+    city: string | null;
+    state: string | null;
+    country: string;
+    skills: string[];
+    latitude: number | null;
+    longitude: number | null;
+    online_status: boolean;
+    last_seen: string;
+    certifications: any[];
+    education: any[];
+    experiences: any[];
+  };
 }
 
 export function ConversationList({ className }: ConversationListProps) {
