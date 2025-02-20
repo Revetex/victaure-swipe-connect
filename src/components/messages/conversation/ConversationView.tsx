@@ -1,7 +1,7 @@
 import { useReceiver } from "@/hooks/useReceiver";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, Trash2 } from "lucide-react";
 import { UserAvatar } from "@/components/UserAvatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState, useRef, useEffect } from "react";
@@ -195,6 +195,24 @@ export function ConversationView() {
     };
   };
 
+  const handleDeleteMessage = async (messageId: string) => {
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .delete()
+        .eq('id', messageId)
+        .eq('sender_id', user?.id);
+
+      if (error) throw error;
+
+      setMessages(prev => prev.filter(msg => msg.id !== messageId));
+      toast.success("Message supprimé");
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      toast.error("Impossible de supprimer le message");
+    }
+  };
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -262,11 +280,22 @@ export function ConversationView() {
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
           {messages.map((message) => (
-            <ChatMessage 
-              key={message.id}
-              message={message}
-              isOwn={message.sender_id === user?.id}
-            />
+            <div key={message.id} className="relative group">
+              <ChatMessage 
+                message={message}
+                isOwn={message.sender_id === user?.id}
+              />
+              {message.sender_id === user?.id && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => handleDeleteMessage(message.id)}
+                >
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              )}
+            </div>
           ))}
           <div ref={messagesEndRef} />
         </div>
