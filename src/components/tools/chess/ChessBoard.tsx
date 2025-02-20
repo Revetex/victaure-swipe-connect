@@ -47,22 +47,19 @@ export function ChessBoard({
               const isLight = (rowIndex + colIndex) % 2 === 0;
 
               return (
-                <motion.button
+                <div
                   key={`${rowIndex}-${colIndex}`}
                   className={cn(
-                    "relative w-full h-full flex items-center justify-center",
-                    "transition-colors duration-200",
+                    "relative w-full aspect-square",
+                    "flex items-center justify-center",
                     isLight 
                       ? "bg-white dark:bg-neutral-800" 
                       : "bg-neutral-300 dark:bg-neutral-700",
                     isSelected && "ring-2 ring-yellow-400 ring-inset z-10",
-                    !gameOver && !isThinking && "hover:brightness-90 active:brightness-95",
-                    "disabled:cursor-not-allowed disabled:opacity-50"
+                    !gameOver && !isThinking && "cursor-pointer hover:brightness-90 active:brightness-95",
+                    gameOver && "cursor-not-allowed opacity-50"
                   )}
-                  whileHover={{ scale: 1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => onSquareClick(rowIndex, colIndex)}
-                  disabled={gameOver || isThinking}
+                  onClick={() => !gameOver && !isThinking && onSquareClick(rowIndex, colIndex)}
                 >
                   {isPossibleMove && (
                     <motion.div
@@ -74,21 +71,16 @@ export function ChessBoard({
                   )}
                   
                   {piece && (
-                    <motion.span
+                    <span
                       className={cn(
                         "text-2xl sm:text-3xl md:text-4xl lg:text-5xl select-none",
-                        "transition-transform duration-200",
                         piece.isWhite ? "text-black dark:text-white" : "text-neutral-800 dark:text-neutral-300"
                       )}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 15 }}
                     >
                       {pieceToSymbol(piece)}
-                    </motion.span>
+                    </span>
                   )}
-                </motion.button>
+                </div>
               );
             })
           )}
