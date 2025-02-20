@@ -1505,13 +1505,6 @@ export type Database = {
             referencedRelation: "relevant_jobs"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "job_transcriptions_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "scraped_jobs"
-            referencedColumns: ["id"]
-          },
         ]
       }
       job_views: {
@@ -3417,100 +3410,61 @@ export type Database = {
       }
       scraped_jobs: {
         Row: {
-          application_url: string | null
-          benefits: string[] | null
           company: string
           created_at: string | null
           description: string | null
-          education_requirement: string | null
           employment_type: string | null
           experience_level: string | null
-          external_company_id: string | null
           external_id: string | null
-          external_url: string | null
           id: string
-          industry: string | null
-          is_remote: boolean | null
-          job_type: string | null
           location: string
           match_score: number | null
           posted_at: string | null
-          relevance_score: number | null
-          remote_type: string | null
-          requirements: string[] | null
           salary_range: string | null
-          salary_type: string | null
           skills: string[] | null
-          source_api: string | null
           source_platform: string | null
+          status: string | null
           title: string
           updated_at: string | null
           url: string
-          xml_data: unknown | null
         }
         Insert: {
-          application_url?: string | null
-          benefits?: string[] | null
           company: string
           created_at?: string | null
           description?: string | null
-          education_requirement?: string | null
           employment_type?: string | null
           experience_level?: string | null
-          external_company_id?: string | null
           external_id?: string | null
-          external_url?: string | null
           id?: string
-          industry?: string | null
-          is_remote?: boolean | null
-          job_type?: string | null
           location: string
           match_score?: number | null
           posted_at?: string | null
-          relevance_score?: number | null
-          remote_type?: string | null
-          requirements?: string[] | null
           salary_range?: string | null
-          salary_type?: string | null
           skills?: string[] | null
-          source_api?: string | null
           source_platform?: string | null
+          status?: string | null
           title: string
           updated_at?: string | null
           url: string
-          xml_data?: unknown | null
         }
         Update: {
-          application_url?: string | null
-          benefits?: string[] | null
           company?: string
           created_at?: string | null
           description?: string | null
-          education_requirement?: string | null
           employment_type?: string | null
           experience_level?: string | null
-          external_company_id?: string | null
           external_id?: string | null
-          external_url?: string | null
           id?: string
-          industry?: string | null
-          is_remote?: boolean | null
-          job_type?: string | null
           location?: string
           match_score?: number | null
           posted_at?: string | null
-          relevance_score?: number | null
-          remote_type?: string | null
-          requirements?: string[] | null
           salary_range?: string | null
-          salary_type?: string | null
           skills?: string[] | null
-          source_api?: string | null
           source_platform?: string | null
+          status?: string | null
           title?: string
           updated_at?: string | null
           url?: string
-          xml_data?: unknown | null
         }
         Relationships: []
       }
