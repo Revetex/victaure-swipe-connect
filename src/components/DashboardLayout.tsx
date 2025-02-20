@@ -23,7 +23,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-background relative">
+    <div className="flex min-h-screen bg-background">
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -37,17 +37,20 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       />
 
       <main className={cn(
-        "flex-1 lg:ml-64 min-h-screen",
-        "glass-panel"
+        "flex-1 lg:ml-64",
+        "flex flex-col items-center",
+        "pt-6 px-4 sm:px-6 lg:px-8"
       )}>
-        {children || (
-          <DashboardContent
-            currentPage={currentPage}
-            isEditing={isEditing}
-            onEditStateChange={handleEditStateChange}
-            onRequestChat={() => handlePageChange(2)}
-          />
-        )}
+        <div className="w-full max-w-3xl">
+          {children || (
+            <DashboardContent
+              currentPage={currentPage}
+              isEditing={isEditing}
+              onEditStateChange={handleEditStateChange}
+              onRequestChat={() => handlePageChange(2)}
+            />
+          )}
+        </div>
       </main>
     </div>
   );
