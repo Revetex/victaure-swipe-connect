@@ -50,6 +50,7 @@ export function JobsMap({ jobs, onJobSelect }: JobsMapProps) {
 
     // Add markers for each job
     const bounds = L.latLngBounds([]);
+    let hasValidMarkers = false;
     
     jobs.forEach(job => {
       if (job.latitude && job.longitude) {
@@ -74,11 +75,12 @@ export function JobsMap({ jobs, onJobSelect }: JobsMapProps) {
 
         markersRef.current.push(marker);
         bounds.extend([job.latitude, job.longitude]);
+        hasValidMarkers = true;
       }
     });
 
     // Fit bounds if there are markers
-    if (!bounds.isEmpty()) {
+    if (hasValidMarkers && bounds.getNorth() !== bounds.getSouth()) {
       map.current.fitBounds(bounds, { padding: [50, 50] });
     }
   }, [jobs]);

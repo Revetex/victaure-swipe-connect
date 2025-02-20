@@ -1,180 +1,119 @@
 
-import { MapPin, Building2, ArrowUpDown, BriefcaseIcon, Clock, DollarSign, GraduationCap } from "lucide-react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 interface JobsFiltersProps {
   selectedLocation: string;
   selectedCompanyType: string;
   sortOrder: "recent" | "salary";
-  locations: string[];
-  onLocationChange: (location: string) => void;
-  onCompanyTypeChange: (type: string) => void;
-  onSortOrderChange: (order: "recent" | "salary") => void;
   experienceLevel: string;
-  onExperienceLevelChange: (level: string) => void;
   contractType: string;
-  onContractTypeChange: (type: string) => void;
+  locations: string[];
   salaryRange: [number, number];
-  onSalaryRangeChange: (range: [number, number]) => void;
-  datePosted: string;
-  onDatePostedChange: (date: string) => void;
-  onReset: () => void;
+  remoteOnly: boolean;
+  onLocationChange: (value: string) => void;
+  onCompanyTypeChange: (value: string) => void;
+  onSortOrderChange: (value: "recent" | "salary") => void;
+  onExperienceLevelChange: (value: string) => void;
+  onContractTypeChange: (value: string) => void;
+  onSalaryRangeChange: (value: [number, number]) => void;
+  onRemoteOnlyChange: (value: boolean) => void;
 }
 
 export function JobsFilters({
   selectedLocation,
   selectedCompanyType,
   sortOrder,
+  experienceLevel,
+  contractType,
   locations,
+  salaryRange,
+  remoteOnly,
   onLocationChange,
   onCompanyTypeChange,
   onSortOrderChange,
-  experienceLevel,
   onExperienceLevelChange,
-  contractType,
   onContractTypeChange,
-  salaryRange,
   onSalaryRangeChange,
-  datePosted,
-  onDatePostedChange,
-  onReset
+  onRemoteOnlyChange
 }: JobsFiltersProps) {
   return (
-    <motion.div
-      variants={{
-        hidden: { y: 20, opacity: 0 },
-        visible: { y: 0, opacity: 1 }
-      }}
-      className="bg-card/50 backdrop-blur-sm border rounded-lg p-4 space-y-4"
-    >
-      <div className="flex flex-wrap gap-4">
-        <div className="w-full md:w-auto">
+    <div className="grid gap-4 p-4 border rounded-lg bg-card">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <Label>Localisation</Label>
           <Select value={selectedLocation} onValueChange={onLocationChange}>
-            <SelectTrigger className="w-[200px]">
-              <MapPin className="h-4 w-4 text-muted-foreground mr-2" />
-              <SelectValue placeholder="Localisation" />
+            <SelectTrigger>
+              <SelectValue placeholder="Toutes les localisations" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="">Toutes les localisations</SelectItem>
-              {locations.map(location => (
-                <SelectItem key={location} value={location}>{location}</SelectItem>
+              {locations.map((location) => (
+                <SelectItem key={location} value={location}>
+                  {location}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
 
-        <div className="w-full md:w-auto">
+        <div className="space-y-2">
+          <Label>Type d'entreprise</Label>
           <Select value={selectedCompanyType} onValueChange={onCompanyTypeChange}>
-            <SelectTrigger className="w-[200px]">
-              <Building2 className="h-4 w-4 text-muted-foreground mr-2" />
-              <SelectValue placeholder="Type d'entreprise" />
+            <SelectTrigger>
+              <SelectValue placeholder="Tous les types" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tous les types d'entreprises</SelectItem>
-              <SelectItem value="internal">Entreprises Victaure</SelectItem>
-              <SelectItem value="external">Entreprises externes</SelectItem>
+              <SelectItem value="">Tous les types</SelectItem>
+              <SelectItem value="internal">Interne</SelectItem>
+              <SelectItem value="external">Externe</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <div className="w-full md:w-auto">
+        <div className="space-y-2">
+          <Label>Trier par</Label>
+          <Select value={sortOrder} onValueChange={onSortOrderChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Trier par" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="recent">Plus récent</SelectItem>
+              <SelectItem value="salary">Meilleur salaire</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Expérience</Label>
           <Select value={experienceLevel} onValueChange={onExperienceLevelChange}>
-            <SelectTrigger className="w-[200px]">
-              <GraduationCap className="h-4 w-4 text-muted-foreground mr-2" />
+            <SelectTrigger>
               <SelectValue placeholder="Niveau d'expérience" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="">Tous les niveaux</SelectItem>
               <SelectItem value="junior">Junior</SelectItem>
-              <SelectItem value="mid-level">Intermédiaire</SelectItem>
+              <SelectItem value="intermediate">Intermédiaire</SelectItem>
               <SelectItem value="senior">Senior</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <div className="w-full md:w-auto">
+        <div className="space-y-2">
+          <Label>Type de contrat</Label>
           <Select value={contractType} onValueChange={onContractTypeChange}>
-            <SelectTrigger className="w-[200px]">
-              <BriefcaseIcon className="h-4 w-4 text-muted-foreground mr-2" />
+            <SelectTrigger>
               <SelectValue placeholder="Type de contrat" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tous les contrats</SelectItem>
-              <SelectItem value="full-time">Temps plein</SelectItem>
-              <SelectItem value="part-time">Temps partiel</SelectItem>
-              <SelectItem value="contract">Contrat</SelectItem>
-              <SelectItem value="freelance">Freelance</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="w-full md:w-auto">
-          <Select value={datePosted} onValueChange={onDatePostedChange}>
-            <SelectTrigger className="w-[200px]">
-              <Clock className="h-4 w-4 text-muted-foreground mr-2" />
-              <SelectValue placeholder="Date de publication" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">Toutes les dates</SelectItem>
-              <SelectItem value="today">Aujourd'hui</SelectItem>
-              <SelectItem value="week">Cette semaine</SelectItem>
-              <SelectItem value="month">Ce mois</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="w-full md:w-auto">
-          <Select value={sortOrder} onValueChange={(value) => onSortOrderChange(value as "recent" | "salary")}>
-            <SelectTrigger className="w-[200px]">
-              <ArrowUpDown className="h-4 w-4 text-muted-foreground mr-2" />
-              <SelectValue placeholder="Trier par" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="recent">Plus récents</SelectItem>
-              <SelectItem value="salary">Meilleurs salaires</SelectItem>
+              <SelectItem value="">Tous les types</SelectItem>
+              <SelectItem value="permanent">CDI</SelectItem>
+              <SelectItem value="temporary">CDD</SelectItem>
+              <SelectItem value="contract">Freelance</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
-
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="text-sm font-medium flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-            Fourchette de salaire
-          </label>
-          <span className="text-sm text-muted-foreground">
-            {salaryRange[0].toLocaleString()}$ - {salaryRange[1].toLocaleString()}$
-          </span>
-        </div>
-        <Slider
-          min={0}
-          max={200000}
-          step={5000}
-          value={[salaryRange[0], salaryRange[1]]}
-          onValueChange={(value) => onSalaryRangeChange(value as [number, number])}
-          className="w-full"
-        />
-      </div>
-
-      <div className="flex justify-end">
-        <Button
-          variant="outline"
-          onClick={onReset}
-          className="text-sm"
-        >
-          Réinitialiser les filtres
-        </Button>
-      </div>
-    </motion.div>
+    </div>
   );
 }

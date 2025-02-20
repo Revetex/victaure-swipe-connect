@@ -14,6 +14,10 @@ export function JobsPage() {
   const [selectedLocation, setSelectedLocation] = useState<string>("");
   const [selectedCompanyType, setSelectedCompanyType] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<"recent" | "salary">("recent");
+  const [experienceLevel, setExperienceLevel] = useState<string>("");
+  const [contractType, setContractType] = useState<string>("");
+  const [salaryRange, setSalaryRange] = useState<[number, number]>([0, 200000]);
+  const [remoteOnly, setRemoteOnly] = useState(false);
   const { data: jobs = [], isLoading } = useJobsData();
   const [selectedJobId, setSelectedJobId] = useState<string>();
 
@@ -29,7 +33,20 @@ export function JobsPage() {
       const matchesCompanyType = !selectedCompanyType || 
         (selectedCompanyType === "internal" ? job.source === "internal" : job.source === "external");
 
-      return matchesSearch && matchesLocation && matchesCompanyType;
+      const matchesExperience = !experienceLevel ||
+        job.experience_level?.toLowerCase() === experienceLevel.toLowerCase();
+
+      const matchesContractType = !contractType ||
+        job.contract_type?.toLowerCase() === contractType.toLowerCase();
+
+      const matchesSalary = (!job.salary_min || job.salary_min >= salaryRange[0]) &&
+        (!job.salary_max || job.salary_max <= salaryRange[1]);
+
+      const matchesRemote = !remoteOnly ||
+        job.remote_type === "full" || job.remote_type === "hybrid";
+
+      return matchesSearch && matchesLocation && matchesCompanyType && 
+             matchesExperience && matchesContractType && matchesSalary && matchesRemote;
     })
     .sort((a, b) => {
       if (sortOrder === "recent") {
@@ -51,6 +68,10 @@ export function JobsPage() {
     setSearchQuery("");
     setSelectedLocation("");
     setSelectedCompanyType("");
+    setExperienceLevel("");
+    setContractType("");
+    setSalaryRange([0, 200000]);
+    setRemoteOnly(false);
   };
 
   if (isLoading) {
@@ -88,10 +109,18 @@ export function JobsPage() {
           selectedLocation={selectedLocation}
           selectedCompanyType={selectedCompanyType}
           sortOrder={sortOrder}
+          experienceLevel={experienceLevel}
+          contractType={contractType}
           locations={locations}
+          salaryRange={salaryRange}
+          remoteOnly={remoteOnly}
           onLocationChange={setSelectedLocation}
           onCompanyTypeChange={setSelectedCompanyType}
           onSortOrderChange={setSortOrder}
+          onExperienceLevelChange={setExperienceLevel}
+          onContractTypeChange={setContractType}
+          onSalaryRangeChange={setSalaryRange}
+          onRemoteOnlyChange={setRemoteOnly}
         />
         
         <JobsResults
