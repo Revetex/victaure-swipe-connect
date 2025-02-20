@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
@@ -12,12 +13,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Message, DatabaseMessage, transformDatabaseMessage } from "@/types/messages";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { FriendSelector } from "./conversation/FriendSelector";
+import { Plus, RefreshCw } from "lucide-react";
 import { AssistantMessage } from "./conversation/AssistantMessage";
 import { SearchBar } from "./conversation/SearchBar";
+import { FriendSelector } from "./conversation/FriendSelector";
 import { useUser } from "@/hooks/useUser";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function MessagesContainer() {
   const { receiver, setReceiver, showConversation, setShowConversation } = useReceiver();
@@ -25,6 +26,7 @@ export function MessagesContainer() {
   const [searchQuery, setSearchQuery] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useUser();
+  const queryClient = useQueryClient();
   const { sendMessage, createOrUpdateConversation } = useConversationHandler();
   
   const { data: conversations = [] } = useMessageQuery();
@@ -46,6 +48,11 @@ export function MessagesContainer() {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [currentMessages, aiMessages]);
+
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["messages"] });
+    toast.success("Messages actualisés");
+  };
 
   const handleSendMessage = async () => {
     if (!receiver || !inputMessage.trim() || !user) {
@@ -132,44 +139,53 @@ export function MessagesContainer() {
             <div className="p-4 border-b space-y-4 sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
               <div className="flex items-center justify-between gap-2">
                 <SearchBar value={searchQuery} onChange={setSearchQuery} />
-                <FriendSelector onSelectFriend={handleStartNewChat}>
-                  <Button variant="default" size="icon" className="shrink-0">
-                    <Plus className="h-4 w-4" />
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={handleRefresh}
+                    className="shrink-0"
+                  >
+                    <RefreshCw className="h-4 w-4" />
                   </Button>
-                </FriendSelector>
+                  <FriendSelector onSelectFriend={handleStartNewChat}>
+                    <Button variant="default" size="icon" className="shrink-0">
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </FriendSelector>
+                </div>
               </div>
             </div>
 
-            <ScrollArea className="flex-1">
-              <div className="p-4 space-y-4">
-                <AssistantMessage 
-                  chatMessages={aiMessages}
-                  onSelectConversation={() => {
-                    setReceiver({
-                      id: 'assistant',
-                      full_name: 'M. Victaure',
-                      avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-                      online_status: true,
-                      last_seen: new Date().toISOString()
-                    });
+            <div className="p-4 space-y-4">
+              <AssistantMessage 
+                chatMessages={aiMessages}
+                onSelectConversation={() => {
+                  setReceiver({
+                    id: 'assistant',
+                    full_name: 'M. Victaure',
+                    avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+                    online_status: true,
+                    last_seen: new Date().toISOString()
+                  });
+                  setShowConversation(true);
+                }}
+              />
+              
+              <div className="pt-2">
+                <ConversationList
+                  conversations={filteredConversations}
+                  onSelectConversation={(receiver) => {
+                    setReceiver(receiver);
                     setShowConversation(true);
                   }}
                 />
-                
-                <div className="pt-2">
-                  <ConversationList
-                    conversations={filteredConversations}
-                    onSelectConversation={(receiver) => {
-                      setReceiver(receiver);
-                      setShowConversation(true);
-                    }}
-                  />
-                </div>
               </div>
-            </ScrollArea>
+            </div>
           </div>
         )}
       </div>
     </Card>
   );
 }
+
