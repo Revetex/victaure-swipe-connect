@@ -72,22 +72,22 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher des profils.
             <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
           </div>
         )}
+        
+        {searchResults.length > 0 && searchQuery && (
+          <div className="absolute w-full z-[100] mt-1">
+            <SearchResults 
+              results={searchResults}
+              onSelect={(profile) => {
+                if (onSelect) {
+                  onSelect(profile);
+                  setSearchQuery("");
+                  setSearchResults([]);
+                }
+              }}
+            />
+          </div>
+        )}
       </div>
-      
-      {searchResults.length > 0 && searchQuery && (
-        <div className="absolute w-full z-50 mt-1">
-          <SearchResults 
-            results={searchResults}
-            onSelect={(profile) => {
-              if (onSelect) {
-                onSelect(profile);
-                setSearchQuery("");
-                setSearchResults([]);
-              }
-            }}
-          />
-        </div>
-      )}
     </div>
   );
 }
