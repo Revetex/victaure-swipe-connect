@@ -4,7 +4,6 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 export function PrivacySection() {
   const [privacyEnabled, setPrivacyEnabled] = useState(false);
@@ -43,7 +42,6 @@ export function PrivacySection() {
       setPrivacyEnabled(profile?.privacy_enabled || false);
     } catch (error) {
       console.error('Error fetching privacy settings:', error);
-      toast.error("Erreur lors du chargement des paramètres de confidentialité");
     } finally {
       setIsLoading(false);
     }
@@ -57,14 +55,11 @@ export function PrivacySection() {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       
       if (authError) {
-        toast.error("Erreur d'authentification");
+        console.error('Auth error:', authError);
         throw authError;
       }
 
-      if (!user) {
-        toast.error("Utilisateur non connecté");
-        return;
-      }
+      if (!user) return;
 
       const newPrivacyState = !privacyEnabled;
 
@@ -74,18 +69,15 @@ export function PrivacySection() {
           privacy_enabled: newPrivacyState,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', user.id);
+        .eq('id', user.id)
+        .select()
+        .single();
 
       if (error) throw error;
 
       setPrivacyEnabled(newPrivacyState);
-      toast.success(newPrivacyState ? 
-        "Votre profil est maintenant privé. Seuls vos amis peuvent voir votre profil complet." : 
-        "Votre profil est maintenant public. Tout le monde peut voir votre profil complet."
-      );
     } catch (error) {
       console.error('Error updating privacy settings:', error);
-      toast.error("Erreur lors de la mise à jour des paramètres de confidentialité");
     } finally {
       setIsLoading(false);
     }
@@ -103,12 +95,7 @@ export function PrivacySection() {
       <div className="flex items-center">
         <div className="flex items-center gap-2">
           {privacyEnabled ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          <span className="text-sm">
-            Profil privé
-            {privacyEnabled ? 
-              " - Seuls vos amis peuvent voir votre profil complet" : 
-              " - Tout le monde peut voir votre profil complet"}
-          </span>
+          <span className="text-sm">Profil privé</span>
         </div>
         <Switch 
           checked={privacyEnabled}

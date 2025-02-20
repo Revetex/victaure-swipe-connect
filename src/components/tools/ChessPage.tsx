@@ -21,18 +21,18 @@ export function ChessPage() {
   } = useChessGame();
 
   return (
-    <div className="container mx-auto p-4 md:pt-16">
+    <div className="container mx-auto p-4 pt-32">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-3xl mx-auto rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 p-4 md:p-6"
+        className="max-w-3xl mx-auto rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 p-6"
       >
-        <div className="flex items-center justify-between mb-4 md:mb-6">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-white/5">
               <Sword className="h-5 w-5 text-yellow-400" />
             </div>
-            <h1 className="text-lg md:text-xl font-bold">Échecs vs IA</h1>
+            <h1 className="text-xl font-bold">Échecs vs IA</h1>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Brain className="h-4 w-4" />
@@ -40,7 +40,7 @@ export function ChessPage() {
           </div>
         </div>
 
-        <div className="space-y-4 md:space-y-6">
+        <div className="space-y-6">
           <ChessControls
             isThinking={isThinking}
             isWhiteTurn={isWhiteTurn}
@@ -50,7 +50,7 @@ export function ChessPage() {
             onReset={resetGame}
           />
           
-          <div className="relative bg-gradient-to-br from-background to-background/95 rounded-lg p-2 md:p-4">
+          <div className="relative">
             {gameOver && (
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -68,7 +68,7 @@ export function ChessPage() {
                     }
                   }}
                   className={cn(
-                    "text-center p-4 md:p-6 rounded-xl border shadow-2xl",
+                    "text-center p-6 rounded-xl border shadow-2xl",
                     "bg-gradient-to-br from-[#1A1F2C]/90 to-[#2A2A2A]/90",
                     "border-white/10"
                   )}
@@ -89,7 +89,7 @@ export function ChessPage() {
                     )} />
                   </motion.div>
                   <motion.h2 
-                    className="text-xl md:text-2xl font-bold mb-2"
+                    className="text-2xl font-bold mb-2"
                     animate={{
                       scale: [1, 1.05, 1],
                       transition: {

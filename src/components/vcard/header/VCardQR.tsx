@@ -1,8 +1,6 @@
 import { QRCodeSVG } from "qrcode.react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
 
 interface VCardQRProps {
   isQRDialogOpen: boolean;
@@ -11,9 +9,7 @@ interface VCardQRProps {
 }
 
 export function VCardQR({ isQRDialogOpen, setIsQRDialogOpen, profileId }: VCardQRProps) {
-  const isMobile = useIsMobile();
   const publicProfileUrl = `${window.location.origin}/profile/${profileId}`;
-  const logoUrl = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png";
 
   return (
     <>
@@ -32,34 +28,19 @@ export function VCardQR({ isQRDialogOpen, setIsQRDialogOpen, profileId }: VCardQ
             level="H"
             includeMargin={false}
             className="rounded-lg opacity-70 hover:opacity-100 transition-opacity duration-300"
-            imageSettings={{
-              src: logoUrl,
-              height: 20,
-              width: 20,
-              excavate: true,
-            }}
           />
         </div>
       </motion.div>
 
       <Dialog open={isQRDialogOpen} onOpenChange={setIsQRDialogOpen}>
-        <DialogContent className={cn(
-          "sm:max-w-md bg-background/95 backdrop-blur-sm border-none",
-          isMobile && "w-[90vw] max-h-[90vh]"
-        )}>
+        <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-sm border-none">
           <div className="flex flex-col items-center space-y-4 p-6">
             <QRCodeSVG
               value={publicProfileUrl}
-              size={isMobile ? 250 : 300}
+              size={200}
               level="H"
               includeMargin={true}
               className="rounded-lg"
-              imageSettings={{
-                src: logoUrl,
-                height: isMobile ? 80 : 100,
-                width: isMobile ? 80 : 100,
-                excavate: true,
-              }}
             />
             <p className="text-xs sm:text-sm text-muted-foreground text-center">
               Scannez ce code QR pour accéder à mon profil professionnel

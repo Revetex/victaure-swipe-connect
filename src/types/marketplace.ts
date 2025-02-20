@@ -14,7 +14,6 @@ export interface MarketplaceListing {
   seller?: {
     full_name: string | null;
     avatar_url: string | null;
-    rating?: number;
   };
 }
 
@@ -26,41 +25,6 @@ export interface MarketplaceOffer {
   status: string;
   created_at: string;
   updated_at: string;
-  bidder?: {
-    full_name: string | null;
-    avatar_url: string | null;
-  };
-}
-
-export interface MarketplaceService {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  current_price: number;
-  images: string[];
-  status: string;
-  type: string;
-  provider_id: string;
-  category_id: string;
-  auction_end_date: string;
-  created_at: string;
-  updated_at: string;
-  currency: string;
-  provider?: {
-    full_name: string | null;
-    avatar_url: string | null;
-  };
-  bids?: ServiceBid[];
-}
-
-export interface ServiceBid {
-  id: string;
-  service_id: string;
-  bidder_id: string;
-  amount: number;
-  status: string;
-  created_at: string;
   bidder?: {
     full_name: string | null;
     avatar_url: string | null;
@@ -99,33 +63,39 @@ export interface GigBid {
   };
 }
 
-export interface MarketplaceFilters {
-  priceRange: [number, number];
-  categories: string[];
-  location?: string;
-  condition?: string;
-  rating?: number;
-  sortBy: 'price' | 'date' | 'rating' | 'views';
-  sortOrder: 'asc' | 'desc';
+export interface MarketplaceService {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  current_price: number;
+  images: string[];
+  status: string;
+  type: string;
+  provider_id: string;
+  owner_id: string;
+  category: string;
+  category_id: string;
+  auction_end_date: string;
+  created_at: string;
+  updated_at: string;
+  currency: string;
+  provider?: {
+    full_name: string | null;
+    avatar_url: string | null;
+  };
+  bids?: ServiceBid[];
 }
 
-export interface MarketplaceStats {
-  totalListings: number;
-  activeListings: number;
-  totalViews: number;
-  averagePrice: number;
-  popularCategories: Array<{
-    category: string;
-    count: number;
-  }>;
-  listingsByType: {
-    vente: number;
-    location: number;
-    service: number;
+export interface ServiceBid {
+  id: string;
+  service_id: string;
+  bidder_id: string;
+  amount: number;
+  status: string;
+  created_at: string;
+  bidder?: {
+    full_name: string | null;
+    avatar_url: string | null;
   };
-  recentActivity: Array<{
-    type: 'view' | 'offer' | 'sale';
-    listingId: string;
-    timestamp: string;
-  }>;
 }

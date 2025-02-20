@@ -1,168 +1,166 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { UnifiedJob, JobTranscription } from "@/types/jobs/types";
 import { Job } from "@/types/job";
 import { toast } from "sonner";
 
-export const useJobsData = () => {
+type MissionType = "company" | "individual";
+
+// Helper function to safely parse JSON array
+const parseJsonArray = (value: unknown): any[] => {
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};
+
+// Helper function to safely parse JSON object
+const parseJsonObject = (value: unknown): Record<string, any> => {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, any>;
+  }
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+  return {};
+};
+
+export const useJobsData = (queryString: string = "") => {
   return useQuery({
-    queryKey: ["jobs"],
+    queryKey: ["all-jobs", queryString],
     queryFn: async () => {
       try {
-        console.log("Fetching jobs...");
-        
-        // Récupérer les emplois de la base de données
-        const { data: jobs, error } = await supabase
+        // Récupérer tous les emplois Victaure avec leurs transcriptions
+        const { data: victaureJobs = [], error: victaureError } = await supabase
           .from('jobs')
           .select(`
             *,
             employer:profiles(
               company_name,
               avatar_url
+            ),
+            job_transcriptions(
+              ai_transcription
             )
           `)
           .eq('status', 'open')
           .order('created_at', { ascending: false });
 
-        if (error) {
-          console.error("Error fetching internal jobs:", error);
-          throw error;
-        }
+        if (victaureError) throw victaureError;
 
-        console.log("Internal jobs fetched:", jobs?.length || 0);
-
-        // Récupérer les emplois scrapés
-        const { data: scrapedJobs, error: scrapedError } = await supabase
+        // Récupérer tous les emplois externes avec leurs transcriptions
+        const { data: scrapedJobs = [], error: scrapedError } = await supabase
           .from('scraped_jobs')
-          .select('*')
+          .select(`
+            *,
+            job_transcriptions(
+              ai_transcription
+            )
+          `)
           .order('posted_at', { ascending: false });
 
-        if (scrapedError) {
-          console.error("Error fetching scraped jobs:", scrapedError);
-          throw scrapedError;
-        }
+        if (scrapedError) throw scrapedError;
 
-        console.log("Scraped jobs fetched:", scrapedJobs?.length || 0);
-
-        // Formatter les emplois internes
-        const formattedInternalJobs: Job[] = (jobs || []).map(job => {
-          try {
-            let interviewProcess = [];
-            let applicationSteps = [];
-
-            // Gestion sécurisée de interview_process
-            if (job.interview_process) {
-              if (typeof job.interview_process === 'string') {
-                interviewProcess = JSON.parse(job.interview_process);
-              } else if (Array.isArray(job.interview_process)) {
-                interviewProcess = job.interview_process;
-              }
-            }
-
-            // Gestion sécurisée de application_steps
-            if (job.application_steps) {
-              if (typeof job.application_steps === 'string') {
-                applicationSteps = JSON.parse(job.application_steps);
-              } else if (Array.isArray(job.application_steps)) {
-                applicationSteps = job.application_steps;
-              }
-            }
-
-            return {
-              id: job.id,
-              title: job.title,
-              description: job.description || '',
-              budget: job.budget || 0,
-              location: job.location || '',
-              employer_id: job.employer_id || '',
-              status: 'open',
-              category: job.category || 'Technology',
-              contract_type: job.contract_type || 'FULL_TIME',
-              experience_level: job.experience_level || 'mid-level',
-              created_at: job.created_at,
-              source: "internal",
-              company: job.employer?.company_name || "Entreprise non spécifiée",
-              url: `/jobs/${job.id}`,
-              mission_type: 'company',
-              salary_min: job.salary_min || undefined,
-              salary_max: job.salary_max || undefined,
-              interview_process: interviewProcess,
-              application_steps: applicationSteps
-            };
-          } catch (error) {
-            console.error('Error formatting internal job:', error, job);
-            return null;
-          }
-        }).filter(Boolean) as Job[];
-
-        console.log("Formatted internal jobs:", formattedInternalJobs.length);
-
-        // Formatter les emplois scrapés
-        const formattedScrapedJobs: Job[] = (scrapedJobs || []).map(job => {
-          try {
-            let salary_min, salary_max;
+        // Formater de manière uniforme
+        const formattedJobs = [
+          ...victaureJobs.map(job => {
+            const missionType: MissionType = 
+              job.mission_type === 'individual' ? 'individual' : 'company';
             
-            if (job.salary_range) {
-              const [min, max] = job.salary_range.split('-').map(s => parseFloat(s.trim()));
-              salary_min = !isNaN(min) ? min : undefined;
-              salary_max = !isNaN(max) ? max : undefined;
-            }
-
+            // Parse interview_process as array or provide empty array if invalid
+            const interviewProcess = parseJsonArray(job.interview_process);
+            const applicationSteps = parseJsonArray(job.application_steps);
+            const salaryBenefits = parseJsonObject(job.salary_benefits);
+            
             return {
-              id: job.id,
-              title: job.title,
-              description: job.description || '',
-              budget: 0,
-              location: job.location || '',
-              employer_id: '',
-              status: 'open',
-              category: 'Technology',
-              contract_type: job.employment_type || 'FULL_TIME',
-              experience_level: job.experience_level || 'mid-level',
-              created_at: job.posted_at,
-              source: "external",
-              company: job.company || "Entreprise externe",
-              url: job.url,
-              mission_type: 'company',
-              salary: job.salary_range,
-              skills: Array.isArray(job.skills) ? job.skills : [],
-              interview_process: [],
-              application_steps: [],
-              salary_min,
-              salary_max
-            };
-          } catch (error) {
-            console.error('Error formatting scraped job:', error, job);
-            return null;
-          }
-        }).filter(Boolean) as Job[];
+              ...job,
+              company: job.employer?.company_name || job.company_name || 'Entreprise',
+              url: `/jobs/${job.id}`,
+              source: "internal" as const,
+              mission_type: missionType,
+              employer: {
+                company_name: job.employer?.company_name,
+                avatar_url: job.employer?.avatar_url
+              },
+              status: job.status as "open" | "closed" | "in-progress",
+              interview_process: interviewProcess,
+              application_steps: applicationSteps,
+              salary_benefits: salaryBenefits,
+              company_culture: Array.isArray(job.company_culture) ? job.company_culture : [],
+              perks: Array.isArray(job.perks) ? job.perks : [],
+              benefits: Array.isArray(job.benefits) ? job.benefits : [],
+              languages: Array.isArray(job.languages) ? job.languages : [],
+              qualifications: Array.isArray(job.qualifications) ? job.qualifications : [],
+              responsibilities: Array.isArray(job.responsibilities) ? job.responsibilities : [],
+              tools_and_technologies: Array.isArray(job.tools_and_technologies) ? job.tools_and_technologies : [],
+              certifications_required: Array.isArray(job.certifications_required) ? job.certifications_required : [],
+              work_schedule: Array.isArray(job.work_schedule) ? job.work_schedule : []
+            } satisfies Job;
+          }),
+          ...scrapedJobs.map(job => ({
+            id: job.id,
+            title: job.title,
+            description: job.description || '',
+            budget: 0,
+            location: job.location,
+            employer_id: '',
+            status: 'open' as const,
+            category: job.industry || 'Technology',
+            contract_type: job.job_type || 'full-time',
+            experience_level: job.experience_level || 'mid-level',
+            company: job.company,
+            url: job.url,
+            source: "external" as const,
+            mission_type: 'company' as MissionType,
+            interview_process: [],
+            application_steps: [],
+            salary_benefits: {},
+            company_culture: [],
+            perks: [],
+            benefits: [],
+            languages: [],
+            qualifications: [],
+            responsibilities: [],
+            tools_and_technologies: [],
+            certifications_required: [],
+            work_schedule: []
+          } satisfies Job))
+        ] as Job[];
 
-        console.log("Formatted scraped jobs:", formattedScrapedJobs.length);
-
-        // Combiner et retourner tous les emplois
-        const allJobs = [...formattedInternalJobs, ...formattedScrapedJobs];
-        
-        console.log("Total jobs loaded:", {
-          totalJobs: allJobs.length,
-          internalJobs: formattedInternalJobs.length,
-          scrapedJobs: formattedScrapedJobs.length,
-        });
-
-        if (allJobs.length === 0) {
-          console.warn("No jobs found in the database");
-          toast.warning("Aucune offre d'emploi trouvée, veuillez réessayer plus tard");
+        // Filtrer si une recherche est présente
+        if (queryString) {
+          const searchTerms = queryString.toLowerCase().split(' ');
+          return formattedJobs.filter(job => {
+            const searchableText = `
+              ${job.title} 
+              ${job.company || ''} 
+              ${job.location} 
+              ${job.description || ''} 
+            `.toLowerCase();
+            
+            return searchTerms.every(term => searchableText.includes(term));
+          });
         }
 
-        return allJobs;
+        return formattedJobs;
+
       } catch (error) {
-        console.error("Error fetching jobs:", error);
-        toast.error("Impossible de charger les offres d'emploi");
-        throw error;
+        console.error('Erreur lors de la récupération des emplois:', error);
+        toast.error('Erreur lors de la récupération des emplois');
+        return [];
       }
-    },
-    refetchInterval: 300000, // Rafraîchir toutes les 5 minutes
-    staleTime: 60000, // Considérer les données comme périmées après 1 minute
-    retry: 3, // Réessayer 3 fois en cas d'échec
-    retryDelay: 1000, // Attendre 1 seconde entre chaque tentative
+    }
   });
 };

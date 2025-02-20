@@ -4,17 +4,15 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 import { Receiver } from "@/types/messages";
 
 interface ConversationHeaderProps {
-  receiver: Receiver;
+  profile: Receiver | null;
   onBack?: () => void;
-  onDelete?: () => void;
-  className?: string;
+  onDeleteConversation?: () => void;
 }
 
 export function ConversationHeader({
-  receiver,
+  profile,
   onBack,
-  onDelete,
-  className
+  onDeleteConversation
 }: ConversationHeaderProps) {
   return (
     <div className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -27,36 +25,36 @@ export function ConversationHeader({
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              {receiver?.avatar_url ? (
+              {profile?.avatar_url ? (
                 <img
-                  src={receiver.avatar_url}
-                  alt={receiver.full_name}
+                  src={profile.avatar_url}
+                  alt={profile.full_name}
                   className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
                 <span className="text-lg font-medium text-primary">
-                  {receiver?.full_name?.charAt(0).toUpperCase()}
+                  {profile?.full_name?.charAt(0).toUpperCase()}
                 </span>
               )}
             </div>
-            {receiver?.online_status && (
+            {profile?.online_status && (
               <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
             )}
           </div>
           <div>
-            <h3 className="font-medium">{receiver?.full_name}</h3>
+            <h3 className="font-medium">{profile?.full_name}</h3>
             <p className="text-sm text-muted-foreground">
-              {receiver?.online_status ? "En ligne" : "Hors ligne"}
+              {profile?.online_status ? "En ligne" : "Hors ligne"}
             </p>
           </div>
         </div>
       </div>
 
-      {onDelete && (
+      {onDeleteConversation && (
         <Button
           variant="ghost"
           size="icon"
-          onClick={onDelete}
+          onClick={onDeleteConversation}
           className="text-destructive hover:text-destructive hover:bg-destructive/10"
         >
           <Trash2 className="h-5 w-5" />

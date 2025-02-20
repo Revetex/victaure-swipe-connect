@@ -1,129 +1,176 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
-import { corsHeaders } from "../_shared/cors.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-interface Profile {
-  id: string;
-  skills: string[];
-  experience_level: string;
-  preferred_locations: string[];
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+interface SearchJob {
+  title: string;
+  company: string;
+  location: string;
+  description: string;
+  url: string;
+  salary?: string;
+  source: string;
+  posted_at: string;
+  job_type?: string;
+  requirements?: string[];
+  benefits?: string[];
 }
 
-interface Job {
-  id: string;
-  title: string;
-  description: string;
-  location: string;
-  required_skills: string[];
-  experience_level: string;
+async function scrapeIndeed(query: string): Promise<SearchJob[]> {
+  const url = `https://ca.indeed.com/jobs?q=${encodeURIComponent(query)}&l=Quebec&sort=date`;
+  const response = await fetch(url);
+  const html = await response.text();
+
+  // Extraire les emplois avec regex
+  const jobs: SearchJob[] = [];
+  const jobBlocks = html.match(/<div class="job_seen_beacon">(.*?)<\/div>/gs) || [];
+
+  jobBlocks.forEach(block => {
+    const title = block.match(/title="(.*?)"/)?.[1] || '';
+    const company = block.match(/companyName">(.*?)<\/span>/)?.[1] || '';
+    const location = block.match(/companyLocation">(.*?)<\/div>/)?.[1] || '';
+    const url = 'https://ca.indeed.com' + (block.match(/href="(.*?)"/)?.[1] || '');
+    
+    jobs.push({
+      title,
+      company,
+      location,
+      description: '',
+      url,
+      source: 'indeed',
+      posted_at: new Date().toISOString()
+    });
+  });
+
+  return jobs;
+}
+
+async function scrapeLinkedIn(): Promise<SearchJob[]> {
+  const url = 'https://www.linkedin.com/jobs/search?keywords=&location=Quebec&geoId=105927923&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0';
+  const response = await fetch(url);
+  const html = await response.text();
+  
+  const jobs: SearchJob[] = [];
+  const jobCards = html.match(/<div class="base-card relative.*?<\/div>/gs) || [];
+
+  jobCards.forEach(card => {
+    const title = card.match(/job-title">(.*?)<\/h3>/)?.[1] || '';
+    const company = card.match(/base-search-card__subtitle">(.*?)<\/h4>/)?.[1] || '';
+    const location = card.match(/job-search-card__location">(.*?)<\/span>/)?.[1] || '';
+    const url = card.match(/href="(.*?)"/)?.[1] || '';
+
+    jobs.push({
+      title,
+      company,
+      location,
+      description: '',
+      url,
+      source: 'linkedin',
+      posted_at: new Date().toISOString()
+    });
+  });
+
+  return jobs;
 }
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabaseClient = createClient(
+    const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { user_id } = await req.json();
+    // Récupérer les jobs de différentes sources
+    const queries = [
+      "développeur",
+      "software engineer",
+      "web developer",
+      "programmeur",
+      "full stack",
+      "frontend",
+      "backend",
+      "devops"
+    ];
 
-    // Récupérer le profil utilisateur
-    const { data: profile, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('*')
-      .eq('id', user_id)
-      .single();
+    let allJobs: SearchJob[] = [];
 
-    if (profileError) throw profileError;
-
-    // Récupérer les emplois récents
-    const { data: jobs, error: jobsError } = await supabaseClient
-      .from('scraped_jobs')
-      .select('*')
-      .gte('posted_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
-
-    if (jobsError) throw jobsError;
-
-    // Analyser la correspondance entre le profil et les emplois
-    const jobMatches = jobs.map(job => {
-      const skillMatch = calculateSkillMatch(profile.skills || [], job.skills || []);
-      const locationMatch = calculateLocationMatch(profile.preferred_locations || [], job.location);
-      const experienceMatch = calculateExperienceMatch(profile.experience_level, job.experience_level);
-
-      const score = (skillMatch * 0.5) + (locationMatch * 0.3) + (experienceMatch * 0.2);
-      const reasons = generateMatchReasons(skillMatch, locationMatch, experienceMatch);
-
-      return {
-        job_id: job.id,
-        score,
-        reasons
-      };
+    // Paralléliser les requêtes pour plus de rapidité
+    await Promise.all([
+      ...queries.map(q => scrapeIndeed(q)),
+      scrapeLinkedIn()
+    ]).then(results => {
+      results.forEach(jobs => {
+        allJobs = [...allJobs, ...jobs];
+      });
     });
 
-    // Mise à jour des scores dans la base de données
-    const updates = jobMatches.map(match => 
-      supabaseClient
-        .from('scraped_jobs')
-        .update({ match_score: Math.round(match.score * 100) })
-        .eq('id', match.job_id)
-    );
+    console.log(`Found ${allJobs.length} total jobs`);
 
-    await Promise.all(updates);
+    // Dédupliquer les emplois par URL
+    const uniqueJobs = Array.from(new Map(allJobs.map(job => [job.url, job])).values());
+
+    // Sauvegarder dans Supabase avec plus d'informations
+    for (const job of uniqueJobs) {
+      const { error } = await supabase
+        .from('scraped_jobs')
+        .upsert(
+          {
+            title: job.title,
+            company: job.company,
+            location: job.location,
+            description: job.description,
+            url: job.url,
+            source_platform: job.source,
+            posted_at: job.posted_at,
+            job_type: job.job_type || 'full-time',
+            requirements: job.requirements || [],
+            benefits: job.benefits || [],
+            is_remote: job.location.toLowerCase().includes('remote') || job.location.toLowerCase().includes('télétravail'),
+            relevance_score: 1
+          },
+          { onConflict: 'url' }
+        );
+
+      if (error) {
+        console.error('Error saving job:', error);
+      }
+    }
+
+    // Nettoyer les vieux jobs
+    const { error: cleanupError } = await supabase
+      .from('scraped_jobs')
+      .delete()
+      .lt('posted_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
+
+    if (cleanupError) {
+      console.error('Error cleaning up old jobs:', cleanupError);
+    }
 
     return new Response(
-      JSON.stringify({ data: jobMatches.sort((a, b) => b.score - a.score) }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
-      }
+      JSON.stringify({ 
+        success: true, 
+        message: `Successfully scraped and saved ${uniqueJobs.length} unique jobs`
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error in smart-job-scraper:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
   }
 });
-
-function calculateSkillMatch(userSkills: string[], jobSkills: string[]): number {
-  if (!userSkills.length || !jobSkills.length) return 0;
-  const matchingSkills = userSkills.filter(skill => 
-    jobSkills.some(jobSkill => jobSkill.toLowerCase().includes(skill.toLowerCase()))
-  );
-  return matchingSkills.length / Math.max(userSkills.length, jobSkills.length);
-}
-
-function calculateLocationMatch(preferredLocations: string[], jobLocation: string): number {
-  if (!preferredLocations.length || !jobLocation) return 0;
-  return preferredLocations.some(loc => 
-    jobLocation.toLowerCase().includes(loc.toLowerCase())
-  ) ? 1 : 0;
-}
-
-function calculateExperienceMatch(userLevel: string, jobLevel: string): number {
-  if (!userLevel || !jobLevel) return 0.5;
-  const levels = ['junior', 'mid-level', 'senior'];
-  const userIdx = levels.indexOf(userLevel.toLowerCase());
-  const jobIdx = levels.indexOf(jobLevel.toLowerCase());
-  if (userIdx === -1 || jobIdx === -1) return 0.5;
-  return 1 - Math.abs(userIdx - jobIdx) / levels.length;
-}
-
-function generateMatchReasons(skillMatch: number, locationMatch: number, experienceMatch: number): string[] {
-  const reasons = [];
-  if (skillMatch > 0.7) reasons.push("Vos compétences correspondent parfaitement");
-  else if (skillMatch > 0.4) reasons.push("Certaines de vos compétences correspondent");
-  if (locationMatch === 1) reasons.push("L'emplacement correspond à vos préférences");
-  if (experienceMatch > 0.7) reasons.push("Votre niveau d'expérience correspond bien");
-  return reasons;
-}

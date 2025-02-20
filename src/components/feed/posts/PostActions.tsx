@@ -2,31 +2,20 @@
 import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import { useReactions } from "./actions/useReactions";
 import { ReactionButton } from "./actions/ReactionButton";
-import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 interface PostActionsProps {
   likes: number;
   dislikes: number;
   commentCount: number;
-  userReaction?: 'like' | 'dislike';
+  userReaction?: string;
   isExpanded: boolean;
   postId: string;
   postAuthorId: string;
   currentUserId?: string;
   userEmail?: string;
+  onLike: () => void;
+  onDislike: () => void;
   onToggleComments: () => void;
-  onReaction?: (postId: string, type: 'like' | 'dislike') => void;
-}
-
-interface PostPayload {
-  id: string;
-  likes: number;
-  dislikes: number;
-  user_id: string;
-  content: string;
-  created_at: string;
 }
 
 export function PostActions({
@@ -39,90 +28,44 @@ export function PostActions({
   postAuthorId,
   currentUserId,
   userEmail,
+  onLike,
+  onDislike,
   onToggleComments,
-  onReaction
 }: PostActionsProps) {
   const { handleReaction } = useReactions({
     postId,
     postAuthorId,
     currentUserId,
     userEmail,
-    userReaction
+    onLike,
+    onDislike
   });
-
-  useEffect(() => {
-    const channel = supabase
-      .channel('post-reactions')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'posts',
-          filter: `id=eq.${postId}`
-        },
-        (payload: RealtimePostgresChangesPayload<PostPayload>) => {
-          if (payload.new && onReaction) {
-            const oldLikes = (payload.old as PostPayload)?.likes ?? 0;
-            const oldDislikes = (payload.old as PostPayload)?.dislikes ?? 0;
-            const newLikes = (payload.new as PostPayload).likes;
-            const newDislikes = (payload.new as PostPayload).dislikes;
-            
-            if (newLikes > oldLikes) {
-              onReaction(postId, 'like');
-            } else if (newDislikes > oldDislikes) {
-              onReaction(postId, 'dislike');
-            }
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [postId, onReaction]);
-
-  const calculateReactionPercentage = () => {
-    const total = likes + dislikes;
-    if (total === 0) return { likes: 0, dislikes: 0 }; // Si pas de réactions, on affiche 0/0
-    
-    const likePercentage = Math.round((likes / total) * 100);
-    const dislikePercentage = 100 - likePercentage;
-    
-    return { likes: likePercentage, dislikes: dislikePercentage };
-  };
-
-  const percentages = calculateReactionPercentage();
 
   return (
     <div className="flex gap-2 items-center py-2">
-      <div className="flex items-center gap-2">
-        <ReactionButton
-          icon={ThumbsUp}
-          count={likes}
-          isActive={userReaction === 'like'}
-          onClick={() => handleReaction('like')}
-          activeClassName="bg-green-500 hover:bg-green-600 text-white shadow-lg"
-        />
-        <ReactionButton
-          icon={ThumbsDown}
-          count={dislikes}
-          isActive={userReaction === 'dislike'}
-          onClick={() => handleReaction('dislike')}
-          activeClassName="bg-red-500 hover:bg-red-600 text-white shadow-lg"
-        />
-      </div>
+      <ReactionButton
+        icon={ThumbsUp}
+        count={likes || 0}
+        isActive={userReaction === 'like'}
+        onClick={() => handleReaction('like')}
+        activeClassName="bg-green-500 hover:bg-green-600 text-white shadow-lg"
+      />
 
-      <div className="flex items-center gap-2">
-        <ReactionButton
-          icon={MessageSquare}
-          count={commentCount}
-          isActive={isExpanded}
-          onClick={onToggleComments}
-          activeClassName="bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
-        />
-      </div>
+      <ReactionButton
+        icon={ThumbsDown}
+        count={dislikes || 0}
+        isActive={userReaction === 'dislike'}
+        onClick={() => handleReaction('dislike')}
+        activeClassName="bg-red-500 hover:bg-red-600 text-white shadow-lg"
+      />
+
+      <ReactionButton
+        icon={MessageSquare}
+        count={commentCount}
+        isActive={isExpanded}
+        onClick={onToggleComments}
+        activeClassName="bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
+      />
     </div>
   );
 }

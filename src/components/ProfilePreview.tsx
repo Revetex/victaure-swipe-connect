@@ -62,8 +62,6 @@ export function ProfilePreview({
     onClose();
   };
 
-  if (!isOpen) return null;
-
   if (isMobile) {
     return (
       <>

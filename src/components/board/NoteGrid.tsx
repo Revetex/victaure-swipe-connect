@@ -15,7 +15,7 @@ export function NoteGrid({ notes, onDeleteNote }: NoteGridProps) {
   const [layout, setLayout] = useState<'grid' | 'masonry' | 'list'>('grid');
 
   return (
-    <div className="w-full space-y-4 p-4">
+    <div className="w-full p-4 space-y-4">
       <div className="flex justify-end">
         <Select value={layout} onValueChange={(value: 'grid' | 'masonry' | 'list') => setLayout(value)}>
           <SelectTrigger className="w-[180px]">

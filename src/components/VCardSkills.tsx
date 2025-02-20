@@ -1,4 +1,3 @@
-
 import { VCardSection } from "./VCardSection";
 import { Code, X } from "lucide-react";
 import { TouchFriendlySkillSelector } from "./skills/TouchFriendlySkillSelector";

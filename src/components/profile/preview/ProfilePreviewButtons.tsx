@@ -21,7 +21,7 @@ export function ProfilePreviewButtons({
   profile,
   onClose,
   canViewFullProfile,
-  onViewProfile,
+  onViewProfile
 }: ProfilePreviewButtonsProps) {
   const {
     isFriend,
@@ -59,15 +59,6 @@ export function ProfilePreviewButtons({
     navigate(`/messages?receiver=${profile.id}`);
   };
 
-  const handleViewProfileClick = () => {
-    if (!canViewFullProfile) {
-      toast.error("Ce profil est privé");
-      return;
-    }
-    onClose();
-    navigate(`/profile/${profile.id}`);
-  };
-
   return (
     <motion.div 
       className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full"
@@ -76,7 +67,7 @@ export function ProfilePreviewButtons({
       transition={{ duration: 0.3 }}
     >
       <Button 
-        onClick={handleViewProfileClick}
+        onClick={onViewProfile}
         variant={canViewFullProfile ? "default" : "secondary"}
         className="w-full flex items-center gap-2"
       >

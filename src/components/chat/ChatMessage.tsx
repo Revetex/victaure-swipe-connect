@@ -14,7 +14,9 @@ interface ChatMessageProps {
   onJobReject?: (jobId: string) => void;
 }
 
+// L'assistant ne propose plus de réponses prédéfinies, mais analyse le contexte
 function analyzeContext(message: Message): string[] {
+  // Suppression des suggestions prédéfinies
   return [];
 }
 
@@ -95,7 +97,7 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex gap-3 ${message.sender_id === 'assistant' ? 'flex-row' : 'flex-row-reverse'} w-full`}
+      className={`flex gap-3 ${message.sender_id === 'assistant' ? 'flex-row' : 'flex-row-reverse'}`}
     >
       <UserAvatar
         user={{
@@ -122,9 +124,9 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
         className="h-8 w-8 mt-1"
       />
       
-      <div className={`flex flex-col space-y-2 ${message.sender_id === 'assistant' ? 'items-start' : 'items-end'} flex-1`}>
+      <div className={`flex flex-col space-y-2 ${message.sender_id === 'assistant' ? 'items-start' : 'items-end'} max-w-[80%]`}>
         <motion.div 
-          className="flex items-start gap-2 w-full"
+          className="flex items-start gap-2"
           layout
         >
           <Card
@@ -132,7 +134,7 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
               message.sender_id === 'assistant' 
                 ? 'bg-muted/50 backdrop-blur-sm border-primary/10' 
                 : 'bg-primary text-primary-foreground'
-            } max-w-[80%]`}
+            }`}
           >
             {message.thinking ? (
               <div className="flex items-center gap-2">

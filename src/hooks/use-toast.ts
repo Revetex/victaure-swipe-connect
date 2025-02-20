@@ -1,6 +1,4 @@
-
 import * as React from "react"
-import { toast as sonnerToast } from "sonner"
 
 import type {
   ToastActionElement,
@@ -92,6 +90,8 @@ export const reducer = (state: State, action: Action): State => {
     case "DISMISS_TOAST": {
       const { toastId } = action
 
+      // ! Side effects ! - This could be extracted into a dismissToast() action,
+      // but I'll keep it here for simplicity
       if (toastId) {
         addToRemoveQueue(toastId)
       } else {
@@ -137,28 +137,37 @@ function dispatch(action: Action) {
   })
 }
 
-interface Toast extends Omit<ToasterToast, "id"> {
-  duration?: number
-}
+type Toast = Omit<ToasterToast, "id">
 
-// Fonction unifiée pour afficher les toasts
-function toast(options: Toast | string) {
-  if (typeof options === 'string') {
-    sonnerToast(options, {
-      position: 'top-center',
-      duration: 3000,
+function toast({ ...props }: Toast) {
+  const id = genId()
+
+  const update = (props: ToasterToast) =>
+    dispatch({
+      type: "UPDATE_TOAST",
+      toast: { ...props, id },
     })
-    return
-  }
+  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
 
-  sonnerToast(options.title || '', {
-    description: options.description,
-    position: 'top-center',
-    duration: options.duration || 3000,
+  dispatch({
+    type: "ADD_TOAST",
+    toast: {
+      ...props,
+      id,
+      open: true,
+      onOpenChange: (open) => {
+        if (!open) dismiss()
+      },
+    },
   })
+
+  return {
+    id: id,
+    dismiss,
+    update,
+  }
 }
 
-// Hook personnalisé pour gérer les toasts
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
 
@@ -170,7 +179,7 @@ function useToast() {
         listeners.splice(index, 1)
       }
     }
-  }, [])
+  }, [state])
 
   return {
     ...state,

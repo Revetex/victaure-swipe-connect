@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 interface ProfilePreviewHeaderProps {
   profile: UserProfile;
-  onRequestChat?: () => void;
+  onRequestChat?: () => void; // Rendons cette prop optionnelle
 }
 
 export function ProfilePreviewHeader({ profile }: ProfilePreviewHeaderProps) {
@@ -18,14 +18,11 @@ export function ProfilePreviewHeader({ profile }: ProfilePreviewHeaderProps) {
       <div className="flex items-center gap-4">
         <div className="relative w-16 h-16 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center ring-2 ring-primary/10">
           {profile.avatar_url ? (
-            <div className="w-full h-full">
-              <img
-                src={profile.avatar_url}
-                alt={profile.full_name || ""}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors" />
-            </div>
+            <img
+              src={profile.avatar_url}
+              alt={profile.full_name || ""}
+              className="w-full h-full object-cover"
+            />
           ) : (
             <UserCircle className="w-8 h-8 text-muted-foreground" />
           )}

@@ -1,5 +1,4 @@
-
-import { Bot, TrendingUp, Search, Briefcase, Sparkles } from "lucide-react";
+import { Bot, MessageSquare, BrainCircuit, Sparkles, UserCog } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -29,36 +28,36 @@ export function MrVictaureWelcome({ onDismiss, onStartChat }: MrVictaureWelcomeP
           </motion.div>
           <div>
             <h2 className="text-2xl font-bold">M. Victaure</h2>
-            <p className="text-muted-foreground">Assistant IA pour votre carrière</p>
+            <p className="text-muted-foreground">Assistant IA personnel</p>
           </div>
         </div>
 
         <div className="space-y-6 mb-6">
           <p className="text-lg">
-            Bonjour! Je suis M. Victaure, votre assistant de carrière propulsé par l'IA. Je suis là pour :
+            Bonjour! Je suis M. Victaure, votre assistant IA personnel propulsé par Hugging Face. Je suis là pour vous aider dans votre parcours professionnel en vous offrant des conseils personnalisés et un soutien adapté à vos besoins. Contrairement à la messagerie entre utilisateurs, je suis un assistant virtuel spécialisé dans l'orientation professionnelle au Québec.
           </p>
 
           <div className="grid gap-4 sm:grid-cols-2">
             {[
               {
-                icon: Search,
-                title: "Recherche d'Emploi",
-                description: "Analyse quotidienne des offres d'emploi pertinentes"
+                icon: UserCog,
+                title: "IA Spécialisée",
+                description: "Conseils professionnels basés sur l'intelligence artificielle"
               },
               {
-                icon: TrendingUp,
-                title: "Analyse de Profil",
-                description: "Suggestions basées sur vos compétences et expériences"
+                icon: MessageSquare,
+                title: "Dialogue Intelligent",
+                description: "Conversations naturelles et personnalisées"
               },
               {
-                icon: Briefcase,
-                title: "Orientation Pro",
-                description: "Conseils personnalisés pour votre carrière"
+                icon: BrainCircuit,
+                title: "Analyse Avancée",
+                description: "Recommandations basées sur vos besoins"
               },
               {
                 icon: Sparkles,
-                title: "Matchmaking",
-                description: "Mise en relation avec les meilleures opportunités"
+                title: "Support Continu",
+                description: "Disponible 24/7 pour vous accompagner"
               }
             ].map((feature, index) => (
               <motion.div 
@@ -93,7 +92,7 @@ export function MrVictaureWelcome({ onDismiss, onStartChat }: MrVictaureWelcomeP
             onClick={onStartChat}
             className="bg-primary hover:bg-primary/90"
           >
-            Commencer l'orientation
+            Commencer la discussion
           </Button>
         </div>
       </Card>

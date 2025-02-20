@@ -1,22 +1,29 @@
 
-import React from "react";
-import { Outlet } from "react-router-dom";
+import React, { useState, useCallback } from "react";
 import { useProfile } from "@/hooks/useProfile";
+import { DashboardContent } from "./dashboard/DashboardContent";
 import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
+import { cn } from "@/lib/utils";
 
-export function DashboardLayout() {
-  const [showMobileMenu, setShowMobileMenu] = React.useState(false);
-  const [currentPage, setCurrentPage] = React.useState(1);
+export function DashboardLayout({ children }: { children?: React.ReactNode }) {
+  const [currentPage, setCurrentPage] = useState(4);
+  const [isEditing, setIsEditing] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { profile } = useProfile();
 
-  const handlePageChange = React.useCallback((page: number) => {
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
+    setIsEditing(false);
     setShowMobileMenu(false);
   }, []);
 
+  const handleEditStateChange = useCallback((state: boolean) => {
+    setIsEditing(state);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background relative">
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -29,10 +36,18 @@ export function DashboardLayout() {
         onPageChange={handlePageChange}
       />
 
-      <main className="lg:pl-64">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
-          <Outlet />
-        </div>
+      <main className={cn(
+        "flex-1 lg:ml-64 min-h-screen",
+        "glass-panel"
+      )}>
+        {children || (
+          <DashboardContent
+            currentPage={currentPage}
+            isEditing={isEditing}
+            onEditStateChange={handleEditStateChange}
+            onRequestChat={() => handlePageChange(2)}
+          />
+        )}
       </main>
     </div>
   );

@@ -1,4 +1,3 @@
-
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -21,7 +20,7 @@ export const usePostOperations = () => {
 
       if (error) throw error;
 
-      await queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
     } catch (error) {
       console.error('Error handling reaction:', error);
       toast("Une erreur est survenue lors de la réaction");

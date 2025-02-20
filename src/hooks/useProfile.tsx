@@ -5,6 +5,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { UserProfile, Friend, createEmptyProfile } from "@/types/profile";
 import { transformDatabaseProfile, transformEducation, transformCertification, transformExperience } from "@/types/profile";
 
+// Définir le type de la réponse de la base de données
+interface DatabaseProfile extends Omit<UserProfile, 'friends' | 'certifications' | 'education' | 'experiences'> {
+  friends?: string[];
+}
+
 export function useProfile() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
@@ -12,9 +17,7 @@ export function useProfile() {
   const [tempProfile, setTempProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const fetchProfile = async () => {
+    async function fetchProfile() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
@@ -29,36 +32,16 @@ export function useProfile() {
 
         if (profileError) throw profileError;
 
-        // Get friend requests from both perspectives where status is accepted
-        const [sentRequests, receivedRequests] = await Promise.all([
-          supabase
-            .from('friend_requests')
-            .select('receiver_id')
-            .eq('sender_id', user.id)
-            .eq('status', 'accepted'),
-          supabase
-            .from('friend_requests')
-            .select('sender_id')
-            .eq('receiver_id', user.id)
-            .eq('status', 'accepted')
-        ]);
-
-        // Combine friend IDs from both queries
-        const friendIds = [
-          ...(sentRequests.data?.map(r => r.receiver_id) || []),
-          ...(receivedRequests.data?.map(r => r.sender_id) || [])
-        ];
-
-        // Remove duplicates
-        const uniqueFriendIds = [...new Set(friendIds)];
+        // Type assertion pour profileData
+        const typedProfileData = profileData as DatabaseProfile;
+        const friendsIds = typedProfileData?.friends || [];
         
-        // Parallel queries for better performance
-        const [friendsResponse, certificationsResponse, educationResponse, experiencesResponse] = 
+        const [{ data: friendsData }, { data: certifications }, { data: education }, { data: experiences }] = 
           await Promise.all([
             supabase
               .from('profiles')
               .select('id, full_name, avatar_url, online_status, last_seen')
-              .in('id', uniqueFriendIds),
+              .in('id', friendsIds),
             supabase
               .from('certifications')
               .select('*')
@@ -73,50 +56,40 @@ export function useProfile() {
               .eq('profile_id', user.id)
           ]);
 
-        if (!isMounted) return;
-
-        const friends: Friend[] = (friendsResponse.data || []).map(friend => ({
+        const friends: Friend[] = friendsData?.map((friend: any) => ({
           id: friend.id,
           full_name: friend.full_name,
           avatar_url: friend.avatar_url,
           online_status: friend.online_status,
           last_seen: friend.last_seen
-        }));
+        })) || [];
 
-        const baseProfile = createEmptyProfile(user.id, profileData.email);
+        const baseProfile = createEmptyProfile(user.id, typedProfileData.email);
         const fullProfile: UserProfile = {
           ...baseProfile,
-          ...profileData,
-          role: (profileData.role || 'professional') as "professional" | "business" | "admin",
+          ...typedProfileData,
+          role: (typedProfileData.role as 'professional' | 'business' | 'admin') || 'professional',
           friends,
-          certifications: (certificationsResponse.data || []).map(cert => transformCertification(cert)),
-          education: (educationResponse.data || []).map(edu => transformEducation(edu)),
-          experiences: (experiencesResponse.data || []).map(exp => transformExperience(exp))
+          certifications: (certifications || []).map(cert => transformCertification(cert)),
+          education: (education || []).map(edu => transformEducation(edu)),
+          experiences: (experiences || []).map(exp => transformExperience(exp))
         };
 
         setProfile(fullProfile);
         setTempProfile(fullProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
-        if (isMounted) {
-          toast({
-            variant: "destructive",
-            title: "Erreur",
-            description: "Impossible de charger votre profil",
-          });
-        }
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible de charger votre profil",
+        });
       } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
-    };
+    }
 
     fetchProfile();
-
-    return () => {
-      isMounted = false;
-    };
   }, [toast]);
 
   return { profile, setProfile, tempProfile, setTempProfile, isLoading };

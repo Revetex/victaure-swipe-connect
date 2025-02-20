@@ -1,21 +1,42 @@
 
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { UserProfile } from "@/types/profile";
+import { transformSearchResults } from "@/utils/profileTransformers";
 
-interface SearchBarProps {
-  value: string;
-  onChange: (value: string) => void;
-}
+export function SearchBar() {
+  const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
 
-export function SearchBar({ value, onChange }: SearchBarProps) {
+  const handleSearch = async (query: string) => {
+    if (!query) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .ilike('full_name', `%${query}%`)
+        .limit(5);
+
+      if (error) throw error;
+      
+      setSearchResults(transformSearchResults(data || []));
+    } catch (error) {
+      console.error('Error searching profiles:', error);
+    }
+  };
+
   return (
-    <div className="relative flex-1">
-      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+    <div className="relative">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
       <Input
-        placeholder="Rechercher une conversation..."
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="pl-8"
+        className="pl-9"
+        placeholder="Rechercher..."
+        onChange={(e) => handleSearch(e.target.value)}
       />
     </div>
   );

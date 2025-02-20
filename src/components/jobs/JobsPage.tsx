@@ -1,106 +1,145 @@
 
 import { useState } from "react";
-import { Job } from "@/types/job";
-import { useJobsData } from "@/hooks/useJobsData";
-import { motion } from "framer-motion";
-import { toast } from "sonner";
-import { JobsHeader } from "./sections/JobsHeader";
-import { JobsSearch } from "./sections/JobsSearch";
-import { JobsFilters } from "./sections/JobsFilters";
-import { JobsResults } from "./sections/JobsResults";
+import { JobList } from "./JobList";
+import { JobFiltersPanel } from "./JobFiltersPanel";
+import { FilterSection } from "./filters/FilterSection";
+import { useJobFilters } from "@/hooks/useJobFilters";
+import { PageLayout } from "@/components/layout/PageLayout";
+import { Button } from "@/components/ui/button";
+import { Plus, List, Grid3X3, LayoutGrid } from "lucide-react";
+import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { JobStats } from "./sections/JobStats";
+import { JobHeader } from "./sections/JobHeader";
 
 export function JobsPage() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState<string>("");
-  const [selectedCompanyType, setSelectedCompanyType] = useState<string>("");
-  const [sortOrder, setSortOrder] = useState<"recent" | "salary">("recent");
-  const { data: jobs = [], isLoading } = useJobsData();
-  const [selectedJobId, setSelectedJobId] = useState<string>();
+  const { filters, updateFilter, resetFilters } = useJobFilters();
+  const [showFilters, setShowFilters] = useState(true);
+  const [viewMode, setViewMode] = useState<'list' | 'grid' | 'cards'>('grid');
 
-  const filteredJobs = jobs
-    .filter(job => {
-      const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.company?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.description?.toLowerCase().includes(searchQuery.toLowerCase());
-
-      const matchesLocation = !selectedLocation || 
-        job.location.toLowerCase().includes(selectedLocation.toLowerCase());
-
-      const matchesCompanyType = !selectedCompanyType || 
-        (selectedCompanyType === "internal" ? job.source === "internal" : job.source === "external");
-
-      return matchesSearch && matchesLocation && matchesCompanyType;
-    })
-    .sort((a, b) => {
-      if (sortOrder === "recent") {
-        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
-      }
-      const aMaxSalary = a.salary_max || a.salary_min || 0;
-      const bMaxSalary = b.salary_max || b.salary_min || 0;
-      return bMaxSalary - aMaxSalary;
-    });
-
-  const locations = Array.from(new Set(jobs.map(job => job.location))).sort();
-
-  const handleJobSelect = (job: Job) => {
-    setSelectedJobId(job.id);
-    toast.info("Détails de l'emploi disponibles bientôt !");
+  // Exemple de données pour JobStats - à remplacer par des données réelles
+  const statsData = {
+    totalJobs: 1234,
+    newToday: 56,
+    topLocation: "Montréal",
+    topCompany: "Victaure Inc."
   };
-
-  const handleResetFilters = () => {
-    setSearchQuery("");
-    setSelectedLocation("");
-    setSelectedCompanyType("");
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
-    <motion.div 
-      variants={{
-        hidden: { opacity: 0 },
-        visible: {
-          opacity: 1,
-          transition: {
-            staggerChildren: 0.1
-          }
-        }
-      }}
-      initial="hidden"
-      animate="visible"
-      className="container mx-auto p-4 max-w-7xl"
-    >
-      <div className="space-y-6">
-        <JobsHeader totalJobs={jobs.length} />
+    <PageLayout>
+      <div className="flex flex-col gap-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <JobHeader onSearch={(value) => updateFilter("searchTerm", value)} totalJobs={statsData.totalJobs} />
         
-        <JobsSearch 
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
-        
-        <JobsFilters
-          selectedLocation={selectedLocation}
-          selectedCompanyType={selectedCompanyType}
-          sortOrder={sortOrder}
-          locations={locations}
-          onLocationChange={setSelectedLocation}
-          onCompanyTypeChange={setSelectedCompanyType}
-          onSortOrderChange={setSortOrder}
-        />
-        
-        <JobsResults
-          jobs={filteredJobs}
-          onJobSelect={handleJobSelect}
-          selectedJobId={selectedJobId}
-          onResetFilters={handleResetFilters}
-        />
+        <JobStats {...statsData} />
+
+        <Tabs defaultValue="regular" className="w-full">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            <TabsList className="w-full sm:w-auto">
+              <TabsTrigger value="regular">Emplois réguliers</TabsTrigger>
+              <TabsTrigger value="contract">Contrats & Jobines</TabsTrigger>
+              <TabsTrigger value="marketplace">Victaure Market</TabsTrigger>
+            </TabsList>
+
+            <div className="flex items-center gap-4 w-full sm:w-auto">
+              <Select 
+                value={viewMode} 
+                onValueChange={(value: 'list' | 'grid' | 'cards') => setViewMode(value)}
+              >
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="list">
+                    <span className="flex items-center">
+                      <List className="h-4 w-4 mr-2" />
+                      Liste
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="grid">
+                    <span className="flex items-center">
+                      <LayoutGrid className="h-4 w-4 mr-2" />
+                      Grille
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="cards">
+                    <span className="flex items-center">
+                      <Grid3X3 className="h-4 w-4 mr-2" />
+                      Cartes
+                    </span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Link to="/jobs/new">
+                <Button className="whitespace-nowrap">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Publier une offre
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-6">
+            <aside className={cn(
+              "lg:w-80 shrink-0 lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)]",
+              showFilters ? "block" : "hidden lg:block"
+            )}>
+              <JobFiltersPanel 
+                filters={filters} 
+                onFilterChange={updateFilter}
+                onReset={resetFilters}
+              />
+            </aside>
+
+            <main className="flex-1 space-y-4">
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <Button 
+                  variant="outline" 
+                  className="lg:hidden"
+                  onClick={() => setShowFilters(!showFilters)}
+                >
+                  {showFilters ? 'Masquer les filtres' : 'Afficher les filtres'}
+                </Button>
+              </div>
+
+              <FilterSection 
+                filters={filters}
+                onFilterChange={updateFilter}
+                onReset={resetFilters}
+              />
+
+              <TabsContent value="regular">
+                <JobList 
+                  filters={filters}
+                  filterType="regular"
+                  showFilters={showFilters}
+                  viewMode={viewMode}
+                />
+              </TabsContent>
+
+              <TabsContent value="contract">
+                <JobList 
+                  filters={filters}
+                  filterType="contract"
+                  showFilters={showFilters}
+                  viewMode={viewMode}
+                />
+              </TabsContent>
+
+              <TabsContent value="marketplace">
+                <JobList 
+                  filters={filters}
+                  filterType="marketplace"
+                  showFilters={showFilters}
+                  viewMode={viewMode}
+                />
+              </TabsContent>
+            </main>
+          </div>
+        </Tabs>
       </div>
-    </motion.div>
+    </PageLayout>
   );
 }

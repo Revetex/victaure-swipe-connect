@@ -16,28 +16,53 @@ export const useConversationDelete = () => {
 
       if (receiver.id === 'assistant') {
         // Supprimer la conversation avec l'assistant
-        const { error: deleteError } = await supabase
-          .from('ai_messages')
-          .delete()
-          .eq('user_id', user.id);
+        const { error: aiError } = await supabase.rpc('delete_ai_conversation', {
+          p_user_id: user.id
+        });
 
-        if (deleteError) throw deleteError;
-        toast.success("Conversation avec l'assistant supprimée");
+        if (aiError) throw aiError;
+        toast.success("Conversation avec l'assistant réinitialisée");
       } else {
-        // Supprimer définitivement les messages entre utilisateurs
-        const { error: deleteError } = await supabase
-          .from('messages')
-          .delete()
-          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
+        // Pour les conversations entre utilisateurs
+        const { data: existingDeletion } = await supabase
+          .from('deleted_conversations')
+          .select('*')
+          .eq('user_id', receiver.id)
+          .eq('conversation_partner_id', user.id)
+          .maybeSingle();
 
-        if (deleteError) throw deleteError;
-        toast.success("Conversation supprimée définitivement");
+        if (existingDeletion) {
+          // Si l'autre utilisateur a déjà supprimé la conversation, supprimer définitivement
+          const { error: deleteError } = await supabase.rpc(
+            'mark_conversation_deleted',
+            { 
+              p_user_id: user.id,
+              p_conversation_partner_id: receiver.id,
+              p_keep_pinned: false
+            }
+          );
+
+          if (deleteError) throw deleteError;
+          toast.success("Conversation définitivement supprimée");
+        } else {
+          // Marquer la conversation comme supprimée pour cet utilisateur uniquement
+          const { error: markError } = await supabase.rpc(
+            'mark_conversation_deleted',
+            { 
+              p_user_id: user.id,
+              p_conversation_partner_id: receiver.id,
+              p_keep_pinned: false
+            }
+          );
+
+          if (markError) throw markError;
+          toast.success("Conversation supprimée de votre liste");
+        }
+
+        // Rafraîchir les données
+        await queryClient.invalidateQueries({ queryKey: ["conversations"] });
+        await queryClient.invalidateQueries({ queryKey: ["messages", receiver.id] });
       }
-
-      // Rafraîchir les données
-      await queryClient.invalidateQueries({ queryKey: ["conversations"] });
-      await queryClient.invalidateQueries({ queryKey: ["messages", receiver.id] });
-      
     } catch (error) {
       console.error('Error deleting conversation:', error);
       toast.error("Erreur lors de la suppression de la conversation");

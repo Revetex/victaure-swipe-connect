@@ -1,7 +1,6 @@
 
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -23,8 +22,6 @@ const logoSizes = {
 };
 
 export function Logo({ size = "md", className }: LogoProps) {
-  const isMobile = useIsMobile();
-  
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -35,11 +32,7 @@ export function Logo({ size = "md", className }: LogoProps) {
         damping: 30,
         mass: 1
       }}
-      className={cn(
-        "select-none",
-        isMobile ? "w-full flex justify-center" : "",
-        className
-      )}
+      className={cn("select-none", className)}
     >
       <motion.div 
         className={cn(

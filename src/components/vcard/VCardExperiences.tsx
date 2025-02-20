@@ -3,8 +3,6 @@ import { Experience } from "@/types/profile";
 import { transformToExperience } from "@/utils/profileTransformers";
 import { ExperienceCard } from "./experiences/ExperienceCard";
 import { ExperienceForm } from "./experiences/ExperienceForm";
-import { VCardSection } from "@/components/VCardSection";
-import { Briefcase } from "lucide-react";
 
 interface VCardExperiencesProps {
   experiences: Experience[];
@@ -44,35 +42,29 @@ export function VCardExperiences({ experiences, isEditing, onUpdate }: VCardExpe
   };
 
   return (
-    <VCardSection
-      title="Expérience"
-      icon={<Briefcase className="h-4 w-4" />}
-      variant="experience"
-    >
-      <div className="space-y-6">
-        {experiences.map((exp) => (
-          <div key={exp.id} className="relative">
-            {isEditing ? (
-              <ExperienceForm
-                exp={exp}
-                onUpdate={handleUpdateExperience}
-                onRemove={handleRemoveExperience}
-              />
-            ) : (
-              <ExperienceCard exp={exp} />
-            )}
-          </div>
-        ))}
-        
-        {isEditing && (
-          <button
-            onClick={handleAddExperience}
-            className="w-full p-4 text-sm text-center text-muted-foreground hover:text-primary hover:bg-muted/50 rounded-lg transition-colors"
-          >
-            Ajouter une expérience
-          </button>
-        )}
-      </div>
-    </VCardSection>
+    <div className="space-y-6">
+      {experiences.map((exp) => (
+        <div key={exp.id} className="relative">
+          {isEditing ? (
+            <ExperienceForm
+              exp={exp}
+              onUpdate={handleUpdateExperience}
+              onRemove={handleRemoveExperience}
+            />
+          ) : (
+            <ExperienceCard exp={exp} />
+          )}
+        </div>
+      ))}
+      
+      {isEditing && (
+        <button
+          onClick={handleAddExperience}
+          className="w-full p-4 text-sm text-center text-muted-foreground hover:text-primary hover:bg-muted/50 rounded-lg transition-colors"
+        >
+          Ajouter une expérience
+        </button>
+      )}
+    </div>
   );
 }
