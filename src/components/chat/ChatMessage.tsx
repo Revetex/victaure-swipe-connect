@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { MessageAnimation } from './MessageAnimation';
 import { AssistantMessageContent } from './AssistantMessageContent';
 import { MessageAudioControls } from './MessageAudioControls';
+import { cn } from '@/lib/utils';
 
 interface ChatMessageProps {
   message: Message;
