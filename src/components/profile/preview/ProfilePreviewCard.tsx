@@ -29,6 +29,29 @@ export function ProfilePreviewCard({
   const { user } = useAuth();
   const isOwnProfile = user?.id === profile.id;
 
+  const handleViewProfile = () => {
+    if (!canViewFullProfile && !isOwnProfile && profile.privacy_enabled) {
+      toast.error("Ce profil est privé. Connectez-vous avec l'utilisateur pour voir son profil complet.");
+      return;
+    }
+    if (onClose) onClose();
+    navigate(`/profile/${profile.id}`);
+  };
+
+  const handleMessageClick = () => {
+    if (!user) {
+      toast.error("Vous devez être connecté pour envoyer un message");
+      return;
+    }
+    
+    if (onRequestChat) {
+      onRequestChat();
+    } else {
+      if (onClose) onClose();
+      navigate(`/messages?receiver=${profile.id}`);
+    }
+  };
+
   return (
     <div className={cn(
       "relative w-full max-w-md mx-auto",
@@ -40,10 +63,11 @@ export function ProfilePreviewCard({
         {!isFlipped ? (
           <ProfilePreviewFront
             profile={profile}
-            onRequestChat={onRequestChat}
+            onRequestChat={handleMessageClick}
             onFlip={() => setIsFlipped(true)}
-            canViewFullProfile={canViewFullProfile}
+            canViewFullProfile={canViewFullProfile || isOwnProfile}
             onClose={onClose}
+            onViewProfile={handleViewProfile}
           />
         ) : (
           <ProfilePreviewBack

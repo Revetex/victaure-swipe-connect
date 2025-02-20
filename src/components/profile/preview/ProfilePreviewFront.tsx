@@ -9,8 +9,6 @@ import { ProfilePreviewContact } from "./ProfilePreviewContact";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
-import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 
 interface ProfilePreviewFrontProps {
   profile: UserProfile;
@@ -18,6 +16,7 @@ interface ProfilePreviewFrontProps {
   onFlip: () => void;
   canViewFullProfile: boolean;
   onClose?: () => void;
+  onViewProfile: () => void;
 }
 
 export function ProfilePreviewFront({
@@ -25,10 +24,10 @@ export function ProfilePreviewFront({
   onRequestChat,
   onFlip,
   canViewFullProfile,
-  onClose
+  onClose,
+  onViewProfile
 }: ProfilePreviewFrontProps) {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const isOwnProfile = user?.id === profile.id;
   
   const {
@@ -45,34 +44,6 @@ export function ProfilePreviewFront({
     handleToggleBlock,
   } = useConnectionActions(profile.id);
 
-  const handleMessageClick = () => {
-    if (!user) {
-      toast.error("Vous devez être connecté pour envoyer un message");
-      return;
-    }
-    
-    // Fermer la preview avant de naviguer
-    if (onClose) {
-      onClose();
-    }
-    
-    navigate(`/messages?receiver=${profile.id}`);
-  };
-
-  const handleViewProfile = () => {
-    if (!canViewFullProfile) {
-      toast.error("Ce profil est privé");
-      return;
-    }
-    
-    // Fermer la preview avant de naviguer
-    if (onClose) {
-      onClose();
-    }
-    
-    navigate(`/profile/${profile.id}`);
-  };
-
   return (
     <div className="space-y-6">
       <motion.div 
@@ -86,7 +57,7 @@ export function ProfilePreviewFront({
           <div className="mt-6 space-y-4">
             {isOwnProfile ? (
               <Button 
-                onClick={handleViewProfile}
+                onClick={onViewProfile}
                 variant="default" 
                 className="w-full flex items-center gap-2"
               >
@@ -96,7 +67,7 @@ export function ProfilePreviewFront({
             ) : (
               <>
                 <Button 
-                  onClick={handleViewProfile}
+                  onClick={onViewProfile}
                   variant={canViewFullProfile ? "default" : "secondary"}
                   className="w-full flex items-center gap-2"
                 >
@@ -117,7 +88,7 @@ export function ProfilePreviewFront({
                   <Button
                     variant="outline"
                     className="w-full flex items-center gap-2"
-                    onClick={handleMessageClick}
+                    onClick={onRequestChat}
                     disabled={!isFriend}
                   >
                     <MessageCircle className="h-4 w-4" />
