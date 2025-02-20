@@ -15,8 +15,141 @@ export interface UserProfile {
   longitude: number | null;
   online_status: boolean;
   last_seen: string;
-  certifications: any[];
-  education: any[];
-  experiences: any[];
+  certifications: Certification[];
+  education: Education[];
+  experiences: Experience[];
   friends: string[];
+  website?: string;
+  company_name?: string;
+  privacy_enabled?: boolean;
+  created_at?: string;
+  sections_order?: string[];
+}
+
+export interface Friend {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  online_status: boolean;
+  last_seen: string;
+}
+
+export interface Experience {
+  id: string;
+  profile_id: string;
+  position: string;
+  company: string;
+  start_date: string | null;
+  end_date: string | null;
+  description: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Education {
+  id: string;
+  profile_id: string;
+  school: string;
+  degree: string;
+  field: string;
+  start_date: string | null;
+  end_date: string | null;
+  description: string | null;
+}
+
+export interface Certification {
+  id: string;
+  profile_id: string;
+  name: string;
+  issuer: string;
+  issue_date: string | null;
+  expiry_date: string | null;
+  credential_id: string | null;
+}
+
+export interface PendingRequest {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  created_at: string;
+  sender?: UserProfile;
+  receiver?: UserProfile;
+}
+
+export function createEmptyProfile(id: string, email: string): UserProfile {
+  return {
+    id,
+    email,
+    full_name: null,
+    avatar_url: null,
+    role: 'professional',
+    bio: null,
+    phone: null,
+    city: null,
+    state: null,
+    country: 'Canada',
+    skills: [],
+    latitude: null,
+    longitude: null,
+    online_status: false,
+    last_seen: new Date().toISOString(),
+    certifications: [],
+    education: [],
+    experiences: [],
+    friends: [],
+    privacy_enabled: false,
+    created_at: new Date().toISOString()
+  };
+}
+
+export function transformDatabaseProfile(data: any): UserProfile {
+  return {
+    ...createEmptyProfile(data.id, data.email),
+    ...data,
+    role: data.role || 'professional',
+    country: data.country || 'Canada',
+    skills: data.skills || [],
+    online_status: data.online_status || false,
+    last_seen: data.last_seen || new Date().toISOString()
+  };
+}
+
+export function transformEducation(data: any): Education {
+  return {
+    id: data.id,
+    profile_id: data.profile_id,
+    school: data.school,
+    degree: data.degree,
+    field: data.field,
+    start_date: data.start_date,
+    end_date: data.end_date,
+    description: data.description
+  };
+}
+
+export function transformCertification(data: any): Certification {
+  return {
+    id: data.id,
+    profile_id: data.profile_id,
+    name: data.name,
+    issuer: data.issuer,
+    issue_date: data.issue_date,
+    expiry_date: data.expiry_date,
+    credential_id: data.credential_id
+  };
+}
+
+export function transformExperience(data: any): Experience {
+  return {
+    id: data.id,
+    profile_id: data.profile_id,
+    position: data.position,
+    company: data.company,
+    start_date: data.start_date,
+    end_date: data.end_date,
+    description: data.description,
+    created_at: data.created_at,
+    updated_at: data.updated_at
+  };
 }
