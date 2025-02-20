@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
@@ -120,66 +119,90 @@ export function MessagesContainer() {
     <Card className="h-[calc(100vh-4rem)] flex flex-col mt-16">
       <div className="flex-1 flex flex-col h-full relative bg-gradient-to-b from-background to-muted/20">
         {showConversation && receiver ? (
-          <ConversationView
-            receiver={receiver}
-            messages={messages}
-            inputMessage={inputMessage}
-            isThinking={isThinking}
-            onInputChange={setInputMessage}
-            onSendMessage={handleSendMessage}
-            onBack={() => {
-              setShowConversation(false);
-              setReceiver(null);
-            }}
-            onDeleteConversation={() => handleDeleteConversation(receiver)}
-            messagesEndRef={messagesEndRef}
-          />
+          <div className="absolute inset-0 flex flex-col">
+            <div className="flex-none">
+              <ConversationHeader 
+                receiver={receiver}
+                onBack={() => {
+                  setShowConversation(false);
+                  setReceiver(null);
+                }}
+                onDelete={() => handleDeleteConversation(receiver)}
+                className="border-b"
+              />
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+              <ConversationMessages
+                messages={messages}
+                isThinking={isThinking}
+                onReply={handleReply}
+                messagesEndRef={messagesEndRef}
+              />
+            </div>
+
+            <div className="flex-none p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+              <div className="max-w-3xl mx-auto">
+                <ChatInput
+                  value={inputMessage}
+                  onChange={setInputMessage}
+                  onSend={handleSendMessage}
+                  isThinking={isThinking}
+                  placeholder="Écrivez votre message..."
+                />
+              </div>
+            </div>
+          </div>
         ) : (
-          <div className="flex flex-col h-full">
-            <div className="p-4 border-b space-y-4 sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
-              <div className="flex items-center justify-between gap-2">
-                <SearchBar value={searchQuery} onChange={setSearchQuery} />
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    onClick={handleRefresh}
-                    className="shrink-0"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                  <FriendSelector onSelectFriend={handleStartNewChat}>
-                    <Button variant="default" size="icon" className="shrink-0">
-                      <Plus className="h-4 w-4" />
+          <div className="absolute inset-0 flex flex-col">
+            <div className="flex-none bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b z-10">
+              <div className="p-4 space-y-4">
+                <div className="flex items-center justify-between gap-2">
+                  <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      onClick={handleRefresh}
+                      className="shrink-0"
+                    >
+                      <RefreshCw className="h-4 w-4" />
                     </Button>
-                  </FriendSelector>
+                    <FriendSelector onSelectFriend={handleStartNewChat}>
+                      <Button variant="default" size="icon" className="shrink-0">
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </FriendSelector>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="p-4 space-y-4">
-              <AssistantMessage 
-                chatMessages={aiMessages}
-                onSelectConversation={() => {
-                  setReceiver({
-                    id: 'assistant',
-                    full_name: 'M. Victaure',
-                    avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-                    online_status: true,
-                    last_seen: new Date().toISOString()
-                  });
-                  setShowConversation(true);
-                }}
-              />
-              
-              <div className="pt-2">
-                <ConversationList
-                  conversations={filteredConversations}
-                  onSelectConversation={(receiver) => {
-                    setReceiver(receiver);
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-4 space-y-4">
+                <AssistantMessage 
+                  chatMessages={aiMessages}
+                  onSelectConversation={() => {
+                    setReceiver({
+                      id: 'assistant',
+                      full_name: 'M. Victaure',
+                      avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+                      online_status: true,
+                      last_seen: new Date().toISOString()
+                    });
                     setShowConversation(true);
                   }}
                 />
+                
+                <div className="pt-2">
+                  <ConversationList
+                    conversations={filteredConversations}
+                    onSelectConversation={(receiver) => {
+                      setReceiver(receiver);
+                      setShowConversation(true);
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>

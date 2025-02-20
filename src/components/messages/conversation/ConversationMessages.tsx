@@ -70,27 +70,25 @@ export function ConversationMessages({
   return (
     <div 
       ref={containerRef}
-      className={cn("flex flex-col h-full", className)}
+      className={cn("h-full overflow-y-auto px-4", className)}
       onScroll={handleScroll}
     >
-      <div className="flex-1 overflow-y-auto px-4">
-        <div className="max-w-3xl mx-auto py-4 space-y-4">
-          {uniqueMessages.map((message) => (
-            <motion.div
-              key={message.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <ChatMessage 
-                message={message} 
-                onReply={onReply}
-              />
-            </motion.div>
-          ))}
-          
-          <div ref={messagesEndRef} className="h-4" />
-        </div>
+      <div className="max-w-3xl mx-auto py-4 space-y-4">
+        {uniqueMessages.map((message) => (
+          <motion.div
+            key={message.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ChatMessage 
+              message={message} 
+              onReply={onReply}
+            />
+          </motion.div>
+        ))}
+        
+        <div ref={messagesEndRef} className="h-4" />
       </div>
 
       <AnimatePresence>
@@ -99,7 +97,7 @@ export function ConversationMessages({
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            className="absolute bottom-4 right-6"
+            className="fixed bottom-20 right-6"
           >
             <Button
               size="icon"
