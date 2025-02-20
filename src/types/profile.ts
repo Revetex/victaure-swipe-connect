@@ -18,7 +18,7 @@ export interface UserProfile {
   certifications: Certification[];
   education: Education[];
   experiences: Experience[];
-  friends: string[];
+  friends: Friend[];
   website?: string;
   company_name?: string;
   privacy_enabled?: boolean;
@@ -49,9 +49,9 @@ export interface Experience {
 export interface Education {
   id: string;
   profile_id: string;
-  school: string;
+  school_name: string;
   degree: string;
-  field: string;
+  field_of_study: string;
   start_date: string | null;
   end_date: string | null;
   description: string | null;
@@ -60,11 +60,14 @@ export interface Education {
 export interface Certification {
   id: string;
   profile_id: string;
-  name: string;
-  issuer: string;
+  title: string;
+  institution: string;
+  year?: string;
   issue_date: string | null;
   expiry_date: string | null;
   credential_id: string | null;
+  credential_url?: string;
+  description?: string;
 }
 
 export interface PendingRequest {
@@ -73,8 +76,9 @@ export interface PendingRequest {
   receiver_id: string;
   status: 'pending' | 'accepted' | 'rejected';
   created_at: string;
-  sender?: UserProfile;
-  receiver?: UserProfile;
+  type: 'incoming' | 'outgoing';
+  sender: UserProfile;
+  receiver: UserProfile;
 }
 
 export function createEmptyProfile(id: string, email: string): UserProfile {
@@ -111,7 +115,8 @@ export function transformDatabaseProfile(data: any): UserProfile {
     country: data.country || 'Canada',
     skills: data.skills || [],
     online_status: data.online_status || false,
-    last_seen: data.last_seen || new Date().toISOString()
+    last_seen: data.last_seen || new Date().toISOString(),
+    friends: Array.isArray(data.friends) ? data.friends : []
   };
 }
 
@@ -119,9 +124,9 @@ export function transformEducation(data: any): Education {
   return {
     id: data.id,
     profile_id: data.profile_id,
-    school: data.school,
-    degree: data.degree,
-    field: data.field,
+    school_name: data.school_name || data.school || '',
+    degree: data.degree || '',
+    field_of_study: data.field_of_study || data.field || '',
     start_date: data.start_date,
     end_date: data.end_date,
     description: data.description
@@ -132,11 +137,14 @@ export function transformCertification(data: any): Certification {
   return {
     id: data.id,
     profile_id: data.profile_id,
-    name: data.name,
-    issuer: data.issuer,
+    title: data.title || data.name || '',
+    institution: data.institution || data.issuer || '',
+    year: data.year,
     issue_date: data.issue_date,
     expiry_date: data.expiry_date,
-    credential_id: data.credential_id
+    credential_id: data.credential_id,
+    credential_url: data.credential_url,
+    description: data.description
   };
 }
 
