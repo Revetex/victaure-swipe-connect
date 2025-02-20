@@ -67,6 +67,7 @@ export function PaymentPanel() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
 
+      // Créer le dépôt dans la boîte de paiement Victaure
       const { data: escrow, error: escrowError } = await supabase
         .from('payment_escrows')
         .insert({
@@ -83,13 +84,13 @@ export function PaymentPanel() {
 
       if (escrowError) throw escrowError;
 
-      toast.success(`Paiement en fiducie #${escrow.id} créé avec succès`);
+      toast.success(`Dépôt effectué dans la boîte Victaure #${escrow.id.slice(0, 8)}`);
       setAmount("");
       setRecipientId("");
-      loadEscrows(); // Recharger la liste
+      loadEscrows();
     } catch (error) {
-      console.error("Erreur lors de la création du paiement:", error);
-      toast.error("Erreur lors de la création du paiement en fiducie");
+      console.error("Erreur lors du dépôt:", error);
+      toast.error("Erreur lors du dépôt dans la boîte Victaure");
     } finally {
       setIsProcessing(false);
     }
@@ -104,7 +105,7 @@ export function PaymentPanel() {
 
       if (error) throw error;
       toast.success("Paiement libéré avec succès");
-      loadEscrows(); // Recharger la liste après libération
+      loadEscrows();
     } catch (error) {
       console.error("Erreur lors de la libération du paiement:", error);
       toast.error("Erreur lors de la libération du paiement");
@@ -125,18 +126,18 @@ export function PaymentPanel() {
     <Card className="p-6 space-y-6">
       <form onSubmit={initiateEscrowPayment} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="recipientId">ID du Destinataire</Label>
+          <Label htmlFor="recipientId">Numéro de Boîte Victaure</Label>
           <Input
             id="recipientId"
             value={recipientId}
             onChange={(e) => setRecipientId(e.target.value)}
-            placeholder="ID du destinataire"
+            placeholder="Entrez le numéro de boîte du destinataire"
             required
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="amount">Montant (CAD)</Label>
+          <Label htmlFor="amount">Montant du Dépôt (CAD)</Label>
           <Input
             id="amount"
             type="number"
@@ -179,23 +180,23 @@ export function PaymentPanel() {
           {isProcessing ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Traitement en cours...
+              Dépôt en cours...
             </>
           ) : (
-            'Créer le paiement en fiducie'
+            'Effectuer le dépôt'
           )}
         </Button>
       </form>
 
       <div className="border-t pt-6">
-        <h3 className="text-lg font-semibold mb-4">Paiements en Fiducie</h3>
+        <h3 className="text-lg font-semibold mb-4">Dépôts en Boîte Victaure</h3>
         {isLoadingEscrows ? (
           <div className="flex justify-center">
             <Loader2 className="h-6 w-6 animate-spin" />
           </div>
         ) : escrows.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center">
-            Aucun paiement en fiducie
+            Aucun dépôt en boîte Victaure
           </p>
         ) : (
           <div className="space-y-4">
@@ -203,15 +204,15 @@ export function PaymentPanel() {
               <Card key={escrow.id} className="p-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="font-medium">Paiement #{escrow.id.slice(0, 8)}</p>
+                    <p className="font-medium">Boîte Victaure #{escrow.id.slice(0, 8)}</p>
                     <p className="text-sm text-muted-foreground">
-                      Montant: {escrow.amount} CAD
+                      Montant du dépôt: {escrow.amount} CAD
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Date de libération: {formatDate(escrow.release_conditions.release_date)}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Statut: {escrow.status}
+                      Statut: {escrow.status === 'frozen' ? 'Gelé' : escrow.status === 'released' ? 'Libéré' : 'Annulé'}
                     </p>
                   </div>
                   {escrow.status === 'frozen' && (
@@ -220,7 +221,7 @@ export function PaymentPanel() {
                       size="sm"
                       onClick={() => releasePayment(escrow.id)}
                     >
-                      Libérer
+                      Libérer le dépôt
                     </Button>
                   )}
                 </div>
