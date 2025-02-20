@@ -10,7 +10,7 @@ interface SearchResultsProps {
 
 export function SearchResults({ results, onSelect }: SearchResultsProps) {
   return (
-    <Card className="w-full shadow-lg border-primary/10 bg-card/95 backdrop-blur">
+    <Card className="w-full shadow-lg border-primary/10 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative z-50">
       <div className="py-1">
         {results.map((profile) => (
           <div
