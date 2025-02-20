@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ChatMessage } from '../ChatMessage';
 import { Message } from '@/types/messages';
@@ -46,11 +46,5 @@ describe('ChatMessage', () => {
     const thinkingMessage = { ...mockMessage, thinking: true };
     render(<ChatMessage message={thinkingMessage} />);
     expect(screen.getByText('En train de réfléchir...')).toBeInTheDocument();
-  });
-
-  it('handles reply callback', () => {
-    const onReply = jest.fn();
-    render(<ChatMessage message={mockMessage} onReply={onReply} />);
-    // Test reply functionality if available
   });
 });

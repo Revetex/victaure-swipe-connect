@@ -8,7 +8,6 @@ declare global {
       toHaveTextContent(text: string): R;
       toBeVisible(): R;
       toHaveClass(className: string): R;
-      // Ajoutez d'autres matchers couramment utilisés si nécessaire
     }
   }
 }
