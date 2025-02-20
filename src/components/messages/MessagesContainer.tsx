@@ -1,9 +1,5 @@
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { ConversationList } from "./conversation/ConversationList";
-import { ConversationView } from "./conversation/ConversationView";
-import { ConversationHeader } from "./conversation/ConversationHeader";
-import { ConversationMessages } from "./conversation/ConversationMessages";
+import { useState, useRef } from "react";
 import { useReceiver } from "@/hooks/useReceiver";
 import { useMessageQuery } from "@/hooks/useMessageQuery";
 import { useConversationMessages } from "@/hooks/useConversationMessages";
@@ -11,17 +7,13 @@ import { useAIChat } from "@/hooks/useAIChat";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
 import { useConversationHandler } from "@/hooks/useConversationHandler";
 import { Card } from "@/components/ui/card";
-import { ChatInput } from "@/components/messages/conversation/ChatInput";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Message, DatabaseMessage, transformDatabaseMessage } from "@/types/messages";
-import { Button } from "@/components/ui/button";
-import { Plus, RefreshCw } from "lucide-react";
-import { AssistantMessage } from "./conversation/AssistantMessage";
-import { SearchBar } from "./conversation/SearchBar";
-import { FriendSelector } from "./conversation/FriendSelector";
+import { transformDatabaseMessage } from "@/types/messages";
 import { useUser } from "@/hooks/useUser";
 import { useQueryClient } from "@tanstack/react-query";
+import { ConversationView } from "./conversation/ConversationView";
+import { ConversationList } from "./conversation/ConversationList";
 
 export function MessagesContainer() {
   const { receiver, setReceiver, showConversation, setShowConversation } = useReceiver();
@@ -39,25 +31,10 @@ export function MessagesContainer() {
     messages: aiMessages, 
     handleSendMessage: handleAISendMessage,
     isThinking,
-    setInputMessage: setAIInputMessage,
-    handleJobAccept,
-    handleJobReject
+    setInputMessage: setAIInputMessage
   } = useAIChat();
   
   const { handleDeleteConversation } = useConversationDelete();
-
-  const handleReply = useCallback((content: string) => {
-    setInputMessage(content);
-    setTimeout(() => {
-      handleSendMessage();
-    }, 100);
-  }, []);
-
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [currentMessages, aiMessages]);
 
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ["messages"] });
@@ -117,11 +94,11 @@ export function MessagesContainer() {
     conv.content?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const messages: Message[] = receiver?.id === 'assistant' 
+  const messages = receiver?.id === 'assistant' 
     ? aiMessages 
     : (Array.isArray(currentMessages) 
         ? currentMessages.map(msg => ({
-            ...transformDatabaseMessage(msg as DatabaseMessage),
+            ...transformDatabaseMessage(msg),
             message_type: msg.is_assistant ? 'assistant' : 'user'
           }))
         : []);
@@ -130,93 +107,33 @@ export function MessagesContainer() {
     <Card className="h-[calc(100vh-4rem)] flex flex-col mt-16">
       <div className="flex-1 flex flex-col h-full relative bg-gradient-to-b from-background to-muted/20">
         {showConversation && receiver ? (
-          <div className="absolute inset-0 flex flex-col">
-            <div className="flex-none">
-              <ConversationHeader 
-                receiver={receiver}
-                onBack={() => {
-                  setShowConversation(false);
-                  setReceiver(null);
-                }}
-                onDelete={() => handleDeleteConversation(receiver)}
-                className="border-b"
-              />
-            </div>
-
-            <div className="flex-1 overflow-y-auto">
-              <ConversationMessages
-                messages={messages}
-                isThinking={isThinking}
-                onReply={handleReply}
-                messagesEndRef={messagesEndRef}
-              />
-            </div>
-
-            <div className="flex-none p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-              <div className="max-w-3xl mx-auto">
-                <ChatInput
-                  value={inputMessage}
-                  onChange={setInputMessage}
-                  onSend={handleSendMessage}
-                  isThinking={isThinking}
-                  placeholder="Écrivez votre message..."
-                />
-              </div>
-            </div>
-          </div>
+          <ConversationView
+            messages={messages}
+            receiver={receiver}
+            inputMessage={inputMessage}
+            isThinking={isThinking}
+            onInputChange={setInputMessage}
+            onSendMessage={handleSendMessage}
+            onBack={() => {
+              setShowConversation(false);
+              setReceiver(null);
+            }}
+            onDelete={() => handleDeleteConversation(receiver)}
+            messagesEndRef={messagesEndRef}
+          />
         ) : (
-          <div className="absolute inset-0 flex flex-col">
-            <div className="flex-none bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b z-10">
-              <div className="p-4 space-y-4">
-                <div className="flex items-center justify-between gap-2">
-                  <SearchBar value={searchQuery} onChange={setSearchQuery} />
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="icon" 
-                      onClick={handleRefresh}
-                      className="shrink-0"
-                    >
-                      <RefreshCw className="h-4 w-4" />
-                    </Button>
-                    <FriendSelector onSelectFriend={handleStartNewChat}>
-                      <Button variant="default" size="icon" className="shrink-0">
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </FriendSelector>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto">
-              <div className="p-4 space-y-4">
-                <AssistantMessage 
-                  chatMessages={aiMessages}
-                  onSelectConversation={() => {
-                    setReceiver({
-                      id: 'assistant',
-                      full_name: 'M. Victaure',
-                      avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-                      online_status: true,
-                      last_seen: new Date().toISOString()
-                    });
-                    setShowConversation(true);
-                  }}
-                />
-                
-                <div className="pt-2">
-                  <ConversationList
-                    conversations={filteredConversations}
-                    onSelectConversation={(receiver) => {
-                      setReceiver(receiver);
-                      setShowConversation(true);
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <ConversationList
+            conversations={filteredConversations}
+            aiMessages={aiMessages}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            onRefresh={handleRefresh}
+            onSelectConversation={(receiver) => {
+              setReceiver(receiver);
+              setShowConversation(true);
+            }}
+            onStartNewChat={handleStartNewChat}
+          />
         )}
       </div>
     </Card>

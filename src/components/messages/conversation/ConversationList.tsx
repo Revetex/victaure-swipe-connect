@@ -1,80 +1,106 @@
 
-import { Message } from "@/types/messages";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { ConversationHeader } from "./ConversationHeader";
+import { AssistantMessage } from "./AssistantMessage";
+import { SearchBar } from "./SearchBar";
+import { Button } from "@/components/ui/button";
+import { RefreshCw, Plus } from "lucide-react";
+import { FriendSelector } from "./FriendSelector";
+import { Message, Receiver } from "@/types/messages";
 
 interface ConversationListProps {
   conversations: Message[];
-  onSelectConversation: (receiver: any) => void;
+  aiMessages: Message[];
+  searchQuery: string;
+  onSearchChange: (value: string) => void;
+  onRefresh: () => void;
+  onSelectConversation: (receiver: Receiver) => void;
+  onStartNewChat: (friendId: string) => void;
 }
 
-export function ConversationList({ conversations, onSelectConversation }: ConversationListProps) {
-  // Regrouper les conversations par receiver_id pour éviter les doublons
-  const uniqueConversations = conversations.reduce((acc: Message[], curr) => {
-    const existingConv = acc.find(
-      conv => conv.receiver_id === curr.receiver_id
-    );
-    if (!existingConv) {
-      acc.push(curr);
-    } else if (new Date(curr.created_at) > new Date(existingConv.created_at)) {
-      // Garder la conversation la plus récente
-      const index = acc.indexOf(existingConv);
-      acc[index] = curr;
-    }
-    return acc;
-  }, []);
-
+export function ConversationList({
+  conversations,
+  aiMessages,
+  searchQuery,
+  onSearchChange,
+  onRefresh,
+  onSelectConversation,
+  onStartNewChat
+}: ConversationListProps) {
   return (
-    <div className="flex flex-col h-full">
-      <div className="border-b p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <h2 className="text-lg font-semibold">Conversations</h2>
+    <div className="absolute inset-0 flex flex-col">
+      <div className="flex-none bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b z-10">
+        <div className="p-4 space-y-4">
+          <div className="flex items-center justify-between gap-2">
+            <SearchBar value={searchQuery} onChange={onSearchChange} />
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={onRefresh}
+                className="shrink-0"
+              >
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+              <FriendSelector onSelectFriend={onStartNewChat}>
+                <Button variant="default" size="icon" className="shrink-0">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </FriendSelector>
+            </div>
+          </div>
+        </div>
       </div>
-      <ScrollArea className="flex-1">
-        <div className="p-4 space-y-2">
-          {uniqueConversations.map((conversation) => {
-            const date = new Date(conversation.created_at);
-            const formattedDate = format(date, "PP", { locale: fr });
-            const isToday = new Date().toDateString() === date.toDateString();
-            const timeDisplay = isToday 
-              ? format(date, "HH:mm")
-              : formattedDate;
 
-            return (
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-4 space-y-4">
+          <AssistantMessage 
+            chatMessages={aiMessages}
+            onSelectConversation={() => {
+              onSelectConversation({
+                id: 'assistant',
+                full_name: 'M. Victaure',
+                avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+                online_status: true,
+                last_seen: new Date().toISOString()
+              });
+            }}
+          />
+          
+          <div className="pt-2">
+            {conversations.map((conversation) => (
               <div
                 key={conversation.id}
-                className={cn(
-                  "p-4 rounded-lg transition-colors cursor-pointer",
-                  "hover:bg-muted/80",
-                  "border border-border/50",
-                  "animate-in fade-in-50"
-                )}
+                className="p-4 rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
                 onClick={() => onSelectConversation(conversation.receiver)}
               >
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    {conversation.receiver?.avatar_url ? (
+                      <img
+                        src={conversation.receiver.avatar_url}
+                        alt={conversation.receiver.full_name}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-lg font-medium text-primary">
+                        {conversation.receiver?.full_name?.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium truncate">
                       {conversation.receiver?.full_name}
                     </h3>
-                    <p className="text-sm text-muted-foreground line-clamp-2 break-words">
+                    <p className="text-sm text-muted-foreground truncate">
                       {conversation.content}
                     </p>
                   </div>
-                  <time className="text-xs text-muted-foreground whitespace-nowrap">
-                    {timeDisplay}
-                  </time>
                 </div>
               </div>
-            );
-          })}
-          {uniqueConversations.length === 0 && (
-            <div className="text-center text-sm text-muted-foreground py-8">
-              Aucune conversation.
-            </div>
-          )}
+            ))}
+          </div>
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }
