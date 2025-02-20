@@ -16,7 +16,7 @@ export interface Receiver {
   full_name: string;
   avatar_url: string | null;
   email: string | null;
-  role: string;
+  role: 'professional' | 'business' | 'admin';
   bio: string | null;
   phone: string | null;
   city: string | null;

@@ -1,13 +1,13 @@
 
 import { useState } from "react";
 import { useReceiver } from "@/hooks/useReceiver";
-import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { UserProfile } from "@/types/profile";
+import type { Receiver } from "@/types/messages";
 
 interface ConversationListProps {
   className?: string;
@@ -40,11 +40,30 @@ export function ConversationList({ className }: ConversationListProps) {
   };
 
   const handleSelectConversation = (user: UserProfile) => {
-    setReceiver({
-      ...user,
+    // Transform UserProfile to Receiver
+    const receiver: Receiver = {
+      id: user.id,
+      full_name: user.full_name || '',
+      avatar_url: user.avatar_url,
+      email: user.email,
+      role: user.role,
+      bio: user.bio,
+      phone: user.phone,
+      city: user.city,
+      state: user.state,
+      country: user.country,
+      skills: user.skills,
+      latitude: user.latitude,
+      longitude: user.longitude,
       online_status: 'online',
-      last_seen: new Date().toISOString()
-    });
+      last_seen: new Date().toISOString(),
+      certifications: user.certifications,
+      education: user.education,
+      experiences: user.experiences,
+      friends: user.friends?.map(friend => friend.id) || []
+    };
+    
+    setReceiver(receiver);
     setShowConversation(true);
   };
 

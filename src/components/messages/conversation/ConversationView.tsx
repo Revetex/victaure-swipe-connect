@@ -39,12 +39,18 @@ export function ConversationView() {
         {receiver && (
           <div className="flex items-center gap-3">
             <UserAvatar
-              user={receiver}
+              user={{
+                ...receiver,
+                online_status: receiver.online_status === 'online',
+                friends: []
+              }}
               className="h-10 w-10"
             />
             <div>
               <p className="font-medium">{receiver.full_name}</p>
-              <p className="text-sm text-muted-foreground">En ligne</p>
+              <p className="text-sm text-muted-foreground">
+                {receiver.online_status === 'online' ? 'En ligne' : 'Hors ligne'}
+              </p>
             </div>
           </div>
         )}
