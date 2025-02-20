@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,12 +10,50 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
+interface PaymentEscrow {
+  id: string;
+  amount: number;
+  status: 'frozen' | 'released' | 'cancelled';
+  created_at: string;
+  release_conditions: {
+    freeze_period_hours: number;
+    release_date: string;
+  };
+  payee_id: string;
+}
+
 export function PaymentPanel() {
   const [amount, setAmount] = useState("");
   const [recipientId, setRecipientId] = useState("");
   const [freezePeriod, setFreezePeriod] = useState("24"); // heures
   const { loading } = usePaymentHandler();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [escrows, setEscrows] = useState<PaymentEscrow[]>([]);
+  const [isLoadingEscrows, setIsLoadingEscrows] = useState(true);
+
+  useEffect(() => {
+    loadEscrows();
+  }, []);
+
+  const loadEscrows = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('payment_escrows')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setEscrows(data || []);
+    } catch (error) {
+      console.error("Erreur lors du chargement des paiements:", error);
+      toast.error("Erreur lors du chargement des paiements en fiducie");
+    } finally {
+      setIsLoadingEscrows(false);
+    }
+  };
 
   const initiateEscrowPayment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +67,6 @@ export function PaymentPanel() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
 
-      // Créer un paiement en fiducie
       const { data: escrow, error: escrowError } = await supabase
         .from('payment_escrows')
         .insert({
@@ -48,6 +86,7 @@ export function PaymentPanel() {
       toast.success(`Paiement en fiducie #${escrow.id} créé avec succès`);
       setAmount("");
       setRecipientId("");
+      loadEscrows(); // Recharger la liste
     } catch (error) {
       console.error("Erreur lors de la création du paiement:", error);
       toast.error("Erreur lors de la création du paiement en fiducie");
@@ -65,10 +104,21 @@ export function PaymentPanel() {
 
       if (error) throw error;
       toast.success("Paiement libéré avec succès");
+      loadEscrows(); // Recharger la liste après libération
     } catch (error) {
       console.error("Erreur lors de la libération du paiement:", error);
       toast.error("Erreur lors de la libération du paiement");
     }
+  };
+
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   return (
@@ -137,15 +187,47 @@ export function PaymentPanel() {
         </Button>
       </form>
 
-      {/* Liste des paiements en fiducie */}
       <div className="border-t pt-6">
         <h3 className="text-lg font-semibold mb-4">Paiements en Fiducie</h3>
-        <div className="space-y-4">
-          {/* Cette partie sera implémentée avec les données de Supabase */}
-          <p className="text-sm text-muted-foreground">
-            Les paiements en fiducie seront listés ici
+        {isLoadingEscrows ? (
+          <div className="flex justify-center">
+            <Loader2 className="h-6 w-6 animate-spin" />
+          </div>
+        ) : escrows.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center">
+            Aucun paiement en fiducie
           </p>
-        </div>
+        ) : (
+          <div className="space-y-4">
+            {escrows.map((escrow) => (
+              <Card key={escrow.id} className="p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-medium">Paiement #{escrow.id.slice(0, 8)}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Montant: {escrow.amount} CAD
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Date de libération: {formatDate(escrow.release_conditions.release_date)}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Statut: {escrow.status}
+                    </p>
+                  </div>
+                  {escrow.status === 'frozen' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => releasePayment(escrow.id)}
+                    >
+                      Libérer
+                    </Button>
+                  )}
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </Card>
   );
