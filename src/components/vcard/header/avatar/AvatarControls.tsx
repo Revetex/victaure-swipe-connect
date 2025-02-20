@@ -15,15 +15,7 @@ export function AvatarControls({ hasAvatar, isLoading, onUpload, onDelete }: Ava
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Vérification de la taille
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize) {
-      toast.error("L'image est trop grande (max 5MB)");
-      event.target.value = '';
-      return;
-    }
-
-    // Vérification du format
+    // Vérification du format uniquement
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
       // Si c'est un HEIC, suggérer la conversion
@@ -40,9 +32,9 @@ export function AvatarControls({ hasAvatar, isLoading, onUpload, onDelete }: Ava
   };
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center gap-2">
+    <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/20 opacity-0 group-hover:opacity-100 transition-all duration-200 rounded-full">
       <label 
-        className="flex items-center justify-center w-10 h-10 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
+        className="flex items-center justify-center w-10 h-10 bg-black/40 rounded-full cursor-pointer transition-all duration-200 hover:bg-black/60"
         htmlFor="avatar-upload"
       >
         <Upload className="h-5 w-5 text-white/90" />
@@ -59,7 +51,7 @@ export function AvatarControls({ hasAvatar, isLoading, onUpload, onDelete }: Ava
         <Button
           variant="ghost"
           size="icon"
-          className="w-10 h-10 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 hover:bg-red-500/40 transition-all duration-200"
+          className="w-10 h-10 bg-black/40 rounded-full hover:bg-red-500/40 transition-all duration-200"
           onClick={onDelete}
           disabled={isLoading}
         >

@@ -12,6 +12,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { initializeStripe } from "@/hooks/useStripePayment";
 import type { StripeElementsOptions } from '@stripe/stripe-js';
 import { toast } from 'sonner';
+import { cn } from "@/lib/utils";
 
 const stripeElementsOptions: StripeElementsOptions = {
   mode: 'payment',
@@ -86,14 +87,18 @@ export function Settings() {
 
   return (
     <Elements stripe={stripePromise} options={stripeElementsOptions}>
-      <ScrollArea className="min-h-[calc(100vh-4rem)] pt-16">
-        <div className="container max-w-2xl mx-auto px-4 py-6 pb-20 space-y-6">
+      <ScrollArea className={cn(
+        "min-h-[calc(100vh-4rem)] pt-16",
+        "w-full max-w-full overflow-x-hidden"
+      )}>
+        <div className="container max-w-2xl mx-auto px-4 py-6 pb-20 space-y-6 w-full">
           {settingsSections.map(({ id, Component }) => (
             <motion.div
               key={id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: "spring", stiffness: 100, damping: 15 }}
+              className="w-full"
             >
               <Component />
             </motion.div>
