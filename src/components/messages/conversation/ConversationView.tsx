@@ -1,25 +1,24 @@
+
 import { useReceiver } from "@/hooks/useReceiver";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ArrowLeft, Send, Trash2 } from "lucide-react";
-import { UserAvatar } from "@/components/UserAvatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState, useRef, useEffect } from "react";
-import { Message, Receiver } from "@/types/messages";
-import { ChatMessage } from "../ChatMessage";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { ConversationHeader } from "./components/ConversationHeader";
+import { MessageList } from "./components/MessageList";
+import { MessageInput } from "./components/MessageInput";
+import { useMessages } from "./hooks/useMessages";
+import type { Receiver } from "@/types/messages";
 
 export function ConversationView() {
   const { receiver, setReceiver, setShowConversation } = useReceiver();
   const [messageInput, setMessageInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { messages, handleDeleteMessage, setMessages } = useMessages(receiver);
   
   useEffect(() => {
     const receiverId = searchParams.get('receiver');
@@ -74,145 +73,6 @@ export function ConversationView() {
     }
   };
 
-  useEffect(() => {
-    if (receiver) {
-      loadMessages();
-      subscribeToMessages();
-    }
-  }, [receiver]);
-
-  const loadMessages = async () => {
-    if (!user || !receiver) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('messages')
-        .select(`
-          *,
-          sender:profiles!messages_sender_id_fkey(*)
-        `)
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .or(`sender_id.eq.${receiver.id},receiver_id.eq.${receiver.id}`)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-      
-      if (data) {
-        const formattedMessages: Message[] = data.map(msg => ({
-          ...msg,
-          metadata: typeof msg.metadata === 'string' ? JSON.parse(msg.metadata) : msg.metadata || {},
-          deleted_by: typeof msg.deleted_by === 'string' ? JSON.parse(msg.deleted_by) : msg.deleted_by || {},
-          sender: {
-            id: msg.sender.id,
-            email: msg.sender.email,
-            full_name: msg.sender.full_name,
-            avatar_url: msg.sender.avatar_url,
-            role: (msg.sender.role as 'professional' | 'business' | 'admin') || 'professional',
-            bio: msg.sender.bio,
-            phone: msg.sender.phone,
-            city: msg.sender.city,
-            state: msg.sender.state,
-            country: msg.sender.country || '',
-            skills: msg.sender.skills || [],
-            latitude: msg.sender.latitude,
-            longitude: msg.sender.longitude,
-            online_status: msg.sender.online_status || false,
-            last_seen: msg.sender.last_seen || new Date().toISOString(),
-            certifications: [],
-            education: [],
-            experiences: [],
-            friends: []
-          }
-        }));
-        setMessages(formattedMessages);
-        scrollToBottom();
-      }
-    } catch (error) {
-      console.error('Error loading messages:', error);
-      toast.error("Impossible de charger les messages");
-    }
-  };
-
-  const subscribeToMessages = () => {
-    if (!user || !receiver) return;
-
-    const channel = supabase
-      .channel('messages')
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'messages',
-        filter: `sender_id=eq.${receiver.id},receiver_id=eq.${user.id}`
-      }, async (payload) => {
-        const { data: messageData, error } = await supabase
-          .from('messages')
-          .select(`
-            *,
-            sender:profiles!messages_sender_id_fkey(*)
-          `)
-          .eq('id', payload.new.id)
-          .single();
-
-        if (error || !messageData) {
-          console.error('Error fetching new message:', error);
-          return;
-        }
-
-        const newMessage: Message = {
-          ...messageData,
-          metadata: typeof messageData.metadata === 'string' ? JSON.parse(messageData.metadata) : messageData.metadata || {},
-          deleted_by: typeof messageData.deleted_by === 'string' ? JSON.parse(messageData.deleted_by) : messageData.deleted_by || {},
-          sender: {
-            id: messageData.sender.id,
-            email: messageData.sender.email,
-            full_name: messageData.sender.full_name,
-            avatar_url: messageData.sender.avatar_url,
-            role: (messageData.sender.role as 'professional' | 'business' | 'admin') || 'professional',
-            bio: messageData.sender.bio,
-            phone: messageData.sender.phone,
-            city: messageData.sender.city,
-            state: messageData.sender.state,
-            country: messageData.sender.country || '',
-            skills: messageData.sender.skills || [],
-            latitude: messageData.sender.latitude,
-            longitude: messageData.sender.longitude,
-            online_status: messageData.sender.online_status || false,
-            last_seen: messageData.sender.last_seen || new Date().toISOString(),
-            certifications: [],
-            education: [],
-            experiences: [],
-            friends: []
-          }
-        };
-        
-        setMessages(prev => [...prev, newMessage]);
-        scrollToBottom();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
-
-  const handleDeleteMessage = async (messageId: string) => {
-    try {
-      const { error } = await supabase
-        .from('messages')
-        .delete()
-        .eq('id', messageId)
-        .eq('sender_id', user?.id);
-
-      if (error) throw error;
-
-      setMessages(prev => prev.filter(msg => msg.id !== messageId));
-      toast.success("Message supprimé");
-    } catch (error) {
-      console.error('Error deleting message:', error);
-      toast.error("Impossible de supprimer le message");
-    }
-  };
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -247,78 +107,23 @@ export function ConversationView() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 p-4 border-b pt-20">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
-          onClick={handleBack}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        
-        {receiver && (
-          <div className="flex items-center gap-3">
-            <UserAvatar
-              user={{
-                ...receiver,
-                online_status: receiver.online_status === 'online',
-                friends: []
-              }}
-              className="h-10 w-10"
-            />
-            <div>
-              <p className="font-medium">{receiver.full_name}</p>
-              <p className="text-sm text-muted-foreground">
-                {receiver.online_status === 'online' ? 'En ligne' : 'Hors ligne'}
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
+      <ConversationHeader 
+        receiver={receiver}
+        onBack={handleBack}
+      />
+      
+      <MessageList
+        messages={messages}
+        currentUserId={user?.id}
+        onDeleteMessage={handleDeleteMessage}
+        messagesEndRef={messagesEndRef}
+      />
 
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
-          {messages.map((message) => (
-            <div key={message.id} className="relative group">
-              <ChatMessage 
-                message={message}
-                isOwn={message.sender_id === user?.id}
-              />
-              {message.sender_id === user?.id && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => handleDeleteMessage(message.id)}
-                >
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              )}
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
-      </ScrollArea>
-
-      <div className="p-4 border-t">
-        <form
-          className="flex gap-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSendMessage();
-          }}
-        >
-          <Input
-            placeholder="Écrire un message..."
-            value={messageInput}
-            onChange={(e) => setMessageInput(e.target.value)}
-          />
-          <Button type="submit" size="icon">
-            <Send className="h-4 w-4" />
-          </Button>
-        </form>
-      </div>
+      <MessageInput
+        value={messageInput}
+        onChange={setMessageInput}
+        onSubmit={handleSendMessage}
+      />
     </div>
   );
 }
