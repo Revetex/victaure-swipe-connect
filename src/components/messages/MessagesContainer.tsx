@@ -9,7 +9,7 @@ import { useConversationHandler } from "@/hooks/useConversationHandler";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { transformDatabaseMessage } from "@/types/messages";
+import { Message, transformDatabaseMessage } from "@/types/messages";
 import { useUser } from "@/hooks/useUser";
 import { useQueryClient } from "@tanstack/react-query";
 import { ConversationView } from "./conversation/ConversationView";
@@ -94,12 +94,12 @@ export function MessagesContainer() {
     conv.content?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const messages = receiver?.id === 'assistant' 
+  const messages: Message[] = receiver?.id === 'assistant' 
     ? aiMessages 
     : (Array.isArray(currentMessages) 
         ? currentMessages.map(msg => ({
             ...transformDatabaseMessage(msg),
-            message_type: msg.is_assistant ? 'assistant' : 'user'
+            message_type: msg.is_assistant ? 'assistant' as const : 'user' as const
           }))
         : []);
 
