@@ -2,6 +2,7 @@
 import { Bot } from "lucide-react";
 import { motion } from "framer-motion";
 import { Avatar } from "@/components/ui/avatar";
+import { Card } from "@/components/ui/card";
 
 export function ChatThinking() {
   return (
@@ -9,7 +10,7 @@ export function ChatThinking() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="flex items-start gap-3 px-4 py-3"
+      className="flex items-start gap-3 p-4"
     >
       <Avatar className="h-8 w-8">
         <div className="h-full w-full rounded-full bg-primary/10 flex items-center justify-center">
@@ -17,7 +18,7 @@ export function ChatThinking() {
         </div>
       </Avatar>
       
-      <div className="bg-muted px-4 py-3 rounded-2xl rounded-tl-sm max-w-[80%] shadow-sm">
+      <Card className="bg-muted/50 px-4 py-3 max-w-[80%]">
         <div className="flex gap-1.5 items-center">
           {[0, 1, 2].map((i) => (
             <motion.span
@@ -33,7 +34,7 @@ export function ChatThinking() {
             />
           ))}
         </div>
-      </div>
+      </Card>
     </motion.div>
   );
 }
