@@ -12,8 +12,8 @@ interface LotteryTabsProps extends PaymentProps {
 
 export function LotteryTabs({ onPaymentRequested, isMobile }: LotteryTabsProps) {
   return (
-    <Tabs defaultValue="chess" className="w-full">
-      <TabsList className={`grid w-full ${isMobile ? 'grid-cols-2 gap-2' : 'grid-cols-2'}`}>
+    <Tabs defaultValue="chess" className="w-full max-w-full">
+      <TabsList className="grid w-full grid-cols-2 gap-1">
         <TabsTrigger value="chess" className="flex items-center gap-2">
           <Sword className="h-4 w-4" />
           <span className="truncate">Échecs</span>
@@ -24,17 +24,17 @@ export function LotteryTabs({ onPaymentRequested, isMobile }: LotteryTabsProps) 
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="chess" className="mt-4 sm:mt-6">
-        <Card className="p-2 sm:p-6 overflow-x-hidden">
-          <div className="w-full">
+      <TabsContent value="chess" className="mt-4">
+        <Card className="p-2 sm:p-6">
+          <div className="w-full max-w-full overflow-hidden">
             <ChessPage />
           </div>
         </Card>
       </TabsContent>
 
-      <TabsContent value="sphere" className="mt-4 sm:mt-6">
-        <Card className="p-2 sm:p-6 overflow-x-hidden">
-          <div className="w-full">
+      <TabsContent value="sphere" className="mt-4">
+        <Card className="p-2 sm:p-6">
+          <div className="w-full max-w-full overflow-hidden">
             <LotoSphere onPaymentRequested={onPaymentRequested} />
           </div>
         </Card>
