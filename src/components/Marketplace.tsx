@@ -11,12 +11,15 @@ import { Calculator, Search, PlusCircle, Filter, SlidersHorizontal } from "lucid
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
 import type { MarketplaceFilters } from "@/types/marketplace";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Marketplace() {
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [showListingForm, setShowListingForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isSearching, setIsSearching] = useState(false);
   const [filters, setFilters] = useState<MarketplaceFilters>({
     priceRange: [0, 10000],
     categories: [],
@@ -24,6 +27,31 @@ export function Marketplace() {
     sortOrder: 'desc'
   });
   const isMobile = useIsMobile();
+
+  const handleSearch = async (value: string) => {
+    setSearchQuery(value);
+    
+    if (!value.trim()) return;
+    
+    setIsSearching(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('marketplace-search', {
+        body: { query: value }
+      });
+
+      if (error) throw error;
+
+      if (data.suggestedKeywords) {
+        toast.info(`Suggestions de recherche: ${data.suggestedKeywords}`);
+      }
+
+    } catch (error) {
+      console.error('Erreur de recherche:', error);
+      toast.error("Une erreur est survenue lors de la recherche");
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   return (
     <motion.div 
@@ -34,11 +62,11 @@ export function Marketplace() {
       <div className="mb-6 space-y-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${isSearching ? 'animate-spin text-primary' : 'text-muted-foreground'}`} />
             <Input 
               placeholder="Rechercher dans le marketplace..." 
               value={searchQuery} 
-              onChange={e => setSearchQuery(e.target.value)} 
+              onChange={e => handleSearch(e.target.value)} 
               className="pl-10" 
             />
           </div>
