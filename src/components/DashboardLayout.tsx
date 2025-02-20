@@ -36,12 +36,8 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         onPageChange={handlePageChange}
       />
 
-      <main className={cn(
-        "flex-1 lg:ml-64",
-        "flex flex-col items-center",
-        "pt-6 px-4 sm:px-6 lg:px-8"
-      )}>
-        <div className="w-full max-w-3xl">
+      <main className="flex-1 lg:ml-64">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
           {children || (
             <DashboardContent
               currentPage={currentPage}

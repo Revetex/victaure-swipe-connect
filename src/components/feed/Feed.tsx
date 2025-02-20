@@ -2,7 +2,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useCallback } from "react";
-import { cn } from "@/lib/utils";
+import { CreatePost } from "./posts/CreatePost";
+import { PostList } from "./posts/PostList";
 
 export function Feed() {
   const queryClient = useQueryClient();

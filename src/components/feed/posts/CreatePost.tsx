@@ -1,54 +1,48 @@
 
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { CreatePostProps } from "./types";
-import { useCreatePost } from "@/hooks/feed/useCreatePost";
-import { CreatePostForm } from "./create/CreatePostForm";
+import { Textarea } from "@/components/ui/textarea";
+import { motion } from "framer-motion";
+
+interface CreatePostProps {
+  onPostCreated: () => void;
+}
 
 export function CreatePost({ onPostCreated }: CreatePostProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const {
-    newPost,
-    setNewPost,
-    privacy,
-    setPrivacy,
-    attachments,
-    isUploading,
-    handleFileChange,
-    removeFile,
-    handleCreatePost
-  } = useCreatePost(onPostCreated);
+  const [content, setContent] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!content.trim()) return;
+    
+    try {
+      // TODO: Implement post creation with Supabase
+      onPostCreated();
+      setContent("");
+    } catch (error) {
+      console.error("Error creating post:", error);
+    }
+  };
 
   return (
-    <Card className={cn(
-      "shadow-lg border-primary/10 transition-all duration-200",
-      isExpanded ? "p-4" : "p-2",
-      "mx-auto max-w-3xl w-full mt-[4.5rem]"
-    )}>
-      {!isExpanded ? (
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-muted-foreground h-auto py-3 px-4"
-          onClick={() => setIsExpanded(true)}
-        >
-          Partagez quelque chose...
+    <motion.form 
+      onSubmit={handleSubmit}
+      className="space-y-4 w-full bg-card rounded-lg p-4 shadow-sm border"
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <Textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder="Quoi de neuf ?"
+        className="w-full resize-none"
+        rows={3}
+      />
+      <div className="flex justify-end">
+        <Button type="submit" disabled={!content.trim()}>
+          Publier
         </Button>
-      ) : (
-        <CreatePostForm
-          newPost={newPost}
-          onPostChange={setNewPost}
-          privacy={privacy}
-          onPrivacyChange={setPrivacy}
-          attachments={attachments}
-          isUploading={isUploading}
-          onFileChange={handleFileChange}
-          onRemoveFile={removeFile}
-          onCreatePost={handleCreatePost}
-          onClose={() => setIsExpanded(false)}
-        />
-      )}
-    </Card>
+      </div>
+    </motion.form>
   );
 }
