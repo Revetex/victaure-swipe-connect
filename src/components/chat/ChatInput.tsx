@@ -10,16 +10,23 @@ interface ChatInputProps {
   isLoading?: boolean;
   disabled?: boolean;
   placeholder?: string;
+  value?: string;
+  onChange?: (value: string) => void;
 }
 
 export function ChatInput({ 
   onSendMessage, 
   isLoading = false,
   disabled = false,
-  placeholder = "Écrivez votre message..."
+  placeholder = "Écrivez votre message...",
+  value,
+  onChange
 }: ChatInputProps) {
-  const [message, setMessage] = useState("");
+  const [internalMessage, setInternalMessage] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  const message = value !== undefined ? value : internalMessage;
+  const setMessage = onChange || setInternalMessage;
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +39,7 @@ export function ChatInput({
     } catch (error) {
       console.error("Error sending message:", error);
     }
-  }, [message, isLoading, onSendMessage]);
+  }, [message, isLoading, onSendMessage, setMessage]);
 
   const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
