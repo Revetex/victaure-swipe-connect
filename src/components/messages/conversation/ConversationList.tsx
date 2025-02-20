@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface ConversationListProps {
   className?: string;
@@ -31,6 +32,7 @@ export function ConversationList({ className }: ConversationListProps) {
   const { setReceiver, setShowConversation } = useReceiver();
   const { user } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -116,6 +118,10 @@ export function ConversationList({ className }: ConversationListProps) {
     }
   };
 
+  const handleAddConversation = () => {
+    navigate('/feed/friends');
+  };
+
   return (
     <div className={cn("flex flex-col border-r pt-20", className)}>
       <div className="p-4 border-b">
@@ -133,6 +139,7 @@ export function ConversationList({ className }: ConversationListProps) {
             size="icon"
             variant="ghost"
             className="shrink-0"
+            onClick={handleAddConversation}
           >
             <Plus className="h-4 w-4" />
           </Button>
