@@ -9,6 +9,8 @@ import { ProfilePreviewContact } from "./ProfilePreviewContact";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface ProfilePreviewFrontProps {
   profile: UserProfile;
@@ -28,6 +30,7 @@ export function ProfilePreviewFront({
   onViewProfile
 }: ProfilePreviewFrontProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const isOwnProfile = user?.id === profile.id;
   
   const {
@@ -43,6 +46,20 @@ export function ProfilePreviewFront({
     handleRemoveFriend,
     handleToggleBlock,
   } = useConnectionActions(profile.id);
+
+  const handleMessageClick = () => {
+    if (!user) {
+      toast.error("Vous devez être connecté pour envoyer un message");
+      return;
+    }
+    
+    if (onRequestChat) {
+      onRequestChat();
+    } else {
+      if (onClose) onClose();
+      navigate(`/messages?receiver=${profile.id}`);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -88,7 +105,7 @@ export function ProfilePreviewFront({
                   <Button
                     variant="outline"
                     className="w-full flex items-center gap-2"
-                    onClick={onRequestChat}
+                    onClick={handleMessageClick}
                     disabled={!isFriend}
                   >
                     <MessageCircle className="h-4 w-4" />
