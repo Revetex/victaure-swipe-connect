@@ -72,26 +72,26 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] fixed inset-0 top-16">
-      <div className="flex-none border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <ConversationHeader 
-          receiver={receiver}
-          onBack={onBack}
-          onDelete={onDeleteConversation}
-        />
-      </div>
+    <div className="absolute inset-0 top-16 flex flex-col bg-background">
+      <ConversationHeader 
+        receiver={receiver}
+        onBack={onBack}
+        onDelete={onDeleteConversation}
+        className="flex-none border-b"
+      />
 
-      <div className="flex-1 overflow-y-auto min-h-0">
+      <div className="flex-1 overflow-hidden relative">
         <ConversationMessages
           messages={messages}
           isThinking={isThinking}
           onReply={handleReply}
           messagesEndRef={messagesEndRef}
+          className="absolute inset-0"
         />
       </div>
 
-      <div className="flex-none p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="max-w-2xl mx-auto">
+      <div className="flex-none border-t p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="max-w-3xl mx-auto">
           <ChatInput
             value={inputMessage}
             onChange={onInputChange}

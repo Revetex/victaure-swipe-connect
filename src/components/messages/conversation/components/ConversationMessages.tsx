@@ -5,25 +5,26 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface ConversationMessagesProps {
   messages: Message[];
   isThinking?: boolean;
   onReply: (content: string) => void;
   messagesEndRef: React.RefObject<HTMLDivElement>;
+  className?: string;
 }
 
 export function ConversationMessages({ 
   messages, 
   isThinking, 
   onReply,
-  messagesEndRef 
+  messagesEndRef,
+  className
 }: ConversationMessagesProps) {
   const [showScrollButton, setShowScrollButton] = useState(false);
-  const [fadeDirection, setFadeDirection] = useState<'up' | 'down'>('up');
   const containerRef = useRef<HTMLDivElement>(null);
   const isAutoScrollingRef = useRef(false);
-  const prevScrollTop = useRef(0);
 
   const uniqueMessages = useMemo(() => 
     messages.filter((message, index, self) =>
@@ -55,10 +56,6 @@ export function ConversationMessages({
     if (isAutoScrollingRef.current) return;
 
     const target = event.currentTarget;
-    const currentScrollTop = target.scrollTop;
-    setFadeDirection(currentScrollTop > prevScrollTop.current ? 'down' : 'up');
-    prevScrollTop.current = currentScrollTop;
-
     const isNearBottom = 
       target.scrollHeight - target.scrollTop - target.clientHeight < 100;
     setShowScrollButton(!isNearBottom);
@@ -73,32 +70,24 @@ export function ConversationMessages({
   return (
     <div 
       ref={containerRef}
-      className="relative flex flex-col min-h-0 w-full"
+      className={cn("flex flex-col h-full", className)}
       onScroll={handleScroll}
     >
-      <div className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="space-y-4 max-w-2xl mx-auto">
-          <AnimatePresence mode="popLayout">
-            {uniqueMessages.map((message) => (
-              <motion.div
-                key={message.id}
-                initial={{ opacity: 0, y: fadeDirection === 'up' ? 20 : -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: fadeDirection === 'up' ? -20 : 20 }}
-                transition={{ 
-                  duration: 0.2,
-                  type: "spring",
-                  stiffness: 500,
-                  damping: 30
-                }}
-              >
-                <ChatMessage 
-                  message={message} 
-                  onReply={onReply}
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
+      <div className="flex-1 overflow-y-auto px-4">
+        <div className="max-w-3xl mx-auto py-4 space-y-4">
+          {uniqueMessages.map((message) => (
+            <motion.div
+              key={message.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ChatMessage 
+                message={message} 
+                onReply={onReply}
+              />
+            </motion.div>
+          ))}
           
           <div ref={messagesEndRef} className="h-4" />
         </div>
@@ -110,13 +99,13 @@ export function ConversationMessages({
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            className="absolute bottom-4 right-6 z-10"
+            className="absolute bottom-4 right-6"
           >
             <Button
               size="icon"
               variant="secondary"
               onClick={scrollToBottom}
-              className="rounded-full shadow-lg hover:shadow-xl transition-all duration-300 bg-primary/10 hover:bg-primary/20"
+              className="rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <ChevronDown className="h-4 w-4" />
             </Button>
