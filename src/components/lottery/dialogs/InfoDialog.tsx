@@ -1,16 +1,10 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { HelpCircle, Diamond, Trophy, Star } from "lucide-react";
-
 export function InfoDialog() {
-  return (
-    <Dialog>
+  return <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2 text-sm">
-          <HelpCircle className="h-4 w-4" />
-          Infos
-        </Button>
+        
       </DialogTrigger>
       <DialogContent className="w-[95vw] max-w-2xl sm:w-full">
         <DialogHeader>
@@ -43,6 +37,5 @@ export function InfoDialog() {
           </div>
         </div>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 }
