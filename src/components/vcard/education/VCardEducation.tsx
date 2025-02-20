@@ -1,13 +1,13 @@
 
 import { VCardSection } from "@/components/VCardSection";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Building2, Calendar, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { UserProfile } from "@/types/profile";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { UserProfile, Education } from "@/types/profile";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
-import { EducationForm } from "./EducationForm";
-import { EducationDisplay } from "./EducationDisplay";
+import { useEffect, useState } from "react";
 
 interface VCardEducationProps {
   profile: UserProfile;
@@ -20,14 +20,15 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
 
   const handleAddEducation = () => {
     try {
-      const newEducation = {
+      const newEducation: Education = {
         id: crypto.randomUUID(),
+        profile_id: profile.id,
         school_name: "",
         degree: "",
         field_of_study: "",
         start_date: null,
         end_date: null,
-        description: "",
+        description: null
       };
 
       setProfile({

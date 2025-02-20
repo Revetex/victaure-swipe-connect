@@ -1,3 +1,4 @@
+
 import { UserProfile, Experience } from "@/types/profile";
 
 export function transformToFullProfile(data: any): UserProfile {
@@ -23,7 +24,6 @@ export function transformToFullProfile(data: any): UserProfile {
     friends: data.friends || [],
     company_name: data.company_name || undefined,
     created_at: data.created_at || new Date().toISOString(),
-    updated_at: data.updated_at || new Date().toISOString(),
     privacy_enabled: data.privacy_enabled || false,
     sections_order: data.sections_order || [],
     website: data.website || undefined

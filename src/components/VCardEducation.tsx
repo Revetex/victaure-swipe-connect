@@ -4,7 +4,7 @@ import { GraduationCap, Building2, Calendar, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, Education } from "@/types/profile";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
