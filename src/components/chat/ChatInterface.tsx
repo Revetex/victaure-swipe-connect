@@ -1,8 +1,8 @@
 
 import React, { useState, useCallback } from 'react';
-import { ChatInput } from './ChatInput';
-import { ChatMessage } from './ChatMessage';
-import { VoiceInterface } from '../VoiceInterface';
+import { ChatInput } from '@/components/chat/ChatInput';
+import { ChatMessage } from '@/components/chat/ChatMessage';
+import { VoiceInterface } from '@/components/VoiceInterface';
 import { useAIChat } from '@/hooks/useAIChat';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
@@ -30,10 +30,8 @@ export function ChatInterface() {
     setIsSpeaking(speaking);
   }, []);
 
-  // Modifier la signature pour correspondre exactement au type attendu
   const handleReply = useCallback((content: string) => {
     if (content) {
-      // Utiliser void pour ignorer la promesse retournée par handleSendMessage
       void handleSendMessage(content);
     }
   }, [handleSendMessage]);
@@ -59,8 +57,8 @@ export function ChatInterface() {
           <ChatInput
             value={inputMessage}
             onChange={setInputMessage}
-            onSend={() => void handleSendMessage(inputMessage)}
-            isThinking={isThinking || isSpeaking}
+            onSendMessage={handleSendMessage}
+            isLoading={isThinking}
             disabled={isSpeaking}
             placeholder={isSpeaking ? "Synthèse vocale en cours..." : "Écrivez votre message..."}
           />
