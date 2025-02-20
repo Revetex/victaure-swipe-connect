@@ -2,7 +2,7 @@
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/Marketplace";
-import { Feed } from "@/components/feed/Feed";
+import { Feed } from "@/components/Feed";
 import { Settings } from "@/components/Settings";
 import { NotesSection } from "@/components/notes/NotesSection";
 import { NotificationsTab } from "@/components/notifications/NotificationsTab";
@@ -53,7 +53,7 @@ export function ContentRouter({
     case 16:
       return <NotesSection />;
     case 17:
-      return <JobsPage />; // Ajout de la page emploi
+      return <JobsPage />;
     case 18:
       return <LotteryPage />;
     default:

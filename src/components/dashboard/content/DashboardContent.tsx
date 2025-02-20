@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/marketplace/Marketplace";
-import { Feed } from "@/components/feed/Feed";
+import { Feed } from "@/components/Feed";
 import { Settings } from "@/components/Settings";
 import { NotesSection } from "@/components/notes/NotesSection";
 import { useEffect } from "react";
