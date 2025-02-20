@@ -10,35 +10,33 @@ interface LotteryTabsProps extends PaymentProps {
   isMobile: boolean;
 }
 
-export function LotteryTabs({ onPaymentRequested, isMobile }: LotteryTabsProps) {
+export function LotteryTabs({ onPaymentRequested }: LotteryTabsProps) {
   return (
-    <Tabs defaultValue="chess" className="w-full max-w-full">
-      <TabsList className="grid w-full grid-cols-2 gap-1">
-        <TabsTrigger value="chess" className="flex items-center gap-2">
-          <Sword className="h-4 w-4" />
-          <span className="truncate">Échecs</span>
+    <Tabs defaultValue="chess" className="w-full">
+      <TabsList className="w-full grid grid-cols-2 gap-2">
+        <TabsTrigger value="chess">
+          <Sword className="h-4 w-4 mr-2" />
+          Échecs
         </TabsTrigger>
-        <TabsTrigger value="sphere" className="flex items-center gap-2">
-          <Crown className="h-4 w-4" />
-          <span className="truncate">LotoSphere</span>
+        <TabsTrigger value="sphere">
+          <Crown className="h-4 w-4 mr-2" />
+          LotoSphere
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="chess" className="mt-4">
-        <Card className="p-2 sm:p-6">
-          <div className="w-full max-w-full overflow-hidden">
+      <div className="mt-4 w-[calc(100vw-2rem)] sm:w-full overflow-hidden">
+        <TabsContent value="chess">
+          <Card className="p-2">
             <ChessPage />
-          </div>
-        </Card>
-      </TabsContent>
+          </Card>
+        </TabsContent>
 
-      <TabsContent value="sphere" className="mt-4">
-        <Card className="p-2 sm:p-6">
-          <div className="w-full max-w-full overflow-hidden">
+        <TabsContent value="sphere">
+          <Card className="p-2">
             <LotoSphere onPaymentRequested={onPaymentRequested} />
-          </div>
-        </Card>
-      </TabsContent>
+          </Card>
+        </TabsContent>
+      </div>
     </Tabs>
   );
 }
