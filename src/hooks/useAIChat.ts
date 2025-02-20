@@ -30,7 +30,7 @@ export function useAIChat(initialContext: Partial<ConversationContext> = {}) {
     addThinkingMessage,
     addAssistantMessage,
     removeThinkingMessages
-  } = useAIMessages();
+  } = useAIMessages({ profileId: profile?.id || '' });
 
   const handleFileAttach = useCallback(async (file: File, messageId: string) => {
     const formData = new FormData();
