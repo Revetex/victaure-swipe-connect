@@ -72,13 +72,19 @@ export function Settings() {
 
   return (
     <Elements stripe={stripePromise} options={stripeElementsOptions}>
-      <ScrollArea className="min-h-screen w-full pt-16">
-        <div className="space-y-4 px-4 sm:px-6 py-6 w-full sm:max-w-2xl mx-auto">
-          {settingsSections.map(({ id, Component }) => (
-            <Component key={id} />
-          ))}
-        </div>
-      </ScrollArea>
+      <div className="min-h-screen w-full overflow-x-hidden">
+        <ScrollArea className="h-[calc(100vh-4rem)] w-full">
+          <div className="max-w-full px-4 py-6 mx-auto md:max-w-2xl">
+            <div className="space-y-4">
+              {settingsSections.map(({ id, Component }) => (
+                <div key={id} className="w-full overflow-x-hidden">
+                  <Component />
+                </div>
+              ))}
+            </div>
+          </div>
+        </ScrollArea>
+      </div>
     </Elements>
   );
 }
