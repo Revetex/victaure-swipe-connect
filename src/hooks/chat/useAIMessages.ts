@@ -11,7 +11,7 @@ const defaultAssistant = {
   last_seen: new Date().toISOString()
 };
 
-export function useAIMessages(profile: UserProfile | null) {
+export function useAIMessages({ profile }: { profile: UserProfile | null }) {
   const [messages, setMessages] = useState<Message[]>([]);
 
   const addMessage = useCallback((content: string, isUser: boolean) => {

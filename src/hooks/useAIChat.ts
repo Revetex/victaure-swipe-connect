@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -30,7 +29,7 @@ export function useAIChat(initialContext: Partial<ConversationContext> = {}) {
     addThinkingMessage,
     addAssistantMessage,
     removeThinkingMessages
-  } = useAIMessages({ profileId: profile?.id || '' });
+  } = useAIMessages({ profile });
 
   const handleFileAttach = useCallback(async (file: File, messageId: string) => {
     const formData = new FormData();
