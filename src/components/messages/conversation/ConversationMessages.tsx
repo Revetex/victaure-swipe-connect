@@ -26,6 +26,7 @@ export function ConversationMessages({
   const containerRef = useRef<HTMLDivElement>(null);
   const isAutoScrollingRef = useRef(false);
 
+  // Dédupliquer les messages en utilisant useMemo
   const uniqueMessages = useMemo(() => 
     messages.filter((message, index, self) =>
       index === self.findIndex((m) => m.id === message.id)
@@ -33,6 +34,7 @@ export function ConversationMessages({
     [messages]
   );
 
+  // Gérer le scroll automatique quand de nouveaux messages arrivent
   useEffect(() => {
     const scrollToBottom = (smooth = true) => {
       if (messagesEndRef.current) {
