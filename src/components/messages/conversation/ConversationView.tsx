@@ -28,17 +28,17 @@ export function ConversationView({
   messagesEndRef
 }: ConversationViewProps) {
   return (
-    <div className="absolute inset-0 flex flex-col">
+    <div className="absolute inset-0 flex flex-col bg-gradient-to-b from-background to-muted/20">
       <div className="flex-none sticky top-0 z-50">
         <ConversationHeader 
           receiver={receiver}
           onBack={onBack}
           onDelete={onDelete}
-          className="border-b"
+          className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b"
         />
       </div>
 
-      <div className="flex-1 overflow-y-auto relative">
+      <div className="flex-1 overflow-y-auto">
         <ConversationMessages
           messages={messages}
           isThinking={isThinking}
@@ -47,8 +47,8 @@ export function ConversationView({
         />
       </div>
 
-      <div className="flex-none fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t z-50">
-        <div className="max-w-3xl mx-auto p-4">
+      <div className="flex-none sticky bottom-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t">
+        <div className="p-4 max-w-3xl mx-auto">
           <ChatInput
             value={inputMessage}
             onChange={onInputChange}
