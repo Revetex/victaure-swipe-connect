@@ -3,7 +3,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ChatMessage } from '../ChatMessage';
-import { Message } from '@/types/messages';
+import type { Message } from '@/types/messages';
 
 const mockMessage: Message = {
   id: '1',
