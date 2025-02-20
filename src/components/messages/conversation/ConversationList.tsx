@@ -29,6 +29,9 @@ export function ConversationList({
 }: ConversationListProps) {
   // Filtrer les conversations pour n'avoir qu'une seule conversation par utilisateur
   const uniqueConversations = conversations.reduce((acc, curr) => {
+    // Ignorer les conversations avec l'assistant
+    if (curr.receiver?.id === 'assistant') return acc;
+    
     const existingConversation = acc.find(conv => conv.receiver?.id === curr.receiver?.id);
     if (!existingConversation) {
       acc.push(curr);
@@ -51,34 +54,34 @@ export function ConversationList({
     conv.content?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const shouldScroll = filteredConversations.length > 8;
+
   return (
-    <div className="absolute inset-0 flex flex-col">
-      <div className="flex-none bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b z-10">
-        <div className="p-4 space-y-4">
-          <div className="flex items-center justify-between gap-2">
-            <SearchBar value={searchQuery} onChange={onSearchChange} />
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={onRefresh}
-                className="shrink-0"
-              >
-                <RefreshCw className="h-4 w-4" />
+    <div className="relative h-full flex flex-col">
+      <div className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b z-20 p-4">
+        <div className="flex items-center justify-between gap-2">
+          <SearchBar value={searchQuery} onChange={onSearchChange} />
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={onRefresh}
+              className="shrink-0"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+            <FriendSelector onSelectFriend={onStartNewChat}>
+              <Button variant="default" size="icon" className="shrink-0">
+                <Plus className="h-4 w-4" />
               </Button>
-              <FriendSelector onSelectFriend={onStartNewChat}>
-                <Button variant="default" size="icon" className="shrink-0">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </FriendSelector>
-            </div>
+            </FriendSelector>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className={`flex-1 ${shouldScroll ? 'overflow-y-auto' : ''}`}>
         <div className="p-4 space-y-4">
-          {/* M. Victaure toujours en premier */}
+          {/* M. Victaure toujours en premier et sticky */}
           <AssistantMessage 
             chatMessages={aiMessages}
             onSelectConversation={() => {
@@ -92,7 +95,7 @@ export function ConversationList({
             }}
           />
           
-          <div className="pt-2">
+          <div className="pt-2 space-y-2">
             {filteredConversations.map((conversation) => (
               <motion.div
                 key={conversation.id}
