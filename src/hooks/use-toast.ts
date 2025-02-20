@@ -1,5 +1,6 @@
 
 import * as React from "react"
+import { toast as sonnerToast } from "sonner"
 
 import type {
   ToastActionElement,
@@ -140,35 +141,24 @@ interface Toast extends Omit<ToasterToast, "id"> {
   duration?: number
 }
 
-function toast({ ...props }: Toast) {
-  const id = genId()
-
-  const update = (props: ToasterToast) =>
-    dispatch({
-      type: "UPDATE_TOAST",
-      toast: { ...props, id },
+// Fonction unifiée pour afficher les toasts
+function toast(options: Toast | string) {
+  if (typeof options === 'string') {
+    sonnerToast(options, {
+      position: 'top-center',
+      duration: 3000,
     })
-  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
-
-  dispatch({
-    type: "ADD_TOAST",
-    toast: {
-      ...props,
-      id,
-      open: true,
-      onOpenChange: (open) => {
-        if (!open) dismiss()
-      },
-    },
-  })
-
-  return {
-    id: id,
-    dismiss,
-    update,
+    return
   }
+
+  sonnerToast(options.title || '', {
+    description: options.description,
+    position: 'top-center',
+    duration: options.duration || 3000,
+  })
 }
 
+// Hook personnalisé pour gérer les toasts
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
 
