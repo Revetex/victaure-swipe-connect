@@ -60,15 +60,9 @@ export function useAIChat() {
         content.toLowerCase().includes(keyword)
       );
 
+      let jobMatches;
       if (shouldAnalyzeJobs) {
-        const jobMatches = await analyzeJobs();
-        if (jobMatches) {
-          const matchesContext = {
-            jobMatches,
-            userProfile: profile
-          };
-          console.log('Job matches context:', matchesContext);
-        }
+        jobMatches = await analyzeJobs();
       }
 
       const { error: userMessageError } = await supabase
@@ -101,7 +95,8 @@ export function useAIChat() {
             userProfile: profile,
             conversationState: conversationContext,
             hasGreeted: conversationContext.hasGreeted,
-            isAnalyzingJobs: isAnalyzing
+            isAnalyzingJobs: isAnalyzing,
+            jobMatches: jobMatches || []
           }
         }
       });
