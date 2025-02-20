@@ -25,16 +25,16 @@ export function LotteryTabs({ onPaymentRequested, isMobile }: LotteryTabsProps) 
       </TabsList>
 
       <TabsContent value="chess" className="mt-4 sm:mt-6">
-        <Card className="p-2 sm:p-6">
-          <div className="w-full overflow-x-hidden">
+        <Card className="p-2 sm:p-6 overflow-x-hidden">
+          <div className="w-full">
             <ChessPage />
           </div>
         </Card>
       </TabsContent>
 
       <TabsContent value="sphere" className="mt-4 sm:mt-6">
-        <Card className="p-2 sm:p-6">
-          <div className="w-full overflow-x-hidden">
+        <Card className="p-2 sm:p-6 overflow-x-hidden">
+          <div className="w-full">
             <LotoSphere onPaymentRequested={onPaymentRequested} />
           </div>
         </Card>

@@ -25,15 +25,8 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
   const validateImage = async (file: File) => {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      toast.error("Format non supporté. Utilisez JPG, PNG ou WEBP", {
+      toast.error("Format non supporté. Utilisez JPG, PNG ou WebP", {
         id: "avatar-format-error"
-      });
-      return false;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("L'image ne doit pas dépasser 5MB", {
-        id: "avatar-size-error"
       });
       return false;
     }
@@ -43,18 +36,6 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
       img.src = URL.createObjectURL(file);
       img.onload = () => {
         URL.revokeObjectURL(img.src);
-        if (img.width < 200 || img.height < 200) {
-          toast.error("L'image doit faire au moins 200x200 pixels", {
-            id: "avatar-dimension-error"
-          });
-          resolve(false);
-        }
-        if (img.width > 2000 || img.height > 2000) {
-          toast.error("L'image est trop grande (max 2000x2000 pixels)", {
-            id: "avatar-max-dimension-error"
-          });
-          resolve(false);
-        }
         resolve(true);
       };
       img.onerror = () => {
@@ -160,10 +141,12 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
   return (
     <>
       <div className="relative group shrink-0">
-        <div className={cn(
-          "relative cursor-pointer",
-          isLoading && "opacity-50"
-        )}
+        <div 
+          className={cn(
+            "relative cursor-pointer rounded-full overflow-hidden",
+            "w-32 h-32 sm:w-40 sm:h-40",
+            isLoading && "opacity-50"
+          )}
           onClick={() => profile.avatar_url && setShowFullscreen(true)}
         >
           <AvatarImage
