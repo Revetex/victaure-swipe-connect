@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { MarketplaceForm } from "./marketplace/MarketplaceForm";
 import { MarketplaceList } from "./marketplace/MarketplaceList";
@@ -10,6 +11,7 @@ import { Calculator, Search, PlusCircle, Filter, SlidersHorizontal } from "lucid
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
 import type { MarketplaceFilters } from "@/types/marketplace";
+
 export function Marketplace() {
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [showListingForm, setShowListingForm] = useState(false);
@@ -22,26 +24,28 @@ export function Marketplace() {
     sortOrder: 'desc'
   });
   const isMobile = useIsMobile();
-  return <motion.div initial={{
-    opacity: 0,
-    y: 20
-  }} animate={{
-    opacity: 1,
-    y: 0
-  }} className="container mx-auto px-4 py-4 sm:py-8 mt-16">
-      
 
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      className="container mx-auto px-4 py-4 sm:py-8 mt-16"
+    >
       <div className="mb-6 space-y-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Rechercher dans le marketplace..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-10" />
+            <Input 
+              placeholder="Rechercher dans le marketplace..." 
+              value={searchQuery} 
+              onChange={e => setSearchQuery(e.target.value)} 
+              className="pl-10" 
+            />
           </div>
           <Button variant="outline" className="gap-2" size={isMobile ? "sm" : "default"}>
             <Filter className="h-4 w-4" />
             Filtres
           </Button>
-          
         </div>
 
         <Tabs defaultValue="all" className="w-full">
@@ -53,18 +57,43 @@ export function Marketplace() {
           </TabsList>
 
           <TabsContent value="all">
-            <MarketplaceList type="all" searchQuery={searchQuery} filters={filters} page={currentPage} onPageChange={setCurrentPage} />
+            <MarketplaceList 
+              type="all" 
+              searchQuery={searchQuery} 
+              filters={filters} 
+              page={currentPage} 
+              onPageChange={setCurrentPage} 
+            />
           </TabsContent>
           <TabsContent value="sale">
-            <MarketplaceList type="vente" searchQuery={searchQuery} filters={filters} page={currentPage} onPageChange={setCurrentPage} />
+            <MarketplaceList 
+              type="vente" 
+              searchQuery={searchQuery} 
+              filters={filters} 
+              page={currentPage} 
+              onPageChange={setCurrentPage} 
+            />
           </TabsContent>
           <TabsContent value="rent">
-            <MarketplaceList type="location" searchQuery={searchQuery} filters={filters} page={currentPage} onPageChange={setCurrentPage} />
+            <MarketplaceList 
+              type="location" 
+              searchQuery={searchQuery} 
+              filters={filters} 
+              page={currentPage} 
+              onPageChange={setCurrentPage} 
+            />
           </TabsContent>
           <TabsContent value="services">
-            <MarketplaceList type="service" searchQuery={searchQuery} filters={filters} page={currentPage} onPageChange={setCurrentPage} />
+            <MarketplaceList 
+              type="service" 
+              searchQuery={searchQuery} 
+              filters={filters} 
+              page={currentPage} 
+              onPageChange={setCurrentPage} 
+            />
           </TabsContent>
         </Tabs>
       </div>
-    </motion.div>;
+    </motion.div>
+  );
 }
