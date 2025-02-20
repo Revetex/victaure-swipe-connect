@@ -3,14 +3,8 @@ import { Logo } from "@/components/Logo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { ProfilePreview } from "@/components/ProfilePreview";
-import { useState } from "react";
 import { navigationItems } from "@/config/navigation";
 import { cn } from "@/lib/utils";
-import { useProfile } from "@/hooks/useProfile";
-import { createEmptyProfile } from "@/types/profile";
-import { UserAvatar } from "@/components/UserAvatar";
 
 interface DashboardMobileNavProps {
   currentPage: number;
@@ -25,14 +19,6 @@ export function DashboardMobileNav({
   setShowMobileMenu,
   onPageChange
 }: DashboardMobileNavProps) {
-  const { user } = useAuth();
-  const { profile } = useProfile();
-  const completeProfile = profile ? {
-    ...createEmptyProfile(profile.id, profile.email || ''),
-    ...profile
-  } : null;
-  const [showProfilePreview, setShowProfilePreview] = useState(false);
-
   return (
     <header className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur shadow-sm">
       <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
@@ -49,19 +35,6 @@ export function DashboardMobileNav({
               <span className="sr-only">Ouvrir le menu</span>
             </Button>
           </SheetTrigger>
-
-          {completeProfile && (
-            <Button 
-              variant="ghost" 
-              onClick={() => setShowProfilePreview(true)} 
-              className="w-8 h-8 p-0"
-            >
-              <UserAvatar 
-                user={completeProfile} 
-                className="w-8 h-8" 
-              />
-            </Button>
-          )}
 
           <div className="flex-1 flex justify-center items-center">
             <Logo />
@@ -100,14 +73,6 @@ export function DashboardMobileNav({
           </nav>
         </SheetContent>
       </Sheet>
-
-      {completeProfile && (
-        <ProfilePreview
-          profile={completeProfile}
-          isOpen={showProfilePreview}
-          onClose={() => setShowProfilePreview(false)}
-        />
-      )}
     </header>
   );
 }

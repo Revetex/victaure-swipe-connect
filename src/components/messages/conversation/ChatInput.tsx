@@ -34,8 +34,8 @@ export function ChatInput({
   };
 
   return (
-    <div className="flex items-end gap-2 bg-background rounded-lg p-2">
-      <div className="flex-1 relative">
+    <div className="fixed bottom-0 left-0 right-0 bg-background p-4 border-t">
+      <div className="flex items-end gap-2 max-w-3xl mx-auto">
         <textarea
           value={value}
           onChange={handleTextareaInput}
@@ -53,17 +53,16 @@ export function ChatInput({
             maxHeight: '200px'
           }}
         />
+        <Button
+          size="icon"
+          onClick={onSend}
+          disabled={!value.trim() || isThinking}
+          className="rounded-full h-10 w-10 flex-shrink-0"
+          title="Envoyer"
+        >
+          <Send className="h-5 w-5" />
+        </Button>
       </div>
-
-      <Button
-        size="icon"
-        onClick={onSend}
-        disabled={!value.trim() || isThinking}
-        className="rounded-full h-10 w-10"
-        title="Envoyer"
-      >
-        <Send className="h-5 w-5" />
-      </Button>
     </div>
   );
 }
