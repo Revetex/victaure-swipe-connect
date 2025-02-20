@@ -33,7 +33,12 @@ export function ConversationView() {
     try {
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select(`
+          *,
+          certifications (*),
+          education (*),
+          experiences (*)
+        `)
         .eq('id', userId)
         .single();
 
@@ -41,9 +46,25 @@ export function ConversationView() {
       
       if (profile) {
         setReceiver({
-          ...profile,
-          online_status: 'offline',
-          friends: profile.friends || []
+          id: profile.id,
+          full_name: profile.full_name || '',
+          avatar_url: profile.avatar_url,
+          email: profile.email,
+          role: profile.role,
+          bio: profile.bio,
+          phone: profile.phone,
+          city: profile.city,
+          state: profile.state,
+          country: profile.country || '',
+          skills: profile.skills || [],
+          latitude: profile.latitude,
+          longitude: profile.longitude,
+          online_status: profile.online_status ? 'online' : 'offline',
+          last_seen: profile.last_seen,
+          certifications: profile.certifications || [],
+          education: profile.education || [],
+          experiences: profile.experiences || [],
+          friends: []
         });
         setShowConversation(true);
       }
@@ -66,15 +87,25 @@ export function ConversationView() {
     try {
       const { data, error } = await supabase
         .from('messages')
-        .select('*, sender:profiles(*)')
+        .select(`
+          *,
+          sender:profiles(*)
+        `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
         .or(`sender_id.eq.${receiver.id},receiver_id.eq.${receiver.id}`)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
       
-      setMessages(data || []);
-      scrollToBottom();
+      if (data) {
+        const formattedMessages: Message[] = data.map(msg => ({
+          ...msg,
+          metadata: msg.metadata ? JSON.parse(msg.metadata) : {},
+          deleted_by: msg.deleted_by ? JSON.parse(msg.deleted_by) : {}
+        }));
+        setMessages(formattedMessages);
+        scrollToBottom();
+      }
     } catch (error) {
       console.error('Error loading messages:', error);
       toast.error("Impossible de charger les messages");
@@ -92,7 +123,12 @@ export function ConversationView() {
         table: 'messages',
         filter: `sender_id=eq.${receiver.id},receiver_id=eq.${user.id}`
       }, (payload) => {
-        setMessages(prev => [...prev, payload.new as Message]);
+        const newMessage = {
+          ...payload.new,
+          metadata: payload.new.metadata ? JSON.parse(payload.new.metadata) : {},
+          deleted_by: payload.new.deleted_by ? JSON.parse(payload.new.deleted_by) : {}
+        } as Message;
+        setMessages(prev => [...prev, newMessage]);
         scrollToBottom();
       })
       .subscribe();
@@ -120,7 +156,8 @@ export function ConversationView() {
         .insert({
           content: messageInput,
           sender_id: user.id,
-          receiver_id: receiver.id
+          receiver_id: receiver.id,
+          metadata: JSON.stringify({}),
         });
 
       if (error) throw error;
