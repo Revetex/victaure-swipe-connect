@@ -5,13 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { navigationItems } from "@/config/navigation";
 import { cn } from "@/lib/utils";
-import { ProfilePreview } from "@/components/ProfilePreview";
-import { useAuth } from "@/hooks/useAuth";
-import { useProfile } from "@/hooks/useProfile";
-import { createEmptyProfile } from "@/types/profile";
-import { useState, useEffect } from "react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Badge } from "@/components/ui/badge";
+import { useState, useEffect } from "react";
 
 interface DashboardMobileNavProps {
   currentPage: number;
@@ -26,16 +22,8 @@ export function DashboardMobileNav({
   setShowMobileMenu,
   onPageChange
 }: DashboardMobileNavProps) {
-  const { user } = useAuth();
-  const { profile } = useProfile();
-  const [showProfilePreview, setShowProfilePreview] = useState(false);
   const { getUnreadCount } = useNotifications();
   const [unreadCount, setUnreadCount] = useState(0);
-
-  const completeProfile = profile ? {
-    ...createEmptyProfile(profile.id, profile.email || ''),
-    ...profile
-  } : null;
 
   useEffect(() => {
     const fetchUnreadCount = async () => {
@@ -64,21 +52,8 @@ export function DashboardMobileNav({
       </SheetTrigger>
 
       <SheetContent side="left" className="w-64 p-0">
-        <div className="flex items-center justify-between p-4">
+        <div className="p-4">
           <Logo />
-          {completeProfile && (
-            <Button
-              variant="ghost"
-              onClick={() => setShowProfilePreview(true)}
-              className="w-10 h-10 p-0 rounded-full overflow-hidden ring-2 ring-primary/20 hover:ring-primary/40 transition-all"
-            >
-              <img
-                src={completeProfile.avatar_url || "/user-icon.svg"}
-                alt={completeProfile.full_name || ""}
-                className="w-full h-full object-cover"
-              />
-            </Button>
-          )}
         </div>
 
         <nav className="space-y-1 p-4" role="navigation" aria-label="Menu principal">
@@ -116,14 +91,6 @@ export function DashboardMobileNav({
             );
           })}
         </nav>
-
-        {completeProfile && (
-          <ProfilePreview
-            profile={completeProfile}
-            isOpen={showProfilePreview}
-            onClose={() => setShowProfilePreview(false)}
-          />
-        )}
       </SheetContent>
     </Sheet>
   );
