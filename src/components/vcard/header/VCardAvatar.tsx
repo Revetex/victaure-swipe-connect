@@ -25,12 +25,16 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
   const validateImage = async (file: File) => {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      toast.error("Format non supporté. Utilisez JPG, PNG ou WEBP");
+      toast.error("Format non supporté. Utilisez JPG, PNG ou WEBP", {
+        id: "avatar-format-error"
+      });
       return false;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("L'image ne doit pas dépasser 5MB");
+      toast.error("L'image ne doit pas dépasser 5MB", {
+        id: "avatar-size-error"
+      });
       return false;
     }
 
@@ -40,18 +44,24 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
       img.onload = () => {
         URL.revokeObjectURL(img.src);
         if (img.width < 200 || img.height < 200) {
-          toast.error("L'image doit faire au moins 200x200 pixels");
+          toast.error("L'image doit faire au moins 200x200 pixels", {
+            id: "avatar-dimension-error"
+          });
           resolve(false);
         }
         if (img.width > 2000 || img.height > 2000) {
-          toast.error("L'image est trop grande (max 2000x2000 pixels)");
+          toast.error("L'image est trop grande (max 2000x2000 pixels)", {
+            id: "avatar-max-dimension-error"
+          });
           resolve(false);
         }
         resolve(true);
       };
       img.onerror = () => {
         URL.revokeObjectURL(img.src);
-        toast.error("Impossible de charger l'image");
+        toast.error("Impossible de charger l'image", {
+          id: "avatar-load-error"
+        });
         resolve(false);
       };
     });
@@ -66,8 +76,12 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
       setImageError(false);
 
       const isValid = await validateImage(file);
-      if (!isValid) return;
+      if (!isValid) {
+        setIsLoading(false);
+        return;
+      }
 
+      // Si une ancienne image existe, la supprimer d'abord
       if (profile.avatar_url) {
         const oldFileName = profile.avatar_url.split('/').pop();
         if (oldFileName) {
@@ -78,24 +92,30 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
       }
 
       const fileExt = file.name.split('.').pop();
-      const filePath = `${crypto.randomUUID()}.${fileExt}`;
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('vcards')
-        .upload(filePath, file);
+        .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from('vcards')
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
-      setProfile({ ...profile, avatar_url: publicUrl });
+      const updatedProfile = { ...profile, avatar_url: publicUrl };
+      setProfile(updatedProfile);
       setIsAvatarDeleted(false);
-      toast.success("Photo de profil mise à jour");
+      
+      toast.success("Photo de profil mise à jour", {
+        id: "avatar-update-success"
+      });
     } catch (error) {
       console.error('Error uploading avatar:', error);
-      toast.error("Impossible de mettre à jour la photo de profil");
+      toast.error("Impossible de mettre à jour la photo de profil", {
+        id: "avatar-update-error"
+      });
       setImageError(true);
     } finally {
       setIsLoading(false);
@@ -108,17 +128,26 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
       if (profile.avatar_url) {
         const fileName = profile.avatar_url.split('/').pop();
         if (fileName) {
-          await supabase.storage
+          const { error } = await supabase.storage
             .from('vcards')
             .remove([fileName]);
+            
+          if (error) throw error;
         }
-        setProfile({ ...profile, avatar_url: null });
+        
+        const updatedProfile = { ...profile, avatar_url: null };
+        setProfile(updatedProfile);
         setIsAvatarDeleted(true);
-        toast.success("Photo de profil supprimée");
+        
+        toast.success("Photo de profil supprimée", {
+          id: "avatar-delete-success"
+        });
       }
     } catch (error) {
       console.error('Error deleting avatar:', error);
-      toast.error("Impossible de supprimer la photo de profil");
+      toast.error("Impossible de supprimer la photo de profil", {
+        id: "avatar-delete-error"
+      });
     } finally {
       setIsLoading(false);
     }
