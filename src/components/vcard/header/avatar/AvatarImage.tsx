@@ -17,13 +17,16 @@ export function AvatarImage({ url, fullName, onError, hasError, isLoading, class
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     console.error("Erreur de chargement de l'image:", e);
     onError();
-    toast.error("Impossible de charger l'image");
+    // Éviter les toasts multiples en utilisant un ID unique
+    toast.error("Impossible de charger l'image", {
+      id: "avatar-load-error",
+    });
   };
 
   return (
     <Avatar className={cn(
       "h-24 w-24 sm:h-28 sm:w-28 ring-2 ring-primary/20 shadow-lg",
-      "relative overflow-hidden",
+      "relative overflow-hidden bg-background",
       className
     )}>
       {isLoading ? (

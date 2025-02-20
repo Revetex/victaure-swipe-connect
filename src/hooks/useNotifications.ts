@@ -25,8 +25,10 @@ export function useNotifications() {
             try {
               if ('Notification' in window && Notification.permission === 'granted') {
                 const registration = await navigator.serviceWorker.ready;
+                // Ajouter un ID unique pour éviter les doublons
                 registration.showNotification(payload.new.title, {
                   body: payload.new.message,
+                  tag: payload.new.id, // Utiliser l'ID comme tag pour éviter les doublons
                   icon: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
                   data: {
                     url: window.location.origin + '/notifications'
@@ -66,10 +68,16 @@ export function useNotifications() {
         throw error;
       }
       
-      toast.success('Toutes les notifications ont été marquées comme lues');
+      // Ajouter un ID unique pour le toast
+      toast.success('Toutes les notifications ont été marquées comme lues', {
+        id: 'mark-all-read',
+      });
     } catch (error) {
       console.error('Error marking notifications as read:', error);
-      toast.error('Erreur lors de la mise à jour des notifications');
+      // Ajouter un ID unique pour le toast d'erreur
+      toast.error('Erreur lors de la mise à jour des notifications', {
+        id: 'mark-all-read-error',
+      });
     }
   };
 
