@@ -47,7 +47,7 @@ export function JobsFilters({
               <SelectValue placeholder="Toutes les localisations" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Toutes les localisations</SelectItem>
+              <SelectItem value="all">Toutes les localisations</SelectItem>
               {locations.map((location) => (
                 <SelectItem key={location} value={location}>
                   {location}
@@ -64,7 +64,7 @@ export function JobsFilters({
               <SelectValue placeholder="Tous les types" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tous les types</SelectItem>
+              <SelectItem value="all">Tous les types</SelectItem>
               <SelectItem value="internal">Interne</SelectItem>
               <SelectItem value="external">Externe</SelectItem>
             </SelectContent>
@@ -91,7 +91,7 @@ export function JobsFilters({
               <SelectValue placeholder="Niveau d'expérience" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tous les niveaux</SelectItem>
+              <SelectItem value="all">Tous les niveaux</SelectItem>
               <SelectItem value="junior">Junior</SelectItem>
               <SelectItem value="intermediate">Intermédiaire</SelectItem>
               <SelectItem value="senior">Senior</SelectItem>
@@ -106,7 +106,7 @@ export function JobsFilters({
               <SelectValue placeholder="Type de contrat" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tous les types</SelectItem>
+              <SelectItem value="all">Tous les types</SelectItem>
               <SelectItem value="permanent">CDI</SelectItem>
               <SelectItem value="temporary">CDD</SelectItem>
               <SelectItem value="contract">Freelance</SelectItem>
