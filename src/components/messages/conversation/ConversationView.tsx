@@ -29,7 +29,7 @@ export function ConversationView({
 }: ConversationViewProps) {
   return (
     <div className="absolute inset-0 flex flex-col">
-      <div className="flex-none">
+      <div className="flex-none sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <ConversationHeader 
           receiver={receiver}
           onBack={onBack}
@@ -38,7 +38,7 @@ export function ConversationView({
         />
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         <ConversationMessages
           messages={messages}
           isThinking={isThinking}
@@ -47,7 +47,7 @@ export function ConversationView({
         />
       </div>
 
-      <div className="flex-none p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex-none sticky bottom-0 z-50 p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-3xl mx-auto">
           <ChatInput
             value={inputMessage}

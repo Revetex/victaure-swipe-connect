@@ -34,35 +34,33 @@ export function ChatInput({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-background p-4 border-t">
-      <div className="flex items-end gap-2 max-w-3xl mx-auto">
-        <textarea
-          value={value}
-          onChange={handleTextareaInput}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          disabled={isThinking}
-          className={cn(
-            "w-full resize-none bg-muted rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary",
-            "min-h-[44px] max-h-[200px]",
-            isThinking && "opacity-50 cursor-not-allowed"
-          )}
-          style={{
-            height: 'auto',
-            minHeight: '44px',
-            maxHeight: '200px'
-          }}
-        />
-        <Button
-          size="icon"
-          onClick={onSend}
-          disabled={!value.trim() || isThinking}
-          className="rounded-full h-10 w-10 flex-shrink-0"
-          title="Envoyer"
-        >
-          <Send className="h-5 w-5" />
-        </Button>
-      </div>
+    <div className="flex items-end gap-2">
+      <textarea
+        value={value}
+        onChange={handleTextareaInput}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        disabled={isThinking}
+        className={cn(
+          "w-full resize-none bg-muted rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary",
+          "min-h-[44px] max-h-[200px]",
+          isThinking && "opacity-50 cursor-not-allowed"
+        )}
+        style={{
+          height: 'auto',
+          minHeight: '44px',
+          maxHeight: '200px'
+        }}
+      />
+      <Button
+        size="icon"
+        onClick={onSend}
+        disabled={!value.trim() || isThinking}
+        className="rounded-full h-10 w-10 flex-shrink-0"
+        title="Envoyer"
+      >
+        <Send className="h-5 w-5" />
+      </Button>
     </div>
   );
 }
