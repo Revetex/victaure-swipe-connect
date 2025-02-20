@@ -452,6 +452,47 @@ export type Database = {
           },
         ]
       }
+      chat_attachments: {
+        Row: {
+          content_type: string
+          created_at: string
+          file_name: string
+          file_path: string
+          id: string
+          message_id: string | null
+          size: number
+          updated_at: string
+        }
+        Insert: {
+          content_type: string
+          created_at?: string
+          file_name: string
+          file_path: string
+          id?: string
+          message_id?: string | null
+          size: number
+          updated_at?: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          message_id?: string | null
+          size?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_attachments_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           content: string
@@ -962,6 +1003,33 @@ export type Database = {
           },
         ]
       }
+      friendships: {
+        Row: {
+          created_at: string
+          friend_id: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          friend_id: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          friend_id?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       gig_bids: {
         Row: {
           amount: number
@@ -1261,6 +1329,57 @@ export type Database = {
         }
         Relationships: []
       }
+      job_listings: {
+        Row: {
+          company: string
+          created_at: string | null
+          description: string | null
+          external_id: string | null
+          id: string
+          location: string | null
+          match_score: number | null
+          posted_at: string | null
+          salary_range: string | null
+          skills: string[] | null
+          source: string | null
+          title: string
+          updated_at: string | null
+          url: string | null
+        }
+        Insert: {
+          company: string
+          created_at?: string | null
+          description?: string | null
+          external_id?: string | null
+          id?: string
+          location?: string | null
+          match_score?: number | null
+          posted_at?: string | null
+          salary_range?: string | null
+          skills?: string[] | null
+          source?: string | null
+          title: string
+          updated_at?: string | null
+          url?: string | null
+        }
+        Update: {
+          company?: string
+          created_at?: string | null
+          description?: string | null
+          external_id?: string | null
+          id?: string
+          location?: string | null
+          match_score?: number | null
+          posted_at?: string | null
+          salary_range?: string | null
+          skills?: string[] | null
+          source?: string | null
+          title?: string
+          updated_at?: string | null
+          url?: string | null
+        }
+        Relationships: []
+      }
       job_postings: {
         Row: {
           business_id: string
@@ -1384,13 +1503,6 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "relevant_jobs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "job_transcriptions_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "scraped_jobs"
             referencedColumns: ["id"]
           },
         ]
@@ -2261,6 +2373,7 @@ export type Database = {
           edited_at: string | null
           encrypted: boolean | null
           encryption_key: string | null
+          has_attachment: boolean | null
           id: string
           is_assistant: boolean | null
           is_deleted: boolean | null
@@ -2288,6 +2401,7 @@ export type Database = {
           edited_at?: string | null
           encrypted?: boolean | null
           encryption_key?: string | null
+          has_attachment?: boolean | null
           id?: string
           is_assistant?: boolean | null
           is_deleted?: boolean | null
@@ -2315,6 +2429,7 @@ export type Database = {
           edited_at?: string | null
           encrypted?: boolean | null
           encryption_key?: string | null
+          has_attachment?: boolean | null
           id?: string
           is_assistant?: boolean | null
           is_deleted?: boolean | null
@@ -3092,6 +3207,7 @@ export type Database = {
       profiles: {
         Row: {
           account_locked: boolean | null
+          allowed_file_types: string[] | null
           auto_update_enabled: boolean | null
           availability_date: string | null
           avatar_url: string | null
@@ -3116,11 +3232,14 @@ export type Database = {
           languages: string[] | null
           last_activity: string | null
           last_failed_attempt: string | null
+          last_save_error: string | null
+          last_save_status: string | null
           last_seen: string | null
           last_used_tool: string | null
           latitude: number | null
           location_enabled: boolean | null
           longitude: number | null
+          max_file_size: number | null
           notifications_enabled: boolean | null
           online_status: boolean | null
           phone: string | null
@@ -3129,6 +3248,7 @@ export type Database = {
           privacy_enabled: boolean | null
           push_notifications_enabled: boolean | null
           push_token: string | null
+          rating: number | null
           role: string
           salary_expectations: Json | null
           search_enabled: boolean | null
@@ -3143,6 +3263,7 @@ export type Database = {
         }
         Insert: {
           account_locked?: boolean | null
+          allowed_file_types?: string[] | null
           auto_update_enabled?: boolean | null
           availability_date?: string | null
           avatar_url?: string | null
@@ -3167,11 +3288,14 @@ export type Database = {
           languages?: string[] | null
           last_activity?: string | null
           last_failed_attempt?: string | null
+          last_save_error?: string | null
+          last_save_status?: string | null
           last_seen?: string | null
           last_used_tool?: string | null
           latitude?: number | null
           location_enabled?: boolean | null
           longitude?: number | null
+          max_file_size?: number | null
           notifications_enabled?: boolean | null
           online_status?: boolean | null
           phone?: string | null
@@ -3180,6 +3304,7 @@ export type Database = {
           privacy_enabled?: boolean | null
           push_notifications_enabled?: boolean | null
           push_token?: string | null
+          rating?: number | null
           role: string
           salary_expectations?: Json | null
           search_enabled?: boolean | null
@@ -3194,6 +3319,7 @@ export type Database = {
         }
         Update: {
           account_locked?: boolean | null
+          allowed_file_types?: string[] | null
           auto_update_enabled?: boolean | null
           availability_date?: string | null
           avatar_url?: string | null
@@ -3218,11 +3344,14 @@ export type Database = {
           languages?: string[] | null
           last_activity?: string | null
           last_failed_attempt?: string | null
+          last_save_error?: string | null
+          last_save_status?: string | null
           last_seen?: string | null
           last_used_tool?: string | null
           latitude?: number | null
           location_enabled?: boolean | null
           longitude?: number | null
+          max_file_size?: number | null
           notifications_enabled?: boolean | null
           online_status?: boolean | null
           phone?: string | null
@@ -3231,6 +3360,7 @@ export type Database = {
           privacy_enabled?: boolean | null
           push_notifications_enabled?: boolean | null
           push_token?: string | null
+          rating?: number | null
           role?: string
           salary_expectations?: Json | null
           search_enabled?: boolean | null
@@ -3280,100 +3410,61 @@ export type Database = {
       }
       scraped_jobs: {
         Row: {
-          application_url: string | null
-          benefits: string[] | null
           company: string
           created_at: string | null
           description: string | null
-          education_requirement: string | null
           employment_type: string | null
           experience_level: string | null
-          external_company_id: string | null
           external_id: string | null
-          external_url: string | null
           id: string
-          industry: string | null
-          is_remote: boolean | null
-          job_type: string | null
           location: string
           match_score: number | null
           posted_at: string | null
-          relevance_score: number | null
-          remote_type: string | null
-          requirements: string[] | null
           salary_range: string | null
-          salary_type: string | null
           skills: string[] | null
-          source_api: string | null
           source_platform: string | null
+          status: string | null
           title: string
           updated_at: string | null
           url: string
-          xml_data: unknown | null
         }
         Insert: {
-          application_url?: string | null
-          benefits?: string[] | null
           company: string
           created_at?: string | null
           description?: string | null
-          education_requirement?: string | null
           employment_type?: string | null
           experience_level?: string | null
-          external_company_id?: string | null
           external_id?: string | null
-          external_url?: string | null
           id?: string
-          industry?: string | null
-          is_remote?: boolean | null
-          job_type?: string | null
           location: string
           match_score?: number | null
           posted_at?: string | null
-          relevance_score?: number | null
-          remote_type?: string | null
-          requirements?: string[] | null
           salary_range?: string | null
-          salary_type?: string | null
           skills?: string[] | null
-          source_api?: string | null
           source_platform?: string | null
+          status?: string | null
           title: string
           updated_at?: string | null
           url: string
-          xml_data?: unknown | null
         }
         Update: {
-          application_url?: string | null
-          benefits?: string[] | null
           company?: string
           created_at?: string | null
           description?: string | null
-          education_requirement?: string | null
           employment_type?: string | null
           experience_level?: string | null
-          external_company_id?: string | null
           external_id?: string | null
-          external_url?: string | null
           id?: string
-          industry?: string | null
-          is_remote?: boolean | null
-          job_type?: string | null
           location?: string
           match_score?: number | null
           posted_at?: string | null
-          relevance_score?: number | null
-          remote_type?: string | null
-          requirements?: string[] | null
           salary_range?: string | null
-          salary_type?: string | null
           skills?: string[] | null
-          source_api?: string | null
           source_platform?: string | null
+          status?: string | null
           title?: string
           updated_at?: string | null
           url?: string
-          xml_data?: unknown | null
         }
         Relationships: []
       }
@@ -4241,7 +4332,8 @@ export type Database = {
         | "customer_service"
         | "other"
       job_source: "linkedin" | "indeed" | "direct"
-      listing_type: "vente" | "location" | "service"
+      listing_status: "active" | "pending" | "sold" | "cancelled"
+      listing_type: "item" | "service" | "rental" | "contract"
       marketplace_listing_type: "vente" | "location" | "service"
       message_delivery_status: "pending" | "delivered" | "read"
       message_sender_type: "user" | "assistant" | "system"
