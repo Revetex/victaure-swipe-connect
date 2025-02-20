@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ConversationMessagesProps {
   messages: Message[];
@@ -29,6 +30,19 @@ export function ConversationMessages({
   const uniqueMessages = useMemo(() => messages.filter((message, index, self) => 
     index === self.findIndex(m => m.id === message.id)
   ), [messages]);
+
+  // Grouper les messages par date
+  const groupedMessages = useMemo(() => {
+    const groups: { [key: string]: Message[] } = {};
+    uniqueMessages.forEach(message => {
+      const date = new Date(message.created_at).toLocaleDateString();
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(message);
+    });
+    return groups;
+  }, [uniqueMessages]);
 
   useEffect(() => {
     const scrollToBottom = (smooth = true) => {
@@ -65,29 +79,45 @@ export function ConversationMessages({
   };
 
   return (
-    <div 
-      ref={containerRef} 
-      className={cn(
-        "flex flex-col justify-end min-h-0 flex-1 overflow-y-auto",
-        className
-      )} 
-      onScroll={handleScroll}
-    >
-      <div className="flex-1 overflow-y-auto px-4">
-        <div className="max-w-3xl mx-auto py-4 space-y-4">
-          {uniqueMessages.map(message => (
-            <motion.div
-              key={message.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <ChatMessage message={message} onReply={onReply} />
-            </motion.div>
+    <div className="flex flex-col h-full">
+      <ScrollArea 
+        className={cn("flex-1 px-4", className)}
+        onScroll={handleScroll}
+        ref={containerRef}
+      >
+        <div className="max-w-3xl mx-auto py-4">
+          {Object.entries(groupedMessages).map(([date, dateMessages]) => (
+            <div key={date} className="mb-6">
+              <div className="flex justify-center mb-4">
+                <div className="bg-muted/50 px-3 py-1 rounded-full text-xs text-muted-foreground">
+                  {date}
+                </div>
+              </div>
+              <div className="space-y-2">
+                {dateMessages.map((message, index) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChatMessage 
+                      message={message}
+                      onReply={onReply}
+                      showAvatar={
+                        index === 0 || 
+                        dateMessages[index - 1]?.sender_id !== message.sender_id ||
+                        Date.parse(message.created_at) - Date.parse(dateMessages[index - 1]?.created_at) > 300000
+                      }
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           ))}
           <div ref={messagesEndRef} className="h-4" />
         </div>
-      </div>
+      </ScrollArea>
 
       <AnimatePresence>
         {showScrollButton && (
