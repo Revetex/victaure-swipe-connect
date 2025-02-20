@@ -28,26 +28,28 @@ export function ConversationView({
   messagesEndRef
 }: ConversationViewProps) {
   return (
-    <div className="absolute inset-0 flex flex-col">
-      <div className="flex-none sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="h-screen flex flex-col overflow-hidden">
+      <div className="flex-none z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <ConversationHeader 
           receiver={receiver}
           onBack={onBack}
           onDelete={onDelete}
-          className="border-b"
+          className="border-b-0"
         />
       </div>
 
-      <div className="flex-1 overflow-y-auto min-h-0">
-        <ConversationMessages
-          messages={messages}
-          isThinking={isThinking}
-          onReply={onInputChange}
-          messagesEndRef={messagesEndRef}
-        />
+      <div className="flex-1 overflow-y-auto">
+        <div className="h-full">
+          <ConversationMessages
+            messages={messages}
+            isThinking={isThinking}
+            onReply={onInputChange}
+            messagesEndRef={messagesEndRef}
+          />
+        </div>
       </div>
 
-      <div className="flex-none sticky bottom-0 z-50 p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex-none z-50 p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-3xl mx-auto">
           <ChatInput
             value={inputMessage}
