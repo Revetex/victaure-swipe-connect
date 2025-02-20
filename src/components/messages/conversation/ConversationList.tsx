@@ -3,12 +3,15 @@ import { useState } from "react";
 import { useReceiver } from "@/hooks/useReceiver";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { UserProfile } from "@/types/profile";
 import type { Receiver } from "@/types/messages";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ConversationListProps {
   className?: string;
@@ -17,6 +20,7 @@ interface ConversationListProps {
 export function ConversationList({ className }: ConversationListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const { setReceiver, setShowConversation } = useReceiver();
+  const { user } = useAuth();
 
   const mockUser: UserProfile = {
     id: '1',
@@ -68,6 +72,25 @@ export function ConversationList({ className }: ConversationListProps) {
     setShowConversation(true);
   };
 
+  const handleDeleteConversation = async (userId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .rpc('mark_conversation_deleted', { 
+          p_user_id: user.id, 
+          p_conversation_partner_id: userId 
+        });
+
+      if (error) throw error;
+      toast.success("Conversation supprimée");
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+      toast.error("Impossible de supprimer la conversation");
+    }
+  };
+
   return (
     <div className={cn("flex flex-col border-r pt-20", className)}>
       <div className="p-4 border-b">
@@ -94,7 +117,7 @@ export function ConversationList({ className }: ConversationListProps) {
       <ScrollArea className="flex-1">
         <div className="space-y-1 p-2">
           <button
-            className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-muted transition-colors"
+            className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-muted transition-colors relative group"
             onClick={() => handleSelectConversation(mockUser)}
           >
             <UserAvatar
@@ -110,6 +133,14 @@ export function ConversationList({ className }: ConversationListProps) {
                 Dernier message...
               </p>
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={(e) => handleDeleteConversation(mockUser.id, e)}
+            >
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </Button>
           </button>
         </div>
       </ScrollArea>
