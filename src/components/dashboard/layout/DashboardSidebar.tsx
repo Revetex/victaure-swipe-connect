@@ -38,7 +38,7 @@ export function DashboardSidebar({
     };
 
     fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 30000);
+    const interval = setInterval(fetchUnreadCount, 30000); // Rafraîchir toutes les 30 secondes
 
     return () => clearInterval(interval);
   }, [getUnreadCount]);
