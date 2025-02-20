@@ -26,7 +26,6 @@ export function ConversationMessages({
   const isAutoScrollingRef = useRef(false);
   const prevScrollTop = useRef(0);
 
-  // Supprimer les messages en double en se basant sur l'ID
   const uniqueMessages = useMemo(() => 
     messages.filter((message, index, self) =>
       index === self.findIndex((m) => m.id === message.id)
@@ -73,13 +72,13 @@ export function ConversationMessages({
   };
 
   return (
-    <div className="relative h-full">
+    <div className="relative flex flex-col h-full bg-background/50">
       <ScrollArea 
         ref={scrollAreaRef}
-        className="h-full"
+        className="flex-1 h-full px-4"
         onScrollCapture={handleScroll}
       >
-        <div className="px-4 py-4 space-y-4 max-w-2xl mx-auto">
+        <div className="space-y-4 py-4 max-w-2xl mx-auto">
           <AnimatePresence mode="popLayout">
             {uniqueMessages.map((message) => (
               <motion.div

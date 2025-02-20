@@ -76,8 +76,8 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <div className="flex flex-col h-screen max-h-screen overflow-hidden">
-      <div className="flex-none">
+    <div className="flex flex-col h-full max-h-full">
+      <div className="fixed top-16 left-0 right-0 z-50">
         <ConversationHeader 
           receiver={receiver}
           onBack={onBack}
@@ -85,7 +85,7 @@ export function ConversationView({
         />
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden pt-20 pb-24">
         <ConversationMessages
           messages={messages}
           isThinking={isThinking}
@@ -94,7 +94,7 @@ export function ConversationView({
         />
       </div>
 
-      <div className="flex-none p-4 bg-background/95 backdrop-blur border-t">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur border-t">
         <div className="max-w-2xl mx-auto">
           <ChatInput
             value={inputMessage}
