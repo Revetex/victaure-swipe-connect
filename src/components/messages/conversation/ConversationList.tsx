@@ -1,4 +1,5 @@
 
+import { motion } from "framer-motion";
 import { ConversationHeader } from "./ConversationHeader";
 import { AssistantMessage } from "./AssistantMessage";
 import { SearchBar } from "./SearchBar";
@@ -26,6 +27,30 @@ export function ConversationList({
   onSelectConversation,
   onStartNewChat
 }: ConversationListProps) {
+  // Filtrer les conversations pour n'avoir qu'une seule conversation par utilisateur
+  const uniqueConversations = conversations.reduce((acc, curr) => {
+    const existingConversation = acc.find(conv => conv.receiver?.id === curr.receiver?.id);
+    if (!existingConversation) {
+      acc.push(curr);
+    } else if (new Date(curr.created_at) > new Date(existingConversation.created_at)) {
+      // Garder la conversation la plus récente
+      const index = acc.indexOf(existingConversation);
+      acc[index] = curr;
+    }
+    return acc;
+  }, [] as Message[]);
+
+  // Trier les conversations par date de création, plus récent en premier
+  const sortedConversations = uniqueConversations.sort((a, b) => 
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+
+  // Filtrer les conversations selon la recherche
+  const filteredConversations = sortedConversations.filter(conv => 
+    conv.receiver?.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    conv.content?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="absolute inset-0 flex flex-col">
       <div className="flex-none bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b z-10">
@@ -53,6 +78,7 @@ export function ConversationList({
 
       <div className="flex-1 overflow-y-auto">
         <div className="p-4 space-y-4">
+          {/* M. Victaure toujours en premier */}
           <AssistantMessage 
             chatMessages={aiMessages}
             onSelectConversation={() => {
@@ -67,9 +93,12 @@ export function ConversationList({
           />
           
           <div className="pt-2">
-            {conversations.map((conversation) => (
-              <div
+            {filteredConversations.map((conversation) => (
+              <motion.div
                 key={conversation.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
                 className="p-4 rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
                 onClick={() => onSelectConversation(conversation.receiver)}
               >
@@ -95,8 +124,11 @@ export function ConversationList({
                       {conversation.content}
                     </p>
                   </div>
+                  <div className="text-xs text-muted-foreground">
+                    {new Date(conversation.created_at).toLocaleDateString()}
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
