@@ -1,6 +1,9 @@
-import { useState, useRef, useEffect } from "react";
+
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
+import { ConversationHeader } from "./conversation/components/ConversationHeader";
+import { ConversationMessages } from "./conversation/components/ConversationMessages";
 import { useReceiver } from "@/hooks/useReceiver";
 import { useMessageQuery } from "@/hooks/useMessageQuery";
 import { useConversationMessages } from "@/hooks/useConversationMessages";
@@ -8,6 +11,7 @@ import { useAIChat } from "@/hooks/useAIChat";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
 import { useConversationHandler } from "@/hooks/useConversationHandler";
 import { Card } from "@/components/ui/card";
+import { ChatInput } from "@/components/chat/ChatInput";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Message, DatabaseMessage, transformDatabaseMessage } from "@/types/messages";
@@ -41,6 +45,13 @@ export function MessagesContainer() {
   } = useAIChat();
   
   const { handleDeleteConversation } = useConversationDelete();
+
+  const handleReply = useCallback((content: string) => {
+    setInputMessage(content);
+    setTimeout(() => {
+      handleSendMessage();
+    }, 100);
+  }, []);
 
   useEffect(() => {
     if (messagesEndRef.current) {
