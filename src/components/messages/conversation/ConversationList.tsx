@@ -3,11 +3,12 @@ import { useState } from "react";
 import { useReceiver } from "@/hooks/useReceiver";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/UserAvatar";
 import type { UserProfile } from "@/types/profile";
 import type { Receiver } from "@/types/messages";
+import { Button } from "@/components/ui/button";
 
 interface ConversationListProps {
   className?: string;
@@ -68,16 +69,25 @@ export function ConversationList({ className }: ConversationListProps) {
   };
 
   return (
-    <div className={cn("flex flex-col border-r", className)}>
-      <div className="p-4 border-b pt-safe-top mt-16">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Rechercher..."
-            className="pl-9"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+    <div className={cn("flex flex-col border-r pt-20", className)}>
+      <div className="p-4 border-b">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher..."
+              className="pl-9"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="shrink-0"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
