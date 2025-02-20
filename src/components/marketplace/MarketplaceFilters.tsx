@@ -1,5 +1,7 @@
 
-import React from 'react';
+import { motion } from "framer-motion";
+import { MapPin, ArrowUpDown, DollarSign, Star, Filter } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -7,140 +9,144 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { 
-  SortAsc, 
-  SortDesc, 
-  ListFilter,
-  MapPin,
-  Star,
-  Ban
-} from "lucide-react";
 import type { MarketplaceFilters } from "@/types/marketplace";
 
-interface FiltersProps {
+interface MarketplaceFiltersProps {
   filters: MarketplaceFilters;
   onFiltersChange: (filters: MarketplaceFilters) => void;
-  maxPrice: number;
+  onReset: () => void;
 }
 
-export function MarketplaceFilters({ filters, onFiltersChange, maxPrice }: FiltersProps) {
+export function MarketplaceFilters({
+  filters,
+  onFiltersChange,
+  onReset
+}: MarketplaceFiltersProps) {
+  const handlePriceRangeChange = (value: number[]) => {
+    onFiltersChange({
+      ...filters,
+      priceRange: [value[0], value[1]]
+    });
+  };
+
   return (
-    <div className="space-y-4 p-4 border rounded-lg bg-card">
-      <div className="space-y-2">
-        <Label>Fourchette de prix</Label>
-        <Slider
-          defaultValue={[0, maxPrice]}
-          max={maxPrice}
-          step={10}
-          value={filters.priceRange}
-          onValueChange={(value) => 
-            onFiltersChange({ ...filters, priceRange: value as [number, number] })
-          }
-          className="w-full"
-        />
-        <div className="flex justify-between text-sm text-muted-foreground">
-          <span>{filters.priceRange[0]}$</span>
-          <span>{filters.priceRange[1]}$</span>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Localisation</Label>
-        <div className="flex gap-2">
-          <Input
-            placeholder="Entrez une ville"
-            value={filters.location || ''}
-            onChange={(e) => 
-              onFiltersChange({ ...filters, location: e.target.value })
-            }
-            className="flex-1"
-          />
-          <Button 
-            variant="outline" 
-            size="icon"
-            onClick={() => onFiltersChange({ ...filters, location: undefined })}
+    <motion.div
+      variants={{
+        hidden: { y: 20, opacity: 0 },
+        visible: { y: 0, opacity: 1 }
+      }}
+      className="bg-card/50 backdrop-blur-sm border rounded-lg p-4 space-y-4"
+    >
+      <div className="flex flex-wrap gap-4">
+        <div className="w-full md:w-auto">
+          <Select 
+            value={filters.location} 
+            onValueChange={(value) => onFiltersChange({ ...filters, location: value })}
           >
-            <Ban className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Note minimum</Label>
-        <Select
-          value={filters.rating?.toString() || ''}
-          onValueChange={(value) => 
-            onFiltersChange({ ...filters, rating: value ? parseInt(value) : undefined })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Toutes les notes" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">Toutes les notes</SelectItem>
-            {[4, 3, 2, 1].map((rating) => (
-              <SelectItem key={rating} value={rating.toString()}>
-                {rating}+ <Star className="inline-block h-4 w-4 ml-1" />
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Trier par</Label>
-        <div className="flex gap-2">
-          <Select
-            value={filters.sortBy}
-            onValueChange={(value: MarketplaceFilters['sortBy']) => 
-              onFiltersChange({ ...filters, sortBy: value })
-            }
-          >
-            <SelectTrigger className="flex-1">
-              <SelectValue />
+            <SelectTrigger className="w-[200px]">
+              <MapPin className="h-4 w-4 text-muted-foreground mr-2" />
+              <SelectValue placeholder="Localisation" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="date">Date</SelectItem>
-              <SelectItem value="price">Prix</SelectItem>
-              <SelectItem value="rating">Note</SelectItem>
-              <SelectItem value="views">Vues</SelectItem>
+              <SelectItem value="">Toutes les localisations</SelectItem>
+              <SelectItem value="montreal">Montréal</SelectItem>
+              <SelectItem value="quebec">Québec</SelectItem>
+              <SelectItem value="toronto">Toronto</SelectItem>
             </SelectContent>
           </Select>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => 
-              onFiltersChange({ 
-                ...filters, 
-                sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc' 
-              })
-            }
+        </div>
+
+        <div className="w-full md:w-auto">
+          <Select 
+            value={filters.condition} 
+            onValueChange={(value) => onFiltersChange({ ...filters, condition: value })}
           >
-            {filters.sortOrder === 'asc' ? (
-              <SortAsc className="h-4 w-4" />
-            ) : (
-              <SortDesc className="h-4 w-4" />
-            )}
-          </Button>
+            <SelectTrigger className="w-[200px]">
+              <Filter className="h-4 w-4 text-muted-foreground mr-2" />
+              <SelectValue placeholder="État" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Tous les états</SelectItem>
+              <SelectItem value="new">Neuf</SelectItem>
+              <SelectItem value="like-new">Comme neuf</SelectItem>
+              <SelectItem value="good">Bon état</SelectItem>
+              <SelectItem value="fair">État correct</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="w-full md:w-auto">
+          <Select
+            value={String(filters.rating)}
+            onValueChange={(value) => onFiltersChange({ ...filters, rating: Number(value) })}
+          >
+            <SelectTrigger className="w-[200px]">
+              <Star className="h-4 w-4 text-muted-foreground mr-2" />
+              <SelectValue placeholder="Note minimum" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Toutes les notes</SelectItem>
+              <SelectItem value="4">4 étoiles et plus</SelectItem>
+              <SelectItem value="3">3 étoiles et plus</SelectItem>
+              <SelectItem value="2">2 étoiles et plus</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="w-full md:w-auto">
+          <Select
+            value={`${filters.sortBy}-${filters.sortOrder}`}
+            onValueChange={(value) => {
+              const [sortBy, sortOrder] = value.split('-') as [MarketplaceFilters['sortBy'], MarketplaceFilters['sortOrder']];
+              onFiltersChange({ ...filters, sortBy, sortOrder });
+            }}
+          >
+            <SelectTrigger className="w-[200px]">
+              <ArrowUpDown className="h-4 w-4 text-muted-foreground mr-2" />
+              <SelectValue placeholder="Trier par" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="date-desc">Plus récents</SelectItem>
+              <SelectItem value="date-asc">Plus anciens</SelectItem>
+              <SelectItem value="price-asc">Prix croissant</SelectItem>
+              <SelectItem value="price-desc">Prix décroissant</SelectItem>
+              <SelectItem value="rating-desc">Meilleures notes</SelectItem>
+              <SelectItem value="views-desc">Plus populaires</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
-      <Button 
-        variant="outline" 
-        className="w-full"
-        onClick={() => onFiltersChange({
-          priceRange: [0, maxPrice],
-          categories: [],
-          sortBy: 'date',
-          sortOrder: 'desc'
-        })}
-      >
-        Réinitialiser les filtres
-      </Button>
-    </div>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium flex items-center gap-2">
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            Fourchette de prix
+          </label>
+          <span className="text-sm text-muted-foreground">
+            {filters.priceRange[0].toLocaleString()}$ - {filters.priceRange[1].toLocaleString()}$
+          </span>
+        </div>
+        <Slider
+          min={0}
+          max={10000}
+          step={100}
+          value={[filters.priceRange[0], filters.priceRange[1]]}
+          onValueChange={handlePriceRangeChange}
+          className="w-full"
+        />
+      </div>
+
+      <div className="flex justify-end">
+        <Button
+          variant="outline"
+          onClick={onReset}
+          className="text-sm"
+        >
+          Réinitialiser les filtres
+        </Button>
+      </div>
+    </motion.div>
   );
 }
