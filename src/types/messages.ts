@@ -11,7 +11,24 @@ export interface Message {
   sender: UserProfile;
 }
 
-export interface Receiver extends UserProfile {
-  online_status?: 'online' | 'offline';
-  last_seen?: string;
+export interface Receiver {
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
+  email: string | null;
+  role: string;
+  bio: string | null;
+  phone: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  skills: string[];
+  latitude: number | null;
+  longitude: number | null;
+  online_status: 'online' | 'offline';
+  last_seen: string | null;
+  certifications: any[];
+  education: any[];
+  experiences: any[];
+  friends: string[];
 }

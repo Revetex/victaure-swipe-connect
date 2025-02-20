@@ -31,7 +31,7 @@ export function ConversationList({ className }: ConversationListProps) {
     skills: [],
     latitude: null,
     longitude: null,
-    online_status: 'online',
+    online_status: false,
     last_seen: new Date().toISOString(),
     certifications: [],
     education: [],
