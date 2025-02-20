@@ -5,7 +5,7 @@ import { Upload, Trash2, Loader2 } from "lucide-react";
 interface AvatarControlsProps {
   hasAvatar: boolean;
   isLoading: boolean;
-  onUpload: () => void;
+  onUpload: (event: React.ChangeEvent<HTMLInputElement>) => void | Promise<void>;
   onDelete: () => void;
 }
 
@@ -17,20 +17,27 @@ export function AvatarControls({
 }: AvatarControlsProps) {
   return (
     <div className="flex gap-2 mt-4">
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={onUpload}
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <Upload className="h-4 w-4" />
-        )}
-        <span className="ml-2">Modifier</span>
-      </Button>
+      <label className="relative">
+        <input
+          type="file"
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          onChange={onUpload}
+          accept="image/jpeg,image/png,image/webp"
+        />
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Upload className="h-4 w-4" />
+          )}
+          <span className="ml-2">Modifier</span>
+        </Button>
+      </label>
       
       {hasAvatar && (
         <Button

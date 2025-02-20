@@ -17,53 +17,38 @@ interface VCardAvatarProps {
   setIsAvatarDeleted: (deleted: boolean) => void;
 }
 
-export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted }: VCardAvatarProps) {
+export function VCardAvatar({
+  profile,
+  isEditing,
+  setProfile,
+  setIsAvatarDeleted
+}: VCardAvatarProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [showFullscreen, setShowFullscreen] = useState(false);
 
-  const compressImage = async (file: File): Promise<File> => {
-    return new Promise((resolve, reject) => {
+  const validateImage = async (file: File) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Format non supporté. Utilisez JPG, PNG ou WebP", {
+        id: "avatar-format-error"
+      });
+      return false;
+    }
+    return new Promise(resolve => {
       const img = new Image();
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-
-      img.onload = () => {
-        // Calcul des dimensions optimales
-        let width = img.width;
-        let height = img.height;
-        const maxSize = 1200;
-
-        if (width > height && width > maxSize) {
-          height = Math.round(height * (maxSize / width));
-          width = maxSize;
-        } else if (height > maxSize) {
-          width = Math.round(width * (maxSize / height));
-          height = maxSize;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        ctx?.drawImage(img, 0, 0, width, height);
-
-        canvas.toBlob(
-          (blob) => {
-            if (!blob) {
-              reject(new Error("Échec de la compression"));
-              return;
-            }
-            resolve(new File([blob], file.name, {
-              type: 'image/jpeg',
-              lastModified: Date.now(),
-            }));
-          },
-          'image/jpeg',
-          0.8
-        );
-      };
-
-      img.onerror = () => reject(new Error("Erreur de chargement de l'image"));
       img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(img.src);
+        resolve(true);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(img.src);
+        toast.error("Impossible de charger l'image", {
+          id: "avatar-load-error"
+        });
+        resolve(false);
+      };
     });
   };
 
@@ -75,41 +60,48 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
       setIsLoading(true);
       setImageError(false);
 
-      // Compression de l'image si nécessaire
-      const processedFile = await compressImage(file);
+      const isValid = await validateImage(file);
+      if (!isValid) {
+        setIsLoading(false);
+        return;
+      }
 
+      // Si une ancienne image existe, la supprimer d'abord
       if (profile.avatar_url) {
         const oldFileName = profile.avatar_url.split('/').pop();
         if (oldFileName) {
-          await supabase.storage
-            .from('vcards')
-            .remove([oldFileName]);
+          await supabase.storage.from('vcards').remove([oldFileName]);
         }
       }
 
-      const fileExt = 'jpg'; // On force le format JPG après compression
-      const filePath = `${crypto.randomUUID()}.${fileExt}`;
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('vcards')
-        .upload(filePath, processedFile);
+        .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from('vcards')
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
-      setProfile({ ...profile, avatar_url: publicUrl });
+      const updatedProfile = { ...profile, avatar_url: publicUrl };
+      setProfile(updatedProfile);
       setIsAvatarDeleted(false);
-      toast.success("Photo de profil mise à jour");
+
+      toast.success("Photo de profil mise à jour", {
+        id: "avatar-update-success"
+      });
     } catch (error) {
       console.error('Error uploading avatar:', error);
-      toast.error("Impossible de mettre à jour la photo de profil");
+      toast.error("Impossible de mettre à jour la photo de profil", {
+        id: "avatar-update-error"
+      });
       setImageError(true);
     } finally {
       setIsLoading(false);
-      if (event.target) event.target.value = '';
     }
   };
 
@@ -119,17 +111,23 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
       if (profile.avatar_url) {
         const fileName = profile.avatar_url.split('/').pop();
         if (fileName) {
-          await supabase.storage
+          const { error } = await supabase.storage
             .from('vcards')
             .remove([fileName]);
+          if (error) throw error;
         }
-        setProfile({ ...profile, avatar_url: null });
+        const updatedProfile = { ...profile, avatar_url: null };
+        setProfile(updatedProfile);
         setIsAvatarDeleted(true);
-        toast.success("Photo de profil supprimée");
+        toast.success("Photo de profil supprimée", {
+          id: "avatar-delete-success"
+        });
       }
     } catch (error) {
       console.error('Error deleting avatar:', error);
-      toast.error("Impossible de supprimer la photo de profil");
+      toast.error("Impossible de supprimer la photo de profil", {
+        id: "avatar-delete-error"
+      });
     } finally {
       setIsLoading(false);
     }
