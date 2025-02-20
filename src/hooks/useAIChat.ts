@@ -10,7 +10,7 @@ import { useSmartJobAnalysis } from './useSmartJobAnalysis';
 
 const ASSISTANT_ID = '00000000-0000-0000-0000-000000000000';
 
-export function useAIChat() {
+export function useAIChat(initialContext: Partial<ConversationContext> = {}) {
   const [isThinking, setIsThinking] = useState(false);
   const [inputMessage, setInputMessage] = useState('');
   const { profile } = useProfile();
@@ -18,7 +18,8 @@ export function useAIChat() {
     messageCount: 0,
     acceptedJobs: [],
     rejectedJobs: [],
-    hasGreeted: false
+    hasGreeted: false,
+    ...initialContext
   });
 
   const { analyzeJobs, isAnalyzing } = useSmartJobAnalysis();

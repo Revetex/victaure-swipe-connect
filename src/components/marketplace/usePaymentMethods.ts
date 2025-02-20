@@ -25,7 +25,13 @@ export function usePaymentMethods() {
         .eq('is_active', true);
 
       if (error) throw error;
-      setMethods(data || []);
+      
+      const typedMethods = (data || []).map(method => ({
+        ...method,
+        payment_type: method.payment_type as PaymentMethod['payment_type']
+      }));
+      
+      setMethods(typedMethods);
     } catch (error) {
       console.error('Error loading payment methods:', error);
       toast.error("Erreur lors du chargement des méthodes de paiement");

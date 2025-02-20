@@ -1,5 +1,6 @@
 
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 interface PaymentTypeSelectorProps {
   paymentType: 'card' | 'interac';
