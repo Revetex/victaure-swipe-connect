@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { UserProfile } from "@/types/profile";
+import { transformDatabaseProfile } from "@/types/profile";
 
 export interface Conversation {
   id: string;
@@ -28,46 +29,37 @@ export function useConversations() {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      // First fetch conversations
+      const { data: conversationsData, error: conversationsError } = await supabase
         .from('conversations')
-        .select(`
-          *,
-          participant:profiles!conversations_participant2_id_fkey(*)
-        `)
-        .eq('participant1_id', user.id)
-        .not('id', 'is', null);
+        .select('*')
+        .eq('participant1_id', user.id);
 
-      if (error) throw error;
+      if (conversationsError) throw conversationsError;
 
-      if (data) {
-        const formattedConversations: Conversation[] = data.map(conv => ({
-          id: conv.id,
-          participant1_id: conv.participant1_id,
-          participant2_id: conv.participant2_id,
-          last_message: conv.last_message || '',
-          last_message_time: conv.last_message_time || new Date().toISOString(),
-          participant: {
-            id: conv.participant.id,
-            email: conv.participant.email || null,
-            full_name: conv.participant.full_name || null,
-            avatar_url: conv.participant.avatar_url || null,
-            role: conv.participant.role || 'professional',
-            bio: conv.participant.bio || null,
-            phone: conv.participant.phone || null,
-            city: conv.participant.city || null,
-            state: conv.participant.state || null,
-            country: conv.participant.country || 'Canada',
-            skills: conv.participant.skills || [],
-            latitude: conv.participant.latitude || null,
-            longitude: conv.participant.longitude || null,
-            online_status: conv.participant.online_status || false,
-            last_seen: conv.participant.last_seen || new Date().toISOString(),
-            certifications: [],
-            education: [],
-            experiences: [],
-            friends: []
-          }
-        }));
+      if (conversationsData) {
+        // Then fetch participant profiles separately
+        const participantIds = conversationsData.map(conv => conv.participant2_id);
+        
+        const { data: participantsData, error: participantsError } = await supabase
+          .from('profiles')
+          .select('*')
+          .in('id', participantIds);
+
+        if (participantsError) throw participantsError;
+
+        // Map conversations with participant profiles
+        const formattedConversations: Conversation[] = conversationsData.map(conv => {
+          const participant = participantsData?.find(p => p.id === conv.participant2_id);
+          return {
+            id: conv.id,
+            participant1_id: conv.participant1_id,
+            participant2_id: conv.participant2_id,
+            last_message: conv.last_message || '',
+            last_message_time: conv.last_message_time || new Date().toISOString(),
+            participant: participant ? transformDatabaseProfile(participant) : null
+          };
+        }).filter(conv => conv.participant !== null);
 
         setConversations(formattedConversations);
       }
@@ -82,9 +74,12 @@ export function useConversations() {
 
     try {
       const { error } = await supabase
-        .rpc('mark_conversation_deleted', { 
-          p_user_id: user.id, 
-          p_conversation_partner_id: conversationPartnerId
+        .from('conversations')
+        .delete()
+        .match({ 
+          id: conversationId,
+          participant1_id: user.id,
+          participant2_id: conversationPartnerId
         });
 
       if (error) throw error;
