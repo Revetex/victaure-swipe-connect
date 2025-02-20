@@ -1,29 +1,27 @@
 
-import { Json } from "@/types/database/auth";
-
-export interface PaymentTransaction {
-  id: string;
-  amount: number;
-  currency: string;
-  status: 'pending' | 'frozen' | 'confirmed' | 'cancelled';
-  transaction_type: 'job_posting' | 'subscription' | 'other';
-  payment_method: 'credit_card' | 'interac';
-  metadata: Json;
-  created_at: string;
-  updated_at: string;
-  user_id: string;
+export interface PaymentProps {
+  onPaymentRequested: (amount: number, gameTitle: string) => Promise<void>;
 }
 
 export interface PaymentMethod {
   id: string;
+  user_id: string;
   payment_type: 'credit_card' | 'interac';
+  card_brand?: string;
+  card_last_four?: string;
   is_default: boolean;
   is_active: boolean;
-  card_last_four?: string;
-  card_brand?: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface PaymentTransaction {
+  id: string;
   user_id: string;
-  stripe_payment_method_id?: string;
-  last_used_at?: string;
+  amount: number;
+  currency: string;
+  status: 'confirmed' | 'pending' | 'cancelled' | 'frozen';
+  payment_method: 'credit_card' | 'interac';
+  created_at: string;
+  description?: string;
 }

@@ -1,19 +1,20 @@
 
 import React, { KeyboardEvent, useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Mic, Send, Paperclip, MicOff } from "lucide-react";
+import { Loader2, Mic, Send, Paperclip, MicOff, Image, File } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { speechService } from "@/services/speechRecognitionService";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChatInputProps {
   value: string;
   onChange: (value: string) => void;
   onSend: () => void;
+  onFileAttach?: (file: File, messageId: string) => Promise<void>;
   isThinking?: boolean;
   isListening?: boolean;
   onVoiceInput?: () => void;
-  onFileAttach?: (file: File) => void;
   placeholder?: string;
   disabled?: boolean;
 }
@@ -22,10 +23,10 @@ export function ChatInput({
   value,
   onChange,
   onSend,
+  onFileAttach,
   isThinking,
   isListening,
   onVoiceInput,
-  onFileAttach,
   placeholder = "Écrivez votre message...",
   disabled = false
 }: ChatInputProps) {
@@ -33,6 +34,7 @@ export function ChatInput({
   const [localIsListening, setLocalIsListening] = useState(false);
   const [isVoiceSupported] = useState(() => speechService.isSupported());
   const [audioLevel, setAudioLevel] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
   const animationFrameRef = useRef<number>();
 
   useEffect(() => {
@@ -94,7 +96,7 @@ export function ChatInput({
         const dataArray = new Uint8Array(analyser.frequencyBinCount);
         analyser.getByteFrequencyData(dataArray);
         const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
-        setAudioLevel(average / 128); // Normalize to 0-1
+        setAudioLevel(average / 128);
 
         animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
       };
@@ -112,30 +114,44 @@ export function ChatInput({
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const maxSize = 10 * 1024 * 1024;
-      if (file.size > maxSize) {
-        toast.error("Le fichier est trop volumineux (max 10MB)");
-        return;
-      }
-      
-      const allowedTypes = [
-        'application/pdf',
-        'image/jpeg',
-        'image/png',
-        'image/gif',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      ];
-      
-      if (!allowedTypes.includes(file.type)) {
-        toast.error("Type de fichier non supporté");
-        return;
-      }
+    if (!file || !onFileAttach) return;
 
-      onFileAttach?.(file);
+    try {
+      setIsUploading(true);
+
+      // Créer d'abord le message
+      const { data: messageData, error: messageError } = await supabase
+        .from('messages')
+        .insert({
+          content: `Fichier: ${file.name}`,
+          has_attachment: true,
+          message_type: 'user',
+          status: 'sending',
+          receiver_id: '00000000-0000-0000-0000-000000000000', // Assistant ID
+          sender_id: (await supabase.auth.getUser()).data.user?.id,
+          is_assistant: false,
+          metadata: {},
+          read: false
+        })
+        .select()
+        .single();
+
+      if (messageError) throw messageError;
+
+      // Uploader le fichier
+      await onFileAttach(file, messageData.id);
+      
+      toast.success("Fichier envoyé avec succès");
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      toast.error("Erreur lors de l'envoi du fichier");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -153,7 +169,7 @@ export function ChatInput({
         ref={fileInputRef}
         className="hidden"
         onChange={handleFileChange}
-        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"
+        accept="*/*"
       />
 
       <Button
@@ -161,10 +177,14 @@ export function ChatInput({
         variant="ghost"
         onClick={() => fileInputRef.current?.click()}
         className="rounded-full h-10 w-10"
-        disabled={isThinking || disabled}
+        disabled={isThinking || disabled || isUploading}
         title="Joindre un fichier"
       >
-        <Paperclip className="h-5 w-5" />
+        {isUploading ? (
+          <Loader2 className="h-5 w-5 animate-spin" />
+        ) : (
+          <Paperclip className="h-5 w-5" />
+        )}
       </Button>
 
       <div className="flex-1 relative">

@@ -1,3 +1,4 @@
+
 import { VCardSection } from "./VCardSection";
 import { GraduationCap, Building2, Calendar, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { UserProfile } from "@/types/profile";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
 
 interface VCardEducationProps {
   profile: UserProfile;
@@ -14,39 +16,59 @@ interface VCardEducationProps {
 }
 
 export function VCardEducation({ profile, isEditing, setProfile }: VCardEducationProps) {
-  const handleAddEducation = () => {
-    const newEducation = {
-      id: crypto.randomUUID(),
-      school_name: "",
-      degree: "",
-      field_of_study: "",
-      start_date: null,
-      end_date: null,
-      description: "",
-    };
+  const [error, setError] = useState<string | null>(null);
 
-    setProfile({
-      ...profile,
-      education: [...(profile.education || []), newEducation],
-    });
-    toast.success("Formation ajoutée");
+  const handleAddEducation = () => {
+    try {
+      const newEducation = {
+        id: crypto.randomUUID(),
+        school_name: "",
+        degree: "",
+        field_of_study: "",
+        start_date: null,
+        end_date: null,
+        description: "",
+      };
+
+      setProfile({
+        ...profile,
+        education: [...(profile.education || []), newEducation],
+      });
+      toast.success("Formation ajoutée");
+    } catch (err) {
+      console.error("Erreur lors de l'ajout d'une formation:", err);
+      setError("Impossible d'ajouter une formation pour le moment");
+      toast.error("Erreur lors de l'ajout de la formation");
+    }
   };
 
   const handleRemoveEducation = (id: string) => {
-    setProfile({
-      ...profile,
-      education: profile.education?.filter((edu) => edu.id !== id),
-    });
-    toast.success("Formation supprimée");
+    try {
+      setProfile({
+        ...profile,
+        education: profile.education?.filter((edu) => edu.id !== id),
+      });
+      toast.success("Formation supprimée");
+    } catch (err) {
+      console.error("Erreur lors de la suppression d'une formation:", err);
+      setError("Impossible de supprimer la formation pour le moment");
+      toast.error("Erreur lors de la suppression de la formation");
+    }
   };
 
   const handleEducationChange = (id: string, field: string, value: string) => {
-    setProfile({
-      ...profile,
-      education: profile.education?.map((edu) =>
-        edu.id === id ? { ...edu, [field]: value } : edu
-      ),
-    });
+    try {
+      setProfile({
+        ...profile,
+        education: profile.education?.map((edu) =>
+          edu.id === id ? { ...edu, [field]: value } : edu
+        ),
+      });
+    } catch (err) {
+      console.error("Erreur lors de la modification d'une formation:", err);
+      setError("Impossible de modifier la formation pour le moment");
+      toast.error("Erreur lors de la modification de la formation");
+    }
   };
 
   const formatDate = (date: string | undefined) => {
@@ -56,6 +78,32 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
       month: "long",
     });
   };
+
+  // Reset error when props change
+  useEffect(() => {
+    setError(null);
+  }, [profile, isEditing]);
+
+  if (error) {
+    return (
+      <VCardSection
+        title="Formation"
+        icon={<GraduationCap className="h-4 w-4" />}
+        variant="education"
+      >
+        <div className="p-4 text-center">
+          <p className="text-red-500">{error}</p>
+          <Button 
+            onClick={() => setError(null)} 
+            variant="ghost" 
+            className="mt-2"
+          >
+            Réessayer
+          </Button>
+        </div>
+      </VCardSection>
+    );
+  }
 
   return (
     <VCardSection
@@ -182,3 +230,4 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
     </VCardSection>
   );
 }
+

@@ -5,23 +5,29 @@ import { UserAvatar } from "@/components/UserAvatar";
 
 interface SearchResultsProps {
   results: UserProfile[];
+  onSelect?: (profile: UserProfile) => void;
 }
 
-export function SearchResults({ results }: SearchResultsProps) {
+export function SearchResults({ results, onSelect }: SearchResultsProps) {
   return (
-    <Card className="absolute w-full z-10 mt-1 p-2 space-y-2">
-      {results.map((profile) => (
-        <div
-          key={profile.id}
-          className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted cursor-pointer"
-        >
-          <UserAvatar user={profile} className="h-8 w-8" />
-          <div>
-            <p className="text-sm font-medium">{profile.full_name}</p>
-            <p className="text-xs text-muted-foreground">{profile.role}</p>
+    <Card className="w-full shadow-lg border-primary/10 bg-card/95 backdrop-blur">
+      <div className="py-1">
+        {results.map((profile) => (
+          <div
+            key={profile.id}
+            onClick={() => onSelect?.(profile)}
+            className="flex items-center gap-3 p-3 hover:bg-muted/50 cursor-pointer transition-colors"
+          >
+            <UserAvatar user={profile} className="h-8 w-8" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{profile.full_name}</p>
+              {profile.role && (
+                <p className="text-xs text-muted-foreground truncate">{profile.role}</p>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </Card>
   );
 }

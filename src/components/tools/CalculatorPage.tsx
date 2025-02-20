@@ -7,12 +7,11 @@ import { Converter } from "./calculator/Converter";
 import { PaymentPanel } from "./calculator/PaymentPanel";
 import { useCalculator } from "./calculator/useCalculator";
 import { Card } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import type { ConversionType } from "./calculator/types";
 import { Elements } from "@stripe/react-stripe-js";
 import { initializeStripe } from "@/hooks/useStripePayment";
 import { Loader2 } from "lucide-react";
 import type { StripeElementsOptions } from '@stripe/stripe-js';
+import type { ConversionType } from './calculator/types';
 
 const stripeElementsOptions: StripeElementsOptions = {
   mode: 'payment',
@@ -40,9 +39,7 @@ export function CalculatorPage() {
     const initStripe = async () => {
       try {
         const stripe = await initializeStripe();
-        if (!stripe) {
-          throw new Error('Failed to initialize Stripe');
-        }
+        if (!stripe) throw new Error('Failed to initialize Stripe');
         setStripePromise(Promise.resolve(stripe));
       } catch (error) {
         console.error('Failed to initialize Stripe:', error);
@@ -50,18 +47,22 @@ export function CalculatorPage() {
         setIsLoading(false);
       }
     };
-
     initStripe();
   }, []);
 
   const handleConvert = () => {
-    // Implémenter la logique de conversion ici
-    console.log("Converting...");
+    // Logique de conversion à implémenter
+    console.log("Converting:", {
+      type: conversionType,
+      from: fromUnit,
+      to: toUnit,
+      value: conversionValue
+    });
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+      <div className="flex items-center justify-center h-screen">
         <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     );
@@ -69,8 +70,8 @@ export function CalculatorPage() {
 
   return (
     <Elements stripe={stripePromise} options={stripeElementsOptions}>
-      <ScrollArea className="h-[calc(100vh-4rem)] w-full pt-16">
-        <div className="container max-w-6xl mx-auto p-4 pb-20 space-y-6">
+      <div className="min-h-screen pt-16 container">
+        <div className="max-w-6xl mx-auto p-4 space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-6">
               <Card className="p-6">
@@ -99,7 +100,7 @@ export function CalculatorPage() {
             />
           </div>
         </div>
-      </ScrollArea>
+      </div>
     </Elements>
   );
 }

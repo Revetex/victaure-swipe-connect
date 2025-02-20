@@ -1,29 +1,18 @@
 
-import { Message, Receiver } from "@/types/messages"; 
-import { ChatHeader } from "@/components/chat/ChatHeader";
-import { ChatInput } from "@/components/chat/ChatInput";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChatMessage } from "@/components/chat/ChatMessage";
-import { ChatThinking } from "@/components/chat/ChatThinking";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, Mic } from "lucide-react";
-import { motion } from "framer-motion";
-import { useState, useEffect, useCallback } from "react";
-import { useProfile } from "@/hooks/useProfile";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { Message, Receiver } from "@/types/messages";
+import { ConversationHeader } from "./ConversationHeader";
+import { ConversationMessages } from "./ConversationMessages";
+import { ChatInput } from "./ChatInput";
 
-export interface ConversationViewProps {
+interface ConversationViewProps {
   messages: Message[];
-  receiver: Receiver | null;
+  receiver: Receiver;
   inputMessage: string;
   isThinking?: boolean;
-  isListening?: boolean;
-  onInputChange: (message: string) => void;
+  onInputChange: (value: string) => void;
   onSendMessage: () => void;
-  onVoiceInput?: () => void;
   onBack: () => void;
-  onDeleteConversation: () => Promise<void>;
+  onDelete: () => Promise<void>;
   messagesEndRef: React.RefObject<HTMLDivElement>;
 }
 
@@ -32,172 +21,43 @@ export function ConversationView({
   receiver,
   inputMessage,
   isThinking,
-  isListening,
   onInputChange,
   onSendMessage,
-  onVoiceInput,
   onBack,
-  onDeleteConversation,
+  onDelete,
   messagesEndRef
 }: ConversationViewProps) {
-  const [showScrollButton, setShowScrollButton] = useState(false);
-  const { profile } = useProfile();
-  const [isVoiceChatActive, setIsVoiceChatActive] = useState(false);
-
-  const handleScroll = (event: any) => {
-    const target = event.target as HTMLDivElement;
-    const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
-    setShowScrollButton(!isNearBottom);
-  };
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleReply = useCallback(async (content: string) => {
-    onInputChange(content);
-    setTimeout(() => {
-      onSendMessage();
-    }, 100);
-  }, [onInputChange, onSendMessage]);
-
-  const startVoiceChat = async () => {
-    try {
-      setIsVoiceChatActive(true);
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(track => track.stop());
-      
-      toast.success("Chat vocal activé! Cliquez sur le microphone pour parler.");
-      if (onVoiceInput) {
-        onVoiceInput();
-      }
-    } catch (error) {
-      console.error("Erreur d'accès au microphone:", error);
-      toast.error("Impossible d'accéder au microphone. Vérifiez vos permissions.");
-      setIsVoiceChatActive(false);
-    }
-  };
-
-  useEffect(() => {
-    const saveConversation = async () => {
-      if (!profile || !receiver || messages.length === 0) return;
-      
-      // Ne pas sauvegarder les conversations avec l'assistant
-      if (receiver.id === 'assistant') return;
-      
-      try {
-        const { error } = await supabase
-          .from('conversations')
-          .upsert({
-            participant1_id: profile.id,
-            participant2_id: receiver.id,
-            last_message: messages[messages.length - 1].content,
-            last_message_time: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
-
-        if (error) {
-          console.error("Erreur lors de la sauvegarde de la conversation:", error);
-          throw error;
-        }
-      } catch (error) {
-        console.error("Erreur lors de la sauvegarde de la conversation:", error);
-      }
-    };
-
-    saveConversation();
-  }, [messages, profile, receiver]);
-
-  if (!receiver) return null;
-
   return (
-    <div className="flex flex-col h-full bg-background">
-      <header className="flex-none">
-        <ChatHeader
-          title={receiver.full_name}
-          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
-          avatarUrl={receiver.avatar_url}
+    <div className="absolute inset-0 flex flex-col">
+      <div className="flex-none">
+        <ConversationHeader 
+          receiver={receiver}
           onBack={onBack}
-          onDelete={onDeleteConversation}
-          isOnline={receiver.online_status}
-          lastSeen={receiver.last_seen}
+          onDelete={onDelete}
+          className="border-b"
         />
-      </header>
+      </div>
 
-      <ScrollArea 
-        className="flex-1 h-[calc(100vh-8rem)]"
-        onScrollCapture={handleScroll}
-      >
-        <div className="px-4">
-          <div className="space-y-4 py-4 max-w-2xl mx-auto">
-            {messages.map((message) => (
-              <motion.div
-                key={message.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ChatMessage 
-                  message={message} 
-                  onReply={handleReply}
-                />
-              </motion.div>
-            ))}
-            
-            {isThinking && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <ChatThinking />
-              </motion.div>
-            )}
-            
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
-      </ScrollArea>
+      <div className="flex-1 overflow-y-auto">
+        <ConversationMessages
+          messages={messages}
+          isThinking={isThinking}
+          onReply={onInputChange}
+          messagesEndRef={messagesEndRef}
+        />
+      </div>
 
-      {showScrollButton && (
-        <Button
-          size="icon"
-          variant="secondary"
-          onClick={scrollToBottom}
-          className="absolute bottom-20 right-4 rounded-full shadow-lg hover:shadow-xl transition-shadow z-10"
-        >
-          <ChevronDown className="h-4 w-4" />
-        </Button>
-      )}
-
-      <footer className="flex-none p-4 bg-background border-t">
-        <div className="max-w-2xl mx-auto">
-          {!isVoiceChatActive && (
-            <Button
-              onClick={startVoiceChat}
-              className="w-full mb-4 gap-2"
-              variant="outline"
-            >
-              <Mic className="w-4 h-4" />
-              Activer le chat vocal
-            </Button>
-          )}
+      <div className="flex-none p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="max-w-3xl mx-auto">
           <ChatInput
             value={inputMessage}
             onChange={onInputChange}
             onSend={onSendMessage}
             isThinking={isThinking}
-            isListening={isListening}
-            onVoiceInput={onVoiceInput}
-            onFileAttach={(file) => {
-              toast.success(`Fichier ${file.name} attaché`);
-              // Implement file handling logic here
-            }}
             placeholder="Écrivez votre message..."
           />
         </div>
-      </footer>
+      </div>
     </div>
   );
 }

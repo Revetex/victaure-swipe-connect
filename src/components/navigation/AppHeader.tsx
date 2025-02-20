@@ -27,17 +27,41 @@ export function AppHeader({
     <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur z-30 border-b h-14">
       <div className="flex items-center justify-between h-full px-4 max-w-[2000px] mx-auto relative z-20">
         <motion.div 
-          className="flex items-center gap-4"
+          className="flex items-center gap-4 flex-1 justify-center"
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <Logo size="lg" />
+          <div className="absolute left-4">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className={cn(
+                    "text-primary hover:bg-primary/5",
+                    "transition-all duration-300",
+                    "active:scale-95 touch-none"
+                  )}
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent 
+                side="left" 
+                className="w-[280px] p-0 z-40"
+              >
+                <FeedSidebar />
+              </SheetContent>
+            </Sheet>
+          </div>
+          
+          <Logo size="md" />
           <h1 className="font-montserrat text-base sm:text-lg md:text-xl text-foreground/80">{title}</h1>
         </motion.div>
         
         <motion.div 
-          className="flex items-center gap-2"
+          className="absolute right-4 flex items-center gap-2"
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
@@ -45,27 +69,6 @@ export function AppHeader({
           <div className="relative">
             <NotificationsBox />
           </div>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className={cn(
-                  "text-primary hover:bg-primary/5",
-                  "transition-all duration-300",
-                  "active:scale-95 touch-none"
-                )}
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent 
-              side="left" 
-              className="w-[280px] p-0 z-40"
-            >
-              <FeedSidebar />
-            </SheetContent>
-          </Sheet>
         </motion.div>
       </div>
     </header>

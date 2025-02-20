@@ -1,21 +1,24 @@
 
-import { Job } from "@/types/job";
+import { useState } from "react";
 import { JobList } from "./JobList";
-import { JobFilters } from "./JobFilterUtils";
+import { Job } from "@/types/job";
 
 interface ScrapedJobsListProps {
   jobs: Job[];
-  filters: JobFilters;
 }
 
-export function ScrapedJobsList({ jobs, filters }: ScrapedJobsListProps) {
+export function ScrapedJobsList({ jobs }: ScrapedJobsListProps) {
+  const [selectedJobId, setSelectedJobId] = useState<string | undefined>();
+
+  const handleJobSelect = (job: Job) => {
+    setSelectedJobId(job.id);
+  };
+
   return (
     <JobList 
-      filters={filters}
-      showFilters={true}
-      filterType="regular"
       jobs={jobs}
-      viewMode="grid"
+      onJobSelect={handleJobSelect}
+      selectedJobId={selectedJobId}
     />
   );
 }

@@ -1,24 +1,19 @@
 
-import { useState, useRef, useEffect } from "react";
-import { ConversationList } from "./conversation/ConversationList";
-import { ConversationView } from "./conversation/ConversationView";
+import { useState, useRef } from "react";
 import { useReceiver } from "@/hooks/useReceiver";
 import { useMessageQuery } from "@/hooks/useMessageQuery";
 import { useConversationMessages } from "@/hooks/useConversationMessages";
 import { useAIChat } from "@/hooks/useAIChat";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
+import { useConversationHandler } from "@/hooks/useConversationHandler";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Message, DatabaseMessage, transformDatabaseMessage } from "@/types/messages";
-import { Json } from "@/types/database/auth";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, Plus } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { FriendSelector } from "./conversation/FriendSelector";
-import { AssistantMessage } from "./conversation/AssistantMessage";
+import { Message, transformDatabaseMessage } from "@/types/messages";
 import { useUser } from "@/hooks/useUser";
+import { useQueryClient } from "@tanstack/react-query";
+import { ConversationView } from "./conversation/ConversationView";
+import { ConversationList } from "./conversation/ConversationList";
 
 export function MessagesContainer() {
   const { receiver, setReceiver, showConversation, setShowConversation } = useReceiver();
@@ -26,9 +21,11 @@ export function MessagesContainer() {
   const [searchQuery, setSearchQuery] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useUser();
+  const queryClient = useQueryClient();
+  const { sendMessage, createOrUpdateConversation } = useConversationHandler();
   
-  const { data: conversations = [], isLoading: isLoadingConversations } = useMessageQuery();
-  const { data: currentMessages = [], isLoading: isLoadingMessages } = useConversationMessages(receiver);
+  const { data: conversations = [] } = useMessageQuery();
+  const { data: currentMessages = [] } = useConversationMessages(receiver);
   
   const { 
     messages: aiMessages, 
@@ -39,11 +36,10 @@ export function MessagesContainer() {
   
   const { handleDeleteConversation } = useConversationDelete();
 
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [currentMessages, aiMessages]);
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["messages"] });
+    toast.success("Messages actualisés");
+  };
 
   const handleSendMessage = async () => {
     if (!receiver || !inputMessage.trim() || !user) {
@@ -51,38 +47,29 @@ export function MessagesContainer() {
       return;
     }
 
-    if (receiver.id === 'assistant') {
-      handleAISendMessage(inputMessage);
-      setAIInputMessage('');
-    } else {
-      const messageData = {
-        content: inputMessage,
-        sender_id: user.id,
-        receiver_id: receiver.id,
-        is_assistant: false,
-        message_type: 'user' as const,
-        status: 'sent' as const,
-        metadata: {
-          timestamp: new Date().toISOString(),
-          type: 'chat'
-        } as Record<string, Json>
-      };
-
-      const { error } = await supabase.from('messages').insert(messageData);
-
-      if (error) {
-        console.error("Error sending message:", error);
-        toast.error("Erreur lors de l'envoi du message");
-        return;
+    try {
+      if (receiver.id === 'assistant') {
+        handleAISendMessage(inputMessage);
+        setAIInputMessage('');
+      } else {
+        await sendMessage(inputMessage, user.id, receiver.id);
       }
+      setInputMessage('');
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Erreur lors de l'envoi du message");
     }
-    
-    setInputMessage('');
-    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
   };
 
   const handleStartNewChat = async (friendId: string) => {
+    if (!user) {
+      toast.error("Vous devez être connecté");
+      return;
+    }
+
     try {
+      await createOrUpdateConversation(user.id, friendId);
+
       const { data: friend, error: friendError } = await supabase
         .from('profiles')
         .select('*')
@@ -90,8 +77,7 @@ export function MessagesContainer() {
         .single();
 
       if (friendError || !friend) {
-        toast.error("Impossible de trouver cet utilisateur");
-        return;
+        throw new Error("Impossible de trouver cet utilisateur");
       }
 
       setReceiver(friend);
@@ -112,18 +98,18 @@ export function MessagesContainer() {
     ? aiMessages 
     : (Array.isArray(currentMessages) 
         ? currentMessages.map(msg => ({
-            ...transformDatabaseMessage(msg as DatabaseMessage),
-            message_type: msg.is_assistant ? 'assistant' : 'user'
+            ...transformDatabaseMessage(msg),
+            message_type: msg.is_assistant ? 'assistant' as const : 'user' as const
           }))
         : []);
 
   return (
-    <Card className="h-[calc(100vh-4rem)] flex flex-col mt-16">
-      <div className="flex-1 flex flex-col h-full relative bg-gradient-to-b from-background to-muted/20">
+    <Card className="h-screen flex flex-col mt-16">
+      <div className="flex-1 relative bg-gradient-to-b from-background to-muted/20">
         {showConversation && receiver ? (
           <ConversationView
-            receiver={receiver}
             messages={messages}
+            receiver={receiver}
             inputMessage={inputMessage}
             isThinking={isThinking}
             onInputChange={setInputMessage}
@@ -132,58 +118,22 @@ export function MessagesContainer() {
               setShowConversation(false);
               setReceiver(null);
             }}
-            onDeleteConversation={() => handleDeleteConversation(receiver)}
+            onDelete={() => handleDeleteConversation(receiver)}
             messagesEndRef={messagesEndRef}
           />
         ) : (
-          <div className="flex flex-col h-full">
-            <div className="p-4 border-b space-y-4 sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
-              <div className="flex items-center justify-between gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Rechercher une conversation..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8"
-                  />
-                </div>
-                <FriendSelector onSelectFriend={handleStartNewChat}>
-                  <Button variant="default" size="icon" className="shrink-0">
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </FriendSelector>
-              </div>
-            </div>
-
-            <ScrollArea className="flex-1">
-              <div className="p-4 space-y-4">
-                <AssistantMessage 
-                  chatMessages={aiMessages}
-                  onSelectConversation={() => {
-                    setReceiver({
-                      id: 'assistant',
-                      full_name: 'M. Victaure',
-                      avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-                      online_status: true,
-                      last_seen: new Date().toISOString()
-                    });
-                    setShowConversation(true);
-                  }}
-                />
-                
-                <div className="pt-2">
-                  <ConversationList
-                    conversations={filteredConversations}
-                    onSelectConversation={(receiver) => {
-                      setReceiver(receiver);
-                      setShowConversation(true);
-                    }}
-                  />
-                </div>
-              </div>
-            </ScrollArea>
-          </div>
+          <ConversationList
+            conversations={filteredConversations}
+            aiMessages={aiMessages}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            onRefresh={handleRefresh}
+            onSelectConversation={(receiver) => {
+              setReceiver(receiver);
+              setShowConversation(true);
+            }}
+            onStartNewChat={handleStartNewChat}
+          />
         )}
       </div>
     </Card>

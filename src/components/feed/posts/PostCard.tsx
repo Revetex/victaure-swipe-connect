@@ -10,15 +10,15 @@ import { CommentManager } from "@/components/feed/comments/CommentManager";
 import { PostCardHeader } from "./card/PostCardHeader";
 import { PostCardContent } from "./card/PostCardContent";
 
-interface PostCardProps {
+export interface PostCardProps {
   post: Post;
   currentUserId?: string;
   userEmail?: string;
   onDelete?: () => void;
   onHide?: (postId: string) => void;
+  onUpdate?: (postId: string, content: string) => void;
   onReaction?: (postId: string, type: 'like' | 'dislike') => void;
   onCommentAdded?: () => void;
-  onUpdate?: (postId: string, content: string) => void;
 }
 
 export function PostCard({ 
@@ -27,18 +27,14 @@ export function PostCard({
   userEmail,
   onDelete, 
   onHide,
+  onUpdate,
   onReaction,
-  onCommentAdded,
-  onUpdate
+  onCommentAdded
 }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
   const isMobile = useIsMobile();
-
-  const handleReaction = (type: 'like' | 'dislike') => {
-    onReaction?.(post.id, type);
-  };
 
   const handleToggleComments = () => {
     setShowComments(!showComments);
@@ -80,7 +76,7 @@ export function PostCard({
           onEdit={() => setIsEditing(true)}
           onSave={handleSaveEdit}
           onCancel={handleCancelEdit}
-          onDelete={onDelete!}
+          onDelete={onDelete}
         />
 
         <PostCardContent 
@@ -101,9 +97,8 @@ export function PostCard({
           postAuthorId={post.user_id}
           currentUserId={currentUserId}
           userEmail={userEmail}
-          onLike={() => handleReaction('like')}
-          onDislike={() => handleReaction('dislike')}
           onToggleComments={handleToggleComments}
+          onReaction={onReaction}
         />
 
         {showComments && post.comments && (

@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -95,62 +96,4 @@
   .text-balance {
     text-wrap: balance;
   }
-}
-
-/* Styles spécifiques pour le chat */
-.chat-container {
-  background-color: hsl(var(--background));
-  min-height: 100vh;
-}
-
-.chat-message {
-  border-radius: var(--radius);
-  padding: 1rem;
-  margin: 0.5rem 0;
-  max-width: 85%;
-}
-
-.chat-message.user {
-  background-color: hsl(var(--primary) / 0.1);
-  margin-left: auto;
-}
-
-.chat-message.assistant {
-  background-color: hsl(var(--secondary));
-  margin-right: auto;
-}
-
-.new-chat-button {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius);
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.new-chat-button:hover {
-  background-color: hsl(var(--primary) / 0.9);
-  transform: translateY(-1px);
-}
-
-.secondary-button {
-  background-color: hsl(var(--secondary));
-  color: hsl(var(--secondary-foreground));
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius);
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.secondary-button:hover {
-  background-color: hsl(var(--secondary) / 0.9);
-}
-
-.highlight {
-  background-color: hsl(var(--accent) / 0.1);
-  color: hsl(var(--accent-foreground));
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--radius);
-  border: 1px solid hsl(var(--accent) / 0.2);
 }

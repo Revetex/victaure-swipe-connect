@@ -10,9 +10,9 @@ import {
   Calculator, 
   Languages, 
   Settings, 
-  SwordIcon, 
   StickyNote,
-  ShoppingBag
+  ShoppingBag,
+  Gamepad2
 } from "lucide-react";
 
 export const navigationItems = [
@@ -21,7 +21,8 @@ export const navigationItems = [
   { id: 4, icon: Newspaper, name: "Actualité", route: "/feed" },
   { id: 2, icon: MessageSquare, name: "Messages", route: "/messages" },
   { id: 3, icon: BriefcaseIcon, name: "Emplois", route: "/jobs" },
-  { id: 17, icon: ShoppingBag, name: "Marketplace", route: "/marketplace" }, // Assurez-vous que cette route est active
+  { id: 17, icon: ShoppingBag, name: "Marketplace", route: "/marketplace" },
+  { id: 18, icon: Gamepad2, name: "Jeux", route: "/lottery" },
   
   // Section réseau
   { id: 9, icon: Bell, name: "Notifications", route: "/notifications" },
@@ -31,7 +32,6 @@ export const navigationItems = [
   { id: 7, icon: ListTodo, name: "Tâches", route: "/tasks" },
   { id: 8, icon: Calculator, name: "Calculatrice", route: "/calculator" },
   { id: 14, icon: Languages, name: "Traducteur", route: "/translator" },
-  { id: 15, icon: SwordIcon, name: "Échecs", route: "/chess" },
   { id: 16, icon: StickyNote, name: "Notes", route: "/notes" },
   { id: 10, icon: Settings, name: "Paramètres", route: "/settings" }
 ] as const;
@@ -58,12 +58,12 @@ export const getPageTitle = (currentPage: number): string => {
       return "Connections";
     case 14:
       return "Traducteur";
-    case 15:
-      return "Échecs";
     case 16:
       return "Notes";
     case 17:
       return "Marketplace";
+    case 18:
+      return "Jeux";
     default:
       return "Actualité";
   }

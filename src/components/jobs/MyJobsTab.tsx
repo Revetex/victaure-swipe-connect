@@ -1,24 +1,24 @@
 
-import { useEffect } from "react";
+import { useState } from "react";
 import { JobList } from "./JobList";
-import { Job } from "@/types/job";
 import { useMyJobs } from "@/hooks/useMyJobs";
+import { Job } from "@/types/job";
 
 export function MyJobsTab() {
   const { jobs, fetchJobs } = useMyJobs();
+  const [selectedJobId, setSelectedJobId] = useState<string | undefined>();
 
-  useEffect(() => {
-    fetchJobs();
-  }, [fetchJobs]);
+  const handleJobSelect = (job: Job) => {
+    setSelectedJobId(job.id);
+  };
 
   return (
-    <JobList 
-      jobs={jobs} 
-      filters={{}} 
-      showFilters={false}
-      filterType="regular"
-      onJobDeleted={fetchJobs} 
-      viewMode="grid"
-    />
+    <div className="space-y-4">
+      <JobList 
+        jobs={jobs} 
+        onJobSelect={handleJobSelect}
+        selectedJobId={selectedJobId}
+      />
+    </div>
   );
 }
