@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
 interface PaymentTypeSelectorProps {
-  paymentType: 'card' | 'interac';
-  setPaymentType: (type: 'card' | 'interac') => void;
+  paymentType: 'credit_card' | 'interac';
+  setPaymentType: (type: 'credit_card' | 'interac') => void;
 }
 
 export function PaymentTypeSelector({ paymentType, setPaymentType }: PaymentTypeSelectorProps) {
@@ -14,8 +14,8 @@ export function PaymentTypeSelector({ paymentType, setPaymentType }: PaymentType
       <div className="flex gap-4">
         <Button
           type="button"
-          variant={paymentType === 'card' ? 'default' : 'outline'}
-          onClick={() => setPaymentType('card')}
+          variant={paymentType === 'credit_card' ? 'default' : 'outline'}
+          onClick={() => setPaymentType('credit_card')}
         >
           Carte de crédit
         </Button>

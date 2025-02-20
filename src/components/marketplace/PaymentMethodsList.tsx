@@ -24,7 +24,7 @@ export function PaymentMethodsList({ methods, onDelete, isDeleting }: PaymentMet
       {methods.map((method) => (
         <Card key={method.id} className="p-4 flex justify-between items-center">
           <div>
-            {method.payment_type === 'card' ? (
+            {method.payment_type === 'credit_card' ? (
               <p>Carte •••• {method.card_last_four}</p>
             ) : (
               <p>Interac {method.email}</p>
