@@ -9,6 +9,8 @@ export const useJobsData = () => {
     queryKey: ["jobs"],
     queryFn: async () => {
       try {
+        console.log("Fetching jobs...");
+        
         // Récupérer les emplois de la base de données
         const { data: jobs, error } = await supabase
           .from('jobs')
@@ -22,16 +24,25 @@ export const useJobsData = () => {
           .eq('status', 'open')
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Error fetching internal jobs:", error);
+          throw error;
+        }
+
+        console.log("Internal jobs fetched:", jobs?.length || 0);
 
         // Récupérer les emplois scrapés
         const { data: scrapedJobs, error: scrapedError } = await supabase
           .from('scraped_jobs')
           .select('*')
-          .order('posted_at', { ascending: false })
-          .limit(50);
+          .order('posted_at', { ascending: false });
 
-        if (scrapedError) throw scrapedError;
+        if (scrapedError) {
+          console.error("Error fetching scraped jobs:", scrapedError);
+          throw scrapedError;
+        }
+
+        console.log("Scraped jobs fetched:", scrapedJobs?.length || 0);
 
         // Formatter les emplois internes
         const formattedInternalJobs: Job[] = (jobs || []).map(job => {
@@ -79,10 +90,12 @@ export const useJobsData = () => {
               application_steps: applicationSteps
             };
           } catch (error) {
-            console.error('Erreur lors du formatage du job interne:', error);
+            console.error('Error formatting internal job:', error, job);
             return null;
           }
         }).filter(Boolean) as Job[];
+
+        console.log("Formatted internal jobs:", formattedInternalJobs.length);
 
         // Formatter les emplois scrapés
         const formattedScrapedJobs: Job[] = (scrapedJobs || []).map(job => {
@@ -119,25 +132,32 @@ export const useJobsData = () => {
               salary_max
             };
           } catch (error) {
-            console.error('Erreur lors du formatage du job scrapé:', error);
+            console.error('Error formatting scraped job:', error, job);
             return null;
           }
         }).filter(Boolean) as Job[];
 
+        console.log("Formatted scraped jobs:", formattedScrapedJobs.length);
+
         // Combiner et retourner tous les emplois
         const allJobs = [...formattedInternalJobs, ...formattedScrapedJobs];
         
-        console.log({
+        console.log("Total jobs loaded:", {
           totalJobs: allJobs.length,
           internalJobs: formattedInternalJobs.length,
           scrapedJobs: formattedScrapedJobs.length,
         });
 
+        if (allJobs.length === 0) {
+          console.warn("No jobs found in the database");
+          toast.warning("Aucune offre d'emploi trouvée, veuillez réessayer plus tard");
+        }
+
         return allJobs;
       } catch (error) {
-        console.error("Erreur lors de la récupération des emplois:", error);
+        console.error("Error fetching jobs:", error);
         toast.error("Impossible de charger les offres d'emploi");
-        return [];
+        throw error;
       }
     },
     refetchInterval: 300000, // Rafraîchir toutes les 5 minutes
