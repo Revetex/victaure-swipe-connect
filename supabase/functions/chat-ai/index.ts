@@ -26,7 +26,7 @@ serve(async (req) => {
         'X-Title': 'M. Victaure Assistant'
       },
       body: JSON.stringify({
-        model: 'cognitivecomputations/dolphin-3.0-mistral-7b-r1',
+        model: 'google/gemini-2.0-flash-thinking-exp-1219:free',
         messages: [
           {
             role: 'system',
@@ -77,3 +77,4 @@ serve(async (req) => {
     );
   }
 });
+
