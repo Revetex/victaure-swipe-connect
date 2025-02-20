@@ -1,35 +1,50 @@
-import { Upload, Trash2 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { Upload, Trash2, Loader2 } from "lucide-react";
+
 interface AvatarControlsProps {
   hasAvatar: boolean;
   isLoading: boolean;
-  onUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onUpload: () => void;
   onDelete: () => void;
 }
-export function AvatarControls({
-  hasAvatar,
-  isLoading,
-  onUpload,
-  onDelete
-}: AvatarControlsProps) {
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
 
-    // Vérification du format uniquement
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(file.type)) {
-      // Si c'est un HEIC, suggérer la conversion
-      if (file.type === 'image/heic' || file.name.toLowerCase().endsWith('.heic')) {
-        toast.error("Le format HEIC n'est pas supporté. Veuillez convertir l'image en JPG");
-      } else {
-        toast.error("Format non supporté. Utilisez JPG, PNG ou WebP");
-      }
-      event.target.value = '';
-      return;
-    }
-    onUpload(event);
-  };
-  return;
+export function AvatarControls({ 
+  hasAvatar, 
+  isLoading, 
+  onUpload, 
+  onDelete 
+}: AvatarControlsProps) {
+  return (
+    <div className="flex gap-2 mt-4">
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={onUpload}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Upload className="h-4 w-4" />
+        )}
+        <span className="ml-2">Modifier</span>
+      </Button>
+      
+      {hasAvatar && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onDelete}
+          disabled={isLoading}
+          className="text-destructive hover:text-destructive"
+        >
+          <Trash2 className="h-4 w-4" />
+          <span className="ml-2">Supprimer</span>
+        </Button>
+      )}
+    </div>
+  );
 }

@@ -7,6 +7,8 @@ import { RefreshCw, Plus } from "lucide-react";
 import { FriendSelector } from "./FriendSelector";
 import { Message, Receiver } from "@/types/messages";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { motion } from "framer-motion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ConversationListProps {
   conversations: Message[];
