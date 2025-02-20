@@ -1,7 +1,7 @@
 
 import { Message, Receiver } from "@/types/messages"; 
 import { ChatInput } from "@/components/chat/ChatInput";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -47,7 +47,6 @@ export function ConversationView({
   useEffect(() => {
     const saveConversation = async () => {
       if (!profile || !receiver || messages.length === 0) return;
-      
       if (receiver.id === 'assistant') return;
       
       try {
@@ -61,10 +60,7 @@ export function ConversationView({
             updated_at: new Date().toISOString()
           });
 
-        if (error) {
-          console.error("Erreur lors de la sauvegarde de la conversation:", error);
-          throw error;
-        }
+        if (error) throw error;
       } catch (error) {
         console.error("Erreur lors de la sauvegarde de la conversation:", error);
       }
@@ -76,8 +72,8 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <div className="flex flex-col h-full max-h-full">
-      <div className="fixed top-16 left-0 right-0 z-50">
+    <div className="flex flex-col h-[calc(100vh-4rem)] fixed inset-0 top-16">
+      <div className="flex-none border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <ConversationHeader 
           receiver={receiver}
           onBack={onBack}
@@ -85,7 +81,7 @@ export function ConversationView({
         />
       </div>
 
-      <div className="flex-1 overflow-hidden pt-20 pb-24">
+      <div className="flex-1 overflow-y-auto min-h-0">
         <ConversationMessages
           messages={messages}
           isThinking={isThinking}
@@ -94,7 +90,7 @@ export function ConversationView({
         />
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur border-t">
+      <div className="flex-none p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-2xl mx-auto">
           <ChatInput
             value={inputMessage}

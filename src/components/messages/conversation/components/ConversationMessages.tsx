@@ -1,6 +1,5 @@
 
 import { Message } from "@/types/messages";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
@@ -22,7 +21,7 @@ export function ConversationMessages({
 }: ConversationMessagesProps) {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [fadeDirection, setFadeDirection] = useState<'up' | 'down'>('up');
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const isAutoScrollingRef = useRef(false);
   const prevScrollTop = useRef(0);
 
@@ -52,10 +51,10 @@ export function ConversationMessages({
     }
   }, [uniqueMessages.length]);
 
-  const handleScroll = (event: any) => {
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     if (isAutoScrollingRef.current) return;
 
-    const target = event.target as HTMLDivElement;
+    const target = event.currentTarget;
     const currentScrollTop = target.scrollTop;
     setFadeDirection(currentScrollTop > prevScrollTop.current ? 'down' : 'up');
     prevScrollTop.current = currentScrollTop;
@@ -72,13 +71,13 @@ export function ConversationMessages({
   };
 
   return (
-    <div className="relative flex flex-col h-full bg-background/50">
-      <ScrollArea 
-        ref={scrollAreaRef}
-        className="flex-1 h-full px-4"
-        onScrollCapture={handleScroll}
-      >
-        <div className="space-y-4 py-4 max-w-2xl mx-auto">
+    <div 
+      ref={containerRef}
+      className="relative flex flex-col min-h-0 w-full"
+      onScroll={handleScroll}
+    >
+      <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="space-y-4 max-w-2xl mx-auto">
           <AnimatePresence mode="popLayout">
             {uniqueMessages.map((message) => (
               <motion.div
@@ -103,7 +102,7 @@ export function ConversationMessages({
           
           <div ref={messagesEndRef} className="h-4" />
         </div>
-      </ScrollArea>
+      </div>
 
       <AnimatePresence>
         {showScrollButton && (
