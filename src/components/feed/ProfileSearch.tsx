@@ -74,10 +74,17 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher des profils.
         )}
       </div>
       
-      {searchResults.length > 0 && (
-        <div className="relative mt-2">
+      {searchResults.length > 0 && searchQuery && (
+        <div className="absolute w-full z-50 mt-1">
           <SearchResults 
             results={searchResults}
+            onSelect={(profile) => {
+              if (onSelect) {
+                onSelect(profile);
+                setSearchQuery("");
+                setSearchResults([]);
+              }
+            }}
           />
         </div>
       )}
