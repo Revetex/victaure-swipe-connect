@@ -1,4 +1,6 @@
 
+import type { UserProfile } from './profile';
+
 export interface Message {
   id: string;
   content: string;
@@ -6,19 +8,10 @@ export interface Message {
   receiver_id: string;
   created_at: string;
   metadata?: Record<string, any>;
-  sender: {
-    id: string;
-    full_name: string;
-    avatar_url: string | null;
-    online_status?: 'online' | 'offline';
-    last_seen?: string;
-  };
+  sender: UserProfile;
 }
 
-export interface Receiver {
-  id: string;
-  full_name: string;
-  avatar_url: string | null;
+export interface Receiver extends UserProfile {
   online_status?: 'online' | 'offline';
   last_seen?: string;
 }
