@@ -3,11 +3,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { PaymentTypeSelector } from "./PaymentTypeSelector";
+import { PaymentMethodsList } from "./PaymentMethodsList";
+import { usePaymentMethods } from "./usePaymentMethods";
+import { Loader2 } from "lucide-react";
 
 export function PaymentMethodForm() {
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [paymentType, setPaymentType] = useState<'card' | 'interac'>('card');
   const [formData, setFormData] = useState({
@@ -16,6 +19,8 @@ export function PaymentMethodForm() {
     cvc: '',
     interacEmail: '',
   });
+
+  const { methods, isDeleting, deletePaymentMethod, loadPaymentMethods } = usePaymentMethods();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,17 +53,17 @@ export function PaymentMethodForm() {
         if (error) throw error;
       }
 
-      toast({
-        title: "Succès",
-        description: "Méthode de paiement ajoutée",
+      toast.success("Méthode de paiement ajoutée");
+      await loadPaymentMethods();
+      setFormData({
+        cardNumber: '',
+        expiry: '',
+        cvc: '',
+        interacEmail: '',
       });
     } catch (error) {
       console.error('Error:', error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible d'ajouter la méthode de paiement",
-      });
+      toast.error("Impossible d'ajouter la méthode de paiement");
     } finally {
       setIsLoading(false);
     }
@@ -66,25 +71,10 @@ export function PaymentMethodForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-4">
-      <div className="space-y-2">
-        <Label>Type de paiement</Label>
-        <div className="flex gap-4">
-          <Button
-            type="button"
-            variant={paymentType === 'card' ? 'default' : 'outline'}
-            onClick={() => setPaymentType('card')}
-          >
-            Carte de crédit
-          </Button>
-          <Button
-            type="button"
-            variant={paymentType === 'interac' ? 'default' : 'outline'}
-            onClick={() => setPaymentType('interac')}
-          >
-            Virement Interac
-          </Button>
-        </div>
-      </div>
+      <PaymentTypeSelector 
+        paymentType={paymentType}
+        setPaymentType={setPaymentType}
+      />
 
       {paymentType === 'card' ? (
         <>
@@ -135,8 +125,24 @@ export function PaymentMethodForm() {
       )}
 
       <Button type="submit" disabled={isLoading}>
-        {isLoading ? "Ajout en cours..." : "Ajouter la méthode de paiement"}
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Ajout en cours...
+          </>
+        ) : (
+          "Ajouter la méthode de paiement"
+        )}
       </Button>
+
+      <div className="mt-8">
+        <h3 className="text-lg font-semibold mb-4">Méthodes de paiement enregistrées</h3>
+        <PaymentMethodsList
+          methods={methods}
+          onDelete={deletePaymentMethod}
+          isDeleting={isDeleting}
+        />
+      </div>
     </form>
   );
 }
