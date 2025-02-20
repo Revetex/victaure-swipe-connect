@@ -80,6 +80,7 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
     });
   };
 
+  // Reset error when props change
   useEffect(() => {
     setError(null);
   }, [profile, isEditing]);
@@ -121,16 +122,93 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
             className="relative w-full bg-background/50 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-border/20"
           >
             {isEditing ? (
-              <EducationForm
-                education={edu}
-                onEducationChange={handleEducationChange}
-                onRemoveEducation={handleRemoveEducation}
-              />
+              <>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    <Input
+                      value={edu.school_name}
+                      onChange={(e) =>
+                        handleEducationChange(edu.id, "school_name", e.target.value)
+                      }
+                      placeholder="Nom de l'école"
+                      className="flex-1 bg-background/50 border-border/20 min-h-[44px]"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <GraduationCap className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    <Input
+                      value={edu.degree}
+                      onChange={(e) =>
+                        handleEducationChange(edu.id, "degree", e.target.value)
+                      }
+                      placeholder="Diplôme"
+                      className="flex-1 bg-background/50 border-border/20 min-h-[44px]"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <Input
+                        type="date"
+                        value={edu.start_date || ""}
+                        onChange={(e) =>
+                          handleEducationChange(edu.id, "start_date", e.target.value)
+                        }
+                        className="flex-1 bg-background/50 border-border/20 min-h-[44px]"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <Input
+                        type="date"
+                        value={edu.end_date || ""}
+                        onChange={(e) =>
+                          handleEducationChange(edu.id, "end_date", e.target.value)
+                        }
+                        className="flex-1 bg-background/50 border-border/20 min-h-[44px]"
+                      />
+                    </div>
+                  </div>
+                  <Textarea
+                    value={edu.description || ""}
+                    onChange={(e) =>
+                      handleEducationChange(edu.id, "description", e.target.value)
+                    }
+                    placeholder="Description de la formation"
+                    className="w-full bg-background/50 border-border/20 min-h-[100px]"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleRemoveEducation(edu.id)}
+                    className="absolute top-2 right-2 text-muted-foreground"
+                    aria-label="Supprimer la formation"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </>
             ) : (
-              <EducationDisplay
-                education={edu}
-                formatDate={formatDate}
-              />
+              <>
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-muted-foreground" />
+                  <h3 className="font-medium">{edu.school_name}</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                  <p>{edu.degree}</p>
+                </div>
+                {edu.description && (
+                  <p className="text-muted-foreground pl-6">{edu.description}</p>
+                )}
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
+                  <span>
+                    {formatDate(edu.start_date)} - {formatDate(edu.end_date) || "Présent"}
+                  </span>
+                </div>
+              </>
             )}
           </motion.div>
         ))}
