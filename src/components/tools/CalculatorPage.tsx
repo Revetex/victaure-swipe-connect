@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { CalculatorDisplay } from "./calculator/CalculatorDisplay";
 import { CalculatorKeypad } from "./calculator/CalculatorKeypad";
-import { CalculatorHistory } from "./calculator/CalculatorHistory";
 import { Converter } from "./calculator/Converter";
 import { PaymentPanel } from "./calculator/PaymentPanel";
 import { useCalculator } from "./calculator/useCalculator";
@@ -83,7 +82,6 @@ export function CalculatorPage() {
                   onClear={calculator.clear}
                 />
               </Card>
-              <CalculatorHistory history={calculator.history} />
               <PaymentPanel />
             </div>
             <Converter 
