@@ -19,10 +19,15 @@ export function PaymentPanel() {
   const [cvv, setCvv] = useState("");
   const [interacEmail, setInteracEmail] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isSendingMoney, setIsSendingMoney] = useState(false);
+  const [recipientEmail, setRecipientEmail] = useState("");
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || isNaN(Number(amount))) return;
+    if (!amount || isNaN(Number(amount))) {
+      toast.error("Veuillez entrer un montant valide");
+      return;
+    }
     await handlePayment(Number(amount), "Paiement via calculatrice");
   };
 
@@ -78,6 +83,59 @@ export function PaymentPanel() {
       toast.error("Erreur lors de l'enregistrement");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const sendMoneyToUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!amount || !recipientEmail) {
+      toast.error("Veuillez remplir tous les champs");
+      return;
+    }
+
+    setIsSendingMoney(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Non authentifié");
+
+      // Vérifier si l'utilisateur destinataire existe
+      const { data: recipientData, error: recipientError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', recipientEmail)
+        .single();
+
+      if (recipientError || !recipientData) {
+        toast.error("Destinataire non trouvé");
+        return;
+      }
+
+      // Créer la transaction
+      const { error: transactionError } = await supabase
+        .from('payment_transactions')
+        .insert({
+          amount: Number(amount),
+          currency: 'CAD',
+          status: 'pending',
+          user_id: user.id,
+          payment_method: paymentMethod,
+          transaction_type: 'transfer',
+          metadata: {
+            recipient_id: recipientData.id,
+            recipient_email: recipientEmail
+          }
+        });
+
+      if (transactionError) throw transactionError;
+
+      toast.success("Transfert initié avec succès");
+      setAmount("");
+      setRecipientEmail("");
+    } catch (error) {
+      console.error("Error sending money:", error);
+      toast.error("Erreur lors du transfert");
+    } finally {
+      setIsSendingMoney(false);
     }
   };
 
@@ -190,6 +248,51 @@ export function PaymentPanel() {
               </>
             ) : (
               'Enregistrer le mode de paiement'
+            )}
+          </Button>
+        </form>
+      </div>
+
+      <div className="border-t pt-6">
+        <form onSubmit={sendMoneyToUser} className="space-y-4">
+          <Label>Envoyer de l'argent à un utilisateur</Label>
+          <div>
+            <Label htmlFor="recipientEmail">Email du destinataire</Label>
+            <Input
+              id="recipientEmail"
+              type="email"
+              value={recipientEmail}
+              onChange={(e) => setRecipientEmail(e.target.value)}
+              placeholder="destinataire@email.com"
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="transferAmount">Montant à envoyer (CAD)</Label>
+            <Input
+              id="transferAmount"
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+              required
+            />
+          </div>
+          <Button 
+            type="submit" 
+            variant="outline" 
+            className="w-full"
+            disabled={isSendingMoney}
+          >
+            {isSendingMoney ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Envoi en cours...
+              </>
+            ) : (
+              'Envoyer'
             )}
           </Button>
         </form>
