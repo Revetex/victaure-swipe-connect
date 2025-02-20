@@ -12,7 +12,7 @@ import { Loader2 } from "lucide-react";
 
 export function PaymentMethodForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [paymentType, setPaymentType] = useState<'card' | 'interac'>('card');
+  const [paymentType, setPaymentType] = useState<'credit_card' | 'interac'>('credit_card');
   const [formData, setFormData] = useState({
     cardNumber: '',
     expiry: '',
@@ -30,12 +30,12 @@ export function PaymentMethodForm() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
 
-      if (paymentType === 'card') {
+      if (paymentType === 'credit_card') {
         const { error } = await supabase
           .from('payment_methods')
           .insert({
             user_id: user.id,
-            payment_type: 'card',
+            payment_type: 'credit_card',
             card_last_four: formData.cardNumber.slice(-4),
             is_default: true,
           });
@@ -76,7 +76,7 @@ export function PaymentMethodForm() {
         setPaymentType={setPaymentType}
       />
 
-      {paymentType === 'card' ? (
+      {paymentType === 'credit_card' ? (
         <>
           <div className="space-y-2">
             <Label htmlFor="cardNumber">Numéro de carte</Label>
