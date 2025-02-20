@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CreatePostProps {
   onPostCreated: () => void;
@@ -10,17 +12,35 @@ interface CreatePostProps {
 
 export function CreatePost({ onPostCreated }: CreatePostProps) {
   const [content, setContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
     
+    setIsSubmitting(true);
     try {
-      // TODO: Implement post creation with Supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Vous devez être connecté pour publier");
+        return;
+      }
+
+      const { error } = await supabase.from('posts').insert({
+        content: content.trim(),
+        user_id: user.id,
+      });
+
+      if (error) throw error;
+
+      toast.success("Publication créée avec succès");
       onPostCreated();
       setContent("");
     } catch (error) {
       console.error("Error creating post:", error);
+      toast.error("Erreur lors de la création de la publication");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -37,9 +57,13 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
         placeholder="Quoi de neuf ?"
         className="w-full resize-none"
         rows={3}
+        disabled={isSubmitting}
       />
       <div className="flex justify-end">
-        <Button type="submit" disabled={!content.trim()}>
+        <Button 
+          type="submit" 
+          disabled={!content.trim() || isSubmitting}
+        >
           Publier
         </Button>
       </div>

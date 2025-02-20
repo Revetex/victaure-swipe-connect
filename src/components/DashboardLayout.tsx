@@ -4,7 +4,6 @@ import { useProfile } from "@/hooks/useProfile";
 import { DashboardContent } from "./dashboard/DashboardContent";
 import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
-import { cn } from "@/lib/utils";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(4);
