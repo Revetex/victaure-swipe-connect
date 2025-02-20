@@ -2,35 +2,19 @@
 import { useState } from "react";
 import { CreatePost } from "./posts/CreatePost";
 import { PostList } from "./posts/PostList";
-import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
-import { ChevronUp } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useRef, useCallback } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function Feed() {
   const queryClient = useQueryClient();
-  const scrollRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const isMobile = useIsMobile();
 
-  const invalidatePosts = useCallback(() => {
+  const invalidatePosts = () => {
     queryClient.invalidateQueries({ queryKey: ["posts"] });
-  }, [queryClient]);
-
-  const handleScroll = useCallback(() => {
-    if (!scrollRef.current) return;
-    setShowScrollTop(scrollRef.current.scrollTop > 200);
-  }, []);
-
-  const scrollToTop = useCallback(() => {
-    scrollRef.current?.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  }, []);
+  };
 
   return (
     <div className="min-h-screen w-full overflow-y-auto">
