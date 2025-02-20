@@ -1,7 +1,7 @@
 
 import React, { useState, useCallback } from 'react';
-import { ChatInput } from '@/components/chat/ChatInput';
-import { ChatMessage } from '@/components/chat/ChatMessage';
+import { ChatInput } from './ChatInput';
+import { ChatMessage } from './ChatMessage';
 import { VoiceInterface } from '@/components/VoiceInterface';
 import { useAIChat } from '@/hooks/useAIChat';
 import { ScrollArea } from '@/components/ui/scroll-area';
