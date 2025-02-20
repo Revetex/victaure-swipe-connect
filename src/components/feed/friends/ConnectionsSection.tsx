@@ -42,7 +42,11 @@ export function ConnectionsSection() {
           email: friend.email || "",
           skills: friend.skills || [],
           online_status: friend.online_status || false,
-          last_seen: friend.last_seen || new Date().toISOString()
+          last_seen: friend.last_seen || new Date().toISOString(),
+          certifications: [],
+          education: [],
+          experiences: [],
+          friends: []
         } as UserProfile;
       });
     }

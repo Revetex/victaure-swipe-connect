@@ -1,7 +1,6 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
 import { UserProfile } from "@/types/profile";
 import { FriendItem } from "./FriendItem";
 
@@ -35,7 +34,9 @@ export function FriendList({ friends, currentPage, itemsPerPage }: FriendListPro
             >
               <FriendItem 
                 friend={{
-                  ...friend,
+                  id: friend.id,
+                  full_name: friend.full_name,
+                  avatar_url: friend.avatar_url,
                   online_status: friend.online_status || false,
                   last_seen: friend.last_seen || new Date().toISOString()
                 }}
