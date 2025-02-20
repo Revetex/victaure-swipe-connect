@@ -1,4 +1,3 @@
-
 import { useReceiver } from "@/hooks/useReceiver";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,21 +89,7 @@ export function ConversationView() {
         .from('messages')
         .select(`
           *,
-          sender:profiles!messages_sender_id_fkey(
-            id,
-            full_name,
-            avatar_url,
-            email,
-            role,
-            bio,
-            phone,
-            city,
-            state,
-            country,
-            skills,
-            online_status,
-            last_seen
-          )
+          sender:profiles!messages_sender_id_fkey(*)
         `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
         .or(`sender_id.eq.${receiver.id},receiver_id.eq.${receiver.id}`)
@@ -118,10 +103,21 @@ export function ConversationView() {
           metadata: typeof msg.metadata === 'string' ? JSON.parse(msg.metadata) : msg.metadata || {},
           deleted_by: typeof msg.deleted_by === 'string' ? JSON.parse(msg.deleted_by) : msg.deleted_by || {},
           sender: {
-            ...msg.sender,
-            role: msg.sender.role || 'professional',
+            id: msg.sender.id,
+            email: msg.sender.email,
+            full_name: msg.sender.full_name,
+            avatar_url: msg.sender.avatar_url,
+            role: (msg.sender.role as 'professional' | 'business' | 'admin') || 'professional',
+            bio: msg.sender.bio,
+            phone: msg.sender.phone,
+            city: msg.sender.city,
+            state: msg.sender.state,
+            country: msg.sender.country || '',
             skills: msg.sender.skills || [],
+            latitude: msg.sender.latitude,
+            longitude: msg.sender.longitude,
             online_status: msg.sender.online_status || false,
+            last_seen: msg.sender.last_seen || new Date().toISOString(),
             certifications: [],
             education: [],
             experiences: [],
@@ -148,26 +144,11 @@ export function ConversationView() {
         table: 'messages',
         filter: `sender_id=eq.${receiver.id},receiver_id=eq.${user.id}`
       }, async (payload) => {
-        // Fetch the complete message with sender info
         const { data: messageData, error } = await supabase
           .from('messages')
           .select(`
             *,
-            sender:profiles!messages_sender_id_fkey(
-              id,
-              full_name,
-              avatar_url,
-              email,
-              role,
-              bio,
-              phone,
-              city,
-              state,
-              country,
-              skills,
-              online_status,
-              last_seen
-            )
+            sender:profiles!messages_sender_id_fkey(*)
           `)
           .eq('id', payload.new.id)
           .single();
@@ -182,10 +163,21 @@ export function ConversationView() {
           metadata: typeof messageData.metadata === 'string' ? JSON.parse(messageData.metadata) : messageData.metadata || {},
           deleted_by: typeof messageData.deleted_by === 'string' ? JSON.parse(messageData.deleted_by) : messageData.deleted_by || {},
           sender: {
-            ...messageData.sender,
-            role: messageData.sender.role || 'professional',
+            id: messageData.sender.id,
+            email: messageData.sender.email,
+            full_name: messageData.sender.full_name,
+            avatar_url: messageData.sender.avatar_url,
+            role: (messageData.sender.role as 'professional' | 'business' | 'admin') || 'professional',
+            bio: messageData.sender.bio,
+            phone: messageData.sender.phone,
+            city: messageData.sender.city,
+            state: messageData.sender.state,
+            country: messageData.sender.country || '',
             skills: messageData.sender.skills || [],
+            latitude: messageData.sender.latitude,
+            longitude: messageData.sender.longitude,
             online_status: messageData.sender.online_status || false,
+            last_seen: messageData.sender.last_seen || new Date().toISOString(),
             certifications: [],
             education: [],
             experiences: [],
