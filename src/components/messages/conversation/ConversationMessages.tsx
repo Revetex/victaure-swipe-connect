@@ -26,12 +26,10 @@ export function ConversationMessages({
   const containerRef = useRef<HTMLDivElement>(null);
   const isAutoScrollingRef = useRef(false);
 
-  // Dédupliquer les messages en utilisant useMemo
   const uniqueMessages = useMemo(() => messages.filter((message, index, self) => 
     index === self.findIndex(m => m.id === message.id)
   ), [messages]);
 
-  // Gérer le scroll automatique quand de nouveaux messages arrivent
   useEffect(() => {
     const scrollToBottom = (smooth = true) => {
       if (messagesEndRef.current) {
@@ -45,6 +43,7 @@ export function ConversationMessages({
         }, 100);
       }
     };
+    
     if (uniqueMessages.length > 0) {
       scrollToBottom();
     }
@@ -69,14 +68,13 @@ export function ConversationMessages({
     <div 
       ref={containerRef} 
       className={cn(
-        "flex flex-col justify-end min-h-full relative pb-[80px]",
+        "flex flex-col justify-end min-h-0 flex-1 overflow-y-auto",
         className
       )} 
       onScroll={handleScroll}
     >
       <div className="flex-1 overflow-y-auto px-4">
-        <div className="max-w-3xl mx-auto py-4 space-y-4 flex flex-col-reverse">
-          <div ref={messagesEndRef} className="h-4" />
+        <div className="max-w-3xl mx-auto py-4 space-y-4">
           {uniqueMessages.map(message => (
             <motion.div
               key={message.id}
@@ -87,6 +85,7 @@ export function ConversationMessages({
               <ChatMessage message={message} onReply={onReply} />
             </motion.div>
           ))}
+          <div ref={messagesEndRef} className="h-4" />
         </div>
       </div>
 

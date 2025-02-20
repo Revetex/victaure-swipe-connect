@@ -19,13 +19,14 @@ interface ChatMessageProps {
 export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: ChatMessageProps) {
   const suggestedJobs = message.metadata?.suggestedJobs as any[] || [];
   const isAssistant = message.sender_id === 'assistant';
+  const isSentByMe = !isAssistant && message.sender_id === 'me';
 
   const messageUser = isAssistant ? message.sender : message.sender;
   const avatarUser = isAssistant ? message.sender : message.sender;
 
   return (
     <MessageAnimation>
-      <div className={`flex ${isAssistant ? 'flex-row' : 'flex-row-reverse'} w-full`}>
+      <div className={`flex ${isSentByMe ? 'flex-row-reverse' : 'flex-row'} w-full gap-2 mb-4`}>
         <UserAvatar
           user={{
             id: avatarUser.id,
@@ -48,36 +49,36 @@ export function ChatMessage({ message, onReply, onJobAccept, onJobReject }: Chat
             experiences: [],
             friends: []
           }}
-          className="h-8 w-8 mt-1"
+          className="h-8 w-8 mt-1 flex-shrink-0"
         />
         
-        <div className={`flex flex-col space-y-2 ${isAssistant ? 'items-start' : 'items-end'} flex-1`}>
-          <div className="flex items-start gap-2 w-full">
-            <Card
-              className={`px-4 py-2 ${
-                isAssistant 
-                  ? 'bg-muted/50 backdrop-blur-sm border-primary/10' 
-                  : 'bg-primary text-primary-foreground'
-              } max-w-[80%]`}
-            >
-              {isAssistant ? (
-                <AssistantMessageContent 
-                  message={message}
-                  suggestedJobs={suggestedJobs}
-                  onJobAccept={onJobAccept}
-                  onJobReject={onJobReject}
-                />
-              ) : (
-                <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
-              )}
-            </Card>
-            
-            {isAssistant && !message.thinking && (
-              <div className="flex flex-col gap-2">
-                <MessageAudioControls text={message.content} />
-              </div>
+        <div className={`flex flex-col space-y-2 ${isSentByMe ? 'items-end' : 'items-start'} max-w-[70%]`}>
+          <Card
+            className={`px-4 py-2 ${
+              isSentByMe 
+                ? 'bg-primary text-primary-foreground' 
+                : isAssistant
+                ? 'bg-muted/50 backdrop-blur-sm border-primary/10'
+                : 'bg-muted'
+            }`}
+          >
+            {isAssistant ? (
+              <AssistantMessageContent 
+                message={message}
+                suggestedJobs={suggestedJobs}
+                onJobAccept={onJobAccept}
+                onJobReject={onJobReject}
+              />
+            ) : (
+              <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
             )}
-          </div>
+          </Card>
+          
+          {isAssistant && !message.thinking && (
+            <div className="flex flex-col gap-2">
+              <MessageAudioControls text={message.content} />
+            </div>
+          )}
         </div>
       </div>
     </MessageAnimation>
