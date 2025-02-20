@@ -1,6 +1,7 @@
 
 import { Card } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Loader2, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Message } from "@/types/messages";
 
 interface AssistantMessageContentProps {

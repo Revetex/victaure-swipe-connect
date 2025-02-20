@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -28,7 +29,7 @@ export function useAIChat() {
     addThinkingMessage,
     addAssistantMessage,
     removeThinkingMessages
-  } = useAIMessages(profile);
+  } = useAIMessages();
 
   const handleFileAttach = useCallback(async (file: File, messageId: string) => {
     const formData = new FormData();
@@ -51,7 +52,7 @@ export function useAIChat() {
 
     try {
       addUserMessage(content);
-      addThinkingMessage(profile);
+      addThinkingMessage();
       setIsThinking(true);
 
       const jobSearchKeywords = ['emploi', 'job', 'travail', 'offre', 'poste', 'recherche'];
@@ -123,7 +124,7 @@ export function useAIChat() {
 
       if (assistantMessageError) throw assistantMessageError;
 
-      addAssistantMessage(data.response, profile);
+      addAssistantMessage(data.response);
       
       setConversationContext(prev => ({
         ...prev,
