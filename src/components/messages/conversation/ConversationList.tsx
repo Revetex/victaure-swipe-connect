@@ -69,7 +69,7 @@ export function ConversationList({ className }: ConversationListProps) {
 
   return (
     <div className={cn("flex flex-col border-r", className)}>
-      <div className="p-4 border-b">
+      <div className="p-4 border-b pt-safe-top mt-16">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
