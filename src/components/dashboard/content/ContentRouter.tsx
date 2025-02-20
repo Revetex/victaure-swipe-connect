@@ -53,7 +53,7 @@ export function ContentRouter({
     case 16:
       return <NotesSection />;
     case 17:
-      return <JobsPage />; // Ajout de la page emploi
+      return <JobsPage />; 
     case 18:
       return <LotteryPage />;
     default:

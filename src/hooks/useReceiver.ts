@@ -1,16 +1,17 @@
+
 import { create } from 'zustand';
-import { Receiver } from '@/types/messages';
+import type { Receiver } from '@/types/messages';
 
 interface ReceiverState {
-  showConversation: boolean;
   receiver: Receiver | null;
-  setShowConversation: (show: boolean) => void;
+  showConversation: boolean;
   setReceiver: (receiver: Receiver | null) => void;
+  setShowConversation: (show: boolean) => void;
 }
 
 export const useReceiver = create<ReceiverState>((set) => ({
-  showConversation: false,
   receiver: null,
-  setShowConversation: (show) => set({ showConversation: show }),
+  showConversation: false,
   setReceiver: (receiver) => set({ receiver }),
+  setShowConversation: (show) => set({ showConversation: show }),
 }));
