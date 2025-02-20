@@ -64,7 +64,7 @@ export function DashboardMobileNav({
             </Button>
           )}
 
-          <div className="flex-1 flex justify-center">
+          <div className="flex-1 flex justify-center items-center">
             <Logo />
           </div>
         </div>
