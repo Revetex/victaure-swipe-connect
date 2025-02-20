@@ -1,4 +1,3 @@
-
 import { UserProfile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -9,19 +8,21 @@ import { AvatarControls } from "./avatar/AvatarControls";
 import { AvatarOverlay } from "./avatar/AvatarOverlay";
 import { AvatarLoader } from "./avatar/AvatarLoader";
 import { FullscreenAvatar } from "./avatar/FullscreenAvatar";
-
 interface VCardAvatarProps {
   profile: UserProfile;
   isEditing: boolean;
   setProfile: (profile: UserProfile) => void;
   setIsAvatarDeleted: (deleted: boolean) => void;
 }
-
-export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted }: VCardAvatarProps) {
+export function VCardAvatar({
+  profile,
+  isEditing,
+  setProfile,
+  setIsAvatarDeleted
+}: VCardAvatarProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [showFullscreen, setShowFullscreen] = useState(false);
-
   const validateImage = async (file: File) => {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
@@ -30,8 +31,7 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
       });
       return false;
     }
-
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const img = new Image();
       img.src = URL.createObjectURL(file);
       img.onload = () => {
@@ -47,15 +47,12 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
       };
     });
   };
-
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
     try {
       setIsLoading(true);
       setImageError(false);
-
       const isValid = await validateImage(file);
       if (!isValid) {
         setIsLoading(false);
@@ -66,29 +63,26 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
       if (profile.avatar_url) {
         const oldFileName = profile.avatar_url.split('/').pop();
         if (oldFileName) {
-          await supabase.storage
-            .from('vcards')
-            .remove([oldFileName]);
+          await supabase.storage.from('vcards').remove([oldFileName]);
         }
       }
-
       const fileExt = file.name.split('.').pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('vcards')
-        .upload(fileName, file);
-
+      const {
+        error: uploadError
+      } = await supabase.storage.from('vcards').upload(fileName, file);
       if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('vcards')
-        .getPublicUrl(fileName);
-
-      const updatedProfile = { ...profile, avatar_url: publicUrl };
+      const {
+        data: {
+          publicUrl
+        }
+      } = supabase.storage.from('vcards').getPublicUrl(fileName);
+      const updatedProfile = {
+        ...profile,
+        avatar_url: publicUrl
+      };
       setProfile(updatedProfile);
       setIsAvatarDeleted(false);
-      
       toast.success("Photo de profil mise à jour", {
         id: "avatar-update-success"
       });
@@ -102,24 +96,23 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
       setIsLoading(false);
     }
   };
-
   const handleDeleteAvatar = async () => {
     try {
       setIsLoading(true);
       if (profile.avatar_url) {
         const fileName = profile.avatar_url.split('/').pop();
         if (fileName) {
-          const { error } = await supabase.storage
-            .from('vcards')
-            .remove([fileName]);
-            
+          const {
+            error
+          } = await supabase.storage.from('vcards').remove([fileName]);
           if (error) throw error;
         }
-        
-        const updatedProfile = { ...profile, avatar_url: null };
+        const updatedProfile = {
+          ...profile,
+          avatar_url: null
+        };
         setProfile(updatedProfile);
         setIsAvatarDeleted(true);
-        
         toast.success("Photo de profil supprimée", {
           id: "avatar-delete-success"
         });
@@ -133,49 +126,16 @@ export function VCardAvatar({ profile, isEditing, setProfile, setIsAvatarDeleted
       setIsLoading(false);
     }
   };
-
   const handleImageError = () => {
     setImageError(true);
   };
-
-  return (
-    <>
+  return <>
       <div className="relative group shrink-0">
-        <div 
-          className={cn(
-            "relative cursor-pointer rounded-full overflow-hidden",
-            "w-32 h-32 sm:w-40 sm:h-40",
-            isLoading && "opacity-50"
-          )}
-          onClick={() => profile.avatar_url && setShowFullscreen(true)}
-        >
-          <AvatarImage
-            url={profile.avatar_url}
-            fullName={profile.full_name}
-            onError={handleImageError}
-            hasError={imageError}
-            isLoading={isLoading}
-          />
-          <AvatarOverlay showOverlay={!!profile.avatar_url && !isEditing} />
-          <AvatarLoader isLoading={isLoading} />
-        </div>
+        
 
-        {isEditing && !isLoading && (
-          <AvatarControls
-            hasAvatar={!!profile.avatar_url}
-            isLoading={isLoading}
-            onUpload={handleAvatarUpload}
-            onDelete={handleDeleteAvatar}
-          />
-        )}
+        {isEditing && !isLoading && <AvatarControls hasAvatar={!!profile.avatar_url} isLoading={isLoading} onUpload={handleAvatarUpload} onDelete={handleDeleteAvatar} />}
       </div>
 
-      <FullscreenAvatar
-        isOpen={showFullscreen}
-        onOpenChange={setShowFullscreen}
-        imageUrl={profile.avatar_url}
-        fullName={profile.full_name}
-      />
-    </>
-  );
+      <FullscreenAvatar isOpen={showFullscreen} onOpenChange={setShowFullscreen} imageUrl={profile.avatar_url} fullName={profile.full_name} />
+    </>;
 }
