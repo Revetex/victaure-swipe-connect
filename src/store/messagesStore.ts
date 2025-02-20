@@ -1,57 +1,27 @@
 
 import { create } from 'zustand';
-import { supabase } from '@/integrations/supabase/client';
 import { Message } from '@/types/messages';
 
 interface MessagesState {
-  conversations: { [key: string]: Message[] };
-  activeConversationId: string | null;
-  setActiveConversation: (id: string) => void;
-  addMessage: (conversationId: string, message: Message) => void;
-  loadConversation: (conversationId: string) => Promise<void>;
+  messages: Message[];
+  setMessages: (messages: Message[]) => void;
+  addMessage: (message: Message) => void;
+  updateMessage: (message: Message) => void;
+  deleteMessage: (messageId: string) => void;
 }
 
-export const useMessagesStore = create<MessagesState>((set, get) => ({
-  conversations: {},
-  activeConversationId: null,
-
-  setActiveConversation: (id: string) => {
-    set({ activeConversationId: id });
-    if (!get().conversations[id]) {
-      get().loadConversation(id);
-    }
-  },
-
-  addMessage: (conversationId: string, message: Message) => {
-    set((state) => ({
-      conversations: {
-        ...state.conversations,
-        [conversationId]: [
-          ...(state.conversations[conversationId] || []),
-          message,
-        ],
-      },
-    }));
-  },
-
-  loadConversation: async (conversationId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('messages')
-        .select('*')
-        .or(`sender_id.eq.${conversationId},receiver_id.eq.${conversationId}`)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-
-      set((state) => ({
-        conversations: {
-          ...state.conversations,
-          [conversationId]: data || [],
-        },
-      }));
-    } catch (error) {
-      console.error('Error loading conversation:', error);
-    }
-  },
+export const useMessagesStore = create<MessagesState>((set) => ({
+  messages: [],
+  setMessages: (messages) => set({ messages }),
+  addMessage: (message) => set((state) => ({ 
+    messages: [...state.messages, message] 
+  })),
+  updateMessage: (updatedMessage) => set((state) => ({
+    messages: state.messages.map(msg => 
+      msg.id === updatedMessage.id ? updatedMessage : msg
+    )
+  })),
+  deleteMessage: (messageId) => set((state) => ({
+    messages: state.messages.filter(msg => msg.id !== messageId)
+  })),
 }));
