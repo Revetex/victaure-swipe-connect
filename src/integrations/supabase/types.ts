@@ -4155,6 +4155,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_tools: {
         Row: {
           created_at: string | null
@@ -4259,6 +4280,12 @@ export type Database = {
       delete_ai_conversation: {
         Args: {
           p_user_id: string
+        }
+        Returns: undefined
+      }
+      delete_user_data: {
+        Args: {
+          user_id: string
         }
         Returns: undefined
       }
