@@ -11,6 +11,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { initializeStripe } from "@/hooks/useStripePayment";
 import type { StripeElementsOptions } from '@stripe/stripe-js';
 import { toast } from 'sonner';
+import { motion } from "framer-motion";
 
 const stripeElementsOptions: StripeElementsOptions = {
   mode: 'payment',
@@ -51,38 +52,53 @@ const Settings = () => {
   }, []);
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-screen">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-    </div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
   }
 
   if (!stripePromise) {
-    return <div className="flex flex-col items-center justify-center h-screen p-4">
-      <p className="text-center text-muted-foreground mb-4">
-        Le système de paiement n'a pas pu être initialisé.
-      </p>
-      <button 
-        onClick={() => window.location.reload()}
-        className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-      >
-        Réessayer
-      </button>
-    </div>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <p className="text-center text-muted-foreground mb-4">
+          Le système de paiement n'a pas pu être initialisé.
+        </p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+        >
+          Réessayer
+        </button>
+      </div>
+    );
   }
 
   return (
     <Elements stripe={stripePromise} options={stripeElementsOptions}>
-      <div className="min-h-screen w-full overflow-x-hidden">
-        <ScrollArea className="h-[calc(100vh-4rem)] w-full">
-          <div className="max-w-full px-4 py-6 mx-auto md:max-w-2xl">
-            <div className="space-y-4">
-              {settingsSections.map(({ id, Component }) => (
-                <div key={id} className="w-full overflow-x-hidden">
+      <div className="min-h-screen w-full overflow-x-hidden pt-20">
+        <ScrollArea className="h-[calc(100vh-5rem)] w-full">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-4xl mx-auto px-4 py-8 space-y-8"
+          >
+            {settingsSections.map(({ id, Component }, index) => (
+              <motion.div
+                key={id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="w-full"
+              >
+                <div className="glass-card">
                   <Component />
                 </div>
-              ))}
-            </div>
-          </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </ScrollArea>
       </div>
     </Elements>
