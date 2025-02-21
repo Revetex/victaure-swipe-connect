@@ -103,9 +103,6 @@ export function JobsPage() {
         <JobsSearch 
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-        />
-        
-        <JobsFilters
           selectedLocation={selectedLocation}
           selectedCompanyType={selectedCompanyType}
           sortOrder={sortOrder}
