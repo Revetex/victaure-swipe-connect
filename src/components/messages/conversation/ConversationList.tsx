@@ -5,11 +5,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNavigate } from "react-router-dom";
 import { ConversationSearch } from "./components/ConversationSearch";
 import { ConversationItem } from "./components/ConversationItem";
 import { useConversations } from "./hooks/useConversations";
 import { ProfilePreview } from "@/components/ProfilePreview";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface ConversationListProps {
   className?: string;
@@ -22,6 +26,8 @@ export function ConversationList({ className }: ConversationListProps) {
   const { conversations, handleDeleteConversation } = useConversations();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
+  const [friends, setFriends] = useState<any[]>([]);
+  const [loadingFriends, setLoadingFriends] = useState(false);
 
   const handleSelectConversation = (conversation: any) => {
     const receiver = {
@@ -33,13 +39,50 @@ export function ConversationList({ className }: ConversationListProps) {
     setShowConversation(true);
   };
 
-  const handleAddConversation = () => {
-    navigate('/feed/friends');
-  };
-
   const handleParticipantClick = (participant: any) => {
     setSelectedParticipant(participant);
     setShowProfilePreview(true);
+  };
+
+  const loadFriends = async () => {
+    try {
+      setLoadingFriends(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: friends, error } = await supabase
+        .from('friends')
+        .select(`
+          friend_id,
+          profiles:friend_id (
+            id,
+            full_name,
+            avatar_url,
+            online_status
+          )
+        `)
+        .eq('user_id', user.id)
+        .eq('status', 'accepted');
+
+      if (error) throw error;
+
+      setFriends(friends?.map(f => f.profiles) || []);
+    } catch (error) {
+      console.error('Error loading friends:', error);
+      toast.error("Impossible de charger vos amis");
+    } finally {
+      setLoadingFriends(false);
+    }
+  };
+
+  const startConversation = (friend: any) => {
+    const receiver = {
+      ...friend,
+      online_status: friend.online_status ? 'online' : 'offline'
+    };
+    
+    setReceiver(receiver);
+    setShowConversation(true);
   };
 
   return (
@@ -50,15 +93,52 @@ export function ConversationList({ className }: ConversationListProps) {
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
           />
-          <Button
-            size="icon"
-            variant="ghost"
-            className="shrink-0"
-            onClick={handleAddConversation}
-          >
-            <Plus className="h-4 w-4" />
-            <span className="sr-only">Nouvelle conversation</span>
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="shrink-0"
+                onClick={loadFriends}
+              >
+                <Plus className="h-4 w-4" />
+                <span className="sr-only">Nouvelle conversation</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0" align="end">
+              <div className="p-2">
+                <h3 className="font-medium px-2 py-1">Démarrer une conversation</h3>
+                {loadingFriends ? (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    Chargement...
+                  </div>
+                ) : friends.length === 0 ? (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    Aucun ami trouvé
+                  </div>
+                ) : (
+                  <ScrollArea className="h-72">
+                    {friends.map((friend) => (
+                      <Button
+                        key={friend.id}
+                        variant="ghost"
+                        className="w-full justify-start gap-2 p-2"
+                        onClick={() => startConversation(friend)}
+                      >
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={friend.avatar_url} />
+                          <AvatarFallback>
+                            {friend.full_name?.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="truncate">{friend.full_name}</span>
+                      </Button>
+                    ))}
+                  </ScrollArea>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
