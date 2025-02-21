@@ -1,12 +1,7 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import * as cheerio from "https://esm.sh/cheerio@1.0.0-rc.12";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.0';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4'
+import { load } from "https://esm.sh/cheerio@1.0.0-rc.12"
+import { corsHeaders } from '../_shared/cors.ts'
 
 interface JobData {
   title: string;
@@ -21,13 +16,13 @@ interface JobData {
 
 async function scrapeWelcomeToTheJungle(): Promise<JobData[]> {
   const jobs: JobData[] = [];
-  const url = 'https://www.welcometothejungle.com/fr/companies/ftle/jobs';
+  const url = 'https://www.welcometothejungle.com/fr/jobs';
 
   try {
     const response = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept': 'text/html',
       }
     });
 
@@ -36,19 +31,19 @@ async function scrapeWelcomeToTheJungle(): Promise<JobData[]> {
     }
 
     const html = await response.text();
-    const $ = cheerio.load(html);
+    const $ = load(html);
 
     $('[data-testid="job-card"]').each((_, element) => {
-      const description = $(element).find('[data-testid="job-card-description"]').text().trim();
+      const $element = $(element);
       const job: JobData = {
-        title: $(element).find('[data-testid="job-card-title"]').text().trim(),
-        company: 'FTLE',
-        location: $(element).find('[data-testid="job-card-location"]').text().trim(),
-        description,
-        url: 'https://www.welcometothejungle.com' + $(element).find('a').attr('href'),
+        title: $element.find('[data-testid="job-card-title"]').text().trim(),
+        company: 'WTTJ',
+        location: $element.find('[data-testid="job-card-location"]').text().trim(),
+        description: $element.find('[data-testid="job-card-description"]').text().trim(),
+        url: 'https://www.welcometothejungle.com' + $element.find('a').attr('href'),
         source_platform: 'welcometothejungle',
-        skills: extractSkills(description),
-        posted_at: new Date().toISOString()
+        posted_at: new Date().toISOString(),
+        skills: extractSkills($element.find('[data-testid="job-card-description"]').text())
       };
 
       if (job.title) {
@@ -56,51 +51,7 @@ async function scrapeWelcomeToTheJungle(): Promise<JobData[]> {
       }
     });
   } catch (error) {
-    console.error('Erreur lors du scraping:', error);
-  }
-
-  return jobs;
-}
-
-async function scrapeLinkedIn(): Promise<JobData[]> {
-  const jobs: JobData[] = [];
-  const url = 'https://www.linkedin.com/jobs/search/?location=Quebec';
-
-  try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept': 'text/html',
-        'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const html = await response.text();
-    const $ = cheerio.load(html);
-
-    $('.job-search-card').each((_, element) => {
-      const description = $(element).find('.job-search-card__description').text().trim();
-      const job: JobData = {
-        title: $(element).find('.job-search-card__title').text().trim(),
-        company: $(element).find('.job-search-card__company-name').text().trim(),
-        location: $(element).find('.job-search-card__location').text().trim(),
-        description,
-        url: $(element).find('a').attr('href') || '',
-        source_platform: 'linkedin',
-        skills: extractSkills(description),
-        posted_at: new Date().toISOString()
-      };
-
-      if (job.title && job.company) {
-        jobs.push(job);
-      }
-    });
-  } catch (error) {
-    console.error('Erreur lors du scraping LinkedIn:', error);
+    console.error('Erreur lors du scraping WTTJ:', error);
   }
 
   return jobs;
@@ -118,7 +69,7 @@ function extractSkills(text: string): string[] {
   );
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -126,14 +77,9 @@ serve(async (req) => {
   try {
     console.log('Starting job scraping...');
     
-    // Collecter les emplois de différentes sources
-    const [wttjJobs, linkedInJobs] = await Promise.all([
-      scrapeWelcomeToTheJungle(),
-      scrapeLinkedIn()
-    ]);
-
-    const allJobs = [...wttjJobs, ...linkedInJobs];
-    console.log(`Found ${allJobs.length} jobs in total`);
+    // Scraper les emplois
+    const wttjJobs = await scrapeWelcomeToTheJungle();
+    console.log(`Found ${wttjJobs.length} jobs from WTTJ`);
 
     // Connexion à Supabase
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -141,7 +87,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Sauvegarder les emplois
-    for (const job of allJobs) {
+    for (const job of wttjJobs) {
       const { error } = await supabase
         .from('scraped_jobs')
         .upsert({
@@ -166,7 +112,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        count: allJobs.length
+        count: wttjJobs.length
       }),
       { 
         headers: { 
