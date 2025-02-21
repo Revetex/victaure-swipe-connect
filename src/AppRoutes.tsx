@@ -1,9 +1,9 @@
 
-import { Routes, Route, RouteProps } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { Feed } from "./components/feed/Feed";
 import { Messages } from "./components/Messages";
 import { Marketplace } from "./components/marketplace/Marketplace";
-import { Settings } from "./components/Settings";
+import Settings from "./components/Settings";
 import { Dashboard } from "./components/Dashboard";
 import { JobsPage } from "./components/jobs/JobsPage";
 import { NotesPage } from "./components/tools/NotesPage";
