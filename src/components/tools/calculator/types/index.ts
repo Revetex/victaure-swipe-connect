@@ -2,7 +2,7 @@
 export type TransactionType = 'escrow' | 'auction' | 'fixed';
 export type FilterOrder = 'asc' | 'desc';
 
-export type ConversionType = 'currency' | 'unit' | 'time';
+export type ConversionType = 'currency' | 'crypto' | 'length' | 'weight' | 'temperature' | 'unit' | 'time';
 
 export interface Rate {
   code: string;

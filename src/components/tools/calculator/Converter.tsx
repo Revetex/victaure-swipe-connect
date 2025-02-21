@@ -78,8 +78,21 @@ export function Converter({
           ["f", "Fahrenheit"],
           ["k", "Kelvin"],
         ];
+      case "time":
+        return [
+          ["s", "Secondes"],
+          ["min", "Minutes"],
+          ["h", "Heures"],
+          ["d", "Jours"],
+        ];
+      case "unit":
       default:
-        return [];
+        return [
+          ["u", "Unités"],
+          ["dz", "Douzaines"],
+          ["c", "Centaines"],
+          ["k", "Milliers"],
+        ];
     }
   };
 
@@ -95,6 +108,8 @@ export function Converter({
           <SelectItem value="length">Longueur</SelectItem>
           <SelectItem value="weight">Poids</SelectItem>
           <SelectItem value="temperature">Température</SelectItem>
+          <SelectItem value="time">Temps</SelectItem>
+          <SelectItem value="unit">Unités</SelectItem>
         </SelectContent>
       </Select>
 
