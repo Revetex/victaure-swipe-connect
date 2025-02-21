@@ -77,7 +77,7 @@ export function ConnectionsSection() {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-4 max-w-3xl mx-auto px-4 sm:px-6 py-8"
     >
-      <Card className="p-6">
+      <Card className="p-6 shadow-lg bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <UserPlus2 className="h-6 w-6 text-primary" />
@@ -100,7 +100,7 @@ export function ConnectionsSection() {
               placeholder="Rechercher une connexion..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-background/50 border-primary/20"
             />
             <Users2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           </div>
@@ -113,7 +113,7 @@ export function ConnectionsSection() {
           </TabsList>
 
           <TabsContent value="all" className="mt-0">
-            <ScrollArea className="h-[500px]">
+            <ScrollArea className="h-[500px] rounded-lg bg-card/40 p-4">
               {filteredFriends.length > 0 ? (
                 <FriendList 
                   friends={filteredFriends}
@@ -127,7 +127,7 @@ export function ConnectionsSection() {
           </TabsContent>
 
           <TabsContent value="online" className="mt-0">
-            <ScrollArea className="h-[500px]">
+            <ScrollArea className="h-[500px] rounded-lg bg-card/40 p-4">
               {filteredFriends.filter(f => f.online_status).length > 0 ? (
                 <FriendList 
                   friends={filteredFriends.filter(f => f.online_status)}
