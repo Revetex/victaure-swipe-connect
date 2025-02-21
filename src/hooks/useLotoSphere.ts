@@ -7,48 +7,69 @@ import { toast } from "sonner";
 export function useLotoSphere() {
   const queryClient = useQueryClient();
 
-  const { data: currentDraw, isLoading: isLoadingDraw } = useQuery({
+  const { data: currentDraw, isLoading: isLoadingDraw, error: drawError } = useQuery({
     queryKey: ["currentDraw"],
     queryFn: async () => {
+      console.log("Fetching current draw...");
       const { data, error } = await supabase
         .from("loto_draws")
         .select("*")
         .eq("status", "pending")
         .order("scheduled_for", { ascending: true })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching draw:", error);
+        throw error;
+      }
+      
+      console.log("Current draw data:", data);
       return data as LotoDraw;
-    }
+    },
   });
 
-  const { data: myTickets = [], isLoading: isLoadingTickets } = useQuery({
+  const { data: myTickets = [], isLoading: isLoadingTickets, error: ticketsError } = useQuery({
     queryKey: ["myTickets", currentDraw?.id],
     queryFn: async () => {
+      console.log("Fetching tickets for draw:", currentDraw?.id);
       if (!currentDraw?.id) return [];
       
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
       const { data, error } = await supabase
         .from("loto_tickets")
         .select("*")
-        .eq("draw_id", currentDraw.id);
+        .eq("draw_id", currentDraw.id)
+        .eq("user_id", user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching tickets:", error);
+        throw error;
+      }
+
+      console.log("Tickets data:", data);
       return data as LotoTicket[];
     },
     enabled: !!currentDraw?.id
   });
 
-  const { data: numberStats = {} } = useQuery({
+  const { data: numberStats = {}, error: statsError } = useQuery({
     queryKey: ["numberStats"],
     queryFn: async () => {
+      console.log("Fetching number stats...");
       const { data, error } = await supabase
         .from("loto_number_stats")
         .select("*");
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching stats:", error);
+        throw error;
+      }
       
-      return data.reduce((acc, stat) => {
+      console.log("Number stats data:", data);
+      return data.reduce((acc: any, stat) => {
         acc[stat.number] = stat;
         return acc;
       }, {});
@@ -59,14 +80,14 @@ export function useLotoSphere() {
     mutationFn: async ({ numbers, color }: { numbers: number[]; color: string }) => {
       if (!currentDraw) throw new Error("Pas de tirage en cours");
 
-      const { data: profile } = await supabase.auth.getUser();
-      if (!profile.user) throw new Error("Vous devez être connecté");
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Vous devez être connecté");
 
       // Vérifier le portefeuille
       const { data: wallet, error: walletError } = await supabase
         .from("user_wallets")
         .select("balance")
-        .eq("user_id", profile.user.id)
+        .eq("user_id", user.id)
         .single();
 
       if (walletError) throw walletError;
@@ -78,7 +99,7 @@ export function useLotoSphere() {
       const { data: ticket, error: ticketError } = await supabase
         .from("loto_tickets")
         .insert([{
-          user_id: profile.user.id,
+          user_id: user.id,
           draw_id: currentDraw.id,
           selected_numbers: numbers,
           bonus_color: color,
@@ -93,7 +114,7 @@ export function useLotoSphere() {
       const { error: updateError } = await supabase
         .from("user_wallets")
         .update({ balance: wallet.balance - 5 })
-        .eq("user_id", profile.user.id);
+        .eq("user_id", user.id);
 
       if (updateError) throw updateError;
 
@@ -103,17 +124,17 @@ export function useLotoSphere() {
       queryClient.invalidateQueries({ queryKey: ["myTickets"] });
       queryClient.invalidateQueries({ queryKey: ["userWallet"] });
       toast.success("Ticket acheté avec succès !");
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
     }
   });
+
+  const error = drawError || ticketsError || statsError;
 
   return {
     currentDraw,
     myTickets,
     numberStats,
     isLoading: isLoadingDraw || isLoadingTickets,
+    error,
     buyTicket: buyTicketMutation.mutate
   };
 }

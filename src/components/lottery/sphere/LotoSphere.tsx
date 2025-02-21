@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { LotoHistory } from "./LotoHistory";
+import { Loader } from "@/components/ui/loader";
 
 export function LotoSphere({
   onPaymentRequested
@@ -26,8 +27,15 @@ export function LotoSphere({
     myTickets,
     numberStats,
     isLoading,
-    buyTicket
+    buyTicket,
+    error
   } = useLotoSphere();
+
+  useEffect(() => {
+    if (error) {
+      toast.error("Erreur lors du chargement: " + error.message);
+    }
+  }, [error]);
 
   const handleNumberSelect = (number: number) => {
     if (selectedNumbers.includes(number)) {
@@ -54,7 +62,11 @@ export function LotoSphere({
       setSelectedNumbers([]);
       setSelectedColor(null);
     } catch (error) {
-      toast.error("Erreur lors de l'achat du ticket");
+      if (error.message.includes("Solde insuffisant")) {
+        onPaymentRequested?.();
+      } else {
+        toast.error("Erreur lors de l'achat du ticket");
+      }
     }
   };
 
@@ -75,8 +87,20 @@ export function LotoSphere({
     class: "bg-purple-500"
   }];
 
-  if (isLoading || !currentDraw) {
-    return <div>Chargement...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[200px]">
+        <Loader className="w-8 h-8" />
+      </div>
+    );
+  }
+
+  if (!currentDraw) {
+    return (
+      <div className="text-center p-4">
+        <p>Aucun tirage en cours. Revenez plus tard.</p>
+      </div>
+    );
   }
 
   const nextDrawTime = new Date(currentDraw.scheduled_for);
