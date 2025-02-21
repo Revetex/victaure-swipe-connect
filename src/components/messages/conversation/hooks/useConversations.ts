@@ -103,27 +103,43 @@ export function useConversations() {
       if (conversationsData) {
         const formattedConversations: Conversation[] = conversationsData
           .map(conv => {
-            if (!conv.participant) return null;
+            const participant = conv.participant as unknown as {
+              id: string;
+              full_name: string;
+              avatar_url: string | null;
+              email: string | null;
+              role: string;
+              bio: string | null;
+              phone: string | null;
+              city: string | null;
+              state: string | null;
+              country: string | null;
+              skills: string[];
+              online_status: boolean;
+              last_seen: string | null;
+            };
+
+            if (!participant) return null;
 
             let role: UserRole = 'professional';
-            if (conv.participant.role === 'business' || conv.participant.role === 'admin') {
-              role = conv.participant.role as UserRole;
+            if (participant.role === 'business' || participant.role === 'admin') {
+              role = participant.role as UserRole;
             }
 
             const transformedParticipant: ConversationParticipant = {
-              id: conv.participant.id,
-              full_name: conv.participant.full_name || '',
-              avatar_url: conv.participant.avatar_url,
-              email: conv.participant.email,
+              id: participant.id,
+              full_name: participant.full_name || '',
+              avatar_url: participant.avatar_url,
+              email: participant.email,
               role: role,
-              bio: conv.participant.bio,
-              phone: conv.participant.phone,
-              city: conv.participant.city,
-              state: conv.participant.state,
-              country: conv.participant.country,
-              skills: conv.participant.skills || [],
-              online_status: conv.participant.online_status,
-              last_seen: conv.participant.last_seen
+              bio: participant.bio,
+              phone: participant.phone,
+              city: participant.city,
+              state: participant.state,
+              country: participant.country,
+              skills: participant.skills || [],
+              online_status: participant.online_status,
+              last_seen: participant.last_seen
             };
 
             return {
