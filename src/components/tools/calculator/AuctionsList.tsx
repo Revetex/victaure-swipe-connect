@@ -20,6 +20,13 @@ export function AuctionsList({
   onCategoryFilterChange,
   onPriceFilterChange
 }: AuctionsListProps) {
+  const handlePriceFilterChange = (value: string) => {
+    onPriceFilterChange({
+      field: 'price',
+      direction: value as 'asc' | 'desc'
+    });
+  };
+
   return (
     <div className="border-t pt-6">
       <div className="flex items-center justify-between mb-6">
@@ -45,8 +52,8 @@ export function AuctionsList({
           </Select>
 
           <Select 
-            value={priceFilter} 
-            onValueChange={onPriceFilterChange}
+            value={priceFilter.direction} 
+            onValueChange={handlePriceFilterChange}
           >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Trier par prix" />
