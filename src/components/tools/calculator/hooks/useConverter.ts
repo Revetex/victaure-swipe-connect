@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { useExchangeRates } from './useExchangeRates';
 import type { ConversionType } from '../types';
 import { toast } from 'sonner';
@@ -18,28 +19,44 @@ export function useConverter() {
       return;
     }
 
+    if (loading) {
+      toast.error("Chargement des taux de change en cours...");
+      return;
+    }
+
+    if (error) {
+      toast.error("Erreur lors de la conversion. Veuillez réessayer.");
+      return;
+    }
+
     const value = parseFloat(conversionValue);
     let result: number | string = 0;
 
-    switch (conversionType) {
-      case "currency":
-      case "crypto":
-        if (rates && rates.rates) {
+    try {
+      switch (conversionType) {
+        case "currency":
+        case "crypto":
+          if (!rates?.rates) {
+            throw new Error("Taux de change non disponibles");
+          }
           result = convertAmount(value, fromUnit, toUnit);
-        }
-        break;
-      case "temperature":
-        result = convertTemperature(value, fromUnit as 'c' | 'f' | 'k', toUnit as 'c' | 'f' | 'k');
-        break;
-      case "length":
-      case "weight":
-      case "time":
-      case "unit":
-        result = convertUnit(value, fromUnit, toUnit, conversionType);
-        break;
-    }
+          break;
+        case "temperature":
+          result = convertTemperature(value, fromUnit as 'c' | 'f' | 'k', toUnit as 'c' | 'f' | 'k');
+          break;
+        case "length":
+        case "weight":
+        case "time":
+        case "unit":
+          result = convertUnit(value, fromUnit, toUnit, conversionType);
+          break;
+      }
 
-    setConversionResult(`${value} ${fromUnit} = ${result} ${toUnit}`);
+      setConversionResult(`${value} ${fromUnit} = ${result} ${toUnit}`);
+    } catch (err) {
+      console.error('Conversion error:', err);
+      toast.error("Erreur lors de la conversion. Veuillez réessayer.");
+    }
   };
 
   return {
@@ -82,9 +99,9 @@ function convertUnit(value: number, from: string, to: string, type: ConversionTy
     weight: { kg: 1, g: 1000, mg: 1000000, lb: 2.20462, oz: 35.274 },
     time: { s: 1, min: 1/60, h: 1/3600, d: 1/86400 },
     unit: { u: 1, dz: 1/12, c: 1/100, k: 1/1000 },
-    currency: {}, // Géré séparément
-    crypto: {}, // Géré séparément
-    temperature: {} // Géré séparément
+    currency: {}, // Géré séparément via useExchangeRates
+    crypto: {}, // Géré séparément via useExchangeRates
+    temperature: {} // Géré séparément via convertTemperature
   };
 
   const rates = conversionRates[type];
