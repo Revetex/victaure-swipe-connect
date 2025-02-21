@@ -95,6 +95,15 @@ export function useLotoSphere() {
         throw new Error("Solde insuffisant");
       }
 
+      // Mise à jour du solde et de la cagnotte
+      const { error: updateError } = await supabase.rpc('handle_loto_purchase', {
+        user_id: user.id,
+        draw_id: currentDraw.id,
+        ticket_price: 5
+      });
+
+      if (updateError) throw updateError;
+
       // Créer le ticket
       const { data: ticket, error: ticketError } = await supabase
         .from("loto_tickets")
@@ -109,15 +118,6 @@ export function useLotoSphere() {
         .single();
 
       if (ticketError) throw ticketError;
-
-      // Mettre à jour le portefeuille et la cagnotte
-      const updates = await supabase.rpc('process_loto_ticket_purchase', {
-        p_user_id: user.id,
-        p_amount: 5,
-        p_draw_id: currentDraw.id
-      });
-
-      if (updates.error) throw updates.error;
 
       return ticket;
     },
