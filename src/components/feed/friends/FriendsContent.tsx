@@ -22,7 +22,7 @@ export function FriendsContent() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-background">
+    <div className="min-h-[calc(100vh-4rem)] bg-background relative z-0">
       <div className="container mx-auto px-4 py-20 max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -31,7 +31,7 @@ export function FriendsContent() {
           className="space-y-8"
         >
           <Card className={cn(
-            "bg-card/50 backdrop-blur-sm p-6",
+            "bg-card/50 backdrop-blur-sm p-6 relative",
             "border rounded-xl shadow-lg"
           )}>
             <div className="flex items-center gap-3 mb-6">
@@ -41,7 +41,7 @@ export function FriendsContent() {
               </h2>
             </div>
             
-            <div className="relative">
+            <div className="relative z-50">
               <ProfileSearch 
                 onSelect={handleProfileSelect}
                 placeholder="Rechercher par nom, compétences, location..."
@@ -55,7 +55,7 @@ export function FriendsContent() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
-            className="space-y-6"
+            className="space-y-6 relative z-0"
           >
             <ConnectionsSection />
           </motion.div>
