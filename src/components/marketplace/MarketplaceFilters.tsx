@@ -1,152 +1,71 @@
 
-import { motion } from "framer-motion";
-import { MapPin, ArrowUpDown, DollarSign, Star, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import type { MarketplaceFilters } from "@/types/marketplace";
+import type { MarketplaceFilters as FiltersType } from "@/types/marketplace";
 
 interface MarketplaceFiltersProps {
-  filters: MarketplaceFilters;
-  onFiltersChange: (filters: MarketplaceFilters) => void;
-  onReset: () => void;
+  filters: FiltersType;
+  onFiltersChange: (filters: FiltersType) => void;
 }
 
-export function MarketplaceFilters({
-  filters,
-  onFiltersChange,
-  onReset
-}: MarketplaceFiltersProps) {
-  const handlePriceRangeChange = (value: number[]) => {
-    onFiltersChange({
-      ...filters,
-      priceRange: [value[0], value[1]]
-    });
-  };
-
+export function MarketplaceFilters({ filters, onFiltersChange }: MarketplaceFiltersProps) {
   return (
-    <motion.div
-      variants={{
-        hidden: { y: 20, opacity: 0 },
-        visible: { y: 0, opacity: 1 }
-      }}
-      className="bg-card/50 backdrop-blur-sm border rounded-lg p-4 space-y-4"
-    >
-      <div className="flex flex-wrap gap-4">
-        <div className="w-full md:w-auto">
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <div>
+          <Label>Fourchette de prix</Label>
+          <Slider
+            defaultValue={filters.priceRange}
+            max={10000}
+            step={100}
+            onValueChange={(value) => onFiltersChange({ ...filters, priceRange: value as [number, number] })}
+          />
+          <div className="flex justify-between mt-2">
+            <span className="text-sm text-muted-foreground">{filters.priceRange[0]} CAD</span>
+            <span className="text-sm text-muted-foreground">{filters.priceRange[1]} CAD</span>
+          </div>
+        </div>
+
+        <div>
+          <Label>Trier par</Label>
           <Select 
-            value={filters.location} 
-            onValueChange={(value) => onFiltersChange({ ...filters, location: value })}
+            value={filters.sortBy} 
+            onValueChange={(value: 'price' | 'date' | 'rating' | 'views') => 
+              onFiltersChange({ ...filters, sortBy: value })
+            }
           >
-            <SelectTrigger className="w-[200px]">
-              <MapPin className="h-4 w-4 text-muted-foreground mr-2" />
-              <SelectValue placeholder="Localisation" />
+            <SelectTrigger>
+              <SelectValue placeholder="Choisir un tri" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Toutes les localisations</SelectItem>
-              <SelectItem value="montreal">Montréal</SelectItem>
-              <SelectItem value="quebec">Québec</SelectItem>
-              <SelectItem value="toronto">Toronto</SelectItem>
+              <SelectItem value="date">Date</SelectItem>
+              <SelectItem value="price">Prix</SelectItem>
+              <SelectItem value="rating">Évaluation</SelectItem>
+              <SelectItem value="views">Vues</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <div className="w-full md:w-auto">
+        <div>
+          <Label>Ordre</Label>
           <Select 
-            value={filters.condition} 
-            onValueChange={(value) => onFiltersChange({ ...filters, condition: value })}
+            value={filters.sortOrder} 
+            onValueChange={(value: 'asc' | 'desc') => 
+              onFiltersChange({ ...filters, sortOrder: value })
+            }
           >
-            <SelectTrigger className="w-[200px]">
-              <Filter className="h-4 w-4 text-muted-foreground mr-2" />
-              <SelectValue placeholder="État" />
+            <SelectTrigger>
+              <SelectValue placeholder="Choisir l'ordre" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tous les états</SelectItem>
-              <SelectItem value="new">Neuf</SelectItem>
-              <SelectItem value="like-new">Comme neuf</SelectItem>
-              <SelectItem value="good">Bon état</SelectItem>
-              <SelectItem value="fair">État correct</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="w-full md:w-auto">
-          <Select
-            value={String(filters.rating)}
-            onValueChange={(value) => onFiltersChange({ ...filters, rating: Number(value) })}
-          >
-            <SelectTrigger className="w-[200px]">
-              <Star className="h-4 w-4 text-muted-foreground mr-2" />
-              <SelectValue placeholder="Note minimum" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">Toutes les notes</SelectItem>
-              <SelectItem value="4">4 étoiles et plus</SelectItem>
-              <SelectItem value="3">3 étoiles et plus</SelectItem>
-              <SelectItem value="2">2 étoiles et plus</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="w-full md:w-auto">
-          <Select
-            value={`${filters.sortBy}-${filters.sortOrder}`}
-            onValueChange={(value) => {
-              const [sortBy, sortOrder] = value.split('-') as [MarketplaceFilters['sortBy'], MarketplaceFilters['sortOrder']];
-              onFiltersChange({ ...filters, sortBy, sortOrder });
-            }}
-          >
-            <SelectTrigger className="w-[200px]">
-              <ArrowUpDown className="h-4 w-4 text-muted-foreground mr-2" />
-              <SelectValue placeholder="Trier par" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="date-desc">Plus récents</SelectItem>
-              <SelectItem value="date-asc">Plus anciens</SelectItem>
-              <SelectItem value="price-asc">Prix croissant</SelectItem>
-              <SelectItem value="price-desc">Prix décroissant</SelectItem>
-              <SelectItem value="rating-desc">Meilleures notes</SelectItem>
-              <SelectItem value="views-desc">Plus populaires</SelectItem>
+              <SelectItem value="asc">Croissant</SelectItem>
+              <SelectItem value="desc">Décroissant</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
-
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="text-sm font-medium flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-            Fourchette de prix
-          </label>
-          <span className="text-sm text-muted-foreground">
-            {filters.priceRange[0].toLocaleString()}$ - {filters.priceRange[1].toLocaleString()}$
-          </span>
-        </div>
-        <Slider
-          min={0}
-          max={10000}
-          step={100}
-          value={[filters.priceRange[0], filters.priceRange[1]]}
-          onValueChange={handlePriceRangeChange}
-          className="w-full"
-        />
-      </div>
-
-      <div className="flex justify-end">
-        <Button
-          variant="outline"
-          onClick={onReset}
-          className="text-sm"
-        >
-          Réinitialiser les filtres
-        </Button>
-      </div>
-    </motion.div>
+    </div>
   );
 }

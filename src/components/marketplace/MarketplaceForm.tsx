@@ -1,4 +1,4 @@
-
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,8 @@ import { ImageUpload } from "./form/ImageUpload";
 import { ListingDetails } from "./form/ListingDetails";
 import { ListingSelectors } from "./form/ListingSelectors";
 import { useListingImages } from "./hooks/useListingImages";
+import { toast } from "sonner";
+import type { ListingType } from "@/types/marketplace";
 
 export function MarketplaceForm() {
   const { toast } = useToast();

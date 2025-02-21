@@ -1,4 +1,3 @@
-
 import { UserProfile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -64,7 +63,6 @@ export function VCardAvatar({
         return;
       }
 
-      // Si une ancienne image existe, la supprimer d'abord
       if (profile.avatar_url) {
         const oldFileName = profile.avatar_url.split('/').pop();
         if (oldFileName) {
@@ -145,14 +143,13 @@ export function VCardAvatar({
 
   return (
     <>
-      <div className="relative group shrink-0">
+      <div className="relative group shrink-0" onClick={() => profile.avatar_url && setShowFullscreen(true)}>
         <AvatarImage
           url={profile.avatar_url}
           fullName={profile.full_name}
           onError={handleImageError}
           hasError={imageError}
           isLoading={isLoading}
-          onClick={() => profile.avatar_url && setShowFullscreen(true)}
         />
         
         <AvatarLoader isLoading={isLoading} />

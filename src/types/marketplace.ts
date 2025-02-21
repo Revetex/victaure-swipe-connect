@@ -1,11 +1,13 @@
 
+export type ListingType = 'vente' | 'location' | 'service';
+
 export interface MarketplaceListing {
   id: string;
   title: string;
   description: string | null;
   price: number;
   currency: string;
-  type: 'vente' | 'location' | 'service';
+  type: ListingType;
   status: string;
   seller_id: string;
   created_at: string;
