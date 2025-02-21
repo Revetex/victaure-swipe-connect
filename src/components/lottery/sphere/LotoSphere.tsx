@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
@@ -11,6 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useLotoSphere } from "@/hooks/useLotoSphere";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function LotoSphere({
   onPaymentRequested
@@ -100,19 +100,21 @@ export function LotoSphere({
           <h3 className="font-semibold text-sm sm:text-base mb-3 sm:mb-4">
             Mes tickets pour ce tirage ({myTickets.length})
           </h3>
-          <div className="space-y-2">
-            {myTickets.map((ticket) => (
-              <div key={ticket.id} className="flex items-center justify-between p-2 bg-black/20 rounded">
-                <div className="flex items-center space-x-2">
-                  <Ticket className="h-4 w-4" />
-                  <span>{ticket.selected_numbers.join(", ")}</span>
+          <ScrollArea className="h-[150px] sm:h-[200px]">
+            <div className="space-y-2">
+              {myTickets.map((ticket) => (
+                <div key={ticket.id} className="flex items-center justify-between p-2 bg-black/20 rounded">
+                  <div className="flex items-center space-x-2">
+                    <Ticket className="h-4 w-4" />
+                    <span className="text-sm">{ticket.selected_numbers.join(", ")}</span>
+                  </div>
+                  <Badge className={`${colors.find(c => c.name.toLowerCase() === ticket.bonus_color.toLowerCase())?.class}`}>
+                    {ticket.bonus_color}
+                  </Badge>
                 </div>
-                <Badge className={`${colors.find(c => c.name.toLowerCase() === ticket.bonus_color.toLowerCase())?.class}`}>
-                  {ticket.bonus_color}
-                </Badge>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollArea>
         </Card>
 
         <Card className="p-4">
@@ -151,7 +153,7 @@ export function LotoSphere({
               {numberStats[number]?.times_drawn > 0 && (
                 <motion.div 
                   className="absolute -top-1 -right-1 h-2 w-2 bg-yellow-500 rounded-full"
-                  animate={{ scale: [1, 1, 1] }}
+                  animate={{ scale: [1, 1.2, 1] }}
                   transition={{ repeat: Infinity, duration: 2 }}
                 />
               )}
@@ -181,38 +183,7 @@ export function LotoSphere({
         </div>
       </Card>
 
-      <div className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'grid-cols-2 gap-4'}`}>
-        <Card className="p-3 sm:p-4">
-          <h3 className="font-semibold text-sm sm:text-base mb-2 flex items-center gap-2">
-            <Gift className="h-4 w-4" />
-            Événements en cours
-          </h3>
-          <ul className="space-y-2 text-xs sm:text-sm">
-            <li className="flex items-center gap-2">
-              <Badge variant="outline" className="text-green-500">
-                -50%
-              </Badge>
-              Lundi Magique: -50% sur les tickets
-            </li>
-            <li className="flex items-center gap-2">
-              <Badge variant="outline" className="text-yellow-500">
-                ×2
-              </Badge>
-              Mercredi: Gains ×2
-            </li>
-          </ul>
-        </Card>
-
-        <Card className="p-3 sm:p-4">
-          <h3 className="font-semibold text-sm sm:text-base mb-2 flex items-center gap-2">
-            <History className="h-4 w-4" />
-            Derniers tirages
-          </h3>
-          <div className="text-xs sm:text-sm opacity-70">
-            Prochain tirage dans {format(nextDrawTime, "mm 'minutes'")}
-          </div>
-        </Card>
-      </div>
+      <LotoHistory />
 
       <Button
         onClick={handlePlay}
