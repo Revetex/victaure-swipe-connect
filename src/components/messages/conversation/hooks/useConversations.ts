@@ -4,9 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
-type UserRole = 'professional' | 'business' | 'admin';
+export type UserRole = 'professional' | 'business' | 'admin';
 
-interface ConversationParticipant {
+export interface ConversationParticipant {
   id: string;
   full_name: string;
   avatar_url?: string | null;
@@ -25,8 +25,8 @@ interface ConversationParticipant {
 export interface Conversation {
   id: string;
   participant: ConversationParticipant;
-  last_message?: string;
-  last_message_time?: string;
+  last_message: string;
+  last_message_time: string;
   participant1_id: string;
   participant2_id: string;
 }
@@ -62,41 +62,42 @@ export function useConversations() {
 
         if (participantsError) throw participantsError;
 
-        const formattedConversations: Conversation[] = conversationsData.map(conv => {
-          const participant = participantsData?.find(p => p.id === conv.participant2_id);
-          if (!participant) return null;
+        const formattedConversations: Conversation[] = conversationsData
+          .map(conv => {
+            const participant = participantsData?.find(p => p.id === conv.participant2_id);
+            if (!participant) return null;
 
-          // Ensure role is one of the allowed values
-          let role: UserRole = 'professional';
-          if (participant.role === 'business' || participant.role === 'admin') {
-            role = participant.role;
-          }
+            let role: UserRole = 'professional';
+            if (participant.role === 'business' || participant.role === 'admin') {
+              role = participant.role;
+            }
 
-          const transformedParticipant: ConversationParticipant = {
-            id: participant.id,
-            full_name: participant.full_name,
-            avatar_url: participant.avatar_url,
-            email: participant.email,
-            role: role,
-            bio: participant.bio,
-            phone: participant.phone,
-            city: participant.city,
-            state: participant.state,
-            country: participant.country,
-            skills: participant.skills || [],
-            online_status: participant.online_status,
-            last_seen: participant.last_seen
-          };
+            const transformedParticipant: ConversationParticipant = {
+              id: participant.id,
+              full_name: participant.full_name,
+              avatar_url: participant.avatar_url,
+              email: participant.email,
+              role: role,
+              bio: participant.bio,
+              phone: participant.phone,
+              city: participant.city,
+              state: participant.state,
+              country: participant.country,
+              skills: participant.skills || [],
+              online_status: participant.online_status,
+              last_seen: participant.last_seen
+            };
 
-          return {
-            id: conv.id,
-            participant1_id: conv.participant1_id,
-            participant2_id: conv.participant2_id,
-            last_message: conv.last_message || '',
-            last_message_time: conv.last_message_time || new Date().toISOString(),
-            participant: transformedParticipant
-          };
-        }).filter((conv): conv is Conversation => conv !== null);
+            return {
+              id: conv.id,
+              participant1_id: conv.participant1_id,
+              participant2_id: conv.participant2_id,
+              last_message: conv.last_message || '',
+              last_message_time: conv.last_message_time || new Date().toISOString(),
+              participant: transformedParticipant
+            };
+          })
+          .filter((conv): conv is Conversation => conv !== null);
 
         setConversations(formattedConversations);
       }

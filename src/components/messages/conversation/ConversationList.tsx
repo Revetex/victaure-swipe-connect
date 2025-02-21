@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { ConversationSearch } from "./components/ConversationSearch";
 import { ConversationItem } from "./components/ConversationItem";
-import { useConversations, type Conversation } from "./hooks/useConversations";
+import { useConversations, type Conversation, type ConversationParticipant } from "./hooks/useConversations";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { NewConversationPopover } from "./components/NewConversationPopover";
 import { useFriendsList } from "./hooks/useFriendsList";
@@ -14,23 +14,6 @@ import type { UserProfile } from "@/types/profile";
 
 interface ConversationListProps {
   className?: string;
-}
-
-interface ConversationParticipant {
-  id: string;
-  full_name: string;
-  avatar_url?: string | null;
-  email?: string | null;
-  role?: 'professional' | 'business' | 'admin';
-  bio?: string | null;
-  phone?: string | null;
-  city?: string | null;
-  state?: string | null;
-  country?: string | null;
-  skills?: string[];
-  online_status?: boolean;
-  last_seen?: string | null;
-  participant2_id?: string;
 }
 
 export function ConversationList({ className }: ConversationListProps) {
@@ -47,7 +30,7 @@ export function ConversationList({ className }: ConversationListProps) {
       full_name: participant.full_name,
       avatar_url: participant.avatar_url || null,
       email: participant.email || null,
-      role: participant.role || 'professional',
+      role: participant.role,
       bio: participant.bio || null,
       phone: participant.phone || null,
       city: participant.city || null,
@@ -81,13 +64,6 @@ export function ConversationList({ className }: ConversationListProps) {
     setShowConversation(true);
   };
 
-  const convertToConversationParticipant = (participant: ConversationParticipant): ConversationParticipant => {
-    return {
-      ...participant,
-      role: (participant.role || 'professional') as 'professional' | 'business' | 'admin'
-    };
-  };
-
   return (
     <div className={cn("flex flex-col border-r pt-20", className)}>
       <div className="p-4 border-b">
@@ -110,7 +86,7 @@ export function ConversationList({ className }: ConversationListProps) {
           {conversations.map((conversation) => (
             <ConversationItem
               key={conversation.id}
-              participant={convertToConversationParticipant(conversation.participant)}
+              participant={conversation.participant}
               lastMessage={conversation.last_message}
               lastMessageTime={conversation.last_message_time}
               onSelect={() => handleSelectConversation(conversation)}
@@ -131,7 +107,7 @@ export function ConversationList({ className }: ConversationListProps) {
             email: selectedParticipant.email || "",
             full_name: selectedParticipant.full_name,
             avatar_url: selectedParticipant.avatar_url || undefined,
-            role: selectedParticipant.role || 'professional',
+            role: selectedParticipant.role,
             bio: selectedParticipant.bio || undefined,
             phone: selectedParticipant.phone || undefined,
             city: selectedParticipant.city || undefined,
@@ -150,8 +126,10 @@ export function ConversationList({ className }: ConversationListProps) {
           onRequestChat={() => handleSelectConversation({
             id: selectedParticipant.id,
             participant: selectedParticipant,
-            participant2_id: selectedParticipant.participant2_id || selectedParticipant.id,
-            participant1_id: selectedParticipant.id
+            participant2_id: selectedParticipant.id,
+            participant1_id: selectedParticipant.id,
+            last_message: '',
+            last_message_time: new Date().toISOString()
           })}
         />
       )}
