@@ -30,7 +30,6 @@ export function Marketplace() {
 
   const handleSearch = async (value: string) => {
     setSearchQuery(value);
-    
     if (!value.trim()) return;
     
     setIsSearching(true);
@@ -44,7 +43,6 @@ export function Marketplace() {
       if (data.suggestedKeywords) {
         toast.info(`Suggestions de recherche: ${data.suggestedKeywords}`);
       }
-
     } catch (error) {
       console.error('Erreur de recherche:', error);
       toast.error("Une erreur est survenue lors de la recherche");
@@ -70,10 +68,32 @@ export function Marketplace() {
               className="pl-10" 
             />
           </div>
-          <Button variant="outline" className="gap-2" size={isMobile ? "sm" : "default"}>
-            <Filter className="h-4 w-4" />
-            Filtres
-          </Button>
+          
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="gap-2" size={isMobile ? "sm" : "default"}>
+                <Filter className="h-4 w-4" />
+                Filtres
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogTitle>Filtres de recherche</DialogTitle>
+              <MarketplaceFilters filters={filters} onFiltersChange={setFilters} />
+            </DialogContent>
+          </Dialog>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="gap-2" size={isMobile ? "sm" : "default"}>
+                <PlusCircle className="h-4 w-4" />
+                Publier une annonce
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-3xl">
+              <DialogTitle>Nouvelle annonce</DialogTitle>
+              <MarketplaceForm />
+            </DialogContent>
+          </Dialog>
         </div>
 
         <Tabs defaultValue="all" className="w-full">

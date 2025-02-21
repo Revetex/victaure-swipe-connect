@@ -1,15 +1,14 @@
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { DialogClose } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "./form/ImageUpload";
 import { ListingDetails } from "./form/ListingDetails";
 import { ListingSelectors } from "./form/ListingSelectors";
 import { useListingImages } from "./hooks/useListingImages";
-
-type ListingType = "vente" | "location" | "service";
 
 export function MarketplaceForm() {
   const { toast } = useToast();
@@ -25,91 +24,91 @@ export function MarketplaceForm() {
     condition: "new",
     location: "",
     category: "",
+    saleType: "immediate", // 'immediate' ou 'auction'
+    auctionEndDate: null as Date | null,
+    minimumBid: "",
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Non authentifié");
-
-      const uploadedImageUrls = await uploadImages();
-
-      const listingData = {
-        ...formData,
-        price: parseFloat(formData.price),
-        seller_id: user.id,
-        images: uploadedImageUrls,
-        status: 'active'
-      };
-
-      const { error } = await supabase
-        .from('marketplace_listings')
-        .insert([listingData]);
-
-      if (error) throw error;
-
-      toast({
-        title: "Succès",
-        description: "Votre annonce a été publiée",
-      });
-
-      // Reset form
-      setFormData({
-        title: "",
-        description: "",
-        price: "",
-        type: "vente",
-        currency: "CAD",
-        condition: "new",
-        location: "",
-        category: "",
-      });
-      resetImages();
-    } catch (error) {
-      console.error('Error:', error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de publier l'annonce",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <ListingDetails
-        title={formData.title}
-        description={formData.description}
-        price={formData.price}
-        onTitleChange={(title) => setFormData(prev => ({ ...prev, title }))}
-        onDescriptionChange={(description) => setFormData(prev => ({ ...prev, description }))}
-        onPriceChange={(price) => setFormData(prev => ({ ...prev, price }))}
-      />
+    <form className="space-y-6">
+      <div className="grid gap-4">
+        <div className="grid gap-2">
+          <Label>Type de vente</Label>
+          <Select value={formData.saleType} onValueChange={(value) => setFormData(prev => ({ ...prev, saleType: value }))}>
+            <SelectTrigger>
+              <SelectValue placeholder="Choisissez le type de vente" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="immediate">Prix immédiat</SelectItem>
+              <SelectItem value="auction">Enchères</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-      <ListingSelectors
-        type={formData.type}
-        condition={formData.condition}
-        location={formData.location}
-        onTypeChange={(type) => setFormData(prev => ({ ...prev, type: type as ListingType }))}
-        onConditionChange={(condition) => setFormData(prev => ({ ...prev, condition }))}
-        onLocationChange={(location) => setFormData(prev => ({ ...prev, location }))}
-      />
+        <div className="grid gap-2">
+          <Label>Titre de l'annonce</Label>
+          <Input 
+            placeholder="Titre de votre annonce" 
+            value={formData.title}
+            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+          />
+        </div>
 
-      <ImageUpload
-        imageUrls={imageUrls}
-        onImageUpload={handleImagePreview}
-        onImageRemove={removeImage}
-      />
+        <div className="grid gap-2">
+          <Label>Description</Label>
+          <Textarea 
+            placeholder="Décrivez votre article en détail..." 
+            className="min-h-[100px]"
+            value={formData.description}
+            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          />
+        </div>
 
-      <Button type="submit" disabled={loading} className="w-full">
-        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {loading ? "Publication en cours..." : "Publier l'annonce"}
-      </Button>
+        {formData.saleType === 'immediate' ? (
+          <div className="grid gap-2">
+            <Label>Prix fixe</Label>
+            <Input 
+              type="number" 
+              placeholder="Prix en CAD"
+              value={formData.price}
+              onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+            />
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="grid gap-2">
+              <Label>Prix de départ</Label>
+              <Input 
+                type="number" 
+                placeholder="Prix minimal en CAD"
+                value={formData.minimumBid}
+                onChange={(e) => setFormData(prev => ({ ...prev, minimumBid: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Fin des enchères</Label>
+              <Input 
+                type="datetime-local"
+                value={formData.auctionEndDate?.toISOString().slice(0, 16) || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, auctionEndDate: new Date(e.target.value) }))}
+              />
+            </div>
+          </div>
+        )}
+
+        <ImageUpload
+          imageUrls={imageUrls}
+          onImageUpload={handleImagePreview}
+          onImageRemove={removeImage}
+        />
+
+        <div className="flex justify-end gap-4 pt-4">
+          <DialogClose asChild>
+            <Button variant="outline">Annuler</Button>
+          </DialogClose>
+          <Button type="submit">Publier l'annonce</Button>
+        </div>
+      </div>
     </form>
   );
 }
