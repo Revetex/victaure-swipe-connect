@@ -1,11 +1,20 @@
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Send, X } from "lucide-react";
+import { Sparkles, Send, X, User, Bot } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
+import { useJobsAI } from "@/hooks/useJobsAI";
+import { useAuth } from "@/hooks/useAuth";
+
+interface Message {
+  id: string;
+  content: string;
+  type: 'user' | 'assistant';
+  timestamp: Date;
+}
 
 interface JobsAIAssistantProps {
   isOpen: boolean;
@@ -14,26 +23,52 @@ interface JobsAIAssistantProps {
 
 export function JobsAIAssistant({ isOpen, onClose }: JobsAIAssistantProps) {
   const [query, setQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const { user } = useAuth();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const { isLoading, askAssistant } = useJobsAI({
+    userProfile: user,
+    jobContext: { /* Contexte des jobs à ajouter */ }
+  });
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollToBottom();
+    }
+  }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query.trim()) return;
+    if (!query.trim() || isLoading) return;
 
-    setIsLoading(true);
+    const userMessage: Message = {
+      id: crypto.randomUUID(),
+      content: query,
+      type: 'user',
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setQuery("");
+
     try {
-      // Simulation de réponse pour l'instant
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      toast.success("L'assistant analyse votre demande", {
-        description: "Je recherche les meilleures opportunités pour vous..."
-      });
-      setQuery("");
+      const response = await askAssistant(query);
+      if (response) {
+        const assistantMessage: Message = {
+          id: crypto.randomUUID(),
+          content: response,
+          type: 'assistant',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+      }
     } catch (error) {
-      toast.error("Une erreur est survenue", {
-        description: "Veuillez réessayer plus tard"
-      });
-    } finally {
-      setIsLoading(false);
+      console.error('Error:', error);
     }
   };
 
@@ -65,15 +100,62 @@ export function JobsAIAssistant({ isOpen, onClose }: JobsAIAssistantProps) {
                 </Button>
               </div>
 
-              <p className="text-sm text-zinc-400">
-                Je peux vous aider à :
-                <span className="block mt-2 pl-4 space-y-1">
-                  <span className="block">• Trouver des offres adaptées à votre profil</span>
-                  <span className="block">• Analyser les tendances du marché</span>
-                  <span className="block">• Optimiser votre CV et lettre de motivation</span>
-                  <span className="block">• Préparer vos entretiens</span>
-                </span>
-              </p>
+              <div className="h-[400px] overflow-y-auto p-4 space-y-4 rounded-lg bg-zinc-900/50">
+                {messages.length === 0 ? (
+                  <div className="text-center text-zinc-500 space-y-2">
+                    <Sparkles className="h-8 w-8 mx-auto mb-2" />
+                    <p>Je peux vous aider à :</p>
+                    <ul className="space-y-1 text-sm">
+                      <li>• Trouver des offres adaptées à votre profil</li>
+                      <li>• Analyser les tendances du marché</li>
+                      <li>• Optimiser votre CV et lettre de motivation</li>
+                      <li>• Préparer vos entretiens</li>
+                    </ul>
+                  </div>
+                ) : (
+                  messages.map((message) => (
+                    <motion.div
+                      key={message.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`flex gap-3 ${
+                        message.type === 'user' ? 'flex-row-reverse' : ''
+                      }`}
+                    >
+                      <div className="flex-shrink-0">
+                        {message.type === 'user' ? (
+                          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                            <User className="h-4 w-4 text-primary" />
+                          </div>
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center">
+                            <Bot className="h-4 w-4 text-zinc-400" />
+                          </div>
+                        )}
+                      </div>
+                      <div
+                        className={`flex flex-col space-y-1 max-w-[80%] ${
+                          message.type === 'user' ? 'items-end' : 'items-start'
+                        }`}
+                      >
+                        <div
+                          className={`rounded-lg px-4 py-2 ${
+                            message.type === 'user'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-zinc-800 text-zinc-100'
+                          }`}
+                        >
+                          <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                        </div>
+                        <span className="text-xs text-zinc-500">
+                          {new Date(message.timestamp).toLocaleTimeString()}
+                        </span>
+                      </div>
+                    </motion.div>
+                  ))
+                )}
+                <div ref={messagesEndRef} />
+              </div>
 
               <form onSubmit={handleSubmit} className="flex gap-2">
                 <Input
