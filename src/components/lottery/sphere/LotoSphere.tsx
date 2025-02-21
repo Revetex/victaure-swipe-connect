@@ -61,9 +61,9 @@ export function LotoSphere({
       await buyTicket({ numbers: selectedNumbers, color: selectedColor });
       setSelectedNumbers([]);
       setSelectedColor(null);
-    } catch (error) {
+    } catch (error: any) {
       if (error.message.includes("Solde insuffisant")) {
-        onPaymentRequested?.();
+        onPaymentRequested?.(5, "LotoSphere");
       } else {
         toast.error("Erreur lors de l'achat du ticket");
       }
