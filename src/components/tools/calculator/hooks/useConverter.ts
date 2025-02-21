@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useExchangeRates } from './useExchangeRates';
 import type { ConversionType } from '../types';
@@ -24,12 +23,7 @@ export function useConverter() {
 
     switch (conversionType) {
       case "currency":
-        if (rates && rates.rates) {
-          result = convertAmount(value, fromUnit, toUnit);
-        }
-        break;
       case "crypto":
-        // Pour l'instant, utiliser la même logique que les devises
         if (rates && rates.rates) {
           result = convertAmount(value, fromUnit, toUnit);
         }
@@ -64,18 +58,15 @@ export function useConverter() {
   };
 }
 
-// Fonctions utilitaires de conversion
 function convertTemperature(value: number, from: 'c' | 'f' | 'k', to: 'c' | 'f' | 'k'): number {
   let celsius = value;
   
-  // Conversion en Celsius
   if (from === 'f') {
     celsius = (value - 32) * 5/9;
   } else if (from === 'k') {
     celsius = value - 273.15;
   }
   
-  // Conversion de Celsius vers l'unité cible
   if (to === 'f') {
     return Number((celsius * 9/5 + 32).toFixed(2));
   } else if (to === 'k') {
