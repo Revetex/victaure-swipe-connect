@@ -103,6 +103,24 @@ export function ConversationList({ className }: ConversationListProps) {
     };
   };
 
+  const convertReceiverToParticipant = (receiver: Receiver): ConversationParticipant => {
+    return {
+      id: receiver.id,
+      full_name: receiver.full_name,
+      avatar_url: receiver.avatar_url,
+      email: receiver.email,
+      role: receiver.role,
+      bio: receiver.bio,
+      phone: receiver.phone,
+      city: receiver.city,
+      state: receiver.state,
+      country: receiver.country,
+      skills: receiver.skills,
+      online_status: receiver.online_status === 'online',
+      last_seen: receiver.last_seen
+    };
+  };
+
   return (
     <div className={cn("flex flex-col border-r pt-20", className)}>
       <div className="p-4 border-b">
@@ -144,7 +162,7 @@ export function ConversationList({ className }: ConversationListProps) {
           profile={convertReceiverToProfile(selectedParticipant)}
           isOpen={showProfilePreview}
           onClose={() => setShowProfilePreview(false)}
-          onRequestChat={() => handleSelectConversation({ participant: selectedParticipant })}
+          onRequestChat={() => handleSelectConversation({ participant: convertReceiverToParticipant(selectedParticipant) })}
         />
       )}
     </div>
