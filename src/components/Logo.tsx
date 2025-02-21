@@ -55,14 +55,35 @@ export function Logo({ size = "md", className }: LogoProps) {
           <span className="font-inter text-zinc-900 dark:text-white font-black tracking-tight">
             VICTAURE
           </span>
-          <img 
-            src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png" 
-            alt="Victaure Logo" 
-            className={cn(
-              logoSizes[size],
-              "object-contain drop-shadow ml-3"
-            )}
-          />
+          <div className="relative ml-3">
+            <img 
+              src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png" 
+              alt="Victaure Logo" 
+              className={cn(
+                logoSizes[size],
+                "object-contain drop-shadow"
+              )}
+            />
+            <motion.div 
+              className="absolute -bottom-3 right-0 transform translate-x-1/4"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 0.8, scale: 1 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+            >
+              <img 
+                src="/lovable-uploads/168ba21b-e221-4668-96cc-eb026041a0ed.png" 
+                alt="Signature" 
+                className={cn(
+                  "w-[60px] h-auto",
+                  "opacity-70 dark:opacity-60",
+                  "mix-blend-multiply dark:mix-blend-screen"
+                )}
+                style={{
+                  filter: "contrast(1.2) brightness(0.9)"
+                }}
+              />
+            </motion.div>
+          </div>
         </div>
       </motion.div>
     </motion.div>
