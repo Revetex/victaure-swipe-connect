@@ -39,45 +39,47 @@ export const useReactions = ({
     setIsProcessing(true);
 
     try {
-      // Si la même réaction existe, on la supprime
-      if (userReaction === type) {
-        const { error } = await supabase
-          .from('post_reactions')
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', currentUserId);
+      // Mise à jour optimiste des données
+      queryClient.setQueriesData(['posts'], (oldData: any) => {
+        return oldData?.map((post: any) => {
+          if (post.id === postId) {
+            const isRemoving = userReaction === type;
+            return {
+              ...post,
+              [type + 's']: post[type + 's'] + (isRemoving ? -1 : 1),
+              ...(userReaction && userReaction !== type && {
+                [userReaction + 's']: post[userReaction + 's'] - 1
+              }),
+              user_reaction: isRemoving ? null : type
+            };
+          }
+          return post;
+        });
+      });
 
-        if (error) throw error;
-      } else {
-        // Sinon, on ajoute/met à jour la réaction
-        const { error } = await supabase
-          .from('post_reactions')
-          .upsert({
-            post_id: postId,
-            user_id: currentUserId,
-            reaction_type: type
-          }, {
-            onConflict: 'post_id,user_id'
-          });
+      // Appel à la fonction RPC handle_post_reaction
+      const { error } = await supabase.rpc('handle_post_reaction', {
+        p_post_id: postId,
+        p_user_id: currentUserId,
+        p_reaction_type: type
+      });
 
-        if (error) throw error;
+      if (error) throw error;
 
-        // Envoyer une notification seulement pour les likes sur les posts d'autres utilisateurs
-        if (type === 'like' && postAuthorId !== currentUserId) {
-          await createNotification(
-            postAuthorId,
-            'Nouveau j\'aime',
-            `${userEmail} a aimé votre publication`,
-            'like'
-          );
-        }
+      // Si c'est un like et pas une suppression de réaction, envoyer une notification
+      if (type === 'like' && userReaction !== type && postAuthorId !== currentUserId) {
+        await createNotification(
+          postAuthorId,
+          'Nouveau j\'aime',
+          `${userEmail} a aimé votre publication`,
+          'like'
+        );
       }
-
-      // Rafraîchir les données
-      await queryClient.invalidateQueries({ queryKey: ["posts"] });
 
     } catch (error) {
       console.error('Error handling reaction:', error);
+      // Annuler la mise à jour optimiste en cas d'erreur
+      await queryClient.invalidateQueries({ queryKey: ["posts"] });
       toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de la réaction",
