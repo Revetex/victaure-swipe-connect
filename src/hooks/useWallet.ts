@@ -45,16 +45,16 @@ export function useWallet() {
     mutationFn: async ({ receiverWalletId, amount }: { receiverWalletId: string; amount: number }) => {
       if (!wallet?.id) throw new Error("Wallet not found");
 
+      // Get receiver's wallet with all necessary fields
       const { data: receiverWallet, error: receiverError } = await supabase
         .from("user_wallets")
-        .select("id")
+        .select("id, balance, currency")
         .eq("wallet_id", receiverWalletId)
         .single();
 
       if (receiverError) throw new Error("Recipient wallet not found");
 
       // Use a direct update since the transfer_funds RPC is not yet registered
-      // This will be replaced once the RPC is properly registered
       const { error: senderError } = await supabase
         .from("user_wallets")
         .update({ balance: wallet.balance - amount })
@@ -64,7 +64,7 @@ export function useWallet() {
 
       const { error: receiverUpdateError } = await supabase
         .from("user_wallets")
-        .update({ balance: receiverWallet.balance + amount })
+        .update({ balance: (receiverWallet.balance || 0) + amount })
         .eq("id", receiverWallet.id);
 
       if (receiverUpdateError) throw receiverUpdateError;
