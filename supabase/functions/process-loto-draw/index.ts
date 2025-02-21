@@ -12,6 +12,8 @@ Deno.serve(async (req) => {
   }
 
   try {
+    console.log('Starting loto draw process...');
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -25,8 +27,11 @@ Deno.serve(async (req) => {
       .single();
 
     if (drawError || !draw) {
+      console.error('No pending draw found:', drawError);
       throw new Error('No pending draw found');
     }
+
+    console.log('Found pending draw:', draw.id);
 
     // Generate random numbers and color
     const numbers = new Set<number>();
@@ -35,6 +40,8 @@ Deno.serve(async (req) => {
     }
     const colors = ['Rouge', 'Vert', 'Bleu', 'Jaune', 'Violet'];
     const bonusColor = colors[Math.floor(Math.random() * colors.length)];
+
+    console.log('Generated numbers:', Array.from(numbers), 'and color:', bonusColor);
 
     // Update draw with numbers and color
     const { error: updateError } = await supabase
@@ -47,27 +54,38 @@ Deno.serve(async (req) => {
       .eq('id', draw.id);
 
     if (updateError) {
+      console.error('Error updating draw:', updateError);
       throw updateError;
     }
+
+    console.log('Draw updated, processing winners...');
 
     // Process the draw using the database function
     const { error: processError } = await supabase
       .rpc('process_loto_draw', { draw_id: draw.id });
 
     if (processError) {
+      console.error('Error processing draw:', processError);
       throw processError;
     }
 
     // Get winning tickets
-    const { data: winners } = await supabase
+    const { data: winners, error: winnersError } = await supabase
       .from('loto_wins')
       .select('*, loto_tickets(user_id)')
       .eq('draw_id', draw.id);
 
+    if (winnersError) {
+      console.error('Error fetching winners:', winnersError);
+      throw winnersError;
+    }
+
+    console.log(`Found ${winners?.length || 0} winners`);
+
     // Send notifications to winners
     if (winners) {
       for (const winner of winners) {
-        await supabase
+        const { error: notifError } = await supabase
           .from('notifications')
           .insert({
             user_id: winner.loto_tickets.user_id,
@@ -75,11 +93,19 @@ Deno.serve(async (req) => {
             message: `Vous avez gagné ${winner.amount} ${draw.currency} au tirage LotoSphere !`,
             type: 'loto_win'
           });
+
+        if (notifError) {
+          console.error('Error sending notification:', notifError);
+        }
       }
     }
 
+    console.log('Scheduling next draw...');
+
     // Schedule next draw
     await supabase.rpc('schedule_next_draw');
+
+    console.log('Draw process completed successfully');
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
