@@ -15,6 +15,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+interface Friend {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  online_status: boolean;
+}
+
 interface ConversationListProps {
   className?: string;
 }
@@ -25,8 +32,8 @@ export function ConversationList({ className }: ConversationListProps) {
   const navigate = useNavigate();
   const { conversations, handleDeleteConversation } = useConversations();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
-  const [selectedParticipant, setSelectedParticipant] = useState(null);
-  const [friends, setFriends] = useState<any[]>([]);
+  const [selectedParticipant, setSelectedParticipant] = useState<any>(null);
+  const [friends, setFriends] = useState<Friend[]>([]);
   const [loadingFriends, setLoadingFriends] = useState(false);
 
   const handleSelectConversation = (conversation: any) => {
@@ -50,11 +57,11 @@ export function ConversationList({ className }: ConversationListProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: friends, error } = await supabase
-        .from('friends')
+      const { data: friendships, error } = await supabase
+        .from('friendships')
         .select(`
           friend_id,
-          profiles:friend_id (
+          friend:profiles!friendships_friend_id_fkey (
             id,
             full_name,
             avatar_url,
@@ -66,7 +73,11 @@ export function ConversationList({ className }: ConversationListProps) {
 
       if (error) throw error;
 
-      setFriends(friends?.map(f => f.profiles) || []);
+      const friendsList = friendships
+        ?.map(friendship => friendship.friend)
+        .filter((friend): friend is Friend => friend !== null) || [];
+
+      setFriends(friendsList);
     } catch (error) {
       console.error('Error loading friends:', error);
       toast.error("Impossible de charger vos amis");
@@ -75,7 +86,7 @@ export function ConversationList({ className }: ConversationListProps) {
     }
   };
 
-  const startConversation = (friend: any) => {
+  const startConversation = (friend: Friend) => {
     const receiver = {
       ...friend,
       online_status: friend.online_status ? 'online' : 'offline'
@@ -126,7 +137,7 @@ export function ConversationList({ className }: ConversationListProps) {
                         onClick={() => startConversation(friend)}
                       >
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={friend.avatar_url} />
+                          <AvatarImage src={friend.avatar_url || undefined} />
                           <AvatarFallback>
                             {friend.full_name?.charAt(0)}
                           </AvatarFallback>
