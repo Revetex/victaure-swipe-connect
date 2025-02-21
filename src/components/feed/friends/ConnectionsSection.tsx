@@ -71,9 +71,9 @@ export function ConnectionsSection() {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-4 max-w-3xl mx-auto px-4 sm:px-6 py-8"
+      className="space-y-4 w-full px-4 sm:px-0"
     >
-      <Card className="bg-black/40 border-zinc-800 shadow-2xl backdrop-blur-sm">
+      <Card className="bg-black/40 border-zinc-800 shadow-2xl backdrop-blur-sm w-full">
         <ConnectionsHeader 
           showPendingRequests={showPendingRequests}
           onTogglePendingRequests={() => setShowPendingRequests(!showPendingRequests)}
