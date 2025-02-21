@@ -96,10 +96,10 @@ export function useLotoSphere() {
       }
 
       // Mise à jour du solde et de la cagnotte
-      const { error: updateError } = await supabase.rpc('handle_loto_purchase', {
-        user_id: user.id,
-        draw_id: currentDraw.id,
-        ticket_price: 5
+      const { error: updateError } = await supabase.rpc('process_loto_ticket_purchase', {
+        p_user_id: user.id,
+        p_amount: 5,
+        p_draw_id: currentDraw.id
       });
 
       if (updateError) throw updateError;
