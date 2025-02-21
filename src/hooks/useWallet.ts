@@ -41,42 +41,56 @@ export function useWallet() {
     enabled: !!wallet?.id
   });
 
-  const addFundsMutation = useMutation({
-    mutationFn: async (amount: number) => {
-      if (!wallet?.id) throw new Error("Portefeuille non trouvé");
+  const sendFundsMutation = useMutation({
+    mutationFn: async ({ receiverWalletId, amount }: { receiverWalletId: string; amount: number }) => {
+      if (!wallet?.id) throw new Error("Wallet not found");
 
-      // Simuler l'ajout de fonds via Stripe/autre méthode de paiement
-      const { error } = await supabase
+      const { data: receiverWallet, error: receiverError } = await supabase
         .from("user_wallets")
-        .update({ 
-          balance: wallet.balance + amount,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", wallet.id);
+        .select("id")
+        .eq("wallet_id", receiverWalletId)
+        .single();
 
-      if (error) throw error;
+      if (receiverError) throw new Error("Recipient wallet not found");
 
-      // Créer la transaction
-      const { error: transactionError } = await supabase
-        .from("wallet_transactions")
-        .insert([{
-          sender_wallet_id: wallet.id,
-          receiver_wallet_id: wallet.id,
-          amount,
-          currency: wallet.currency,
-          status: 'completed',
-          description: 'Rechargement du compte'
-        }]);
+      const { error: transactionError } = await supabase.rpc('transfer_funds', {
+        p_sender_wallet_id: wallet.id,
+        p_receiver_wallet_id: receiverWallet.id,
+        p_amount: amount
+      });
 
       if (transactionError) throw transactionError;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userWallet"] });
       queryClient.invalidateQueries({ queryKey: ["walletTransactions"] });
-      toast.success("Fonds ajoutés avec succès");
+      toast.success("Funds sent successfully");
     },
     onError: (error: Error) => {
-      toast.error("Erreur lors de l'ajout des fonds");
+      toast.error(error.message);
+    }
+  });
+
+  const freezeWalletMutation = useMutation({
+    mutationFn: async (freeze: boolean) => {
+      if (!wallet?.id) throw new Error("Wallet not found");
+
+      const { error } = await supabase
+        .from("user_wallets")
+        .update({ 
+          is_frozen: freeze,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", wallet.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userWallet"] });
+    },
+    onError: (error: Error) => {
+      toast.error("Failed to update wallet status");
+      console.error("Freeze wallet error:", error);
     }
   });
 
@@ -84,6 +98,8 @@ export function useWallet() {
     wallet,
     transactions,
     isLoading,
-    addFunds: addFundsMutation.mutate
+    sendFunds: (receiverWalletId: string, amount: number) => 
+      sendFundsMutation.mutateAsync({ receiverWalletId, amount }),
+    freezeWallet: (freeze: boolean) => freezeWalletMutation.mutateAsync(freeze)
   };
 }
