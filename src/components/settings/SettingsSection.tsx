@@ -17,11 +17,9 @@ export function SettingsSection({ title, children, className }: SettingsSectionP
       transition={{ duration: 0.3 }}
       className={cn("mb-2", className)}
     >
-      <div className="w-full space-y-1 rounded-lg border border-border/50 p-4 bg-card hover:bg-accent/5 transition-colors">
-        <h3 className="text-sm font-medium text-muted-foreground mb-3 px-2">{title}</h3>
-        <div className="space-y-2">
-          {children}
-        </div>
+      <div className="w-full space-y-1 rounded-lg border border-border/50 p-3 bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <h3 className="text-sm font-medium text-muted-foreground mb-2 px-2">{title}</h3>
+        {children}
       </div>
     </motion.div>
   );

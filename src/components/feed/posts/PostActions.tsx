@@ -83,6 +83,18 @@ export function PostActions({
     };
   }, [postId, onReaction]);
 
+  const calculateReactionPercentage = () => {
+    const total = likes + dislikes;
+    if (total === 0) return { likes: 0, dislikes: 0 }; // Si pas de réactions, on affiche 0/0
+    
+    const likePercentage = Math.round((likes / total) * 100);
+    const dislikePercentage = 100 - likePercentage;
+    
+    return { likes: likePercentage, dislikes: dislikePercentage };
+  };
+
+  const percentages = calculateReactionPercentage();
+
   return (
     <div className="flex gap-2 items-center py-2">
       <div className="flex items-center gap-2">

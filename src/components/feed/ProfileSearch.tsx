@@ -74,12 +74,12 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher des profils.
         )}
         
         {searchResults.length > 0 && searchQuery && (
-          <div className="absolute top-full left-0 right-0 mt-1">
+          <div className="absolute w-full z-[100] mt-1">
             <SearchResults 
               results={searchResults}
-              onSelect={async (profile) => {
+              onSelect={(profile) => {
                 if (onSelect) {
-                  await onSelect(profile);
+                  onSelect(profile);
                   setSearchQuery("");
                   setSearchResults([]);
                 }
