@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { ExchangeRates, Rate } from '../types';
+import { ExchangeRates } from '../types';
 
 export function useExchangeRates() {
   const [rates, setRates] = useState<ExchangeRates | null>(null);
