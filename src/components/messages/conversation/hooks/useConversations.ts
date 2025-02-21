@@ -33,66 +33,88 @@ export interface Conversation {
 
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
     if (user) {
       loadConversations();
+      subscribeToConversations();
     }
+    return () => {
+      supabase.removeChannel('conversations');
+    };
   }, [user]);
+
+  const subscribeToConversations = () => {
+    const channel = supabase
+      .channel('conversations')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'conversations'
+        },
+        () => {
+          loadConversations();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  };
 
   const loadConversations = async () => {
     if (!user) return;
+    setLoading(true);
 
     try {
       const { data: conversationsData, error: conversationsError } = await supabase
         .from('conversations')
-        .select('*')
-        .eq('participant1_id', user.id);
+        .select(`
+          *,
+          last_message:messages!conversations_last_message_fkey(content),
+          participant:profiles!conversations_participant2_id_fkey(*)
+        `)
+        .eq('participant1_id', user.id)
+        .order('last_message_time', { ascending: false });
 
       if (conversationsError) throw conversationsError;
 
       if (conversationsData) {
-        const participantIds = conversationsData.map(conv => conv.participant2_id);
-        
-        const { data: participantsData, error: participantsError } = await supabase
-          .from('profiles')
-          .select('*')
-          .in('id', participantIds);
-
-        if (participantsError) throw participantsError;
-
         const formattedConversations: Conversation[] = conversationsData
           .map(conv => {
-            const participant = participantsData?.find(p => p.id === conv.participant2_id);
-            if (!participant) return null;
+            if (!conv.participant) return null;
 
             let role: UserRole = 'professional';
-            if (participant.role === 'business' || participant.role === 'admin') {
-              role = participant.role;
+            if (conv.participant.role === 'business' || conv.participant.role === 'admin') {
+              role = conv.participant.role;
             }
 
             const transformedParticipant: ConversationParticipant = {
-              id: participant.id,
-              full_name: participant.full_name,
-              avatar_url: participant.avatar_url,
-              email: participant.email,
+              id: conv.participant.id,
+              full_name: conv.participant.full_name,
+              avatar_url: conv.participant.avatar_url,
+              email: conv.participant.email,
               role: role,
-              bio: participant.bio,
-              phone: participant.phone,
-              city: participant.city,
-              state: participant.state,
-              country: participant.country,
-              skills: participant.skills || [],
-              online_status: participant.online_status,
-              last_seen: participant.last_seen
+              bio: conv.participant.bio,
+              phone: conv.participant.phone,
+              city: conv.participant.city,
+              state: conv.participant.state,
+              country: conv.participant.country,
+              skills: conv.participant.skills || [],
+              online_status: conv.participant.online_status,
+              last_seen: conv.participant.last_seen
             };
 
             return {
               id: conv.id,
               participant1_id: conv.participant1_id,
               participant2_id: conv.participant2_id,
-              last_message: conv.last_message || '',
+              last_message: conv.last_message?.content || '',
               last_message_time: conv.last_message_time || new Date().toISOString(),
               participant: transformedParticipant
             };
@@ -104,6 +126,8 @@ export function useConversations() {
     } catch (error) {
       console.error('Error loading conversations:', error);
       toast.error("Impossible de charger les conversations");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -133,8 +157,35 @@ export function useConversations() {
     }
   };
 
+  const createConversation = async (participantId: string) => {
+    if (!user) return null;
+
+    try {
+      const { data, error } = await supabase
+        .from('conversations')
+        .insert({
+          participant1_id: user.id,
+          participant2_id: participantId,
+          last_message_time: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      await loadConversations();
+      return data;
+    } catch (error) {
+      console.error('Error creating conversation:', error);
+      toast.error("Impossible de créer la conversation");
+      return null;
+    }
+  };
+
   return {
     conversations,
-    handleDeleteConversation
+    loading,
+    handleDeleteConversation,
+    createConversation
   };
 }
