@@ -2,6 +2,9 @@
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import 'leaflet.markercluster';
 import { Job } from '@/types/job';
 import { Badge } from '@/components/ui/badge';
 import { formatDistance } from 'date-fns';
@@ -62,8 +65,8 @@ export function JobsMap({ jobs, onJobSelect }: JobsMapProps) {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map.current);
 
-    // Initialiser le groupe de marqueurs
-    markerClusterRef.current = L.markerClusterGroup();
+    // Initialiser le groupe de marqueurs avec MarkerClusterGroup
+    markerClusterRef.current = new L.MarkerClusterGroup();
     map.current.addLayer(markerClusterRef.current);
 
     return () => {
