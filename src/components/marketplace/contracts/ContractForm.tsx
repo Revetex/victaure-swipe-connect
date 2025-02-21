@@ -16,13 +16,14 @@ import { fr } from "date-fns/locale";
 import { CalendarIcon, Upload } from "lucide-react";
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/integrations/supabase/client";
+import { ListingType } from "@/types/marketplace";
 import * as z from "zod";
 
 const contractFormSchema = z.object({
   title: z.string().min(1, "Le titre est requis"),
   description: z.string().min(1, "La description est requise"),
   category: z.string().min(1, "La catégorie est requise"),
-  type: z.string().min(1, "Le type est requis"),
+  type: z.enum(["service", "location", "vente"] as const),
   location: z.string().min(1, "La localisation est requise"),
   budget_min: z.number().min(0, "Le budget minimum doit être positif"),
   budget_max: z.number().min(0, "Le budget maximum doit être positif"),
@@ -96,17 +97,19 @@ export function ContractForm() {
       if (error) throw error;
 
       // Créer également une annonce marketplace
+      const listingData = {
+        title: data.title,
+        description: data.description,
+        price: data.budget_max,
+        type: data.type as ListingType,
+        currency: "CAD",
+        seller_id: user.id,
+        status: "active",
+      };
+
       const { error: listingError } = await supabase
         .from("marketplace_listings")
-        .insert({
-          title: data.title,
-          description: data.description,
-          price: data.budget_max,
-          type: data.type,
-          currency: "CAD",
-          seller_id: user.id,
-          status: "active",
-        });
+        .insert(listingData);
 
       if (listingError) throw listingError;
 
@@ -157,8 +160,8 @@ export function ContractForm() {
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="service">Service</SelectItem>
-                  <SelectItem value="project">Projet</SelectItem>
-                  <SelectItem value="contract">Contrat</SelectItem>
+                  <SelectItem value="location">Location</SelectItem>
+                  <SelectItem value="vente">Vente</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
