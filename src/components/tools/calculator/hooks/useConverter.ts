@@ -24,8 +24,15 @@ export function useConverter() {
 
     switch (conversionType) {
       case "currency":
+        if (rates && rates.rates) {
+          result = convertAmount(value, fromUnit, toUnit);
+        }
+        break;
       case "crypto":
-        result = convertAmount(value, fromUnit, toUnit);
+        // Pour l'instant, utiliser la même logique que les devises
+        if (rates && rates.rates) {
+          result = convertAmount(value, fromUnit, toUnit);
+        }
         break;
       case "temperature":
         result = convertTemperature(value, fromUnit as 'c' | 'f' | 'k', toUnit as 'c' | 'f' | 'k');

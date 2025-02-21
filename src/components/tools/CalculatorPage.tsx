@@ -5,12 +5,13 @@ import { CalculatorKeypad } from "./calculator/CalculatorKeypad";
 import { Converter } from "./calculator/Converter";
 import { PaymentPanel } from "./calculator/PaymentPanel";
 import { useCalculator } from "./calculator/useCalculator";
+import { useConverter } from "./calculator/hooks/useConverter";
 import { Card } from "@/components/ui/card";
 import { Elements } from "@stripe/react-stripe-js";
 import { initializeStripe } from "@/hooks/useStripePayment";
 import { Loader2 } from "lucide-react";
 import type { StripeElementsOptions } from '@stripe/stripe-js';
-import type { ConversionType } from './calculator/types';
+import type { TransactionType } from './calculator/types';
 
 const stripeElementsOptions: StripeElementsOptions = {
   mode: 'payment',
@@ -26,13 +27,11 @@ const stripeElementsOptions: StripeElementsOptions = {
 
 export function CalculatorPage() {
   const calculator = useCalculator();
-  const [conversionType, setConversionType] = useState<ConversionType>("currency");
-  const [fromUnit, setFromUnit] = useState("CAD");
-  const [toUnit, setToUnit] = useState("USD");
-  const [conversionValue, setConversionValue] = useState("");
-  const [conversionResult, setConversionResult] = useState("");
+  const converter = useConverter();
   const [stripePromise, setStripePromise] = useState<Promise<any> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [transactionType, setTransactionType] = useState<TransactionType>('fixed');
+  const [amount, setAmount] = useState(0);
 
   useEffect(() => {
     const initStripe = async () => {
@@ -49,14 +48,8 @@ export function CalculatorPage() {
     initStripe();
   }, []);
 
-  const handleConvert = () => {
-    // Logique de conversion à implémenter
-    console.log("Converting:", {
-      type: conversionType,
-      from: fromUnit,
-      to: toUnit,
-      value: conversionValue
-    });
+  const handlePaymentSubmit = () => {
+    console.log("Payment submitted:", { type: transactionType, amount });
   };
 
   if (isLoading) {
@@ -82,19 +75,24 @@ export function CalculatorPage() {
                   onClear={calculator.clear}
                 />
               </Card>
-              <PaymentPanel />
+              <PaymentPanel 
+                type={transactionType}
+                amount={amount}
+                onAmountChange={setAmount}
+                onSubmit={handlePaymentSubmit}
+              />
             </div>
             <Converter 
-              conversionType={conversionType}
-              fromUnit={fromUnit}
-              toUnit={toUnit}
-              conversionValue={conversionValue}
-              conversionResult={conversionResult}
-              onConversionTypeChange={setConversionType}
-              onFromUnitChange={setFromUnit}
-              onToUnitChange={setToUnit}
-              onValueChange={setConversionValue}
-              onConvert={handleConvert}
+              conversionType={converter.conversionType}
+              fromUnit={converter.fromUnit}
+              toUnit={converter.toUnit}
+              conversionValue={converter.conversionValue}
+              conversionResult={converter.conversionResult}
+              onConversionTypeChange={converter.setConversionType}
+              onFromUnitChange={converter.setFromUnit}
+              onToUnitChange={converter.setToUnit}
+              onValueChange={converter.setConversionValue}
+              onConvert={converter.handleConversion}
             />
           </div>
         </div>
