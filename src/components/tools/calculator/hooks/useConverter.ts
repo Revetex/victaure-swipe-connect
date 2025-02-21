@@ -1,8 +1,44 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useExchangeRates } from './useExchangeRates';
 import type { ConversionType } from '../types';
 import { toast } from 'sonner';
+
+function convertTemperature(value: number, from: 'c' | 'f' | 'k', to: 'c' | 'f' | 'k'): number {
+  let celsius = value;
+  
+  if (from === 'f') {
+    celsius = (value - 32) * 5/9;
+  } else if (from === 'k') {
+    celsius = value - 273.15;
+  }
+  
+  if (to === 'f') {
+    return Number((celsius * 9/5 + 32).toFixed(2));
+  } else if (to === 'k') {
+    return Number((celsius + 273.15).toFixed(2));
+  }
+  
+  return Number(celsius.toFixed(2));
+}
+
+function convertUnit(value: number, from: string, to: string, type: ConversionType): number {
+  const conversionRates: Record<ConversionType, Record<string, number>> = {
+    length: { m: 1, km: 0.001, cm: 100, mm: 1000, ft: 3.28084, in: 39.3701 },
+    weight: { kg: 1, g: 1000, mg: 1000000, lb: 2.20462, oz: 35.274 },
+    time: { s: 1, min: 1/60, h: 1/3600, d: 1/86400 },
+    unit: { u: 1, dz: 1/12, c: 1/100, k: 1/1000 },
+    currency: {}, // Géré séparément via useExchangeRates
+    crypto: {}, // Géré séparément via useExchangeRates
+    temperature: {} // Géré séparément via convertTemperature
+  };
+
+  const rates = conversionRates[type];
+  if (!rates[from] || !rates[to]) return value;
+
+  const baseValue = value / rates[from];
+  return Number((baseValue * rates[to]).toFixed(2));
+}
 
 export function useConverter() {
   const [conversionType, setConversionType] = useState<ConversionType>("currency");
@@ -13,7 +49,7 @@ export function useConverter() {
   
   const { rates, loading, error, convertAmount } = useExchangeRates();
 
-  const handleConversion = () => {
+  const handleConversion = useCallback(() => {
     if (!conversionValue || isNaN(Number(conversionValue))) {
       toast.error("Veuillez entrer une valeur numérique valide");
       return;
@@ -57,7 +93,7 @@ export function useConverter() {
       console.error('Conversion error:', err);
       toast.error("Erreur lors de la conversion. Veuillez réessayer.");
     }
-  };
+  }, [conversionType, conversionValue, fromUnit, toUnit, rates, loading, error, convertAmount]);
 
   return {
     conversionType,
@@ -73,40 +109,4 @@ export function useConverter() {
     setConversionValue,
     handleConversion
   };
-}
-
-function convertTemperature(value: number, from: 'c' | 'f' | 'k', to: 'c' | 'f' | 'k'): number {
-  let celsius = value;
-  
-  if (from === 'f') {
-    celsius = (value - 32) * 5/9;
-  } else if (from === 'k') {
-    celsius = value - 273.15;
-  }
-  
-  if (to === 'f') {
-    return Number((celsius * 9/5 + 32).toFixed(2));
-  } else if (to === 'k') {
-    return Number((celsius + 273.15).toFixed(2));
-  }
-  
-  return Number(celsius.toFixed(2));
-}
-
-function convertUnit(value: number, from: string, to: string, type: ConversionType): number {
-  const conversionRates: Record<ConversionType, Record<string, number>> = {
-    length: { m: 1, km: 0.001, cm: 100, mm: 1000, ft: 3.28084, in: 39.3701 },
-    weight: { kg: 1, g: 1000, mg: 1000000, lb: 2.20462, oz: 35.274 },
-    time: { s: 1, min: 1/60, h: 1/3600, d: 1/86400 },
-    unit: { u: 1, dz: 1/12, c: 1/100, k: 1/1000 },
-    currency: {}, // Géré séparément via useExchangeRates
-    crypto: {}, // Géré séparément via useExchangeRates
-    temperature: {} // Géré séparément via convertTemperature
-  };
-
-  const rates = conversionRates[type];
-  if (!rates[from] || !rates[to]) return value;
-
-  const baseValue = value / rates[from];
-  return Number((baseValue * rates[to]).toFixed(2));
 }

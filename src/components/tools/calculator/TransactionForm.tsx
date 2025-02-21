@@ -65,7 +65,7 @@ export function TransactionForm({
         <div className="space-y-2">
           <Label>Type de transaction</Label>
           <div className="text-sm text-muted-foreground">
-            {marketingDescriptions[type]}
+            {marketingDescriptions[type].description}
           </div>
         </div>
 
