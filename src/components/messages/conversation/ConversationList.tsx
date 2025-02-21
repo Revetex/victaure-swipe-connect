@@ -59,15 +59,25 @@ export function ConversationList({ className }: ConversationListProps) {
     setShowConversation(true);
   };
 
-  const convertToUserProfile = (receiver: Receiver): UserProfile => {
+  const convertReceiverToProfile = (receiver: Receiver): UserProfile => {
     return {
-      ...receiver,
-      online_status: receiver.online_status === 'online',
+      id: receiver.id,
+      email: receiver.email || "",
+      full_name: receiver.full_name,
       avatar_url: receiver.avatar_url || undefined,
-      friends: [],
+      role: receiver.role,
+      bio: receiver.bio || undefined,
+      phone: receiver.phone || undefined,
+      city: receiver.city || undefined,
+      state: receiver.state || undefined,
+      country: receiver.country || undefined,
+      skills: receiver.skills,
+      online_status: receiver.online_status === 'online',
+      last_seen: receiver.last_seen || undefined,
       certifications: [],
       education: [],
-      experiences: []
+      experiences: [],
+      friends: []
     };
   };
 
@@ -109,7 +119,7 @@ export function ConversationList({ className }: ConversationListProps) {
 
       {selectedParticipant && (
         <ProfilePreview
-          profile={convertToUserProfile(selectedParticipant)}
+          profile={convertReceiverToProfile(selectedParticipant)}
           isOpen={showProfilePreview}
           onClose={() => setShowProfilePreview(false)}
           onRequestChat={() => handleSelectConversation({ participant: selectedParticipant })}
