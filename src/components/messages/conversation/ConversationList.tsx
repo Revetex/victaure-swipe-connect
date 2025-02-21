@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { ConversationSearch } from "./components/ConversationSearch";
 import { ConversationItem } from "./components/ConversationItem";
-import { useConversations } from "./hooks/useConversations";
+import { useConversations, type Conversation } from "./hooks/useConversations";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { NewConversationPopover } from "./components/NewConversationPopover";
 import { useFriendsList } from "./hooks/useFriendsList";
@@ -31,14 +31,6 @@ interface ConversationParticipant {
   online_status?: boolean;
   last_seen?: string | null;
   participant2_id?: string;
-}
-
-interface Conversation {
-  id: string;
-  participant: ConversationParticipant;
-  last_message?: string;
-  last_message_time?: string;
-  participant2_id: string;
 }
 
 export function ConversationList({ className }: ConversationListProps) {
@@ -89,25 +81,10 @@ export function ConversationList({ className }: ConversationListProps) {
     setShowConversation(true);
   };
 
-  const convertReceiverToProfile = (participant: ConversationParticipant): UserProfile => {
+  const convertToConversationParticipant = (participant: ConversationParticipant): ConversationParticipant => {
     return {
-      id: participant.id,
-      email: participant.email || "",
-      full_name: participant.full_name,
-      avatar_url: participant.avatar_url || undefined,
-      role: participant.role || 'professional',
-      bio: participant.bio || undefined,
-      phone: participant.phone || undefined,
-      city: participant.city || undefined,
-      state: participant.state || undefined,
-      country: participant.country || undefined,
-      skills: participant.skills || [],
-      online_status: !!participant.online_status,
-      last_seen: participant.last_seen || undefined,
-      certifications: [],
-      education: [],
-      experiences: [],
-      friends: []
+      ...participant,
+      role: (participant.role || 'professional') as 'professional' | 'business' | 'admin'
     };
   };
 
@@ -133,7 +110,7 @@ export function ConversationList({ className }: ConversationListProps) {
           {conversations.map((conversation) => (
             <ConversationItem
               key={conversation.id}
-              participant={conversation.participant}
+              participant={convertToConversationParticipant(conversation.participant)}
               lastMessage={conversation.last_message}
               lastMessageTime={conversation.last_message_time}
               onSelect={() => handleSelectConversation(conversation)}
@@ -149,13 +126,32 @@ export function ConversationList({ className }: ConversationListProps) {
 
       {selectedParticipant && (
         <ProfilePreview
-          profile={convertReceiverToProfile(selectedParticipant)}
+          profile={{
+            id: selectedParticipant.id,
+            email: selectedParticipant.email || "",
+            full_name: selectedParticipant.full_name,
+            avatar_url: selectedParticipant.avatar_url || undefined,
+            role: selectedParticipant.role || 'professional',
+            bio: selectedParticipant.bio || undefined,
+            phone: selectedParticipant.phone || undefined,
+            city: selectedParticipant.city || undefined,
+            state: selectedParticipant.state || undefined,
+            country: selectedParticipant.country || undefined,
+            skills: selectedParticipant.skills || [],
+            online_status: !!selectedParticipant.online_status,
+            last_seen: selectedParticipant.last_seen || undefined,
+            certifications: [],
+            education: [],
+            experiences: [],
+            friends: []
+          }}
           isOpen={showProfilePreview}
           onClose={() => setShowProfilePreview(false)}
           onRequestChat={() => handleSelectConversation({
             id: selectedParticipant.id,
             participant: selectedParticipant,
-            participant2_id: selectedParticipant.participant2_id || selectedParticipant.id
+            participant2_id: selectedParticipant.participant2_id || selectedParticipant.id,
+            participant1_id: selectedParticipant.id
           })}
         />
       )}
