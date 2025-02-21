@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -20,12 +21,13 @@ import * as z from "zod";
 const contractFormSchema = z.object({
   title: z.string().min(1, "Le titre est requis"),
   description: z.string().min(1, "La description est requise"),
+  category: z.string().min(1, "La catégorie est requise"),
+  type: z.string().min(1, "Le type est requis"),
+  location: z.string().min(1, "La localisation est requise"),
   budget_min: z.number().min(0, "Le budget minimum doit être positif"),
   budget_max: z.number().min(0, "Le budget maximum doit être positif"),
   deadline: z.date().optional(),
   requirements: z.array(z.string()),
-  category: z.string().optional(),
-  location: z.string().optional(),
 });
 
 type ContractFormValues = z.infer<typeof contractFormSchema>;
@@ -39,6 +41,8 @@ export function ContractForm() {
     resolver: zodResolver(contractFormSchema),
     defaultValues: {
       requirements: [],
+      type: "service",
+      category: "technology",
     },
   });
 
@@ -71,11 +75,19 @@ export function ContractForm() {
         documentUrls.push(publicUrl);
       }
 
-      // Create contract
+      // Create contract with listing
       const { error } = await supabase
         .from("marketplace_contracts")
         .insert({
-          ...data,
+          title: data.title,
+          description: data.description,
+          budget_min: data.budget_min,
+          budget_max: data.budget_max,
+          deadline: data.deadline?.toISOString(),
+          requirements: data.requirements,
+          category: data.category,
+          location: data.location,
+          currency: "CAD",
           creator_id: user.id,
           documents: documentUrls,
           status: "open",
@@ -83,7 +95,22 @@ export function ContractForm() {
 
       if (error) throw error;
 
-      toast.success("Contrat créé avec succès");
+      // Créer également une annonce marketplace
+      const { error: listingError } = await supabase
+        .from("marketplace_listings")
+        .insert({
+          title: data.title,
+          description: data.description,
+          price: data.budget_max,
+          type: data.type,
+          currency: "CAD",
+          seller_id: user.id,
+          status: "active",
+        });
+
+      if (listingError) throw listingError;
+
+      toast.success("Contrat et annonce créés avec succès");
       form.reset();
       setFiles([]);
     } catch (error) {
@@ -107,7 +134,7 @@ export function ContractForm() {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Titre</FormLabel>
+              <FormLabel>Titre de l'annonce</FormLabel>
               <FormControl>
                 <Input placeholder="Titre du contrat" {...field} />
               </FormControl>
@@ -118,16 +145,79 @@ export function ContractForm() {
 
         <FormField
           control={form.control}
+          name="type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Type d'annonce</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez un type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="service">Service</SelectItem>
+                  <SelectItem value="project">Projet</SelectItem>
+                  <SelectItem value="contract">Contrat</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Catégorie</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez une catégorie" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="technology">Technologie</SelectItem>
+                  <SelectItem value="design">Design</SelectItem>
+                  <SelectItem value="writing">Rédaction</SelectItem>
+                  <SelectItem value="marketing">Marketing</SelectItem>
+                  <SelectItem value="legal">Juridique</SelectItem>
+                  <SelectItem value="other">Autre</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>Description détaillée</FormLabel>
               <FormControl>
                 <Textarea 
                   placeholder="Description détaillée du contrat"
                   className="min-h-[100px]"
                   {...field} 
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="location"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Localisation</FormLabel>
+              <FormControl>
+                <Input placeholder="Ville, Province" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -244,7 +334,7 @@ export function ContractForm() {
           className="w-full"
           disabled={uploading}
         >
-          {uploading ? "Création en cours..." : "Créer le contrat"}
+          {uploading ? "Création en cours..." : "Publier l'annonce"}
         </Button>
       </form>
     </Form>
