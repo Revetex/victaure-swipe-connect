@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { ConversationSearch } from "./components/ConversationSearch";
 import { ConversationItem } from "./components/ConversationItem";
 import { useConversations } from "./hooks/useConversations";
+import { ProfilePreview } from "@/components/ProfilePreview";
 
 interface ConversationListProps {
   className?: string;
@@ -19,6 +20,8 @@ export function ConversationList({ className }: ConversationListProps) {
   const { setReceiver, setShowConversation } = useReceiver();
   const navigate = useNavigate();
   const { conversations, handleDeleteConversation } = useConversations();
+  const [showProfilePreview, setShowProfilePreview] = useState(false);
+  const [selectedParticipant, setSelectedParticipant] = useState(null);
 
   const handleSelectConversation = (conversation: any) => {
     const receiver = {
@@ -32,6 +35,11 @@ export function ConversationList({ className }: ConversationListProps) {
 
   const handleAddConversation = () => {
     navigate('/feed/friends');
+  };
+
+  const handleParticipantClick = (participant: any) => {
+    setSelectedParticipant(participant);
+    setShowProfilePreview(true);
   };
 
   return (
@@ -49,6 +57,7 @@ export function ConversationList({ className }: ConversationListProps) {
             onClick={handleAddConversation}
           >
             <Plus className="h-4 w-4" />
+            <span className="sr-only">Nouvelle conversation</span>
           </Button>
         </div>
       </div>
@@ -62,6 +71,7 @@ export function ConversationList({ className }: ConversationListProps) {
               lastMessage={conversation.last_message}
               lastMessageTime={conversation.last_message_time}
               onSelect={() => handleSelectConversation(conversation)}
+              onParticipantClick={() => handleParticipantClick(conversation.participant)}
               onDelete={(e) => {
                 e.stopPropagation();
                 handleDeleteConversation(conversation.id, conversation.participant2_id);
@@ -70,6 +80,15 @@ export function ConversationList({ className }: ConversationListProps) {
           ))}
         </div>
       </ScrollArea>
+
+      {selectedParticipant && (
+        <ProfilePreview
+          profile={selectedParticipant}
+          isOpen={showProfilePreview}
+          onClose={() => setShowProfilePreview(false)}
+          onRequestChat={() => handleSelectConversation({ participant: selectedParticipant })}
+        />
+      )}
     </div>
   );
 }

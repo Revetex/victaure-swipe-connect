@@ -1,15 +1,19 @@
 
-import { Button } from "@/components/ui/button";
-import { UserAvatar } from "@/components/UserAvatar";
-import { Trash2 } from "lucide-react";
-import { UserProfile } from "@/types/profile";
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { UserCircle2, Trash2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface ConversationItemProps {
-  participant: UserProfile;
-  lastMessage: string;
-  lastMessageTime: string;
+  participant: any;
+  lastMessage?: string;
+  lastMessageTime?: string;
   onSelect: () => void;
   onDelete: (e: React.MouseEvent) => void;
+  onParticipantClick: () => void;
 }
 
 export function ConversationItem({
@@ -17,41 +21,64 @@ export function ConversationItem({
   lastMessage,
   lastMessageTime,
   onSelect,
-  onDelete
+  onDelete,
+  onParticipantClick
 }: ConversationItemProps) {
   return (
-    <button
-      className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-muted transition-colors relative group"
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={cn(
+        "flex items-center gap-3 p-2 rounded-lg",
+        "hover:bg-accent cursor-pointer"
+      )}
       onClick={onSelect}
     >
-      <UserAvatar
-        user={participant}
-        className="h-12 w-12"
-      />
+      <button 
+        className="shrink-0" 
+        onClick={(e) => {
+          e.stopPropagation();
+          onParticipantClick();
+        }}
+      >
+        <Avatar className="h-10 w-10">
+          <AvatarImage src={participant.avatar_url} alt={participant.full_name} />
+          <AvatarFallback>
+            <UserCircle2 className="h-6 w-6" />
+          </AvatarFallback>
+        </Avatar>
+      </button>
+
       <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-baseline">
+        <div className="flex items-center justify-between">
           <p className="font-medium truncate">
-            {participant.full_name}
+            {participant.full_name || 'Utilisateur'}
           </p>
-          <span className="text-xs text-muted-foreground">
-            {new Date(lastMessageTime).toLocaleTimeString([], { 
-              hour: '2-digit', 
-              minute: '2-digit' 
-            })}
-          </span>
+          {lastMessageTime && (
+            <span className="text-xs text-muted-foreground">
+              {formatDistanceToNow(new Date(lastMessageTime), {
+                addSuffix: true,
+                locale: fr
+              })}
+            </span>
+          )}
         </div>
-        <p className="text-sm text-muted-foreground truncate">
-          {lastMessage}
-        </p>
+        {lastMessage && (
+          <p className="text-sm text-muted-foreground truncate">
+            {lastMessage}
+          </p>
+        )}
       </div>
+
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
         onClick={onDelete}
       >
-        <Trash2 className="h-4 w-4 text-destructive" />
+        <Trash2 className="h-4 w-4" />
+        <span className="sr-only">Supprimer la conversation</span>
       </Button>
-    </button>
+    </motion.div>
   );
 }
