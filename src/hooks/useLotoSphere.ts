@@ -10,29 +10,39 @@ export function useLotoSphere() {
   const { data: currentDraw, isLoading: isLoadingDraw, error: drawError } = useQuery({
     queryKey: ["currentDraw"],
     queryFn: async () => {
-      console.log("Fetching current draw...");
       const { data, error } = await supabase
         .from("loto_draws")
         .select("*")
         .eq("status", "pending")
         .order("scheduled_for", { ascending: true })
         .limit(1)
-        .maybeSingle();
+        .single();
 
-      if (error) {
-        console.error("Error fetching draw:", error);
-        throw error;
-      }
-      
-      console.log("Current draw data:", data);
+      if (error) throw error;
       return data as LotoDraw;
+    },
+  });
+
+  const { data: userWallet = null, isLoading: isLoadingWallet } = useQuery({
+    queryKey: ["userWallet"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Non authentifié");
+
+      const { data, error } = await supabase
+        .from("user_wallets")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
     },
   });
 
   const { data: myTickets = [], isLoading: isLoadingTickets, error: ticketsError } = useQuery({
     queryKey: ["myTickets", currentDraw?.id],
     queryFn: async () => {
-      console.log("Fetching tickets for draw:", currentDraw?.id);
       if (!currentDraw?.id) return [];
       
       const { data: { user } } = await supabase.auth.getUser();
@@ -44,12 +54,7 @@ export function useLotoSphere() {
         .eq("draw_id", currentDraw.id)
         .eq("user_id", user.id);
 
-      if (error) {
-        console.error("Error fetching tickets:", error);
-        throw error;
-      }
-
-      console.log("Tickets data:", data);
+      if (error) throw error;
       return data as LotoTicket[];
     },
     enabled: !!currentDraw?.id
@@ -58,17 +63,12 @@ export function useLotoSphere() {
   const { data: numberStats = {}, error: statsError } = useQuery({
     queryKey: ["numberStats"],
     queryFn: async () => {
-      console.log("Fetching number stats...");
       const { data, error } = await supabase
         .from("loto_number_stats")
         .select("*");
 
-      if (error) {
-        console.error("Error fetching stats:", error);
-        throw error;
-      }
+      if (error) throw error;
       
-      console.log("Number stats data:", data);
       return data.reduce((acc: any, stat) => {
         acc[stat.number] = stat;
         return acc;
@@ -86,7 +86,7 @@ export function useLotoSphere() {
       // Vérifier le portefeuille
       const { data: wallet, error: walletError } = await supabase
         .from("user_wallets")
-        .select("balance")
+        .select("balance, currency")
         .eq("user_id", user.id)
         .single();
 
@@ -110,30 +110,34 @@ export function useLotoSphere() {
 
       if (ticketError) throw ticketError;
 
-      // Mettre à jour le portefeuille
-      const { error: updateError } = await supabase
-        .from("user_wallets")
-        .update({ balance: wallet.balance - 5 })
-        .eq("user_id", user.id);
+      // Mettre à jour le portefeuille et la cagnotte
+      const updates = await supabase.rpc('process_loto_ticket_purchase', {
+        p_user_id: user.id,
+        p_amount: 5,
+        p_draw_id: currentDraw.id
+      });
 
-      if (updateError) throw updateError;
+      if (updates.error) throw updates.error;
 
       return ticket;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["myTickets"] });
       queryClient.invalidateQueries({ queryKey: ["userWallet"] });
+      queryClient.invalidateQueries({ queryKey: ["currentDraw"] });
       toast.success("Ticket acheté avec succès !");
     }
   });
 
   const error = drawError || ticketsError || statsError;
+  const isLoading = isLoadingDraw || isLoadingTickets || isLoadingWallet;
 
   return {
     currentDraw,
     myTickets,
     numberStats,
-    isLoading: isLoadingDraw || isLoadingTickets,
+    userWallet,
+    isLoading,
     error,
     buyTicket: buyTicketMutation.mutate
   };
