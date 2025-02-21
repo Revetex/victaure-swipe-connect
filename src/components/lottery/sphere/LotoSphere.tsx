@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
@@ -11,6 +12,7 @@ import { useLotoSphere } from "@/hooks/useLotoSphere";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { LotoHistory } from "./LotoHistory";
 
 export function LotoSphere({
   onPaymentRequested
