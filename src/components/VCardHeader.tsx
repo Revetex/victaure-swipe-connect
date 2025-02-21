@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { motion } from "framer-motion";
@@ -5,6 +6,7 @@ import { VCardActions } from "./VCardActions";
 import { VCardAvatar } from "./vcard/header/VCardAvatar";
 import { VCardInfo } from "./vcard/header/VCardInfo";
 import { VCardQR } from "./vcard/header/VCardQR";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface VCardHeaderProps {
   profile: UserProfile;
@@ -28,6 +30,7 @@ export function VCardHeader({
 }: VCardHeaderProps) {
   const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
   const [isAvatarDeleted, setIsAvatarDeleted] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleInputChange = (key: string, value: string) => {
     setProfile({ ...profile, [key]: value });
@@ -49,7 +52,12 @@ export function VCardHeader({
       animate={{ opacity: 1, y: 0 }}
       className="relative"
     >
-      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+      <div className={`
+        flex gap-6
+        ${isMobile 
+          ? 'flex-col items-center' 
+          : 'flex-row sm:items-start'}
+      `}>
         <VCardAvatar 
           profile={profile}
           isEditing={isEditing}
@@ -65,8 +73,17 @@ export function VCardHeader({
           />
         </div>
 
-        <div className="flex items-center gap-4">
-          {!isEditing && <VCardQR isQRDialogOpen={isQRDialogOpen} setIsQRDialogOpen={setIsQRDialogOpen} profileId={profile.id} />}
+        <div className={`
+          flex items-center gap-4
+          ${isMobile ? 'w-full justify-center mt-4' : ''}
+        `}>
+          {!isEditing && (
+            <VCardQR 
+              isQRDialogOpen={isQRDialogOpen} 
+              setIsQRDialogOpen={setIsQRDialogOpen} 
+              profileId={profile.id} 
+            />
+          )}
           
           <div className="shrink-0">
             <VCardActions
