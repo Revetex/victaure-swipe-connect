@@ -602,6 +602,50 @@ export type Database = {
           },
         ]
       }
+      contract_bids: {
+        Row: {
+          amount: number
+          bidder_id: string
+          contract_id: string
+          created_at: string | null
+          documents: string[] | null
+          id: string
+          proposal: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          bidder_id: string
+          contract_id: string
+          created_at?: string | null
+          documents?: string[] | null
+          id?: string
+          proposal?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          bidder_id?: string
+          contract_id?: string
+          created_at?: string | null
+          documents?: string[] | null
+          id?: string
+          proposal?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_bids_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversation_participants: {
         Row: {
           conversation_id: string | null
@@ -1996,6 +2040,63 @@ export type Database = {
           id?: string
           name?: string
           type?: string
+        }
+        Relationships: []
+      }
+      marketplace_contracts: {
+        Row: {
+          budget_max: number | null
+          budget_min: number | null
+          category: string | null
+          created_at: string | null
+          creator_id: string
+          currency: string
+          deadline: string | null
+          description: string | null
+          documents: string[] | null
+          id: string
+          location: string | null
+          requirements: string[] | null
+          searchable_text: unknown | null
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          budget_max?: number | null
+          budget_min?: number | null
+          category?: string | null
+          created_at?: string | null
+          creator_id: string
+          currency?: string
+          deadline?: string | null
+          description?: string | null
+          documents?: string[] | null
+          id?: string
+          location?: string | null
+          requirements?: string[] | null
+          searchable_text?: unknown | null
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          budget_max?: number | null
+          budget_min?: number | null
+          category?: string | null
+          created_at?: string | null
+          creator_id?: string
+          currency?: string
+          deadline?: string | null
+          description?: string | null
+          documents?: string[] | null
+          id?: string
+          location?: string | null
+          requirements?: string[] | null
+          searchable_text?: unknown | null
+          status?: string
+          title?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
