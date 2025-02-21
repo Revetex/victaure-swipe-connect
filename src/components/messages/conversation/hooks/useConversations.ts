@@ -3,14 +3,15 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { UserProfile, transformDatabaseProfile } from "@/types/profile";
+
+type UserRole = 'professional' | 'business' | 'admin';
 
 interface ConversationParticipant {
   id: string;
   full_name: string;
   avatar_url?: string | null;
   email?: string | null;
-  role?: 'professional' | 'business' | 'admin';
+  role: UserRole;
   bio?: string | null;
   phone?: string | null;
   city?: string | null;
@@ -19,7 +20,6 @@ interface ConversationParticipant {
   skills?: string[];
   online_status?: boolean;
   last_seen?: string | null;
-  participant2_id?: string;
 }
 
 export interface Conversation {
@@ -64,10 +64,29 @@ export function useConversations() {
 
         const formattedConversations: Conversation[] = conversationsData.map(conv => {
           const participant = participantsData?.find(p => p.id === conv.participant2_id);
-          const transformedParticipant = participant ? {
-            ...participant,
-            role: (participant.role || 'professional') as 'professional' | 'business' | 'admin'
-          } : null;
+          if (!participant) return null;
+
+          // Ensure role is one of the allowed values
+          let role: UserRole = 'professional';
+          if (participant.role === 'business' || participant.role === 'admin') {
+            role = participant.role;
+          }
+
+          const transformedParticipant: ConversationParticipant = {
+            id: participant.id,
+            full_name: participant.full_name,
+            avatar_url: participant.avatar_url,
+            email: participant.email,
+            role: role,
+            bio: participant.bio,
+            phone: participant.phone,
+            city: participant.city,
+            state: participant.state,
+            country: participant.country,
+            skills: participant.skills || [],
+            online_status: participant.online_status,
+            last_seen: participant.last_seen
+          };
 
           return {
             id: conv.id,
@@ -75,9 +94,9 @@ export function useConversations() {
             participant2_id: conv.participant2_id,
             last_message: conv.last_message || '',
             last_message_time: conv.last_message_time || new Date().toISOString(),
-            participant: transformedParticipant as ConversationParticipant
+            participant: transformedParticipant
           };
-        }).filter(conv => conv.participant !== null);
+        }).filter((conv): conv is Conversation => conv !== null);
 
         setConversations(formattedConversations);
       }
