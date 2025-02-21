@@ -2,6 +2,22 @@
 export type TransactionType = 'escrow' | 'auction' | 'fixed';
 export type FilterOrder = 'asc' | 'desc';
 
+export type ConversionType = 'currency' | 'unit' | 'time';
+
+export interface Rate {
+  code: string;
+  rate: number;
+  name: string;
+}
+
+export interface ExchangeRates {
+  base: string;
+  date: string;
+  rates: Record<string, number>;
+  success: boolean;
+  timestamp: number;
+}
+
 export const marketingDescriptions = {
   escrow: {
     title: "Paiement Sécurisé en Fiducie 🔒",
