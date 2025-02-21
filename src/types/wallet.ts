@@ -5,6 +5,7 @@ export interface UserWallet {
   wallet_id: string;
   balance: number;
   currency: string;
+  is_frozen: boolean;
   created_at: string;
   updated_at: string;
 }

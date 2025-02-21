@@ -9,13 +9,11 @@ import { Loader } from "@/components/ui/loader";
 import { useWallet } from "@/hooks/useWallet";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { PaymentMethodsList } from "@/components/settings/payment/PaymentMethodsList";
-import { PaymentTypeSelector } from "@/components/settings/payment/PaymentTypeSelector";
 
 export function WalletManager() {
   const [sendAmount, setSendAmount] = useState("");
   const [receiverWalletId, setReceiverWalletId] = useState("");
-  const { wallet, isLoading, addFunds, sendFunds, freezeWallet, transactions } = useWallet();
+  const { wallet, isLoading, sendFunds, freezeWallet } = useWallet();
   const [showPaymentMethods, setShowPaymentMethods] = useState(false);
 
   if (isLoading) {
@@ -146,30 +144,6 @@ export function WalletManager() {
           >
             Send Funds
           </Button>
-        </CardContent>
-      </Card>
-
-      {/* Payment Methods */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Payment Methods</CardTitle>
-          <CardDescription>Manage your payment methods</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => setShowPaymentMethods(!showPaymentMethods)}
-          >
-            {showPaymentMethods ? "Hide" : "Show"} Payment Methods
-          </Button>
-
-          {showPaymentMethods && (
-            <div className="space-y-4">
-              <PaymentTypeSelector />
-              <PaymentMethodsList />
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>

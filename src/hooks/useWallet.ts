@@ -53,11 +53,33 @@ export function useWallet() {
 
       if (receiverError) throw new Error("Recipient wallet not found");
 
-      const { error: transactionError } = await supabase.rpc('transfer_funds', {
-        p_sender_wallet_id: wallet.id,
-        p_receiver_wallet_id: receiverWallet.id,
-        p_amount: amount
-      });
+      // Use a direct update since the transfer_funds RPC is not yet registered
+      // This will be replaced once the RPC is properly registered
+      const { error: senderError } = await supabase
+        .from("user_wallets")
+        .update({ balance: wallet.balance - amount })
+        .eq("id", wallet.id);
+
+      if (senderError) throw senderError;
+
+      const { error: receiverUpdateError } = await supabase
+        .from("user_wallets")
+        .update({ balance: receiverWallet.balance + amount })
+        .eq("id", receiverWallet.id);
+
+      if (receiverUpdateError) throw receiverUpdateError;
+
+      // Create transaction record
+      const { error: transactionError } = await supabase
+        .from("wallet_transactions")
+        .insert({
+          sender_wallet_id: wallet.id,
+          receiver_wallet_id: receiverWallet.id,
+          amount,
+          currency: wallet.currency,
+          status: 'completed',
+          description: 'Wallet transfer'
+        });
 
       if (transactionError) throw transactionError;
     },
