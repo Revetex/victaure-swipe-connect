@@ -1,19 +1,21 @@
+
 import { UserProfile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { AvatarImage } from "./avatar/AvatarImage";
 import { AvatarControls } from "./avatar/AvatarControls";
 import { AvatarOverlay } from "./avatar/AvatarOverlay";
 import { AvatarLoader } from "./avatar/AvatarLoader";
 import { FullscreenAvatar } from "./avatar/FullscreenAvatar";
+
 interface VCardAvatarProps {
   profile: UserProfile;
   isEditing: boolean;
   setProfile: (profile: UserProfile) => void;
   setIsAvatarDeleted: (deleted: boolean) => void;
 }
+
 export function VCardAvatar({
   profile,
   isEditing,
@@ -23,6 +25,7 @@ export function VCardAvatar({
   const [isLoading, setIsLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [showFullscreen, setShowFullscreen] = useState(false);
+
   const validateImage = async (file: File) => {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
@@ -47,9 +50,11 @@ export function VCardAvatar({
       };
     });
   };
+
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
     try {
       setIsLoading(true);
       setImageError(false);
@@ -66,23 +71,27 @@ export function VCardAvatar({
           await supabase.storage.from('vcards').remove([oldFileName]);
         }
       }
+
       const fileExt = file.name.split('.').pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
-      const {
-        error: uploadError
-      } = await supabase.storage.from('vcards').upload(fileName, file);
+      
+      const { error: uploadError } = await supabase.storage
+        .from('vcards')
+        .upload(fileName, file);
+
       if (uploadError) throw uploadError;
-      const {
-        data: {
-          publicUrl
-        }
-      } = supabase.storage.from('vcards').getPublicUrl(fileName);
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('vcards')
+        .getPublicUrl(fileName);
+
       const updatedProfile = {
         ...profile,
         avatar_url: publicUrl
       };
       setProfile(updatedProfile);
       setIsAvatarDeleted(false);
+      
       toast.success("Photo de profil mise à jour", {
         id: "avatar-update-success"
       });
@@ -96,23 +105,26 @@ export function VCardAvatar({
       setIsLoading(false);
     }
   };
+
   const handleDeleteAvatar = async () => {
     try {
       setIsLoading(true);
       if (profile.avatar_url) {
         const fileName = profile.avatar_url.split('/').pop();
         if (fileName) {
-          const {
-            error
-          } = await supabase.storage.from('vcards').remove([fileName]);
+          const { error } = await supabase.storage
+            .from('vcards')
+            .remove([fileName]);
           if (error) throw error;
         }
+
         const updatedProfile = {
           ...profile,
           avatar_url: null
         };
         setProfile(updatedProfile);
         setIsAvatarDeleted(true);
+        
         toast.success("Photo de profil supprimée", {
           id: "avatar-delete-success"
         });
@@ -126,16 +138,43 @@ export function VCardAvatar({
       setIsLoading(false);
     }
   };
+
   const handleImageError = () => {
     setImageError(true);
   };
-  return <>
-      <div className="relative group shrink-0">
-        
 
-        {isEditing && !isLoading && <AvatarControls hasAvatar={!!profile.avatar_url} isLoading={isLoading} onUpload={handleAvatarUpload} onDelete={handleDeleteAvatar} />}
+  return (
+    <>
+      <div className="relative group shrink-0">
+        <AvatarImage
+          url={profile.avatar_url}
+          fullName={profile.full_name}
+          onError={handleImageError}
+          hasError={imageError}
+          isLoading={isLoading}
+          onClick={() => profile.avatar_url && setShowFullscreen(true)}
+        />
+        
+        <AvatarLoader isLoading={isLoading} />
+        
+        <AvatarOverlay showOverlay={!isLoading && !imageError && !!profile.avatar_url} />
+
+        {isEditing && !isLoading && (
+          <AvatarControls 
+            hasAvatar={!!profile.avatar_url} 
+            isLoading={isLoading}
+            onUpload={handleAvatarUpload}
+            onDelete={handleDeleteAvatar}
+          />
+        )}
       </div>
 
-      <FullscreenAvatar isOpen={showFullscreen} onOpenChange={setShowFullscreen} imageUrl={profile.avatar_url} fullName={profile.full_name} />
-    </>;
+      <FullscreenAvatar 
+        isOpen={showFullscreen}
+        onOpenChange={setShowFullscreen}
+        imageUrl={profile.avatar_url}
+        fullName={profile.full_name}
+      />
+    </>
+  );
 }
