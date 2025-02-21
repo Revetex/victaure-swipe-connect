@@ -24,33 +24,39 @@ export function ConversationList({ className }: ConversationListProps) {
   const [selectedParticipant, setSelectedParticipant] = useState<Receiver | null>(null);
   const { friends, loadingFriends, loadFriends } = useFriendsList();
 
-  const handleSelectConversation = (conversation: any) => {
-    const receiver: Receiver = {
-      ...conversation.participant,
-      online_status: conversation.participant.online_status ? 'online' as const : 'offline' as const,
-      last_seen: new Date().toISOString(),
+  const convertParticipantToReceiver = (participant: any): Receiver => {
+    return {
+      id: participant.id,
+      full_name: participant.full_name,
+      avatar_url: participant.avatar_url || null,
+      email: participant.email || null,
+      role: participant.role as 'professional' | 'business' | 'admin',
+      bio: participant.bio || null,
+      phone: participant.phone || null,
+      city: participant.city || null,
+      state: participant.state || null,
+      country: participant.country || null,
+      skills: participant.skills || [],
+      online_status: participant.online_status ? 'online' as const : 'offline' as const,
+      last_seen: participant.last_seen || new Date().toISOString(),
       certifications: [],
       education: [],
       experiences: [],
       friends: [],
-      avatar_url: conversation.participant.avatar_url || null,
-      email: conversation.participant.email || null,
-      bio: conversation.participant.bio || null,
-      phone: conversation.participant.phone || null,
-      city: conversation.participant.city || null,
-      state: conversation.participant.state || null,
-      country: conversation.participant.country || null,
       latitude: null,
-      longitude: null,
-      skills: conversation.participant.skills || []
+      longitude: null
     };
-    
+  };
+
+  const handleSelectConversation = (conversation: any) => {
+    const receiver = convertParticipantToReceiver(conversation.participant);
     setReceiver(receiver);
     setShowConversation(true);
   };
 
-  const handleParticipantClick = (participant: Receiver) => {
-    setSelectedParticipant(participant);
+  const handleParticipantClick = (participant: any) => {
+    const receiver = convertParticipantToReceiver(participant);
+    setSelectedParticipant(receiver);
     setShowProfilePreview(true);
   };
 
@@ -107,7 +113,7 @@ export function ConversationList({ className }: ConversationListProps) {
               lastMessage={conversation.last_message}
               lastMessageTime={conversation.last_message_time}
               onSelect={() => handleSelectConversation(conversation)}
-              onParticipantClick={() => handleParticipantClick(conversation.participant as Receiver)}
+              onParticipantClick={() => handleParticipantClick(conversation.participant)}
               onDelete={(e) => {
                 e.stopPropagation();
                 handleDeleteConversation(conversation.id, conversation.participant2_id);
