@@ -4599,6 +4599,14 @@ export type Database = {
         }
         Returns: undefined
       }
+      process_loto_ticket_purchase: {
+        Args: {
+          p_user_id: string
+          p_amount: number
+          p_draw_id: string
+        }
+        Returns: undefined
+      }
       schedule_next_draw: {
         Args: Record<PropertyKey, never>
         Returns: undefined
