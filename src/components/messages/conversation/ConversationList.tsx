@@ -16,6 +16,22 @@ interface ConversationListProps {
   className?: string;
 }
 
+interface ConversationParticipant {
+  id: string;
+  full_name: string;
+  avatar_url?: string | null;
+  email?: string | null;
+  role?: string;
+  bio?: string | null;
+  phone?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  skills?: string[];
+  online_status?: boolean;
+  last_seen?: string | null;
+}
+
 export function ConversationList({ className }: ConversationListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const { setReceiver, setShowConversation } = useReceiver();
@@ -24,20 +40,20 @@ export function ConversationList({ className }: ConversationListProps) {
   const [selectedParticipant, setSelectedParticipant] = useState<Receiver | null>(null);
   const { friends, loadingFriends, loadFriends } = useFriendsList();
 
-  const convertParticipantToReceiver = (participant: any): Receiver => {
+  const convertParticipantToReceiver = (participant: ConversationParticipant): Receiver => {
     return {
       id: participant.id,
       full_name: participant.full_name,
       avatar_url: participant.avatar_url || null,
       email: participant.email || null,
-      role: participant.role as 'professional' | 'business' | 'admin',
+      role: (participant.role || 'professional') as 'professional' | 'business' | 'admin',
       bio: participant.bio || null,
       phone: participant.phone || null,
       city: participant.city || null,
       state: participant.state || null,
       country: participant.country || null,
       skills: participant.skills || [],
-      online_status: participant.online_status ? 'online' as const : 'offline' as const,
+      online_status: participant.online_status ? 'online' : 'offline',
       last_seen: participant.last_seen || new Date().toISOString(),
       certifications: [],
       education: [],
@@ -48,13 +64,13 @@ export function ConversationList({ className }: ConversationListProps) {
     };
   };
 
-  const handleSelectConversation = (conversation: any) => {
+  const handleSelectConversation = (conversation: { participant: ConversationParticipant }) => {
     const receiver = convertParticipantToReceiver(conversation.participant);
     setReceiver(receiver);
     setShowConversation(true);
   };
 
-  const handleParticipantClick = (participant: any) => {
+  const handleParticipantClick = (participant: ConversationParticipant) => {
     const receiver = convertParticipantToReceiver(participant);
     setSelectedParticipant(receiver);
     setShowProfilePreview(true);
