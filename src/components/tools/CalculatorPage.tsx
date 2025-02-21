@@ -48,8 +48,15 @@ export function CalculatorPage() {
     initStripe();
   }, []);
 
-  const handlePaymentSubmit = () => {
-    console.log("Payment submitted:", { type: transactionType, amount });
+  const handlePaymentSubmit = async () => {
+    try {
+      if (amount <= 0) {
+        throw new Error("Le montant doit être supérieur à 0");
+      }
+      console.log("Payment submitted:", { type: transactionType, amount });
+    } catch (error) {
+      console.error("Payment error:", error);
+    }
   };
 
   if (isLoading) {
@@ -66,7 +73,7 @@ export function CalculatorPage() {
         <div className="max-w-6xl mx-auto p-4 space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-6">
-              <Card className="p-6">
+              <Card className="p-6 relative overflow-hidden backdrop-blur-sm bg-card/95 border-primary/10">
                 <CalculatorDisplay value={calculator.display} />
                 <CalculatorKeypad 
                   onNumber={calculator.handleNumber}
