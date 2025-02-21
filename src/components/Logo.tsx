@@ -1,91 +1,73 @@
 
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useNavigate } from "react-router-dom";
+import { useReceiver } from "@/hooks/useReceiver";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
+const BASE_GRADIENTS = {
+  blue: ["from-indigo-500", "to-blue-500"],
+  red: ["from-red-500", "to-pink-500"],
+  green: ["from-green-500", "to-emerald-500"],
+  purple: ["from-purple-500", "to-indigo-500"],
+};
 
 interface LogoProps {
-  size?: "sm" | "md" | "lg" | "xl";
+  variant?: keyof typeof BASE_GRADIENTS;
+  forceTheme?: "dark" | "light";
   className?: string;
 }
 
-const textSizes = {
-  sm: "text-xl",
-  md: "text-2xl",
-  lg: "text-3xl",
-  xl: "text-4xl"
-};
+export function Logo({ variant = "purple", forceTheme, className }: LogoProps) {
+  const navigate = useNavigate();
+  const { setReceiver, setShowConversation } = useReceiver();
 
-const logoSizes = {
-  sm: "w-6 h-6",
-  md: "w-8 h-8",
-  lg: "w-10 h-10",
-  xl: "w-12 h-12"
-};
+  const startAIChat = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Vous devez être connecté pour discuter avec Mr Victaure");
+        return;
+      }
 
-export function Logo({ size = "md", className }: LogoProps) {
-  const isMobile = useIsMobile();
-  
+      // Configuration de l'assistant comme receiver
+      const aiAssistant = {
+        id: "ai-assistant",
+        full_name: "Mr Victaure AI",
+        avatar_url: "/ai-assistant-avatar.png",
+        email: "ai@victaure.com",
+        role: "professional",
+        bio: "Assistant IA spécialisé dans l'emploi",
+        online_status: "online",
+        last_seen: new Date().toISOString(),
+        is_assistant: true
+      };
+
+      setReceiver(aiAssistant);
+      setShowConversation(true);
+      navigate("/messages");
+    } catch (error) {
+      console.error("Error starting AI chat:", error);
+      toast.error("Impossible de démarrer la conversation avec Mr Victaure");
+    }
+  };
+
+  const [start, end] = BASE_GRADIENTS[variant];
+  const textColorClass = forceTheme === "light" || (!forceTheme && variant === "purple")
+    ? "text-white"
+    : "text-zinc-900";
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        type: "spring",
-        stiffness: 500,
-        damping: 30,
-        mass: 1
-      }}
-      className={cn(
-        "select-none",
-        isMobile ? "w-full flex justify-center" : "",
-        className
-      )}
+    <div 
+      className="flex items-center justify-center relative cursor-pointer" 
+      onClick={startAIChat}
     >
-      <motion.div 
-        className={cn(
-          "font-sans font-bold tracking-wider",
-          "relative flex items-center justify-center",
-          "transition-all duration-500",
-          textSizes[size]
-        )}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <div className="flex items-center justify-center relative">
-          <span className="font-inter text-zinc-900 dark:text-white font-black tracking-tight">
-            VICTAURE
-          </span>
-          <div className="relative ml-3">
-            <img 
-              src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png" 
-              alt="Victaure Logo" 
-              className={cn(
-                logoSizes[size],
-                "object-contain drop-shadow"
-              )}
-            />
-            <motion.div 
-              className="absolute -bottom-3 right-0 transform translate-x-1/4"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 0.8, scale: 1 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-            >
-              <img 
-                src="/lovable-uploads/168ba21b-e221-4668-96cc-eb026041a0ed.png" 
-                alt="Signature" 
-                className={cn(
-                  "w-[60px] h-auto",
-                  "opacity-70 dark:opacity-60",
-                  "mix-blend-multiply dark:mix-blend-screen"
-                )}
-                style={{
-                  filter: "contrast(1.2) brightness(0.9)"
-                }}
-              />
-            </motion.div>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
+      <div
+        className={`absolute inset-0 bg-gradient-to-r ${start} ${end} blur-2xl opacity-20`}
+        aria-hidden="true"
+      />
+      <span className={`relative font-display font-bold text-xl ${textColorClass}`}>
+        Mr Victaure
+      </span>
+    </div>
   );
 }
