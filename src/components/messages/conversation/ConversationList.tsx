@@ -21,7 +21,7 @@ interface ConversationParticipant {
   full_name: string;
   avatar_url?: string | null;
   email?: string | null;
-  role?: string;
+  role?: 'professional' | 'business' | 'admin';
   bio?: string | null;
   phone?: string | null;
   city?: string | null;
@@ -30,6 +30,15 @@ interface ConversationParticipant {
   skills?: string[];
   online_status?: boolean;
   last_seen?: string | null;
+  participant2_id?: string;
+}
+
+interface Conversation {
+  id: string;
+  participant: ConversationParticipant;
+  last_message?: string;
+  last_message_time?: string;
+  participant2_id: string;
 }
 
 export function ConversationList({ className }: ConversationListProps) {
@@ -37,7 +46,7 @@ export function ConversationList({ className }: ConversationListProps) {
   const { setReceiver, setShowConversation } = useReceiver();
   const { conversations, handleDeleteConversation } = useConversations();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
-  const [selectedParticipant, setSelectedParticipant] = useState<Receiver | null>(null);
+  const [selectedParticipant, setSelectedParticipant] = useState<ConversationParticipant | null>(null);
   const { friends, loadingFriends, loadFriends } = useFriendsList();
 
   const convertParticipantToReceiver = (participant: ConversationParticipant): Receiver => {
@@ -46,7 +55,7 @@ export function ConversationList({ className }: ConversationListProps) {
       full_name: participant.full_name,
       avatar_url: participant.avatar_url || null,
       email: participant.email || null,
-      role: (participant.role || 'professional') as 'professional' | 'business' | 'admin',
+      role: participant.role || 'professional',
       bio: participant.bio || null,
       phone: participant.phone || null,
       city: participant.city || null,
@@ -64,15 +73,14 @@ export function ConversationList({ className }: ConversationListProps) {
     };
   };
 
-  const handleSelectConversation = (conversation: { participant: ConversationParticipant }) => {
+  const handleSelectConversation = (conversation: Conversation) => {
     const receiver = convertParticipantToReceiver(conversation.participant);
     setReceiver(receiver);
     setShowConversation(true);
   };
 
   const handleParticipantClick = (participant: ConversationParticipant) => {
-    const receiver = convertParticipantToReceiver(participant);
-    setSelectedParticipant(receiver);
+    setSelectedParticipant(participant);
     setShowProfilePreview(true);
   };
 
@@ -81,43 +89,25 @@ export function ConversationList({ className }: ConversationListProps) {
     setShowConversation(true);
   };
 
-  const convertReceiverToProfile = (receiver: Receiver): UserProfile => {
+  const convertReceiverToProfile = (participant: ConversationParticipant): UserProfile => {
     return {
-      id: receiver.id,
-      email: receiver.email || "",
-      full_name: receiver.full_name,
-      avatar_url: receiver.avatar_url || undefined,
-      role: receiver.role,
-      bio: receiver.bio || undefined,
-      phone: receiver.phone || undefined,
-      city: receiver.city || undefined,
-      state: receiver.state || undefined,
-      country: receiver.country || undefined,
-      skills: receiver.skills,
-      online_status: receiver.online_status === 'online',
-      last_seen: receiver.last_seen || undefined,
+      id: participant.id,
+      email: participant.email || "",
+      full_name: participant.full_name,
+      avatar_url: participant.avatar_url || undefined,
+      role: participant.role || 'professional',
+      bio: participant.bio || undefined,
+      phone: participant.phone || undefined,
+      city: participant.city || undefined,
+      state: participant.state || undefined,
+      country: participant.country || undefined,
+      skills: participant.skills || [],
+      online_status: !!participant.online_status,
+      last_seen: participant.last_seen || undefined,
       certifications: [],
       education: [],
       experiences: [],
       friends: []
-    };
-  };
-
-  const convertReceiverToParticipant = (receiver: Receiver): ConversationParticipant => {
-    return {
-      id: receiver.id,
-      full_name: receiver.full_name,
-      avatar_url: receiver.avatar_url,
-      email: receiver.email,
-      role: receiver.role,
-      bio: receiver.bio,
-      phone: receiver.phone,
-      city: receiver.city,
-      state: receiver.state,
-      country: receiver.country,
-      skills: receiver.skills,
-      online_status: receiver.online_status === 'online',
-      last_seen: receiver.last_seen
     };
   };
 
@@ -162,7 +152,11 @@ export function ConversationList({ className }: ConversationListProps) {
           profile={convertReceiverToProfile(selectedParticipant)}
           isOpen={showProfilePreview}
           onClose={() => setShowProfilePreview(false)}
-          onRequestChat={() => handleSelectConversation({ participant: convertReceiverToParticipant(selectedParticipant) })}
+          onRequestChat={() => handleSelectConversation({
+            id: selectedParticipant.id,
+            participant: selectedParticipant,
+            participant2_id: selectedParticipant.participant2_id || selectedParticipant.id
+          })}
         />
       )}
     </div>
