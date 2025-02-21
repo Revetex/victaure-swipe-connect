@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useExchangeRates } from './useExchangeRates';
 import type { ConversionType } from '../types';
 import { toast } from 'sonner';
