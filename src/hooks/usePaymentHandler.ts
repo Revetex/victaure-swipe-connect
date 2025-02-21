@@ -10,65 +10,62 @@ export function usePaymentHandler() {
   const handlePayment = async (amount: number, description: string) => {
     try {
       setLoading(true);
-      const stripe = await getStripeClient();
-
+      
+      // Vérifier que l'utilisateur est connecté
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        throw new Error('User not authenticated');
+        throw new Error('Veuillez vous connecter pour effectuer un paiement');
       }
 
-      // Créer un customer s'il n'existe pas déjà
-      const { data: customerData } = await supabase
+      // Initialiser Stripe
+      const stripe = await getStripeClient();
+      if (!stripe) {
+        throw new Error('Erreur lors de l\'initialisation de Stripe');
+      }
+
+      // Récupérer ou créer le customer Stripe
+      const { data: customerData, error: customerError } = await supabase
         .from('stripe_customers')
         .select('stripe_customer_id')
         .eq('user_id', user.id)
         .single();
 
-      let customerId = customerData?.stripe_customer_id;
-
-      if (!customerId) {
-        const customer = await stripe.customers.create({
-          email: user.email,
-          metadata: {
-            user_id: user.id
-          }
-        });
-
-        await supabase
-          .from('stripe_customers')
-          .insert({
-            user_id: user.id,
-            stripe_customer_id: customer.id
-          });
-
-        customerId = customer.id;
+      if (customerError && customerError.code !== 'PGRST116') {
+        throw new Error('Erreur lors de la récupération du client');
       }
 
       // Créer la session de paiement
-      const session = await stripe.checkout.sessions.create({
-        customer: customerId,
-        payment_method_types: ['card'],
-        line_items: [{
-          price_data: {
-            currency: 'cad',
-            product_data: {
-              name: description,
-            },
-            unit_amount: amount * 100, // Convertir en centimes
-          },
-          quantity: 1,
-        }],
-        mode: 'payment',
-        success_url: `${window.location.origin}/payment/success`,
-        cancel_url: `${window.location.origin}/payment/cancel`,
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount,
+          description,
+          customerId: customerData?.stripe_customer_id
+        }),
       });
 
+      if (!response.ok) {
+        throw new Error('Erreur lors de la création de la session de paiement');
+      }
+
+      const session = await response.json();
+
       // Rediriger vers la page de paiement Stripe
-      window.location.href = session.url!;
+      const { error: stripeError } = await stripe.redirectToCheckout({
+        sessionId: session.id
+      });
+
+      if (stripeError) {
+        throw stripeError;
+      }
 
     } catch (error) {
       console.error('Payment error:', error);
-      toast.error("Une erreur est survenue lors du paiement");
+      toast.error(error instanceof Error ? error.message : "Erreur lors du paiement");
+      throw error;
     } finally {
       setLoading(false);
     }
