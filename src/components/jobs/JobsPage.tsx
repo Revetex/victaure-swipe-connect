@@ -74,6 +74,13 @@ export function JobsPage() {
     setRemoteOnly(false);
   };
 
+  const handleRequestAssistant = () => {
+    toast.success("Une nouvelle version de l'assistant arrive bientôt !", {
+      description: "Notre IA va vous aider à trouver le job parfait !",
+      duration: 5000,
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -98,7 +105,7 @@ export function JobsPage() {
       className="container mx-auto p-4 max-w-7xl"
     >
       <div className="space-y-6">
-        <JobsHeader totalJobs={jobs.length} />
+        <JobsHeader totalJobs={jobs.length} onRequestAssistant={handleRequestAssistant} />
         
         <JobsSearch 
           searchQuery={searchQuery}
