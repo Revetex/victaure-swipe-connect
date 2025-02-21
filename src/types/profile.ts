@@ -23,6 +23,7 @@ export interface UserProfile {
   privacy_enabled?: boolean;
   created_at?: string;
   sections_order?: string[];
+  verified?: boolean;
 }
 
 export interface Friend {

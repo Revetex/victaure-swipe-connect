@@ -1,4 +1,3 @@
-
 import { UserProfile, Experience } from "@/types/profile";
 
 export function transformToFullProfile(data: any): UserProfile {
@@ -26,7 +25,8 @@ export function transformToFullProfile(data: any): UserProfile {
     created_at: data.created_at || new Date().toISOString(),
     privacy_enabled: data.privacy_enabled || false,
     sections_order: data.sections_order || [],
-    website: data.website || undefined
+    website: data.website || undefined,
+    verified: data.verified || false
   };
 }
 
