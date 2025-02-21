@@ -14,12 +14,23 @@ import { ProfilePreview } from "@/components/ProfilePreview";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import type { Receiver } from "@/types/messages";
 
-interface Friend {
-  id: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  online_status: boolean;
+interface FriendshipData {
+  friend: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+    online_status: boolean;
+    email: string;
+    role: 'professional' | 'business' | 'admin';
+    bio: string | null;
+    phone: string | null;
+    city: string | null;
+    state: string | null;
+    country: string;
+    skills: string[];
+  }
 }
 
 interface ConversationListProps {
@@ -32,8 +43,8 @@ export function ConversationList({ className }: ConversationListProps) {
   const navigate = useNavigate();
   const { conversations, handleDeleteConversation } = useConversations();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
-  const [selectedParticipant, setSelectedParticipant] = useState<any>(null);
-  const [friends, setFriends] = useState<Friend[]>([]);
+  const [selectedParticipant, setSelectedParticipant] = useState<Receiver | null>(null);
+  const [friends, setFriends] = useState<Receiver[]>([]);
   const [loadingFriends, setLoadingFriends] = useState(false);
 
   const handleSelectConversation = (conversation: any) => {
@@ -46,7 +57,7 @@ export function ConversationList({ className }: ConversationListProps) {
     setShowConversation(true);
   };
 
-  const handleParticipantClick = (participant: any) => {
+  const handleParticipantClick = (participant: Receiver) => {
     setSelectedParticipant(participant);
     setShowProfilePreview(true);
   };
@@ -60,12 +71,19 @@ export function ConversationList({ className }: ConversationListProps) {
       const { data: friendships, error } = await supabase
         .from('friendships')
         .select(`
-          friend_id,
           friend:profiles!friendships_friend_id_fkey (
             id,
             full_name,
             avatar_url,
-            online_status
+            online_status,
+            email,
+            role,
+            bio,
+            phone,
+            city,
+            state,
+            country,
+            skills
           )
         `)
         .eq('user_id', user.id)
@@ -73,11 +91,23 @@ export function ConversationList({ className }: ConversationListProps) {
 
       if (error) throw error;
 
-      const friendsList = friendships
-        ?.map(friendship => friendship.friend)
-        .filter((friend): friend is Friend => friend !== null) || [];
+      if (friendships) {
+        const formattedFriends: Receiver[] = friendships
+          .map((friendship: FriendshipData) => ({
+            ...friendship.friend,
+            online_status: friendship.friend.online_status ? 'online' : 'offline',
+            last_seen: new Date().toISOString(),
+            certifications: [],
+            education: [],
+            experiences: [],
+            friends: [],
+            latitude: null,
+            longitude: null
+          }))
+          .filter((friend): friend is Receiver => friend !== null);
 
-      setFriends(friendsList);
+        setFriends(formattedFriends);
+      }
     } catch (error) {
       console.error('Error loading friends:', error);
       toast.error("Impossible de charger vos amis");
@@ -86,13 +116,8 @@ export function ConversationList({ className }: ConversationListProps) {
     }
   };
 
-  const startConversation = (friend: Friend) => {
-    const receiver = {
-      ...friend,
-      online_status: friend.online_status ? 'online' : 'offline'
-    };
-    
-    setReceiver(receiver);
+  const startConversation = (friend: Receiver) => {
+    setReceiver(friend);
     setShowConversation(true);
   };
 
