@@ -28,9 +28,9 @@ function convertUnit(value: number, from: string, to: string, type: ConversionTy
     weight: { kg: 1, g: 1000, mg: 1000000, lb: 2.20462, oz: 35.274 },
     time: { s: 1, min: 1/60, h: 1/3600, d: 1/86400 },
     unit: { u: 1, dz: 1/12, c: 1/100, k: 1/1000 },
-    currency: {}, // Handled by useExchangeRates
-    crypto: {}, // Handled by useExchangeRates
-    temperature: {} // Handled by convertTemperature
+    currency: {},
+    crypto: {},
+    temperature: {}
   };
 
   const rates = conversionRates[type];
