@@ -15,14 +15,8 @@ export interface WalletTransaction {
   receiver_wallet_id: string;
   amount: number;
   currency: string;
-  status: 'pending' | 'completed' | 'cancelled' | 'frozen';
+  status: 'pending' | 'completed' | 'failed' | 'cancelled';
   description?: string;
   created_at: string;
   updated_at: string;
 }
-
-export type TransferFormData = {
-  receiverWalletId: string;
-  amount: number;
-  description?: string;
-};

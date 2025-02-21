@@ -1,99 +1,89 @@
 
-import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { UserWallet, WalletTransaction, TransferFormData } from '@/types/wallet';
-import { toast } from 'sonner';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { UserWallet, WalletTransaction } from "@/types/wallet";
+import { toast } from "sonner";
 
 export function useWallet() {
-  const [loading, setLoading] = useState(false);
-  
-  const getWallet = async (): Promise<UserWallet | null> => {
-    try {
+  const queryClient = useQueryClient();
+
+  const { data: wallet, isLoading } = useQuery({
+    queryKey: ["userWallet"],
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Non authentifié');
+      if (!user) throw new Error("Non connecté");
 
       const { data, error } = await supabase
-        .from('user_wallets')
-        .select('*')
-        .eq('user_id', user.id)
+        .from("user_wallets")
+        .select("*")
+        .eq("user_id", user.id)
         .single();
 
       if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Erreur lors de la récupération du wallet:', error);
-      return null;
+      return data as UserWallet;
     }
-  };
+  });
 
-  const transferMoney = async ({ receiverWalletId, amount, description }: TransferFormData) => {
-    try {
-      setLoading(true);
-      const senderWallet = await getWallet();
-      if (!senderWallet) throw new Error('Wallet non trouvé');
-      if (senderWallet.balance < amount) throw new Error('Solde insuffisant');
+  const { data: transactions = [] } = useQuery({
+    queryKey: ["walletTransactions"],
+    queryFn: async () => {
+      if (!wallet?.id) return [];
 
       const { data, error } = await supabase
-        .from('wallet_transactions')
-        .insert([{
-          sender_wallet_id: senderWallet.id,
-          receiver_wallet_id: receiverWalletId,
-          amount,
-          description,
-          status: 'frozen'
-        }])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      toast.success('Transaction créée et gelée en attente de confirmation');
-      return data as WalletTransaction;
-    } catch (error) {
-      console.error('Erreur de transfert:', error);
-      toast.error(error instanceof Error ? error.message : 'Erreur lors du transfert');
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getTransactions = async (): Promise<WalletTransaction[]> => {
-    try {
-      const wallet = await getWallet();
-      if (!wallet) return [];
-
-      const { data, error } = await supabase
-        .from('wallet_transactions')
-        .select('*')
+        .from("wallet_transactions")
+        .select("*")
         .or(`sender_wallet_id.eq.${wallet.id},receiver_wallet_id.eq.${wallet.id}`)
-        .order('created_at', { ascending: false });
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
-      
-      // Vérifier que le status est valide avant de retourner les données
-      return (data || []).map(transaction => {
-        // S'assurer que le status est l'une des valeurs autorisées
-        const validStatus: WalletTransaction['status'] = 
-          ['pending', 'completed', 'cancelled', 'frozen'].includes(transaction.status) 
-            ? transaction.status as WalletTransaction['status']
-            : 'pending'; // Valeur par défaut si le status n'est pas valide
+      return data as WalletTransaction[];
+    },
+    enabled: !!wallet?.id
+  });
 
-        return {
-          ...transaction,
-          status: validStatus
-        } as WalletTransaction;
-      });
-    } catch (error) {
-      console.error('Erreur lors de la récupération des transactions:', error);
-      return [];
+  const addFundsMutation = useMutation({
+    mutationFn: async (amount: number) => {
+      if (!wallet?.id) throw new Error("Portefeuille non trouvé");
+
+      // Simuler l'ajout de fonds via Stripe/autre méthode de paiement
+      const { error } = await supabase
+        .from("user_wallets")
+        .update({ 
+          balance: wallet.balance + amount,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", wallet.id);
+
+      if (error) throw error;
+
+      // Créer la transaction
+      const { error: transactionError } = await supabase
+        .from("wallet_transactions")
+        .insert([{
+          sender_wallet_id: wallet.id,
+          receiver_wallet_id: wallet.id,
+          amount,
+          currency: wallet.currency,
+          status: 'completed',
+          description: 'Rechargement du compte'
+        }]);
+
+      if (transactionError) throw transactionError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userWallet"] });
+      queryClient.invalidateQueries({ queryKey: ["walletTransactions"] });
+      toast.success("Fonds ajoutés avec succès");
+    },
+    onError: (error: Error) => {
+      toast.error("Erreur lors de l'ajout des fonds");
     }
-  };
+  });
 
   return {
-    getWallet,
-    transferMoney,
-    getTransactions,
-    loading
+    wallet,
+    transactions,
+    isLoading,
+    addFunds: addFundsMutation.mutate
   };
 }
