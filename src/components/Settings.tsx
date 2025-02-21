@@ -33,7 +33,7 @@ const settingsSections = [
   { id: 'logout', Component: LogoutSection }
 ];
 
-export function Settings() {
+const Settings = () => {
   const [stripePromise, setStripePromise] = useState<Promise<any> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -88,3 +88,5 @@ export function Settings() {
     </Elements>
   );
 }
+
+export default Settings;

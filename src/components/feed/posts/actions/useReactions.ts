@@ -74,7 +74,7 @@ export const useReactions = ({
       }
 
       // Rafraîchir les données
-      await queryClient.invalidateQueries({ queryKey: ["posts"] });
+      await queryClient.invalidateQueries({ queryKey: ['posts'] });
 
     } catch (error) {
       console.error('Error handling reaction:', error);
