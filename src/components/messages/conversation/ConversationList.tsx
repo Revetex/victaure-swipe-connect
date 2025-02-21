@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Receiver } from "@/types/messages";
+import type { UserProfile } from "@/types/profile";
 
 interface FriendshipData {
   friend: {
@@ -22,13 +23,13 @@ interface FriendshipData {
     full_name: string | null;
     avatar_url: string | null;
     online_status: boolean;
-    email: string;
+    email: string | null;
     role: 'professional' | 'business' | 'admin';
     bio: string | null;
     phone: string | null;
     city: string | null;
     state: string | null;
-    country: string;
+    country: string | null;
     skills: string[];
   }
 }
@@ -48,9 +49,24 @@ export function ConversationList({ className }: ConversationListProps) {
   const [loadingFriends, setLoadingFriends] = useState(false);
 
   const handleSelectConversation = (conversation: any) => {
-    const receiver = {
+    const receiver: Receiver = {
       ...conversation.participant,
-      online_status: conversation.participant.online_status ? 'online' : 'offline'
+      online_status: conversation.participant.online_status ? 'online' : 'offline',
+      last_seen: new Date().toISOString(),
+      certifications: [],
+      education: [],
+      experiences: [],
+      friends: [],
+      avatar_url: conversation.participant.avatar_url || null,
+      email: conversation.participant.email || null,
+      bio: conversation.participant.bio || null,
+      phone: conversation.participant.phone || null,
+      city: conversation.participant.city || null,
+      state: conversation.participant.state || null,
+      country: conversation.participant.country || null,
+      latitude: null,
+      longitude: null,
+      skills: conversation.participant.skills || []
     };
     
     setReceiver(receiver);
@@ -92,8 +108,8 @@ export function ConversationList({ className }: ConversationListProps) {
       if (error) throw error;
 
       if (friendships) {
-        const formattedFriends: Receiver[] = friendships
-          .map((friendship: FriendshipData) => ({
+        const formattedFriends: Receiver[] = (friendships as unknown as FriendshipData[])
+          .map(friendship => ({
             ...friendship.friend,
             online_status: friendship.friend.online_status ? 'online' : 'offline',
             last_seen: new Date().toISOString(),
@@ -102,9 +118,16 @@ export function ConversationList({ className }: ConversationListProps) {
             experiences: [],
             friends: [],
             latitude: null,
-            longitude: null
-          }))
-          .filter((friend): friend is Receiver => friend !== null);
+            longitude: null,
+            avatar_url: friendship.friend.avatar_url || null,
+            email: friendship.friend.email || null,
+            bio: friendship.friend.bio || null,
+            phone: friendship.friend.phone || null,
+            city: friendship.friend.city || null,
+            state: friendship.friend.state || null,
+            country: friendship.friend.country || null,
+            skills: friendship.friend.skills || []
+          }));
 
         setFriends(formattedFriends);
       }
@@ -187,7 +210,7 @@ export function ConversationList({ className }: ConversationListProps) {
               lastMessage={conversation.last_message}
               lastMessageTime={conversation.last_message_time}
               onSelect={() => handleSelectConversation(conversation)}
-              onParticipantClick={() => handleParticipantClick(conversation.participant)}
+              onParticipantClick={() => handleParticipantClick(conversation.participant as Receiver)}
               onDelete={(e) => {
                 e.stopPropagation();
                 handleDeleteConversation(conversation.id, conversation.participant2_id);
@@ -199,7 +222,7 @@ export function ConversationList({ className }: ConversationListProps) {
 
       {selectedParticipant && (
         <ProfilePreview
-          profile={selectedParticipant}
+          profile={selectedParticipant as unknown as UserProfile}
           isOpen={showProfilePreview}
           onClose={() => setShowProfilePreview(false)}
           onRequestChat={() => handleSelectConversation({ participant: selectedParticipant })}
