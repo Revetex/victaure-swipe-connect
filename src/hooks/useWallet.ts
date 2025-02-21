@@ -48,7 +48,7 @@ export function useWallet() {
       if (error) throw error;
 
       toast.success('Transaction créée et gelée en attente de confirmation');
-      return data;
+      return data as WalletTransaction;
     } catch (error) {
       console.error('Erreur de transfert:', error);
       toast.error(error instanceof Error ? error.message : 'Erreur lors du transfert');
@@ -70,7 +70,20 @@ export function useWallet() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      
+      // Vérifier que le status est valide avant de retourner les données
+      return (data || []).map(transaction => {
+        // S'assurer que le status est l'une des valeurs autorisées
+        const validStatus: WalletTransaction['status'] = 
+          ['pending', 'completed', 'cancelled', 'frozen'].includes(transaction.status) 
+            ? transaction.status as WalletTransaction['status']
+            : 'pending'; // Valeur par défaut si le status n'est pas valide
+
+        return {
+          ...transaction,
+          status: validStatus
+        } as WalletTransaction;
+      });
     } catch (error) {
       console.error('Erreur lors de la récupération des transactions:', error);
       return [];
