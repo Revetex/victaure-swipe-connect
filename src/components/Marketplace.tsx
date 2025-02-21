@@ -1,16 +1,15 @@
-
 import { useState } from "react";
 import { MarketplaceForm } from "./marketplace/MarketplaceForm";
 import { MarketplaceList } from "./marketplace/MarketplaceList";
-import { PaymentMethodForm } from "./marketplace/PaymentMethodForm";
+import { MarketplaceFilters } from "./marketplace/MarketplaceFilters";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Calculator, Search, PlusCircle, Filter, SlidersHorizontal } from "lucide-react";
+import { Calculator, Search, PlusCircle, Filter } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
-import type { MarketplaceFilters } from "@/types/marketplace";
+import type { MarketplaceFilters as MarketplaceFiltersType } from "@/types/marketplace";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,7 +19,7 @@ export function Marketplace() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
-  const [filters, setFilters] = useState<MarketplaceFilters>({
+  const [filters, setFilters] = useState<MarketplaceFiltersType>({
     priceRange: [0, 10000],
     categories: [],
     sortBy: 'date',

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
@@ -13,7 +14,6 @@ import { toast } from "sonner";
 import type { ListingType } from "@/types/marketplace";
 
 export function MarketplaceForm() {
-  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const { imageUrls, handleImagePreview, removeImage, uploadImages, resetImages } = useListingImages();
   
