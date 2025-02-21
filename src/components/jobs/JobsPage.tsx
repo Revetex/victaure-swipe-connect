@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Job } from "@/types/job";
 import { useJobsData } from "@/hooks/useJobsData";
@@ -8,6 +7,7 @@ import { JobsHeader } from "./sections/JobsHeader";
 import { JobsSearch } from "./sections/JobsSearch";
 import { JobsFilters } from "./sections/JobsFilters";
 import { JobsResults } from "./sections/JobsResults";
+import { JobsAIAssistant } from "./sections/JobsAIAssistant";
 
 export function JobsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,6 +20,7 @@ export function JobsPage() {
   const [remoteOnly, setRemoteOnly] = useState(false);
   const { data: jobs = [], isLoading } = useJobsData();
   const [selectedJobId, setSelectedJobId] = useState<string>();
+  const [isAssistantOpen, setIsAssistantOpen] = useState(false);
 
   const filteredJobs = jobs
     .filter(job => {
@@ -75,10 +76,7 @@ export function JobsPage() {
   };
 
   const handleRequestAssistant = () => {
-    toast.success("Une nouvelle version de l'assistant arrive bientôt !", {
-      description: "Notre IA va vous aider à trouver le job parfait !",
-      duration: 5000,
-    });
+    setIsAssistantOpen(true);
   };
 
   if (isLoading) {
@@ -105,7 +103,10 @@ export function JobsPage() {
       className="container mx-auto p-4 max-w-7xl"
     >
       <div className="space-y-6">
-        <JobsHeader totalJobs={jobs.length} onRequestAssistant={handleRequestAssistant} />
+        <JobsHeader 
+          totalJobs={jobs.length} 
+          onRequestAssistant={handleRequestAssistant} 
+        />
         
         <JobsSearch 
           searchQuery={searchQuery}
@@ -132,6 +133,11 @@ export function JobsPage() {
           onJobSelect={handleJobSelect}
           selectedJobId={selectedJobId}
           onResetFilters={handleResetFilters}
+        />
+
+        <JobsAIAssistant 
+          isOpen={isAssistantOpen}
+          onClose={() => setIsAssistantOpen(false)}
         />
       </div>
     </motion.div>
