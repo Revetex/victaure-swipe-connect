@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { RealtimeChannel } from "@supabase/supabase-js";
 
 export type UserRole = 'professional' | 'business' | 'admin';
 
@@ -39,15 +40,17 @@ export function useConversations() {
   useEffect(() => {
     if (user) {
       loadConversations();
-      subscribeToConversations();
+      const channel = subscribeToConversations();
+      return () => {
+        if (channel) {
+          supabase.removeChannel(channel);
+        }
+      };
     }
-    return () => {
-      supabase.removeChannel('conversations');
-    };
   }, [user]);
 
   const subscribeToConversations = () => {
-    const channel = supabase
+    return supabase
       .channel('conversations')
       .on(
         'postgres_changes',
@@ -61,10 +64,6 @@ export function useConversations() {
         }
       )
       .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   };
 
   const loadConversations = async () => {
@@ -75,9 +74,26 @@ export function useConversations() {
       const { data: conversationsData, error: conversationsError } = await supabase
         .from('conversations')
         .select(`
-          *,
-          last_message:messages!conversations_last_message_fkey(content),
-          participant:profiles!conversations_participant2_id_fkey(*)
+          id,
+          participant1_id,
+          participant2_id,
+          last_message,
+          last_message_time,
+          participant:profiles!conversations_participant2_id_fkey (
+            id,
+            full_name,
+            avatar_url,
+            email,
+            role,
+            bio,
+            phone,
+            city,
+            state,
+            country,
+            skills,
+            online_status,
+            last_seen
+          )
         `)
         .eq('participant1_id', user.id)
         .order('last_message_time', { ascending: false });
@@ -91,12 +107,12 @@ export function useConversations() {
 
             let role: UserRole = 'professional';
             if (conv.participant.role === 'business' || conv.participant.role === 'admin') {
-              role = conv.participant.role;
+              role = conv.participant.role as UserRole;
             }
 
             const transformedParticipant: ConversationParticipant = {
               id: conv.participant.id,
-              full_name: conv.participant.full_name,
+              full_name: conv.participant.full_name || '',
               avatar_url: conv.participant.avatar_url,
               email: conv.participant.email,
               role: role,
@@ -114,7 +130,7 @@ export function useConversations() {
               id: conv.id,
               participant1_id: conv.participant1_id,
               participant2_id: conv.participant2_id,
-              last_message: conv.last_message?.content || '',
+              last_message: conv.last_message || '',
               last_message_time: conv.last_message_time || new Date().toISOString(),
               participant: transformedParticipant
             };
