@@ -45,8 +45,24 @@ export function AuthFooter() {
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="text-[#F2EBE4]">Conditions d'utilisation</DialogTitle>
+                <DialogTitle className="text-xl font-bold mb-4">Conditions d'utilisation</DialogTitle>
               </DialogHeader>
+              <div className="prose prose-sm prose-invert max-w-none">
+                <h3>1. Acceptation des conditions</h3>
+                <p>En accédant à Victaure, vous acceptez d'être lié par ces conditions d'utilisation, toutes les lois et réglementations applicables.</p>
+                
+                <h3>2. Utilisation du service</h3>
+                <p>Vous vous engagez à utiliser le service de manière éthique et légale. Toute utilisation frauduleuse ou abusive est strictement interdite.</p>
+                
+                <h3>3. Responsabilité</h3>
+                <p>Victaure ne peut être tenu responsable des dommages directs ou indirects résultant de l'utilisation de la plateforme.</p>
+                
+                <h3>4. Protection des données</h3>
+                <p>Nous nous engageons à protéger vos données personnelles conformément à notre politique de confidentialité.</p>
+                
+                <h3>5. Propriété intellectuelle</h3>
+                <p>Tout le contenu sur Victaure est protégé par les droits d'auteur et autres lois sur la propriété intellectuelle.</p>
+              </div>
             </DialogContent>
           </Dialog>
 
@@ -58,8 +74,21 @@ export function AuthFooter() {
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="text-[#F2EBE4]">Politique de confidentialité</DialogTitle>
+                <DialogTitle className="text-xl font-bold mb-4">Politique de confidentialité</DialogTitle>
               </DialogHeader>
+              <div className="prose prose-sm prose-invert max-w-none">
+                <h3>1. Collecte des données</h3>
+                <p>Nous collectons uniquement les données nécessaires au bon fonctionnement du service et à l'amélioration de votre expérience.</p>
+                
+                <h3>2. Utilisation des données</h3>
+                <p>Vos données sont utilisées pour personnaliser votre expérience, améliorer nos services et vous proposer des offres pertinentes.</p>
+                
+                <h3>3. Protection des données</h3>
+                <p>Nous mettons en œuvre des mesures de sécurité strictes pour protéger vos données personnelles.</p>
+                
+                <h3>4. Vos droits</h3>
+                <p>Vous avez le droit d'accéder, de modifier ou de supprimer vos données personnelles à tout moment.</p>
+              </div>
             </DialogContent>
           </Dialog>
 
@@ -71,8 +100,21 @@ export function AuthFooter() {
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="text-[#F2EBE4]">Politique des cookies</DialogTitle>
+                <DialogTitle className="text-xl font-bold mb-4">Politique des cookies</DialogTitle>
               </DialogHeader>
+              <div className="prose prose-sm prose-invert max-w-none">
+                <h3>1. Utilisation des cookies</h3>
+                <p>Nous utilisons des cookies pour améliorer votre expérience de navigation et personnaliser nos services.</p>
+                
+                <h3>2. Types de cookies</h3>
+                <p>Nous utilisons des cookies essentiels, analytiques et de performance pour optimiser notre plateforme.</p>
+                
+                <h3>3. Gestion des cookies</h3>
+                <p>Vous pouvez modifier vos préférences de cookies à tout moment dans les paramètres de votre navigateur.</p>
+                
+                <h3>4. Conservation</h3>
+                <p>Les cookies sont conservés pour une durée maximale de 13 mois conformément aux recommandations de la CNIL.</p>
+              </div>
             </DialogContent>
           </Dialog>
 

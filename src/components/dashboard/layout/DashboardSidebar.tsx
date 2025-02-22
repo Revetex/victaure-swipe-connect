@@ -46,9 +46,19 @@ export function DashboardSidebar({
       <div className="flex flex-col h-full bg-[#64B5D9]/10 backdrop-blur supports-[backdrop-filter]:bg-[#64B5D9]/10 border-r border-[#64B5D9]/10">
         <div className="flex items-center justify-between p-4">
           <Logo />
-          {completeProfile && <Button variant="ghost" onClick={() => setShowProfilePreview(true)} className="w-10 h-10 p-0 rounded-full overflow-hidden ring-2 ring-[#64B5D9]/20 hover:ring-[#64B5D9]/40 transition-all transform hover:scale-105">
-              <img src={completeProfile.avatar_url || "/user-icon.svg"} alt={completeProfile.full_name || ""} className="w-full h-full object-cover" />
-            </Button>}
+          {completeProfile && (
+            <Button 
+              variant="ghost" 
+              onClick={() => setShowProfilePreview(true)} 
+              className="w-10 h-10 p-0 rounded-full overflow-hidden ring-2 ring-[#64B5D9]/20 hover:ring-[#64B5D9]/40 transition-all transform hover:scale-105 cursor-pointer"
+            >
+              <img 
+                src={completeProfile.avatar_url || "/user-icon.svg"} 
+                alt={completeProfile.full_name || ""} 
+                className="w-full h-full object-cover" 
+              />
+            </Button>
+          )}
         </div>
 
         <ScrollArea className="flex-1 px-4 py-2">
@@ -56,18 +66,43 @@ export function DashboardSidebar({
             {navigationItems.map(item => {
               const Icon = item.icon;
               const isNotificationsItem = item.id === 9;
-              return <button key={item.id} onClick={() => onPageChange(item.id)} className={cn("w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm relative", "transition-all duration-300 ease-out", "hover:scale-[1.02] active:scale-[0.98]", "border border-transparent", currentPage === item.id ? "bg-gradient-to-r from-[#64B5D9]/20 to-[#64B5D9]/5 text-[#64B5D9] font-medium border-[#64B5D9]/10 shadow-sm" : "text-[#F2EBE4]/60 hover:bg-[#64B5D9]/10 hover:text-[#F2EBE4] hover:border-[#64B5D9]/20")}>
+              return (
+                <button 
+                  key={item.id} 
+                  onClick={() => onPageChange(item.id)} 
+                  className={cn(
+                    "w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm relative cursor-pointer",
+                    "transition-all duration-300 ease-out",
+                    "hover:scale-[1.02] active:scale-[0.98]",
+                    "border border-transparent",
+                    currentPage === item.id 
+                      ? "bg-gradient-to-r from-[#64B5D9]/20 to-[#64B5D9]/5 text-white font-medium border-[#64B5D9]/10 shadow-sm" 
+                      : "text-white hover:bg-[#64B5D9]/10 hover:text-white hover:border-[#64B5D9]/20"
+                  )}
+                >
                   <Icon className="h-4 w-4" />
                   <span>{item.name}</span>
-                  {isNotificationsItem && unreadCount > 0 && <Badge variant="destructive" className="absolute right-2 top-1/2 -translate-y-1/2 min-w-[20px] h-5 flex items-center justify-center">
+                  {isNotificationsItem && unreadCount > 0 && (
+                    <Badge 
+                      variant="destructive" 
+                      className="absolute right-2 top-1/2 -translate-y-1/2 min-w-[20px] h-5 flex items-center justify-center"
+                    >
                       {unreadCount}
-                    </Badge>}
-                </button>;
+                    </Badge>
+                  )}
+                </button>
+              );
             })}
           </nav>
         </ScrollArea>
 
-        {completeProfile && <ProfilePreview profile={completeProfile} isOpen={showProfilePreview} onClose={() => setShowProfilePreview(false)} />}
+        {completeProfile && (
+          <ProfilePreview 
+            profile={completeProfile} 
+            isOpen={showProfilePreview} 
+            onClose={() => setShowProfilePreview(false)} 
+          />
+        )}
       </div>
     </div>;
 }
