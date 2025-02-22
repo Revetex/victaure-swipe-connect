@@ -1,4 +1,3 @@
-
 import { Logo } from "@/components/Logo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -49,7 +48,7 @@ export function DashboardMobileNav({
             }}
           />
 
-          <div className="p-4 border-b-2 border-black/20 bg-black/5">
+          <div className="p-4 border-b-2 border-black bg-black/5">
             <Logo />
           </div>
 
@@ -67,10 +66,9 @@ export function DashboardMobileNav({
                     "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm",
                     "transition-all duration-200 border-2 shadow-sm",
                     currentPage === item.id 
-                      ? "bg-white/15 text-white font-medium border-black/40 shadow-inner" 
-                      : "text-white/90 hover:bg-white/10 hover:text-white border-black/20 hover:border-black/40"
+                      ? "bg-white/15 text-white font-medium border-black shadow-inner" 
+                      : "text-white/90 hover:bg-white/10 hover:text-white border-black/20 hover:border-black"
                   )} 
-                  title={item.name}
                 >
                   <Icon className="h-3.5 w-3.5" />
                   <span className="font-medium">{item.name}</span>
@@ -84,13 +82,13 @@ export function DashboardMobileNav({
                 <button 
                   className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm
                     transition-all duration-200 border-2 shadow-sm
-                    bg-white/10 text-white font-medium border-black/40 hover:bg-white/15"
+                    bg-white/10 text-white font-medium border-black hover:bg-white/15"
                 >
                   <Coins className="h-3.5 w-3.5" />
                   <span className="font-medium">Voir les tarifs</span>
                 </button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl w-11/12 max-h-[90vh] overflow-y-auto bg-[#1B2A4A] border-2 border-black/40">
+              <DialogContent className="max-w-4xl w-11/12 max-h-[90vh] overflow-y-auto bg-[#1B2A4A] border-2 border-black">
                 <div className="p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 text-center">
                     Tarifs Victaure 2024

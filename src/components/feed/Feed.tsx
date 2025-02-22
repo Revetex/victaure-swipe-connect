@@ -16,7 +16,7 @@ export function Feed() {
   };
 
   return (
-    <section className="max-w-3xl mx-auto pb-20 px-4">
+    <section className="min-h-[calc(100vh-4rem)] mt-16 max-w-3xl mx-auto px-4">
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
