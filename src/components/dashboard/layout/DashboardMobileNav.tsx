@@ -1,8 +1,8 @@
 
 import { Logo } from "@/components/Logo";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Menu, Coins } from "lucide-react";
+import { Coins } from "lucide-react";
 import { navigationItems } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 import { PricingGrid } from "@/components/pricing/PricingGrid";
@@ -24,7 +24,7 @@ export function DashboardMobileNav({
     <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
       <SheetContent 
         side="left" 
-        className="w-72 p-0 bg-[#64B5D9] border-2 border-black relative overflow-hidden"
+        className="w-72 p-0 bg-[#64B5D9] border-2 border-black relative overflow-hidden z-50"
       >
         {/* Motif de fond */}
         <div 
@@ -37,7 +37,7 @@ export function DashboardMobileNav({
           }}
         />
 
-        <div className="p-4 border-b-2 border-black bg-black/5">
+        <div className="p-4 border-b-2 border-black bg-black/5 relative z-10">
           <Logo />
         </div>
 

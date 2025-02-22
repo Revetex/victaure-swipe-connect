@@ -28,25 +28,33 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
     setIsEditing(state);
   }, []);
 
+  const toggleMobileMenu = useCallback(() => {
+    setShowMobileMenu(prev => !prev);
+  }, []);
+
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background overflow-hidden">
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
       />
 
-      <DashboardMobileNav
-        currentPage={currentPage}
-        showMobileMenu={showMobileMenu}
-        setShowMobileMenu={setShowMobileMenu}
-        onPageChange={handlePageChange}
-      />
+      {/* Menu mobile avec z-index plus élevé */}
+      <div className="fixed inset-0 z-50 lg:hidden">
+        <DashboardMobileNav
+          currentPage={currentPage}
+          showMobileMenu={showMobileMenu}
+          setShowMobileMenu={setShowMobileMenu}
+          onPageChange={handlePageChange}
+        />
+      </div>
 
       <main className={cn(
         "flex-1 lg:ml-64",
         "min-h-screen",
         "mt-16",
-        "w-full"
+        "w-full",
+        "relative"
       )}>
         <AppHeader 
           onRequestAssistant={handleRequestChat}
@@ -54,14 +62,16 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
           setShowMobileMenu={setShowMobileMenu}
         />
         
-        {children || (
-          <DashboardContent
-            currentPage={currentPage}
-            isEditing={isEditing}
-            onEditStateChange={handleEditStateChange}
-            onRequestChat={handleRequestChat}
-          />
-        )}
+        <div className="relative z-0">
+          {children || (
+            <DashboardContent
+              currentPage={currentPage}
+              isEditing={isEditing}
+              onEditStateChange={handleEditStateChange}
+              onRequestChat={handleRequestChat}
+            />
+          )}
+        </div>
       </main>
     </div>
   );
