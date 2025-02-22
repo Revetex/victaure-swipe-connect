@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Mail, Lock } from "lucide-react";
 import { motion } from "framer-motion";
+import { AltchaWidget } from "./AltchaWidget";
+import { useState } from "react";
 
 interface LoginFormProps {
   email: string;
@@ -19,11 +21,20 @@ export function LoginForm({
   email,
   password,
   loading,
-  redirectTo,
   onEmailChange,
   onPasswordChange,
   onSubmit
 }: LoginFormProps) {
+  const [isVerified, setIsVerified] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isVerified) {
+      return;
+    }
+    onSubmit();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -41,10 +52,7 @@ export function LoginForm({
         </p>
       </div>
 
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit();
-      }} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email-login">Email</Label>
           <div className="relative">
@@ -86,9 +94,11 @@ export function LoginForm({
           </div>
         </div>
 
+        <AltchaWidget onVerify={setIsVerified} />
+
         <Button
           type="submit"
-          disabled={loading || !email || !password}
+          disabled={loading || !email || !password || !isVerified}
           className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 font-medium shadow-sm hover:shadow-md"
           aria-label={loading ? "Connexion en cours..." : "Se connecter"}
         >
