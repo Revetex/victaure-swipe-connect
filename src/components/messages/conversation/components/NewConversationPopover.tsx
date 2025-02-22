@@ -25,8 +25,8 @@ interface Friend {
   avatar_url: string | null;
 }
 
-interface FriendshipJoin {
-  friend: Friend;
+interface FriendshipResponse {
+  friend: Friend | null;
 }
 
 export function NewConversationPopover({ onSelectFriend }: NewConversationPopoverProps) {
@@ -56,8 +56,12 @@ export function NewConversationPopover({ onSelectFriend }: NewConversationPopove
         
         if (friendships) {
           const formattedFriends = friendships
-            .filter((f): f is FriendshipJoin => f.friend !== null)
-            .map(f => f.friend);
+            .filter((friendship): friendship is FriendshipResponse & { friend: Friend } => 
+              friendship?.friend !== null && 
+              typeof friendship.friend === 'object' &&
+              'id' in friendship.friend
+            )
+            .map(friendship => friendship.friend);
           setFriends(formattedFriends);
         }
       } catch (error) {
