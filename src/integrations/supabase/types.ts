@@ -36,42 +36,6 @@ export type Database = {
         }
         Relationships: []
       }
-      ai_file_uploads: {
-        Row: {
-          content_text: string | null
-          created_at: string
-          file_name: string
-          file_path: string
-          file_type: string
-          id: string
-          processed: boolean | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          content_text?: string | null
-          created_at?: string
-          file_name: string
-          file_path: string
-          file_type: string
-          id?: string
-          processed?: boolean | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          content_text?: string | null
-          created_at?: string
-          file_name?: string
-          file_path?: string
-          file_type?: string
-          id?: string
-          processed?: boolean | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       ai_interactions: {
         Row: {
           context: string | null
@@ -174,33 +138,6 @@ export type Database = {
         }
         Relationships: []
       }
-      ai_settings: {
-        Row: {
-          created_at: string | null
-          enabled: boolean | null
-          feature: string
-          id: string
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          enabled?: boolean | null
-          feature: string
-          id?: string
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          enabled?: boolean | null
-          feature?: string
-          id?: string
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       app_versions: {
         Row: {
           checksum: string | null
@@ -269,42 +206,6 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
-      }
-      blocked_users: {
-        Row: {
-          blocked_id: string
-          blocker_id: string
-          created_at: string
-          id: string
-        }
-        Insert: {
-          blocked_id: string
-          blocker_id: string
-          created_at?: string
-          id?: string
-        }
-        Update: {
-          blocked_id?: string
-          blocker_id?: string
-          created_at?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "blocked_users_blocked_id_fkey"
-            columns: ["blocked_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "blocked_users_blocker_id_fkey"
-            columns: ["blocker_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       business_profiles: {
         Row: {
@@ -451,71 +352,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      chat_attachments: {
-        Row: {
-          content_type: string
-          created_at: string
-          file_name: string
-          file_path: string
-          id: string
-          message_id: string | null
-          size: number
-          updated_at: string
-        }
-        Insert: {
-          content_type: string
-          created_at?: string
-          file_name: string
-          file_path: string
-          id?: string
-          message_id?: string | null
-          size: number
-          updated_at?: string
-        }
-        Update: {
-          content_type?: string
-          created_at?: string
-          file_name?: string
-          file_path?: string
-          id?: string
-          message_id?: string | null
-          size?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chat_attachments_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "messages"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      chat_messages: {
-        Row: {
-          content: string
-          created_at: string | null
-          id: string
-          is_ai: boolean | null
-          user_id: string | null
-        }
-        Insert: {
-          content: string
-          created_at?: string | null
-          id?: string
-          is_ai?: boolean | null
-          user_id?: string | null
-        }
-        Update: {
-          content?: string
-          created_at?: string | null
-          id?: string
-          is_ai?: boolean | null
-          user_id?: string | null
-        }
-        Relationships: []
       }
       chess_games: {
         Row: {
@@ -1197,27 +1033,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      job_analyses: {
-        Row: {
-          ai_analysis: Json
-          created_at: string
-          id: string
-          original_description: string
-        }
-        Insert: {
-          ai_analysis: Json
-          created_at?: string
-          id?: string
-          original_description: string
-        }
-        Update: {
-          ai_analysis?: Json
-          created_at?: string
-          id?: string
-          original_description?: string
-        }
-        Relationships: []
       }
       job_applications: {
         Row: {
@@ -2712,6 +2527,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_messages_conversation"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fk_receiver"
             columns: ["receiver_id"]
             isOneToOne: false
@@ -2872,7 +2694,15 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_notifications_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       obsolete_features: {
         Row: {
