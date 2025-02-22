@@ -99,8 +99,8 @@ export function Logo({ size = "md", className }: LogoProps) {
         "font-tiempos font-black tracking-[0.2em]",
         "text-transparent bg-clip-text bg-gradient-to-b from-zinc-900 to-zinc-700",
         "dark:from-white dark:to-zinc-300",
-        "[text-shadow:_-1px_-1px_0_#000,_1px_-1px_0_#000,_-1px_1px_0_#000,_1px_1px_0_#000]",
-        "dark:[text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff]",
+        "relative after:absolute after:inset-0 after:content-['VICTAURE'] after:text-transparent after:tracking-[0.2em] after:font-tiempos after:font-black",
+        "after:[text-shadow:1px_1px_0_rgb(75,85,99)]",
         textSizes[size]
       )}>
         VICTAURE

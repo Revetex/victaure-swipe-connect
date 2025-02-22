@@ -1,4 +1,3 @@
-
 import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
@@ -8,7 +7,7 @@ import { motion } from "framer-motion";
 import { useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
-import { Briefcase, CalendarDays, Clock, Sparkles, ShoppingBag, Wallet, Tool, ActivitySquare, FileText, Users, Gavel, MessagesSquare } from "lucide-react";
+import { Briefcase, CalendarDays, Clock, Sparkles, ShoppingBag, Wallet, ActivitySquare, FileText, Users, Gavel, MessagesSquare } from "lucide-react";
 
 export default function Auth() {
   const {
@@ -58,7 +57,7 @@ export default function Auth() {
     title: "Paiements Sécurisés",
     description: "Portefeuille digital et transactions protégées"
   }, {
-    icon: <Tool className="w-5 h-5" />,
+    icon: <ActivitySquare className="w-5 h-5" />,
     title: "Boîte à Outils Pro",
     description: "Calculatrice, traducteur, notes et plus encore"
   }];
