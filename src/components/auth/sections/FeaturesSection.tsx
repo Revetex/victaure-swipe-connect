@@ -1,8 +1,8 @@
 
-import { Canvas } from "@react-three/fiber";
-import { Scene3D } from "./features/Scene3D";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { Loader } from "@/components/ui/loader";
+
+const ThreeScene = lazy(() => import("./features/ThreeScene"));
 
 export function FeaturesSection() {
   return (
@@ -12,12 +12,7 @@ export function FeaturesSection() {
           <Loader className="w-8 h-8 text-[#64B5D9]" />
         </div>
       }>
-        <Canvas 
-          camera={{ position: [0, 0, 7] }}
-          gl={{ antialias: true }}
-        >
-          <Scene3D />
-        </Canvas>
+        <ThreeScene />
       </Suspense>
     </div>
   );
