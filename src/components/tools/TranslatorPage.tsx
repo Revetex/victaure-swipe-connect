@@ -18,10 +18,12 @@ export function TranslatorPage() {
     setTargetLang,
     isLoading,
     isSpeaking,
+    isListening,
     handleTranslate,
     copyToClipboard,
     speakText,
-    swapLanguages
+    swapLanguages,
+    startSpeechRecognition
   } = useTranslator();
 
   useEffect(() => {
@@ -76,7 +78,9 @@ export function TranslatorPage() {
                 onChange={(e) => setSourceText(e.target.value)}
                 placeholder="Enter text to translate..."
                 onSpeak={() => speakText(sourceText, sourceLang)}
+                onListen={startSpeechRecognition}
                 isSpeaking={isSpeaking}
+                isListening={isListening}
               />
             </div>
 

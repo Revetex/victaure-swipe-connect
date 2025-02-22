@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { languages } from "./translatorConfig";
@@ -12,6 +11,64 @@ export function useTranslator() {
   const [isLoading, setIsLoading] = useState(false);
   const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+
+  const startSpeechRecognition = useCallback(() => {
+    if (!('webkitSpeechRecognition' in window)) {
+      toast.error("Speech recognition is not supported in your browser");
+      return;
+    }
+
+    // Si on écoute déjà, on arrête
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+
+    const recognition = new window.webkitSpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = sourceLang;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+      toast.info("Listening...");
+    };
+
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event);
+      setIsListening(false);
+      toast.error("Speech recognition failed");
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = Array.from(event.results)
+        .map(result => result[0].transcript)
+        .join('');
+
+      setSourceText(transcript);
+    };
+
+    recognition.start();
+
+    // Stocke l'instance pour pouvoir l'arrêter plus tard
+    const cleanup = () => {
+      recognition.stop();
+      setIsListening(false);
+    };
+
+    // Nettoie après 30 secondes pour éviter une écoute trop longue
+    const timeout = setTimeout(cleanup, 30000);
+
+    return () => {
+      clearTimeout(timeout);
+      cleanup();
+    };
+  }, [sourceLang, isListening]);
 
   const handleTranslate = async () => {
     if (!sourceText.trim()) {
@@ -129,9 +186,11 @@ export function useTranslator() {
     isLoading,
     detectedLanguage,
     isSpeaking,
+    isListening,
     handleTranslate,
     copyToClipboard,
     speakText,
-    swapLanguages
+    swapLanguages,
+    startSpeechRecognition
   };
 }
