@@ -9,7 +9,6 @@ import { AuthFooter } from "@/components/auth/sections/AuthFooter";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
 import { VictaureChat } from "@/components/chat/VictaureChat";
 import { toast } from "sonner";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -33,22 +32,29 @@ export default function Auth() {
     toast.error("Veuillez vous connecter pour continuer la conversation avec Mr. Victaure");
   };
 
-  const handleLegalLink = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
-    e.preventDefault();
-    const dialog = document.createElement('dialog');
-    dialog.setAttribute('open', '');
-    const iframe = document.createElement('iframe');
-    iframe.src = path;
-    iframe.style.width = '100%';
-    iframe.style.height = '80vh';
-    iframe.style.border = 'none';
-    dialog.appendChild(iframe);
-    document.body.appendChild(dialog);
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-[#1B2A4A] relative overflow-hidden">
-      <div className="fixed inset-0 bg-grid-[#F2EBE4]/5 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
+      {/* Signature background */}
+      <div 
+        className="fixed inset-0 opacity-[0.03] pointer-events-none"
+        style={{
+          backgroundImage: "url('/lovable-uploads/168ba21b-e221-4668-96cc-eb026041a0ed.png')",
+          backgroundSize: "400px",
+          backgroundPosition: "center",
+          filter: "grayscale(0.5)"
+        }}
+      />
+      
+      {/* Subtle pattern overlay */}
+      <div 
+        className="fixed inset-0 opacity-10 pointer-events-none"
+        style={{
+          backgroundImage: "url('/lovable-uploads/60542c40-c17c-42cc-8136-f4780f09946a.png')",
+          backgroundSize: "64px",
+          backgroundRepeat: "repeat",
+          maskImage: "radial-gradient(circle at center, black 60%, transparent 100%)"
+        }}
+      />
       
       <ThemeSelector />
       
@@ -56,12 +62,12 @@ export default function Auth() {
         <div className="w-full max-w-xl mx-auto space-y-8">
           <AuthHeader />
 
-          <div className="relative bg-[#9b87f5]/10 rounded-xl p-4 backdrop-blur-sm border border-[#9b87f5]/20 overflow-hidden">
+          <div className="relative bg-[#D3E4FD]/80 rounded-xl p-4 backdrop-blur-sm border border-[#D3E4FD] overflow-hidden">
             <div 
               className="absolute inset-0 opacity-5"
               style={{
                 backgroundImage: "url('/lovable-uploads/60542c40-c17c-42cc-8136-f4780f09946a.png')",
-                backgroundSize: "64px",
+                backgroundSize: "32px",
                 backgroundRepeat: "repeat"
               }}
             />
@@ -75,7 +81,7 @@ export default function Auth() {
           <div className="w-full">
             <Suspense fallback={
               <div className="flex items-center justify-center">
-                <Loader className="w-6 h-6 text-[#64B5D9]" />
+                <Loader className="w-6 h-6 text-[#D3E4FD]" />
               </div>
             }>
               <AuthForm redirectTo={location.state?.from?.pathname} />
