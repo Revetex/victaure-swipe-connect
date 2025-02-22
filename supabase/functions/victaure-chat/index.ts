@@ -14,7 +14,14 @@ serve(async (req) => {
   }
 
   try {
-    const { messages } = await req.json()
+    const { messages, type = 'chat' } = await req.json()
+
+    // Sélectionner le bon modèle selon le type de requête
+    const model = type === 'chat' 
+      ? 'google/gemini-2.0-pro-exp-02-05:free'
+      : type === 'function' 
+        ? 'cognitivecomputations/dolphin3.0-r1-mistral-24b:free'
+        : 'qwen/qwen2.5-vl-72b-instruct:free'
 
     const response = await fetch('https://api.openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -26,14 +33,22 @@ serve(async (req) => {
         'Origin': 'https://victaure.com'
       },
       body: JSON.stringify({
-        model: 'gemini-pro-vision',
+        model,
         messages: [
           {
             role: 'system',
-            content: 'Tu es Mr. Victaure, un assistant professionnel sur une plateforme de recrutement québécoise. Tu dois être amical et professionnel, répondre en français, et aider les utilisateurs avec leurs questions sur l\'emploi, le recrutement et la carrière.'
+            content: type === 'chat'
+              ? 'Tu es Mr. Victaure, un assistant professionnel sur une plateforme de recrutement québécoise. Tu dois être amical et professionnel, répondre en français, et aider les utilisateurs avec leurs questions sur l\'emploi, le recrutement et la carrière.'
+              : type === 'function'
+                ? 'Tu es un assistant spécialisé dans l\'analyse de données et l\'exécution de fonctions complexes. Tu dois être précis et efficace.'
+                : 'Tu es un assistant spécialisé dans l\'analyse et la génération d\'images. Tu dois être créatif tout en restant professionnel.'
           },
           ...messages
-        ]
+        ],
+        ...(type === 'vision' && {
+          max_tokens: 4096,
+          temperature: 0.7
+        })
       })
     })
 
@@ -42,7 +57,7 @@ serve(async (req) => {
     }
 
     const data = await response.json()
-    console.log('Response from Gemini:', data)
+    console.log('Response from AI:', data)
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

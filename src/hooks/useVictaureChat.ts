@@ -8,6 +8,8 @@ interface Message {
   content: string;
 }
 
+type RequestType = 'chat' | 'function' | 'vision';
+
 interface UseVictaureChatProps {
   onResponse?: (response: string) => void;
 }
@@ -15,7 +17,7 @@ interface UseVictaureChatProps {
 export function useVictaureChat({ onResponse }: UseVictaureChatProps = {}) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const sendMessage = async (userMessage: string, context?: string) => {
+  const sendMessage = async (userMessage: string, context?: string, type: RequestType = 'chat') => {
     setIsLoading(true);
     try {
       const messages: Message[] = [];
@@ -33,7 +35,7 @@ export function useVictaureChat({ onResponse }: UseVictaureChatProps = {}) {
       });
 
       const { data, error } = await supabase.functions.invoke('victaure-chat', {
-        body: { messages }
+        body: { messages, type }
       });
 
       if (error) throw error;
