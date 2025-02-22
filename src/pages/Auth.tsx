@@ -1,4 +1,3 @@
-
 import { Suspense } from "react";
 import { useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,13 +11,27 @@ import { PricingGrid } from "@/components/pricing/PricingGrid";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Bot, Briefcase, Sparkles, Wrench, Users, ArrowRight } from "lucide-react";
+import { 
+  Bot, 
+  Briefcase, 
+  Sparkles, 
+  Wrench, 
+  Users, 
+  ArrowRight,
+  ShieldCheck,
+  CreditCard,
+  Timer,
+  ShoppingBag,
+  Gavel,
+  Zap
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+  const [isPricingOpen, setIsPricingOpen] = useState(false);
   const [countdown, setCountdown] = useState({
     days: 0,
     hours: 0,
@@ -62,6 +75,29 @@ export default function Auth() {
     toast.error("Veuillez vous connecter pour continuer la conversation avec Mr. Victaure");
   };
 
+  const innovations = [
+    {
+      icon: ShieldCheck,
+      title: "Résiliation sans engagement",
+      description: "Liberté totale dans votre utilisation du service"
+    },
+    {
+      icon: CreditCard,
+      title: "Paiement sécurisé direct",
+      description: "Transactions protégées et instantanées"
+    },
+    {
+      icon: ShoppingBag,
+      title: "Marketplace intégrée",
+      description: "Achetez et vendez en toute simplicité"
+    },
+    {
+      icon: Gavel,
+      title: "Contrats aux enchères",
+      description: "Système d'enchères innovant pour les contrats"
+    }
+  ];
+
   const features = [
     {
       icon: Users,
@@ -79,15 +115,14 @@ export default function Auth() {
       description: "CV, lettre de motivation, analyse de marché et plus encore"
     },
     {
-      icon: Sparkles,
-      title: "Assistant IA personnel",
-      description: "Mr. Victaure vous guide dans votre parcours professionnel"
+      icon: Timer,
+      title: "Gestion flexible",
+      description: "Gérez vos services sans engagement"
     }
   ];
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#1B2A4A] via-[#1B2A4A] to-[#152238] relative overflow-hidden">
-      {/* Pattern de fond animé */}
       <div className="absolute inset-0 bg-[url('/lovable-uploads/bcfe3f97-9c11-4615-821e-d9666f3a9c14.png')] bg-repeat opacity-[0.02] animate-[pulse_4s_ease-in-out_infinite]" />
       
       <ThemeSelector />
@@ -96,13 +131,40 @@ export default function Auth() {
         <div className="w-full max-w-xl mx-auto space-y-12">
           <AuthHeader />
 
-          {/* Compte à rebours amélioré */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-[#64B5D9]/20 to-[#64B5D9]/10 p-4 rounded-xl border border-[#64B5D9]/30 shadow-lg"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <Zap className="w-5 h-5 text-[#64B5D9]" />
+              <h3 className="text-white font-semibold">Nouvelles Fonctionnalités</h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {innovations.map((innovation, index) => (
+                <motion.div
+                  key={innovation.title}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-start gap-3"
+                >
+                  <innovation.icon className="w-5 h-5 text-[#64B5D9] mt-1" />
+                  <div>
+                    <h4 className="text-white text-sm font-medium">{innovation.title}</h4>
+                    <p className="text-[#F2EBE4]/60 text-xs">{innovation.description}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="relative"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/0 via-[#64B5D9]/10 to-[#64B5D9]/0 blur-xl" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/0 via-[#64B5D9]/5 to-[#64B5D9]/0 blur-xl" />
             <div className="relative space-y-6">
               <h2 className="text-2xl sm:text-3xl font-bold text-center text-white">
                 Lancement officiel dans
@@ -131,7 +193,6 @@ export default function Auth() {
             </div>
           </motion.div>
 
-          {/* Badge amélioré */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -145,7 +206,6 @@ export default function Auth() {
             </Badge>
           </motion.div>
 
-          {/* Features améliorées */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {features.map((feature, index) => (
               <motion.div
@@ -172,7 +232,6 @@ export default function Auth() {
             ))}
           </div>
 
-          {/* Chat amélioré */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -188,7 +247,6 @@ export default function Auth() {
             </div>
           </motion.div>
 
-          {/* Formulaire d'authentification */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -196,10 +254,37 @@ export default function Auth() {
           >
             <AuthForm />
           </motion.div>
+
+          <Dialog open={isPricingOpen} onOpenChange={setIsPricingOpen}>
+            <DialogContent className="max-w-4xl w-11/12 h-[80vh] overflow-y-auto bg-[#1B2A4A] border-2 border-[#64B5D9]/30">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold text-center text-white mb-6">
+                  Tarifs Victaure 2024
+                </DialogTitle>
+              </DialogHeader>
+              <PricingGrid />
+            </DialogContent>
+          </Dialog>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex justify-center"
+          >
+            <button
+              onClick={() => setIsPricingOpen(true)}
+              className="group relative overflow-hidden rounded-full bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] px-6 py-3 transition-all duration-300 hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-white/20 transition-transform duration-300 group-hover:translate-x-full" />
+              <span className="relative flex items-center gap-2 text-white font-medium">
+                Voir tous nos tarifs
+                <ArrowRight className="w-4 h-4" />
+              </span>
+            </button>
+          </motion.div>
         </div>
       </main>
 
-      {/* Section Entreprises améliorée */}
       <section 
         className="relative w-full py-20 overflow-hidden"
         style={{
