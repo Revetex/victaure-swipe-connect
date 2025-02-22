@@ -21,11 +21,11 @@ export function AppHeader({ totalJobs, onRequestAssistant }: AppHeaderProps) {
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between p-6 bg-[#1B2A4A]/50 backdrop-blur-md border-b border-[#64B5D9]/20"
+        className="flex h-16 items-center justify-between px-4 bg-[#1B2A4A]/50 backdrop-blur-md border-b border-[#64B5D9]/20"
       >
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Briefcase className="h-8 w-8 text-[#64B5D9]" />
+            <Briefcase className="h-6 w-6 text-[#64B5D9]" />
             <motion.div
               className="absolute -inset-2 bg-[#64B5D9]/20 rounded-full blur-xl"
               animate={{
@@ -40,11 +40,11 @@ export function AppHeader({ totalJobs, onRequestAssistant }: AppHeaderProps) {
             />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#F2EBE4]">
+            <h1 className="text-xl font-bold text-[#F2EBE4]">
               Victaure
             </h1>
             {totalJobs !== undefined && (
-              <p className="text-sm text-[#64B5D9]">
+              <p className="text-xs text-[#64B5D9]">
                 {totalJobs} offres disponibles
               </p>
             )}
