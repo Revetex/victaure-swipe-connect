@@ -11,6 +11,9 @@ import { useState, useEffect } from "react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Coins } from "lucide-react";
+import { PricingGrid } from "@/components/pricing/PricingGrid";
 
 interface DashboardSidebarProps {
   currentPage: number;
@@ -44,14 +47,25 @@ export function DashboardSidebar({
 
   return (
     <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64">
-      <div className="flex flex-col h-full bg-[#64B5D9] dark:bg-[#64B5D9]/5 backdrop-blur-sm supports-[backdrop-filter]:bg-[#64B5D9]/90 dark:supports-[backdrop-filter]:bg-[#64B5D9]/5">
-        <div className="flex items-center justify-between p-4 relative z-50">
+      <div className="flex flex-col h-full bg-[#64B5D9] relative overflow-hidden border-r-2 border-black">
+        {/* Motif de fond */}
+        <div 
+          className="absolute inset-0 opacity-[0.03] pointer-events-none"
+          style={{
+            backgroundImage: `url('/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png')`,
+            backgroundSize: '150px',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'repeat'
+          }}
+        />
+
+        <div className="flex items-center justify-between p-4 border-b-2 border-black bg-black/5 relative z-10">
           <Logo />
           {completeProfile && (
             <Button 
               variant="ghost" 
               onClick={() => setShowProfilePreview(true)} 
-              className="w-10 h-10 p-0 rounded-full overflow-hidden ring-2 ring-white/20 hover:ring-white/40 transition-all transform hover:scale-105 cursor-pointer relative z-50"
+              className="w-10 h-10 p-0 rounded-full overflow-hidden ring-2 ring-black/20 hover:ring-black/40 transition-all transform hover:scale-105 cursor-pointer"
             >
               <img 
                 src={completeProfile.avatar_url || "/user-icon.svg"} 
@@ -63,7 +77,7 @@ export function DashboardSidebar({
         </div>
 
         <ScrollArea className="flex-1 px-4 py-2">
-          <nav className="space-y-2">
+          <nav className="space-y-1.5">
             {navigationItems.map(item => {
               const Icon = item.icon;
               const isNotificationsItem = item.id === 9;
@@ -72,21 +86,19 @@ export function DashboardSidebar({
                   key={item.id} 
                   onClick={() => onPageChange(item.id)} 
                   className={cn(
-                    "w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm relative",
-                    "transition-all duration-300 ease-out",
-                    "hover:scale-[1.02] active:scale-[0.98]",
-                    "hover:bg-white/10",
+                    "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm",
+                    "transition-all duration-200 border-2 shadow-sm",
                     currentPage === item.id 
-                      ? "bg-white/15 text-white font-medium shadow-sm" 
-                      : "text-white/90 hover:text-white"
+                      ? "bg-white/15 text-white font-medium border-black shadow-inner" 
+                      : "text-white/90 hover:bg-white/10 hover:text-white border-black/20 hover:border-black"
                   )}
                 >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.name}</span>
+                  <Icon className="h-3.5 w-3.5" />
+                  <span className="font-medium">{item.name}</span>
                   {isNotificationsItem && unreadCount > 0 && (
                     <Badge 
                       variant="destructive" 
-                      className="absolute right-2 top-1/2 -translate-y-1/2 min-w-[20px] h-5 flex items-center justify-center"
+                      className="ml-auto min-w-[20px] h-5"
                     >
                       {unreadCount}
                     </Badge>
@@ -94,6 +106,28 @@ export function DashboardSidebar({
                 </button>
               );
             })}
+
+            {/* Bouton Tarifs */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <button 
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    transition-all duration-200 border-2 shadow-sm
+                    bg-white/10 text-white font-medium border-black hover:bg-white/15"
+                >
+                  <Coins className="h-3.5 w-3.5" />
+                  <span className="font-medium">Voir les tarifs</span>
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl w-11/12 max-h-[90vh] overflow-y-auto bg-[#1B2A4A] border-2 border-black">
+                <div className="p-6">
+                  <h2 className="text-2xl font-bold text-white mb-6 text-center">
+                    Tarifs Victaure 2024
+                  </h2>
+                  <PricingGrid />
+                </div>
+              </DialogContent>
+            </Dialog>
           </nav>
         </ScrollArea>
 
