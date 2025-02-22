@@ -3,10 +3,12 @@ import { useState, useEffect, useRef } from "react";
 import { Bot, Wand2, MessagesSquare } from "lucide-react";
 import { toast } from "sonner";
 import { useVictaureChat } from "@/hooks/useVictaureChat";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ChatMessage {
   content: string;
   isUser: boolean;
+  username?: string;
 }
 
 interface VictaureChatProps {
@@ -29,6 +31,7 @@ export function VictaureChat({
   const [userQuestions, setUserQuestions] = useState(0);
   const [userInput, setUserInput] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
   const { sendMessage, isLoading } = useVictaureChat({
     onResponse: (response) => {
       console.log("Received response:", response);
@@ -67,7 +70,11 @@ export function VictaureChat({
 
     const userMessage = userInput.trim();
     setUserQuestions(prev => prev + 1);
-    setMessages(prev => [...prev, { content: userMessage, isUser: true }]);
+    setMessages(prev => [...prev, { 
+      content: userMessage, 
+      isUser: true,
+      username: user?.email || 'Visiteur'
+    }]);
     setUserInput("");
     setShowThinking(true);
 
@@ -122,15 +129,21 @@ export function VictaureChat({
         >
           <div className="space-y-4">
             {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`p-3 rounded-lg ${
-                  message.isUser
-                    ? "ml-auto bg-[#64B5D9] text-white border-transparent max-w-[80%]"
-                    : "mr-auto bg-white dark:bg-zinc-800 text-[#1B2A4A] dark:text-white border-[#64B5D9]/10 max-w-[80%]"
-                }`}
-              >
-                <p className="text-sm font-medium whitespace-pre-wrap">{message.content}</p>
+              <div key={index} className="space-y-1">
+                {message.isUser && message.username && (
+                  <p className="text-xs text-right text-gray-500 dark:text-gray-400 px-2">
+                    {message.username}
+                  </p>
+                )}
+                <div
+                  className={`p-3 rounded-lg ${
+                    message.isUser
+                      ? "ml-auto bg-[#64B5D9] text-white border-transparent max-w-[80%]"
+                      : "mr-auto bg-white dark:bg-zinc-800 text-[#1B2A4A] dark:text-white border-[#64B5D9]/10 max-w-[80%]"
+                  }`}
+                >
+                  <p className="text-sm font-medium whitespace-pre-wrap">{message.content}</p>
+                </div>
               </div>
             ))}
           </div>
