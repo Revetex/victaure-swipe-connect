@@ -24,9 +24,16 @@ export interface StickyNote {
   user_id: string;
   created_at?: string;
   updated_at?: string;
-  metadata?: Record<string, any>;
+  metadata?: {
+    width?: number;
+    height?: number;
+    [key: string]: any;
+  };
+  position?: {
+    x: number;
+    y: number;
+  };
   layout_type?: 'grid' | 'masonry' | 'list';
-  position?: { x: number; y: number };
 }
 
 export interface ColorOption {

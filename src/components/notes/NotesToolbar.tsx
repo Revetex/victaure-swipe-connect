@@ -35,17 +35,17 @@ export function NotesToolbar({
   const getColorClass = (color: string) => {
     switch (color) {
       case 'yellow':
-        return 'bg-[#FEF7CD]';
+        return 'bg-[#FEF7CD] text-zinc-800';
       case 'blue':
-        return 'bg-[#D3E4FD]';
+        return 'bg-[#D3E4FD] text-zinc-800';
       case 'green':
-        return 'bg-[#F2FCE2]';
+        return 'bg-[#F2FCE2] text-zinc-800';
       case 'purple':
-        return 'bg-[#E5DEFF]';
+        return 'bg-[#E5DEFF] text-zinc-800';
       case 'orange':
-        return 'bg-[#FEC6A1]';
+        return 'bg-[#FEC6A1] text-zinc-800';
       default:
-        return 'bg-[#FEF7CD]';
+        return 'bg-[#FEF7CD] text-zinc-800';
     }
   };
 
@@ -87,8 +87,8 @@ export function NotesToolbar({
         </Select>
         <Button onClick={handleAddNote} size="icon" variant="ghost">
           <Plus className="h-4 w-4" />
-        </Button>
-      </div>
+          <Button>
+          </div>
     </div>
   );
 }
