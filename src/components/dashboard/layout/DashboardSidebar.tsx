@@ -10,6 +10,7 @@ import { createEmptyProfile } from "@/types/profile";
 import { useState, useEffect } from "react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 
 interface DashboardSidebarProps {
   currentPage: number;
@@ -67,8 +68,9 @@ export function DashboardSidebar({
             const Icon = item.icon;
             const isNotificationsItem = item.id === 9;
             return (
-              <button
+              <Link
                 key={item.id}
+                to={item.route}
                 onClick={() => onPageChange(item.id)}
                 className={cn(
                   "w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm relative",
@@ -92,12 +94,11 @@ export function DashboardSidebar({
                     {unreadCount}
                   </Badge>
                 )}
-              </button>
+              </Link>
             );
           })}
         </nav>
 
-        {/* Signature en bas du menu */}
         <div className="p-4 mt-auto border-t border-border/50">
           <div className="flex items-center justify-center opacity-60 hover:opacity-100 transition-all duration-300">
             <img 
