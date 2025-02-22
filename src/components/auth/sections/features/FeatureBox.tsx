@@ -42,7 +42,7 @@ export function FeatureBox({ position }: FeatureBoxProps) {
         return (
           <Text
             key={index}
-            font="/fonts/Inter-Regular.woff"
+            font="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hjp-Ek-_0ew.ttf"
             position={textPosition}
             rotation={textRotation}
             fontSize={0.3}
