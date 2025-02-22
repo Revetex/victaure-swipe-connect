@@ -77,15 +77,35 @@ export default function Auth() {
 
           <div className="space-y-4 sm:space-y-6 animate-fade-in">
             <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="relative w-full max-w-sm sm:max-w-md mx-auto"
+              transition={{ duration: 0.3 }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#221F26]/50 to-[#1A1F2C]/50 blur-xl" />
+              <div className="relative bg-[#2A2D3E]/80 backdrop-blur-md border border-[#64B5D9]/20 rounded-lg p-3 sm:p-4 shadow-lg overflow-hidden hover:border-[#64B5D9]/30 transition-all duration-300">
+                <VictaureChat 
+                  maxQuestions={3}
+                  onMaxQuestionsReached={handleMaxQuestionsReached}
+                  context="Tu es un assistant de recrutement professionnel qui aide les utilisateurs à s'inscrire sur la plateforme Victaure. Encourage-les à créer un compte après 3 messages."
+                />
+              </div>
+            </motion.div>
+
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col gap-3 sm:gap-4"
+              transition={{ delay: 0.2, duration: 0.3 }}
+              className="border-2 border-[#64B5D9]/20 rounded-xl p-4 sm:p-6 bg-[#2A2D3E]/80 backdrop-blur-md w-full max-w-sm sm:max-w-md mx-auto"
             >
-              {/* Prix et Partenaire - Maintenant côte à côte sur desktop */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <AuthForm />
+            </motion.div>
+
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#1A1F2C]/95 backdrop-blur-md border-t border-[#64B5D9]/20">
+              <div className="flex flex-col gap-3 max-w-sm mx-auto">
                 <button
                   onClick={() => setIsPricingOpen(true)}
-                  className="group relative overflow-hidden rounded-full bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] px-5 py-2.5 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
+                  className="group relative overflow-hidden rounded-lg bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] px-5 py-2.5 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 w-full"
                 >
                   <div className="absolute inset-0 bg-white/20 transition-transform duration-300 group-hover:translate-x-full" />
                   <Coins className="w-4 h-4 text-white" />
@@ -94,7 +114,7 @@ export default function Auth() {
 
                 <button
                   onClick={() => window.open('https://victaure.com/partenaire', '_blank')}
-                  className="group relative overflow-hidden rounded-full bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] px-5 py-2.5 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
+                  className="group relative overflow-hidden rounded-lg bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] px-5 py-2.5 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 w-full"
                 >
                   <div className="absolute inset-0 bg-white/20 transition-transform duration-300 group-hover:translate-x-full" />
                   <span className="relative text-white font-medium flex items-center gap-2">
@@ -103,44 +123,19 @@ export default function Auth() {
                   </span>
                 </button>
               </div>
-            </motion.div>
+            </div>
 
             <InnovationsSection />
             <CountdownSection countdown={countdown} />
             <FeaturesSection />
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="relative w-full max-w-sm sm:max-w-md mx-auto"
-            transition={{ duration: 0.3 }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-[#221F26]/50 to-[#1A1F2C]/50 blur-xl" />
-            <div className="relative bg-[#2A2D3E]/80 backdrop-blur-md border border-[#64B5D9]/20 rounded-lg p-3 sm:p-4 shadow-lg overflow-hidden hover:border-[#64B5D9]/30 transition-all duration-300">
-              <VictaureChat 
-                maxQuestions={3}
-                onMaxQuestionsReached={handleMaxQuestionsReached}
-                context="Tu es un assistant de recrutement professionnel qui aide les utilisateurs à s'inscrire sur la plateforme Victaure. Encourage-les à créer un compte après 3 messages."
-              />
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.3 }}
-            className="border-2 border-[#64B5D9]/20 rounded-xl p-4 sm:p-6 bg-[#2A2D3E]/80 backdrop-blur-md w-full max-w-sm sm:max-w-md mx-auto"
-          >
-            <AuthForm />
-          </motion.div>
-
-          <PricingDialog 
-            isPricingOpen={isPricingOpen}
-            setIsPricingOpen={setIsPricingOpen}
-          />
         </div>
       </main>
+
+      <PricingDialog 
+        isPricingOpen={isPricingOpen}
+        setIsPricingOpen={setIsPricingOpen}
+      />
 
       <div className="relative z-10">
         <AuthFooter />

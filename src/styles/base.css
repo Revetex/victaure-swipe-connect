@@ -40,7 +40,7 @@
   }
 
   input, textarea, select {
-    @apply bg-[#F1F0FB] dark:bg-[#2A2D3E] text-[#1A1F2C] dark:text-[#F2EBE4];
+    @apply bg-[#F1F0FB] dark:bg-[#2A2D3E] text-[#1A1F2C] dark:text-[#F2EBE4] border-[#64B5D9]/20;
   }
 }
 
