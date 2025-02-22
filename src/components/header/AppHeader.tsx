@@ -49,9 +49,9 @@ export function AppHeader({
             <img 
               src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png" 
               alt="Victaure Logo" 
-              className="h-8 w-8 object-contain"
+              className="h-9 w-9 object-contain"
             />
-            <span className="font-tiempos font-black tracking-[0.2em] text-[#F2EBE4]">
+            <span className="font-tiempos font-black tracking-[0.2em] text-[#F2EBE4] text-xl">
               VICTAURE
             </span>
           </div>
