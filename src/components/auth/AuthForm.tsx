@@ -29,7 +29,7 @@ export function AuthForm({ redirectTo }: AuthFormProps) {
 
   return (
     <div className="w-full">
-      <div className="relative mx-auto w-full max-w-md overflow-hidden border border-black/10 rounded-xl bg-white/90 backdrop-blur-sm shadow-xl">
+      <div className="relative mx-auto w-full max-w-md overflow-hidden border border-[#64B5D9]/20 rounded-xl glass-panel shadow-xl">
         <div className="absolute inset-0 bg-[#F2EBE4]/5"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2364B5D9' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -45,7 +45,7 @@ export function AuthForm({ redirectTo }: AuthFormProps) {
               value="login" 
               className={cn(
                 "w-full h-12 rounded-none data-[state=active]:bg-transparent",
-                "data-[state=active]:text-[#1B2A4A] data-[state=active]:border-b-2",
+                "data-[state=active]:text-[#F2EBE4] data-[state=active]:border-b-2",
                 "data-[state=active]:border-[#64B5D9] transition-colors"
               )}
             >
@@ -55,7 +55,7 @@ export function AuthForm({ redirectTo }: AuthFormProps) {
               value="signup"
               className={cn(
                 "w-full h-12 rounded-none data-[state=active]:bg-transparent",
-                "data-[state=active]:text-[#1B2A4A] data-[state=active]:border-b-2",
+                "data-[state=active]:text-[#F2EBE4] data-[state=active]:border-b-2",
                 "data-[state=active]:border-[#64B5D9] transition-colors"
               )}
             >
@@ -63,7 +63,7 @@ export function AuthForm({ redirectTo }: AuthFormProps) {
             </TabsTrigger>
           </TabsList>
 
-          <div className="p-6 bg-white/95">
+          <div className="p-6 bg-[#1B2A4A]/80 backdrop-blur-sm">
             <AnimatePresence mode="wait">
               <motion.div
                 key={view}
