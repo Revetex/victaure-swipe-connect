@@ -1,13 +1,12 @@
-
 import { Suspense, useState, useEffect, useRef } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
 import { Logo } from "@/components/Logo";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, Navigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
-import { MessagesSquare, Bot, Wand2 } from "lucide-react";
+import { MessagesSquare, Bot, Wand2, Mail, Phone, MapPin, MessageCircle, BrainCircuit } from "lucide-react";
 import { toast } from "sonner";
 
 interface ChatMessage {
@@ -40,8 +39,10 @@ export default function Auth() {
       }
     };
 
-    showWelcome();
-  }, [showWelcomeMessage]);
+    if (!isTyping && !showWelcomeMessage) {
+      showWelcome();
+    }
+  }, [isTyping, showWelcomeMessage]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -74,18 +75,48 @@ export default function Auth() {
       setShowThinking(true);
 
       try {
-        // Simuler une réponse de Mr Victaure
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        const responses = [
-          "Je comprends votre intérêt ! Créez un compte pour découvrir toutes nos fonctionnalités.",
-          "Excellent choix ! Pour une expérience personnalisée, connectez-vous à votre compte.",
-          "Je serai ravi de vous aider davantage. Inscrivez-vous pour accéder à tous nos services !"
-        ];
-        const aiResponse = responses[userQuestions];
+        const response = await fetch('https://api.openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer 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',
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://victaure.com',
+            'X-Title': 'Victaure Assistant',
+            'Origin': window.location.origin
+          },
+          body: JSON.stringify({
+            model: 'mistralai/mistral-7b-instruct',
+            messages: [
+              {
+                role: 'system',
+                content: 'Tu es Mr. Victaure, un assistant professionnel sur une plateforme de recrutement. Tu dois être amical et professionnel, encourageant les utilisateurs à créer un compte après 3 messages.'
+              },
+              {
+                role: 'user',
+                content: userMessage
+              }
+            ]
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (!data.choices?.[0]?.message?.content) {
+          throw new Error('Format de réponse invalide');
+        }
+
+        const aiResponse = data.choices[0].message.content;
         setVisibleMessages(prev => [...prev, { content: aiResponse, isUser: false }]);
       } catch (error) {
-        console.error('Error:', error);
-        toast.error("L'assistant n'est pas disponible pour le moment");
+        console.error('Erreur:', error);
+        toast.error("L'assistant n'est pas disponible pour le moment, veuillez réessayer plus tard.");
+        setVisibleMessages(prev => [...prev, { 
+          content: "Désolé, je ne suis pas disponible pour le moment. Veuillez réessayer plus tard.", 
+          isUser: false 
+        }]);
       } finally {
         setShowThinking(false);
       }
@@ -113,7 +144,7 @@ export default function Auth() {
               <div className="flex items-center gap-3 bg-[#F2EBE4] p-4 border-b-[3px] border-[#64B5D9]">
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    <Bot className="w-10 h-10 text-[#1B2A4A]" />
+                    <BrainCircuit className="w-10 h-10 text-[#1B2A4A]" />
                     <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
                   </div>
                   <div>
@@ -129,7 +160,7 @@ export default function Auth() {
                 )}
               </div>
 
-              <div className="p-4 bg-[#1B2A4A]">
+              <div className="p-4">
                 <div 
                   ref={chatContainerRef}
                   className="flex flex-col justify-end h-[400px] overflow-y-auto mb-4"
@@ -169,7 +200,7 @@ export default function Auth() {
                     disabled={userQuestions >= 3 || !userInput.trim()}
                     className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#64B5D9] text-[#F2EBE4] hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   >
-                    <MessagesSquare className="w-4 h-4" />
+                    <MessageCircle className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -187,6 +218,33 @@ export default function Auth() {
 
         <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center">
           <div className="space-y-8 border-t border-[#F2EBE4]/10 pt-8">
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold text-[#F2EBE4]">Nous contacter</h3>
+              <form className="space-y-4 max-w-md mx-auto">
+                <input
+                  type="text"
+                  placeholder="Votre nom"
+                  className="w-full h-10 px-4 rounded-lg bg-[#F2EBE4]/10 border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors text-[#F2EBE4] placeholder:text-[#F2EBE4]/40"
+                />
+                <input
+                  type="email"
+                  placeholder="Votre email"
+                  className="w-full h-10 px-4 rounded-lg bg-[#F2EBE4]/10 border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors text-[#F2EBE4] placeholder:text-[#F2EBE4]/40"
+                />
+                <textarea
+                  placeholder="Votre message..."
+                  rows={4}
+                  className="w-full p-4 rounded-lg bg-[#F2EBE4]/10 border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors text-[#F2EBE4] placeholder:text-[#F2EBE4]/40"
+                />
+                <button
+                  type="submit"
+                  className="w-full h-10 rounded-lg bg-[#64B5D9] text-[#F2EBE4] hover:bg-[#64B5D9]/90 transition-colors font-medium"
+                >
+                  Envoyer
+                </button>
+              </form>
+            </div>
+
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-[#F2EBE4]">Liens juridiques</h3>
               <div className="space-y-2">
