@@ -7,6 +7,7 @@ import { PaymentPanel } from "./calculator/PaymentPanel";
 import { useCalculator } from "./calculator/useCalculator";
 import { useConverter } from "./calculator/hooks/useConverter";
 import { Card } from "@/components/ui/card";
+import { PricingGrid } from "@/components/pricing/PricingGrid";
 import { usePaymentHandler } from "@/hooks/usePaymentHandler";
 import { toast } from "sonner";
 import type { TransactionType } from './calculator/types';
@@ -35,8 +36,8 @@ export function CalculatorPage() {
   };
 
   return (
-    <div className="min-h-screen pt-16 container">
-      <div className="max-w-6xl mx-auto p-4 space-y-6">
+    <div className="min-h-screen pt-16 space-y-8">
+      <div className="container max-w-6xl mx-auto p-4 space-y-6">
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-6">
             <Card className="p-6 relative overflow-hidden backdrop-blur-sm bg-card/95 border-primary/10">
@@ -69,6 +70,13 @@ export function CalculatorPage() {
           />
         </div>
       </div>
+
+      <section className="w-full bg-white/5 backdrop-blur-sm py-8 border-t border-primary/10">
+        <div className="container">
+          <h2 className="text-2xl font-semibold text-center mb-8">Nos Tarifs</h2>
+          <PricingGrid />
+        </div>
+      </section>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { AuthHeader } from "@/components/auth/sections/AuthHeader";
 import { AuthFooter } from "@/components/auth/sections/AuthFooter";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
 import { VictaureChat } from "@/components/chat/VictaureChat";
+import { PricingGrid } from "@/components/pricing/PricingGrid";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
@@ -39,25 +40,10 @@ export default function Auth() {
       <div 
         className="fixed inset-0 opacity-[0.025] pointer-events-none"
         style={{
-          backgroundImage: `
-            url('${'/lovable-uploads/bcfe3f97-9c11-4615-821e-d9666f3a9c14.png'}'),
-            url('/lovable-uploads/168ba21b-e221-4668-96cc-eb026041a0ed.png')
-          `,
+          backgroundImage: `url('/lovable-uploads/bcfe3f97-9c11-4615-821e-d9666f3a9c14.png'), url('/lovable-uploads/168ba21b-e221-4668-96cc-eb026041a0ed.png')`,
           backgroundSize: "200px, 300px",
           backgroundPosition: "center",
-          backgroundRepeat: "space",
-          filter: "contrast(1.2) brightness(0.95)"
-        }}
-      />
-      
-      {/* Subtle pattern overlay */}
-      <div 
-        className="fixed inset-0 opacity-10 pointer-events-none"
-        style={{
-          backgroundImage: "url('/lovable-uploads/60542c40-c17c-42cc-8136-f4780f09946a.png')",
-          backgroundSize: "32px",
-          backgroundRepeat: "repeat",
-          maskImage: "radial-gradient(circle at center, black 60%, transparent 100%)"
+          backgroundRepeat: "space"
         }}
       />
       
@@ -68,14 +54,6 @@ export default function Auth() {
           <AuthHeader />
 
           <div className="relative bg-[#D3E4FD]/80 rounded-xl p-4 backdrop-blur-sm border border-[#D3E4FD] overflow-hidden">
-            <div 
-              className="absolute inset-0 opacity-5"
-              style={{
-                backgroundImage: "url('/lovable-uploads/60542c40-c17c-42cc-8136-f4780f09946a.png')",
-                backgroundSize: "32px",
-                backgroundRepeat: "repeat"
-              }}
-            />
             <VictaureChat 
               maxQuestions={3}
               onMaxQuestionsReached={handleMaxQuestionsReached}
@@ -83,19 +61,15 @@ export default function Auth() {
             />
           </div>
 
-          <div className="w-full">
-            <Suspense fallback={
-              <div className="flex items-center justify-center">
-                <Loader className="w-6 h-6 text-[#D3E4FD]" />
-              </div>
-            }>
-              <AuthForm redirectTo={location.state?.from?.pathname} />
-            </Suspense>
-          </div>
+          <AuthForm />
         </div>
-
-        <AuthFooter />
       </main>
+
+      <section className="w-full bg-white/5 backdrop-blur-sm py-16">
+        <PricingGrid />
+      </section>
+
+      <AuthFooter />
     </div>
   );
 }
