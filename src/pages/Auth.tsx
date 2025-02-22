@@ -10,9 +10,9 @@ import { ThemeSelector } from "@/components/auth/ThemeSelector";
 import { VictaureChat } from "@/components/chat/VictaureChat";
 import { PricingGrid } from "@/components/pricing/PricingGrid";
 import { toast } from "sonner";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Bot, Briefcase, Sparkles, Wrench, Users } from "lucide-react";
+import { Bot, Briefcase, Sparkles, Wrench, Users, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -86,54 +86,52 @@ export default function Auth() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#1B2A4A] relative overflow-hidden">
-      {/* Motif de fond */}
-      <div 
-        className="fixed inset-0 opacity-[0.025] pointer-events-none"
-        style={{
-          backgroundImage: `url('/lovable-uploads/bcfe3f97-9c11-4615-821e-d9666f3a9c14.png'), url('/lovable-uploads/168ba21b-e221-4668-96cc-eb026041a0ed.png')`,
-          backgroundSize: "200px, 300px",
-          backgroundPosition: "center",
-          backgroundRepeat: "space"
-        }}
-      />
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#1B2A4A] via-[#1B2A4A] to-[#152238] relative overflow-hidden">
+      {/* Pattern de fond animé */}
+      <div className="absolute inset-0 bg-[url('/lovable-uploads/bcfe3f97-9c11-4615-821e-d9666f3a9c14.png')] bg-repeat opacity-[0.02] animate-[pulse_4s_ease-in-out_infinite]" />
       
       <ThemeSelector />
       
-      <main className="flex-1 flex flex-col items-center justify-center w-full px-4 py-8 sm:p-6 lg:p-8 relative z-10">
-        <div className="w-full max-w-xl mx-auto space-y-8">
+      <main className="flex-1 flex flex-col items-center justify-center w-full px-4 py-12 sm:py-16 lg:py-20 relative z-10">
+        <div className="w-full max-w-xl mx-auto space-y-12">
           <AuthHeader />
 
-          {/* Compte à rebours */}
+          {/* Compte à rebours amélioré */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center justify-center space-y-4"
+            className="relative"
           >
-            <h2 className="text-[#F2EBE4] text-xl font-medium">
-              Lancement officiel dans
-            </h2>
-            <div className="grid grid-cols-4 gap-4 text-center">
-              <div className="bg-[#D3E4FD]/10 backdrop-blur-sm border-2 border-[#D3E4FD]/20 rounded-xl p-4">
-                <div className="text-2xl font-bold text-[#64B5D9]">{countdown.days}</div>
-                <div className="text-[#F2EBE4]/60 text-sm">Jours</div>
-              </div>
-              <div className="bg-[#D3E4FD]/10 backdrop-blur-sm border-2 border-[#D3E4FD]/20 rounded-xl p-4">
-                <div className="text-2xl font-bold text-[#64B5D9]">{countdown.hours}</div>
-                <div className="text-[#F2EBE4]/60 text-sm">Heures</div>
-              </div>
-              <div className="bg-[#D3E4FD]/10 backdrop-blur-sm border-2 border-[#D3E4FD]/20 rounded-xl p-4">
-                <div className="text-2xl font-bold text-[#64B5D9]">{countdown.minutes}</div>
-                <div className="text-[#F2EBE4]/60 text-sm">Minutes</div>
-              </div>
-              <div className="bg-[#D3E4FD]/10 backdrop-blur-sm border-2 border-[#D3E4FD]/20 rounded-xl p-4">
-                <div className="text-2xl font-bold text-[#64B5D9]">{countdown.seconds}</div>
-                <div className="text-[#F2EBE4]/60 text-sm">Secondes</div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/0 via-[#64B5D9]/10 to-[#64B5D9]/0 blur-xl" />
+            <div className="relative space-y-6">
+              <h2 className="text-2xl sm:text-3xl font-bold text-center text-white">
+                Lancement officiel dans
+              </h2>
+              <div className="grid grid-cols-4 gap-3 sm:gap-4">
+                {[
+                  { value: countdown.days, label: "Jours" },
+                  { value: countdown.hours, label: "Heures" },
+                  { value: countdown.minutes, label: "Minutes" },
+                  { value: countdown.seconds, label: "Secondes" }
+                ].map((item, index) => (
+                  <motion.div
+                    key={item.label}
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-gradient-to-br from-[#D3E4FD]/10 to-transparent backdrop-blur-lg border border-[#D3E4FD]/20 rounded-xl p-4 flex flex-col items-center justify-center shadow-[0_8px_32px_rgba(0,0,0,0.12)]"
+                  >
+                    <span className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#64B5D9] to-[#D3E4FD] bg-clip-text text-transparent">
+                      {item.value}
+                    </span>
+                    <span className="text-[#F2EBE4]/60 text-sm mt-1">{item.label}</span>
+                  </motion.div>
+                ))}
               </div>
             </div>
           </motion.div>
 
-          {/* Bannière Gratuit */}
+          {/* Badge amélioré */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -141,77 +139,104 @@ export default function Auth() {
           >
             <Badge 
               variant="secondary" 
-              className="px-4 py-2 text-lg bg-[#64B5D9]/20 border-2 border-[#64B5D9] text-white"
+              className="px-6 py-3 text-lg bg-gradient-to-r from-[#64B5D9]/20 to-[#64B5D9]/10 backdrop-blur-sm border-2 border-[#64B5D9] text-white shadow-lg hover:shadow-xl transition-all duration-300"
             >
               Gratuit pour les chercheurs d'emploi
             </Badge>
           </motion.div>
 
-          {/* Grid des fonctionnalités */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          {/* Features améliorées */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-[#D3E4FD]/10 backdrop-blur-sm border-2 border-[#D3E4FD]/20 rounded-xl p-4"
+                className="group bg-gradient-to-br from-[#D3E4FD]/10 to-transparent backdrop-blur-lg border border-[#D3E4FD]/20 rounded-xl p-6 hover:bg-[#D3E4FD]/20 transition-all duration-300 cursor-pointer"
               >
-                <div className="flex items-start gap-3">
-                  <feature.icon className="w-5 h-5 text-[#64B5D9] mt-1" />
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg bg-[#64B5D9]/20 group-hover:bg-[#64B5D9]/30 transition-colors">
+                    <feature.icon className="w-6 h-6 text-[#64B5D9]" />
+                  </div>
                   <div>
-                    <h3 className="text-[#F2EBE4] font-medium">{feature.title}</h3>
-                    <p className="text-[#F2EBE4]/60 text-sm">{feature.description}</p>
+                    <h3 className="text-[#F2EBE4] font-semibold text-lg mb-2 group-hover:text-[#64B5D9] transition-colors">
+                      {feature.title}
+                    </h3>
+                    <p className="text-[#F2EBE4]/70 text-sm leading-relaxed">
+                      {feature.description}
+                    </p>
                   </div>
                 </div>
               </motion.div>
             ))}
           </div>
 
-          <div className="relative bg-[#D3E4FD]/5 backdrop-blur-sm border-2 border-[#D3E4FD]/20 rounded-xl p-4 overflow-hidden">
-            <VictaureChat 
-              maxQuestions={3}
-              onMaxQuestionsReached={handleMaxQuestionsReached}
-              context="Tu es un assistant de recrutement professionnel qui aide les utilisateurs à s'inscrire sur la plateforme Victaure. Encourage-les à créer un compte après 3 messages."
-            />
-          </div>
+          {/* Chat amélioré */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-[#64B5D9]/10 to-[#1B2A4A]/30 blur-xl" />
+            <div className="relative bg-gradient-to-br from-[#D3E4FD]/10 to-transparent backdrop-blur-lg border border-[#D3E4FD]/20 rounded-xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-hidden">
+              <VictaureChat 
+                maxQuestions={3}
+                onMaxQuestionsReached={handleMaxQuestionsReached}
+                context="Tu es un assistant de recrutement professionnel qui aide les utilisateurs à s'inscrire sur la plateforme Victaure. Encourage-les à créer un compte après 3 messages."
+              />
+            </div>
+          </motion.div>
 
-          <AuthForm />
+          {/* Formulaire d'authentification */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <AuthForm />
+          </motion.div>
         </div>
       </main>
 
+      {/* Section Entreprises améliorée */}
       <section 
-        className="relative w-full py-16 overflow-hidden"
+        className="relative w-full py-20 overflow-hidden"
         style={{
-          background: "linear-gradient(to bottom, rgba(27, 42, 74, 0.95), rgba(27, 42, 74, 0.8))",
+          background: "linear-gradient(to bottom, rgba(27, 42, 74, 0.98), rgba(21, 34, 56, 0.95))",
           boxShadow: "0 -10px 30px rgba(0,0,0,0.2)"
         }}
       >
-        {/* Motif de fond entreprise */}
         <div 
-          className="absolute inset-0 opacity-[0.05] pointer-events-none"
+          className="absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage: `url('/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png')`,
             backgroundSize: '200px',
             backgroundPosition: 'center',
-            backgroundRepeat: 'repeat'
+            backgroundRepeat: 'repeat',
+            animation: 'float 20s ease-in-out infinite'
           }}
         />
 
-        {/* Effet de brillance */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/0 via-[#64B5D9]/10 to-[#64B5D9]/0 pointer-events-none" />
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/0 via-[#64B5D9]/5 to-[#64B5D9]/0" />
+          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#64B5D9]/20 to-transparent" />
+        </div>
 
         <div className="relative max-w-6xl mx-auto px-4">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-12 space-y-4"
+            className="text-center mb-16 space-y-6"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-white">
-              Solutions Entreprises
+            <h2 className="text-4xl md:text-5xl font-bold">
+              <span className="bg-gradient-to-r from-white via-[#D3E4FD] to-[#64B5D9] bg-clip-text text-transparent">
+                Solutions Entreprises
+              </span>
             </h2>
-            <p className="text-[#F2EBE4]/80 text-lg max-w-2xl mx-auto">
-              Optimisez votre recrutement grâce à notre marketplace d'outils IA spécialisés
+            <p className="text-[#F2EBE4]/80 text-lg max-w-2xl mx-auto leading-relaxed">
+              Optimisez votre recrutement grâce à notre marketplace d'outils IA spécialisés.
+              Une suite complète pour vos besoins RH.
             </p>
           </motion.div>
 
