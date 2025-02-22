@@ -12,6 +12,8 @@ import { NewConversationPopover } from "./components/NewConversationPopover";
 import { useFriendsList } from "./hooks/useFriendsList";
 import type { Receiver } from "@/types/messages";
 import type { UserProfile } from "@/types/profile";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface ConversationListProps {
   className?: string;
@@ -102,37 +104,50 @@ export function ConversationList({ className }: ConversationListProps) {
       </ScrollArea>
 
       {selectedParticipant && (
-        <ProfilePreview
-          profile={{
-            id: selectedParticipant.id,
-            email: selectedParticipant.email || "",
-            full_name: selectedParticipant.full_name,
-            avatar_url: selectedParticipant.avatar_url || undefined,
-            role: selectedParticipant.role,
-            bio: selectedParticipant.bio || undefined,
-            phone: selectedParticipant.phone || undefined,
-            city: selectedParticipant.city || undefined,
-            state: selectedParticipant.state || undefined,
-            country: selectedParticipant.country || undefined,
-            skills: selectedParticipant.skills || [],
-            online_status: !!selectedParticipant.online_status,
-            last_seen: selectedParticipant.last_seen || undefined,
-            certifications: [],
-            education: [],
-            experiences: [],
-            friends: []
-          }}
-          isOpen={showProfilePreview}
-          onClose={() => setShowProfilePreview(false)}
-          onRequestChat={() => handleSelectConversation({
-            id: selectedParticipant.id,
-            participant: selectedParticipant,
-            participant2_id: selectedParticipant.id,
-            participant1_id: selectedParticipant.id,
-            last_message: '',
-            last_message_time: new Date().toISOString()
-          })}
-        />
+        <Dialog open={showProfilePreview} onOpenChange={() => setShowProfilePreview(false)}>
+          <DialogContent 
+            className="max-w-4xl p-0" 
+            aria-describedby="profile-preview-description"
+          >
+            <VisuallyHidden asChild>
+              <DialogTitle>Profil de {selectedParticipant.full_name}</DialogTitle>
+            </VisuallyHidden>
+            <DialogDescription id="profile-preview-description" className="sr-only">
+              Aperçu détaillé du profil de {selectedParticipant.full_name}
+            </DialogDescription>
+            <ProfilePreview
+              profile={{
+                id: selectedParticipant.id,
+                email: selectedParticipant.email || "",
+                full_name: selectedParticipant.full_name,
+                avatar_url: selectedParticipant.avatar_url || undefined,
+                role: selectedParticipant.role,
+                bio: selectedParticipant.bio || undefined,
+                phone: selectedParticipant.phone || undefined,
+                city: selectedParticipant.city || undefined,
+                state: selectedParticipant.state || undefined,
+                country: selectedParticipant.country || undefined,
+                skills: selectedParticipant.skills || [],
+                online_status: !!selectedParticipant.online_status,
+                last_seen: selectedParticipant.last_seen || undefined,
+                certifications: [],
+                education: [],
+                experiences: [],
+                friends: []
+              }}
+              isOpen={showProfilePreview}
+              onClose={() => setShowProfilePreview(false)}
+              onRequestChat={() => handleSelectConversation({
+                id: selectedParticipant.id,
+                participant: selectedParticipant,
+                participant2_id: selectedParticipant.id,
+                participant1_id: selectedParticipant.id,
+                last_message: '',
+                last_message_time: new Date().toISOString()
+              })}
+            />
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );
