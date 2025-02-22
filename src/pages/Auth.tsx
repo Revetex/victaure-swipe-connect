@@ -9,6 +9,7 @@ import { AuthFooter } from "@/components/auth/sections/AuthFooter";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
 import { VictaureChat } from "@/components/chat/VictaureChat";
 import { toast } from "sonner";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -32,6 +33,19 @@ export default function Auth() {
     toast.error("Veuillez vous connecter pour continuer la conversation avec Mr. Victaure");
   };
 
+  const handleLegalLink = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+    e.preventDefault();
+    const dialog = document.createElement('dialog');
+    dialog.setAttribute('open', '');
+    const iframe = document.createElement('iframe');
+    iframe.src = path;
+    iframe.style.width = '100%';
+    iframe.style.height = '80vh';
+    iframe.style.border = 'none';
+    dialog.appendChild(iframe);
+    document.body.appendChild(dialog);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#1B2A4A] relative overflow-hidden">
       <div className="fixed inset-0 bg-grid-[#F2EBE4]/5 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
@@ -42,11 +56,21 @@ export default function Auth() {
         <div className="w-full max-w-xl mx-auto space-y-8">
           <AuthHeader />
 
-          <VictaureChat 
-            maxQuestions={3}
-            onMaxQuestionsReached={handleMaxQuestionsReached}
-            context="Tu es un assistant de recrutement professionnel qui aide les utilisateurs à s'inscrire sur la plateforme Victaure. Encourage-les à créer un compte après 3 messages."
-          />
+          <div className="relative bg-[#9b87f5]/10 rounded-xl p-4 backdrop-blur-sm border border-[#9b87f5]/20 overflow-hidden">
+            <div 
+              className="absolute inset-0 opacity-5"
+              style={{
+                backgroundImage: "url('/lovable-uploads/60542c40-c17c-42cc-8136-f4780f09946a.png')",
+                backgroundSize: "64px",
+                backgroundRepeat: "repeat"
+              }}
+            />
+            <VictaureChat 
+              maxQuestions={3}
+              onMaxQuestionsReached={handleMaxQuestionsReached}
+              context="Tu es un assistant de recrutement professionnel qui aide les utilisateurs à s'inscrire sur la plateforme Victaure. Encourage-les à créer un compte après 3 messages."
+            />
+          </div>
 
           <div className="w-full">
             <Suspense fallback={
