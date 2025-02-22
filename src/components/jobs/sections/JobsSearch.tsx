@@ -13,7 +13,6 @@ import { JobsFilters } from "./JobsFilters";
 interface JobsSearchProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  // Ajout des props nécessaires pour les filtres
   selectedLocation: string;
   selectedCompanyType: string;
   sortOrder: "recent" | "salary";

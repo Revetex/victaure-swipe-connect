@@ -1,6 +1,7 @@
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { UserCircle } from "lucide-react";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface FullscreenAvatarProps {
   isOpen: boolean;
@@ -13,6 +14,9 @@ export function FullscreenAvatar({ isOpen, onOpenChange, imageUrl, fullName }: F
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl w-full p-0">
+        <VisuallyHidden asChild>
+          <DialogTitle>Photo de profil de {fullName || "l'utilisateur"}</DialogTitle>
+        </VisuallyHidden>
         <div className="relative w-full h-full max-h-[80vh] overflow-hidden">
           {imageUrl ? (
             <img

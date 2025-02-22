@@ -1,8 +1,9 @@
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface ImageViewerProps {
   images: string[];
@@ -25,6 +26,10 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
   return (
     <Dialog open={isOpen} onOpenChange={() => onClose()}>
       <DialogContent className="max-w-[95vw] max-h-[95vh] w-full h-full p-0 flex items-center justify-center">
+        <VisuallyHidden asChild>
+          <DialogTitle>Visualisation d'image {currentIndex + 1} sur {images.length}</DialogTitle>
+        </VisuallyHidden>
+        
         <Button
           variant="ghost"
           size="icon"
