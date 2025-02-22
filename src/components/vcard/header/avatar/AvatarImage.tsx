@@ -20,7 +20,8 @@ export function AvatarImage({ url, fullName, onError, hasError, isLoading, class
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     console.error("Erreur de chargement de l'image:", e);
     onError();
-    toast.error("Impossible de charger l'image", {
+    toast.error("L'image de profil n'est pas accessible", {
+      description: "Veuillez télécharger une nouvelle image",
       id: "avatar-load-error",
     });
   };
@@ -28,7 +29,7 @@ export function AvatarImage({ url, fullName, onError, hasError, isLoading, class
   const avatarClasses = cn(
     isMobile ? "h-32 w-32" : "h-24 w-24 sm:h-28 sm:w-28",
     "ring-2 ring-primary/20 shadow-lg",
-    "relative overflow-hidden bg-background",
+    "relative overflow-hidden bg-background backdrop-blur-sm",
     className
   );
 
@@ -69,10 +70,16 @@ export function AvatarImage({ url, fullName, onError, hasError, isLoading, class
     <Avatar className={avatarClasses}>
       <UIAvatarImage 
         src={url}
-        alt={fullName || ''}
+        alt={fullName || 'Photo de profil'}
         className="object-cover w-full h-full"
         onError={handleImageError}
       />
+      <AvatarFallback className="bg-primary/10">
+        <UserCircle2 className={cn(
+          "text-primary/60",
+          isMobile ? "h-16 w-16" : "h-12 w-12"
+        )} />
+      </AvatarFallback>
     </Avatar>
   );
 }
