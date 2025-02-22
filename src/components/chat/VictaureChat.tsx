@@ -78,7 +78,7 @@ export function VictaureChat({
   };
 
   return (
-    <div className="w-full glass-panel rounded-xl overflow-hidden border-2 border-[#222] shadow-[0_0_0_1px_rgba(100,181,217,0.1),0_4px_12px_rgba(0,0,0,0.3)]">
+    <div className="w-full glass-panel rounded-xl overflow-hidden border-2 border-black shadow-[0_0_0_1px_rgba(100,181,217,0.1),0_4px_12px_rgba(0,0,0,0.3)]">
       <div className="flex items-center gap-3 bg-[#F2EBE4] p-4 border-b-[3px] border-[#64B5D9]">
         <div className="flex items-center gap-3">
           <div className="relative">
