@@ -28,6 +28,10 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
     setIsEditing(state);
   }, []);
 
+  const handleMobileMenuToggle = useCallback((show: boolean) => {
+    setShowMobileMenu(show);
+  }, []);
+
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar desktop */}
@@ -38,27 +42,30 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         />
       </div>
 
-      {/* Menu mobile */}
-      <DashboardMobileNav
-        currentPage={currentPage}
-        showMobileMenu={showMobileMenu}
-        setShowMobileMenu={setShowMobileMenu}
-        onPageChange={handlePageChange}
-      />
+      {/* Menu mobile avec z-index élevé */}
+      <div className="lg:hidden">
+        <DashboardMobileNav
+          currentPage={currentPage}
+          showMobileMenu={showMobileMenu}
+          setShowMobileMenu={handleMobileMenuToggle}
+          onPageChange={handlePageChange}
+        />
+      </div>
 
       <main className={cn(
         "flex-1",
         "lg:ml-64",
         "min-h-screen",
+        "w-full",
         "relative"
       )}>
         <AppHeader 
           onRequestAssistant={handleRequestChat}
           showMobileMenu={showMobileMenu}
-          setShowMobileMenu={setShowMobileMenu}
+          setShowMobileMenu={handleMobileMenuToggle}
         />
         
-        <div className="pt-16">
+        <div className="pt-16 w-full">
           {children || (
             <DashboardContent
               currentPage={currentPage}

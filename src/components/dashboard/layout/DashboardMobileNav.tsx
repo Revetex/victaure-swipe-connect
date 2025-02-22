@@ -28,9 +28,9 @@ export function DashboardMobileNav({
           "w-[280px] p-0",
           "bg-[#64B5D9]",
           "border-2 border-black",
-          "relative",
+          "fixed inset-y-0 left-0",
           "lg:hidden",
-          "z-50"
+          "z-[150]"
         )}
       >
         {/* Motif de fond */}
