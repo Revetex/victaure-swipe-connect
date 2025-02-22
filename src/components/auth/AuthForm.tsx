@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -18,14 +19,45 @@ export function AuthForm({ redirectTo }: { redirectTo?: string }) {
 
   return (
     <div className="w-full">
-      <div className="bg-[#1B2A4A]/80 backdrop-blur-sm p-6 rounded-xl border-2 border-black shadow-xl">
-        <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-3 w-full">
-            <TabsTrigger value="login">Connexion</TabsTrigger>
-            <TabsTrigger value="signup">Inscription</TabsTrigger>
-            <TabsTrigger value="business">Entreprise</TabsTrigger>
+      <div className="bg-[#1B2A4A]/60 backdrop-blur-lg p-8 rounded-2xl border-2 border-[#D3E4FD]/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative overflow-hidden">
+        {/* Effet de brillance sur les bords */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#64B5D9]/20 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#64B5D9]/20 to-transparent" />
+          <div className="absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-[#64B5D9]/20 to-transparent" />
+          <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-[#64B5D9]/20 to-transparent" />
+        </div>
+
+        <Tabs 
+          defaultValue={activeTab} 
+          onValueChange={setActiveTab}
+          className="relative z-10"
+        >
+          <TabsList className="grid grid-cols-3 w-full mb-6 bg-[#D3E4FD]/5 border-2 border-[#D3E4FD]/20 rounded-lg p-1">
+            <TabsTrigger 
+              value="login"
+              className="data-[state=active]:bg-[#64B5D9]/20 data-[state=active]:text-white data-[state=active]:shadow-none transition-all duration-300"
+            >
+              Connexion
+            </TabsTrigger>
+            <TabsTrigger 
+              value="signup"
+              className="data-[state=active]:bg-[#64B5D9]/20 data-[state=active]:text-white data-[state=active]:shadow-none transition-all duration-300"
+            >
+              Inscription
+            </TabsTrigger>
+            <TabsTrigger 
+              value="business"
+              className="data-[state=active]:bg-[#64B5D9]/20 data-[state=active]:text-white data-[state=active]:shadow-none transition-all duration-300"
+            >
+              Entreprise
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value="login">
+
+          <TabsContent 
+            value="login"
+            className="mt-0 space-y-6"
+          >
             <LoginForm 
               email={formData.email}
               password={formData.password}
@@ -36,7 +68,11 @@ export function AuthForm({ redirectTo }: { redirectTo?: string }) {
               onSubmit={() => signIn(formData.email, formData.password, redirectTo)}
             />
           </TabsContent>
-          <TabsContent value="signup">
+
+          <TabsContent 
+            value="signup"
+            className="mt-0 space-y-6"
+          >
             <SignupForm 
               email={formData.email}
               password={formData.password}
@@ -51,7 +87,11 @@ export function AuthForm({ redirectTo }: { redirectTo?: string }) {
               onSubmit={() => signUp(formData.email, formData.password, formData.fullName, formData.phone, redirectTo)}
             />
           </TabsContent>
-          <TabsContent value="business">
+
+          <TabsContent 
+            value="business"
+            className="mt-0 space-y-6"
+          >
             <BusinessSignupForm redirectTo={redirectTo} />
           </TabsContent>
         </Tabs>
