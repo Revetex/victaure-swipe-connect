@@ -1,17 +1,57 @@
-import { Suspense } from "react";
+
+import { Suspense, useState, useEffect } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
 import { Logo } from "@/components/Logo";
 import { AuthVideo } from "@/components/auth/AuthVideo";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
-import { MessagesSquare, Bot } from "lucide-react";
+import { MessagesSquare, Bot, Wand2 } from "lucide-react";
 
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+  const [visibleMessages, setVisibleMessages] = useState<string[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [showThinking, setShowThinking] = useState(false);
+
+  const messages = [
+    "Bonjour ! Je suis Mr. Victaure, votre assistant personnel.",
+    "Je suis là pour vous guider dans votre recherche d'emploi... 🎯",
+    "Laissez-moi vous présenter notre plateforme innovante !",
+    "Sur Victaure, vous pouvez créer votre CV professionnel avec mon aide. Je vous guide dans la rédaction et optimise votre profil. 📝",
+    "Notre système d'enchères et de contrats sécurisés vous permet de participer à des appels d'offres professionnels. 📊"
+  ];
+
+  useEffect(() => {
+    const showNextMessage = async () => {
+      if (currentMessageIndex < messages.length) {
+        setShowThinking(true);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        setShowThinking(false);
+        setIsTyping(true);
+        
+        const message = messages[currentMessageIndex];
+        let tempMessage = "";
+        
+        for (let i = 0; i < message.length; i++) {
+          await new Promise(resolve => setTimeout(resolve, 30));
+          tempMessage += message[i];
+          setVisibleMessages(prev => [...prev.slice(0, -1), tempMessage]);
+        }
+        
+        setIsTyping(false);
+        setCurrentMessageIndex(prev => prev + 1);
+      }
+    };
+
+    if (!isTyping && currentMessageIndex < messages.length) {
+      showNextMessage();
+    }
+  }, [currentMessageIndex, isTyping]);
 
   if (isAuthenticated) {
     const redirectTo = sessionStorage.getItem('redirectTo') || '/dashboard';
@@ -24,21 +64,6 @@ export default function Auth() {
       <Loader className="w-8 h-8 text-primary" />
     </div>;
   }
-
-  const messages = [
-    {
-      text: "Bonjour ! Je suis Mr. Victaure, votre assistant personnel. Je vais vous présenter notre plateforme innovante.",
-      delay: 0
-    },
-    {
-      text: "Sur Victaure, vous pouvez créer votre CV professionnel avec mon aide. Je vous guide dans la rédaction et optimise votre profil. 📝",
-      delay: 3
-    },
-    {
-      text: "Notre système d'enchères et de contrats sécurisés vous permet de participer à des appels d'offres professionnels. 📊",
-      delay: 6
-    }
-  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#F5DEB3]/5 via-background to-[#8B7355]/5 relative overflow-hidden">
@@ -75,43 +100,50 @@ export default function Auth() {
               La Plateforme Complète du Marché de l'Emploi
             </h1>
 
-            <div className="w-full glass-panel rounded-xl p-4 border border-[#D2B48C]/10 space-y-4">
-              <div className="flex items-center gap-2 text-[#8B7355]">
+            <div className="w-full glass-panel rounded-xl p-4 border border-[#D2B48C]/10">
+              <div className="flex items-center gap-2 text-[#8B7355] mb-4">
                 <Bot className="w-5 h-5" />
                 <span className="text-sm font-medium">Mr. Victaure</span>
+                {showThinking && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex items-center gap-1 ml-2"
+                  >
+                    <Wand2 className="w-4 h-4 text-[#8B7355] animate-pulse" />
+                    <span className="text-xs text-[#8B7355]/70">réfléchit...</span>
+                  </motion.div>
+                )}
               </div>
 
-              {messages.map((message, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, height: 0, y: 10 }}
-                  animate={{ opacity: 1, height: "auto", y: 0 }}
-                  transition={{ 
-                    delay: message.delay,
-                    duration: 0.5,
-                    height: {
-                      duration: 0.4,
-                    },
-                  }}
-                  className="ml-7 p-3 bg-[#F5DEB3]/5 dark:bg-[#8B7355]/5 rounded-lg border border-[#D2B48C]/10"
-                >
-                  <motion.p 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: message.delay + 0.2, duration: 0.3 }}
-                    className="text-sm text-foreground/90"
-                  >
-                    {message.text}
-                  </motion.p>
-                </motion.div>
-              ))}
+              <div className="space-y-4 max-h-[300px] overflow-y-auto flex flex-col-reverse">
+                <AnimatePresence mode="popLayout">
+                  {visibleMessages.map((message, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20, height: 0 }}
+                      animate={{ opacity: 1, y: 0, height: "auto" }}
+                      exit={{ opacity: 0, y: -20, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="ml-7 p-3 bg-[#F5DEB3]/5 dark:bg-[#8B7355]/5 rounded-lg border border-[#D2B48C]/10"
+                    >
+                      <p className="text-sm text-foreground/90 whitespace-pre-wrap">{message}</p>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0, 1, 0] }}
-                transition={{ duration: 1, repeat: Infinity }}
-                className="ml-7 w-3 h-5 bg-[#8B7355]/50 rounded"
-              />
+              <div className="mt-4 flex items-center gap-2">
+                <div className="flex-1 h-10 px-4 rounded-lg bg-[#F5DEB3]/5 dark:bg-[#8B7355]/5 border border-[#D2B48C]/10">
+                  <motion.div 
+                    animate={{ opacity: [0.4, 1, 0.4] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="h-full flex items-center text-sm text-muted-foreground"
+                  >
+                    Mr. Victaure est en train d'écrire...
+                  </motion.div>
+                </div>
+              </div>
             </div>
           </div>
 
