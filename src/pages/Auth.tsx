@@ -87,7 +87,7 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#1B2A4A] relative overflow-hidden">
-      {/* Logo and signature pattern */}
+      {/* Motif de fond */}
       <div 
         className="fixed inset-0 opacity-[0.025] pointer-events-none"
         style={{
@@ -180,11 +180,41 @@ export default function Auth() {
         </div>
       </main>
 
-      <section className="w-full bg-white/5 backdrop-blur-sm py-16 border-t-2 border-[#D3E4FD]/20">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center text-white mb-8">
-            Choisissez votre plan
-          </h2>
+      <section 
+        className="relative w-full py-16 overflow-hidden"
+        style={{
+          background: "linear-gradient(to bottom, rgba(27, 42, 74, 0.95), rgba(27, 42, 74, 0.8))",
+          boxShadow: "0 -10px 30px rgba(0,0,0,0.2)"
+        }}
+      >
+        {/* Motif de fond entreprise */}
+        <div 
+          className="absolute inset-0 opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage: `url('/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png')`,
+            backgroundSize: '200px',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'repeat'
+          }}
+        />
+
+        {/* Effet de brillance */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/0 via-[#64B5D9]/10 to-[#64B5D9]/0 pointer-events-none" />
+
+        <div className="relative max-w-6xl mx-auto px-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-12 space-y-4"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-white">
+              Solutions Entreprises
+            </h2>
+            <p className="text-[#F2EBE4]/80 text-lg max-w-2xl mx-auto">
+              Optimisez votre recrutement grâce à notre marketplace d'outils IA spécialisés
+            </p>
+          </motion.div>
+
           <PricingGrid />
         </div>
       </section>
