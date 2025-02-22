@@ -19,7 +19,7 @@ interface VictaureChatProps {
 export function VictaureChat({ 
   maxQuestions = 3, 
   initialMessage = "Bonjour ! Je suis Mr. Victaure, votre assistant personnel. Comment puis-je vous aider aujourd'hui ? 🎯",
-  context,
+  context = "Tu es un assistant professionnel qui aide les utilisateurs.",
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -29,7 +29,11 @@ export function VictaureChat({
   const [userQuestions, setUserQuestions] = useState(0);
   const [userInput, setUserInput] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const { sendMessage, isLoading } = useVictaureChat();
+  const { sendMessage, isLoading } = useVictaureChat({
+    onResponse: (response) => {
+      console.log("Received response:", response);
+    }
+  });
 
   useEffect(() => {
     const showWelcomeMessage = async () => {
@@ -68,18 +72,23 @@ export function VictaureChat({
     setShowThinking(true);
 
     try {
+      console.log("Sending message with context:", context);
       const response = await sendMessage(userMessage, context);
       if (response) {
+        console.log("Received response:", response);
         setMessages(prev => [...prev, { content: response, isUser: false }]);
       }
+    } catch (error) {
+      console.error("Error in chat:", error);
+      toast.error("Désolé, je ne peux pas répondre pour le moment");
     } finally {
       setShowThinking(false);
     }
   };
 
   return (
-    <div className="w-full glass-panel rounded-xl overflow-hidden border-2 border-black shadow-[0_0_0_1px_rgba(100,181,217,0.1),0_4px_12px_rgba(0,0,0,0.3)]">
-      <div className="flex items-center gap-3 bg-[#F2EBE4] p-4 border-b-[3px] border-[#64B5D9]">
+    <div className="w-full glass-panel rounded-xl overflow-hidden border-2 border-black/10 shadow-lg relative">
+      <div className="flex items-center gap-3 bg-white/80 dark:bg-zinc-900/80 p-4 border-b border-black/10">
         <div className="flex items-center gap-3">
           <div className="relative">
             <Bot className="w-10 h-10 text-[#1B2A4A]" />
@@ -98,7 +107,15 @@ export function VictaureChat({
         )}
       </div>
 
-      <div className="p-4 bg-[#1B2A4A]">
+      <div 
+        className="relative bg-white/5 p-4"
+        style={{
+          backgroundImage: "url('/lovable-uploads/60542c40-c17c-42cc-8136-f4780f09946a.png')",
+          backgroundSize: "32px",
+          backgroundRepeat: "repeat",
+          backgroundColor: "rgba(155, 135, 245, 0.05)"
+        }}
+      >
         <div 
           ref={chatContainerRef}
           className="flex flex-col justify-end h-[400px] overflow-y-auto mb-4 scrollbar-none"
@@ -109,8 +126,8 @@ export function VictaureChat({
                 key={index}
                 className={`p-3 rounded-lg ${
                   message.isUser
-                    ? "ml-auto bg-[#64B5D9] text-[#F2EBE4] border-transparent max-w-[80%]"
-                    : "mr-auto bg-[#F2EBE4] text-[#1B2A4A] border-[#64B5D9]/10 max-w-[80%]"
+                    ? "ml-auto bg-[#64B5D9] text-white border-transparent max-w-[80%]"
+                    : "mr-auto bg-white dark:bg-zinc-800 text-[#1B2A4A] dark:text-white border-[#64B5D9]/10 max-w-[80%]"
                 }`}
               >
                 <p className="text-sm font-medium whitespace-pre-wrap">{message.content}</p>
@@ -130,14 +147,14 @@ export function VictaureChat({
                 : "Posez une question à Mr. Victaure..."
             }
             disabled={userQuestions >= maxQuestions || isLoading}
-            className="flex-1 h-10 px-4 rounded-lg bg-[#F2EBE4] border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[#1B2A4A] user-select-none"
+            className="flex-1 h-10 px-4 rounded-lg bg-white dark:bg-zinc-800 border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[#1B2A4A] dark:text-white"
             onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
             aria-label="Message input"
           />
           <button
             onClick={handleSendMessage}
             disabled={userQuestions >= maxQuestions || !userInput.trim() || isLoading}
-            className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#64B5D9] text-[#F2EBE4] hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#64B5D9] text-white hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             title="Envoyer le message"
             aria-label="Envoyer le message"
           >
