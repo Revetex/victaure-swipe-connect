@@ -8,9 +8,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
 import { MessagesSquare, Bot, Wand2 } from "lucide-react";
 import { toast } from "sonner";
-
 export default function Auth() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const {
+    isAuthenticated,
+    isLoading
+  } = useAuth();
   const location = useLocation();
   const [visibleMessages, setVisibleMessages] = useState<string[]>([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -18,15 +20,7 @@ export default function Auth() {
   const [showThinking, setShowThinking] = useState(false);
   const [userQuestions, setUserQuestions] = useState<number>(0);
   const [userInput, setUserInput] = useState("");
-
-  const messages = [
-    "Bonjour ! Je suis Mr. Victaure, votre assistant personnel.",
-    "Je suis là pour vous guider dans votre recherche d'emploi... 🎯",
-    "Laissez-moi vous présenter notre plateforme innovante !",
-    "Sur Victaure, vous pouvez créer votre CV professionnel avec mon aide. Je vous guide dans la rédaction et optimise votre profil. 📝",
-    "Notre système d'enchères et de contrats sécurisés vous permet de participer à des appels d'offres professionnels. 📊"
-  ];
-
+  const messages = ["Bonjour ! Je suis Mr. Victaure, votre assistant personnel.", "Je suis là pour vous guider dans votre recherche d'emploi... 🎯", "Laissez-moi vous présenter notre plateforme innovante !", "Sur Victaure, vous pouvez créer votre CV professionnel avec mon aide. Je vous guide dans la rédaction et optimise votre profil. 📝", "Notre système d'enchères et de contrats sécurisés vous permet de participer à des appels d'offres professionnels. 📊"];
   useEffect(() => {
     const showNextMessage = async () => {
       if (currentMessageIndex < messages.length) {
@@ -34,38 +28,31 @@ export default function Auth() {
         await new Promise(resolve => setTimeout(resolve, 1500));
         setShowThinking(false);
         setIsTyping(true);
-        
         const message = messages[currentMessageIndex];
         let tempMessage = "";
-        
         for (let i = 0; i < message.length; i++) {
           await new Promise(resolve => setTimeout(resolve, 30));
           tempMessage += message[i];
           setVisibleMessages(prev => [...prev.slice(0, -1), tempMessage]);
         }
-        
         setIsTyping(false);
         setCurrentMessageIndex(prev => prev + 1);
       }
     };
-
     if (!isTyping && currentMessageIndex < messages.length) {
       showNextMessage();
     }
   }, [currentMessageIndex, isTyping]);
-
   if (isAuthenticated) {
     const redirectTo = sessionStorage.getItem('redirectTo') || '/dashboard';
     sessionStorage.removeItem('redirectTo');
     return <Navigate to={redirectTo} replace />;
   }
-
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center bg-background">
       <Loader className="w-8 h-8 text-[#64B5D9]" />
     </div>;
   }
-
   const handleSendMessage = () => {
     if (userQuestions >= 3) {
       toast.error("Veuillez vous connecter pour continuer la conversation avec Mr. Victaure");
@@ -77,20 +64,21 @@ export default function Auth() {
       setUserInput("");
     }
   };
-
-  return (
-    <div className="min-h-screen flex flex-col bg-[#1B2A4A] relative overflow-hidden">
+  return <div className="min-h-screen flex flex-col bg-[#1B2A4A] relative overflow-hidden">
       <div className="fixed inset-0 bg-grid-[#F2EBE4]/5 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
       
       <ThemeSelector />
       
       <main className="flex-1 flex flex-col items-center justify-center w-full px-4 py-8 sm:p-6 lg:p-8 relative z-10">
-        <motion.div 
-          className="w-full max-w-xl mx-auto space-y-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <motion.div className="w-full max-w-xl mx-auto space-y-12" initial={{
+        opacity: 0,
+        y: 20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        duration: 0.5
+      }}>
           <div className="flex flex-col items-center justify-center space-y-6">
             <Logo size="xl" className="transform-none text-[#F2EBE4]" />
             
@@ -102,83 +90,65 @@ export default function Auth() {
               <div className="flex items-center gap-2 text-[#1B2A4A] mb-4">
                 <Bot className="w-5 h-5" />
                 <span className="text-sm font-medium">Mr. Victaure</span>
-                {showThinking && (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex items-center gap-1 ml-2"
-                  >
+                {showThinking && <motion.div initial={{
+                opacity: 0,
+                scale: 0.8
+              }} animate={{
+                opacity: 1,
+                scale: 1
+              }} className="flex items-center gap-1 ml-2">
                     <Wand2 className="w-4 h-4 text-[#64B5D9] animate-pulse" />
                     <span className="text-xs text-[#64B5D9]">réfléchit...</span>
-                  </motion.div>
-                )}
+                  </motion.div>}
               </div>
 
               <div className="space-y-4 h-[400px] overflow-y-auto flex flex-col-reverse px-2">
                 <AnimatePresence mode="popLayout">
-                  {visibleMessages.map((message, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20, height: 0 }}
-                      animate={{ opacity: 1, y: 0, height: "auto" }}
-                      exit={{ opacity: 0, y: -20, height: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className={`p-3 rounded-lg border ${
-                        index >= messages.length
-                          ? "ml-auto bg-[#64B5D9] text-[#F2EBE4] border-transparent max-w-[80%]"
-                          : "mr-auto bg-[#F2EBE4] border-[#64B5D9]/10 max-w-[80%]"
-                      }`}
-                    >
+                  {visibleMessages.map((message, index) => <motion.div key={index} initial={{
+                  opacity: 0,
+                  y: 20,
+                  height: 0
+                }} animate={{
+                  opacity: 1,
+                  y: 0,
+                  height: "auto"
+                }} exit={{
+                  opacity: 0,
+                  y: -20,
+                  height: 0
+                }} transition={{
+                  duration: 0.2
+                }} className={`p-3 rounded-lg border ${index >= messages.length ? "ml-auto bg-[#64B5D9] text-[#F2EBE4] border-transparent max-w-[80%]" : "mr-auto bg-[#F2EBE4] border-[#64B5D9]/10 max-w-[80%]"}`}>
                       <p className="text-sm text-[#1B2A4A] whitespace-pre-wrap">{message}</p>
-                    </motion.div>
-                  ))}
+                    </motion.div>)}
                 </AnimatePresence>
               </div>
 
               <div className="mt-4 flex items-center gap-2">
-                <input
-                  type="text"
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                  placeholder={userQuestions >= 3 ? "Connectez-vous pour continuer..." : "Posez une question à Mr. Victaure..."}
-                  disabled={userQuestions >= 3}
-                  className="flex-1 h-10 px-4 rounded-lg bg-[#F2EBE4] border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[#1B2A4A]"
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                />
-                <button
-                  onClick={handleSendMessage}
-                  disabled={userQuestions >= 3 || !userInput.trim()}
-                  className="h-10 px-4 rounded-lg bg-[#64B5D9] text-[#F2EBE4] hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                >
+                <input type="text" value={userInput} onChange={e => setUserInput(e.target.value)} placeholder={userQuestions >= 3 ? "Connectez-vous pour continuer..." : "Posez une question à Mr. Victaure..."} disabled={userQuestions >= 3} className="flex-1 h-10 px-4 rounded-lg bg-[#F2EBE4] border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[#1B2A4A]" onKeyPress={e => e.key === 'Enter' && handleSendMessage()} />
+                <button onClick={handleSendMessage} disabled={userQuestions >= 3 || !userInput.trim()} className="h-10 px-4 rounded-lg bg-[#64B5D9] text-[#F2EBE4] hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
                   <span className="text-sm">Envoyer</span>
                   <MessagesSquare className="w-4 h-4" />
                 </button>
               </div>
-              {userQuestions >= 3 && (
-                <p className="mt-2 text-xs text-[#1B2A4A]/60 text-center">
+              {userQuestions >= 3 && <p className="mt-2 text-xs text-[#1B2A4A]/60 text-center">
                   Vous avez atteint la limite de questions. Connectez-vous pour continuer à discuter avec Mr. Victaure.
-                </p>
-              )}
+                </p>}
             </div>
           </div>
 
-          <Suspense fallback={
-            <div className="flex items-center justify-center">
+          <Suspense fallback={<div className="flex items-center justify-center">
               <Loader className="w-6 h-6 text-[#64B5D9]" />
-            </div>
-          }>
+            </div>}>
             <AuthForm redirectTo={location.state?.from?.pathname} />
           </Suspense>
         </motion.div>
 
-        <div className="mt-8 text-center text-sm text-[#F2EBE4]/60">
-          <span className="font-medium text-[#F2EBE4]">Victaure</span> - Votre passerelle vers l'emploi du futur.
-        </div>
+        
 
         <div className="absolute bottom-4 right-4 text-xs text-[#F2EBE4]/40 font-tiempos">
           © Thomas Blanchet
         </div>
       </main>
-    </div>
-  );
+    </div>;
 }
