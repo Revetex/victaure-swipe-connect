@@ -13,12 +13,13 @@ export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
   const [visibleMessages, setVisibleMessages] = useState<string[]>([]);
+  const [autoMessages, setAutoMessages] = useState<string[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [showThinking, setShowThinking] = useState(false);
   const [userQuestions, setUserQuestions] = useState<number>(0);
   const [userInput, setUserInput] = useState("");
-  const [autoMessagesEnabled, setAutoMessagesEnabled] = useState(true);
+
   const messages = [
     "Bonjour ! Je suis Mr. Victaure, votre assistant personnel.", 
     "Je suis là pour vous guider dans votre recherche d'emploi... 🎯", 
@@ -31,7 +32,7 @@ export default function Auth() {
 
   useEffect(() => {
     const showNextMessage = async () => {
-      if (currentMessageIndex < messages.length && autoMessagesEnabled) {
+      if (currentMessageIndex < messages.length) {
         setShowThinking(true);
         await new Promise(resolve => setTimeout(resolve, 1500));
         setShowThinking(false);
@@ -41,7 +42,7 @@ export default function Auth() {
         for (let i = 0; i < message.length; i++) {
           await new Promise(resolve => setTimeout(resolve, 30));
           tempMessage += message[i];
-          setVisibleMessages(prev => [...prev.slice(0, currentMessageIndex), tempMessage]);
+          setAutoMessages(prev => [...prev.slice(0, currentMessageIndex), tempMessage]);
         }
         setIsTyping(false);
         setCurrentMessageIndex(prev => prev + 1);
@@ -55,7 +56,7 @@ export default function Auth() {
     if (!isTyping && currentMessageIndex < messages.length) {
       showNextMessage();
     }
-  }, [currentMessageIndex, isTyping, autoMessagesEnabled]);
+  }, [currentMessageIndex, isTyping]);
 
   if (isAuthenticated) {
     const redirectTo = sessionStorage.getItem('redirectTo') || '/dashboard';
@@ -75,7 +76,8 @@ export default function Auth() {
       return;
     }
     if (userInput.trim()) {
-      setAutoMessagesEnabled(false);
+      setAutoMessages([]); // Reset auto messages when user starts chatting
+      setCurrentMessageIndex(messages.length); // Stop auto messages
       setUserQuestions(prev => prev + 1);
       setVisibleMessages(prev => [...prev, userInput.trim()]);
       setUserInput("");
@@ -143,16 +145,24 @@ export default function Auth() {
                   <AnimatePresence mode="popLayout">
                     {visibleMessages.map((message, index) => (
                       <motion.div
-                        key={index}
+                        key={`user-${index}`}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.2 }}
-                        className={`p-3 rounded-lg border ${
-                          index >= messages.length
-                            ? "ml-auto bg-[#64B5D9] text-[#F2EBE4] border-transparent max-w-[80%]"
-                            : "mr-auto bg-[#F2EBE4] border-[#64B5D9]/10 max-w-[80%]"
-                        }`}
+                        className="ml-auto bg-[#64B5D9] text-[#F2EBE4] border-transparent max-w-[80%] p-3 rounded-lg"
+                      >
+                        <p className="text-sm whitespace-pre-wrap">{message}</p>
+                      </motion.div>
+                    ))}
+                    {autoMessages.map((message, index) => (
+                      <motion.div
+                        key={`auto-${index}`}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.2 }}
+                        className="mr-auto bg-[#F2EBE4] border-[#64B5D9]/10 max-w-[80%] p-3 rounded-lg"
                       >
                         <p className="text-sm text-[#1B2A4A] whitespace-pre-wrap">{message}</p>
                       </motion.div>
@@ -192,19 +202,54 @@ export default function Auth() {
             </div>
           </div>
 
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center">
-                <Loader className="w-6 h-6 text-[#64B5D9]" />
-              </div>
-            }
-          >
-            <AuthForm redirectTo={location.state?.from?.pathname} />
-          </Suspense>
+          <div className="mt-8 w-full">
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center">
+                  <Loader className="w-6 h-6 text-[#64B5D9]" />
+                </div>
+              }
+            >
+              <AuthForm redirectTo={location.state?.from?.pathname} />
+            </Suspense>
+          </div>
         </motion.div>
 
-        <div className="absolute bottom-4 right-4 text-xs text-[#F2EBE4]/40 font-tiempos">
-          © Thomas Blanchet
+        <div className="mt-24 w-full">
+          <footer className="pb-8 px-4 w-full max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="flex items-center justify-center">
+                <Logo size="lg" className="transform-none text-[#F2EBE4]" />
+              </div>
+              <div className="flex items-center justify-center">
+                <a href="https://www.linkedin.com/in/thomas-blanchet-5b5b5b229/" target="_blank" rel="noopener noreferrer">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M16 8a4 4 0 0 1 4 4v4h4a4 4 0 0 1 4-4V8a4 4 0 0 1-4-4H8a4 4 0 0 1-4 4z" />
+                    <path d="M12 16a4 4 0 0 0 4-4h4a4 4 0 0 0 4 4v4a4 4 0 0 0-4 4H12a4 4 0 0 0-4-4z" />
+                    <path d="M4 12a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v4a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4z" />
+                  </svg>
+                </a>
+              </div>
+              <div className="flex items-center justify-center">
+                <a href="https://github.com/thomasblanchet" target="_blank" rel="noopener noreferrer">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 21h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2z" />
+                    <line x1="12" y1="9" x2="12" y2="15" />
+                    <line x1="12" y1="15" x2="12" y2="19" />
+                  </svg>
+                </a>
+              </div>
+              <div className="flex items-center justify-center">
+                <a href="https://www.instagram.com/thomasblanchet/" target="_blank" rel="noopener noreferrer">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="12" x2="12" y2="16" />
+                    <line x1="12" y1="16" x2="12" y2="20" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </footer>
         </div>
       </main>
     </div>
