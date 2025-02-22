@@ -17,6 +17,7 @@ export function TranslatorPage() {
     targetLang,
     setTargetLang,
     isLoading,
+    isSpeaking,
     handleTranslate,
     copyToClipboard,
     speakText,
@@ -75,6 +76,7 @@ export function TranslatorPage() {
                 onChange={(e) => setSourceText(e.target.value)}
                 placeholder="Enter text to translate..."
                 onSpeak={() => speakText(sourceText, sourceLang)}
+                isSpeaking={isSpeaking}
               />
             </div>
 
@@ -102,6 +104,7 @@ export function TranslatorPage() {
                 readOnly
                 onSpeak={() => speakText(translatedText, targetLang)}
                 onCopy={() => copyToClipboard(translatedText)}
+                isSpeaking={isSpeaking}
               />
             </div>
           </div>

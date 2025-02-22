@@ -11,6 +11,7 @@ export function useTranslator() {
   const [targetLang, setTargetLang] = useState("en");
   const [isLoading, setIsLoading] = useState(false);
   const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const handleTranslate = async () => {
     if (!sourceText.trim()) {
@@ -71,8 +72,40 @@ export function useTranslator() {
   };
 
   const speakText = (text: string, lang: string) => {
+    if (!text) {
+      toast.error("No text to speak");
+      return;
+    }
+
+    // Si une synthèse est en cours, on l'arrête
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
+    utterance.rate = 1.0;  // Vitesse normale
+    utterance.pitch = 1.0; // Hauteur normale
+    utterance.volume = 1.0; // Volume maximum
+
+    // Événements pour gérer l'état de la synthèse
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = (event) => {
+      console.error('Speech synthesis error:', event);
+      setIsSpeaking(false);
+      toast.error("Speech synthesis failed");
+    };
+
+    // On essaie de trouver une voix correspondant à la langue
+    const voices = window.speechSynthesis.getVoices();
+    const voice = voices.find(v => v.lang.startsWith(lang));
+    if (voice) {
+      utterance.voice = voice;
+    }
+
     window.speechSynthesis.speak(utterance);
   };
 
@@ -95,6 +128,7 @@ export function useTranslator() {
     setTargetLang,
     isLoading,
     detectedLanguage,
+    isSpeaking,
     handleTranslate,
     copyToClipboard,
     speakText,
