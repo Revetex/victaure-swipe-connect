@@ -1,3 +1,4 @@
+
 .glass-card {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
@@ -10,6 +11,19 @@
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
+}
+
+.glass-panel {
+  background: rgba(27, 42, 74, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(100, 181, 217, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-panel:hover {
+  background: rgba(27, 42, 74, 0.5);
+  border: 1px solid rgba(100, 181, 217, 0.2);
 }
 
 .glass-input {
