@@ -34,7 +34,7 @@ export function AuthForm({ redirectTo }: AuthFormProps) {
 
   const slideVariants = {
     enter: (direction: number) => ({
-      x: direction > 0 ? 1000 : -1000,
+      x: direction > 0 ? 100 : -100,
       opacity: 0
     }),
     center: {
@@ -44,13 +44,13 @@ export function AuthForm({ redirectTo }: AuthFormProps) {
     },
     exit: (direction: number) => ({
       zIndex: 0,
-      x: direction < 0 ? 1000 : -1000,
+      x: direction < 0 ? 100 : -100,
       opacity: 0
     })
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full px-4 sm:px-0">
       <div className="relative mx-auto w-full max-w-md overflow-hidden border border-[#64B5D9]/20 rounded-xl glass-panel shadow-xl">
         <div className="absolute inset-0 bg-[#F2EBE4]/5"
           style={{

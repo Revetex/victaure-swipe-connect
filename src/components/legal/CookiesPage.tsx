@@ -1,83 +1,77 @@
-import { X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
-export function CookiesPage() {
-  const navigate = useNavigate();
+import { motion } from "framer-motion";
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
+export default function CookiesPage() {
   return (
-    <div className="container mx-auto py-8 px-4 relative">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute right-6 top-6 text-muted-foreground hover:text-foreground"
-        onClick={() => navigate('/')}
+    <div className="min-h-screen bg-[#1B2A4A] py-16 px-4 sm:px-6 lg:px-8">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-4xl mx-auto"
       >
-        <X className="h-6 w-6" />
-      </Button>
-      <Card>
-        <CardHeader>
-          <CardTitle>Politique des cookies</CardTitle>
-        </CardHeader>
-        <CardContent className="prose dark:prose-invert max-w-none">
-          <h2>1. Qu'est-ce qu'un cookie ?</h2>
-          <p>
-            Un cookie est un petit fichier texte stocké sur votre appareil lors de la visite d'un site web. Les cookies nous permettent de reconnaître votre appareil et d'améliorer votre expérience utilisateur.
-          </p>
+        <h1 className="text-3xl font-bold text-[#F2EBE4] mb-8">Politique des Cookies</h1>
+        
+        <div className="space-y-8 text-[#F2EBE4]/80">
+          <section className="legal-section">
+            <h2 className="text-xl font-semibold mb-4 text-[#F2EBE4]">Qu'est-ce qu'un cookie ?</h2>
+            <p className="mb-4">
+              Un cookie est un petit fichier texte stocké sur votre ordinateur ou appareil mobile lorsque vous visitez un site web. Les cookies sont largement utilisés pour faire fonctionner les sites web ou les rendre plus efficaces, ainsi que pour fournir des informations aux propriétaires du site.
+            </p>
+          </section>
 
-          <h2>2. Types de cookies utilisés</h2>
-          <h3>Cookies essentiels</h3>
-          <p>
-            Nécessaires au fonctionnement du site, ils permettent :
-          </p>
-          <ul>
-            <li>La connexion sécurisée à votre compte</li>
-            <li>La mémorisation de vos préférences</li>
-            <li>Le bon fonctionnement technique du site</li>
-          </ul>
+          <section className="legal-section">
+            <h2 className="text-xl font-semibold mb-4 text-[#F2EBE4]">Comment utilisons-nous les cookies ?</h2>
+            <p className="mb-4">
+              Nous utilisons différents types de cookies pour :
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Assurer le bon fonctionnement de notre plateforme</li>
+              <li>Mémoriser vos préférences et paramètres</li>
+              <li>Améliorer la sécurité de votre connexion</li>
+              <li>Analyser l'utilisation de notre site</li>
+              <li>Personnaliser votre expérience utilisateur</li>
+            </ul>
+          </section>
 
-          <h3>Cookies analytiques</h3>
-          <p>
-            Nous utilisons ces cookies pour :
-          </p>
-          <ul>
-            <li>Analyser le trafic du site</li>
-            <li>Comprendre comment vous utilisez nos services</li>
-            <li>Améliorer nos fonctionnalités</li>
-          </ul>
+          <section className="legal-section">
+            <h2 className="text-xl font-semibold mb-4 text-[#F2EBE4]">Types de cookies utilisés</h2>
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold text-[#F2EBE4]">Cookies essentiels</h3>
+                <p>Nécessaires au fonctionnement du site. Ils ne peuvent pas être désactivés.</p>
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#F2EBE4]">Cookies de performance</h3>
+                <p>Nous aident à comprendre comment les visiteurs interagissent avec notre site.</p>
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#F2EBE4]">Cookies de fonctionnalité</h3>
+                <p>Permettent de mémoriser vos choix et préférences.</p>
+              </div>
+            </div>
+          </section>
 
-          <h3>Cookies de personnalisation</h3>
-          <p>
-            Ces cookies nous permettent de :
-          </p>
-          <ul>
-            <li>Mémoriser vos préférences</li>
-            <li>Adapter le contenu à vos intérêts</li>
-            <li>Améliorer votre expérience utilisateur</li>
-          </ul>
+          <section className="legal-section">
+            <h2 className="text-xl font-semibold mb-4 text-[#F2EBE4]">Gestion des cookies</h2>
+            <p className="mb-4">
+              Vous pouvez contrôler et/ou supprimer les cookies comme vous le souhaitez. Vous pouvez supprimer tous les cookies déjà présents sur votre ordinateur et paramétrer la plupart des navigateurs pour qu'ils les bloquent. Toutefois, dans ce cas, vous devrez peut-être paramétrer manuellement certaines préférences chaque fois que vous visiterez notre site.
+            </p>
+          </section>
 
-          <h2>3. Gestion des cookies</h2>
-          <p>
-            Vous pouvez à tout moment :
-          </p>
-          <ul>
-            <li>Accepter ou refuser les cookies non essentiels</li>
-            <li>Modifier vos préférences dans les paramètres de votre navigateur</li>
-            <li>Supprimer les cookies existants</li>
-          </ul>
-
-          <h2>4. Contact</h2>
-          <p>
-            Pour toute question concernant notre utilisation des cookies : cookies@victaure.com
-          </p>
-        </CardContent>
-      </Card>
+          <section className="legal-section">
+            <h2 className="text-xl font-semibold mb-4 text-[#F2EBE4]">Nous contacter</h2>
+            <p>
+              Pour toute question concernant notre politique de cookies, vous pouvez nous contacter à :
+            </p>
+            <div className="mt-4">
+              <p>Email : tblanchet3909@hotmail.com</p>
+              <p>Téléphone : 819 668-0473</p>
+              <p>Adresse : Trois-Rivières, Québec, Canada</p>
+            </div>
+          </section>
+        </div>
+      </motion.div>
     </div>
   );
 }
