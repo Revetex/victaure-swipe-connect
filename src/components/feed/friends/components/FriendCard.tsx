@@ -1,7 +1,7 @@
 
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Star } from "lucide-react";
+import { MessageCircle, Star, UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
 import { ProfileNameButton } from "@/components/profile/ProfileNameButton";
 
@@ -15,9 +15,28 @@ export function FriendCard({ friend }: FriendCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.02 }}
-      className="relative overflow-hidden"
+      className="relative overflow-hidden rounded-xl"
     >
-      <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-[#F2FCE2]/50 via-[#D3E4FD]/30 to-[#FFDEE2]/20 backdrop-blur-sm border border-zinc-200/30 hover:border-primary/20 transition-all duration-300 group">
+      {/* Background buttons that appear on hover */}
+      <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0">
+        <Button 
+          variant="secondary"
+          size="icon"
+          className="bg-white/80 hover:bg-white shadow-lg"
+        >
+          <MessageCircle className="h-5 w-5" />
+        </Button>
+        <Button
+          variant="secondary"
+          size="icon"
+          className="bg-white/80 hover:bg-white shadow-lg"
+        >
+          <UserPlus className="h-5 w-5" />
+        </Button>
+      </div>
+
+      {/* Main content with glass effect */}
+      <div className="relative z-10 flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-[#F2FCE2]/50 via-[#D3E4FD]/30 to-[#FFDEE2]/20 backdrop-blur-sm border border-zinc-200/30 hover:border-primary/20 transition-all duration-300 group hover:bg-white/80">
         <div className="flex items-center gap-4">
           <div className="relative">
             <img
@@ -48,15 +67,7 @@ export function FriendCard({ friend }: FriendCardProps) {
             </p>
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-zinc-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
-        >
-          <MessageCircle className="h-5 w-5" />
-        </Button>
       </div>
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
     </motion.div>
   );
 }
