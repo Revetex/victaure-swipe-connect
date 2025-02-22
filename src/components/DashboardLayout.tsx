@@ -52,16 +52,19 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "flex-1 lg:ml-64",
         "min-h-[calc(100vh-4rem)]",
         "relative",
-        "pt-16"
+        "pt-16 px-4 md:px-6 lg:px-8",
+        "max-w-[1920px] mx-auto"
       )}>
-        {children || (
-          <DashboardContent
-            currentPage={currentPage}
-            isEditing={isEditing}
-            onEditStateChange={handleEditStateChange}
-            onRequestChat={handleRequestChat}
-          />
-        )}
+        <div className="h-full w-full rounded-lg bg-white/50 backdrop-blur-sm p-4 md:p-6 border border-black/5 shadow-sm">
+          {children || (
+            <DashboardContent
+              currentPage={currentPage}
+              isEditing={isEditing}
+              onEditStateChange={handleEditStateChange}
+              onRequestChat={handleRequestChat}
+            />
+          )}
+        </div>
       </main>
     </div>
   );
