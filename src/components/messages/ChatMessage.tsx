@@ -31,9 +31,9 @@ export function ChatMessage({ message, isOwn }: ChatMessageProps) {
         isOwn && "items-end"
       )}>
         <div className={cn(
-          "rounded-lg px-3 py-2",
+          "rounded-lg px-3 py-2 shadow-[0_0_0_1px_rgba(100,181,217,0.1),0_1px_3px_0_rgba(0,0,0,0.1)]",
           isOwn 
-            ? "bg-[#64B5D9] text-[#F2EBE4]" 
+            ? "bg-[#64B5D9] text-[#F2EBE4] border border-[#64B5D9]/30" 
             : "bg-[#1B2A4A]/80 border border-[#64B5D9]/20 text-[#F2EBE4]"
         )}>
           <p className="text-sm">{message.content}</p>

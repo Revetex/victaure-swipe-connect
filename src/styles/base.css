@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -71,7 +70,9 @@
 @layer components {
   .glass-panel {
     @apply bg-white/80 dark:bg-[#1B2A4A]/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 
-           dark:supports-[backdrop-filter]:bg-[#1B2A4A]/60 border border-[#64B5D9]/20;
+           dark:supports-[backdrop-filter]:bg-[#1B2A4A]/60 
+           border border-[#64B5D9]/20
+           shadow-[0_0_0_1px_rgba(100,181,217,0.1),0_4px_12px_rgba(0,0,0,0.3)];
   }
 
   .glass-card {
