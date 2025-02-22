@@ -5,12 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import { User } from '@supabase/supabase-js';
 import { useSession } from './useSession';
 import { clearStorages } from '@/utils/authUtils';
+import { toast } from 'sonner';
 
 interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
   error: Error | null;
   user: User | null;
+  loading: boolean;
 }
 
 export function useAuth() {
@@ -19,8 +21,54 @@ export function useAuth() {
     isLoading: true,
     isAuthenticated: false,
     error: null,
-    user: null
+    user: null,
+    loading: false
   });
+
+  const signIn = async (email: string, password: string, redirectTo?: string) => {
+    try {
+      setState(prev => ({ ...prev, loading: true }));
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      navigate(redirectTo || '/dashboard');
+    } catch (error) {
+      console.error('Sign in error:', error);
+      toast.error(error instanceof Error ? error.message : 'Erreur de connexion');
+    } finally {
+      setState(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  const signUp = async (email: string, password: string, fullName: string, phone: string, redirectTo?: string) => {
+    try {
+      setState(prev => ({ ...prev, loading: true }));
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            phone: phone
+          }
+        }
+      });
+
+      if (signUpError) throw signUpError;
+
+      toast.success("Compte créé avec succès ! Veuillez vérifier votre email.");
+      navigate(redirectTo || '/auth');
+    } catch (error) {
+      console.error('Sign up error:', error);
+      toast.error(error instanceof Error ? error.message : 'Erreur lors de la création du compte');
+    } finally {
+      setState(prev => ({ ...prev, loading: false }));
+    }
+  };
 
   const signOut = async () => {
     try {
@@ -38,7 +86,8 @@ export function useAuth() {
         isLoading: false,
         isAuthenticated: false,
         error: null,
-        user: null
+        user: null,
+        loading: false
       });
 
       navigate('/auth');
@@ -49,7 +98,8 @@ export function useAuth() {
         ...prev, 
         isAuthenticated: false,
         isLoading: false,
-        error: error instanceof Error ? error : new Error('Unknown error')
+        error: error instanceof Error ? error : new Error('Unknown error'),
+        loading: false
       }));
       navigate('/auth');
     }
@@ -167,6 +217,8 @@ export function useAuth() {
 
   return { 
     ...state,
+    signIn,
+    signUp,
     signOut
   };
 }
