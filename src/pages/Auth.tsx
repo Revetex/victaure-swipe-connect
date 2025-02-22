@@ -134,8 +134,10 @@ export default function Auth() {
               La Plateforme Complète du Marché de l'Emploi
             </h1>
 
+            <p className="text-[#64B5D9] font-medium text-lg">Une entreprise fièrement québécoise</p>
+
             <div className="w-full glass-panel rounded-xl overflow-hidden border-2 border-[#222] shadow-[0_0_0_1px_rgba(100,181,217,0.1),0_4px_12px_rgba(0,0,0,0.3)]">
-              <div className="flex items-center gap-3 bg-[#F2EBE4] p-4 border-b border-[#64B5D9]/20">
+              <div className="flex items-center gap-3 bg-[#F2EBE4] p-4 border-b-[3px] border-[#64B5D9]">
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <BrainCircuit className="w-10 h-10 text-[#1B2A4A]" />
@@ -212,10 +214,6 @@ export default function Auth() {
 
         <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center">
           <div className="space-y-8 border-t border-[#F2EBE4]/10 pt-8">
-            <div>
-              <p className="text-[#64B5D9] font-medium">Une entreprise fièrement québécoise</p>
-            </div>
-
             <div className="space-y-6">
               <h3 className="text-lg font-semibold text-[#F2EBE4]">Nous contacter</h3>
               <form className="space-y-4 max-w-md mx-auto">
