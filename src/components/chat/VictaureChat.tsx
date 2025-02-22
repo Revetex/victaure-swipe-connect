@@ -1,9 +1,9 @@
-
 import { useState, useEffect, useRef } from "react";
-import { Bot, Wand2, MessagesSquare } from "lucide-react";
+import { Bot, Wand2, MessagesSquare, Mic, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import { useVictaureChat } from "@/hooks/useVictaureChat";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChatMessage {
   content: string;
@@ -30,6 +30,8 @@ export function VictaureChat({
   const [showThinking, setShowThinking] = useState(false);
   const [userQuestions, setUserQuestions] = useState(0);
   const [userInput, setUserInput] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { sendMessage, isLoading } = useVictaureChat({
@@ -37,6 +39,70 @@ export function VictaureChat({
       console.log("Received response:", response);
     }
   });
+
+  const startRecording = async () => {
+    try {
+      setIsRecording(true);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      const audioChunks: BlobPart[] = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        audioChunks.push(event.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+        const reader = new FileReader();
+        reader.readAsDataURL(audioBlob);
+        reader.onloadend = async () => {
+          const base64Audio = reader.result?.toString().split(",")[1];
+          if (base64Audio) {
+            try {
+              const { data, error } = await supabase.functions.invoke("voice-to-text", {
+                body: { audio: base64Audio }
+              });
+              if (error) throw error;
+              setUserInput(data.text);
+            } catch (error) {
+              console.error("Speech to text error:", error);
+              toast.error("Désolé, je n'ai pas pu comprendre votre message");
+            }
+          }
+        };
+      };
+
+      mediaRecorder.start();
+      setTimeout(() => {
+        mediaRecorder.stop();
+        stream.getTracks().forEach(track => track.stop());
+        setIsRecording(false);
+      }, 5000);
+
+    } catch (error) {
+      console.error("Recording error:", error);
+      toast.error("Impossible d'accéder au microphone");
+      setIsRecording(false);
+    }
+  };
+
+  const speakText = async (text: string) => {
+    try {
+      setIsSpeaking(true);
+      const { data, error } = await supabase.functions.invoke("text-to-voice", {
+        body: { text, voice: "alloy" }
+      });
+      if (error) throw error;
+
+      const audio = new Audio(`data:audio/mp3;base64,${data.audioContent}`);
+      audio.onended = () => setIsSpeaking(false);
+      await audio.play();
+    } catch (error) {
+      console.error("Text to speech error:", error);
+      toast.error("Désolé, je ne peux pas parler pour le moment");
+      setIsSpeaking(false);
+    }
+  };
 
   useEffect(() => {
     const showWelcomeMessage = async () => {
@@ -84,6 +150,7 @@ export function VictaureChat({
       if (response) {
         console.log("Received response:", response);
         setMessages(prev => [...prev, { content: response, isUser: false }]);
+        speakText(response);
       }
     } catch (error) {
       console.error("Error in chat:", error);
@@ -102,8 +169,8 @@ export function VictaureChat({
             <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
           </div>
           <div>
-            <h3 className="font-semibold text-[#1B2A4A]">Mr. Victaure</h3>
-            <p className="text-xs text-[#1B2A4A]/60">Assistant IA</p>
+            <h3 className="font-semibold text-[#1B2A4A] dark:text-gray-200">Mr. Victaure</h3>
+            <p className="text-xs text-[#1B2A4A]/60 dark:text-gray-400">Assistant IA</p>
           </div>
         </div>
         {showThinking && (
@@ -139,7 +206,7 @@ export function VictaureChat({
                   className={`p-3 rounded-lg ${
                     message.isUser
                       ? "ml-auto bg-[#64B5D9] text-white border-transparent max-w-[80%]"
-                      : "mr-auto bg-white dark:bg-zinc-800 text-[#1B2A4A] dark:text-white border-[#64B5D9]/10 max-w-[80%]"
+                      : "mr-auto bg-[#F1F0FB] dark:bg-zinc-800/90 text-[#1B2A4A] dark:text-gray-200 border-[#64B5D9]/10 max-w-[80%]"
                   }`}
                 >
                   <p className="text-sm font-medium whitespace-pre-wrap">{message.content}</p>
@@ -150,6 +217,15 @@ export function VictaureChat({
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={startRecording}
+            disabled={isRecording || userQuestions >= maxQuestions}
+            className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#F1F0FB] dark:bg-zinc-800 text-[#1B2A4A] dark:text-gray-200 hover:bg-[#E5E3F7] dark:hover:bg-zinc-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            title={isRecording ? "Enregistrement en cours..." : "Enregistrer un message vocal"}
+          >
+            <Mic className={`w-4 h-4 ${isRecording ? 'text-red-500 animate-pulse' : ''}`} />
+          </button>
+
           <input
             type="text"
             value={userInput}
@@ -160,19 +236,29 @@ export function VictaureChat({
                 : "Posez une question à Mr. Victaure..."
             }
             disabled={userQuestions >= maxQuestions || isLoading}
-            className="flex-1 h-10 px-4 rounded-lg bg-white dark:bg-zinc-800 border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[#1B2A4A] dark:text-white"
+            className="flex-1 h-10 px-4 rounded-lg bg-[#F1F0FB] dark:bg-zinc-800 border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[#1B2A4A] dark:text-gray-200 placeholder-[#1B2A4A]/40 dark:placeholder-gray-400"
             onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
             aria-label="Message input"
           />
+
           <button
             onClick={handleSendMessage}
             disabled={userQuestions >= maxQuestions || !userInput.trim() || isLoading}
             className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#64B5D9] text-white hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             title="Envoyer le message"
-            aria-label="Envoyer le message"
           >
-            <MessagesSquare className="w-4 h-4" aria-hidden="true" />
+            <MessagesSquare className="w-4 h-4" />
           </button>
+
+          {isSpeaking && (
+            <button
+              onClick={() => setIsSpeaking(false)}
+              className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#64B5D9] text-white animate-pulse"
+              title="Arrêter la lecture vocale"
+            >
+              <Volume2 className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
     </div>
