@@ -10,10 +10,15 @@ import { MessagesSquare, Bot, Wand2, Mail, Phone, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 
+interface ChatMessage {
+  content: string;
+  isUser: boolean;
+}
+
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
-  const [visibleMessages, setVisibleMessages] = useState<string[]>([]);
+  const [visibleMessages, setVisibleMessages] = useState<ChatMessage[]>([]);
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [showThinking, setShowThinking] = useState(false);
@@ -29,12 +34,7 @@ export default function Auth() {
         setShowThinking(false);
         setIsTyping(true);
         const message = "Bonjour ! Je suis Mr. Victaure, votre assistant personnel. Comment puis-je vous aider aujourd'hui ? 🎯";
-        let tempMessage = "";
-        for (let i = 0; i < message.length; i++) {
-          await new Promise(resolve => setTimeout(resolve, 30));
-          tempMessage += message[i];
-          setVisibleMessages([tempMessage]);
-        }
+        setVisibleMessages([{ content: message, isUser: false }]);
         setIsTyping(false);
         setShowWelcomeMessage(true);
       }
@@ -73,13 +73,13 @@ export default function Auth() {
         const response = await fetch('https://api.openrouter.ai/api/v1/chat/completions', {
           method: 'POST',
           headers: {
-            'Authorization': 'Bearer YOUR_API_KEY',
+            'Authorization': 'Bearer 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',
             'Content-Type': 'application/json',
             'HTTP-Referer': 'https://victaure.com',
             'X-Title': 'Victaure Assistant'
           },
           body: JSON.stringify({
-            model: 'mistralai/mistral-7b-instruct', // Modèle gratuit
+            model: 'mistralai/mistral-7b-instruct',
             messages: [
               {
                 role: 'system',
@@ -95,7 +95,6 @@ export default function Auth() {
 
         const data = await response.json();
         const aiResponse = data.choices[0].message.content;
-
         setVisibleMessages(prev => [...prev, { content: aiResponse, isUser: false }]);
       } catch (error) {
         console.error('Error:', error);
