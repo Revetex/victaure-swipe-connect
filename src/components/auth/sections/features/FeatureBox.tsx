@@ -26,28 +26,35 @@ export function FeatureBox({ position }: FeatureBoxProps) {
     >
       <boxGeometry args={[3, 3, 3]} />
       <meshStandardMaterial color="#1B2A4A" />
-      {features.map((feature, index) => (
-        <group key={index}>
+      {features.map((feature, index) => {
+        const textPosition: [number, number, number] = [
+          index === 0 ? 1.51 : index === 1 ? -1.51 : 0,
+          index === 2 ? 1.51 : index === 3 ? -1.51 : 0,
+          index < 2 ? 0 : index === 2 ? 1.51 : -1.51
+        ];
+        
+        const textRotation: [number, number, number] = [
+          index === 2 ? -Math.PI / 2 : index === 3 ? Math.PI / 2 : 0,
+          index === 0 ? -Math.PI / 2 : index === 1 ? Math.PI / 2 : 0,
+          0
+        ];
+
+        return (
           <Text
-            position={[
-              index === 0 ? 1.51 : index === 1 ? -1.51 : 0,
-              index === 2 ? 1.51 : index === 3 ? -1.51 : 0,
-              index < 2 ? 0 : index === 2 ? 1.51 : -1.51
-            ]}
+            key={index}
+            position={textPosition}
+            rotation={textRotation}
             fontSize={0.3}
             color="#F2EBE4"
             anchorX="center"
             anchorY="middle"
-            rotation={[
-              index === 2 ? -Math.PI / 2 : index === 3 ? Math.PI / 2 : 0,
-              index === 0 ? -Math.PI / 2 : index === 1 ? Math.PI / 2 : 0,
-              0
-            ]}
+            font="/fonts/Inter-Regular.woff"
+            characters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
           >
             {feature.title}
           </Text>
-        </group>
-      ))}
+        );
+      })}
     </mesh>
   );
 }
