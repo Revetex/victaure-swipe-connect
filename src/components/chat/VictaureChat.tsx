@@ -95,7 +95,7 @@ export function VictaureChat({
 
   return (
     <div className="w-full glass-panel rounded-xl overflow-hidden border-2 border-black/10 shadow-lg relative">
-      <div className="flex items-center gap-3 bg-white/80 dark:bg-zinc-900/80 p-4 border-b border-black/10">
+      <div className="flex items-center gap-3 bg-[#F1F0FB] dark:bg-zinc-900/80 p-4 border-b border-black/10">
         <div className="flex items-center gap-3">
           <div className="relative">
             <Bot className="w-10 h-10 text-[#1B2A4A]" />
