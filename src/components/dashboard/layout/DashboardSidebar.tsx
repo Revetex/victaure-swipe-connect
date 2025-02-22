@@ -43,14 +43,14 @@ export function DashboardSidebar({
   }, [getUnreadCount]);
 
   return <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64">
-      <div className="flex flex-col h-full bg-[#64B5D9]/10 backdrop-blur supports-[backdrop-filter]:bg-[#64B5D9]/10 border-r border-[#64B5D9]/10">
-        <div className="flex items-center justify-between p-4">
+      <div className="flex flex-col h-full bg-[#64B5D9]/5 backdrop-blur-sm supports-[backdrop-filter]:bg-[#64B5D9]/5">
+        <div className="flex items-center justify-between p-4 relative z-50">
           <Logo />
           {completeProfile && (
             <Button 
               variant="ghost" 
               onClick={() => setShowProfilePreview(true)} 
-              className="w-10 h-10 p-0 rounded-full overflow-hidden ring-2 ring-[#64B5D9]/20 hover:ring-[#64B5D9]/40 transition-all transform hover:scale-105 cursor-pointer"
+              className="w-10 h-10 p-0 rounded-full overflow-hidden ring-2 ring-[#64B5D9]/20 hover:ring-[#64B5D9]/40 transition-all transform hover:scale-105 cursor-pointer relative z-50"
             >
               <img 
                 src={completeProfile.avatar_url || "/user-icon.svg"} 
@@ -71,13 +71,13 @@ export function DashboardSidebar({
                   key={item.id} 
                   onClick={() => onPageChange(item.id)} 
                   className={cn(
-                    "w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm relative cursor-pointer",
+                    "w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm relative",
                     "transition-all duration-300 ease-out",
                     "hover:scale-[1.02] active:scale-[0.98]",
-                    "border border-transparent",
+                    "hover:bg-[#64B5D9]/10",
                     currentPage === item.id 
-                      ? "bg-gradient-to-r from-[#64B5D9]/20 to-[#64B5D9]/5 text-white font-medium border-[#64B5D9]/10 shadow-sm" 
-                      : "text-white hover:bg-[#64B5D9]/10 hover:text-white hover:border-[#64B5D9]/20"
+                      ? "bg-[#64B5D9]/15 text-white font-medium shadow-sm" 
+                      : "text-white/90 hover:text-white"
                   )}
                 >
                   <Icon className="h-4 w-4" />
