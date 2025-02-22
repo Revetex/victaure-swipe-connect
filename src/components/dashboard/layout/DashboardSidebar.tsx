@@ -10,7 +10,7 @@ import { createEmptyProfile } from "@/types/profile";
 import { useState, useEffect } from "react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface DashboardSidebarProps {
   currentPage: number;
@@ -43,13 +43,9 @@ export function DashboardSidebar({
     return () => clearInterval(interval);
   }, [getUnreadCount]);
 
-  const handlePageClick = (pageId: number, route: string) => {
-    onPageChange(pageId);
-  };
-
   return (
     <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64">
-      <div className="flex flex-col flex-grow bg-[#1B2A4A]/95 backdrop-blur supports-[backdrop-filter]:bg-[#1B2A4A]/60 border-r border-[#64B5D9]/10">
+      <div className="flex flex-col h-full bg-[#1B2A4A]/95 backdrop-blur supports-[backdrop-filter]:bg-[#1B2A4A]/60 border-r border-[#64B5D9]/10">
         <div className="flex items-center justify-between p-4">
           <Logo />
           {completeProfile && (
@@ -67,38 +63,40 @@ export function DashboardSidebar({
           )}
         </div>
 
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto scrollbar-none">
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
-            const isNotificationsItem = item.id === 9;
-            return (
-              <button
-                key={item.id}
-                onClick={() => handlePageClick(item.id, item.route)}
-                className={cn(
-                  "w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm relative",
-                  "transition-all duration-300 ease-out",
-                  "hover:scale-[1.02] active:scale-[0.98]",
-                  "border border-transparent",
-                  currentPage === item.id 
-                    ? "bg-gradient-to-r from-[#64B5D9]/20 to-[#64B5D9]/5 text-[#64B5D9] font-medium border-[#64B5D9]/10 shadow-sm"
-                    : "text-[#F2EBE4]/60 hover:bg-[#64B5D9]/10 hover:text-[#F2EBE4] hover:border-[#64B5D9]/20"
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                <span>{item.name}</span>
-                {isNotificationsItem && unreadCount > 0 && (
-                  <Badge 
-                    variant="destructive" 
-                    className="absolute right-2 top-1/2 -translate-y-1/2 min-w-[20px] h-5 flex items-center justify-center"
-                  >
-                    {unreadCount}
-                  </Badge>
-                )}
-              </button>
-            );
-          })}
-        </nav>
+        <ScrollArea className="flex-1 px-4 py-2">
+          <nav className="space-y-2">
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              const isNotificationsItem = item.id === 9;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onPageChange(item.id)}
+                  className={cn(
+                    "w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm relative",
+                    "transition-all duration-300 ease-out",
+                    "hover:scale-[1.02] active:scale-[0.98]",
+                    "border border-transparent",
+                    currentPage === item.id 
+                      ? "bg-gradient-to-r from-[#64B5D9]/20 to-[#64B5D9]/5 text-[#64B5D9] font-medium border-[#64B5D9]/10 shadow-sm"
+                      : "text-[#F2EBE4]/60 hover:bg-[#64B5D9]/10 hover:text-[#F2EBE4] hover:border-[#64B5D9]/20"
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{item.name}</span>
+                  {isNotificationsItem && unreadCount > 0 && (
+                    <Badge 
+                      variant="destructive" 
+                      className="absolute right-2 top-1/2 -translate-y-1/2 min-w-[20px] h-5 flex items-center justify-center"
+                    >
+                      {unreadCount}
+                    </Badge>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+        </ScrollArea>
 
         <div className="p-4 mt-auto border-t border-[#64B5D9]/10">
           <div className="flex items-center justify-center opacity-60 hover:opacity-100 transition-all duration-300">
