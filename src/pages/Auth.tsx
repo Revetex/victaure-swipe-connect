@@ -1,4 +1,3 @@
-
 import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
@@ -73,8 +72,14 @@ export default function Auth() {
       
       <ThemeSelector />
       
-      <main className="flex-1 flex flex-col items-center justify-center w-full p-4 sm:p-6 lg:p-8 relative z-10">
-        <div className="w-full max-w-xl mx-auto space-y-8 glass-panel rounded-2xl p-6 sm:p-8 border border-primary/10 backdrop-blur-sm">
+      <main className="flex-1 flex flex-col items-center justify-center w-full p-4 sm:p-6 lg:p-8 relative z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),rgba(255,255,255,0))]" />
+        <div className="absolute inset-0" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          opacity: 0.4
+        }} />
+        
+        <div className="w-full max-w-xl mx-auto space-y-8 glass-panel rounded-2xl p-6 sm:p-8 border border-primary/10 backdrop-blur-sm relative">
           <motion.div 
             className="flex flex-col items-center justify-center space-y-6"
             initial={{ opacity: 0, y: 20 }}
@@ -130,6 +135,10 @@ export default function Auth() {
               <span className="font-medium text-primary">Victaure</span> - Votre passerelle vers l'emploi du futur.
             </p>
           </div>
+        </div>
+
+        <div className="absolute bottom-4 right-4 text-xs text-muted-foreground/40 font-tiempos">
+          © David Benga
         </div>
       </main>
     </div>
