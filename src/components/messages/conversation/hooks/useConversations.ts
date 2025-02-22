@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { Conversation } from "../types/conversation.types";
+import { Conversation, ConversationParticipant } from "../types/conversation.types";
 import { transformConversation } from "../utils/conversationTransformers";
 
 export function useConversations() {
@@ -76,7 +76,10 @@ export function useConversations() {
 
       if (conversationsData) {
         const formattedConversations = conversationsData
-          .map(conv => transformConversation(conv))
+          .map(conv => transformConversation({
+            ...conv,
+            participant: Array.isArray(conv.participant) ? conv.participant[0] : conv.participant
+          }))
           .filter((conv): conv is Conversation => conv !== null);
 
         setConversations(formattedConversations);
@@ -148,4 +151,4 @@ export function useConversations() {
   };
 }
 
-export type { Conversation } from '../types/conversation.types';
+export type { Conversation, ConversationParticipant } from '../types/conversation.types';
