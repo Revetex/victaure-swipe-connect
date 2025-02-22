@@ -1,7 +1,7 @@
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Text, Center, useFont } from "@react-three/drei";
+import { Text, Center } from "@react-three/drei";
 import type { Mesh } from 'three';
 import { features } from "./featureData";
 
@@ -32,7 +32,6 @@ export function FeatureBox({ position }: FeatureBoxProps) {
             anchorY="middle"
             maxWidth={2}
             textAlign="center"
-            font="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
           >
             {features[0].title}
           </Text>

@@ -12,7 +12,6 @@ export function FeaturesSection() {
         camera={{ position: [0, 0, 7], fov: 75 }}
         gl={{ antialias: true }}
         dpr={[1, 2]}
-        shadows
       >
         <color attach="background" args={["#1A1F2C"]} />
         <ambientLight intensity={0.5} />
