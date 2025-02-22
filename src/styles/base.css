@@ -52,33 +52,32 @@
 
 @layer base {
   * {
-    @apply border-border selection:bg-primary/10;
+    @apply border-border selection:bg-[#64B5D9]/10;
   }
   
   body {
-    @apply bg-background text-foreground antialiased overflow-x-hidden font-sans;
-    text-transform: none;
+    @apply bg-[#1B2A4A] text-[#F2EBE4] antialiased overflow-x-hidden font-sans;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-normal tracking-tight;
-    text-transform: none;
+    @apply font-normal text-[#F2EBE4];
   }
 
   button, a {
-    text-transform: none;
+    @apply text-[#F2EBE4] hover:text-[#64B5D9] transition-colors;
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-white/80 dark:bg-zinc-900/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-zinc-900/60;
+    @apply bg-white/80 dark:bg-[#1B2A4A]/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 
+           dark:supports-[backdrop-filter]:bg-[#1B2A4A]/60 border border-[#64B5D9]/20;
   }
 
   .glass-card {
-    @apply bg-white/80 dark:bg-zinc-900/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 
-           dark:supports-[backdrop-filter]:bg-zinc-900/60 
-           border border-zinc-200 dark:border-zinc-800 
+    @apply bg-white/80 dark:bg-[#1B2A4A]/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 
+           dark:supports-[backdrop-filter]:bg-[#1B2A4A]/60 
+           border border-[#64B5D9]/20
            shadow-lg rounded-xl p-8;
   }
 
@@ -88,6 +87,10 @@
 
   .bg-grid-16 {
     background-size: 16px 16px;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-br from-[#F2EBE4] via-[#F2EBE4]/90 to-[#F2EBE4]/70 bg-clip-text text-transparent;
   }
 }
 

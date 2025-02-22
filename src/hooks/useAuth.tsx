@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -123,7 +122,8 @@ export function useAuth() {
               isLoading: false,
               isAuthenticated: false,
               error: null,
-              user: null
+              user: null,
+              loading: false
             });
           }
           return;
@@ -147,7 +147,8 @@ export function useAuth() {
                 isLoading: false,
                 isAuthenticated: true,
                 error: null,
-                user
+                user,
+                loading: false
               });
             }
           } catch (error) {
@@ -157,7 +158,8 @@ export function useAuth() {
               isLoading: false,
               isAuthenticated: false,
               error: error instanceof Error ? error : new Error('Authentication failed'),
-              user: null
+              user: null,
+              loading: false
             });
           }
         };
@@ -171,47 +173,21 @@ export function useAuth() {
             isLoading: false,
             isAuthenticated: false,
             error: error instanceof Error ? error : new Error('Authentication failed'),
-            user: null
+            user: null,
+            loading: false
           });
         }
         navigate('/auth');
       }
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event);
-      
-      if (event === 'SIGNED_OUT' || !session) {
-        setState({
-          isLoading: false,
-          isAuthenticated: false,
-          error: null,
-          user: null
-        });
-      } else if (event === 'SIGNED_IN' && session) {
-        setState({
-          isLoading: false,
-          isAuthenticated: true,
-          error: null,
-          user: session.user
-        });
-      } else if (event === 'TOKEN_REFRESHED') {
-        console.log("Token refreshed successfully");
-        setState(prev => ({
-          ...prev,
-          isAuthenticated: true
-        }));
-      }
-    });
-
     initializeAuth();
-
+    
     const authCheckInterval = setInterval(initializeAuth, 300000);
 
     return () => {
       mounted = false;
       clearInterval(authCheckInterval);
-      subscription.unsubscribe();
     };
   }, [navigate]);
 
