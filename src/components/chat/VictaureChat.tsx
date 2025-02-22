@@ -115,12 +115,12 @@ export function VictaureChat({
       </div>
 
       <div 
-        className="relative bg-white/5 p-4"
+        className="relative p-4"
         style={{
+          backgroundColor: "rgba(27, 42, 74, 0.03)",
           backgroundImage: "url('/lovable-uploads/60542c40-c17c-42cc-8136-f4780f09946a.png')",
           backgroundSize: "32px",
-          backgroundRepeat: "repeat",
-          backgroundColor: "rgba(155, 135, 245, 0.05)"
+          backgroundRepeat: "repeat"
         }}
       >
         <div 
