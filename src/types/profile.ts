@@ -1,3 +1,4 @@
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -93,7 +94,7 @@ export interface PendingRequest {
   receiver: UserProfile;
 }
 
-export function createEmptyProfile(id: string, email: string): UserProfile {
+function createEmptyProfile(id: string, email: string): UserProfile {
   return {
     id,
     email,
@@ -119,7 +120,7 @@ export function createEmptyProfile(id: string, email: string): UserProfile {
   };
 }
 
-export function transformDatabaseProfile(data: any): UserProfile {
+function transformDatabaseProfile(data: any): UserProfile {
   return {
     ...createEmptyProfile(data.id, data.email),
     ...data,
@@ -132,7 +133,7 @@ export function transformDatabaseProfile(data: any): UserProfile {
   };
 }
 
-export function transformEducation(data: any): Education {
+function transformEducation(data: any): Education {
   return {
     id: data.id,
     profile_id: data.profile_id,
@@ -145,7 +146,7 @@ export function transformEducation(data: any): Education {
   };
 }
 
-export function transformCertification(data: any): Certification {
+function transformCertification(data: any): Certification {
   return {
     id: data.id,
     profile_id: data.profile_id,
@@ -160,7 +161,7 @@ export function transformCertification(data: any): Certification {
   };
 }
 
-export function transformExperience(data: any): Experience {
+function transformExperience(data: any): Experience {
   return {
     id: data.id,
     profile_id: data.profile_id,
@@ -174,22 +175,12 @@ export function transformExperience(data: any): Experience {
   };
 }
 
-// Note: Regroupons toutes les exportations de types en un seul endroit
-export type {
-  UserProfile,
-  Friend,
-  Experience,
-  Education,
-  Certification,
-  PendingRequest,
-  BlockedUser
-};
-
-// Note: Exportons les fonctions utilitaires séparément
+// Note: Regroupons toutes les exportations ensemble
 export {
   createEmptyProfile,
   transformDatabaseProfile,
   transformEducation,
   transformCertification,
-  transformExperience
+  transformExperience,
+  type BlockedUser
 };
