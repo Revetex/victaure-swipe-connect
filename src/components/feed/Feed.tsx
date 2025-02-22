@@ -15,7 +15,7 @@ export function Feed() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] w-full max-w-3xl mx-auto px-4 py-16">
+    <div className="w-full max-w-3xl mx-auto px-4">
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}

@@ -28,10 +28,6 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
     setIsEditing(state);
   }, []);
 
-  const toggleMobileMenu = useCallback(() => {
-    setShowMobileMenu(!showMobileMenu);
-  }, [showMobileMenu]);
-
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar desktop */}
@@ -54,16 +50,15 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "flex-1",
         "lg:ml-64",
         "min-h-screen",
-        "relative",
-        "bg-background"
+        "relative"
       )}>
         <AppHeader 
           onRequestAssistant={handleRequestChat}
           showMobileMenu={showMobileMenu}
-          setShowMobileMenu={toggleMobileMenu}
+          setShowMobileMenu={setShowMobileMenu}
         />
         
-        <div className="pt-16 relative">
+        <div className="pt-16">
           {children || (
             <DashboardContent
               currentPage={currentPage}

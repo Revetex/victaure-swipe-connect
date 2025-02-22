@@ -31,7 +31,9 @@ export function AppHeader({
   };
 
   const toggleMobileMenu = () => {
-    setShowMobileMenu?.(!showMobileMenu);
+    if (setShowMobileMenu) {
+      setShowMobileMenu(!showMobileMenu);
+    }
   };
 
   return (
@@ -46,12 +48,12 @@ export function AppHeader({
             variant="ghost"
             size="sm"
             onClick={toggleMobileMenu}
-            className="lg:hidden text-white hover:bg-white/20 border-2 border-black"
+            className="lg:hidden text-white hover:bg-white/20 border-2 border-black active:scale-95 transition-transform"
           >
             <Menu className="h-4 w-4" />
           </Button>
           
-          <div className="flex items-center gap-3 justify-between relative z-50">
+          <div className="flex items-center gap-3 justify-between relative z-10">
             <img
               src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png"
               alt="Victaure Logo"
