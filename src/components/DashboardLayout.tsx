@@ -23,9 +23,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-background w-full relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#9b87f5]/10 to-transparent pointer-events-none" />
-      
+    <div className="flex min-h-screen bg-background w-full">
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -39,10 +37,9 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       />
 
       <main className={cn(
-        "flex-1 lg:ml-64 min-h-screen p-4 sm:p-6",
-        "bg-transparent",
-        "border-l border-border/10",
-        "relative z-10"
+        "flex-1 lg:ml-64",
+        "min-h-screen",
+        "relative"
       )}>
         {children || (
           <DashboardContent

@@ -8,7 +8,7 @@ import { LoadingState } from "./LoadingState";
 import { FloatingButtons } from "./FloatingButtons";
 import { ContentRouter } from "./ContentRouter";
 import { DashboardHome } from "./DashboardHome";
-import { DashboardFriendsList } from "../DashboardFriendsList";
+import { DashboardFriendsList } from "./DashboardFriendsList";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -47,13 +47,9 @@ export function DashboardContent({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className={cn(
-        "min-h-screen w-full rounded-lg",
-        "bg-[#1B2A4A]/30 backdrop-blur-sm",
-        "border border-[#64B5D9]/10"
-      )}
+      className="min-h-screen w-full"
     >
-      <div className="relative p-6">
+      <div className="h-full">
         <ContentRouter
           currentPage={currentPage}
           onEditStateChange={onEditStateChange}
@@ -68,7 +64,7 @@ export function DashboardContent({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-0 bg-[#1B2A4A]/80 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
           >
             <div className="container flex items-center justify-center min-h-screen">
               <DashboardFriendsList 
