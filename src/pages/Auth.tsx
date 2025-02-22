@@ -12,12 +12,37 @@ import { PricingGrid } from "@/components/pricing/PricingGrid";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Bot, Briefcase, Sparkles, Tool, Users } from "lucide-react";
+import { Bot, Briefcase, Sparkles, Wrench, Users } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+  const [countdown, setCountdown] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+
+  useEffect(() => {
+    const launchDate = new Date('2025-03-15T08:00:00').getTime();
+
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = launchDate - now;
+
+      setCountdown({
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000)
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   if (isAuthenticated) {
     const redirectTo = sessionStorage.getItem('redirectTo') || '/dashboard';
@@ -49,7 +74,7 @@ export default function Auth() {
       description: "Des outils d'IA spécialisés pour optimiser votre recherche"
     },
     {
-      icon: Tool,
+      icon: Wrench,
       title: "Suite d'outils complète",
       description: "CV, lettre de motivation, analyse de marché et plus encore"
     },
@@ -78,6 +103,35 @@ export default function Auth() {
       <main className="flex-1 flex flex-col items-center justify-center w-full px-4 py-8 sm:p-6 lg:p-8 relative z-10">
         <div className="w-full max-w-xl mx-auto space-y-8">
           <AuthHeader />
+
+          {/* Compte à rebours */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center justify-center space-y-4"
+          >
+            <h2 className="text-[#F2EBE4] text-xl font-medium">
+              Lancement officiel dans
+            </h2>
+            <div className="grid grid-cols-4 gap-4 text-center">
+              <div className="bg-[#D3E4FD]/10 backdrop-blur-sm border-2 border-[#D3E4FD]/20 rounded-xl p-4">
+                <div className="text-2xl font-bold text-[#64B5D9]">{countdown.days}</div>
+                <div className="text-[#F2EBE4]/60 text-sm">Jours</div>
+              </div>
+              <div className="bg-[#D3E4FD]/10 backdrop-blur-sm border-2 border-[#D3E4FD]/20 rounded-xl p-4">
+                <div className="text-2xl font-bold text-[#64B5D9]">{countdown.hours}</div>
+                <div className="text-[#F2EBE4]/60 text-sm">Heures</div>
+              </div>
+              <div className="bg-[#D3E4FD]/10 backdrop-blur-sm border-2 border-[#D3E4FD]/20 rounded-xl p-4">
+                <div className="text-2xl font-bold text-[#64B5D9]">{countdown.minutes}</div>
+                <div className="text-[#F2EBE4]/60 text-sm">Minutes</div>
+              </div>
+              <div className="bg-[#D3E4FD]/10 backdrop-blur-sm border-2 border-[#D3E4FD]/20 rounded-xl p-4">
+                <div className="text-2xl font-bold text-[#64B5D9]">{countdown.seconds}</div>
+                <div className="text-[#F2EBE4]/60 text-sm">Secondes</div>
+              </div>
+            </div>
+          </motion.div>
 
           {/* Bannière Gratuit */}
           <motion.div 

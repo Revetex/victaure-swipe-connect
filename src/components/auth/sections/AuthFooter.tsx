@@ -36,6 +36,33 @@ export function AuthFooter() {
   return (
     <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center" role="contentinfo">
       <div className="space-y-8 border-t border-[#F2EBE4]/10 pt-8">
+        <div className="flex justify-center mb-8">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button 
+                variant="secondary"
+                className="bg-[#64B5D9]/20 border-2 border-[#64B5D9] text-white hover:bg-[#64B5D9]/30"
+              >
+                Devenez Partenaire
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px] bg-[#1B2A4A] border-2 border-[#64B5D9]">
+              <div className="p-6 space-y-6">
+                <h3 className="text-xl font-semibold text-white text-center">Information de Contact</h3>
+                <div className="space-y-4 text-[#F2EBE4]/80">
+                  <p>Pour toute demande de partenariat, contactez :</p>
+                  <div className="space-y-2">
+                    <p className="font-medium text-[#64B5D9]">Guillaume Duhan</p>
+                    <p>Directeur des partenariats</p>
+                    <p>Email: info@victaure.com</p>
+                    <p>Tél: (514) 555-0123</p>
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
         <nav className="flex flex-wrap justify-center gap-4 text-sm text-[#F2EBE4]/60" role="navigation">
           <Dialog>
             <DialogTrigger asChild>
