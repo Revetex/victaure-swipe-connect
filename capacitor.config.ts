@@ -27,11 +27,10 @@ const config: CapacitorConfig = {
       '052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com'
     ],
     headers: {
-      // Add Cache-Control header
-      'Cache-Control': 'max-age=31536000, public',
-      // Add SameSite attribute to cookies and other security headers
-      'Set-Cookie': 'SameSite=Strict; Secure',
+      // Ajout de l'en-tête X-Content-Type-Options
       'X-Content-Type-Options': 'nosniff',
+      // Autres en-têtes de sécurité importants
+      'Content-Security-Policy': "default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https: wss: http://localhost:* ws://localhost:*;",
       'X-Frame-Options': 'DENY',
       'X-XSS-Protection': '1; mode=block',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
@@ -39,6 +38,10 @@ const config: CapacitorConfig = {
       'Cross-Origin-Embedder-Policy': 'require-corp',
       'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Resource-Policy': 'same-site',
+      // Cache control pour les performances
+      'Cache-Control': 'max-age=31536000, public',
+      // Configuration des cookies
+      'Set-Cookie': 'SameSite=Strict; Secure'
     }
   },
   android: {
