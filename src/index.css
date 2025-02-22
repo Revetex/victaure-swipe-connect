@@ -51,10 +51,7 @@
 
   * {
     @apply border-border selection:bg-zinc-900/10 dark:selection:bg-zinc-50/10;
-    -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    -webkit-user-select: none;
-    -moz-user-select: none;
     user-select: none;
   }
   
@@ -146,6 +143,13 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  .line-clamp-none {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: none;
+    overflow: hidden;
+  }
 }
 
 @layer utilities {
@@ -157,4 +161,20 @@
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
+
+  @keyframes accordion-down {
+    from { max-height: 0; }
+    to { max-height: var(--radix-accordion-content-height); }
+  }
+
+  @keyframes accordion-up {
+    from { max-height: var(--radix-accordion-content-height); }
+    to { max-height: 0; }
+  }
 }
+
+/* Leaflet specific styles */
+.leaflet-overlay-pane svg {
+  user-select: none;
+}
+

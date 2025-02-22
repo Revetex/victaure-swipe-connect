@@ -48,12 +48,12 @@ export function LoginForm({
         <div className="space-y-2">
           <Label htmlFor="email-login">Email</Label>
           <div className="relative">
-            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" aria-hidden="true" />
             <Input
               id="email-login"
               name="email"
-              placeholder="nom@exemple.com"
               type="email"
+              placeholder="nom@exemple.com"
               autoComplete="email"
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
@@ -61,6 +61,7 @@ export function LoginForm({
               className="pl-10"
               required
               aria-required="true"
+              aria-label="Adresse email"
             />
           </div>
         </div>
@@ -68,7 +69,7 @@ export function LoginForm({
         <div className="space-y-2">
           <Label htmlFor="password-login">Mot de passe</Label>
           <div className="relative">
-            <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" aria-hidden="true" />
             <Input
               id="password-login"
               name="password"
@@ -80,6 +81,7 @@ export function LoginForm({
               className="pl-10"
               required
               aria-required="true"
+              aria-label="Mot de passe"
             />
           </div>
         </div>
@@ -88,9 +90,13 @@ export function LoginForm({
           type="submit"
           disabled={loading || !email || !password}
           className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 font-medium shadow-sm hover:shadow-md"
+          aria-label={loading ? "Connexion en cours..." : "Se connecter"}
         >
           {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              <span className="sr-only">Connexion en cours...</span>
+            </>
           ) : (
             "Se connecter"
           )}
