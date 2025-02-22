@@ -21,6 +21,9 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
     handleCreatePost
   } = useCreatePost(onPostCreated);
 
+  // Transformer les PostAttachments en URLs pour le preview
+  const attachmentUrls = attachments.map(attachment => attachment.preview);
+
   return (
     <Card className={cn(
       "shadow-lg border-primary/10 transition-all duration-200",
@@ -41,7 +44,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
           onPostChange={setNewPost}
           privacy={privacy}
           onPrivacyChange={setPrivacy}
-          attachments={attachments}
+          attachments={attachmentUrls}
           isUploading={isUploading}
           onFileChange={handleFileChange}
           onRemoveFile={removeFile}
