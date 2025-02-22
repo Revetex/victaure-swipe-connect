@@ -27,18 +27,20 @@ serve(async (req) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'nousresearch/nous-hermes-llama2-70b',
+        model: 'google/gemini-pro',
         messages: [
           {
             role: 'system',
             content: `Tu es Mr. Victaure, un assistant professionnel sur une plateforme de recrutement. 
                      Tu es amical, professionnel et serviable. Tu communiques en français.
-                     Tu aides les utilisateurs à trouver des emplois, améliorer leur CV et leurs compétences professionnelles.`
+                     Tu aides les utilisateurs à trouver des emplois, améliorer leur CV et leurs compétences professionnelles.
+                     Tu donnes des conseils concrets et personnalisés.`
           },
           ...messages
         ],
         temperature: 0.7,
-        max_tokens: 1000
+        max_tokens: 1000,
+        top_p: 0.9
       })
     })
 
