@@ -37,7 +37,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       />
 
       <main className={cn(
-        "flex-1 lg:ml-64 min-h-screen p-6",
+        "flex-1 lg:ml-64 min-h-screen p-4 sm:p-6",
         "bg-background",
         "border-l border-border/10"
       )}>

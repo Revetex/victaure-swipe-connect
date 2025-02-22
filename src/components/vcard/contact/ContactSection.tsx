@@ -18,12 +18,10 @@ export function ContactSection({ children }: ContactSectionProps) {
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="relative p-6 backdrop-blur-sm rounded-xl overflow-hidden"
+        className="relative p-6 backdrop-blur-sm rounded-xl overflow-hidden space-y-4"
       >
         <CircuitBackground />
-        <div className="relative z-10 space-y-4">
-          {children}
-        </div>
+        {children}
       </motion.div>
     </VCardSection>
   );

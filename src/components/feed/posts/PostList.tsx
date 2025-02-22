@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -105,10 +104,9 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="w-full max-w-3xl mx-auto px-2 sm:px-4">
       <AnimatePresence mode="popLayout">
         {posts.map((post) => {
-          // Assurons-nous que toutes les propriétés requises sont présentes
           const postWithDefaults: Post = {
             ...post,
             likes: post.likes || 0,
