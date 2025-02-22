@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ProfileNameButton } from "@/components/profile/ProfileNameButton";
 import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
+import type { Receiver } from "@/types/messages";
 
 interface FriendCardProps {
   friend: UserProfile;
@@ -16,7 +17,13 @@ export function FriendCard({ friend }: FriendCardProps) {
   const { setReceiver, setShowConversation } = useReceiver();
 
   const handleStartChat = () => {
-    setReceiver(friend);
+    const receiver: Receiver = {
+      id: friend.id,
+      full_name: friend.full_name,
+      avatar_url: friend.avatar_url || "/user-icon.svg", // Utilisation d'une image par défaut si avatar_url est null
+      email: friend.email
+    };
+    setReceiver(receiver);
     setShowConversation(true);
     navigate('/messages');
   };
