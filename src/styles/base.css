@@ -31,16 +31,33 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  html, body {
-    @apply overflow-x-hidden antialiased;
+  html {
+    @apply text-base antialiased scroll-smooth;
+  }
+
+  body {
+    @apply overflow-x-hidden bg-background text-foreground;
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
-    -moz-text-size-adjust: 100%;
-    -ms-text-size-adjust: 100%;
   }
 
   input, textarea, select {
     @apply bg-[#F1F0FB] dark:bg-[#2A2D3E] text-[#1A1F2C] dark:text-[#F2EBE4] border-[#64B5D9]/20;
+  }
+
+  /* Amélioration du contraste des placeholders */
+  ::placeholder {
+    @apply text-[#1A1F2C]/50 dark:text-[#F2EBE4]/50;
+  }
+
+  /* Amélioration du style de focus */
+  :focus-visible {
+    @apply outline-none ring-2 ring-[#64B5D9] ring-offset-2 ring-offset-background;
+  }
+
+  /* Amélioration du style de sélection */
+  ::selection {
+    @apply bg-[#64B5D9]/20 text-current;
   }
 }
 

@@ -24,7 +24,14 @@ export function DashboardMobileNav({
     <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
       <SheetContent 
         side="left" 
-        className="w-72 p-0 bg-[#64B5D9] border-2 border-black relative overflow-hidden z-50"
+        className={cn(
+          "w-[280px] p-0",
+          "bg-[#64B5D9]",
+          "border-2 border-black",
+          "relative",
+          "lg:hidden",
+          "z-50"
+        )}
       >
         {/* Motif de fond */}
         <div 
@@ -37,11 +44,13 @@ export function DashboardMobileNav({
           }}
         />
 
+        {/* En-tête avec logo */}
         <div className="p-4 border-b-2 border-black bg-black/5 relative z-10">
           <Logo />
         </div>
 
-        <nav className="space-y-1.5 p-4 relative z-10">
+        {/* Navigation */}
+        <nav className="space-y-2 p-4 relative z-10 max-h-[calc(100vh-180px)] overflow-y-auto">
           {navigationItems.map(item => {
             const Icon = item.icon;
             return (
@@ -52,15 +61,18 @@ export function DashboardMobileNav({
                   setShowMobileMenu(false);
                 }} 
                 className={cn(
-                  "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm",
-                  "transition-all duration-200 border-2 shadow-sm",
+                  "w-full flex items-center gap-2 px-3 py-2.5",
+                  "rounded-lg text-sm font-medium",
+                  "transition-all duration-200",
+                  "border-2 shadow-sm",
+                  "active:scale-[0.98]",
                   currentPage === item.id 
-                    ? "bg-white/15 text-white font-medium border-black shadow-inner" 
+                    ? "bg-white/15 text-white border-black shadow-inner" 
                     : "text-white/90 hover:bg-white/10 hover:text-white border-black/20 hover:border-black"
                 )} 
               >
-                <Icon className="h-3.5 w-3.5" />
-                <span className="font-medium">{item.name}</span>
+                <Icon className="h-4 w-4" />
+                <span>{item.name}</span>
               </button>
             );
           })}
@@ -69,12 +81,19 @@ export function DashboardMobileNav({
           <Dialog>
             <DialogTrigger asChild>
               <button 
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                  transition-all duration-200 border-2 shadow-sm
-                  bg-white/10 text-white font-medium border-black hover:bg-white/15"
+                className={cn(
+                  "w-full flex items-center gap-2 px-3 py-2.5",
+                  "rounded-lg text-sm font-medium",
+                  "transition-all duration-200",
+                  "border-2 border-black",
+                  "bg-white/10 text-white",
+                  "hover:bg-white/15",
+                  "active:scale-[0.98]",
+                  "shadow-sm"
+                )}
               >
-                <Coins className="h-3.5 w-3.5" />
-                <span className="font-medium">Voir les tarifs</span>
+                <Coins className="h-4 w-4" />
+                <span>Voir les tarifs</span>
               </button>
             </DialogTrigger>
             <DialogContent className="max-w-4xl w-11/12 max-h-[90vh] overflow-y-auto bg-[#1B2A4A] border-2 border-black">
