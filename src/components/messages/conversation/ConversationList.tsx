@@ -1,3 +1,4 @@
+
 import { useAuth } from "@/hooks/useAuth";
 import { useReceiver } from "@/hooks/useReceiver";
 import { cn } from "@/lib/utils";
@@ -5,10 +6,6 @@ import { ConversationItem } from "./components/ConversationItem";
 import { ConversationSearch } from "./components/ConversationSearch";
 import { NewConversationPopover } from "./components/NewConversationPopover";
 import { useEffect, useState } from "react";
-
-interface ConversationListProps {
-  className?: string;
-}
 
 export function ConversationList({ className }: { className?: string }) {
   const { user } = useAuth();
