@@ -174,9 +174,22 @@ export function transformExperience(data: any): Experience {
   };
 }
 
-// Note: Remplaçons les exports multiples par un seul export groupé
+// Note: Regroupons toutes les exportations de types en un seul endroit
 export type {
+  UserProfile,
+  Friend,
+  Experience,
+  Education,
+  Certification,
+  PendingRequest,
   BlockedUser
 };
 
-export type { UserProfile, Friend, Experience, Education, Certification, PendingRequest };
+// Note: Exportons les fonctions utilitaires séparément
+export {
+  createEmptyProfile,
+  transformDatabaseProfile,
+  transformEducation,
+  transformCertification,
+  transformExperience
+};
