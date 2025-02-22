@@ -19,7 +19,7 @@ export function CountdownSection({ countdown }: CountdownProps) {
     >
       <div className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/0 via-[#64B5D9]/10 to-[#64B5D9]/0 blur-xl" />
       <div className="relative space-y-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center text-white">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center text-[#F2EBE4]">
           Lancement officiel dans
         </h2>
         <div className="grid grid-cols-4 gap-3 sm:gap-4">
@@ -39,7 +39,7 @@ export function CountdownSection({ countdown }: CountdownProps) {
               <span className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#64B5D9] to-[#D3E4FD] bg-clip-text text-transparent">
                 {item.value}
               </span>
-              <span className="text-[#F2EBE4]/60 text-sm mt-1">{item.label}</span>
+              <span className="text-[#F2EBE4]/70 text-sm mt-1">{item.label}</span>
             </motion.div>
           ))}
         </div>

@@ -28,7 +28,7 @@ export default function Auth() {
   });
 
   useEffect(() => {
-    const launchDate = new Date('2024-03-30T08:00:00').getTime();
+    const launchDate = new Date('2025-03-30T08:00:00').getTime();
 
     const timer = setInterval(() => {
       const now = new Date().getTime();
@@ -65,8 +65,8 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#1A1F2C] relative">
-      <div className="absolute inset-0 bg-[url('/lovable-uploads/bcfe3f97-9c11-4615-821e-d9666f3a9c14.png')] bg-repeat opacity-[0.03] pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80 pointer-events-none" />
+      <div className="absolute inset-0 bg-pattern animate-[pulse_4s_ease-in-out_infinite]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80" />
       
       <ThemeSelector />
       
@@ -83,7 +83,7 @@ export default function Auth() {
             className="relative w-full max-w-md mx-auto"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-[#221F26]/50 to-[#1A1F2C]/50 blur-xl" />
-            <div className="relative bg-[#221F26]/30 backdrop-blur-md border border-white/10 rounded-lg p-4 shadow-lg overflow-hidden hover:border-white/20 transition-all duration-300">
+            <div className="relative bg-[#2A2D3E]/80 backdrop-blur-md border border-[#64B5D9]/20 rounded-lg p-4 shadow-lg overflow-hidden hover:border-[#64B5D9]/30 transition-all duration-300">
               <VictaureChat 
                 maxQuestions={3}
                 onMaxQuestionsReached={handleMaxQuestionsReached}
@@ -96,7 +96,7 @@ export default function Auth() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="border-2 border-[#64B5D9]/20 rounded-xl p-6 bg-[#221F26]/50 backdrop-blur-md"
+            className="border-2 border-[#64B5D9]/20 rounded-xl p-6 bg-[#2A2D3E]/80 backdrop-blur-md"
           >
             <AuthForm />
           </motion.div>
