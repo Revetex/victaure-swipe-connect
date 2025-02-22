@@ -1,4 +1,3 @@
-
 import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
@@ -33,16 +32,16 @@ export default function Auth() {
     },
     {
       text: "Sur Victaure, vous pouvez créer votre CV professionnel avec mon aide. Je vous guide dans la rédaction et optimise votre profil. 📝",
-      delay: 2
+      delay: 3
     },
     {
       text: "Notre système d'enchères et de contrats sécurisés vous permet de participer à des appels d'offres professionnels. 📊",
-      delay: 4
+      delay: 6
     }
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-background to-muted/5 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#F5DEB3]/5 via-background to-[#8B7355]/5 relative overflow-hidden">
       <div className="fixed inset-0 bg-grid-white/5 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
       
       <motion.div className="fixed inset-0 opacity-10" 
@@ -72,12 +71,12 @@ export default function Auth() {
           <div className="flex flex-col items-center justify-center space-y-6">
             <Logo size="xl" className="transform-none" />
             
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent font-tiempos text-center">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight bg-gradient-to-r from-[#8B7355] via-[#A0522D] to-[#D2B48C] bg-clip-text text-transparent font-tiempos text-center">
               La Plateforme Complète du Marché de l'Emploi
             </h1>
 
-            <div className="w-full glass-panel rounded-xl p-4 border border-primary/10 space-y-4">
-              <div className="flex items-center gap-2 text-primary mb-4">
+            <div className="w-full glass-panel rounded-xl p-4 border border-[#D2B48C]/10 space-y-4">
+              <div className="flex items-center gap-2 text-[#8B7355]">
                 <Bot className="w-5 h-5" />
                 <span className="text-sm font-medium">Mr. Victaure</span>
               </div>
@@ -85,12 +84,25 @@ export default function Auth() {
               {messages.map((message, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: message.delay, duration: 0.5 }}
-                  className="ml-7 p-3 bg-white/5 dark:bg-black/5 rounded-lg border border-primary/5"
+                  initial={{ opacity: 0, height: 0, y: 10 }}
+                  animate={{ opacity: 1, height: "auto", y: 0 }}
+                  transition={{ 
+                    delay: message.delay,
+                    duration: 0.5,
+                    height: {
+                      duration: 0.4,
+                    },
+                  }}
+                  className="ml-7 p-3 bg-[#F5DEB3]/5 dark:bg-[#8B7355]/5 rounded-lg border border-[#D2B48C]/10"
                 >
-                  <p className="text-sm text-foreground/90">{message.text}</p>
+                  <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: message.delay + 0.2, duration: 0.3 }}
+                    className="text-sm text-foreground/90"
+                  >
+                    {message.text}
+                  </motion.p>
                 </motion.div>
               ))}
 
@@ -98,7 +110,7 @@ export default function Auth() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [0, 1, 0] }}
                 transition={{ duration: 1, repeat: Infinity }}
-                className="ml-7 w-3 h-5 bg-primary/50 rounded"
+                className="ml-7 w-3 h-5 bg-[#8B7355]/50 rounded"
               />
             </div>
           </div>
