@@ -7,9 +7,10 @@ import "@/styles/shared.css";
 interface VCardContainerProps {
   children: ReactNode;
   className?: string;
+  isEditing?: boolean;
 }
 
-export function VCardContainer({ children, className }: VCardContainerProps) {
+export function VCardContainer({ children, className, isEditing }: VCardContainerProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
