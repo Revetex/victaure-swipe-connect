@@ -25,6 +25,10 @@ interface Friend {
   avatar_url: string | null;
 }
 
+interface FriendshipJoin {
+  friend: Friend;
+}
+
 export function NewConversationPopover({ onSelectFriend }: NewConversationPopoverProps) {
   const [open, setOpen] = useState(false);
   const [friends, setFriends] = useState<Friend[]>([]);
@@ -50,8 +54,12 @@ export function NewConversationPopover({ onSelectFriend }: NewConversationPopove
 
         if (error) throw error;
         
-        const formattedFriends = friendships?.map(f => f.friend) || [];
-        setFriends(formattedFriends);
+        if (friendships) {
+          const formattedFriends = friendships
+            .filter((f): f is FriendshipJoin => f.friend !== null)
+            .map(f => f.friend);
+          setFriends(formattedFriends);
+        }
       } catch (error) {
         console.error('Error loading friends:', error);
         toast.error("Impossible de charger la liste d'amis");
