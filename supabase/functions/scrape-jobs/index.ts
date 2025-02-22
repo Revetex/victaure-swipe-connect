@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js'
-import { Browser, connect } from 'puppeteer'
+import * as puppeteer from 'puppeteer'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,27 +12,35 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders })
   }
 
-  let browser: Browser | null = null;
+  let browser = null;
 
   try {
     console.log('Starting job scraping process...')
 
-    browser = await connect({
-      browserWSEndpoint: `ws://localhost:9222`
+    // Configuration spécifique pour Deno
+    browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage'
+      ]
     });
-    
-    console.log('Connected to browser')
+
+    console.log('Browser launched successfully')
     const page = await browser.newPage()
-    console.log('Browser page created successfully')
 
-    // Configuration pour Indeed Québec
+    // Augmenter les timeouts pour être sûr
+    page.setDefaultTimeout(30000)
+    page.setDefaultNavigationTimeout(30000)
+
+    console.log('Navigating to Indeed...')
     await page.goto('https://ca.indeed.com/jobs?l=Quebec&sc=0kf%3Ajt%28fulltime%29%3B&lang=fr', {
-      waitUntil: 'networkidle0',
-      timeout: 30000
+      waitUntil: 'networkidle0'
     })
-    console.log('Navigated to Indeed')
 
-    await page.waitForSelector('.job_seen_beacon', { timeout: 30000 })
+    console.log('Waiting for job cards to load...')
+    await page.waitForSelector('.job_seen_beacon')
     console.log('Page loaded successfully')
 
     const jobs = await page.evaluate(() => {
@@ -45,9 +53,7 @@ Deno.serve(async (req) => {
         const locationElement = card.querySelector('.companyLocation')
         const snippetElement = card.querySelector('.job-snippet')
         const salaryElement = card.querySelector('.salary-snippet')
-        const urlElement = card.querySelector('h2.jobTitle a') as HTMLAnchorElement
-
-        console.log('Processing job:', titleElement?.textContent)
+        const urlElement = card.querySelector('h2.jobTitle a')
 
         const experienceMatch = snippetElement?.textContent?.match(/(\d+).*?ans?.*?expérience/i)
         const skillsMatch = snippetElement?.textContent?.match(/compétences?:?\s*([^.]+)/i)
@@ -57,8 +63,8 @@ Deno.serve(async (req) => {
           company: companyElement?.textContent?.trim() || '',
           location: locationElement?.textContent?.trim() || '',
           description: snippetElement?.textContent?.trim() || '',
-          salary_range: salaryElement?.textContent?.trim(),
-          url: urlElement?.href || '',
+          salary_range: salaryElement?.textContent?.trim() || null,
+          url: (urlElement as HTMLAnchorElement)?.href || '',
           posted_at: new Date().toISOString(),
           source_platform: 'indeed',
           employment_type: 'FULL_TIME',
@@ -68,9 +74,8 @@ Deno.serve(async (req) => {
       })
     })
 
-    console.log(`Found ${jobs.length} jobs, saving to database...`)
+    console.log(`Scraped ${jobs.length} jobs, preparing to save...`)
 
-    // Connexion à Supabase avec la clé de service
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
