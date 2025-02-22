@@ -8,7 +8,6 @@ import { NotesSection } from "@/components/notes/NotesSection";
 import { NotificationsTab } from "@/components/notifications/NotificationsTab";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
-import { ChessPage } from "@/components/tools/ChessPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { FriendsList } from "@/components/feed/FriendsList";
 import { LotteryPage } from "@/components/lottery/LotteryPage";
@@ -27,36 +26,90 @@ export function ContentRouter({
   onRequestChat,
   renderDashboardHome 
 }: ContentRouterProps) {
-  switch (currentPage) {
-    case 1:
-      return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
-    case 2:
-      return <Messages />;
-    case 3:
-      return <Marketplace />;
-    case 4:
-      return <Feed />;
-    case 7:
-      return <TasksPage />;
-    case 8:
-      return <CalculatorPage />;
-    case 9:
-      return <NotificationsTab />;
-    case 10:
-      return <Settings />;
-    case 12:
-      return <FriendsList />;
-    case 14:
-      return <TranslatorPage />;
-    case 15:
-      return <ChessPage />;
-    case 16:
-      return <NotesSection />;
-    case 17:
-      return <JobsPage />; 
-    case 18:
-      return <LotteryPage />;
-    default:
-      return renderDashboardHome();
-  }
+  const commonClassName = "min-h-screen pt-14 lg:pt-0";
+
+  return (
+    <div className="h-full">
+      {(() => {
+        switch (currentPage) {
+          case 1:
+            return (
+              <div className={commonClassName}>
+                <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />
+              </div>
+            );
+          case 2:
+            return <Messages />;
+          case 3:
+            return (
+              <div className={commonClassName}>
+                <Marketplace />
+              </div>
+            );
+          case 4:
+            return (
+              <div className={`${commonClassName} bg-background`}>
+                <Feed />
+              </div>
+            );
+          case 7:
+            return (
+              <div className={commonClassName}>
+                <TasksPage />
+              </div>
+            );
+          case 8:
+            return (
+              <div className={`${commonClassName} bg-card/5`}>
+                <CalculatorPage />
+              </div>
+            );
+          case 9:
+            return (
+              <div className={commonClassName}>
+                <NotificationsTab />
+              </div>
+            );
+          case 10:
+            return (
+              <div className={`${commonClassName} bg-background`}>
+                <Settings />
+              </div>
+            );
+          case 12:
+            return (
+              <div className={commonClassName}>
+                <FriendsList />
+              </div>
+            );
+          case 14:
+            return (
+              <div className={`${commonClassName} bg-card/5`}>
+                <TranslatorPage />
+              </div>
+            );
+          case 16:
+            return (
+              <div className={`${commonClassName} bg-card/5`}>
+                <NotesSection />
+              </div>
+            );
+          case 17:
+            return (
+              <div className={commonClassName}>
+                <JobsPage />
+              </div>
+            );
+          case 18:
+            return (
+              <div className={`${commonClassName} bg-card/5`}>
+                <LotteryPage />
+              </div>
+            );
+          default:
+            return renderDashboardHome();
+        }
+      })()}
+    </div>
+  );
 }

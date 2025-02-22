@@ -1,92 +1,49 @@
 
-import { formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { UserCircle2, Trash2, Pin } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { useAuth } from "@/hooks/useAuth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
-interface ConversationItemProps {
-  participant: any;
-  lastMessage?: string;
-  lastMessageTime?: string;
-  onSelect: () => void;
-  onDelete: (e: React.MouseEvent) => void;
-  onParticipantClick: () => void;
-  isPinned?: boolean;
+export interface ConversationItemProps {
+  conversation: any;
+  isSelected: boolean;
+  onClick: () => void;
 }
 
-export function ConversationItem({
-  participant,
-  lastMessage,
-  lastMessageTime,
-  onSelect,
-  onDelete,
-  onParticipantClick,
-  isPinned = false
-}: ConversationItemProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={cn(
-        "flex items-center gap-3 p-2 rounded-lg",
-        "hover:bg-[#64B5D9]/10 cursor-pointer",
-        isPinned && "bg-[#1B2A4A]/30 border border-[#64B5D9]/20"
-      )}
-      onClick={onSelect}
-    >
-      <button 
-        className="shrink-0" 
-        onClick={(e) => {
-          e.stopPropagation();
-          onParticipantClick();
-        }}
-      >
-        <Avatar className="h-10 w-10 ring-2 ring-[#64B5D9]/20">
-          <AvatarImage src={participant.avatar_url} alt={participant.full_name} />
-          <AvatarFallback>
-            <UserCircle2 className="h-6 w-6" />
-          </AvatarFallback>
-        </Avatar>
-      </button>
+export function ConversationItem({ conversation, isSelected, onClick }: ConversationItemProps) {
+  const { user } = useAuth();
 
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <p className="font-medium text-[#F2EBE4]">
-              {participant.full_name || 'Utilisateur'}
-            </p>
-            {isPinned && <Pin className="h-3 w-3 text-[#64B5D9]" />}
-          </div>
-          {lastMessageTime && (
-            <span className="text-xs text-[#F2EBE4]/60">
-              {formatDistanceToNow(new Date(lastMessageTime), {
-                addSuffix: true,
-                locale: fr
-              })}
-            </span>
-          )}
-        </div>
-        {lastMessage && (
-          <p className="text-sm text-[#F2EBE4]/60 truncate">
-            {lastMessage}
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors ${
+        isSelected ? "bg-muted" : ""
+      }`}
+    >
+      <Avatar className="h-10 w-10">
+        <AvatarImage src={conversation.avatar_url || ""} />
+        <AvatarFallback>
+          {conversation.full_name?.charAt(0) || "?"}
+        </AvatarFallback>
+      </Avatar>
+      
+      <div className="flex-1 min-w-0 text-left">
+        <p className="font-medium truncate">
+          {conversation.full_name || "Utilisateur"}
+        </p>
+        {conversation.last_message && (
+          <p className="text-sm text-muted-foreground truncate">
+            {conversation.last_message.sender_id === user?.id ? "Vous: " : ""}
+            {conversation.last_message.content}
           </p>
         )}
       </div>
 
-      {!isPinned && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-          onClick={onDelete}
-        >
-          <Trash2 className="h-4 w-4" />
-          <span className="sr-only">Supprimer la conversation</span>
-        </Button>
+      {conversation.last_message && (
+        <span className="text-xs text-muted-foreground whitespace-nowrap">
+          {format(new Date(conversation.last_message.created_at), "HH:mm", { locale: fr })}
+        </span>
       )}
-    </motion.div>
+    </button>
   );
 }
