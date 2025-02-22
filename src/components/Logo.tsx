@@ -1,3 +1,4 @@
+
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -5,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useLocation } from "react-router-dom";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -29,6 +31,8 @@ export function Logo({ size = "md", className }: LogoProps) {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { setReceiver, setShowConversation } = useReceiver();
+  const location = useLocation();
+  const isAuthPage = location.pathname === "/auth";
 
   const startAIChat = async () => {
     try {
@@ -86,15 +90,17 @@ export function Logo({ size = "md", className }: LogoProps) {
       )}
       onClick={startAIChat}
     >
-      <img 
-        src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png" 
-        alt="Victaure Logo" 
-        loading="eager"
-        className={cn(
-          logoSizes[size],
-          "object-contain"
-        )}
-      />
+      {isAuthPage && (
+        <img 
+          src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png" 
+          alt="Victaure Logo" 
+          loading="eager"
+          className={cn(
+            logoSizes[size],
+            "object-contain"
+          )}
+        />
+      )}
       <span className={cn(
         "font-tiempos font-black tracking-[0.2em] text-[#F2EBE4]",
         textSizes[size]

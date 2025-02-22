@@ -11,7 +11,6 @@ import { ProfilePreview } from "@/components/ProfilePreview";
 import { NewConversationPopover } from "./components/NewConversationPopover";
 import { useFriendsList } from "./hooks/useFriendsList";
 import type { Receiver } from "@/types/messages";
-import type { UserProfile } from "@/types/profile";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
@@ -26,6 +25,17 @@ export function ConversationList({ className }: ConversationListProps) {
   const [showProfilePreview, setShowProfilePreview] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState<ConversationParticipant | null>(null);
   const { friends, loadingFriends, loadFriends } = useFriendsList();
+
+  const aiAssistant = {
+    id: "ai-assistant",
+    full_name: "Mr Victaure AI",
+    avatar_url: "/ai-assistant-avatar.png",
+    email: "ai@victaure.com",
+    role: "professional" as const,
+    bio: "Assistant IA spécialisé dans l'emploi",
+    online_status: true,
+    last_seen: new Date().toISOString()
+  };
 
   const convertParticipantToReceiver = (participant: ConversationParticipant): Receiver => {
     return {
@@ -67,6 +77,32 @@ export function ConversationList({ className }: ConversationListProps) {
     setShowConversation(true);
   };
 
+  const startAIChat = () => {
+    const aiReceiver: Receiver = {
+      id: "ai-assistant",
+      full_name: "Mr Victaure AI",
+      avatar_url: "/ai-assistant-avatar.png",
+      email: "ai@victaure.com",
+      role: "professional",
+      bio: "Assistant IA spécialisé dans l'emploi",
+      phone: null,
+      city: null,
+      state: null,
+      country: "France",
+      skills: [],
+      latitude: null,
+      longitude: null,
+      online_status: "online",
+      last_seen: new Date().toISOString(),
+      certifications: [],
+      education: [],
+      experiences: [],
+      friends: []
+    };
+    setReceiver(aiReceiver);
+    setShowConversation(true);
+  };
+
   return (
     <div className={cn("flex flex-col border-r pt-20", className)}>
       <div className="p-4 border-b">
@@ -86,6 +122,18 @@ export function ConversationList({ className }: ConversationListProps) {
 
       <ScrollArea className="flex-1">
         <div className="space-y-1 p-2">
+          {/* Mr Victaure AI - Épinglé */}
+          <ConversationItem
+            participant={aiAssistant}
+            lastMessage="Je suis là pour vous aider"
+            lastMessageTime={new Date().toISOString()}
+            onSelect={startAIChat}
+            onParticipantClick={() => {}}
+            onDelete={() => {}}
+            isPinned={true}
+          />
+
+          {/* Autres conversations */}
           {conversations.map((conversation) => (
             <ConversationItem
               key={conversation.id}
@@ -106,7 +154,7 @@ export function ConversationList({ className }: ConversationListProps) {
       {selectedParticipant && (
         <Dialog open={showProfilePreview} onOpenChange={() => setShowProfilePreview(false)}>
           <DialogContent 
-            className="max-w-4xl p-0" 
+            className="max-w-4xl p-0 bg-[#1B2A4A]/95 backdrop-blur-sm border border-[#64B5D9]/10" 
             aria-describedby="profile-preview-description"
           >
             <VisuallyHidden asChild>
