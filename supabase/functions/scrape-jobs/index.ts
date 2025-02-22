@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js'
-import { default as puppeteer } from "puppeteer-core"
+import { Browser, connect } from 'puppeteer'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,21 +12,27 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders })
   }
 
+  let browser: Browser | null = null;
+
   try {
     console.log('Starting job scraping process...')
 
-    // Création d'une instance de navigateur avec la bonne syntaxe pour Deno
-    const browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      executablePath: 'google-chrome-stable'
-    })
+    browser = await connect({
+      browserWSEndpoint: `ws://localhost:9222`
+    });
     
+    console.log('Connected to browser')
     const page = await browser.newPage()
-    console.log('Browser launched successfully')
+    console.log('Browser page created successfully')
 
     // Configuration pour Indeed Québec
-    await page.goto('https://ca.indeed.com/jobs?l=Quebec&sc=0kf%3Ajt%28fulltime%29%3B&lang=fr')
-    await page.waitForSelector('.job_seen_beacon', { timeout: 10000 })
+    await page.goto('https://ca.indeed.com/jobs?l=Quebec&sc=0kf%3Ajt%28fulltime%29%3B&lang=fr', {
+      waitUntil: 'networkidle0',
+      timeout: 30000
+    })
+    console.log('Navigated to Indeed')
+
+    await page.waitForSelector('.job_seen_beacon', { timeout: 30000 })
     console.log('Page loaded successfully')
 
     const jobs = await page.evaluate(() => {
@@ -62,7 +68,6 @@ Deno.serve(async (req) => {
       })
     })
 
-    await browser.close()
     console.log(`Found ${jobs.length} jobs, saving to database...`)
 
     // Connexion à Supabase avec la clé de service
@@ -123,5 +128,10 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500
     })
+  } finally {
+    if (browser) {
+      await browser.close()
+      console.log('Browser closed')
+    }
   }
 })
