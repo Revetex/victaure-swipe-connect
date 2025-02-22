@@ -3,6 +3,7 @@ import { Bot, Wand2, MessagesSquare, Search, Mic, MicOff, Volume2, VolumeX } fro
 import { toast } from "sonner";
 import { useVictaureChat } from "@/hooks/useVictaureChat";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChatMessage {
   content: string;
