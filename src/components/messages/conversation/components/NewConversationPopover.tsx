@@ -11,12 +11,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import type { Database } from "@/integrations/supabase/types";
 
 export interface NewConversationPopoverProps {
   onSelectFriend: () => void;
   onLoadFriends?: () => Promise<any[]>;
   friends?: any[];
   loadingFriends?: boolean;
+}
+
+interface Friend {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
 }
 
 export function NewConversationPopover({ 
@@ -26,7 +33,7 @@ export function NewConversationPopover({
   loadingFriends: propsLoadingFriends 
 }: NewConversationPopoverProps) {
   const [open, setOpen] = useState(false);
-  const [localFriends, setLocalFriends] = useState<any[]>([]);
+  const [localFriends, setLocalFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
@@ -37,11 +44,11 @@ export function NewConversationPopover({
 
     try {
       setLoading(true);
-      const { data: friends, error } = await supabase
-        .from('friends')
+      const { data: friendships, error } = await supabase
+        .from('friendships')
         .select(`
           friend_id,
-          profiles:friend_id (
+          friend:profiles!friendships_friend_id_fkey (
             id,
             full_name,
             avatar_url
@@ -52,7 +59,7 @@ export function NewConversationPopover({
 
       if (error) throw error;
       
-      return friends?.map(f => f.profiles) || [];
+      return friendships?.map(f => f.friend) || [];
     } catch (error) {
       console.error('Error loading friends:', error);
       return [];
@@ -91,7 +98,7 @@ export function NewConversationPopover({
               Aucun ami trouvé
             </div>
           ) : (
-            friends.map((friend: any) => (
+            friends.map((friend: Friend) => (
               <button
                 key={friend.id}
                 onClick={() => {
