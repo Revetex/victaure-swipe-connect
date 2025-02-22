@@ -87,8 +87,8 @@ export function NotesToolbar({
         </Select>
         <Button onClick={handleAddNote} size="icon" variant="ghost">
           <Plus className="h-4 w-4" />
-          <Button>
-          </div>
+        </Button>
+      </div>
     </div>
   );
 }
