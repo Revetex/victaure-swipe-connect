@@ -3,7 +3,6 @@ import { Job } from "@/types/job";
 import { useJobsData } from "@/hooks/useJobsData";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { JobsHeader } from "./sections/JobsHeader";
 import { JobsSearch } from "./sections/JobsSearch";
 import { JobsFilters } from "./sections/JobsFilters";
 import { JobsResults } from "./sections/JobsResults";
@@ -103,11 +102,6 @@ export function JobsPage() {
       className="container mx-auto p-4 max-w-7xl"
     >
       <div className="space-y-6">
-        <JobsHeader 
-          totalJobs={jobs.length} 
-          onRequestAssistant={handleRequestAssistant} 
-        />
-        
         <JobsSearch 
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -128,7 +122,7 @@ export function JobsPage() {
           onRemoteOnlyChange={setRemoteOnly}
         />
         
-        <JobsResults
+        <JobsResults 
           jobs={filteredJobs}
           onJobSelect={handleJobSelect}
           selectedJobId={selectedJobId}

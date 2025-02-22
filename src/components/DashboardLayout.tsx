@@ -6,18 +6,16 @@ import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/header/AppHeader";
-import { useNavigate } from "react-router-dom";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(4);
   const [isEditing, setIsEditing] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const { profile } = useProfile();
-  const navigate = useNavigate();
 
   const handleRequestChat = () => {
-    navigate("/messages");
-    setCurrentPage(2);
+    setIsAssistantOpen(true);
   };
 
   const handlePageChange = useCallback((page: number) => {
@@ -61,7 +59,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
             currentPage={currentPage}
             isEditing={isEditing}
             onEditStateChange={handleEditStateChange}
-            onRequestChat={() => handlePageChange(2)}
+            onRequestChat={() => setIsAssistantOpen(true)}
           />
         )}
       </main>
