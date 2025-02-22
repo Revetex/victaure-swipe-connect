@@ -1,5 +1,5 @@
 
-import { Profile } from "@/types/profile";
+import { UserProfile } from "@/types/profile";
 import { UserAvatar } from "@/components/UserAvatar";
 import { MoreVertical, Globe, Lock, Users, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,9 +8,13 @@ import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
 interface PostCardHeaderProps {
-  profile: Profile;
+  profile: {
+    id: string;
+    full_name: string;
+    avatar_url?: string;
+  };
   created_at: string;
-  privacy_level: 'public' | 'private' | 'friends';
+  privacy_level: 'public' | 'connections';
   isOwnPost: boolean;
   isEditing: boolean;
   onEdit: () => void;
@@ -32,8 +36,7 @@ export function PostCardHeader({
 }: PostCardHeaderProps) {
   const PrivacyIcon = {
     public: Globe,
-    private: Lock,
-    friends: Users
+    connections: Users
   }[privacy_level];
 
   return (
