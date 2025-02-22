@@ -4,12 +4,23 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, Star, UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
 import { ProfileNameButton } from "@/components/profile/ProfileNameButton";
+import { useNavigate } from "react-router-dom";
+import { useReceiver } from "@/hooks/useReceiver";
 
 interface FriendCardProps {
   friend: UserProfile;
 }
 
 export function FriendCard({ friend }: FriendCardProps) {
+  const navigate = useNavigate();
+  const { setReceiver, setShowConversation } = useReceiver();
+
+  const handleStartChat = () => {
+    setReceiver(friend);
+    setShowConversation(true);
+    navigate('/messages');
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -23,6 +34,7 @@ export function FriendCard({ friend }: FriendCardProps) {
           variant="secondary"
           size="icon"
           className="bg-white/80 hover:bg-white shadow-lg"
+          onClick={handleStartChat}
         >
           <MessageCircle className="h-5 w-5" />
         </Button>
