@@ -1,141 +1,104 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LoginForm } from "./LoginForm";
-import { SignupForm } from "./SignupForm";
-import { BusinessSignupForm } from "./BusinessSignupForm";
+import { LoginForm } from "@/components/auth/LoginForm";
+import { SignupForm } from "@/components/auth/SignupForm";
+import { useAuth } from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface AuthFormProps {
   redirectTo?: string;
 }
 
-export function AuthForm({ redirectTo = '/dashboard' }: AuthFormProps) {
+export function AuthForm({ redirectTo }: AuthFormProps) {
+  const [view, setView] = useState<"login" | "signup">("login");
+  const { signIn, signUp, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
-  const handleAuth = async (type: 'login' | 'signup') => {
-    try {
-      setLoading(true);
+  const handleLogin = async () => {
+    await signIn(email, password, redirectTo);
+  };
 
-      let result;
-      if (type === 'signup') {
-        result = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              full_name: fullName,
-              phone: phone,
-            },
-            emailRedirectTo: `${window.location.origin}/auth/callback`
-          }
-        });
-      } else {
-        result = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-      }
-
-      const { error } = result;
-
-      if (error) {
-        if (error.message.includes('Email not confirmed')) {
-          toast.error("Veuillez confirmer votre email avant de vous connecter");
-        } else if (error.message.includes('Invalid login credentials')) {
-          toast.error("Email ou mot de passe incorrect");
-        } else if (error.message.includes('User already registered')) {
-          toast.error("Un compte existe déjà avec cet email");
-        } else {
-          toast.error(error.message);
-        }
-        return;
-      }
-
-      if (type === 'signup') {
-        toast.success("Inscription réussie! Veuillez vérifier votre email");
-      } else {
-        toast.success("Connexion réussie!");
-        navigate(redirectTo);
-      }
-
-    } catch (error) {
-      console.error('Auth error:', error);
-      toast.error("Une erreur est survenue");
-    } finally {
-      setLoading(false);
-    }
+  const handleSignup = async () => {
+    await signUp(email, password, redirectTo);
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-      className="w-full max-w-md mx-auto backdrop-blur-xl bg-white/80 dark:bg-zinc-900/80 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800"
-    >
-      <Tabs defaultValue="login" className="w-full p-1">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger 
-            value="login" 
-            className="data-[state=active]:bg-zinc-900 data-[state=active]:text-white dark:data-[state=active]:bg-zinc-100 dark:data-[state=active]:text-zinc-900"
-          >
-            Connexion
-          </TabsTrigger>
-          <TabsTrigger 
-            value="signup"
-            className="data-[state=active]:bg-zinc-900 data-[state=active]:text-white dark:data-[state=active]:bg-zinc-100 dark:data-[state=active]:text-zinc-900"
-          >
-            Inscription
-          </TabsTrigger>
-          <TabsTrigger 
-            value="business"
-            className="data-[state=active]:bg-zinc-900 data-[state=active]:text-white dark:data-[state=active]:bg-zinc-100 dark:data-[state=active]:text-zinc-900"
-          >
-            Entreprise
-          </TabsTrigger>
-        </TabsList>
+    <div className="w-full">
+      <div className="relative mx-auto w-full max-w-md overflow-hidden border border-black/10 rounded-xl bg-white/90 backdrop-blur-sm shadow-xl">
+        <div className="absolute inset-0 bg-[#F2EBE4]/5"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2364B5D9' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        />
+        <Tabs 
+          defaultValue={view} 
+          onValueChange={(v) => setView(v as "login" | "signup")}
+          className="relative z-10"
+        >
+          <TabsList className="w-full p-0 h-12 rounded-none bg-transparent border-b border-black/10">
+            <TabsTrigger 
+              value="login" 
+              className={cn(
+                "w-full h-12 rounded-none data-[state=active]:bg-transparent",
+                "data-[state=active]:text-[#1B2A4A] data-[state=active]:border-b-2",
+                "data-[state=active]:border-[#64B5D9] transition-colors"
+              )}
+            >
+              Se connecter
+            </TabsTrigger>
+            <TabsTrigger 
+              value="signup"
+              className={cn(
+                "w-full h-12 rounded-none data-[state=active]:bg-transparent",
+                "data-[state=active]:text-[#1B2A4A] data-[state=active]:border-b-2",
+                "data-[state=active]:border-[#64B5D9] transition-colors"
+              )}
+            >
+              Créer un compte
+            </TabsTrigger>
+          </TabsList>
 
-        <AnimatePresence mode="wait">
-          <TabsContent value="login" className="p-6">
-            <LoginForm
-              email={email}
-              password={password}
-              loading={loading}
-              onEmailChange={setEmail}
-              onPasswordChange={setPassword}
-              onSubmit={() => handleAuth('login')}
-            />
-          </TabsContent>
-
-          <TabsContent value="signup" className="p-6">
-            <SignupForm
-              email={email}
-              password={password}
-              fullName={fullName}
-              phone={phone}
-              loading={loading}
-              onEmailChange={setEmail}
-              onPasswordChange={setPassword}
-              onFullNameChange={setFullName}
-              onPhoneChange={setPhone}
-              onSubmit={() => handleAuth('signup')}
-            />
-          </TabsContent>
-
-          <TabsContent value="business" className="p-6">
-            <BusinessSignupForm />
-          </TabsContent>
-        </AnimatePresence>
-      </Tabs>
-    </motion.div>
+          <div className="p-6">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={view}
+                initial={{ opacity: 0, x: view === "login" ? -20 : 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: view === "login" ? 20 : -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <TabsContent value="login" forceMount>
+                  {view === "login" && (
+                    <LoginForm
+                      email={email}
+                      password={password}
+                      loading={loading}
+                      onEmailChange={setEmail}
+                      onPasswordChange={setPassword}
+                      onSubmit={handleLogin}
+                    />
+                  )}
+                </TabsContent>
+                <TabsContent value="signup" forceMount>
+                  {view === "signup" && (
+                    <SignupForm
+                      email={email}
+                      password={password}
+                      loading={loading}
+                      onEmailChange={setEmail}
+                      onPasswordChange={setPassword}
+                      onSubmit={handleSignup}
+                    />
+                  )}
+                </TabsContent>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </Tabs>
+      </div>
+    </div>
   );
 }
