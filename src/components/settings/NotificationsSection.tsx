@@ -31,6 +31,9 @@ export function NotificationsSection() {
         <Switch 
           checked={isEnabled}
           onCheckedChange={handleToggle}
+          aria-label="Activer ou désactiver les notifications"
+          title="Toggle notifications"
+          id="notifications-toggle"
         />
       </div>
     </Button>
