@@ -1,15 +1,15 @@
 
 import { UserProfile } from "@/types/profile";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ProfilePreviewDialog } from "./profile/preview/ProfilePreviewDialog";
-import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { memo, useState } from "react";
+import { useState } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { Dialog, DialogContent } from "./ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { ProfilePreviewModal } from "./profile/preview/ProfilePreviewModal";
 import { ProfilePreviewButtons } from "./profile/preview/ProfilePreviewButtons";
 import { toast } from "sonner";
+import { AnimatePresence } from "framer-motion";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
@@ -17,8 +17,6 @@ interface ProfilePreviewProps {
   onClose: () => void;
   onRequestChat?: () => void;
 }
-
-const MemoizedProfilePreviewDialog = memo(ProfilePreviewDialog);
 
 export function ProfilePreview({
   profile,
@@ -68,7 +66,16 @@ export function ProfilePreview({
     return (
       <>
         <Dialog open={isOpen} onOpenChange={onClose}>
-          <DialogContent className="max-w-md w-full p-0">
+          <DialogContent 
+            className="max-w-md w-full p-0"
+            aria-describedby="mobile-profile-description"
+          >
+            <VisuallyHidden asChild>
+              <DialogTitle>Profil de {profile.full_name || "l'utilisateur"}</DialogTitle>
+            </VisuallyHidden>
+            <DialogDescription id="mobile-profile-description" className="sr-only">
+              Vue détaillée du profil de {profile.full_name || "l'utilisateur"} avec ses informations et actions disponibles
+            </DialogDescription>
             <div className="flex flex-col h-full overflow-hidden">
               <MemoizedProfilePreviewDialog
                 profile={profile}
@@ -92,7 +99,16 @@ export function ProfilePreview({
         </Dialog>
 
         <Dialog open={showFullscreenImage} onOpenChange={setShowFullscreenImage}>
-          <DialogContent className="max-w-none w-screen h-screen p-0 bg-black/90">
+          <DialogContent 
+            className="max-w-none w-screen h-screen p-0 bg-black/90"
+            aria-describedby="fullscreen-image-description"
+          >
+            <VisuallyHidden asChild>
+              <DialogTitle>Photo de profil en plein écran</DialogTitle>
+            </VisuallyHidden>
+            <DialogDescription id="fullscreen-image-description" className="sr-only">
+              Vue agrandie de la photo de profil de {profile.full_name || "l'utilisateur"}
+            </DialogDescription>
             <div className="relative w-full h-full flex items-center justify-center">
               <img 
                 src={profile.avatar_url || ""} 
@@ -122,7 +138,16 @@ export function ProfilePreview({
       )}
 
       <Dialog open={showFullscreenImage} onOpenChange={setShowFullscreenImage}>
-        <DialogContent className="max-w-none w-screen h-screen p-0 bg-black/90">
+        <DialogContent 
+          className="max-w-none w-screen h-screen p-0 bg-black/90"
+          aria-describedby="fullscreen-image-description"
+        >
+          <VisuallyHidden asChild>
+            <DialogTitle>Photo de profil en plein écran</DialogTitle>
+          </VisuallyHidden>
+          <DialogDescription id="fullscreen-image-description" className="sr-only">
+            Vue agrandie de la photo de profil de {profile.full_name || "l'utilisateur"}
+          </DialogDescription>
           <div className="relative w-full h-full flex items-center justify-center">
             <motion.img 
               src={profile.avatar_url || ""} 
@@ -140,3 +165,6 @@ export function ProfilePreview({
     </AnimatePresence>
   );
 }
+
+// Optimisation des performances avec memo
+const MemoizedProfilePreviewDialog = memo(ProfilePreviewDialog);
