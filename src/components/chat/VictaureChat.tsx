@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Bot, Wand2, MessagesSquare } from "lucide-react";
 import { toast } from "sonner";
@@ -34,7 +33,9 @@ export function VictaureChat({
   const { user } = useAuth();
   const { sendMessage, isLoading } = useVictaureChat({
     onResponse: (response) => {
-      console.log("Received response:", response);
+      if (response) {
+        setMessages(prev => [...prev, { content: response, isUser: false }]);
+      }
     }
   });
 
@@ -81,10 +82,7 @@ export function VictaureChat({
     try {
       console.log("Sending message with context:", context);
       const response = await sendMessage(userMessage, context);
-      if (response) {
-        console.log("Received response:", response);
-        setMessages(prev => [...prev, { content: response, isUser: false }]);
-      }
+      console.log("Received response:", response);
     } catch (error) {
       console.error("Error in chat:", error);
       toast.error("Désolé, je ne peux pas répondre pour le moment");
