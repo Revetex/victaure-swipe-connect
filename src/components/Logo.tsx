@@ -1,4 +1,3 @@
-
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -97,10 +96,7 @@ export function Logo({ size = "md", className }: LogoProps) {
         )}
       />
       <span className={cn(
-        "font-tiempos font-black tracking-[0.2em]",
-        "text-transparent bg-clip-text",
-        "bg-gradient-to-r from-[#8B7355] via-[#A0522D] to-[#D2B48C]",
-        "dark:from-[#BDB76B] dark:via-[#DEB887] dark:to-[#F5DEB3]",
+        "font-tiempos font-black tracking-[0.2em] text-[#F2EBE4]",
         textSizes[size]
       )}>
         VICTAURE

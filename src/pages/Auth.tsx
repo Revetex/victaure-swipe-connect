@@ -1,4 +1,3 @@
-
 import { Suspense, useState, useEffect } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
@@ -8,6 +7,7 @@ import { useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
 import { MessagesSquare, Bot, Wand2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -79,23 +79,8 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#F2EBE4] via-[#F2EBE4]/50 to-[#64B5D9]/10 relative overflow-hidden">
-      <div className="fixed inset-0 bg-grid-white/5 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
-      
-      <motion.div className="fixed inset-0 opacity-10" 
-        style={{
-          background: "radial-gradient(circle at center, #64B5D9 0%, transparent 70%)"
-        }} 
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.1, 0.2, 0.1]
-        }} 
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
+    <div className="min-h-screen flex flex-col bg-[#1B2A4A] relative overflow-hidden">
+      <div className="fixed inset-0 bg-grid-[#F2EBE4]/5 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
       
       <ThemeSelector />
       
@@ -107,14 +92,14 @@ export default function Auth() {
           transition={{ duration: 0.5 }}
         >
           <div className="flex flex-col items-center justify-center space-y-6">
-            <Logo size="xl" className="transform-none" />
+            <Logo size="xl" className="transform-none text-[#F2EBE4]" />
             
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight bg-gradient-to-r from-[#1B2A4A] via-[#1B2A4A] to-[#64B5D9] bg-clip-text text-transparent font-tiempos text-center">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-[#F2EBE4] font-tiempos text-center">
               La Plateforme Complète du Marché de l'Emploi
             </h1>
 
-            <div className="w-full glass-panel rounded-xl p-4 border border-[#64B5D9]/20 bg-white/80 dark:bg-[#1B2A4A]/80">
-              <div className="flex items-center gap-2 text-[#1B2A4A] dark:text-[#64B5D9] mb-4">
+            <div className="w-full glass-panel rounded-xl p-4 border border-[#64B5D9]/20 bg-white/90">
+              <div className="flex items-center gap-2 text-[#1B2A4A] mb-4">
                 <Bot className="w-5 h-5" />
                 <span className="text-sm font-medium">Mr. Victaure</span>
                 {showThinking && (
@@ -124,7 +109,7 @@ export default function Auth() {
                     className="flex items-center gap-1 ml-2"
                   >
                     <Wand2 className="w-4 h-4 text-[#64B5D9] animate-pulse" />
-                    <span className="text-xs text-[#64B5D9]/70">réfléchit...</span>
+                    <span className="text-xs text-[#64B5D9]">réfléchit...</span>
                   </motion.div>
                 )}
               </div>
@@ -140,11 +125,11 @@ export default function Auth() {
                       transition={{ duration: 0.2 }}
                       className={`p-3 rounded-lg border ${
                         index >= messages.length
-                          ? "ml-auto bg-[#64B5D9] text-white border-transparent max-w-[80%]"
+                          ? "ml-auto bg-[#64B5D9] text-[#F2EBE4] border-transparent max-w-[80%]"
                           : "mr-auto bg-[#F2EBE4] border-[#64B5D9]/10 max-w-[80%]"
                       }`}
                     >
-                      <p className="text-sm whitespace-pre-wrap">{message}</p>
+                      <p className="text-sm text-[#1B2A4A] whitespace-pre-wrap">{message}</p>
                     </motion.div>
                   ))}
                 </AnimatePresence>
@@ -157,13 +142,13 @@ export default function Auth() {
                   onChange={(e) => setUserInput(e.target.value)}
                   placeholder={userQuestions >= 3 ? "Connectez-vous pour continuer..." : "Posez une question à Mr. Victaure..."}
                   disabled={userQuestions >= 3}
-                  className="flex-1 h-10 px-4 rounded-lg bg-[#F2EBE4] border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 h-10 px-4 rounded-lg bg-[#F2EBE4] border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[#1B2A4A]"
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                 />
                 <button
                   onClick={handleSendMessage}
                   disabled={userQuestions >= 3 || !userInput.trim()}
-                  className="h-10 px-4 rounded-lg bg-[#64B5D9] text-white hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="h-10 px-4 rounded-lg bg-[#64B5D9] text-[#F2EBE4] hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   <span className="text-sm">Envoyer</span>
                   <MessagesSquare className="w-4 h-4" />
@@ -186,11 +171,11 @@ export default function Auth() {
           </Suspense>
         </motion.div>
 
-        <div className="mt-8 text-center text-sm text-[#1B2A4A]/60">
-          <span className="font-medium text-[#1B2A4A]">Victaure</span> - Votre passerelle vers l'emploi du futur.
+        <div className="mt-8 text-center text-sm text-[#F2EBE4]/60">
+          <span className="font-medium text-[#F2EBE4]">Victaure</span> - Votre passerelle vers l'emploi du futur.
         </div>
 
-        <div className="absolute bottom-4 right-4 text-xs text-[#1B2A4A]/40 font-tiempos">
+        <div className="absolute bottom-4 right-4 text-xs text-[#F2EBE4]/40 font-tiempos">
           © Thomas Blanchet
         </div>
       </main>
