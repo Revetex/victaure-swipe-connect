@@ -23,7 +23,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-background relative">
+    <div className="flex min-h-screen bg-[#1B2A4A]/95 relative">
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -37,8 +37,9 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       />
 
       <main className={cn(
-        "flex-1 lg:ml-64 min-h-screen",
-        "glass-panel"
+        "flex-1 lg:ml-64 min-h-screen p-6",
+        "bg-[#1B2A4A]/50 backdrop-blur-md",
+        "border-l border-[#64B5D9]/10"
       )}>
         {children || (
           <DashboardContent

@@ -3,13 +3,13 @@
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(100, 181, 217, 0.1);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
 .glass-card:hover {
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(100, 181, 217, 0.2);
   transition: all 0.3s ease;
 }
 
@@ -30,10 +30,25 @@
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(100, 181, 217, 0.1);
 }
 
 .glass-input:focus {
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(100, 181, 217, 0.2);
+}
+
+.dashboard-layout {
+  --primary-color: #64B5D9;
+  --secondary-color: #1B2A4A;
+  --accent-color: #F2EBE4;
+  color: var(--accent-color);
+}
+
+.dashboard-card {
+  @apply glass-panel p-6 rounded-lg border border-[#64B5D9]/10 hover:border-[#64B5D9]/20 transition-all duration-300;
+}
+
+.dashboard-section {
+  @apply bg-[#1B2A4A]/30 backdrop-blur-sm rounded-lg border border-[#64B5D9]/10 p-6;
 }
