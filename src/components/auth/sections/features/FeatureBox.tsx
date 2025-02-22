@@ -1,9 +1,8 @@
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Text3D, Center } from "@react-three/drei";
+import { Center } from "@react-three/drei";
 import type { Mesh } from 'three';
-import { features } from "./featureData";
 
 interface FeatureBoxProps {
   position: [number, number, number];

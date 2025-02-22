@@ -4,6 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import { Loader } from "@/components/ui/loader";
 import { FeatureBox } from "./features/FeatureBox";
 import { Html, OrbitControls } from "@react-three/drei";
+import { features } from "./features/featureData";
 
 export function FeaturesSection() {
   return (
