@@ -10,11 +10,13 @@ export function NotificationsSection() {
 
   const handleToggle = (checked: boolean) => {
     setIsEnabled(checked);
-    // Éviter les toasts multiples en utilisant un ID unique
     toast.success(`Notifications ${checked ? "activées" : "désactivées"}`, {
       id: "notifications-toggle",
     });
   };
+
+  const switchId = "notifications-toggle";
+  const switchLabel = "État des notifications";
 
   return (
     <Button
@@ -25,15 +27,15 @@ export function NotificationsSection() {
     >
       <div className="flex items-center">
         <div className="flex items-center gap-2">
-          <Bell className="h-4 w-4" />
-          <span className="text-sm">Notifications</span>
+          <Bell className="h-4 w-4" aria-hidden="true" />
+          <label htmlFor={switchId} className="text-sm">{switchLabel}</label>
         </div>
         <Switch 
+          id={switchId}
           checked={isEnabled}
           onCheckedChange={handleToggle}
-          aria-label="Activer ou désactiver les notifications"
-          title="Toggle notifications"
-          id="notifications-toggle"
+          aria-label={switchLabel}
+          title="Activer ou désactiver les notifications"
         />
       </div>
     </Button>

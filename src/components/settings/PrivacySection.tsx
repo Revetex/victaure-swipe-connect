@@ -1,4 +1,3 @@
-
 import { Eye, EyeOff } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,9 @@ export function PrivacySection() {
   const [isLoading, setIsLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const MAX_RETRIES = 3;
+
+  const switchId = "privacy-toggle";
+  const switchLabel = "État de la confidentialité du profil";
 
   useEffect(() => {
     fetchPrivacySettings();
@@ -102,21 +104,25 @@ export function PrivacySection() {
     >
       <div className="flex items-center">
         <div className="flex items-center gap-2">
-          {privacyEnabled ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          <span className="text-sm">
+          {privacyEnabled ? 
+            <EyeOff className="h-4 w-4" aria-hidden="true" /> : 
+            <Eye className="h-4 w-4" aria-hidden="true" />
+          }
+          <label htmlFor={switchId} className="text-sm">
             Profil privé
+            <span className="sr-only"> - </span>
             {privacyEnabled ? 
-              " - Seuls vos amis peuvent voir votre profil complet" : 
-              " - Tout le monde peut voir votre profil complet"}
-          </span>
+              "Seuls vos amis peuvent voir votre profil complet" : 
+              "Tout le monde peut voir votre profil complet"}
+          </label>
         </div>
         <Switch 
+          id={switchId}
           checked={privacyEnabled}
           onCheckedChange={handlePrivacyToggle}
           disabled={isLoading}
-          aria-label="Activer ou désactiver le mode privé"
-          title="Toggle privacy mode"
-          id="privacy-toggle"
+          aria-label={switchLabel}
+          title="Activer ou désactiver le mode privé"
         />
       </div>
     </Button>
