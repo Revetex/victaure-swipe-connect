@@ -51,7 +51,7 @@ export function DashboardSidebar({
             <Button
               variant="ghost"
               onClick={() => setShowProfilePreview(true)}
-              className="w-10 h-10 p-0 rounded-full overflow-hidden ring-2 ring-primary/20 hover:ring-primary/40 transition-all"
+              className="w-10 h-10 p-0 rounded-full overflow-hidden ring-2 ring-primary/20 hover:ring-primary/40 transition-all transform hover:scale-105"
             >
               <img
                 src={completeProfile.avatar_url || "/user-icon.svg"}
@@ -62,7 +62,7 @@ export function DashboardSidebar({
           )}
         </div>
 
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-none">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto scrollbar-none">
           {navigationItems.map((item) => {
             const Icon = item.icon;
             const isNotificationsItem = item.id === 9;
@@ -71,12 +71,13 @@ export function DashboardSidebar({
                 key={item.id}
                 onClick={() => onPageChange(item.id)}
                 className={cn(
-                  "w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm relative",
-                  "transition-all duration-200 ease-in-out",
-                  "hover:scale-[1.02]",
+                  "w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm relative",
+                  "transition-all duration-300 ease-out",
+                  "hover:scale-[1.02] active:scale-[0.98]",
+                  "border border-transparent",
                   currentPage === item.id 
-                    ? "bg-gradient-to-r from-primary/20 to-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "bg-gradient-to-r from-primary/20 to-primary/5 text-primary font-medium border-primary/10 shadow-sm"
+                    : "text-muted-foreground hover:bg-muted/80 hover:text-foreground hover:border-border/50"
                 )}
                 aria-label={item.name}
                 title={item.name}
@@ -97,12 +98,12 @@ export function DashboardSidebar({
         </nav>
 
         {/* Signature en bas du menu */}
-        <div className="p-4 border-t border-border/50">
-          <div className="flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity">
+        <div className="p-4 mt-auto border-t border-border/50">
+          <div className="flex items-center justify-center opacity-60 hover:opacity-100 transition-all duration-300">
             <img 
               src="/lovable-uploads/168ba21b-e221-4668-96cc-eb026041a0ed.png" 
               alt="Signature" 
-              className="h-8 w-auto mix-blend-multiply dark:mix-blend-screen"
+              className="h-8 w-auto mix-blend-multiply dark:mix-blend-screen hover:scale-105 transition-transform"
             />
           </div>
         </div>

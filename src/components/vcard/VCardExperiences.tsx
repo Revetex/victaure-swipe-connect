@@ -4,7 +4,8 @@ import { transformToExperience } from "@/utils/profileTransformers";
 import { ExperienceCard } from "./experiences/ExperienceCard";
 import { ExperienceForm } from "./experiences/ExperienceForm";
 import { VCardSection } from "@/components/VCardSection";
-import { Briefcase } from "lucide-react";
+import { Briefcase, Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface VCardExperiencesProps {
   experiences: Experience[];
@@ -67,9 +68,20 @@ export function VCardExperiences({ experiences, isEditing, onUpdate }: VCardExpe
         {isEditing && (
           <button
             onClick={handleAddExperience}
-            className="w-full p-4 text-sm text-center text-muted-foreground hover:text-primary hover:bg-muted/50 rounded-lg transition-colors"
+            className={cn(
+              "w-full p-4 text-sm font-medium",
+              "flex items-center justify-center gap-2",
+              "bg-gradient-to-r from-primary/10 to-primary/5",
+              "hover:from-primary/20 hover:to-primary/10",
+              "text-primary/80 hover:text-primary",
+              "rounded-lg shadow-sm",
+              "border border-primary/10 hover:border-primary/20",
+              "transition-all duration-300",
+              "hover:scale-[1.02] active:scale-[0.98]"
+            )}
           >
-            Ajouter une expérience
+            <Plus className="h-4 w-4" />
+            <span>Ajouter une expérience</span>
           </button>
         )}
       </div>
