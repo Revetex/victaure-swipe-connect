@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js'
-import puppeteer from 'puppeteer'
+import * as puppeteer from 'puppeteer'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,7 +15,8 @@ Deno.serve(async (req) => {
   try {
     console.log('Starting job scraping process...')
 
-    const browser = await puppeteer.launch({
+    // Création d'une instance de navigateur avec la bonne syntaxe pour Deno
+    const browser = await puppeteer.default.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     })
     
