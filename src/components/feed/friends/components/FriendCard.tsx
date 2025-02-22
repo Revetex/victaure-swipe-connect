@@ -20,8 +20,23 @@ export function FriendCard({ friend }: FriendCardProps) {
     const receiver: Receiver = {
       id: friend.id,
       full_name: friend.full_name,
-      avatar_url: friend.avatar_url || "/user-icon.svg", // Utilisation d'une image par défaut si avatar_url est null
-      email: friend.email
+      avatar_url: friend.avatar_url || "/user-icon.svg",
+      email: friend.email,
+      role: friend.role as 'professional' | 'business' | 'admin',
+      bio: friend.bio || null,
+      phone: friend.phone || null,
+      city: friend.city || null,
+      state: friend.state || null,
+      country: friend.country || null,
+      skills: friend.skills || [],
+      latitude: friend.latitude || null,
+      longitude: friend.longitude || null,
+      online_status: friend.online_status ? 'online' : 'offline',
+      last_seen: friend.last_seen || null,
+      certifications: friend.certifications || [],
+      education: friend.education || [],
+      experiences: friend.experiences || [],
+      friends: friend.friends?.map(f => f.id) || []
     };
     setReceiver(receiver);
     setShowConversation(true);
