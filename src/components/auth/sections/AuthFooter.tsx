@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -6,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export function AuthFooter() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,12 +18,18 @@ export function AuthFooter() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      console.log("Formulaire soumis:", formData);
+      const { error } = await supabase.functions.invoke('send-contact-email', {
+        body: formData
+      });
+
+      if (error) throw error;
+
       toast.success("Message envoyé avec succès!");
       setIsOpen(false);
       setFormData({ name: "", email: "", message: "" });
     } catch (error) {
       toast.error("Erreur lors de l'envoi du message");
+      console.error(error);
     }
   };
 
@@ -31,15 +37,45 @@ export function AuthFooter() {
     <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center" role="contentinfo">
       <div className="space-y-8 border-t border-[#F2EBE4]/10 pt-8">
         <nav className="flex flex-wrap justify-center gap-4 text-sm text-[#F2EBE4]/60" role="navigation">
-          <Link to="/legal/terms" className="hover:text-[#F2EBE4]" title="Accéder aux conditions d'utilisation">
-            Conditions d'utilisation
-          </Link>
-          <Link to="/legal/privacy" className="hover:text-[#F2EBE4]" title="Accéder à la politique de confidentialité">
-            Politique de confidentialité
-          </Link>
-          <Link to="/legal/cookies" className="hover:text-[#F2EBE4]" title="Accéder à la politique des cookies">
-            Politique des cookies
-          </Link>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="link" className="text-[#F2EBE4]/60 hover:text-[#F2EBE4]">
+                Conditions d'utilisation
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-[#F2EBE4]">Conditions d'utilisation</DialogTitle>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="link" className="text-[#F2EBE4]/60 hover:text-[#F2EBE4]">
+                Politique de confidentialité
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-[#F2EBE4]">Politique de confidentialité</DialogTitle>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="link" className="text-[#F2EBE4]/60 hover:text-[#F2EBE4]">
+                Politique des cookies
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-[#F2EBE4]">Politique des cookies</DialogTitle>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
               <Button 
@@ -50,7 +86,7 @@ export function AuthFooter() {
                 Nous contacter
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-[#1B2A4A] border-2 border-black" role="dialog" aria-label="Formulaire de contact">
+            <DialogContent className="sm:max-w-[425px] bg-[#1B2A4A] border-2 border-black">
               <DialogHeader>
                 <DialogTitle className="text-[#F2EBE4]">Contactez-nous</DialogTitle>
               </DialogHeader>
@@ -61,14 +97,10 @@ export function AuthFooter() {
                   </label>
                   <Input
                     id="contact-name"
-                    name="contact-name"
-                    type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     className="bg-[#F2EBE4] text-[#1B2A4A]"
-                    aria-required="true"
-                    aria-label="Votre nom"
                   />
                 </div>
                 <div className="space-y-2">
@@ -77,14 +109,11 @@ export function AuthFooter() {
                   </label>
                   <Input
                     id="contact-email"
-                    name="contact-email"
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     className="bg-[#F2EBE4] text-[#1B2A4A]"
-                    aria-required="true"
-                    aria-label="Votre email"
                   />
                 </div>
                 <div className="space-y-2">
@@ -93,19 +122,15 @@ export function AuthFooter() {
                   </label>
                   <Textarea
                     id="contact-message"
-                    name="contact-message"
                     required
                     value={formData.message}
                     onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                     className="bg-[#F2EBE4] text-[#1B2A4A] min-h-[100px]"
-                    aria-required="true"
-                    aria-label="Votre message"
                   />
                 </div>
                 <Button 
                   type="submit" 
                   className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-[#F2EBE4]"
-                  title="Envoyer le message"
                 >
                   Envoyer
                 </Button>

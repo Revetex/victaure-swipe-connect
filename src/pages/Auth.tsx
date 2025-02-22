@@ -9,6 +9,7 @@ import { AuthFooter } from "@/components/auth/sections/AuthFooter";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
 import { VictaureChat } from "@/components/chat/VictaureChat";
 import { toast } from "sonner";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -34,14 +35,18 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#1B2A4A] relative overflow-hidden">
-      {/* Signature background */}
+      {/* Logo and signature pattern */}
       <div 
-        className="fixed inset-0 opacity-[0.03] pointer-events-none"
+        className="fixed inset-0 opacity-[0.025] pointer-events-none"
         style={{
-          backgroundImage: "url('/lovable-uploads/168ba21b-e221-4668-96cc-eb026041a0ed.png')",
-          backgroundSize: "400px",
+          backgroundImage: `
+            url('${'/lovable-uploads/bcfe3f97-9c11-4615-821e-d9666f3a9c14.png'}'),
+            url('/lovable-uploads/168ba21b-e221-4668-96cc-eb026041a0ed.png')
+          `,
+          backgroundSize: "200px, 300px",
           backgroundPosition: "center",
-          filter: "grayscale(0.5)"
+          backgroundRepeat: "space",
+          filter: "contrast(1.2) brightness(0.95)"
         }}
       />
       
@@ -50,7 +55,7 @@ export default function Auth() {
         className="fixed inset-0 opacity-10 pointer-events-none"
         style={{
           backgroundImage: "url('/lovable-uploads/60542c40-c17c-42cc-8136-f4780f09946a.png')",
-          backgroundSize: "64px",
+          backgroundSize: "32px",
           backgroundRepeat: "repeat",
           maskImage: "radial-gradient(circle at center, black 60%, transparent 100%)"
         }}
