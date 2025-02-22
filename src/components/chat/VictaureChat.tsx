@@ -1,9 +1,9 @@
+
 import { useState, useEffect, useRef } from "react";
-import { Bot, Wand2, MessagesSquare, Search, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
+import { Bot, Wand2, MessagesSquare } from "lucide-react";
 import { toast } from "sonner";
 import { useVictaureChat } from "@/hooks/useVictaureChat";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 
 interface ChatMessage {
   content: string;
@@ -18,74 +18,6 @@ interface VictaureChatProps {
   onMaxQuestionsReached?: () => void;
 }
 
-class AudioRecorder {
-  private stream: MediaStream | null = null;
-  private audioContext: AudioContext | null = null;
-  private processor: ScriptProcessorNode | null = null;
-  private source: MediaStreamAudioSourceNode | null = null;
-
-  constructor(private onAudioData: (audioData: Float32Array) => void) {}
-
-  async start() {
-    try {
-      this.stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          sampleRate: 24000,
-          channelCount: 1,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }
-      });
-      this.audioContext = new AudioContext({ sampleRate: 24000 });
-      this.source = this.audioContext.createMediaStreamSource(this.stream);
-      this.processor = this.audioContext.createScriptProcessor(4096, 1, 1);
-      this.processor.onaudioprocess = (e) => {
-        const inputData = e.inputBuffer.getChannelData(0);
-        this.onAudioData(new Float32Array(inputData));
-      };
-      this.source.connect(this.processor);
-      this.processor.connect(this.audioContext.destination);
-    } catch (error) {
-      console.error('Error accessing microphone:', error);
-      throw error;
-    }
-  }
-
-  stop() {
-    if (this.source) {
-      this.source.disconnect();
-      this.source = null;
-    }
-    if (this.processor) {
-      this.processor.disconnect();
-      this.processor = null;
-    }
-    if (this.stream) {
-      this.stream.getTracks().forEach(track => track.stop());
-      this.stream = null;
-    }
-    if (this.audioContext) {
-      this.audioContext.close();
-      this.audioContext = null;
-    }
-  }
-}
-
-const encodeAudioData = (float32Array: Float32Array): string => {
-  const int16Array = new Int16Array(float32Array.length);
-  for (let i = 0; i < float32Array.length; i++) {
-    const s = Math.max(-1, Math.min(1, float32Array[i]));
-    int16Array[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
-  }
-  const uint8Array = new Uint8Array(int16Array.buffer);
-  let binary = '';
-  for (let i = 0; i < uint8Array.length; i++) {
-    binary += String.fromCharCode(uint8Array[i]);
-  }
-  return btoa(binary);
-};
-
 export function VictaureChat({ 
   maxQuestions = 3, 
   initialMessage = "Bonjour ! Je suis Mr. Victaure, votre assistant personnel. Comment puis-je vous aider aujourd'hui ? 🎯",
@@ -98,115 +30,13 @@ export function VictaureChat({
   const [showThinking, setShowThinking] = useState(false);
   const [userQuestions, setUserQuestions] = useState(0);
   const [userInput, setUserInput] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [audioQueue, setAudioQueue] = useState<string[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const audioRecorderRef = useRef<AudioRecorder | null>(null);
   const { user } = useAuth();
   const { sendMessage, isLoading } = useVictaureChat({
-    onResponse: async (response) => {
-      if (response) {
-        setMessages(prev => [...prev, { content: response, isUser: false }]);
-        try {
-          const { data, error } = await supabase.functions.invoke('text-to-speech', {
-            body: { text: response, voice: 'roger' }
-          });
-          
-          if (error) throw error;
-          
-          if (data?.audioContent) {
-            setAudioQueue(prev => [...prev, data.audioContent]);
-          }
-        } catch (err) {
-          console.error('Error converting text to speech:', err);
-        }
-      }
+    onResponse: (response) => {
+      console.log("Received response:", response);
     }
   });
-
-  useEffect(() => {
-    if (audioQueue.length > 0 && !isSpeaking) {
-      playNextAudio();
-    }
-  }, [audioQueue, isSpeaking]);
-
-  const playNextAudio = async () => {
-    if (audioQueue.length === 0) return;
-
-    setIsSpeaking(true);
-    const audioContent = audioQueue[0];
-    const audio = new Audio(`data:audio/mp3;base64,${audioContent}`);
-    
-    audio.onended = () => {
-      setIsSpeaking(false);
-      setAudioQueue(prev => prev.slice(1));
-    };
-
-    try {
-      await audio.play();
-    } catch (err) {
-      console.error('Error playing audio:', err);
-      setIsSpeaking(false);
-      setAudioQueue(prev => prev.slice(1));
-    }
-  };
-
-  const toggleSpeech = () => {
-    if (isSpeaking) {
-      setIsSpeaking(false);
-      setAudioQueue([]);
-    }
-  };
-
-  const toggleRecording = async () => {
-    if (isRecording) {
-      audioRecorderRef.current?.stop();
-      setIsRecording(false);
-    } else {
-      try {
-        audioRecorderRef.current = new AudioRecorder(async (audioData) => {
-          try {
-            const encodedAudio = encodeAudioData(audioData);
-            const { data, error } = await supabase.functions.invoke('voice-to-text', {
-              body: { audio: encodedAudio }
-            });
-            
-            if (error) throw error;
-            
-            if (data?.text) {
-              setUserInput(data.text);
-            }
-          } catch (err) {
-            console.error('Error converting speech to text:', err);
-          }
-        });
-        
-        await audioRecorderRef.current.start();
-        setIsRecording(true);
-      } catch (err) {
-        console.error('Error starting recording:', err);
-        toast.error("Impossible d'accéder au microphone");
-      }
-    }
-  };
-
-  const handleWebSearch = async () => {
-    if (!userInput.trim() || isLoading) return;
-
-    setShowThinking(true);
-    try {
-      const response = await sendMessage(userInput, 
-        context + " Utilise tes capacités de recherche sur Internet pour fournir des informations précises et à jour."
-      );
-      setUserInput("");
-    } catch (error) {
-      console.error("Error searching:", error);
-      toast.error("Désolé, je ne peux pas effectuer la recherche pour le moment");
-    } finally {
-      setShowThinking(false);
-    }
-  };
 
   useEffect(() => {
     const showWelcomeMessage = async () => {
@@ -251,7 +81,10 @@ export function VictaureChat({
     try {
       console.log("Sending message with context:", context);
       const response = await sendMessage(userMessage, context);
-      console.log("Received response:", response);
+      if (response) {
+        console.log("Received response:", response);
+        setMessages(prev => [...prev, { content: response, isUser: false }]);
+      }
     } catch (error) {
       console.error("Error in chat:", error);
       toast.error("Désolé, je ne peux pas répondre pour le moment");
@@ -317,17 +150,6 @@ export function VictaureChat({
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={toggleRecording}
-            className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#64B5D9] text-white hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            title={isRecording ? "Arrêter l'enregistrement" : "Démarrer l'enregistrement"}
-          >
-            {isRecording ? (
-              <MicOff className="w-4 h-4 animate-pulse" />
-            ) : (
-              <Mic className="w-4 h-4" />
-            )}
-          </button>
           <input
             type="text"
             value={userInput}
@@ -340,33 +162,16 @@ export function VictaureChat({
             disabled={userQuestions >= maxQuestions || isLoading}
             className="flex-1 h-10 px-4 rounded-lg bg-white dark:bg-zinc-800 border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[#1B2A4A] dark:text-white"
             onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
+            aria-label="Message input"
           />
-          <button
-            onClick={handleWebSearch}
-            disabled={userQuestions >= maxQuestions || !userInput.trim() || isLoading}
-            className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#64B5D9] text-white hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            title="Rechercher sur le web"
-          >
-            <Search className="w-4 h-4" />
-          </button>
-          <button
-            onClick={toggleSpeech}
-            className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#64B5D9] text-white hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            title={isSpeaking ? "Arrêter la lecture" : "Écouter les réponses"}
-          >
-            {isSpeaking ? (
-              <VolumeX className="w-4 h-4" />
-            ) : (
-              <Volume2 className="w-4 h-4" />
-            )}
-          </button>
           <button
             onClick={handleSendMessage}
             disabled={userQuestions >= maxQuestions || !userInput.trim() || isLoading}
             className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#64B5D9] text-white hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             title="Envoyer le message"
+            aria-label="Envoyer le message"
           >
-            <MessagesSquare className="w-4 h-4" />
+            <MessagesSquare className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
       </div>
