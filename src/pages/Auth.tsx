@@ -36,34 +36,22 @@ export default function Auth() {
       delay: 2
     },
     {
-      text: "Nous avons aussi un marketplace où vous pouvez acheter, vendre et proposer vos services. C'est idéal pour démarrer votre activité ! 🛍️",
-      delay: 4
-    },
-    {
-      text: "Pour les missions courtes, découvrez nos 'petits jobs' sans engagement. Parfait pour la flexibilité ! ⚡",
-      delay: 6
-    },
-    {
       text: "Notre système d'enchères et de contrats sécurisés vous permet de participer à des appels d'offres professionnels. 📊",
-      delay: 8
-    },
-    {
-      text: "Et bien sûr, vous avez accès à un portefeuille digital pour des paiements sécurisés et une gestion simplifiée. 💳",
-      delay: 10
+      delay: 4
     }
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#9b87f5]/5 via-[#D6BCFA]/5 to-[#403E43]/5">
-      <div className="fixed inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-background to-muted/5 relative overflow-hidden">
+      <div className="fixed inset-0 bg-grid-white/5 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
       
-      <motion.div className="fixed inset-0 opacity-20" 
+      <motion.div className="fixed inset-0 opacity-10" 
         style={{
           background: "radial-gradient(circle at center, var(--primary) 0%, transparent 70%)"
         }} 
         animate={{
           scale: [1, 1.2, 1],
-          opacity: [0.2, 0.3, 0.2]
+          opacity: [0.1, 0.2, 0.1]
         }} 
         transition={{
           duration: 8,
@@ -74,26 +62,22 @@ export default function Auth() {
       
       <ThemeSelector />
       
-      <main className="flex-1 flex flex-col items-center justify-center w-full p-4 sm:p-6 lg:p-8 relative z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),rgba(255,255,255,0))]" />
-        
-        <div className="w-full max-w-2xl mx-auto space-y-8 glass-panel rounded-2xl p-6 sm:p-8 border border-primary/10 backdrop-blur-sm relative">
-          <motion.div 
-            className="flex flex-col items-center justify-center space-y-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="flex justify-center w-full">
-              <Logo size="xl" className="transform-none" />
-            </div>
+      <main className="flex-1 flex flex-col items-center justify-center w-full px-4 py-8 sm:p-6 lg:p-8 relative z-10">
+        <motion.div 
+          className="w-full max-w-xl mx-auto space-y-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex flex-col items-center justify-center space-y-6">
+            <Logo size="xl" className="transform-none" />
             
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent font-tiempos text-center">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent font-tiempos text-center">
               La Plateforme Complète du Marché de l'Emploi
             </h1>
 
-            <div className="w-full max-w-xl mx-auto mt-8 space-y-4 bg-black/5 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-primary">
+            <div className="w-full glass-panel rounded-xl p-4 border border-primary/10 space-y-4">
+              <div className="flex items-center gap-2 text-primary mb-4">
                 <Bot className="w-5 h-5" />
                 <span className="text-sm font-medium">Mr. Victaure</span>
               </div>
@@ -104,7 +88,7 @@ export default function Auth() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: message.delay, duration: 0.5 }}
-                  className="ml-7 p-3 bg-white/10 rounded-lg border border-primary/10"
+                  className="ml-7 p-3 bg-white/5 dark:bg-black/5 rounded-lg border border-primary/5"
                 >
                   <p className="text-sm text-foreground/90">{message.text}</p>
                 </motion.div>
@@ -117,9 +101,7 @@ export default function Auth() {
                 className="ml-7 w-3 h-5 bg-primary/50 rounded"
               />
             </div>
-          </motion.div>
-
-          <AuthVideo />
+          </div>
 
           <Suspense fallback={
             <div className="flex items-center justify-center">
@@ -128,13 +110,10 @@ export default function Auth() {
           }>
             <AuthForm redirectTo={location.state?.from?.pathname} />
           </Suspense>
+        </motion.div>
 
-          <div className="mt-8 text-center">
-            <p className="text-sm text-muted-foreground">
-              Rejoignez la révolution de l'emploi flexible. <br />
-              <span className="font-medium text-primary">Victaure</span> - Votre passerelle vers l'emploi du futur.
-            </p>
-          </div>
+        <div className="mt-8 text-center text-sm text-muted-foreground">
+          <span className="font-medium text-primary">Victaure</span> - Votre passerelle vers l'emploi du futur.
         </div>
 
         <div className="absolute bottom-4 right-4 text-xs text-muted-foreground/40 font-tiempos">

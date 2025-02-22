@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,7 +39,10 @@ export function LoginForm({
         </p>
       </div>
 
-      <div className="space-y-4">
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit();
+      }} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email-login">Email</Label>
           <div className="relative">
@@ -47,6 +51,7 @@ export function LoginForm({
               id="email-login"
               placeholder="nom@exemple.com"
               type="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
               disabled={loading}
@@ -62,6 +67,7 @@ export function LoginForm({
             <Input
               id="password-login"
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}
               disabled={loading}
@@ -69,19 +75,19 @@ export function LoginForm({
             />
           </div>
         </div>
-      </div>
 
-      <Button
-        onClick={onSubmit}
-        disabled={loading || !email || !password}
-        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 font-medium shadow-sm hover:shadow-md"
-      >
-        {loading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          "Se connecter"
-        )}
-      </Button>
+        <Button
+          type="submit"
+          disabled={loading || !email || !password}
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 font-medium shadow-sm hover:shadow-md"
+        >
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            "Se connecter"
+          )}
+        </Button>
+      </form>
     </motion.div>
   );
 }
