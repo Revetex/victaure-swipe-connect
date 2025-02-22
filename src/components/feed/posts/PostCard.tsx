@@ -62,10 +62,11 @@ export function PostCard({
       className="relative group"
     >
       <Card className={cn(
-        "border shadow-sm transition-all duration-200",
-        "p-3 sm:p-4 hover:shadow-md hover:border-primary/20",
+        "bg-[#1B2A4A]/80 backdrop-blur-sm border border-[#64B5D9]/10",
+        "p-3 sm:p-4 hover:border-[#64B5D9]/20 shadow-[0_0_0_1px_rgba(100,181,217,0.1),0_4px_12px_rgba(0,0,0,0.3)]",
+        "transition-all duration-300",
         isMobile ? "active:scale-[0.995] touch-none" : "hover:scale-[1.002]",
-        "touch-pan-y overscroll-y-contain"
+        "text-[#F2EBE4]"
       )}>
         <PostCardHeader 
           profile={post.profiles}

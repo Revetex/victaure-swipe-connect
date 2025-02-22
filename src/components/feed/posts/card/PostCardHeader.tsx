@@ -1,23 +1,22 @@
 
-import { PostHeader } from "../../PostHeader";
+import { Profile } from "@/types/profile";
+import { UserAvatar } from "@/components/UserAvatar";
+import { MoreVertical, Globe, Lock, Users, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Edit2, Save, Trash2, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface PostCardHeaderProps {
-  profile: {
-    id: string;
-    full_name: string;
-    avatar_url?: string;
-  };
+  profile: Profile;
   created_at: string;
-  privacy_level: "public" | "connections";
+  privacy_level: 'public' | 'private' | 'friends';
   isOwnPost: boolean;
   isEditing: boolean;
   onEdit: () => void;
   onSave: () => void;
   onCancel: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
 }
 
 export function PostCardHeader({
@@ -31,76 +30,68 @@ export function PostCardHeader({
   onCancel,
   onDelete
 }: PostCardHeaderProps) {
+  const PrivacyIcon = {
+    public: Globe,
+    private: Lock,
+    friends: Users
+  }[privacy_level];
+
   return (
-    <div className="flex justify-between items-start gap-3">
-      <PostHeader 
-        profile={profile}
-        created_at={created_at}
-        privacy_level={privacy_level}
-      />
-      
-      {isOwnPost && (
-        <div className="flex gap-1">
-          {isEditing ? (
-            <>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onSave}
-                className={cn(
-                  "text-primary hover:text-primary/90 hover:bg-primary/10",
-                  "min-h-[44px] min-w-[44px] touch-manipulation"
-                )}
-                aria-label="Sauvegarder les modifications"
-                title="Sauvegarder les modifications"
-              >
-                <Save className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onCancel}
-                className={cn(
-                  "text-muted-foreground hover:text-foreground",
-                  "min-h-[44px] min-w-[44px] touch-manipulation"
-                )}
-                aria-label="Annuler les modifications"
-                title="Annuler les modifications"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onEdit}
-                className={cn(
-                  "text-primary hover:text-primary/90 hover:bg-primary/10",
-                  "min-h-[44px] min-w-[44px] touch-manipulation"
-                )}
-                aria-label="Modifier la publication"
-                title="Modifier la publication"
-              >
-                <Edit2 className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onDelete}
-                className={cn(
-                  "text-destructive hover:text-destructive/90 hover:bg-destructive/10",
-                  "min-h-[44px] min-w-[44px] touch-manipulation"
-                )}
-                aria-label="Supprimer la publication"
-                title="Supprimer la publication"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </>
-          )}
+    <div className="flex items-start justify-between mb-4">
+      <div className="flex items-center gap-3">
+        <UserAvatar user={profile} />
+        <div>
+          <h3 className="font-semibold text-[#F2EBE4]">{profile.full_name}</h3>
+          <div className="flex items-center gap-2 text-xs text-[#F2EBE4]/70">
+            <time>{formatDistanceToNow(new Date(created_at), { addSuffix: true, locale: fr })}</time>
+            <span>•</span>
+            <div className="flex items-center gap-1">
+              <PrivacyIcon className="w-3 h-3" />
+              <span className="capitalize">{privacy_level}</span>
+            </div>
+          </div>
         </div>
+      </div>
+
+      {isEditing ? (
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={onSave}
+            size="sm"
+            variant="ghost"
+            className="text-[#64B5D9] hover:text-[#64B5D9]/80"
+          >
+            <CheckCircle className="w-4 h-4" />
+          </Button>
+          <Button
+            onClick={onCancel}
+            size="sm"
+            variant="ghost"
+            className="text-[#F2EBE4]/70 hover:text-[#F2EBE4]"
+          >
+            <XCircle className="w-4 h-4" />
+          </Button>
+        </div>
+      ) : isOwnPost && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-[#F2EBE4]/70 hover:text-[#F2EBE4]"
+            >
+              <MoreVertical className="w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="bg-[#1B2A4A] border-[#64B5D9]/10 text-[#F2EBE4]">
+            <DropdownMenuItem onClick={onEdit} className="hover:text-[#64B5D9]">
+              Modifier
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onDelete} className="text-red-400 hover:text-red-300">
+              Supprimer
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
     </div>
   );
