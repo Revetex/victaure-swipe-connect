@@ -1,7 +1,7 @@
 
 import { UserProfile } from "@/types/profile";
 import { UserAvatar } from "@/components/UserAvatar";
-import { MoreVertical, Globe, Lock, Users, CheckCircle, XCircle } from "lucide-react";
+import { MoreVertical, Globe, Users, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { formatDistanceToNow } from "date-fns";
@@ -34,6 +34,18 @@ export function PostCardHeader({
   onCancel,
   onDelete
 }: PostCardHeaderProps) {
+  // Create a minimal UserProfile object with required fields
+  const userProfileForAvatar: UserProfile = {
+    id: profile.id,
+    email: '', // Required by UserProfile type
+    full_name: profile.full_name,
+    avatar_url: profile.avatar_url,
+    certifications: [], // Required by UserProfile type
+    education: [], // Required by UserProfile type
+    experiences: [], // Required by UserProfile type
+    friends: [], // Required by UserProfile type
+  };
+
   const PrivacyIcon = {
     public: Globe,
     connections: Users
@@ -42,7 +54,7 @@ export function PostCardHeader({
   return (
     <div className="flex items-start justify-between mb-4">
       <div className="flex items-center gap-3">
-        <UserAvatar user={profile} />
+        <UserAvatar user={userProfileForAvatar} />
         <div>
           <h3 className="font-semibold text-[#F2EBE4]">{profile.full_name}</h3>
           <div className="flex items-center gap-2 text-xs text-[#F2EBE4]/70">

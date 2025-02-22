@@ -1,20 +1,20 @@
 
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Image, Send, Loader2, ImagePlus, X } from "lucide-react";
+import { Image, Send, Loader2, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { FilePreview } from "../FilePreview";
 import { PrivacySelector } from "../PrivacySelector";
 import { AnimatePresence } from "framer-motion";
-import { PostAttachment, PostPrivacyLevel } from "../types";
+import { PostPrivacyLevel } from "../types";
 
 interface CreatePostFormProps {
   newPost: string;
   onPostChange: (value: string) => void;
   privacy: PostPrivacyLevel;
   onPrivacyChange: (value: PostPrivacyLevel) => void;
-  attachments: PostAttachment[];
+  attachments: string[];
   isUploading: boolean;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRemoveFile: (index: number) => void;
@@ -91,17 +91,8 @@ export function CreatePostForm({
             )}
             onClick={() => document.getElementById('file-upload')?.click()}
           >
-            {attachments.length > 0 ? (
-              <>
-                <ImagePlus className="h-4 w-4 mr-2" />
-                Ajouter une image
-              </>
-            ) : (
-              <>
-                <Image className="h-4 w-4 mr-2" />
-                Ajouter une image
-              </>
-            )}
+            <Image className="h-4 w-4 mr-2" />
+            Ajouter une image
           </Button>
           
           <PrivacySelector
