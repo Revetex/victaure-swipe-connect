@@ -27,6 +27,8 @@ export function DashboardMobileNav({
             variant="ghost" 
             size="icon"
             className="bg-background/50 backdrop-blur-sm border border-border/10 hover:bg-background/80"
+            title="Ouvrir le menu de navigation"
+            aria-label="Ouvrir le menu de navigation"
           >
             <Menu className="h-5 w-5" />
           </Button>
@@ -53,6 +55,8 @@ export function DashboardMobileNav({
                       ? "bg-primary text-primary-foreground" 
                       : "text-muted-foreground hover:bg-muted"
                   )}
+                  title={item.name}
+                  aria-label={`Naviguer vers ${item.name}`}
                 >
                   <Icon className="h-4 w-4" />
                   <span>{item.name}</span>

@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -50,14 +51,14 @@
 
   * {
     @apply border-border selection:bg-zinc-900/10 dark:selection:bg-zinc-50/10;
+    text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
-    text-size-adjust: 100%;
+    user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    user-select: none;
   }
   
   body {
@@ -218,9 +219,10 @@
   }
 }
 
+/* Leaflet specific styles with proper vendor prefixes */
 .leaflet-overlay-pane svg {
+  user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  user-select: none;
 }
