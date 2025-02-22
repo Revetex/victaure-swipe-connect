@@ -1,3 +1,4 @@
+
 import { UserProfile, Experience } from "@/types/profile";
 
 export function transformToFullProfile(data: any): UserProfile {

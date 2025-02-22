@@ -4,6 +4,7 @@ import { Message, Receiver } from "@/types/messages";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { transformToFullProfile } from "@/utils/profileTransformers";
 
 export function useMessages(receiver: Receiver | null) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -30,7 +31,6 @@ export function useMessages(receiver: Receiver | null) {
   useEffect(() => {
     if (!receiver?.id || !user?.id) return;
     
-    // Ne pas afficher de message de présentation pour Mr Victaure
     if (receiver.id !== "ai-assistant") {
       loadMessages();
     }
@@ -82,9 +82,9 @@ export function useMessages(receiver: Receiver | null) {
           ...msg,
           metadata: typeof msg.metadata === 'string' ? JSON.parse(msg.metadata) : msg.metadata || {},
           deleted_by: typeof msg.deleted_by === 'string' ? JSON.parse(msg.deleted_by) : msg.deleted_by || {},
-          sender: msg.sender
+          sender: transformToFullProfile(msg.sender)
         }));
-        setMessages(formattedMessages);
+        setMessages(formattedMessages as Message[]);
       }
     } catch (error) {
       console.error('Error loading messages:', error);
