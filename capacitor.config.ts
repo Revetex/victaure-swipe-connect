@@ -25,7 +25,21 @@ const config: CapacitorConfig = {
       '*.lovableproject.com',
       '*.vercel.app',
       '052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com'
-    ]
+    ],
+    headers: {
+      // Add Cache-Control header
+      'Cache-Control': 'max-age=31536000, public',
+      // Add SameSite attribute to cookies and other security headers
+      'Set-Cookie': 'SameSite=Strict; Secure',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Permissions-Policy': 'geolocation=(self), camera=(self), microphone=(self)',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Resource-Policy': 'same-site',
+    }
   },
   android: {
     buildOptions: {
@@ -44,6 +58,11 @@ const config: CapacitorConfig = {
       androidSpinnerStyle: "large",
       spinnerColor: "#999999",
     },
+    Cookies: {
+      enabled: true,
+      samesite: 'Strict',
+      secure: true
+    }
   }
 };
 
