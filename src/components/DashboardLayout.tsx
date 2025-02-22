@@ -14,9 +14,9 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const { profile } = useProfile();
 
-  const handleRequestChat = () => {
+  const handleRequestChat = useCallback(() => {
     setIsAssistantOpen(true);
-  };
+  }, []);
 
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
@@ -29,7 +29,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-background w-full">
+    <div className="flex min-h-screen bg-background w-full overflow-hidden">
       <AppHeader 
         onRequestAssistant={handleRequestChat}
         showMobileMenu={showMobileMenu}
@@ -59,7 +59,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
             currentPage={currentPage}
             isEditing={isEditing}
             onEditStateChange={handleEditStateChange}
-            onRequestChat={() => setIsAssistantOpen(true)}
+            onRequestChat={handleRequestChat}
           />
         )}
       </main>
