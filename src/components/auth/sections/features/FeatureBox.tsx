@@ -1,7 +1,7 @@
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Text, Center } from "@react-three/drei";
+import { Center } from "@react-three/drei";
 import type { Mesh } from 'three';
 import { features } from "./featureData";
 
@@ -23,21 +23,10 @@ export function FeatureBox({ position }: FeatureBoxProps) {
       <mesh ref={meshRef}>
         <boxGeometry args={[3, 3, 3]} />
         <meshStandardMaterial color="#1B2A4A" />
-        {features.map((feature, index) => (
-          <Text
-            key={index}
-            position={[0, 0, 1.51]}
-            rotation={[0, 0, 0]}
-            fontSize={0.3}
-            color="#F2EBE4"
-            anchorX="center"
-            anchorY="middle"
-            maxWidth={2}
-            textAlign="center"
-          >
-            {feature.title}
-          </Text>
-        ))}
+        <mesh position={[0, 0, 1.51]}>
+          <planeGeometry args={[2, 0.5]} />
+          <meshStandardMaterial color="#64B5D9" transparent opacity={0.2} />
+        </mesh>
       </mesh>
     </Center>
   );
