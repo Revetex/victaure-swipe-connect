@@ -174,4 +174,9 @@ export function transformExperience(data: any): Experience {
   };
 }
 
-export type { UserProfile, Friend, Experience, Education, Certification, PendingRequest, BlockedUser };
+// Note: Remplaçons les exports multiples par un seul export groupé
+export type {
+  BlockedUser
+};
+
+export type { UserProfile, Friend, Experience, Education, Certification, PendingRequest };
