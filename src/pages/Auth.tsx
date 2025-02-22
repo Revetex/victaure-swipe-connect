@@ -1,3 +1,4 @@
+
 import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
@@ -8,22 +9,26 @@ import { useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
 import { Briefcase, CalendarDays, Clock, Sparkles } from "lucide-react";
+
 export default function Auth() {
   const {
     isAuthenticated,
     isLoading
   } = useAuth();
   const location = useLocation();
+
   if (isAuthenticated) {
     const redirectTo = sessionStorage.getItem('redirectTo') || '/dashboard';
     sessionStorage.removeItem('redirectTo');
     return <Navigate to={redirectTo} replace />;
   }
+
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader className="w-8 h-8 text-primary" />
       </div>;
   }
+
   const features = [{
     icon: <Briefcase className="w-5 h-5" />,
     title: "Jobs du Weekend",
@@ -41,6 +46,7 @@ export default function Auth() {
     title: "IA Intelligente",
     description: "Un assistant personnel pour votre recherche"
   }];
+
   return <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#9b87f5]/5 via-[#D6BCFA]/5 to-[#403E43]/5">
       <div className="fixed inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
       
