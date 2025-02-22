@@ -64,26 +64,29 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#1A1F2C] relative">
+    <div className="min-h-screen flex flex-col bg-[#1A1F2C] relative overflow-x-hidden">
       <div className="absolute inset-0 bg-pattern animate-[pulse_4s_ease-in-out_infinite]" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80" />
       
       <ThemeSelector />
       
-      <main className="flex-1 flex flex-col items-center justify-center w-full px-4 py-8 sm:py-12 relative z-10">
-        <div className="w-full max-w-2xl mx-auto space-y-8">
+      <main className="flex-1 flex flex-col items-center justify-center w-full px-3 sm:px-4 py-6 sm:py-8 lg:py-12 relative z-10">
+        <div className="w-full max-w-lg lg:max-w-2xl mx-auto space-y-6 sm:space-y-8">
           <AuthHeader />
-          <InnovationsSection />
-          <CountdownSection countdown={countdown} />
-          <FeaturesSection />
+          <div className="space-y-6 sm:space-y-8 animate-fade-in">
+            <InnovationsSection />
+            <CountdownSection countdown={countdown} />
+            <FeaturesSection />
+          </div>
 
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative w-full max-w-md mx-auto"
+            className="relative w-full max-w-sm sm:max-w-md mx-auto"
+            transition={{ duration: 0.3 }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-[#221F26]/50 to-[#1A1F2C]/50 blur-xl" />
-            <div className="relative bg-[#2A2D3E]/80 backdrop-blur-md border border-[#64B5D9]/20 rounded-lg p-4 shadow-lg overflow-hidden hover:border-[#64B5D9]/30 transition-all duration-300">
+            <div className="relative bg-[#2A2D3E]/80 backdrop-blur-md border border-[#64B5D9]/20 rounded-lg p-3 sm:p-4 shadow-lg overflow-hidden hover:border-[#64B5D9]/30 transition-all duration-300">
               <VictaureChat 
                 maxQuestions={3}
                 onMaxQuestionsReached={handleMaxQuestionsReached}
@@ -95,8 +98,8 @@ export default function Auth() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="border-2 border-[#64B5D9]/20 rounded-xl p-6 bg-[#2A2D3E]/80 backdrop-blur-md"
+            transition={{ delay: 0.2, duration: 0.3 }}
+            className="border-2 border-[#64B5D9]/20 rounded-xl p-4 sm:p-6 bg-[#2A2D3E]/80 backdrop-blur-md w-full max-w-sm sm:max-w-md mx-auto"
           >
             <AuthForm />
           </motion.div>
@@ -108,7 +111,7 @@ export default function Auth() {
         </div>
       </main>
 
-      <div className="relative z-10 pb-20">
+      <div className="relative z-10">
         <AuthFooter />
       </div>
     </div>
