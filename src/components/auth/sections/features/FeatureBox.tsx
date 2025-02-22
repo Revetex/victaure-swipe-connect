@@ -1,6 +1,6 @@
 
-import { useRef, useState } from "react";
-import { useFrame, ThreeElements } from "@react-three/fiber";
+import { useRef } from "react";
+import { useFrame } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
 import type { Mesh } from 'three';
 import { features } from "./featureData";
@@ -11,8 +11,6 @@ interface FeatureBoxProps {
 
 export function FeatureBox({ position }: FeatureBoxProps) {
   const meshRef = useRef<Mesh>(null);
-  const [hovered, setHover] = useState(false);
-  const [active, setActive] = useState(false);
 
   useFrame((state, delta) => {
     if (meshRef.current) {
@@ -25,13 +23,9 @@ export function FeatureBox({ position }: FeatureBoxProps) {
     <mesh
       position={position}
       ref={meshRef}
-      scale={active ? 1.5 : 1}
-      onClick={() => setActive(!active)}
-      onPointerOver={() => setHover(true)}
-      onPointerOut={() => setHover(false)}
     >
       <boxGeometry args={[3, 3, 3]} />
-      <meshStandardMaterial color={hovered ? "#64B5D9" : "#1B2A4A"} />
+      <meshStandardMaterial color="#1B2A4A" />
       {features.map((feature, index) => (
         <Text
           key={index}
