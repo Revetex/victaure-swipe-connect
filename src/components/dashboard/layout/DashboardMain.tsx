@@ -16,6 +16,7 @@ export function DashboardMain() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [showAIChat, setShowAIChat] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const handleRequestChat = () => {
     setShowAIChat(true);
@@ -107,6 +108,8 @@ export function DashboardMain() {
       <DashboardMobileNav
         currentPage={currentPage}
         onPageChange={setCurrentPage}
+        showMobileMenu={showMobileMenu}
+        setShowMobileMenu={setShowMobileMenu}
       />
     </div>
   );
