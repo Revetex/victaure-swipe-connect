@@ -18,8 +18,6 @@ export function AuthFooter() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Ici vous pouvez implémenter l'envoi réel du formulaire
-      // Par exemple avec un appel API à votre backend
       console.log("Formulaire soumis:", formData);
       toast.success("Message envoyé avec succès!");
       setIsOpen(false);
@@ -30,16 +28,16 @@ export function AuthFooter() {
   };
 
   return (
-    <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center">
+    <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center" role="contentinfo">
       <div className="space-y-8 border-t border-[#F2EBE4]/10 pt-8">
-        <nav className="flex flex-wrap justify-center gap-4 text-sm text-[#F2EBE4]/60">
-          <Link to="/legal/terms" className="hover:text-[#F2EBE4]">
+        <nav className="flex flex-wrap justify-center gap-4 text-sm text-[#F2EBE4]/60" role="navigation">
+          <Link to="/legal/terms" className="hover:text-[#F2EBE4]" title="Accéder aux conditions d'utilisation">
             Conditions d'utilisation
           </Link>
-          <Link to="/legal/privacy" className="hover:text-[#F2EBE4]">
+          <Link to="/legal/privacy" className="hover:text-[#F2EBE4]" title="Accéder à la politique de confidentialité">
             Politique de confidentialité
           </Link>
-          <Link to="/legal/cookies" className="hover:text-[#F2EBE4]">
+          <Link to="/legal/cookies" className="hover:text-[#F2EBE4]" title="Accéder à la politique des cookies">
             Politique des cookies
           </Link>
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -47,56 +45,67 @@ export function AuthFooter() {
               <Button 
                 variant="link" 
                 className="text-sm text-[#F2EBE4]/60 hover:text-[#F2EBE4]"
+                title="Ouvrir le formulaire de contact"
               >
                 Nous contacter
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-[#1B2A4A] border-2 border-black">
+            <DialogContent className="sm:max-w-[425px] bg-[#1B2A4A] border-2 border-black" role="dialog" aria-label="Formulaire de contact">
               <DialogHeader>
                 <DialogTitle className="text-[#F2EBE4]">Contactez-nous</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <label htmlFor="name" className="text-sm font-medium text-[#F2EBE4]">
+                  <label htmlFor="contact-name" className="text-sm font-medium text-[#F2EBE4]">
                     Nom
                   </label>
                   <Input
-                    id="name"
+                    id="contact-name"
+                    name="contact-name"
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     className="bg-[#F2EBE4] text-[#1B2A4A]"
+                    aria-required="true"
+                    aria-label="Votre nom"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium text-[#F2EBE4]">
+                  <label htmlFor="contact-email" className="text-sm font-medium text-[#F2EBE4]">
                     Email
                   </label>
                   <Input
-                    id="email"
+                    id="contact-email"
+                    name="contact-email"
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     className="bg-[#F2EBE4] text-[#1B2A4A]"
+                    aria-required="true"
+                    aria-label="Votre email"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="message" className="text-sm font-medium text-[#F2EBE4]">
+                  <label htmlFor="contact-message" className="text-sm font-medium text-[#F2EBE4]">
                     Message
                   </label>
                   <Textarea
-                    id="message"
+                    id="contact-message"
+                    name="contact-message"
                     required
                     value={formData.message}
                     onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                     className="bg-[#F2EBE4] text-[#1B2A4A] min-h-[100px]"
+                    aria-required="true"
+                    aria-label="Votre message"
                   />
                 </div>
                 <Button 
                   type="submit" 
                   className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-[#F2EBE4]"
+                  title="Envoyer le message"
                 >
                   Envoyer
                 </Button>

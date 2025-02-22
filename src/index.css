@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -51,16 +50,50 @@
 
   * {
     @apply border-border selection:bg-zinc-900/10 dark:selection:bg-zinc-50/10;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     user-select: none;
   }
   
   body {
     @apply bg-background text-foreground antialiased overflow-x-hidden font-sans min-w-full;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   #root {
     @apply min-w-full w-full m-0 p-0;
+  }
+
+  .flex {
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  .flex-col {
+    -ms-flex-direction: column;
+    flex-direction: column;
+  }
+
+  .items-center {
+    -ms-flex-align: center;
+    align-items: center;
+  }
+
+  .justify-center {
+    -ms-flex-pack: center;
+    justify-content: center;
+  }
+
+  .grid {
+    display: -ms-grid;
+    display: grid;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -154,8 +187,8 @@
 
 @layer utilities {
   .scrollbar-none {
-    scrollbar-width: none;
     -ms-overflow-style: none;
+    scrollbar-width: none;
   }
   
   .scrollbar-none::-webkit-scrollbar {
@@ -163,18 +196,31 @@
   }
 
   @keyframes accordion-down {
-    from { max-height: 0; }
-    to { max-height: var(--radix-accordion-content-height); }
+    from {
+      transform: scaleY(0);
+      transform-origin: top;
+    }
+    to {
+      transform: scaleY(1);
+      transform-origin: top;
+    }
   }
 
   @keyframes accordion-up {
-    from { max-height: var(--radix-accordion-content-height); }
-    to { max-height: 0; }
+    from {
+      transform: scaleY(1);
+      transform-origin: top;
+    }
+    to {
+      transform: scaleY(0);
+      transform-origin: top;
+    }
   }
 }
 
-/* Leaflet specific styles */
 .leaflet-overlay-pane svg {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
-
