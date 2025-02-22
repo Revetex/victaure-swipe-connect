@@ -1,4 +1,3 @@
-
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -39,7 +38,6 @@ export function Logo({ size = "md", className }: LogoProps) {
         return;
       }
 
-      // Configuration de l'assistant comme receiver avec tous les champs requis
       const aiAssistant = {
         id: "ai-assistant",
         full_name: "Mr Victaure AI",
@@ -88,60 +86,22 @@ export function Logo({ size = "md", className }: LogoProps) {
       )}
       onClick={startAIChat}
     >
-      <motion.div 
-        className={cn(
-          "relative flex flex-col items-center justify-center",
-          "transition-all duration-500",
+      <div className="flex items-center gap-3">
+        <img 
+          src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png" 
+          alt="Victaure Logo" 
+          className={cn(
+            logoSizes[size],
+            "object-contain"
+          )}
+        />
+        <span className={cn(
+          "font-tiempos text-zinc-900 dark:text-white font-black tracking-tight",
           textSizes[size]
-        )}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <div className="relative mb-2">
-          <motion.img 
-            src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png" 
-            alt="Victaure Logo" 
-            className={cn(
-              logoSizes[size],
-              "object-contain drop-shadow-lg"
-            )}
-            animate={{
-              scale: [1, 1.05, 1],
-              rotate: [0, 2, -2, 0],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-          <motion.div
-            className="absolute inset-0 bg-primary/20 rounded-full blur-xl"
-            animate={{
-              opacity: [0.2, 0.4, 0.2],
-              scale: [0.8, 1.1, 0.8],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-        </div>
-        <div className="flex items-center justify-center relative">
-          <span className="font-tiempos text-zinc-900 dark:text-white font-black tracking-tight
-            relative px-1 py-0.5
-            [text-shadow:_2px_2px_2px_rgb(0_0_0_/_20%)]
-            after:content-[''] after:absolute after:inset-0 
-            after:bg-gradient-to-b after:from-white/20 after:to-transparent after:rounded-lg
-            after:pointer-events-none
-            border border-zinc-900/10 dark:border-white/10 rounded-lg
-            bg-gradient-to-b from-zinc-50/50 to-transparent dark:from-white/10 dark:to-transparent
-          ">
-            VICTAURE
-          </span>
-        </div>
-      </motion.div>
+        )}>
+          VICTAURE
+        </span>
+      </div>
     </motion.div>
   );
 }
