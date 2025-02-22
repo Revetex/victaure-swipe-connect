@@ -99,7 +99,7 @@ export function Logo({ size = "md", className }: LogoProps) {
         whileTap={{ scale: 0.95 }}
       >
         <div className="flex items-center justify-center relative">
-          <span className="font-inter text-zinc-900 dark:text-white font-black tracking-tight">
+          <span className="font-tiempos text-zinc-900 dark:text-white font-black tracking-tight">
             VICTAURE
           </span>
           <div className="relative ml-3">

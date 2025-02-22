@@ -1,4 +1,3 @@
-
 import { type Config } from "tailwindcss";
 
 export default {
@@ -20,6 +19,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
+        tiempos: ['Tiempos Headline', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -92,4 +92,3 @@ export default {
     require('@tailwindcss/typography')
   ],
 } satisfies Config;
-
