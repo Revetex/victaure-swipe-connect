@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,6 +5,9 @@ import { LoginForm } from "./LoginForm";
 import { SignupForm } from "./SignupForm";
 import { BusinessSignupForm } from "./BusinessSignupForm";
 import { useAuth } from "@/hooks/useAuth";
+import { Input } from "@/components/ui/input";
+import { Loader } from "@/components/ui/loader";
+import { Github } from "@/components/ui/github";
 
 export function AuthForm({ redirectTo }: { redirectTo?: string }) {
   const [activeTab, setActiveTab] = useState("login");

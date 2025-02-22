@@ -15,6 +15,7 @@ import { InnovationsSection } from "@/components/auth/sections/InnovationsSectio
 import { FeaturesSection } from "@/components/auth/sections/FeaturesSection";
 import { PricingDialog } from "@/components/auth/sections/PricingDialog";
 import { toast } from "sonner";
+import { ArrowRight, Coins } from "lucide-react";
 
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -53,7 +54,7 @@ export default function Auth() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-[#1A1F2C]">
         <Loader className="w-8 h-8 text-[#64B5D9]" />
       </div>
     );
@@ -70,10 +71,40 @@ export default function Auth() {
       
       <ThemeSelector />
       
-      <main className="flex-1 flex flex-col items-center justify-center w-full px-3 sm:px-4 py-6 sm:py-8 lg:py-12 relative z-10">
-        <div className="w-full max-w-lg lg:max-w-2xl mx-auto space-y-6 sm:space-y-8">
+      <main className="flex-1 flex flex-col items-center justify-center w-full px-3 sm:px-4 py-4 sm:py-6 lg:py-8 relative z-10">
+        <div className="w-full max-w-lg lg:max-w-2xl mx-auto space-y-4 sm:space-y-6">
           <AuthHeader />
-          <div className="space-y-6 sm:space-y-8 animate-fade-in">
+
+          <div className="space-y-4 sm:space-y-6 animate-fade-in">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col gap-3 sm:gap-4"
+            >
+              {/* Prix et Partenaire - Maintenant côte à côte sur desktop */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  onClick={() => setIsPricingOpen(true)}
+                  className="group relative overflow-hidden rounded-full bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] px-5 py-2.5 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
+                >
+                  <div className="absolute inset-0 bg-white/20 transition-transform duration-300 group-hover:translate-x-full" />
+                  <Coins className="w-4 h-4 text-white" />
+                  <span className="relative text-white font-medium">Voir les tarifs</span>
+                </button>
+
+                <button
+                  onClick={() => window.open('https://victaure.com/partenaire', '_blank')}
+                  className="group relative overflow-hidden rounded-full bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] px-5 py-2.5 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
+                >
+                  <div className="absolute inset-0 bg-white/20 transition-transform duration-300 group-hover:translate-x-full" />
+                  <span className="relative text-white font-medium flex items-center gap-2">
+                    Devenir partenaire
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
+                </button>
+              </div>
+            </motion.div>
+
             <InnovationsSection />
             <CountdownSection countdown={countdown} />
             <FeaturesSection />
