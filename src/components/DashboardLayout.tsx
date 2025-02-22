@@ -50,7 +50,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
 
       <main className={cn(
         "flex-1 lg:ml-64",
-        "min-h-screen",
+        "min-h-[calc(100vh-4rem)]",
         "relative",
         "pt-16"
       )}>

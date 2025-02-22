@@ -33,14 +33,14 @@ export function AppHeader({
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex h-16 items-center justify-between px-4 bg-background/50 backdrop-blur-md border-b border-border/10"
+        className="flex h-16 items-center justify-between px-4 bg-[#64B5D9] text-white"
       >
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleMobileMenu}
-            className="lg:hidden bg-background/50 backdrop-blur-sm border border-border/10 hover:bg-background/80"
+            className="lg:hidden text-white hover:bg-white/20"
           >
             <Menu className="h-5 w-5" />
           </Button>
@@ -52,17 +52,17 @@ export function AppHeader({
 
         <div className="flex items-center gap-4">
           {totalJobs !== undefined && (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-white/80">
               {totalJobs} offres disponibles
             </p>
           )}
 
           <Button
             onClick={handleAssistantRequest}
-            className="group relative overflow-hidden glass-panel bg-primary/10 hover:bg-primary/20 text-foreground font-medium transition-all duration-300 border border-border/10"
+            className="group relative overflow-hidden bg-white/10 hover:bg-white/20 text-white font-medium transition-all duration-300"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-foreground/10 to-primary/0 opacity-0 group-hover:opacity-100 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-all duration-1000" />
-            <Sparkles className="h-4 w-4 mr-2 text-primary" />
+            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-all duration-1000" />
+            <Sparkles className="h-4 w-4 mr-2 text-white" />
             <span className="hidden sm:inline">Assistant Victaure IA</span>
             <span className="sm:hidden">IA</span>
           </Button>

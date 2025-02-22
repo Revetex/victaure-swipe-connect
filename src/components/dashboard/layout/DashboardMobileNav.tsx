@@ -26,7 +26,7 @@ export function DashboardMobileNav({
           <Button 
             variant="ghost" 
             size="icon"
-            className="bg-background/50 backdrop-blur-sm border border-border/10 hover:bg-background/80"
+            className="text-white hover:bg-white/20"
             title="Ouvrir le menu de navigation"
             aria-label="Ouvrir le menu de navigation"
           >
@@ -34,7 +34,7 @@ export function DashboardMobileNav({
           </Button>
         </SheetTrigger>
 
-        <SheetContent side="left" className="w-64 p-0">
+        <SheetContent side="left" className="w-64 p-0 bg-[#64B5D9] border-none">
           <div className="p-4">
             <Logo />
           </div>
@@ -52,8 +52,8 @@ export function DashboardMobileNav({
                     "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm",
                     "transition-colors",
                     currentPage === item.id 
-                      ? "bg-primary text-primary-foreground" 
-                      : "text-muted-foreground hover:bg-muted"
+                      ? "bg-white/15 text-white font-medium" 
+                      : "text-white/80 hover:bg-white/10 hover:text-white"
                   )}
                   title={item.name}
                   aria-label={`Naviguer vers ${item.name}`}
