@@ -27,6 +27,23 @@ export function AuthForm({ redirectTo }: AuthFormProps) {
     await signUp(email, password, fullName, phone, redirectTo);
   };
 
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0
+    })
+  };
+
   return (
     <div className="w-full">
       <div className="relative mx-auto w-full max-w-md overflow-hidden border border-[#64B5D9]/20 rounded-xl glass-panel shadow-xl">
@@ -64,13 +81,18 @@ export function AuthForm({ redirectTo }: AuthFormProps) {
           </TabsList>
 
           <div className="p-6 bg-[#1B2A4A]/80 backdrop-blur-sm">
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" custom={view === "login" ? -1 : 1}>
               <motion.div
                 key={view}
-                initial={{ opacity: 0, x: view === "login" ? -20 : 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: view === "login" ? 20 : -20 }}
-                transition={{ duration: 0.2 }}
+                custom={view === "login" ? -1 : 1}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{
+                  x: { type: "spring", stiffness: 300, damping: 30 },
+                  opacity: { duration: 0.2 }
+                }}
                 className="space-y-4"
               >
                 <TabsContent value="login" forceMount>

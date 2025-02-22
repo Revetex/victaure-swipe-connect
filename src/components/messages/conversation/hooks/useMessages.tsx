@@ -31,7 +31,10 @@ export function useMessages(receiver: Receiver | null) {
   useEffect(() => {
     if (!receiver?.id || !user?.id) return;
     
-    if (receiver.id !== "ai-assistant") {
+    // Pour Mr Victaure, on charge les messages existants
+    if (receiver.id === "ai-assistant") {
+      setMessages([]); // On commence avec une conversation vide
+    } else {
       loadMessages();
     }
 
