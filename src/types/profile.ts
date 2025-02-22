@@ -26,6 +26,18 @@ export interface UserProfile {
   verified?: boolean;
 }
 
+interface BlockedUser {
+  id: string;
+  blocker_id: string;
+  blocked_id: string;
+  created_at: string;
+  blocked?: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+  };
+}
+
 export interface Friend {
   id: string;
   full_name: string | null;
@@ -161,3 +173,5 @@ export function transformExperience(data: any): Experience {
     updated_at: data.updated_at
   };
 }
+
+export type { UserProfile, Friend, Experience, Education, Certification, PendingRequest, BlockedUser };

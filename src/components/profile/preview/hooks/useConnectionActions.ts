@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -70,9 +71,10 @@ export function useConnectionActions(profileId: string) {
         .from('blocked_users')
         .select('*')
         .eq('blocker_id', user.id)
-        .eq('blocked_id', profileId);
+        .eq('blocked_id', profileId)
+        .maybeSingle();
 
-      if (blockStatus && blockStatus.length > 0) {
+      if (blockStatus) {
         const { error } = await supabase
           .from('blocked_users')
           .delete()

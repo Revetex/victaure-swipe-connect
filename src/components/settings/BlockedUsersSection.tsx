@@ -8,9 +8,11 @@ import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SettingsSection } from "./SettingsSection";
 import { useState } from "react";
+import type { BlockedUser } from "@/types/profile";
 
 export function BlockedUsersSection() {
   const [isExpanded, setIsExpanded] = useState(false);
+  
   const { data: blockedUsers, refetch } = useQuery({
     queryKey: ["blocked-users"],
     queryFn: async () => {
@@ -18,8 +20,9 @@ export function BlockedUsersSection() {
       if (!user) throw new Error("Not authenticated");
 
       const { data: blocked, error } = await supabase
-        .from("blocked_users")
+        .from('blocked_users')
         .select(`
+          id,
           blocked:profiles!blocked_users_blocked_id_fkey(
             id,
             full_name,
@@ -29,7 +32,7 @@ export function BlockedUsersSection() {
         .eq("blocker_id", user.id);
 
       if (error) throw error;
-      return blocked;
+      return blocked as BlockedUser[];
     }
   });
 
@@ -106,4 +109,3 @@ export function BlockedUsersSection() {
     </SettingsSection>
   );
 }
-
