@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js'
-import * as puppeteer from 'puppeteer'
+import { default as puppeteer } from "puppeteer-core"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -16,8 +16,9 @@ Deno.serve(async (req) => {
     console.log('Starting job scraping process...')
 
     // Création d'une instance de navigateur avec la bonne syntaxe pour Deno
-    const browser = await puppeteer.default.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      executablePath: 'google-chrome-stable'
     })
     
     const page = await browser.newPage()
@@ -38,7 +39,6 @@ Deno.serve(async (req) => {
         const locationElement = card.querySelector('.companyLocation')
         const snippetElement = card.querySelector('.job-snippet')
         const salaryElement = card.querySelector('.salary-snippet')
-        const dateElement = card.querySelector('.date')
         const urlElement = card.querySelector('h2.jobTitle a') as HTMLAnchorElement
 
         console.log('Processing job:', titleElement?.textContent)
