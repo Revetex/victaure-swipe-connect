@@ -13,8 +13,11 @@ export function FriendsList() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className={cn(
-        "min-h-screen w-full bg-background pt-16",
-        isMobile ? "pb-20" : "pb-6"
+        "min-h-screen w-full",
+        "bg-gradient-to-br from-[#F2FCE2]/50 via-[#D3E4FD]/30 to-[#FFDEE2]/20",
+        "backdrop-blur-sm",
+        isMobile ? "pb-20" : "pb-6",
+        "pt-16"
       )}
     >
       <FriendsContent />
