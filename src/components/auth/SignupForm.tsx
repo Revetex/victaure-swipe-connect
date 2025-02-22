@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ interface SignupFormProps {
   fullName: string;
   phone: string;
   loading: boolean;
+  redirectTo?: string;
   onEmailChange: (value: string) => void;
   onPasswordChange: (value: string) => void;
   onFullNameChange: (value: string) => void;
@@ -27,6 +29,7 @@ export function SignupForm({
   fullName,
   phone,
   loading,
+  redirectTo,
   onEmailChange,
   onPasswordChange,
   onFullNameChange,

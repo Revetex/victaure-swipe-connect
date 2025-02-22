@@ -9,6 +9,7 @@ interface LoginFormProps {
   email: string;
   password: string;
   loading: boolean;
+  redirectTo?: string;
   onEmailChange: (value: string) => void;
   onPasswordChange: (value: string) => void;
   onSubmit: () => void;
@@ -18,6 +19,7 @@ export function LoginForm({
   email,
   password,
   loading,
+  redirectTo,
   onEmailChange,
   onPasswordChange,
   onSubmit

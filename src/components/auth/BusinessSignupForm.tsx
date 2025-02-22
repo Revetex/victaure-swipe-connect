@@ -3,19 +3,17 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { Loader2, Building2, Mail, Lock, Phone, MapPin } from 'lucide-react';
+import { Loader2, Building2, Mail, Lock, Phone, MapPin } from "lucide-react";
+import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
-export function BusinessSignupForm() {
+interface BusinessSignupFormProps {
+  redirectTo?: string;
+}
+
+export function BusinessSignupForm({ redirectTo }: BusinessSignupFormProps) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -35,7 +33,6 @@ export function BusinessSignupForm() {
     setLoading(true);
 
     try {
-      // 1. Créer le compte utilisateur
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -44,7 +41,6 @@ export function BusinessSignupForm() {
       if (authError) throw authError;
 
       if (authData.user) {
-        // 2. Créer le profil entreprise
         const { error: profileError } = await supabase
           .from('business_profiles')
           .insert({
@@ -63,11 +59,11 @@ export function BusinessSignupForm() {
         if (profileError) throw profileError;
 
         toast.success('Compte entreprise créé avec succès');
-        navigate('/dashboard');
+        navigate(redirectTo || '/dashboard');
       }
     } catch (error) {
       console.error('Error:', error);
-      toast.error(error.message || "Erreur lors de la création du compte");
+      toast.error("Erreur lors de la création du compte");
     } finally {
       setLoading(false);
     }
@@ -80,12 +76,12 @@ export function BusinessSignupForm() {
           Créez votre compte entreprise
         </h1>
         <p className="text-sm text-muted-foreground">
-          Commencez votre période d'essai gratuite de 2 mois
+          Commencez votre période d'essai gratuite
         </p>
       </div>
 
       <div className="space-y-4">
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="companyName">Nom de l'entreprise</Label>
           <div className="relative">
             <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -100,7 +96,7 @@ export function BusinessSignupForm() {
           </div>
         </div>
 
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="email">Email professionnel</Label>
           <div className="relative">
             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -116,7 +112,7 @@ export function BusinessSignupForm() {
           </div>
         </div>
 
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="password">Mot de passe</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -173,7 +169,7 @@ export function BusinessSignupForm() {
           </div>
         </div>
 
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="phone">Téléphone</Label>
           <div className="relative">
             <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -184,11 +180,12 @@ export function BusinessSignupForm() {
               value={formData.phone}
               onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
               className="pl-10"
+              required
             />
           </div>
         </div>
 
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="address">Adresse</Label>
           <div className="relative">
             <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -198,6 +195,7 @@ export function BusinessSignupForm() {
               value={formData.address}
               onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
               className="pl-10"
+              required
             />
           </div>
         </div>
@@ -237,6 +235,7 @@ export function BusinessSignupForm() {
               placeholder="A1A 1A1"
               value={formData.postalCode}
               onChange={(e) => setFormData(prev => ({ ...prev, postalCode: e.target.value }))}
+              required
             />
           </div>
         </div>
@@ -256,18 +255,6 @@ export function BusinessSignupForm() {
           "Créer mon compte entreprise"
         )}
       </Button>
-
-      <p className="px-8 text-center text-sm text-muted-foreground">
-        En créant un compte, vous acceptez nos{" "}
-        <a href="/terms" className="underline underline-offset-4 hover:text-primary">
-          conditions d'utilisation
-        </a>
-        {" "}et notre{" "}
-        <a href="/privacy" className="underline underline-offset-4 hover:text-primary">
-          politique de confidentialité
-        </a>
-        .
-      </p>
     </form>
   );
 }
