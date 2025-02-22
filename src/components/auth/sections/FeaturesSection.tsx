@@ -30,18 +30,21 @@ const features = [
   }
 ];
 
-function Box(props: any) {
+function Box({ position }: { position: [number, number, number] }) {
   const mesh = useRef<THREE.Mesh>(null!);
   const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
 
-  useFrame((state) => {
-    mesh.current.rotation.x = mesh.current.rotation.y += 0.01;
+  useFrame(() => {
+    if (mesh.current) {
+      mesh.current.rotation.x += 0.01;
+      mesh.current.rotation.y += 0.01;
+    }
   });
 
   return (
     <mesh
-      {...props}
+      position={position}
       ref={mesh}
       scale={active ? 1.5 : 1}
       onClick={() => setActive(!active)}
@@ -75,13 +78,24 @@ function Box(props: any) {
   );
 }
 
+function Scene() {
+  return (
+    <>
+      <ambientLight intensity={0.5} />
+      <pointLight position={[10, 10, 10]} />
+      <Box position={[0, 0, 0]} />
+    </>
+  );
+}
+
 export function FeaturesSection() {
   return (
     <div className="h-[300px] w-full">
-      <Canvas camera={{ position: [0, 0, 7] }}>
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} />
-        <Box position={[0, 0, 0]} />
+      <Canvas 
+        camera={{ position: [0, 0, 7] }}
+        gl={{ antialias: true }}
+      >
+        <Scene />
       </Canvas>
     </div>
   );
