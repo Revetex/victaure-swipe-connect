@@ -5,71 +5,45 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 210 34% 20%;
-    --card: 0 0% 100%;
-    --card-foreground: 210 34% 20%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 210 34% 20%;
-    --primary: 200 61% 62%;
-    --primary-foreground: 210 34% 20%;
-    --secondary: 210 34% 20%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 210 34% 95%;
-    --muted-foreground: 210 34% 45%;
-    --accent: 24 33% 93%;
-    --accent-foreground: 210 34% 20%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 210 34% 90%;
-    --input: 210 34% 90%;
-    --ring: 200 61% 62%;
+    --background: #1B2A4A;
+    --foreground: #F2EBE4;
+    --primary: #64B5D9;
+    --primary-foreground: #1B2A4A;
+    --secondary: #1B2A4A;
+    --secondary-foreground: #F2EBE4;
+    --muted: rgba(242, 235, 228, 0.1);
+    --muted-foreground: rgba(242, 235, 228, 0.5);
+    --accent: #64B5D9;
+    --accent-foreground: #1B2A4A;
+    --card: rgba(27, 42, 74, 0.8);
+    --card-foreground: #F2EBE4;
+    --border: rgba(100, 181, 217, 0.1);
+    --input: rgba(100, 181, 217, 0.1);
+    --ring: #64B5D9;
     --radius: 0.75rem;
   }
 
-  .dark {
-    --background: 210 34% 20%;
-    --foreground: 0 0% 98%;
-    --card: 210 34% 18%;
-    --card-foreground: 0 0% 98%;
-    --popover: 210 34% 18%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 200 61% 62%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 210 34% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 210 34% 25%;
-    --muted-foreground: 210 34% 75%;
-    --accent: 24 33% 93%;
-    --accent-foreground: 210 34% 20%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 210 34% 30%;
-    --input: 210 34% 30%;
-    --ring: 200 61% 62%;
-  }
-}
-
-@layer base {
   * {
     @apply border-border;
   }
-  
+
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground m-0 p-0 min-h-screen;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
+  }
+
+  #root {
+    @apply min-h-screen w-full;
+  }
+
+  /* Reset margins and paddings that might cause shift */
+  html, body, #root {
+    @apply m-0 p-0 overflow-x-hidden;
   }
 }
 
 @layer utilities {
-  .glass-panel {
-    @apply bg-white/80 dark:bg-secondary/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 
-           dark:supports-[backdrop-filter]:bg-secondary/60 
-           border border-primary/20
-           shadow-[0_0_0_1px_rgba(100,181,217,0.1),0_4px_12px_rgba(0,0,0,0.3)];
-  }
-
-  .text-gradient {
-    @apply bg-gradient-to-br from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent;
+  .glass-effect {
+    @apply bg-opacity-20 backdrop-blur-md;
   }
 }

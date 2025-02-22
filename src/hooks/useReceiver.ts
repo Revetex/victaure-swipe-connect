@@ -12,6 +12,12 @@ interface ReceiverState {
 export const useReceiver = create<ReceiverState>((set) => ({
   receiver: null,
   showConversation: false,
-  setReceiver: (receiver) => set({ receiver }),
-  setShowConversation: (show) => set({ showConversation: show }),
+  setReceiver: (receiver) => {
+    console.log('Setting receiver:', receiver);
+    set({ receiver });
+  },
+  setShowConversation: (show) => {
+    console.log('Setting showConversation:', show);
+    set({ showConversation: show });
+  },
 }));
