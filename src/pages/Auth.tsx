@@ -57,39 +57,56 @@ export default function Auth() {
     </div>;
   }
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (userQuestions >= 3) {
       toast.error("Veuillez vous connecter pour continuer la conversation avec Mr. Victaure");
       return;
     }
     if (userInput.trim()) {
+      const userMessage = userInput.trim();
       setUserQuestions(prev => prev + 1);
-      setVisibleMessages(prev => [...prev, userInput.trim()]);
+      setVisibleMessages(prev => [...prev, { content: userMessage, isUser: true }]);
       setUserInput("");
-      
       setShowThinking(true);
-      setTimeout(() => {
+
+      try {
+        const response = await fetch('https://api.openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer YOUR_API_KEY',
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://victaure.com',
+            'X-Title': 'Victaure Assistant'
+          },
+          body: JSON.stringify({
+            model: 'mistralai/mistral-7b-instruct', // Modèle gratuit
+            messages: [
+              {
+                role: 'system',
+                content: 'Tu es Mr. Victaure, un assistant professionnel sur une plateforme de recrutement. Tu dois être amical et professionnel, encourageant les utilisateurs à créer un compte après 3 messages.'
+              },
+              {
+                role: 'user',
+                content: userMessage
+              }
+            ]
+          })
+        });
+
+        const data = await response.json();
+        const aiResponse = data.choices[0].message.content;
+
+        setVisibleMessages(prev => [...prev, { content: aiResponse, isUser: false }]);
+      } catch (error) {
+        console.error('Error:', error);
+        toast.error("Désolé, je ne peux pas répondre pour le moment");
+      } finally {
         setShowThinking(false);
-        let response = "";
-        switch(userQuestions) {
-          case 0:
-            response = "Je vois que ce sujet vous intéresse ! J'aimerais en savoir plus sur vos objectifs professionnels. Quelle est votre domaine d'expertise ?";
-            break;
-          case 1:
-            response = "Très intéressant ! Notre plateforme propose justement des opportunités dans ce domaine. Recherchez-vous un emploi à temps plein ou des missions freelance ?";
-            break;
-          case 2:
-            response = "Je comprends vos besoins. Pour vous accompagner de manière personnalisée et vous donner accès à toutes nos fonctionnalités, je vous invite à créer un compte. Cela me permettra de mieux cibler les opportunités qui vous correspondent.";
-            break;
-          default:
-            response = "Je vous invite à créer un compte pour continuer notre discussion.";
-        }
-        setVisibleMessages(prev => [...prev, response]);
         
         if (chatContainerRef.current) {
           chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
         }
-      }, 1000);
+      }
     }
   };
 
@@ -129,12 +146,12 @@ export default function Auth() {
                     <div
                       key={index}
                       className={`p-3 rounded-lg ${
-                        index % 2 === 1
-                          ? "mr-auto bg-[#F2EBE4] border-[#64B5D9]/10 max-w-[80%]"
-                          : "ml-auto bg-[#64B5D9] text-[#F2EBE4] border-transparent max-w-[80%]"
+                        message.isUser
+                          ? "ml-auto bg-[#64B5D9] text-[#F2EBE4] border-transparent max-w-[80%]"
+                          : "mr-auto bg-[#F2EBE4] text-[#1B2A4A] border-[#64B5D9]/10 max-w-[80%]"
                       }`}
                     >
-                      <p className="text-sm whitespace-pre-wrap">{message}</p>
+                      <p className="text-sm font-medium whitespace-pre-wrap">{message.content}</p>
                     </div>
                   ))}
                 </div>
@@ -157,9 +174,8 @@ export default function Auth() {
                 <button
                   onClick={handleSendMessage}
                   disabled={userQuestions >= 3 || !userInput.trim()}
-                  className="h-10 px-4 rounded-lg bg-[#64B5D9] text-[#F2EBE4] hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#64B5D9] text-[#F2EBE4] hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
-                  <span className="text-sm">Envoyer</span>
                   <MessagesSquare className="w-4 h-4" />
                 </button>
               </div>
@@ -180,11 +196,15 @@ export default function Auth() {
           </div>
         </div>
 
-        <footer className="mt-24 w-full max-w-6xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-[#F2EBE4]/10 pt-8">
-            <div className="space-y-4 order-2 md:order-1">
+        <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center">
+          <div className="space-y-8 border-t border-[#F2EBE4]/10 pt-8">
+            <div>
+              <p className="text-[#64B5D9] font-medium">Une entreprise fièrement québécoise</p>
+            </div>
+
+            <div className="space-y-6">
               <h3 className="text-lg font-semibold text-[#F2EBE4]">Nous contacter</h3>
-              <form className="space-y-4">
+              <form className="space-y-4 max-w-md mx-auto">
                 <input
                   type="text"
                   placeholder="Votre nom"
@@ -209,26 +229,23 @@ export default function Auth() {
               </form>
             </div>
 
-            <div className="flex flex-col justify-between order-1 md:order-2">
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-[#F2EBE4]">Liens juridiques</h3>
-                <div className="space-y-2">
-                  <Link to="/legal/terms" className="block text-sm text-[#F2EBE4]/80 hover:text-[#64B5D9]">
-                    Conditions d'utilisation
-                  </Link>
-                  <Link to="/legal/privacy" className="block text-sm text-[#F2EBE4]/80 hover:text-[#64B5D9]">
-                    Politique de confidentialité
-                  </Link>
-                  <Link to="/legal/cookies" className="block text-sm text-[#F2EBE4]/80 hover:text-[#64B5D9]">
-                    Politique des cookies
-                  </Link>
-                </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-[#F2EBE4]">Liens juridiques</h3>
+              <div className="space-y-2">
+                <Link to="/legal/terms" className="block text-sm text-[#F2EBE4]/80 hover:text-[#64B5D9]">
+                  Conditions d'utilisation
+                </Link>
+                <Link to="/legal/privacy" className="block text-sm text-[#F2EBE4]/80 hover:text-[#64B5D9]">
+                  Politique de confidentialité
+                </Link>
+                <Link to="/legal/cookies" className="block text-sm text-[#F2EBE4]/80 hover:text-[#64B5D9]">
+                  Politique des cookies
+                </Link>
               </div>
+            </div>
 
-              <div className="mt-8 text-center text-sm">
-                <p className="text-[#F2EBE4]/60">© {new Date().getFullYear()} Victaure Technologies inc.</p>
-                <p className="mt-2 text-[#64B5D9]">Une entreprise fièrement québécoise</p>
-              </div>
+            <div className="text-sm text-[#F2EBE4]/60">
+              <p>© {new Date().getFullYear()} Victaure Technologies inc.</p>
             </div>
           </div>
         </footer>
