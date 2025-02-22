@@ -11,6 +11,9 @@ import { VictaureChat } from "@/components/chat/VictaureChat";
 import { PricingGrid } from "@/components/pricing/PricingGrid";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Bot, Briefcase, Sparkles, Tool, Users } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -34,6 +37,29 @@ export default function Auth() {
     toast.error("Veuillez vous connecter pour continuer la conversation avec Mr. Victaure");
   };
 
+  const features = [
+    {
+      icon: Users,
+      title: "Gratuit pour les chercheurs d'emploi",
+      description: "Accédez à toutes les fonctionnalités essentielles sans frais"
+    },
+    {
+      icon: Bot,
+      title: "Marketplace IA innovante",
+      description: "Des outils d'IA spécialisés pour optimiser votre recherche"
+    },
+    {
+      icon: Tool,
+      title: "Suite d'outils complète",
+      description: "CV, lettre de motivation, analyse de marché et plus encore"
+    },
+    {
+      icon: Sparkles,
+      title: "Assistant IA personnel",
+      description: "Mr. Victaure vous guide dans votre parcours professionnel"
+    }
+  ];
+
   return (
     <div className="min-h-screen flex flex-col bg-[#1B2A4A] relative overflow-hidden">
       {/* Logo and signature pattern */}
@@ -53,7 +79,42 @@ export default function Auth() {
         <div className="w-full max-w-xl mx-auto space-y-8">
           <AuthHeader />
 
-          <div className="relative bg-[#D3E4FD]/80 rounded-xl p-4 backdrop-blur-sm border border-[#D3E4FD] overflow-hidden">
+          {/* Bannière Gratuit */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex justify-center"
+          >
+            <Badge 
+              variant="secondary" 
+              className="px-4 py-2 text-lg bg-[#64B5D9]/20 border-2 border-[#64B5D9] text-white"
+            >
+              Gratuit pour les chercheurs d'emploi
+            </Badge>
+          </motion.div>
+
+          {/* Grid des fonctionnalités */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-[#D3E4FD]/10 backdrop-blur-sm border-2 border-[#D3E4FD]/20 rounded-xl p-4"
+              >
+                <div className="flex items-start gap-3">
+                  <feature.icon className="w-5 h-5 text-[#64B5D9] mt-1" />
+                  <div>
+                    <h3 className="text-[#F2EBE4] font-medium">{feature.title}</h3>
+                    <p className="text-[#F2EBE4]/60 text-sm">{feature.description}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="relative bg-[#D3E4FD]/5 backdrop-blur-sm border-2 border-[#D3E4FD]/20 rounded-xl p-4 overflow-hidden">
             <VictaureChat 
               maxQuestions={3}
               onMaxQuestionsReached={handleMaxQuestionsReached}
@@ -65,8 +126,13 @@ export default function Auth() {
         </div>
       </main>
 
-      <section className="w-full bg-white/5 backdrop-blur-sm py-16">
-        <PricingGrid />
+      <section className="w-full bg-white/5 backdrop-blur-sm py-16 border-t-2 border-[#D3E4FD]/20">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-2xl font-bold text-center text-white mb-8">
+            Choisissez votre plan
+          </h2>
+          <PricingGrid />
+        </div>
       </section>
 
       <AuthFooter />
