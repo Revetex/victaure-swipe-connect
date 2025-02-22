@@ -1,5 +1,4 @@
-
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
 import { Logo } from "@/components/Logo";
@@ -19,6 +18,7 @@ export default function Auth() {
   const [showThinking, setShowThinking] = useState(false);
   const [userQuestions, setUserQuestions] = useState<number>(0);
   const [userInput, setUserInput] = useState("");
+  const [autoMessagesEnabled, setAutoMessagesEnabled] = useState(true);
   const messages = [
     "Bonjour ! Je suis Mr. Victaure, votre assistant personnel.", 
     "Je suis là pour vous guider dans votre recherche d'emploi... 🎯", 
@@ -27,9 +27,11 @@ export default function Auth() {
     "Notre système d'enchères et de contrats sécurisés vous permet de participer à des appels d'offres professionnels. 📊"
   ];
 
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const showNextMessage = async () => {
-      if (currentMessageIndex < messages.length) {
+      if (currentMessageIndex < messages.length && autoMessagesEnabled) {
         setShowThinking(true);
         await new Promise(resolve => setTimeout(resolve, 1500));
         setShowThinking(false);
@@ -43,13 +45,17 @@ export default function Auth() {
         }
         setIsTyping(false);
         setCurrentMessageIndex(prev => prev + 1);
+
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
       }
     };
 
     if (!isTyping && currentMessageIndex < messages.length) {
       showNextMessage();
     }
-  }, [currentMessageIndex, isTyping]);
+  }, [currentMessageIndex, isTyping, autoMessagesEnabled]);
 
   if (isAuthenticated) {
     const redirectTo = sessionStorage.getItem('redirectTo') || '/dashboard';
@@ -69,9 +75,24 @@ export default function Auth() {
       return;
     }
     if (userInput.trim()) {
+      setAutoMessagesEnabled(false);
       setUserQuestions(prev => prev + 1);
       setVisibleMessages(prev => [...prev, userInput.trim()]);
       setUserInput("");
+      
+      setTimeout(() => {
+        const responses = [
+          "Je comprends votre question. Pour y répondre pleinement, je vous invite à créer un compte. Cela me permettra de mieux vous accompagner.",
+          "Excellente question ! Pour accéder à toutes les fonctionnalités et obtenir une réponse détaillée, je vous suggère de vous connecter.",
+          "Je vois que vous êtes intéressé ! Connectez-vous pour découvrir toutes les possibilités que nous offrons."
+        ];
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        setVisibleMessages(prev => [...prev, randomResponse]);
+        
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+      }, 1000);
     }
   };
 
@@ -95,7 +116,7 @@ export default function Auth() {
               La Plateforme Complète du Marché de l'Emploi
             </h1>
 
-            <div className="w-full glass-panel rounded-xl p-4 border border-[#64B5D9]/20 bg-white/90">
+            <div className="w-full glass-panel rounded-xl p-4 border-2 border-[#222] shadow-[0_0_0_1px_rgba(100,181,217,0.1),0_4px_12px_rgba(0,0,0,0.3)]">
               <div className="flex items-center gap-2 text-[#1B2A4A] mb-4">
                 <Bot className="w-5 h-5" />
                 <span className="text-sm font-medium">Mr. Victaure</span>
@@ -111,25 +132,33 @@ export default function Auth() {
                 )}
               </div>
 
-              <div className="space-y-4 h-[400px] overflow-y-auto">
-                <AnimatePresence mode="popLayout">
-                  {visibleMessages.map((message, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.2 }}
-                      className={`p-3 rounded-lg border ${
-                        index >= messages.length
-                          ? "ml-auto bg-[#64B5D9] text-[#F2EBE4] border-transparent max-w-[80%]"
-                          : "mr-auto bg-[#F2EBE4] border-[#64B5D9]/10 max-w-[80%]"
-                      }`}
-                    >
-                      <p className="text-sm text-[#1B2A4A] whitespace-pre-wrap">{message}</p>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+              <div 
+                ref={chatContainerRef}
+                className="space-y-4 h-[400px] overflow-y-auto flex flex-col-reverse"
+                style={{
+                  scrollBehavior: 'smooth'
+                }}
+              >
+                <div className="flex flex-col-reverse">
+                  <AnimatePresence mode="popLayout">
+                    {visibleMessages.map((message, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.2 }}
+                        className={`p-3 rounded-lg border ${
+                          index >= messages.length
+                            ? "ml-auto bg-[#64B5D9] text-[#F2EBE4] border-transparent max-w-[80%]"
+                            : "mr-auto bg-[#F2EBE4] border-[#64B5D9]/10 max-w-[80%]"
+                        }`}
+                      >
+                        <p className="text-sm text-[#1B2A4A] whitespace-pre-wrap">{message}</p>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
               </div>
 
               <div className="mt-4 flex items-center gap-2">
