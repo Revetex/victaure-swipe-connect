@@ -28,7 +28,7 @@ export default function Auth() {
   });
 
   useEffect(() => {
-    const launchDate = new Date('2025-03-15T08:00:00').getTime();
+    const launchDate = new Date('2024-03-30T08:00:00').getTime();
 
     const timer = setInterval(() => {
       const now = new Date().getTime();
@@ -64,7 +64,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#1B2A4A] via-[#1B2A4A] to-[#152238] relative overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-black via-[#1B2A4A] to-black relative overflow-hidden">
       <div className="absolute inset-0 bg-[url('/lovable-uploads/bcfe3f97-9c11-4615-821e-d9666f3a9c14.png')] bg-repeat opacity-[0.02] animate-[pulse_4s_ease-in-out_infinite]" />
       
       <ThemeSelector />
@@ -81,8 +81,8 @@ export default function Auth() {
             animate={{ opacity: 1, scale: 1 }}
             className="relative"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-[#64B5D9]/10 to-[#1B2A4A]/30 blur-xl" />
-            <div className="relative bg-gradient-to-br from-[#D3E4FD]/10 to-transparent backdrop-blur-lg border border-[#D3E4FD]/20 rounded-xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#64B5D9]/10 to-black/30 blur-xl" />
+            <div className="relative bg-gradient-to-br from-white/10 to-transparent backdrop-blur-lg border border-white/20 rounded-xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-hidden">
               <VictaureChat 
                 maxQuestions={3}
                 onMaxQuestionsReached={handleMaxQuestionsReached}

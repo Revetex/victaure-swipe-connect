@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -6,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+
 export function AuthFooter() {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -13,15 +15,15 @@ export function AuthFooter() {
     email: "",
     message: ""
   });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const {
-        error
-      } = await supabase.functions.invoke('send-contact-email', {
+      const { error } = await supabase.functions.invoke('send-contact-email', {
         body: formData
       });
       if (error) throw error;
+      
       toast.success("Message envoyé avec succès!");
       setIsOpen(false);
       setFormData({
@@ -34,19 +36,21 @@ export function AuthFooter() {
       console.error(error);
     }
   };
-  return <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center" role="contentinfo">
-      <div className="space-y-8 border-t border-[#F2EBE4]/10 pt-8">
+
+  return (
+    <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center" role="contentinfo">
+      <div className="space-y-8 border-t border-white/20 pt-8">
         <div className="flex justify-center mb-8">
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="secondary" className="bg-[#64B5D9]/20 border-2 border-[#64B5D9] text-white hover:bg-[#64B5D9]/30">
+              <Button variant="secondary" className="bg-white/10 border-2 border-white text-white hover:bg-white/20">
                 Devenez Partenaire
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-[#1B2A4A] border-2 border-[#64B5D9]">
+            <DialogContent className="sm:max-w-[425px] bg-[#1B2A4A] border-2 border-white/20">
               <div className="p-6 space-y-6">
                 <h3 className="text-xl font-semibold text-white text-center">Information de Contact</h3>
-                <div className="space-y-4 text-[#F2EBE4]/80">
+                <div className="space-y-4 text-white/80">
                   <p>Pour toute demande de partenariat, contactez :</p>
                   <div className="space-y-2">
                     <p className="font-medium text-[#64B5D9]">Thomas Blanchet</p>
@@ -60,16 +64,16 @@ export function AuthFooter() {
           </Dialog>
         </div>
 
-        <nav className="flex flex-wrap justify-center gap-4 text-sm text-[#F2EBE4]/60" role="navigation">
+        <nav className="flex flex-wrap justify-center gap-4 text-sm text-white/80" role="navigation">
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="link" className="text-[#F2EBE4]/60 hover:text-[#F2EBE4]">
+              <Button variant="link" className="text-white/80 hover:text-white">
                 Conditions d'utilisation
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl bg-[#1B2A4A] border-2 border-white/20">
               <DialogHeader>
-                <DialogTitle className="text-xl font-bold mb-4">Conditions d'utilisation</DialogTitle>
+                <DialogTitle className="text-xl font-bold mb-4 text-white">Conditions d'utilisation</DialogTitle>
               </DialogHeader>
               <div className="prose prose-sm prose-invert max-w-none">
                 <h3>1. Acceptation des conditions</h3>
@@ -92,13 +96,13 @@ export function AuthFooter() {
 
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="link" className="text-[#F2EBE4]/60 hover:text-[#F2EBE4]">
+              <Button variant="link" className="text-white/80 hover:text-white">
                 Politique de confidentialité
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl bg-[#1B2A4A] border-2 border-white/20">
               <DialogHeader>
-                <DialogTitle className="text-xl font-bold mb-4">Politique de confidentialité</DialogTitle>
+                <DialogTitle className="text-xl font-bold mb-4 text-white">Politique de confidentialité</DialogTitle>
               </DialogHeader>
               <div className="prose prose-sm prose-invert max-w-none">
                 <h3>1. Collecte des données</h3>
@@ -118,13 +122,13 @@ export function AuthFooter() {
 
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="link" className="text-[#F2EBE4]/60 hover:text-[#F2EBE4]">
+              <Button variant="link" className="text-white/80 hover:text-white">
                 Politique des cookies
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl bg-[#1B2A4A] border-2 border-white/20">
               <DialogHeader>
-                <DialogTitle className="text-xl font-bold mb-4">Politique des cookies</DialogTitle>
+                <DialogTitle className="text-xl font-bold mb-4 text-white">Politique des cookies</DialogTitle>
               </DialogHeader>
               <div className="prose prose-sm prose-invert max-w-none">
                 <h3>1. Utilisation des cookies</h3>
@@ -144,43 +148,43 @@ export function AuthFooter() {
 
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-              <Button variant="link" className="text-sm text-[#F2EBE4]/60 hover:text-[#F2EBE4]" title="Ouvrir le formulaire de contact">
+              <Button variant="link" className="text-white/80 hover:text-white">
                 Nous contacter
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-[#1B2A4A] border-2 border-black">
+            <DialogContent className="sm:max-w-[425px] bg-[#1B2A4A] border-2 border-white/20">
               <DialogHeader>
-                <DialogTitle className="text-[#F2EBE4]">Contactez-nous</DialogTitle>
+                <DialogTitle className="text-white">Contactez-nous</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <label htmlFor="contact-name" className="text-sm font-medium text-[#F2EBE4]">
+                  <label htmlFor="contact-name" className="text-sm font-medium text-white">
                     Nom
                   </label>
                   <Input id="contact-name" required value={formData.name} onChange={e => setFormData(prev => ({
-                  ...prev,
-                  name: e.target.value
-                }))} className="bg-[#F2EBE4] text-[#1B2A4A]" />
+                    ...prev,
+                    name: e.target.value
+                  }))} className="bg-white text-[#1B2A4A]" />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="contact-email" className="text-sm font-medium text-[#F2EBE4]">
+                  <label htmlFor="contact-email" className="text-sm font-medium text-white">
                     Email
                   </label>
                   <Input id="contact-email" type="email" required value={formData.email} onChange={e => setFormData(prev => ({
-                  ...prev,
-                  email: e.target.value
-                }))} className="bg-[#F2EBE4] text-[#1B2A4A]" />
+                    ...prev,
+                    email: e.target.value
+                  }))} className="bg-white text-[#1B2A4A]" />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="contact-message" className="text-sm font-medium text-[#F2EBE4]">
+                  <label htmlFor="contact-message" className="text-sm font-medium text-white">
                     Message
                   </label>
                   <Textarea id="contact-message" required value={formData.message} onChange={e => setFormData(prev => ({
-                  ...prev,
-                  message: e.target.value
-                }))} className="bg-[#F2EBE4] text-[#1B2A4A] min-h-[100px]" />
+                    ...prev,
+                    message: e.target.value
+                  }))} className="bg-white text-[#1B2A4A] min-h-[100px]" />
                 </div>
-                <Button type="submit" className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-[#F2EBE4]">
+                <Button type="submit" className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white">
                   Envoyer
                 </Button>
               </form>
@@ -188,9 +192,10 @@ export function AuthFooter() {
           </Dialog>
         </nav>
 
-        <div className="text-sm text-[#F2EBE4]/60">
+        <div className="text-sm text-white/80">
           <p>© 2025 Victaure Technologies inc.</p>
         </div>
       </div>
-    </footer>;
+    </footer>
+  );
 }
