@@ -6,14 +6,17 @@ import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/header/AppHeader";
+import { useNavigate } from "react-router-dom";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(4);
   const [isEditing, setIsEditing] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { profile } = useProfile();
+  const navigate = useNavigate();
 
   const handleRequestChat = () => {
+    navigate("/messages");
     setCurrentPage(2);
   };
 
@@ -29,7 +32,12 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-background w-full">
-      <AppHeader onRequestAssistant={handleRequestChat} />
+      <AppHeader 
+        onRequestAssistant={handleRequestChat}
+        showMobileMenu={showMobileMenu}
+        setShowMobileMenu={setShowMobileMenu}
+      />
+      
       <DashboardSidebar 
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -46,7 +54,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "flex-1 lg:ml-64",
         "min-h-screen",
         "relative",
-        "pt-16" // Ajout de padding-top pour compenser le header fixe
+        "pt-16"
       )}>
         {children || (
           <DashboardContent
