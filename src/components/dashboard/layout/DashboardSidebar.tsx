@@ -46,8 +46,8 @@ export function DashboardSidebar({
   }, [getUnreadCount]);
 
   return (
-    <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64">
-      <div className="flex flex-col h-full bg-[#64B5D9] relative overflow-hidden border-r-2 border-black">
+    <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:z-50">
+      <div className="flex flex-col h-full w-64 bg-[#64B5D9] relative overflow-hidden border-r-2 border-black">
         {/* Motif de fond */}
         <div 
           className="absolute inset-0 opacity-[0.03] pointer-events-none"

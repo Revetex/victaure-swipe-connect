@@ -5,7 +5,6 @@ import { PostList } from "./posts/PostList";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
 
 export function Feed() {
   const queryClient = useQueryClient();
@@ -16,12 +15,11 @@ export function Feed() {
   };
 
   return (
-    <section className="min-h-[calc(100vh-4rem)] mt-16 max-w-3xl mx-auto px-4">
+    <div className="min-h-[calc(100vh-4rem)] w-full max-w-3xl mx-auto px-4 py-16">
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
-        className="mb-4"
       >
         <CreatePost onPostCreated={invalidatePosts} />
       </motion.div>
@@ -30,12 +28,13 @@ export function Feed() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.2 }}
+        className="mt-4"
       >
         <PostList 
           onPostDeleted={invalidatePosts}
           onPostUpdated={invalidatePosts}
         />
       </motion.div>
-    </section>
+    </div>
   );
 }
