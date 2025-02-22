@@ -71,31 +71,6 @@ export function AuthForm({
         </Tabs>
       </div>
 
-      <footer className="mt-24 pb-8 px-4 w-full max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          
-
-          
-
-          <div className="md:col-span-2 space-y-4">
-            <h3 className="text-lg font-semibold text-[#F2EBE4]">Nous contacter</h3>
-            <form className="space-y-4">
-              <Input type="text" placeholder="Votre nom" className="bg-[#1B2A4A]/80 border-[#64B5D9]/20 text-[#F2EBE4] placeholder:text-[#F2EBE4]/40" />
-              <Input type="email" placeholder="Votre email" className="bg-[#1B2A4A]/80 border-[#64B5D9]/20 text-[#F2EBE4] placeholder:text-[#F2EBE4]/40" />
-              <Textarea placeholder="Votre message..." className="bg-[#1B2A4A]/80 border-[#64B5D9]/20 text-[#F2EBE4] placeholder:text-[#F2EBE4]/40 min-h-[100px]" />
-              <Button type="submit" className="w-full bg-[#64B5D9] text-[#F2EBE4] hover:bg-[#64B5D9]/90">
-                Envoyer
-              </Button>
-            </form>
-          </div>
-        </div>
-
-        <Separator className="my-8 bg-[#64B5D9]/20" />
-        
-        <div className="text-center text-sm text-[#F2EBE4]/60">
-          <p>© {new Date().getFullYear()} Victaure Technologies inc. Tous droits réservés.</p>
-          <p className="mt-2">Une entreprise fièrement québécoise</p>
-        </div>
-      </footer>
+      
     </div>;
 }
