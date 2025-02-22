@@ -1,7 +1,7 @@
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Text, useFont } from "@react-three/drei";
+import { Text } from "@react-three/drei";
 import type { Mesh } from 'three';
 import { features } from "./featureData";
 
@@ -11,7 +11,6 @@ interface FeatureBoxProps {
 
 export function FeatureBox({ position }: FeatureBoxProps) {
   const meshRef = useRef<Mesh>(null);
-  const font = useFont("/fonts/Inter-Regular.woff");
 
   useFrame((state, delta) => {
     if (meshRef.current) {
@@ -19,8 +18,6 @@ export function FeatureBox({ position }: FeatureBoxProps) {
       meshRef.current.rotation.y += delta * 0.5;
     }
   });
-
-  if (!font) return null;
 
   return (
     <mesh
@@ -45,13 +42,15 @@ export function FeatureBox({ position }: FeatureBoxProps) {
         return (
           <Text
             key={index}
-            font={font.data}
+            font="/fonts/Inter-Regular.woff"
             position={textPosition}
             rotation={textRotation}
             fontSize={0.3}
             color="#F2EBE4"
             anchorX="center"
             anchorY="middle"
+            maxWidth={2}
+            textAlign="center"
           >
             {feature.title}
           </Text>
