@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Loader } from "@/components/ui/loader";
 import { FeatureBox } from "./features/FeatureBox";
-import { Html, OrbitControls } from "@react-three/drei";
+import { Html } from "@react-three/drei";
 import { features } from "./features/featureData";
 
 export function FeaturesSection() {
@@ -16,13 +16,7 @@ export function FeaturesSection() {
       </div>
       <Canvas
         camera={{ position: [0, 0, 7], fov: 75 }}
-        gl={{ 
-          antialias: true,
-          alpha: true,
-          powerPreference: "high-performance"
-        }}
-        dpr={[1, 2]}
-        legacy={false}
+        gl={{ antialias: true }}
       >
         <color attach="background" args={["#1A1F2C"]} />
         <ambientLight intensity={0.5} />
@@ -34,12 +28,6 @@ export function FeaturesSection() {
         }>
           <FeatureBox position={[0, 0, 0]} />
         </Suspense>
-        <OrbitControls 
-          enableZoom={false}
-          enablePan={false}
-          minPolarAngle={Math.PI / 2}
-          maxPolarAngle={Math.PI / 2}
-        />
       </Canvas>
     </div>
   );
