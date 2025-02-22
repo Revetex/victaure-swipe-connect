@@ -11,7 +11,7 @@ interface FeatureBoxProps {
 export function FeatureBox({ position }: FeatureBoxProps) {
   const meshRef = useRef<Mesh>(null);
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (meshRef.current) {
       meshRef.current.rotation.y += delta * 0.5;
     }
@@ -19,9 +19,9 @@ export function FeatureBox({ position }: FeatureBoxProps) {
 
   return (
     <Center position={position}>
-      <mesh ref={meshRef}>
+      <mesh ref={meshRef} castShadow receiveShadow>
         <boxGeometry args={[3, 3, 3]} />
-        <meshStandardMaterial color="#1B2A4A" />
+        <meshStandardMaterial color="#1B2A4A" roughness={0.5} metalness={0.5} />
       </mesh>
     </Center>
   );
