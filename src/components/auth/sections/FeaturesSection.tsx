@@ -7,7 +7,12 @@ import { Html, OrbitControls } from "@react-three/drei";
 
 export function FeaturesSection() {
   return (
-    <div className="h-[300px] w-full">
+    <div className="h-[300px] w-full relative">
+      <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+        <h2 className="text-[#64B5D9] text-xl font-medium">
+          {features[0].title}
+        </h2>
+      </div>
       <Canvas
         camera={{ position: [0, 0, 7], fov: 75 }}
         gl={{ antialias: true }}
