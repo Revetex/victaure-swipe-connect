@@ -90,6 +90,7 @@ export function Logo({ size = "md", className }: LogoProps) {
       <img 
         src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png" 
         alt="Victaure Logo" 
+        loading="eager"
         className={cn(
           logoSizes[size],
           "object-contain"
@@ -99,8 +100,7 @@ export function Logo({ size = "md", className }: LogoProps) {
         "font-tiempos font-black tracking-[0.2em]",
         "text-transparent bg-clip-text bg-gradient-to-b from-zinc-900 to-zinc-700",
         "dark:from-white dark:to-zinc-300",
-        "relative after:absolute after:inset-0 after:content-['VICTAURE'] after:text-transparent after:tracking-[0.2em] after:font-tiempos after:font-black",
-        "after:[text-shadow:1px_1px_0_rgb(75,85,99)]",
+        "[text-shadow:_-1px_-1px_0_rgb(75,85,99),_1px_-1px_0_rgb(75,85,99),_-1px_1px_0_rgb(75,85,99),_1px_1px_0_rgb(75,85,99)]",
         textSizes[size]
       )}>
         VICTAURE
