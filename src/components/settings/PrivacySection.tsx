@@ -93,6 +93,10 @@ export function PrivacySection() {
     }
   };
 
+  const privacyDescription = privacyEnabled
+    ? "Seuls vos amis peuvent voir votre profil complet"
+    : "Tout le monde peut voir votre profil complet";
+
   return (
     <Button
       variant="ghost"
@@ -110,20 +114,21 @@ export function PrivacySection() {
           }
           <label htmlFor={switchId} className="text-sm">
             Profil privé
-            <span className="sr-only"> - </span>
-            {privacyEnabled ? 
-              "Seuls vos amis peuvent voir votre profil complet" : 
-              "Tout le monde peut voir votre profil complet"}
+            <span className="sr-only"> - {privacyDescription}</span>
           </label>
         </div>
         <Switch 
-          id={switchId}
           checked={privacyEnabled}
           onCheckedChange={handlePrivacyToggle}
           disabled={isLoading}
+          id={switchId}
           aria-label={switchLabel}
           title="Activer ou désactiver le mode privé"
+          aria-describedby="privacy-description"
         />
+        <span id="privacy-description" className="sr-only">
+          {privacyEnabled ? "Rendre le profil public" : "Rendre le profil privé"}
+        </span>
       </div>
     </Button>
   );

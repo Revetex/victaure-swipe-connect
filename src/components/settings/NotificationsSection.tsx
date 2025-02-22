@@ -31,12 +31,16 @@ export function NotificationsSection() {
           <label htmlFor={switchId} className="text-sm">{switchLabel}</label>
         </div>
         <Switch 
-          id={switchId}
           checked={isEnabled}
           onCheckedChange={handleToggle}
+          id={switchId}
           aria-label={switchLabel}
           title="Activer ou désactiver les notifications"
+          aria-describedby="notifications-description"
         />
+        <span id="notifications-description" className="sr-only">
+          {isEnabled ? "Désactiver les notifications" : "Activer les notifications"}
+        </span>
       </div>
     </Button>
   );
