@@ -8,7 +8,7 @@ import { LoadingState } from "./LoadingState";
 import { FloatingButtons } from "./FloatingButtons";
 import { ContentRouter } from "./ContentRouter";
 import { DashboardHome } from "./DashboardHome";
-import { DashboardFriendsList } from "./DashboardFriendsList";
+import { DashboardFriendsList } from "../DashboardFriendsList";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -53,7 +53,7 @@ export function DashboardContent({
         "border border-[#64B5D9]/10"
       )}
     >
-      <div className="relative">
+      <div className="relative p-6">
         <ContentRouter
           currentPage={currentPage}
           onEditStateChange={onEditStateChange}

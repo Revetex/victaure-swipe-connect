@@ -43,16 +43,20 @@ export function DashboardSidebar({
     return () => clearInterval(interval);
   }, [getUnreadCount]);
 
+  const handlePageClick = (pageId: number, route: string) => {
+    onPageChange(pageId);
+  };
+
   return (
     <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64">
-      <div className="flex flex-col flex-grow bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-r">
+      <div className="flex flex-col flex-grow bg-[#1B2A4A]/95 backdrop-blur supports-[backdrop-filter]:bg-[#1B2A4A]/60 border-r border-[#64B5D9]/10">
         <div className="flex items-center justify-between p-4">
           <Logo />
           {completeProfile && (
             <Button
               variant="ghost"
               onClick={() => setShowProfilePreview(true)}
-              className="w-10 h-10 p-0 rounded-full overflow-hidden ring-2 ring-primary/20 hover:ring-primary/40 transition-all transform hover:scale-105"
+              className="w-10 h-10 p-0 rounded-full overflow-hidden ring-2 ring-[#64B5D9]/20 hover:ring-[#64B5D9]/40 transition-all transform hover:scale-105"
             >
               <img
                 src={completeProfile.avatar_url || "/user-icon.svg"}
@@ -68,23 +72,20 @@ export function DashboardSidebar({
             const Icon = item.icon;
             const isNotificationsItem = item.id === 9;
             return (
-              <Link
+              <button
                 key={item.id}
-                to={item.route}
-                onClick={() => onPageChange(item.id)}
+                onClick={() => handlePageClick(item.id, item.route)}
                 className={cn(
                   "w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm relative",
                   "transition-all duration-300 ease-out",
                   "hover:scale-[1.02] active:scale-[0.98]",
                   "border border-transparent",
                   currentPage === item.id 
-                    ? "bg-gradient-to-r from-primary/20 to-primary/5 text-primary font-medium border-primary/10 shadow-sm"
-                    : "text-muted-foreground hover:bg-muted/80 hover:text-foreground hover:border-border/50"
+                    ? "bg-gradient-to-r from-[#64B5D9]/20 to-[#64B5D9]/5 text-[#64B5D9] font-medium border-[#64B5D9]/10 shadow-sm"
+                    : "text-[#F2EBE4]/60 hover:bg-[#64B5D9]/10 hover:text-[#F2EBE4] hover:border-[#64B5D9]/20"
                 )}
-                aria-label={item.name}
-                title={item.name}
               >
-                <Icon className="h-4 w-4" aria-hidden="true" />
+                <Icon className="h-4 w-4" />
                 <span>{item.name}</span>
                 {isNotificationsItem && unreadCount > 0 && (
                   <Badge 
@@ -94,17 +95,17 @@ export function DashboardSidebar({
                     {unreadCount}
                   </Badge>
                 )}
-              </Link>
+              </button>
             );
           })}
         </nav>
 
-        <div className="p-4 mt-auto border-t border-border/50">
+        <div className="p-4 mt-auto border-t border-[#64B5D9]/10">
           <div className="flex items-center justify-center opacity-60 hover:opacity-100 transition-all duration-300">
             <img 
               src="/lovable-uploads/168ba21b-e221-4668-96cc-eb026041a0ed.png" 
               alt="Signature" 
-              className="h-8 w-auto mix-blend-multiply dark:mix-blend-screen hover:scale-105 transition-transform"
+              className="h-8 w-auto mix-blend-luminosity hover:scale-105 transition-transform"
             />
           </div>
         </div>
