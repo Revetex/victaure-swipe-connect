@@ -51,6 +51,11 @@
 
   * {
     @apply border-border selection:bg-zinc-900/10 dark:selection:bg-zinc-50/10;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
   }
   
   body {

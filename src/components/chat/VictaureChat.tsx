@@ -101,7 +101,7 @@ export function VictaureChat({
       <div className="p-4 bg-[#1B2A4A]">
         <div 
           ref={chatContainerRef}
-          className="flex flex-col justify-end h-[400px] overflow-y-auto mb-4"
+          className="flex flex-col justify-end h-[400px] overflow-y-auto mb-4 scrollbar-none"
         >
           <div className="space-y-4">
             {messages.map((message, index) => (
@@ -130,15 +130,18 @@ export function VictaureChat({
                 : "Posez une question à Mr. Victaure..."
             }
             disabled={userQuestions >= maxQuestions || isLoading}
-            className="flex-1 h-10 px-4 rounded-lg bg-[#F2EBE4] border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[#1B2A4A]"
+            className="flex-1 h-10 px-4 rounded-lg bg-[#F2EBE4] border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[#1B2A4A] user-select-none"
             onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
+            aria-label="Message input"
           />
           <button
             onClick={handleSendMessage}
             disabled={userQuestions >= maxQuestions || !userInput.trim() || isLoading}
             className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#64B5D9] text-[#F2EBE4] hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            title="Envoyer le message"
+            aria-label="Envoyer le message"
           >
-            <MessagesSquare className="w-4 h-4" />
+            <MessagesSquare className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
       </div>
