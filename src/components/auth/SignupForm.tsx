@@ -142,24 +142,31 @@ export function SignupForm({
                       <p>Nous collectons les informations suivantes :</p>
                       <ul className="list-disc pl-5 space-y-1">
                         <li>Nom et prénom</li>
-                        <li>Adresse e-mail</li>
+                        <li>Adresse e-mail professionnelle</li>
                         <li>Numéro de téléphone</li>
                         <li>Informations professionnelles</li>
                       </ul>
 
-                      <h2 className="text-lg font-semibold">2. Utilisation des informations</h2>
-                      <p>Les informations collectées sont utilisées pour :</p>
+                      <h2 className="text-lg font-semibold mt-6">2. Utilisation des données</h2>
+                      <p>Vos données sont utilisées pour :</p>
                       <ul className="list-disc pl-5 space-y-1">
-                        <li>Personnaliser l'expérience utilisateur</li>
-                        <li>Améliorer notre service</li>
-                        <li>Communiquer avec vous concernant votre compte</li>
+                        <li>Personnaliser votre expérience</li>
+                        <li>Améliorer nos services</li>
+                        <li>Vous contacter concernant votre compte</li>
+                        <li>Assurer la sécurité de la plateforme</li>
                       </ul>
 
-                      <h2 className="text-lg font-semibold">3. Protection des informations</h2>
-                      <p>Nous mettons en œuvre une variété de mesures de sécurité pour préserver la sécurité de vos informations personnelles.</p>
+                      <h2 className="text-lg font-semibold mt-6">3. Protection des données</h2>
+                      <p>Nous mettons en œuvre des mesures de sécurité pour protéger vos informations.</p>
 
-                      <h2 className="text-lg font-semibold">4. Cookies</h2>
-                      <p>Nous utilisons des cookies pour améliorer l'expérience utilisateur et analyser notre trafic.</p>
+                      <h2 className="text-lg font-semibold mt-6">4. Vos droits</h2>
+                      <p>Vous disposez des droits suivants :</p>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>Accès à vos données</li>
+                        <li>Rectification des informations</li>
+                        <li>Suppression de compte</li>
+                        <li>Opposition au traitement</li>
+                      </ul>
                     </div>
                   </ScrollArea>
                 </DialogContent>
@@ -176,19 +183,27 @@ export function SignupForm({
                   <ScrollArea className="h-[400px] pr-4">
                     <div className="space-y-4 p-4 text-sm">
                       <h2 className="text-lg font-semibold">1. Acceptation des conditions</h2>
-                      <p>En accédant à ce site, vous acceptez d'être lié par ces conditions d'utilisation, toutes les lois et réglementations applicables.</p>
+                      <p>En utilisant notre plateforme, vous acceptez les présentes conditions.</p>
 
-                      <h2 className="text-lg font-semibold">2. Licence d'utilisation</h2>
-                      <p>Une licence limitée, non exclusive et non transférable vous est accordée pour accéder et utiliser le site.</p>
+                      <h2 className="text-lg font-semibold mt-6">2. Utilisation du service</h2>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>Créez un compte unique</li>
+                        <li>Fournissez des informations exactes</li>
+                        <li>Respectez les règles de la communauté</li>
+                      </ul>
 
-                      <h2 className="text-lg font-semibold">3. Compte utilisateur</h2>
-                      <p>Vous êtes responsable du maintien de la confidentialité de votre compte et de votre mot de passe.</p>
+                      <h2 className="text-lg font-semibold mt-6">3. Sécurité</h2>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>Protection de vos identifiants</li>
+                        <li>Signalement des activités suspectes</li>
+                        <li>Respect de la confidentialité</li>
+                      </ul>
 
-                      <h2 className="text-lg font-semibold">4. Limitations de responsabilité</h2>
-                      <p>Nous ne serons pas tenus responsables des dommages directs, indirects, accessoires ou consécutifs.</p>
+                      <h2 className="text-lg font-semibold mt-6">4. Responsabilités</h2>
+                      <p>Vous êtes responsable de toutes les activités sous votre compte.</p>
 
-                      <h2 className="text-lg font-semibold">5. Modifications du service</h2>
-                      <p>Nous nous réservons le droit de modifier ou d'interrompre le service sans préavis.</p>
+                      <h2 className="text-lg font-semibold mt-6">5. Modifications</h2>
+                      <p>Nous pouvons modifier ces conditions à tout moment.</p>
                     </div>
                   </ScrollArea>
                 </DialogContent>
