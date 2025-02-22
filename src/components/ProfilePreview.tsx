@@ -3,13 +3,14 @@ import { UserProfile } from "@/types/profile";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ProfilePreviewDialog } from "./profile/preview/ProfilePreviewDialog";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useAuth } from "@/hooks/useAuth";
 import { ProfilePreviewModal } from "./profile/preview/ProfilePreviewModal";
 import { ProfilePreviewButtons } from "./profile/preview/ProfilePreviewButtons";
 import { toast } from "sonner";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
