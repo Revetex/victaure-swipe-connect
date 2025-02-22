@@ -51,6 +51,7 @@ export function LoginForm({
             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               id="email-login"
+              name="email"
               placeholder="nom@exemple.com"
               type="email"
               autoComplete="email"
@@ -58,6 +59,8 @@ export function LoginForm({
               onChange={(e) => onEmailChange(e.target.value)}
               disabled={loading}
               className="pl-10"
+              required
+              aria-required="true"
             />
           </div>
         </div>
@@ -68,12 +71,15 @@ export function LoginForm({
             <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               id="password-login"
+              name="password"
               type="password"
               autoComplete="current-password"
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}
               disabled={loading}
               className="pl-10"
+              required
+              aria-required="true"
             />
           </div>
         </div>
