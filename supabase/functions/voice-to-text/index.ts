@@ -51,7 +51,6 @@ serve(async (req) => {
     // Process audio in chunks
     const binaryAudio = processBase64Chunks(audio)
     
-    // Send to OpenRouter
     const response = await fetch('https://api.openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -60,11 +59,15 @@ serve(async (req) => {
         'HTTP-Referer': 'https://victaure.com',
       },
       body: JSON.stringify({
-        model: 'mistralai/mixtral-8x7b-instruct:free',
+        model: 'google/gemini-2.0-pro-exp-02-05:free',
         messages: [
           {
             role: 'system',
-            content: 'You are a speech-to-text API. Convert the following audio to text: ' + audio.substring(0, 100) + '...'
+            content: 'You are a speech-to-text API. Your task is to accurately transcribe spoken audio into written text, preserving the meaning and context while ensuring proper formatting and punctuation.'
+          },
+          {
+            role: 'user',
+            content: `Please transcribe this audio content accurately: ${audio.substring(0, 100)}...`
           }
         ],
         stream: false

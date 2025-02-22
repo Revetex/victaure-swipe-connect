@@ -18,7 +18,6 @@ serve(async (req) => {
       throw new Error('Text is required')
     }
 
-    // Generate speech from text using OpenRouter
     const response = await fetch('https://api.openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -27,11 +26,15 @@ serve(async (req) => {
         'HTTP-Referer': 'https://victaure.com',
       },
       body: JSON.stringify({
-        model: 'mistralai/mixtral-8x7b-instruct:free',
+        model: 'google/gemini-2.0-pro-exp-02-05:free',
         messages: [
           {
             role: 'system',
-            content: 'You are a text-to-speech API. Convert the following text to speech: ' + text
+            content: 'You are a text-to-speech API. Convert the given text to natural spoken language, focusing on proper pronunciation, intonation, and emotional context.'
+          },
+          {
+            role: 'user',
+            content: `Convert this text to speech with natural intonation and emotion: "${text}"`
           }
         ],
         stream: false
