@@ -3,12 +3,11 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
 import { Logo } from "@/components/Logo";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLocation, Navigate } from "react-router-dom";
+import { useLocation, Navigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
 import { MessagesSquare, Bot, Wand2, Mail, Phone, MapPin, MessageCircle, BrainCircuit } from "lucide-react";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
 
 interface ChatMessage {
   content: string;
@@ -82,7 +81,8 @@ export default function Auth() {
             'Authorization': 'Bearer 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',
             'Content-Type': 'application/json',
             'HTTP-Referer': 'https://victaure.com',
-            'X-Title': 'Victaure Assistant'
+            'X-Title': 'Victaure Assistant',
+            'Origin': window.location.origin
           },
           body: JSON.stringify({
             model: 'mistralai/mistral-7b-instruct',
@@ -100,19 +100,23 @@ export default function Auth() {
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(`Erreur HTTP: ${response.status}`);
         }
 
         const data = await response.json();
         if (!data.choices?.[0]?.message?.content) {
-          throw new Error('Invalid response format from API');
+          throw new Error('Format de réponse invalide');
         }
 
         const aiResponse = data.choices[0].message.content;
         setVisibleMessages(prev => [...prev, { content: aiResponse, isUser: false }]);
       } catch (error) {
-        console.error('Error:', error);
-        toast.error("Désolé, je ne peux pas répondre pour le moment");
+        console.error('Erreur:', error);
+        toast.error("L'assistant n'est pas disponible pour le moment, veuillez réessayer plus tard.");
+        setVisibleMessages(prev => [...prev, { 
+          content: "Désolé, je ne suis pas disponible pour le moment. Veuillez réessayer plus tard.", 
+          isUser: false 
+        }]);
       } finally {
         setShowThinking(false);
       }
@@ -244,13 +248,22 @@ export default function Auth() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-[#F2EBE4]">Liens juridiques</h3>
               <div className="space-y-2">
-                <Link to="/legal/terms" className="block text-sm text-[#F2EBE4]/80 hover:text-[#64B5D9]">
+                <Link 
+                  to="/legal/terms" 
+                  className="block text-sm text-[#F2EBE4]/80 hover:text-[#64B5D9] transition-colors"
+                >
                   Conditions d'utilisation
                 </Link>
-                <Link to="/legal/privacy" className="block text-sm text-[#F2EBE4]/80 hover:text-[#64B5D9]">
+                <Link 
+                  to="/legal/privacy" 
+                  className="block text-sm text-[#F2EBE4]/80 hover:text-[#64B5D9] transition-colors"
+                >
                   Politique de confidentialité
                 </Link>
-                <Link to="/legal/cookies" className="block text-sm text-[#F2EBE4]/80 hover:text-[#64B5D9]">
+                <Link 
+                  to="/legal/cookies" 
+                  className="block text-sm text-[#F2EBE4]/80 hover:text-[#64B5D9] transition-colors"
+                >
                   Politique des cookies
                 </Link>
               </div>
