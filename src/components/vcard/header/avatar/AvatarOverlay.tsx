@@ -16,16 +16,16 @@ export function AvatarOverlay({ showOverlay }: AvatarOverlayProps) {
       className={`
         absolute inset-0 flex items-center justify-center 
         ${isMobile 
-          ? 'bg-black/60 opacity-100' 
+          ? 'bg-black/60 opacity-100 backdrop-blur-sm' 
           : 'bg-black/40 opacity-0 hover:opacity-100'
         }
         transition-opacity rounded-full cursor-pointer
-        backdrop-blur-sm
       `}
     >
       <Maximize2 
         className={`
-          h-6 w-6 text-white 
+          ${isMobile ? 'h-8 w-8' : 'h-6 w-6'}
+          text-white 
           ${isMobile ? 'animate-pulse' : ''}
         `} 
       />

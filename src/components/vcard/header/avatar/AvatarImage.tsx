@@ -3,6 +3,7 @@ import { Avatar, AvatarImage as UIAvatarImage, AvatarFallback } from "@/componen
 import { UserCircle2, ImageOff, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AvatarImageProps {
   url: string | null;
@@ -14,6 +15,8 @@ interface AvatarImageProps {
 }
 
 export function AvatarImage({ url, fullName, onError, hasError, isLoading, className }: AvatarImageProps) {
+  const isMobile = useIsMobile();
+  
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     console.error("Erreur de chargement de l'image:", e);
     onError();
@@ -23,7 +26,8 @@ export function AvatarImage({ url, fullName, onError, hasError, isLoading, class
   };
 
   const avatarClasses = cn(
-    "h-24 w-24 sm:h-28 sm:w-28 ring-2 ring-primary/20 shadow-lg",
+    isMobile ? "h-32 w-32" : "h-24 w-24 sm:h-28 sm:w-28",
+    "ring-2 ring-primary/20 shadow-lg",
     "relative overflow-hidden bg-background",
     className
   );
@@ -52,7 +56,10 @@ export function AvatarImage({ url, fullName, onError, hasError, isLoading, class
     return (
       <Avatar className={avatarClasses}>
         <AvatarFallback className="bg-primary/10">
-          <UserCircle2 className="h-12 w-12 text-primary/60" />
+          <UserCircle2 className={cn(
+            "text-primary/60",
+            isMobile ? "h-16 w-16" : "h-12 w-12"
+          )} />
         </AvatarFallback>
       </Avatar>
     );
