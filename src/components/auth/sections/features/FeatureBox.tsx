@@ -1,8 +1,8 @@
 
 import { useRef, useState } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, ThreeElements } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
-import * as THREE from 'three';
+import type { Mesh } from 'three';
 import { features } from "./featureData";
 
 interface FeatureBoxProps {
@@ -10,21 +10,21 @@ interface FeatureBoxProps {
 }
 
 export function FeatureBox({ position }: FeatureBoxProps) {
-  const mesh = useRef<THREE.Mesh>(null!);
+  const meshRef = useRef<Mesh>(null);
   const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
 
-  useFrame(() => {
-    if (mesh.current) {
-      mesh.current.rotation.x += 0.01;
-      mesh.current.rotation.y += 0.01;
+  useFrame((state, delta) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x += delta * 0.5;
+      meshRef.current.rotation.y += delta * 0.5;
     }
   });
 
   return (
     <mesh
       position={position}
-      ref={mesh}
+      ref={meshRef}
       scale={active ? 1.5 : 1}
       onClick={() => setActive(!active)}
       onPointerOver={() => setHover(true)}
