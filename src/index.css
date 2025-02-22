@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -53,8 +54,11 @@
   }
   
   body {
-    @apply bg-background text-foreground antialiased overflow-x-hidden font-sans;
-    text-transform: none;
+    @apply bg-background text-foreground antialiased overflow-x-hidden font-sans min-w-full;
+  }
+
+  #root {
+    @apply min-w-full w-full m-0 p-0;
   }
 
   h1, h2, h3, h4, h5, h6 {
