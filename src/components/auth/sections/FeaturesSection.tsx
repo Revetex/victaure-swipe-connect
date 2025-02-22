@@ -13,12 +13,16 @@ export function FeaturesSection() {
         </div>
       }>
         <Canvas 
-          camera={{ position: [0, 0, 7] }}
+          camera={{ position: [0, 0, 7], fov: 75 }}
           gl={{ antialias: true }}
+          dpr={[1, 2]}
         >
+          <color attach="background" args={["#1A1F2C"]} />
           <ambientLight intensity={0.5} />
           <pointLight position={[10, 10, 10]} />
-          <FeatureBox position={[0, 0, 0]} />
+          <Suspense fallback={null}>
+            <FeatureBox position={[0, 0, 0]} />
+          </Suspense>
         </Canvas>
       </Suspense>
     </div>
