@@ -5,19 +5,19 @@
 
 @layer components {
   .page-container {
-    @apply relative min-h-screen w-full bg-background 
-           px-0 pb-6;
+    @apply relative min-h-screen w-full bg-[#F1F0FB] dark:bg-background 
+           px-0 pb-6 border-x border-black/10;
   }
 
   .content-section {
-    @apply bg-card/30 backdrop-blur-sm
-           border-x-0 border-y border-border/10
+    @apply bg-[#F1F0FB]/50 dark:bg-card/30 backdrop-blur-sm
+           border border-black/10 dark:border-border/10
            p-4 sm:p-6;
   }
 
   .section-header {
     @apply flex items-center justify-between
-           border-b border-border/10
+           border-b border-black/10 dark:border-border/10
            pb-4 mb-4;
   }
 
@@ -27,10 +27,11 @@
   }
 
   .glass-card {
-    @apply bg-card/20 backdrop-blur-sm
-           border border-border/10
+    @apply bg-[#F1F0FB]/30 dark:bg-card/20 backdrop-blur-sm
+           border border-black/10 dark:border-border/10
            p-4
-           hover:bg-card/30 hover:border-border/20
+           hover:bg-[#F1F0FB]/40 dark:hover:bg-card/30 
+           hover:border-black/20 dark:hover:border-border/20
            transition-all duration-300;
   }
 
@@ -42,8 +43,8 @@
   .app-header {
     @apply fixed top-0 left-0 right-0 z-50
            h-16 px-4
-           bg-card/80 backdrop-blur-md
-           border-b border-border/10
+           bg-[#F1F0FB]/80 dark:bg-card/80 backdrop-blur-md
+           border-b border-black/10 dark:border-border/10
            flex items-center justify-between;
   }
 
