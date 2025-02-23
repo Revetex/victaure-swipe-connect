@@ -19,7 +19,7 @@ serve(async (req) => {
       throw new Error('Messages array is required');
     }
 
-    console.log('Processing chat request with Gemini');
+    console.log('Processing chat request with Gemini, messages:', JSON.stringify(messages, null, 2));
 
     const response = await fetch('https://api.openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -33,12 +33,14 @@ serve(async (req) => {
         messages: messages,
         temperature: 0.7,
         max_tokens: 1000,
+        stream: false
       }),
     });
 
     const data = await response.json();
     console.log('Gemini response received:', {
       status: response.status,
+      responseData: data,
       hasChoices: !!data.choices,
       firstChoice: data.choices?.[0]?.message,
     });
