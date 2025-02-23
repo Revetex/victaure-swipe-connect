@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -9,7 +8,6 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
-
 export function AuthFooter() {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -17,14 +15,12 @@ export function AuthFooter() {
     email: "",
     message: ""
   });
-
   const contactInfo = {
     name: "Thomas Blanchet",
     title: "Développement / Conception",
     email: "tblanchet@hotmail.com",
     tel: "+1(819) 668-0473"
   };
-
   const vCardData = `BEGIN:VCARD
 VERSION:3.0
 FN:${contactInfo.name}
@@ -32,15 +28,15 @@ TITLE:${contactInfo.title}
 EMAIL:${contactInfo.email}
 TEL:${contactInfo.tel}
 END:VCARD`;
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { error } = await supabase.functions.invoke('send-contact-email', {
+      const {
+        error
+      } = await supabase.functions.invoke('send-contact-email', {
         body: formData
       });
       if (error) throw error;
-      
       toast.success("Message envoyé avec succès!");
       setIsOpen(false);
       setFormData({
@@ -53,33 +49,14 @@ END:VCARD`;
       console.error(error);
     }
   };
-
-  return (
-    <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center relative" role="contentinfo">
+  return <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center relative" role="contentinfo">
       <div className="space-y-8 border-t border-[#F1F0FB]/20 pt-8">
         <div className="flex justify-center items-center gap-8 mb-8">
-          <div className="relative w-40 h-16">
-            <img 
-              src="/lovable-uploads/193c092a-9104-486d-a72a-0d882d86ce20.png"
-              alt="Signature" 
-              className="absolute inset-0 w-full h-full object-contain brightness-150 contrast-125 filter drop-shadow-lg"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#64B5D9]/10 to-transparent mix-blend-overlay"></div>
-          </div>
+          
           <div className="bg-white p-2 rounded-lg shadow-lg relative">
-            <QRCodeSVG 
-              value={vCardData}
-              size={80}
-              level="H"
-              includeMargin={true}
-              className="rounded"
-            />
+            <QRCodeSVG value={vCardData} size={80} level="H" includeMargin={true} className="rounded" />
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <img 
-                src="/lovable-uploads/3244c263-281b-43cf-a4cc-251cac7c7253.png"
-                alt="Victaure Logo"
-                className="w-12 h-12 opacity-90"
-              />
+              <img src="/lovable-uploads/3244c263-281b-43cf-a4cc-251cac7c7253.png" alt="Victaure Logo" className="w-12 h-12 opacity-90" />
             </div>
           </div>
         </div>
@@ -188,50 +165,28 @@ END:VCARD`;
                   <label htmlFor="contact-name" className="text-sm font-medium text-[#F1F0FB]">
                     Nom
                   </label>
-                  <Input 
-                    id="contact-name" 
-                    required 
-                    value={formData.name} 
-                    onChange={e => setFormData(prev => ({
-                      ...prev,
-                      name: e.target.value
-                    }))} 
-                    className="bg-white text-[#1B2A4A]"
-                    autoFocus={false}
-                  />
+                  <Input id="contact-name" required value={formData.name} onChange={e => setFormData(prev => ({
+                  ...prev,
+                  name: e.target.value
+                }))} className="bg-white text-[#1B2A4A]" autoFocus={false} />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="contact-email" className="text-sm font-medium text-[#F1F0FB]">
                     Email
                   </label>
-                  <Input 
-                    id="contact-email" 
-                    type="email" 
-                    required 
-                    value={formData.email} 
-                    onChange={e => setFormData(prev => ({
-                      ...prev,
-                      email: e.target.value
-                    }))} 
-                    className="bg-white text-[#1B2A4A]"
-                    autoFocus={false}
-                  />
+                  <Input id="contact-email" type="email" required value={formData.email} onChange={e => setFormData(prev => ({
+                  ...prev,
+                  email: e.target.value
+                }))} className="bg-white text-[#1B2A4A]" autoFocus={false} />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="contact-message" className="text-sm font-medium text-[#F1F0FB]">
                     Message
                   </label>
-                  <Textarea 
-                    id="contact-message" 
-                    required 
-                    value={formData.message} 
-                    onChange={e => setFormData(prev => ({
-                      ...prev,
-                      message: e.target.value
-                    }))} 
-                    className="bg-white text-[#1B2A4A] min-h-[100px]"
-                    autoFocus={false}
-                  />
+                  <Textarea id="contact-message" required value={formData.message} onChange={e => setFormData(prev => ({
+                  ...prev,
+                  message: e.target.value
+                }))} className="bg-white text-[#1B2A4A] min-h-[100px]" autoFocus={false} />
                 </div>
                 <Button type="submit" className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white">
                   Envoyer
@@ -246,6 +201,5 @@ END:VCARD`;
           <p className="relative">© 2025 Victaure Technologies inc.</p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 }
