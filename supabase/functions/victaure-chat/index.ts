@@ -1,6 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,25 +11,6 @@ interface Message {
   role: 'system' | 'user' | 'assistant';
   content: string;
 }
-
-const fetchWithTimeout = async (url: string, options: RequestInit & { timeout?: number }) => {
-  const { timeout = 10000, ...fetchOptions } = options;
-  
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
-  
-  try {
-    const response = await fetch(url, {
-      ...fetchOptions,
-      signal: controller.signal
-    });
-    clearTimeout(id);
-    return response;
-  } catch (error) {
-    clearTimeout(id);
-    throw error;
-  }
-};
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -45,61 +26,53 @@ serve(async (req) => {
 
     console.log('Processing chat request with Gemini, messages:', JSON.stringify(messages, null, 2));
 
-    const formattedMessages = messages.map((msg: Message) => ({
-      role: msg.role === 'system' ? 'user' : msg.role,
-      content: msg.content
-    }));
-
-    console.log('Formatted messages:', JSON.stringify(formattedMessages, null, 2));
-
-    const openRouterKey = Deno.env.get('OPENROUTER_API_KEY');
-    if (!openRouterKey) {
-      throw new Error('OPENROUTER_API_KEY is not configured');
+    const geminiKey = Deno.env.get('GEMINI_API_KEY');
+    if (!geminiKey) {
+      throw new Error('GEMINI_API_KEY is not configured');
     }
 
+    const genAI = new GoogleGenerativeAI(geminiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    // Convertir les messages pour le format de l'historique Gemini
+    const formattedMessages = messages.reduce((acc: string[], msg: Message) => {
+      // Si c'est un message système, l'ajouter comme contexte au premier message utilisateur
+      if (msg.role === 'system') {
+        acc.push(`Context: ${msg.content}`);
+      } else if (msg.role === 'user') {
+        acc.push(msg.content);
+      }
+      return acc;
+    }, []);
+
+    console.log('Starting chat with formatted messages:', formattedMessages);
+
     try {
-      const response = await fetchWithTimeout('https://api.openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openRouterKey}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://victaure.com',
-          'OR-ORGANIZATION': 'victaure'
-        },
-        body: JSON.stringify({
-          model: 'google/gemini-2.0-pro-exp-02-05:free',
-          messages: formattedMessages,
-          temperature: 0.7,
-          max_tokens: 1000,
-          stream: false
-        }),
-        timeout: 15000 // 15 seconds timeout
-      });
+      const result = await model.generateContent(formattedMessages.join('\n'));
+      const response = await result.response;
+      const text = response.text();
 
-      const data = await response.json();
-      console.log('OpenRouter raw response:', JSON.stringify(data, null, 2));
-      console.log('Response status:', response.status);
+      console.log('Gemini response:', text);
 
-      if (!response.ok) {
-        const errorMessage = data.error?.message || 'Failed to get response from Gemini';
-        console.error('OpenRouter API error:', errorMessage);
-        throw new Error(errorMessage);
-      }
+      // Format the response to match the OpenAI format expected by the frontend
+      const formattedResponse = {
+        choices: [
+          {
+            message: {
+              role: 'assistant',
+              content: text
+            }
+          }
+        ]
+      };
 
-      if (!data.choices?.[0]?.message) {
-        console.error('Invalid response format:', data);
-        throw new Error('Invalid response format from OpenRouter API');
-      }
-
-      return new Response(JSON.stringify(data), {
+      return new Response(JSON.stringify(formattedResponse), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
 
-    } catch (fetchError) {
-      if (fetchError.name === 'AbortError') {
-        throw new Error('La requête a pris trop de temps à répondre');
-      }
-      throw new Error(`Erreur de connexion à OpenRouter: ${fetchError.message}`);
+    } catch (aiError) {
+      console.error('Gemini API error:', aiError);
+      throw new Error(`Erreur lors de la génération du contenu: ${aiError.message}`);
     }
 
   } catch (error) {
