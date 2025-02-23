@@ -1,3 +1,4 @@
+
 import { navigationItems } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
@@ -9,7 +10,6 @@ import { createEmptyProfile } from "@/types/profile";
 import { useState, useEffect } from "react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Coins } from "lucide-react";
 import { PricingGrid } from "@/components/pricing/PricingGrid";
@@ -63,10 +63,10 @@ export function DashboardSidebar({
           }} 
         />
 
-        <ScrollArea className="flex-1 px-4 py-2">
-          <nav className="space-y-6">
+        <div className="flex-1 px-3 py-2 overflow-y-auto">
+          <nav className="space-y-3">
             {/* Section principale */}
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               {mainItems.map(item => {
                 const Icon = item.icon;
                 const isNotificationsItem = item.id === 9;
@@ -75,7 +75,7 @@ export function DashboardSidebar({
                     key={item.id}
                     onClick={() => onPageChange(item.id)}
                     className={cn(
-                      "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm",
+                      "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm",
                       "transition-all duration-200 border-2 shadow-sm",
                       currentPage === item.id
                         ? "bg-white/15 text-white font-medium border-black shadow-inner"
@@ -83,7 +83,7 @@ export function DashboardSidebar({
                     )}
                   >
                     <Icon className="h-3.5 w-3.5" />
-                    <span className="font-medium">{item.name}</span>
+                    <span className="font-medium truncate">{item.name}</span>
                     {isNotificationsItem && unreadCount > 0 && (
                       <Badge variant="destructive" className="ml-auto min-w-[20px] h-5">
                         {unreadCount}
@@ -95,19 +95,18 @@ export function DashboardSidebar({
             </div>
 
             {/* Section réseau */}
-            <div className="space-y-1.5">
-              <div className="px-3 py-1 text-xs font-semibold text-white/60 uppercase tracking-wider">
+            <div className="space-y-1">
+              <div className="px-2 py-0.5 text-xs font-semibold text-white/60 uppercase tracking-wider">
                 Réseau
               </div>
               {networkItems.map(item => {
                 const Icon = item.icon;
-                const isNotificationsItem = item.id === 9;
                 return (
                   <button
                     key={item.id}
                     onClick={() => onPageChange(item.id)}
                     className={cn(
-                      "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm",
+                      "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm",
                       "transition-all duration-200 border-2 shadow-sm",
                       currentPage === item.id
                         ? "bg-white/15 text-white font-medium border-black shadow-inner"
@@ -115,20 +114,15 @@ export function DashboardSidebar({
                     )}
                   >
                     <Icon className="h-3.5 w-3.5" />
-                    <span className="font-medium">{item.name}</span>
-                    {isNotificationsItem && unreadCount > 0 && (
-                      <Badge variant="destructive" className="ml-auto min-w-[20px] h-5">
-                        {unreadCount}
-                      </Badge>
-                    )}
+                    <span className="font-medium truncate">{item.name}</span>
                   </button>
                 );
               })}
             </div>
 
             {/* Section outils */}
-            <div className="space-y-1.5">
-              <div className="px-3 py-1 text-xs font-semibold text-white/60 uppercase tracking-wider">
+            <div className="space-y-1">
+              <div className="px-2 py-0.5 text-xs font-semibold text-white/60 uppercase tracking-wider">
                 Outils
               </div>
               {toolsItems.map(item => {
@@ -138,7 +132,7 @@ export function DashboardSidebar({
                     key={item.id}
                     onClick={() => onPageChange(item.id)}
                     className={cn(
-                      "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm",
+                      "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm",
                       "transition-all duration-200 border-2 shadow-sm",
                       currentPage === item.id
                         ? "bg-white/15 text-white font-medium border-black shadow-inner"
@@ -146,13 +140,13 @@ export function DashboardSidebar({
                     )}
                   >
                     <Icon className="h-3.5 w-3.5" />
-                    <span className="font-medium">{item.name}</span>
+                    <span className="font-medium truncate">{item.name}</span>
                   </button>
                 );
               })}
             </div>
           </nav>
-        </ScrollArea>
+        </div>
 
         {completeProfile && (
           <ProfilePreview 
