@@ -42,7 +42,7 @@ export function ContentRouter({
             return <Messages />;
           case 3:
             return (
-              <div className="min-h-screen">
+              <div className="min-h-screen pt-16">
                 <Marketplace />
               </div>
             );
