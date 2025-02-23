@@ -23,7 +23,18 @@ export function Feed() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
-        <CreatePostForm onPostCreated={invalidatePosts} />
+        <CreatePostForm 
+          newPost=""
+          onPostChange={() => {}}
+          privacy="public"
+          onPrivacyChange={() => {}}
+          attachments={[]}
+          isUploading={false}
+          onFileChange={() => {}}
+          onRemoveFile={() => {}}
+          onCreatePost={invalidatePosts}
+          onClose={() => {}}
+        />
       </motion.div>
 
       <motion.div
