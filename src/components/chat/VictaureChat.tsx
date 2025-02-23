@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Bot, Wand2, MessagesSquare, Mic, Volume2 } from "lucide-react";
 import { toast } from "sonner";
@@ -13,19 +14,16 @@ interface ChatMessage {
 
 interface VictaureChatProps {
   maxQuestions?: number;
-  initialMessage?: string;
   context?: string;
   onMaxQuestionsReached?: () => void;
 }
 
 export function VictaureChat({ 
   maxQuestions = 3, 
-  initialMessage = "Bonjour ! Je suis Mr. Victaure, votre assistant personnel. Comment puis-je vous aider aujourd'hui ? 🎯",
-  context = "Tu es un assistant professionnel qui aide les utilisateurs.",
+  context = "Tu es Mr. Victaure, un assistant professionnel spécialisé dans l'emploi et le recrutement. Ton objectif est d'aider les utilisateurs à s'inscrire et trouver du travail. Tu es chaleureux, empathique et très professionnel.",
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [showWelcome, setShowWelcome] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [showThinking, setShowThinking] = useState(false);
   const [userQuestions, setUserQuestions] = useState(0);
@@ -105,29 +103,47 @@ export function VictaureChat({
   };
 
   useEffect(() => {
-    const showWelcomeMessage = async () => {
-      if (!showWelcome) {
-        setShowThinking(true);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setShowThinking(false);
-        setIsTyping(true);
-        setMessages([{ content: initialMessage, isUser: false }]);
-        setIsTyping(false);
-        setShowWelcome(true);
-      }
-    };
-
-    showWelcomeMessage();
-  }, [initialMessage, showWelcome]);
-
-  useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
+  // Initial greeting from Mr Victaure
+  useEffect(() => {
+    const greetUser = async () => {
+      setShowThinking(true);
+      try {
+        const initialMessage = {
+          role: "system",
+          content: context
+        };
+        
+        const userGreeting = {
+          role: "user",
+          content: "Bonjour !"
+        };
+
+        const { data, error } = await supabase.functions.invoke("victaure-chat", {
+          body: { messages: [initialMessage, userGreeting] }
+        });
+
+        if (error) throw error;
+
+        const response = data.choices[0].message.content;
+        setMessages([{ content: response, isUser: false }]);
+      } catch (error) {
+        console.error("Error getting initial message:", error);
+        toast.error("Désolé, je ne suis pas disponible pour le moment");
+      } finally {
+        setShowThinking(false);
+      }
+    };
+
+    greetUser();
+  }, [context]);
+
   const handleSendMessage = async () => {
-    if (userQuestions >= maxQuestions) {
+    if (userQuestions >= maxQuestions && !user) {
       onMaxQuestionsReached?.();
       return;
     }
@@ -145,13 +161,31 @@ export function VictaureChat({
     setShowThinking(true);
 
     try {
-      console.log("Sending message with context:", context);
-      const response = await sendMessage(userMessage, context);
-      if (response) {
-        console.log("Received response:", response);
-        setMessages(prev => [...prev, { content: response, isUser: false }]);
-        speakText(response);
-      }
+      // Préparer les messages pour l'API
+      const messageHistory = [
+        {
+          role: "system",
+          content: context
+        },
+        ...messages.map(msg => ({
+          role: msg.isUser ? "user" : "assistant",
+          content: msg.content
+        })),
+        {
+          role: "user",
+          content: userMessage
+        }
+      ];
+
+      const { data, error } = await supabase.functions.invoke("victaure-chat", {
+        body: { messages: messageHistory }
+      });
+
+      if (error) throw error;
+
+      const response = data.choices[0].message.content;
+      setMessages(prev => [...prev, { content: response, isUser: false }]);
+      speakText(response);
     } catch (error) {
       console.error("Error in chat:", error);
       toast.error("Désolé, je ne peux pas répondre pour le moment");
@@ -219,7 +253,7 @@ export function VictaureChat({
         <div className="flex items-center gap-2">
           <button
             onClick={startRecording}
-            disabled={isRecording || userQuestions >= maxQuestions}
+            disabled={isRecording || (userQuestions >= maxQuestions && !user)}
             className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#F1F0FB] dark:bg-zinc-800 text-[#1B2A4A] dark:text-gray-200 hover:bg-[#E5E3F7] dark:hover:bg-zinc-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             title={isRecording ? "Enregistrement en cours..." : "Enregistrer un message vocal"}
           >
@@ -231,11 +265,11 @@ export function VictaureChat({
             value={userInput}
             onChange={e => setUserInput(e.target.value)}
             placeholder={
-              userQuestions >= maxQuestions
+              userQuestions >= maxQuestions && !user
                 ? "Connectez-vous pour continuer..."
                 : "Posez une question à Mr. Victaure..."
             }
-            disabled={userQuestions >= maxQuestions || isLoading}
+            disabled={userQuestions >= maxQuestions && !user}
             className="flex-1 h-10 px-4 rounded-lg bg-[#F1F0FB] dark:bg-zinc-800 border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[#1B2A4A] dark:text-gray-200 placeholder-[#1B2A4A]/40 dark:placeholder-gray-400"
             onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
             aria-label="Message input"
@@ -243,7 +277,7 @@ export function VictaureChat({
 
           <button
             onClick={handleSendMessage}
-            disabled={userQuestions >= maxQuestions || !userInput.trim() || isLoading}
+            disabled={userQuestions >= maxQuestions && !user || !userInput.trim()}
             className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#64B5D9] text-white hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             title="Envoyer le message"
           >
