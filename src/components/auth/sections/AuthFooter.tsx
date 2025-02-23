@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -7,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
 
 export function AuthFooter() {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,16 +38,27 @@ export function AuthFooter() {
   };
 
   return (
-    <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center" role="contentinfo">
+    <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center relative" role="contentinfo">
       <div className="space-y-8 border-t border-white/20 pt-8">
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-8 relative">
+          <div className="absolute inset-0 bg-[#64B5D9]/20 blur-xl animate-pulse"></div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="secondary" className="bg-white/10 border-2 border-white text-white hover:bg-white/20">
-                Devenez Partenaire
-              </Button>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button 
+                  variant="secondary" 
+                  className="relative group bg-gradient-to-r from-[#64B5D9] to-[#1B2A4A] hover:from-[#1B2A4A] hover:to-[#64B5D9] text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-6 text-lg font-semibold"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="relative z-10">Devenez Partenaire</span>
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+                </Button>
+              </motion.div>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-[#1B2A4A] border-2 border-white/20">
+            <DialogContent className="sm:max-w-[425px] bg-gradient-to-br from-[#1B2A4A] to-[#0F172A] border-2 border-white/20 shadow-2xl">
               <div className="p-6 space-y-6">
                 <h3 className="text-xl font-semibold text-white text-center">Information de Contact</h3>
                 <div className="space-y-4 text-white/80">
@@ -58,13 +69,18 @@ export function AuthFooter() {
                     <p>Email: tblanchet@hotmail.com</p>
                     <p>Tél: +1(819) 668-0473</p>
                   </div>
+                  <img 
+                    src="/lovable-uploads/465f04b5-cc68-4002-adcc-ccd6492ca572.png" 
+                    alt="Signature Thomas Blanchet" 
+                    className="w-32 mx-auto mt-4 opacity-80"
+                  />
                 </div>
               </div>
             </DialogContent>
           </Dialog>
         </div>
 
-        <nav className="flex flex-wrap justify-center gap-4 text-sm text-white/80" role="navigation">
+        <nav className="flex flex-wrap justify-center gap-3 text-sm text-white/80" role="navigation">
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="link" className="text-white/80 hover:text-white">
@@ -214,8 +230,9 @@ export function AuthFooter() {
           </Dialog>
         </nav>
 
-        <div className="text-sm text-white/80">
-          <p>© 2025 Victaure Technologies inc.</p>
+        <div className="text-sm text-white/80 relative">
+          <div className="absolute inset-0 bg-gradient-to-t from-[#64B5D9]/5 to-transparent opacity-50"></div>
+          <p className="relative">© 2025 Victaure Technologies inc.</p>
         </div>
       </div>
     </footer>
