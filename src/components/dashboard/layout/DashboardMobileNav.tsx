@@ -1,11 +1,8 @@
 
 import { Logo } from "@/components/Logo";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Coins } from "lucide-react";
 import { navigationItems } from "@/config/navigation";
 import { cn } from "@/lib/utils";
-import { PricingGrid } from "@/components/pricing/PricingGrid";
 
 interface DashboardMobileNavProps {
   currentPage: number;
@@ -76,35 +73,6 @@ export function DashboardMobileNav({
               </button>
             );
           })}
-
-          {/* Bouton Tarifs */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <button 
-                className={cn(
-                  "w-full flex items-center gap-2 px-3 py-2.5",
-                  "rounded-lg text-sm font-medium",
-                  "transition-all duration-200",
-                  "border-2 border-black",
-                  "bg-white/10 text-white",
-                  "hover:bg-white/15",
-                  "active:scale-[0.98]",
-                  "shadow-sm"
-                )}
-              >
-                <Coins className="h-4 w-4" />
-                <span>Voir les tarifs</span>
-              </button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl w-11/12 max-h-[90vh] overflow-y-auto bg-[#1B2A4A] border-2 border-black">
-              <div className="p-6">
-                <h2 className="text-2xl font-bold text-white mb-6 text-center">
-                  Tarifs Victaure 2024
-                </h2>
-                <PricingGrid />
-              </div>
-            </DialogContent>
-          </Dialog>
         </nav>
       </SheetContent>
     </Sheet>

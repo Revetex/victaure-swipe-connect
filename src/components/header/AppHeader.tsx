@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/Logo";
-import { useNavigate } from "react-router-dom";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useState } from "react";
+import { VictaureChat } from "@/components/chat/VictaureChat";
 
 interface AppHeaderProps {
   totalJobs?: number;
@@ -15,22 +17,12 @@ interface AppHeaderProps {
 
 export function AppHeader({
   totalJobs,
-  onRequestAssistant,
   showMobileMenu,
   setShowMobileMenu
 }: AppHeaderProps) {
+  const [showChat, setShowChat] = useState(false);
   const { user } = useAuth();
-  const navigate = useNavigate();
 
-  const handleAssistantRequest = () => {
-    if (onRequestAssistant) {
-      onRequestAssistant();
-    } else {
-      navigate("/messages");
-    }
-  };
-
-  // Simplifié la fonction de toggle
   const handleMenuClick = () => {
     if (setShowMobileMenu) {
       setShowMobileMenu(!showMobileMenu);
@@ -73,7 +65,7 @@ export function AppHeader({
         )}
 
         <Button
-          onClick={handleAssistantRequest}
+          onClick={() => setShowChat(true)}
           className="group relative overflow-hidden bg-white/10 hover:bg-white/20 text-white font-medium transition-all duration-300 border-2 border-black"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-all duration-1000" />
@@ -81,6 +73,18 @@ export function AppHeader({
           <span className="hidden sm:inline">Assistant Victaure IA</span>
           <span className="sm:hidden">IA</span>
         </Button>
+
+        <Dialog open={showChat} onOpenChange={setShowChat}>
+          <DialogContent className="max-w-3xl w-[90vw] h-[80vh] p-0 bg-[#1B2A4A] border-2 border-black">
+            <VictaureChat 
+              maxQuestions={user ? undefined : 3}
+              context="Tu es Mr. Victaure, un assistant professionnel spécialisé dans l'emploi. Tu aides les utilisateurs à trouver du travail et à améliorer leur carrière."
+              onMaxQuestionsReached={() => {
+                setShowChat(false);
+              }}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
     </motion.header>
   );
