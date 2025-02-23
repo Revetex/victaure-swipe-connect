@@ -16,7 +16,7 @@ export function Feed() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="w-full max-w-3xl mx-auto space-y-6 p-4 sm:p-6"
+      className="w-full max-w-3xl mx-auto space-y-6 pt-2 px-4 sm:px-6"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
