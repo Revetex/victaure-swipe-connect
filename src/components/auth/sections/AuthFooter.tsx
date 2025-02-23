@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -7,6 +8,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
+import { QRCodeSVG } from "qrcode.react";
 
 export function AuthFooter() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,6 +17,21 @@ export function AuthFooter() {
     email: "",
     message: ""
   });
+
+  const contactInfo = {
+    name: "Thomas Blanchet",
+    title: "Développement / Conception",
+    email: "tblanchet@hotmail.com",
+    tel: "+1(819) 668-0473"
+  };
+
+  const vCardData = `BEGIN:VCARD
+VERSION:3.0
+FN:${contactInfo.name}
+TITLE:${contactInfo.title}
+EMAIL:${contactInfo.email}
+TEL:${contactInfo.tel}
+END:VCARD`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,47 +57,31 @@ export function AuthFooter() {
   return (
     <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center relative" role="contentinfo">
       <div className="space-y-8 border-t border-[#F1F0FB]/20 pt-8">
-        <div className="flex justify-center mb-8 relative">
-          <div className="absolute inset-0 bg-[#64B5D9]/20 blur-xl animate-pulse"></div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Button 
-                  variant="secondary" 
-                  className="relative group bg-gradient-to-r from-[#64B5D9] to-[#1B2A4A] hover:from-[#1B2A4A] hover:to-[#64B5D9] text-[#F1F0FB] border-none shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-6 text-lg font-semibold"
-                >
-                  <span className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                  <span className="relative z-10">Devenez Partenaire</span>
-                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-[#F1F0FB] scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
-                </Button>
-              </motion.div>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-gradient-to-br from-[#1B2A4A] to-[#0F172A] border-2 border-[#F1F0FB]/20 shadow-2xl backdrop-blur-xl">
-              <div className="p-6 space-y-6">
-                <h3 className="text-xl font-semibold text-[#F1F0FB] text-center">Information de Contact</h3>
-                <div className="space-y-4 text-[#F1F0FB]/90">
-                  <p>Pour toute demande de partenariat, contactez :</p>
-                  <div className="space-y-2">
-                    <p className="font-medium text-[#64B5D9]">Thomas Blanchet</p>
-                    <p>Développement / Conception</p>
-                    <p>Email: tblanchet@hotmail.com</p>
-                    <p>Tél: +1(819) 668-0473</p>
-                  </div>
-                  <div className="relative w-40 h-16 mx-auto mt-6">
-                    <img 
-                      src="/lovable-uploads/465f04b5-cc68-4002-adcc-ccd6492ca572.png" 
-                      alt="Signature Thomas Blanchet" 
-                      className="absolute inset-0 w-full h-full object-contain brightness-150 contrast-125 filter drop-shadow-lg"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#64B5D9]/10 to-transparent mix-blend-overlay"></div>
-                  </div>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+        <div className="flex justify-center items-center gap-8 mb-8">
+          <div className="relative w-40 h-16">
+            <img 
+              src="/lovable-uploads/4094eef8-416d-478d-8b90-cee77a783811.png"
+              alt="Signature Thomas Blanchet" 
+              className="absolute inset-0 w-full h-full object-contain brightness-150 contrast-125 filter drop-shadow-lg"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#64B5D9]/10 to-transparent mix-blend-overlay"></div>
+          </div>
+          <div className="bg-white p-2 rounded-lg shadow-lg">
+            <QRCodeSVG 
+              value={vCardData}
+              size={80}
+              level="H"
+              includeMargin={true}
+              className="rounded"
+            />
+          </div>
+        </div>
+
+        <div className="text-center space-y-2 text-[#F1F0FB]">
+          <p className="font-medium text-[#64B5D9]">{contactInfo.name}</p>
+          <p>{contactInfo.title}</p>
+          <p>Email: {contactInfo.email}</p>
+          <p>Tél: {contactInfo.tel}</p>
         </div>
 
         <nav className="flex flex-wrap justify-center gap-3 text-sm text-[#F1F0FB]/80" role="navigation">
