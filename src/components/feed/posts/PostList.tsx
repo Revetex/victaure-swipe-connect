@@ -188,7 +188,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
                 userEmail={user?.email}
                 onDelete={() => post.user_id === user?.id && setPostToDelete(post.id)}
                 onHide={(postId) => handleHide(postId, user?.id)}
-                onUpdate={handleUpdatePost}
+                onUpdate={(postId, content) => handleUpdate(postId, content)}
                 onShare={() => {
                   setSelectedPostToShare(post);
                   setShowShareDialog(true);
@@ -203,7 +203,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
       <DeletePostDialog 
         isOpen={!!postToDelete}
         onClose={() => setPostToDelete(null)}
-        onConfirm={() => postToDelete && handleDeletePost(postToDelete, user?.id)}
+        onConfirm={() => postToDelete && handleDelete(postToDelete, user?.id)}
       />
 
       {/* Dialogue de partage */}
