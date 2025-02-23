@@ -1,8 +1,6 @@
-
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-
 interface ReactionButtonProps {
   icon: LucideIcon;
   count: number;
@@ -11,7 +9,6 @@ interface ReactionButtonProps {
   onClick: () => void;
   activeClassName?: string;
 }
-
 export function ReactionButton({
   icon: Icon,
   count,
@@ -20,18 +17,5 @@ export function ReactionButton({
   onClick,
   activeClassName
 }: ReactionButtonProps) {
-  return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={onClick}
-      className={cn(
-        "flex items-center gap-1.5 font-medium",
-        isActive && activeClassName
-      )}
-    >
-      <Icon className="w-4 h-4" />
-      <span>{count}{suffix}</span>
-    </Button>
-  );
+  return;
 }
