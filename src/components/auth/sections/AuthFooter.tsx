@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -40,7 +39,7 @@ export function AuthFooter() {
 
   return (
     <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center relative" role="contentinfo">
-      <div className="space-y-8 border-t border-white/20 pt-8">
+      <div className="space-y-8 border-t border-[#F1F0FB]/20 pt-8">
         <div className="flex justify-center mb-8 relative">
           <div className="absolute inset-0 bg-[#64B5D9]/20 blur-xl animate-pulse"></div>
           <Dialog>
@@ -51,18 +50,18 @@ export function AuthFooter() {
               >
                 <Button 
                   variant="secondary" 
-                  className="relative group bg-gradient-to-r from-[#64B5D9] to-[#1B2A4A] hover:from-[#1B2A4A] hover:to-[#64B5D9] text-white border-none shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-6 text-lg font-semibold"
+                  className="relative group bg-gradient-to-r from-[#64B5D9] to-[#1B2A4A] hover:from-[#1B2A4A] hover:to-[#64B5D9] text-[#F1F0FB] border-none shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-6 text-lg font-semibold"
                 >
                   <span className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                   <span className="relative z-10">Devenez Partenaire</span>
-                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-[#F1F0FB] scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
                 </Button>
               </motion.div>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-gradient-to-br from-[#1B2A4A] to-[#0F172A] border-2 border-white/20 shadow-2xl">
+            <DialogContent className="sm:max-w-[425px] bg-gradient-to-br from-[#1B2A4A] to-[#0F172A] border-2 border-[#F1F0FB]/20 shadow-2xl backdrop-blur-xl">
               <div className="p-6 space-y-6">
-                <h3 className="text-xl font-semibold text-white text-center">Information de Contact</h3>
-                <div className="space-y-4 text-white/80">
+                <h3 className="text-xl font-semibold text-[#F1F0FB] text-center">Information de Contact</h3>
+                <div className="space-y-4 text-[#F1F0FB]/90">
                   <p>Pour toute demande de partenariat, contactez :</p>
                   <div className="space-y-2">
                     <p className="font-medium text-[#64B5D9]">Thomas Blanchet</p>
@@ -84,16 +83,16 @@ export function AuthFooter() {
           </Dialog>
         </div>
 
-        <nav className="flex flex-wrap justify-center gap-3 text-sm text-white/80" role="navigation">
+        <nav className="flex flex-wrap justify-center gap-3 text-sm text-[#F1F0FB]/80" role="navigation">
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="link" className="text-white/80 hover:text-white">
+              <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB]">
                 Conditions d'utilisation
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-[#1B2A4A] border-2 border-white/20">
+            <DialogContent className="max-w-2xl bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl">
               <DialogHeader>
-                <DialogTitle className="text-xl font-bold mb-4 text-white">Conditions d'utilisation</DialogTitle>
+                <DialogTitle className="text-xl font-bold mb-4 text-[#F1F0FB]">Conditions d'utilisation</DialogTitle>
               </DialogHeader>
               <div className="prose prose-sm prose-invert max-w-none">
                 <h3>1. Acceptation des conditions</h3>
@@ -116,13 +115,13 @@ export function AuthFooter() {
 
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="link" className="text-white/80 hover:text-white">
+              <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB]">
                 Politique de confidentialité
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-[#1B2A4A] border-2 border-white/20">
+            <DialogContent className="max-w-2xl bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl">
               <DialogHeader>
-                <DialogTitle className="text-xl font-bold mb-4 text-white">Politique de confidentialité</DialogTitle>
+                <DialogTitle className="text-xl font-bold mb-4 text-[#F1F0FB]">Politique de confidentialité</DialogTitle>
               </DialogHeader>
               <div className="prose prose-sm prose-invert max-w-none">
                 <h3>1. Collecte des données</h3>
@@ -142,13 +141,13 @@ export function AuthFooter() {
 
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="link" className="text-white/80 hover:text-white">
+              <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB]">
                 Politique des cookies
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-[#1B2A4A] border-2 border-white/20">
+            <DialogContent className="max-w-2xl bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl">
               <DialogHeader>
-                <DialogTitle className="text-xl font-bold mb-4 text-white">Politique des cookies</DialogTitle>
+                <DialogTitle className="text-xl font-bold mb-4 text-[#F1F0FB]">Politique des cookies</DialogTitle>
               </DialogHeader>
               <div className="prose prose-sm prose-invert max-w-none">
                 <h3>1. Utilisation des cookies</h3>
@@ -168,17 +167,17 @@ export function AuthFooter() {
 
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-              <Button variant="link" className="text-white/80 hover:text-white">
+              <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB]">
                 Nous contacter
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-[#1B2A4A] border-2 border-white/20">
+            <DialogContent className="sm:max-w-[425px] bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl">
               <DialogHeader>
-                <DialogTitle className="text-white">Contactez-nous</DialogTitle>
+                <DialogTitle className="text-[#F1F0FB]">Contactez-nous</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <label htmlFor="contact-name" className="text-sm font-medium text-white">
+                  <label htmlFor="contact-name" className="text-sm font-medium text-[#F1F0FB]">
                     Nom
                   </label>
                   <Input 
@@ -194,7 +193,7 @@ export function AuthFooter() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="contact-email" className="text-sm font-medium text-white">
+                  <label htmlFor="contact-email" className="text-sm font-medium text-[#F1F0FB]">
                     Email
                   </label>
                   <Input 
@@ -211,7 +210,7 @@ export function AuthFooter() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="contact-message" className="text-sm font-medium text-white">
+                  <label htmlFor="contact-message" className="text-sm font-medium text-[#F1F0FB]">
                     Message
                   </label>
                   <Textarea 
@@ -234,7 +233,7 @@ export function AuthFooter() {
           </Dialog>
         </nav>
 
-        <div className="text-sm text-white/80 relative">
+        <div className="text-sm text-[#F1F0FB]/80 relative">
           <div className="absolute inset-0 bg-gradient-to-t from-[#64B5D9]/5 to-transparent opacity-50"></div>
           <p className="relative">© 2025 Victaure Technologies inc.</p>
         </div>
