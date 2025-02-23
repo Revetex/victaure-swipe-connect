@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -69,11 +70,14 @@ export function AuthFooter() {
                     <p>Email: tblanchet@hotmail.com</p>
                     <p>Tél: +1(819) 668-0473</p>
                   </div>
-                  <img 
-                    src="/lovable-uploads/465f04b5-cc68-4002-adcc-ccd6492ca572.png" 
-                    alt="Signature Thomas Blanchet" 
-                    className="w-32 mx-auto mt-4 opacity-80"
-                  />
+                  <div className="relative w-40 h-16 mx-auto mt-6">
+                    <img 
+                      src="/lovable-uploads/465f04b5-cc68-4002-adcc-ccd6492ca572.png" 
+                      alt="Signature Thomas Blanchet" 
+                      className="absolute inset-0 w-full h-full object-contain brightness-150 contrast-125 filter drop-shadow-lg"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#64B5D9]/10 to-transparent mix-blend-overlay"></div>
+                  </div>
                 </div>
               </div>
             </DialogContent>
