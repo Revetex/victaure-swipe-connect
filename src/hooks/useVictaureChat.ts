@@ -46,7 +46,7 @@ export function useVictaureChat({ onResponse }: UseVictaureChatProps = {}) {
 
     } catch (error) {
       console.error('Error sending message:', error);
-      toast.error("Désolé, je ne suis pas disponible pour le moment");
+      toast.error("Désolé, je ne peux pas répondre pour le moment");
       return null;
     } finally {
       setIsLoading(false);
