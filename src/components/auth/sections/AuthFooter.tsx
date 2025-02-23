@@ -60,13 +60,13 @@ END:VCARD`;
         <div className="flex justify-center items-center gap-8 mb-8">
           <div className="relative w-40 h-16">
             <img 
-              src="/lovable-uploads/4094eef8-416d-478d-8b90-cee77a783811.png"
-              alt="Signature Thomas Blanchet" 
+              src="/lovable-uploads/193c092a-9104-486d-a72a-0d882d86ce20.png"
+              alt="Signature" 
               className="absolute inset-0 w-full h-full object-contain brightness-150 contrast-125 filter drop-shadow-lg"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#64B5D9]/10 to-transparent mix-blend-overlay"></div>
           </div>
-          <div className="bg-white p-2 rounded-lg shadow-lg">
+          <div className="bg-white p-2 rounded-lg shadow-lg relative">
             <QRCodeSVG 
               value={vCardData}
               size={80}
@@ -74,6 +74,13 @@ END:VCARD`;
               includeMargin={true}
               className="rounded"
             />
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <img 
+                src="/lovable-uploads/3244c263-281b-43cf-a4cc-251cac7c7253.png"
+                alt="Victaure Logo"
+                className="w-12 h-12 opacity-90"
+              />
+            </div>
           </div>
         </div>
 
