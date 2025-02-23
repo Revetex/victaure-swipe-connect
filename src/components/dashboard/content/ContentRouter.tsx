@@ -47,7 +47,7 @@ export function ContentRouter({
             );
           case 4:
             return (
-              <div className="min-h-screen">
+              <div className="min-h-screen pt-16 lg:pt-16">
                 <Feed />
               </div>
             );
