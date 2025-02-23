@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { MarketplaceForm } from "./marketplace/MarketplaceForm";
 import { MarketplaceList } from "./marketplace/MarketplaceList";
@@ -55,9 +54,9 @@ export function Marketplace() {
     <motion.div 
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
-      className="container mx-auto px-4 py-2"
+      className="container mx-auto px-4"
     >
-      <div className="mb-6 space-y-4">
+      <div className="space-y-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${isSearching ? 'animate-spin text-primary' : 'text-muted-foreground'}`} />
