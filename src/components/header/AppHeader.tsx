@@ -66,11 +66,10 @@ export function AppHeader({
 
         <Button
           onClick={() => setShowChat(true)}
-          className="group relative overflow-hidden bg-white/10 hover:bg-white/20 text-white font-medium transition-all duration-300 border-2 border-black"
+          className="group bg-white/10 hover:bg-white/20 text-white text-sm py-1.5 px-3 h-8 rounded-lg border border-white/30 shadow-inner shadow-white/10 transition-all duration-200"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-all duration-1000" />
-          <Sparkles className="h-4 w-4 mr-2 text-white" />
-          <span className="hidden sm:inline">Assistant Victaure IA</span>
+          <Sparkles className="h-3.5 w-3.5 mr-1.5 text-yellow-300" />
+          <span className="hidden sm:inline">Assistant IA</span>
           <span className="sm:hidden">IA</span>
         </Button>
 
