@@ -12,13 +12,32 @@ interface Message {
   content: string;
 }
 
+const fetchWithTimeout = async (url: string, options: RequestInit & { timeout?: number }) => {
+  const { timeout = 10000, ...fetchOptions } = options;
+  
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  
+  try {
+    const response = await fetch(url, {
+      ...fetchOptions,
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    return response;
+  } catch (error) {
+    clearTimeout(id);
+    throw error;
+  }
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { messages, type = 'chat' } = await req.json();
+    const { messages } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       throw new Error('Messages array is required');
@@ -27,7 +46,7 @@ serve(async (req) => {
     console.log('Processing chat request with Gemini, messages:', JSON.stringify(messages, null, 2));
 
     const formattedMessages = messages.map((msg: Message) => ({
-      role: msg.role === 'system' ? 'user' : msg.role, // Gemini doesn't support system role
+      role: msg.role === 'system' ? 'user' : msg.role,
       content: msg.content
     }));
 
@@ -38,42 +57,50 @@ serve(async (req) => {
       throw new Error('OPENROUTER_API_KEY is not configured');
     }
 
-    const response = await fetch('https://api.openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openRouterKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://victaure.com',
-        'OR-ORGANIZATION': 'victaure'
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.0-pro-exp-02-05:free',
-        messages: formattedMessages,
-        temperature: 0.7,
-        max_tokens: 1000,
-        stream: false
-      }),
-    });
+    try {
+      const response = await fetchWithTimeout('https://api.openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openRouterKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://victaure.com',
+          'OR-ORGANIZATION': 'victaure'
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.0-pro-exp-02-05:free',
+          messages: formattedMessages,
+          temperature: 0.7,
+          max_tokens: 1000,
+          stream: false
+        }),
+        timeout: 15000 // 15 seconds timeout
+      });
 
-    const data = await response.json();
-    
-    console.log('OpenRouter raw response:', JSON.stringify(data, null, 2));
-    console.log('Response status:', response.status);
+      const data = await response.json();
+      console.log('OpenRouter raw response:', JSON.stringify(data, null, 2));
+      console.log('Response status:', response.status);
 
-    if (!response.ok) {
-      const errorMessage = data.error?.message || 'Failed to get response from Gemini';
-      console.error('OpenRouter API error:', errorMessage);
-      throw new Error(errorMessage);
+      if (!response.ok) {
+        const errorMessage = data.error?.message || 'Failed to get response from Gemini';
+        console.error('OpenRouter API error:', errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      if (!data.choices?.[0]?.message) {
+        console.error('Invalid response format:', data);
+        throw new Error('Invalid response format from OpenRouter API');
+      }
+
+      return new Response(JSON.stringify(data), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+
+    } catch (fetchError) {
+      if (fetchError.name === 'AbortError') {
+        throw new Error('La requête a pris trop de temps à répondre');
+      }
+      throw new Error(`Erreur de connexion à OpenRouter: ${fetchError.message}`);
     }
-
-    if (!data.choices?.[0]?.message) {
-      console.error('Invalid response format:', data);
-      throw new Error('Invalid response format from OpenRouter API');
-    }
-
-    return new Response(JSON.stringify(data), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
 
   } catch (error) {
     console.error('Error in victaure-chat function:', error);
