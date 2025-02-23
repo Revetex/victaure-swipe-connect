@@ -8,50 +8,43 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { messages, type = 'chat' } = await req.json();
+    const { messages } = await req.json();
 
-    // Validate request
     if (!messages || !Array.isArray(messages)) {
       throw new Error('Messages array is required');
     }
 
-    console.log('Processing chat request:', { type, messageCount: messages.length });
+    console.log('Processing chat request with Gemini');
 
-    // Faire la requête à l'API OpenAI
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+        'Authorization': `Bearer ${Deno.env.get('OPENROUTER_API_KEY')}`,
         'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://victaure.com',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages,
+        model: 'google/gemini-2.0-pro-exp-02-05:free',
+        messages: messages,
         temperature: 0.7,
         max_tokens: 1000,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
       }),
     });
 
     const data = await response.json();
-
-    // Log the response for debugging
-    console.log('OpenAI response received:', {
+    console.log('Gemini response received:', {
       status: response.status,
       hasChoices: !!data.choices,
       firstChoice: data.choices?.[0]?.message,
     });
 
     if (!response.ok) {
-      throw new Error(data.error?.message || 'Failed to get response from OpenAI');
+      throw new Error(data.error?.message || 'Failed to get response from Gemini');
     }
 
     return new Response(JSON.stringify(data), {
