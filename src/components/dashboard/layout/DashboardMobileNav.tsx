@@ -23,11 +23,12 @@ export function DashboardMobileNav({
         side="left" 
         className={cn(
           "w-[280px] p-0",
-          "bg-[#64B5D9]",
+          "bg-[#1B2A4A]",
           "border-2 border-black",
           "fixed inset-y-0 left-0",
           "lg:hidden",
-          "z-[150]"
+          "z-[150]",
+          "overflow-y-auto pb-20" // Ajout du padding-bottom et overflow
         )}
       >
         {/* Motif de fond */}
@@ -47,7 +48,7 @@ export function DashboardMobileNav({
         </div>
 
         {/* Navigation */}
-        <nav className="space-y-2 p-4 relative z-10 max-h-[calc(100vh-180px)] overflow-y-auto">
+        <nav className="space-y-2 p-4 relative z-10">
           {navigationItems.map(item => {
             const Icon = item.icon;
             return (
