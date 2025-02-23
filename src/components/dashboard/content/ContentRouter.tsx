@@ -1,3 +1,4 @@
+
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/Marketplace";
@@ -41,7 +42,7 @@ export function ContentRouter({
             return <Messages />;
           case 3:
             return (
-              <div className={commonClassName}>
+              <div className="min-h-screen">
                 <Marketplace />
               </div>
             );
