@@ -48,7 +48,7 @@ export function ContentRouter({
             );
           case 4:
             return (
-              <div className={`${commonClassName} bg-background`}>
+              <div className="min-h-screen pt-16">
                 <Feed />
               </div>
             );
