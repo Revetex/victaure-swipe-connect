@@ -1,3 +1,4 @@
+
 import { Briefcase, Sparkles, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -32,7 +33,7 @@ export function AppHeader({
     <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed top-0 left-0 right-0 z-[100] flex h-16 items-center justify-between px-4 bg-[#0EA5E9] dark:bg-[#0EA5E9]/90 text-white border-2 border-black shadow-lg"
+      className="fixed top-0 left-0 right-0 z-[100] flex h-16 items-center justify-between px-4 bg-[#1B2A4A] dark:bg-[#1B2A4A]/95 text-white border-2 border-black shadow-lg"
     >
       <div className="flex items-center gap-4">
         <Button
@@ -50,8 +51,10 @@ export function AppHeader({
             alt="Victaure Logo"
             className="h-9 w-9 object-contain"
           />
-          <span className="font-tiempos font-black tracking-[0.2em] text-[#F2EBE4] text-xl">
+          <span className="font-tiempos font-black tracking-[0.2em] text-[#F2EBE4] text-xl relative group">
             VICTAURE
+            <div className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-[#64B5D9] to-transparent opacity-20 filter blur-sm"></div>
           </span>
         </div>
       </div>

@@ -50,7 +50,7 @@ export function DashboardSidebar({
 
   return (
     <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64">
-      <div className="flex flex-col h-full pt-16 bg-[#0EA5E9] dark:bg-[#0EA5E9]/90 relative overflow-hidden border-r-2 border-black">
+      <div className="flex flex-col h-full pt-16 bg-[#1B2A4A] dark:bg-[#1B2A4A]/95 relative overflow-hidden border-r-2 border-black">
         {/* Motif de fond */}
         <div 
           className="absolute inset-0 opacity-[0.03] pointer-events-none" 
@@ -62,6 +62,7 @@ export function DashboardSidebar({
           }} 
         />
 
+        {/* Navigation */}
         <div className="flex-1 px-3 py-2 overflow-y-auto">
           <nav className="space-y-3">
             {/* Section principale */}
