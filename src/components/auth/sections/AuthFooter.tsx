@@ -161,28 +161,50 @@ export function AuthFooter() {
                   <label htmlFor="contact-name" className="text-sm font-medium text-white">
                     Nom
                   </label>
-                  <Input id="contact-name" required value={formData.name} onChange={e => setFormData(prev => ({
-                    ...prev,
-                    name: e.target.value
-                  }))} className="bg-white text-[#1B2A4A]" />
+                  <Input 
+                    id="contact-name" 
+                    required 
+                    value={formData.name} 
+                    onChange={e => setFormData(prev => ({
+                      ...prev,
+                      name: e.target.value
+                    }))} 
+                    className="bg-white text-[#1B2A4A]"
+                    autoFocus={false}
+                  />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="contact-email" className="text-sm font-medium text-white">
                     Email
                   </label>
-                  <Input id="contact-email" type="email" required value={formData.email} onChange={e => setFormData(prev => ({
-                    ...prev,
-                    email: e.target.value
-                  }))} className="bg-white text-[#1B2A4A]" />
+                  <Input 
+                    id="contact-email" 
+                    type="email" 
+                    required 
+                    value={formData.email} 
+                    onChange={e => setFormData(prev => ({
+                      ...prev,
+                      email: e.target.value
+                    }))} 
+                    className="bg-white text-[#1B2A4A]"
+                    autoFocus={false}
+                  />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="contact-message" className="text-sm font-medium text-white">
                     Message
                   </label>
-                  <Textarea id="contact-message" required value={formData.message} onChange={e => setFormData(prev => ({
-                    ...prev,
-                    message: e.target.value
-                  }))} className="bg-white text-[#1B2A4A] min-h-[100px]" />
+                  <Textarea 
+                    id="contact-message" 
+                    required 
+                    value={formData.message} 
+                    onChange={e => setFormData(prev => ({
+                      ...prev,
+                      message: e.target.value
+                    }))} 
+                    className="bg-white text-[#1B2A4A] min-h-[100px]"
+                    autoFocus={false}
+                  />
                 </div>
                 <Button type="submit" className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white">
                   Envoyer
