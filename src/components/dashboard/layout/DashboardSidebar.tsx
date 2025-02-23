@@ -1,4 +1,3 @@
-
 import { navigationItems } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
@@ -52,7 +51,7 @@ export function DashboardSidebar({
 
   return (
     <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64">
-      <div className="flex flex-col h-full bg-[#64B5D9] relative overflow-hidden border-r-2 border-black">
+      <div className="flex flex-col h-full bg-[#0EA5E9] dark:bg-[#0EA5E9]/90 relative overflow-hidden border-r-2 border-black">
         {/* Motif de fond */}
         <div 
           className="absolute inset-0 opacity-[0.03] pointer-events-none" 

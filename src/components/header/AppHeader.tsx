@@ -1,4 +1,3 @@
-
 import { Briefcase, Sparkles, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -33,7 +32,7 @@ export function AppHeader({
     <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed top-0 left-0 right-0 z-[100] flex h-16 items-center justify-between px-4 bg-[#64B5D9] text-white border-2 border-black shadow-lg"
+      className="fixed top-0 left-0 right-0 z-[100] flex h-16 items-center justify-between px-4 bg-[#0EA5E9] dark:bg-[#0EA5E9]/90 text-white border-2 border-black shadow-lg"
     >
       <div className="flex items-center gap-4">
         <Button

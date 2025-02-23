@@ -1,4 +1,3 @@
-
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/Marketplace";
@@ -48,7 +47,7 @@ export function ContentRouter({
             );
           case 4:
             return (
-              <div className="min-h-screen pt-16">
+              <div className="min-h-screen">
                 <Feed />
               </div>
             );
