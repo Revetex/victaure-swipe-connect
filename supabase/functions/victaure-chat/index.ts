@@ -1,6 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai";
+import { HfInference } from 'https://esm.sh/@huggingface/inference@2.3.2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,35 +24,43 @@ serve(async (req) => {
       throw new Error('Messages array is required');
     }
 
-    console.log('Processing chat request with Gemini, messages:', JSON.stringify(messages, null, 2));
+    console.log('Processing chat request with HuggingFace, messages:', JSON.stringify(messages, null, 2));
 
-    const geminiKey = Deno.env.get('GEMINI_API_KEY');
-    if (!geminiKey) {
-      throw new Error('GEMINI_API_KEY is not configured');
+    const hfToken = Deno.env.get('HUGGING_FACE_ACCESS_TOKEN');
+    if (!hfToken) {
+      throw new Error('HUGGING_FACE_ACCESS_TOKEN is not configured');
     }
 
-    const genAI = new GoogleGenerativeAI(geminiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const hf = new HfInference(hfToken);
 
-    // Convertir les messages pour le format de l'historique Gemini
-    const formattedMessages = messages.reduce((acc: string[], msg: Message) => {
-      // Si c'est un message système, l'ajouter comme contexte au premier message utilisateur
+    // Formatage du prompt pour le modèle
+    const conversationText = messages.map(msg => {
       if (msg.role === 'system') {
-        acc.push(`Context: ${msg.content}`);
+        return `Instructions: ${msg.content}\n`;
       } else if (msg.role === 'user') {
-        acc.push(msg.content);
+        return `User: ${msg.content}\n`;
+      } else {
+        return `Assistant: ${msg.content}\n`;
       }
-      return acc;
-    }, []);
+    }).join('');
 
-    console.log('Starting chat with formatted messages:', formattedMessages);
+    console.log('Formatted conversation:', conversationText);
 
     try {
-      const result = await model.generateContent(formattedMessages.join('\n'));
-      const response = await result.response;
-      const text = response.text();
+      const response = await hf.textGeneration({
+        model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+        inputs: conversationText + 'Assistant:',
+        parameters: {
+          max_new_tokens: 1024,
+          temperature: 0.7,
+          top_p: 0.95,
+          repetition_penalty: 1.1
+        }
+      });
 
-      console.log('Gemini response:', text);
+      console.log('HuggingFace response:', response);
+
+      const generatedText = response.generated_text.trim();
 
       // Format the response to match the OpenAI format expected by the frontend
       const formattedResponse = {
@@ -60,7 +68,7 @@ serve(async (req) => {
           {
             message: {
               role: 'assistant',
-              content: text
+              content: generatedText
             }
           }
         ]
@@ -71,7 +79,7 @@ serve(async (req) => {
       });
 
     } catch (aiError) {
-      console.error('Gemini API error:', aiError);
+      console.error('HuggingFace API error:', aiError);
       throw new Error(`Erreur lors de la génération du contenu: ${aiError.message}`);
     }
 
