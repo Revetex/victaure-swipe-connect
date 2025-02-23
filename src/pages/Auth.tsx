@@ -15,12 +15,10 @@ import { InnovationsSection } from "@/components/auth/sections/InnovationsSectio
 import { FeaturesSection } from "@/components/auth/sections/FeaturesSection";
 import { PricingDialog } from "@/components/auth/sections/PricingDialog";
 import { toast } from "sonner";
-import { ArrowRight, Coins } from "lucide-react";
 
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
-  const [isPricingOpen, setIsPricingOpen] = useState(false);
   const [countdown, setCountdown] = useState({
     days: 0,
     hours: 0,
@@ -101,41 +99,12 @@ export default function Auth() {
               <AuthForm />
             </motion.div>
 
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#1A1F2C]/95 backdrop-blur-md border-t border-[#64B5D9]/20">
-              <div className="flex flex-col gap-3 max-w-sm mx-auto">
-                <button
-                  onClick={() => setIsPricingOpen(true)}
-                  className="group relative overflow-hidden rounded-lg bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] px-5 py-2.5 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 w-full"
-                >
-                  <div className="absolute inset-0 bg-white/20 transition-transform duration-300 group-hover:translate-x-full" />
-                  <Coins className="w-4 h-4 text-white" />
-                  <span className="relative text-white font-medium">Voir les tarifs</span>
-                </button>
-
-                <button
-                  onClick={() => window.open('https://victaure.com/partenaire', '_blank')}
-                  className="group relative overflow-hidden rounded-lg bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] px-5 py-2.5 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 w-full"
-                >
-                  <div className="absolute inset-0 bg-white/20 transition-transform duration-300 group-hover:translate-x-full" />
-                  <span className="relative text-white font-medium flex items-center gap-2">
-                    Devenir partenaire
-                    <ArrowRight className="w-4 h-4" />
-                  </span>
-                </button>
-              </div>
-            </div>
-
             <InnovationsSection />
             <CountdownSection countdown={countdown} />
             <FeaturesSection />
           </div>
         </div>
       </main>
-
-      <PricingDialog 
-        isPricingOpen={isPricingOpen}
-        setIsPricingOpen={setIsPricingOpen}
-      />
 
       <div className="relative z-10">
         <AuthFooter />
