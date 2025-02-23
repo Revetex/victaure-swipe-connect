@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { MarketplaceForm } from "./marketplace/MarketplaceForm";
 import { MarketplaceList } from "./marketplace/MarketplaceList";
@@ -54,7 +55,7 @@ export function Marketplace() {
     <motion.div 
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
-      className="container mx-auto px-4"
+      className="h-full px-4"
     >
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row gap-3">
