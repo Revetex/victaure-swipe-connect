@@ -26,17 +26,17 @@ export function LoginForm({
 }: LoginFormProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
       className="space-y-6"
     >
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-2xl font-semibold tracking-tight text-[#F1F0FB]">
           Connectez-vous à votre compte
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-[#F1F0FB]/80">
           Entrez vos identifiants pour accéder à votre espace
         </p>
       </div>
@@ -46,9 +46,9 @@ export function LoginForm({
         onSubmit();
       }} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email-login">Email</Label>
+          <Label htmlFor="email-login" className="text-[#F1F0FB]">Email</Label>
           <div className="relative">
-            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+            <Mail className="absolute left-3 top-3 h-4 w-4 text-[#F1F0FB]/60" aria-hidden="true" />
             <Input
               id="email-login"
               name="email"
@@ -58,7 +58,7 @@ export function LoginForm({
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
               disabled={loading}
-              className="pl-10"
+              className="pl-10 bg-[#F1F0FB]/10 border-[#F1F0FB]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40"
               required
               aria-required="true"
               aria-label="Adresse email"
@@ -67,9 +67,9 @@ export function LoginForm({
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="password-login">Mot de passe</Label>
+          <Label htmlFor="password-login" className="text-[#F1F0FB]">Mot de passe</Label>
           <div className="relative">
-            <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+            <Lock className="absolute left-3 top-3 h-4 w-4 text-[#F1F0FB]/60" aria-hidden="true" />
             <Input
               id="password-login"
               name="password"
@@ -78,7 +78,7 @@ export function LoginForm({
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}
               disabled={loading}
-              className="pl-10"
+              className="pl-10 bg-[#F1F0FB]/10 border-[#F1F0FB]/20 text-[#F1F0FB]"
               required
               aria-required="true"
               aria-label="Mot de passe"
@@ -89,7 +89,7 @@ export function LoginForm({
         <Button
           type="submit"
           disabled={loading || !email || !password}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 font-medium shadow-sm hover:shadow-md"
+          className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white transition-colors duration-200 font-medium"
           aria-label={loading ? "Connexion en cours..." : "Se connecter"}
         >
           {loading ? (

@@ -6,9 +6,6 @@ import { LoginForm } from "./LoginForm";
 import { SignupForm } from "./SignupForm";
 import { BusinessSignupForm } from "./BusinessSignupForm";
 import { useAuth } from "@/hooks/useAuth";
-import { Input } from "@/components/ui/input";
-import { Loader } from "@/components/ui/loader";
-import { Github } from "lucide-react";
 
 export function AuthForm({ redirectTo }: { redirectTo?: string }) {
   const [activeTab, setActiveTab] = useState("login");
@@ -39,19 +36,19 @@ export function AuthForm({ redirectTo }: { redirectTo?: string }) {
           <TabsList className="grid grid-cols-3 w-full mb-6 bg-[#D3E4FD]/5 border-2 border-[#D3E4FD]/20 rounded-lg p-1">
             <TabsTrigger 
               value="login"
-              className="data-[state=active]:bg-[#64B5D9]/20 data-[state=active]:text-white data-[state=active]:shadow-none transition-all duration-300"
+              className="text-[#F1F0FB] data-[state=active]:bg-[#64B5D9]/20 data-[state=active]:text-white data-[state=active]:shadow-none transition-all duration-200"
             >
               Connexion
             </TabsTrigger>
             <TabsTrigger 
               value="signup"
-              className="data-[state=active]:bg-[#64B5D9]/20 data-[state=active]:text-white data-[state=active]:shadow-none transition-all duration-300"
+              className="text-[#F1F0FB] data-[state=active]:bg-[#64B5D9]/20 data-[state=active]:text-white data-[state=active]:shadow-none transition-all duration-200"
             >
               Inscription
             </TabsTrigger>
             <TabsTrigger 
               value="business"
-              className="data-[state=active]:bg-[#64B5D9]/20 data-[state=active]:text-white data-[state=active]:shadow-none transition-all duration-300"
+              className="text-[#F1F0FB] data-[state=active]:bg-[#64B5D9]/20 data-[state=active]:text-white data-[state=active]:shadow-none transition-all duration-200"
             >
               Entreprise
             </TabsTrigger>
