@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Post } from "@/types/posts";
@@ -9,6 +8,8 @@ import { PostActions } from "./PostActions";
 import { CommentManager } from "@/components/feed/comments/CommentManager";
 import { PostCardHeader } from "./card/PostCardHeader";
 import { PostCardContent } from "./card/PostCardContent";
+import { Button } from "@/components/ui/button";
+import { SendHorizonal } from "lucide-react";
 
 export interface PostCardProps {
   post: Post;
@@ -17,6 +18,7 @@ export interface PostCardProps {
   onDelete?: () => void;
   onHide?: (postId: string) => void;
   onUpdate?: (postId: string, content: string) => void;
+  onShare?: () => void;
   onReaction?: (postId: string, type: 'like' | 'dislike') => void;
   onCommentAdded?: () => void;
 }
@@ -29,7 +31,8 @@ export function PostCard({
   onHide,
   onUpdate,
   onReaction,
-  onCommentAdded
+  onCommentAdded,
+  onShare
 }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -100,6 +103,15 @@ export function PostCard({
           onToggleComments={handleToggleComments}
           onReaction={onReaction}
         />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onShare}
+          className="text-gray-500 hover:text-gray-700"
+        >
+          <SendHorizonal className="h-4 w-4 mr-2" />
+          Partager
+        </Button>
 
         {showComments && post.comments && (
           <CommentManager
