@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Job } from "@/types/job";
 import { useJobsData } from "@/hooks/useJobsData";
@@ -66,6 +65,10 @@ export function JobsPage() {
     setRemoteOnly(false);
   };
 
+  const handleJobSelect = (job: Job) => {
+    console.log("Job selected:", job);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
@@ -79,12 +82,11 @@ export function JobsPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={cn(
-        "container mx-auto p-4 max-w-7xl",
-        "min-h-[calc(100vh-4rem)]",
+        "page-container",
         "pt-20"
       )}
     >
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-7xl mx-auto">
         <JobsSearch 
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -107,6 +109,7 @@ export function JobsPage() {
         
         <JobsResults 
           jobs={filteredJobs}
+          onJobSelect={handleJobSelect}
           onResetFilters={handleResetFilters}
         />
       </div>
