@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from '../_shared/cors.ts';
 
@@ -120,7 +119,6 @@ Concentre-toi sur :
       maxTokens: payload.max_tokens
     });
 
-    // Utilise le modèle gemini-2.0-flash-thinking-exp:free
     const openRouterPromise = fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -133,23 +131,31 @@ Concentre-toi sur :
 
     const response = await fetchWithTimeout(openRouterPromise, TIMEOUT_DURATION);
     
-    // Log the raw response status and headers
     console.log('OpenRouter response status:', response.status);
     console.log('OpenRouter response headers:', Object.fromEntries(response.headers.entries()));
 
     const data = await response.json();
     console.log('OpenRouter response data:', JSON.stringify(data, null, 2));
 
+    // Vérification spécifique des erreurs de limite de taux
+    if (data.error) {
+      if (data.error.code === 429) {
+        const resetTime = new Date(parseInt(data.error.metadata?.headers?.["X-RateLimit-Reset"] || Date.now()));
+        const resetTimeString = resetTime.toLocaleString();
+        throw new Error(`Limite d'utilisation atteinte. Réessayez après ${resetTimeString}`);
+      }
+      throw new Error(`OpenRouter API error: ${JSON.stringify(data.error)}`);
+    }
+
     if (!response.ok) {
-      throw new Error(`OpenRouter API error: ${JSON.stringify(data.error || 'Unknown error')}`);
+      throw new Error(`OpenRouter API error: Status ${response.status}`);
     }
 
     if (!data.choices?.[0]?.message?.content) {
       console.error('Invalid response structure:', data);
-      throw new Error("Invalid response structure from OpenRouter");
+      throw new Error("Structure de réponse invalide de OpenRouter");
     }
 
-    // Create standard response format
     const formattedResponse = {
       choices: [{
         message: {
@@ -172,7 +178,7 @@ Concentre-toi sur :
 
     const errorResponse = {
       error: {
-        message: error instanceof Error ? error.message : "An unknown error occurred",
+        message: error instanceof Error ? error.message : "Une erreur inconnue s'est produite",
         name: error instanceof Error ? error.name : "UnknownError",
         timestamp: new Date().toISOString()
       }
@@ -182,7 +188,7 @@ Concentre-toi sur :
       JSON.stringify(errorResponse),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
+        status: error instanceof Error && error.message.includes('Limite') ? 429 : 500,
       }
     );
   }
