@@ -60,12 +60,10 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
           )
         `)
 
-      // Appliquer le filtre
       if (filter === "liked") {
         query.eq("user_id", user?.id);
       }
 
-      // Appliquer le tri
       switch (sortBy) {
         case 'date':
           query.order('created_at', { ascending: sortOrder === 'asc' });
@@ -74,7 +72,6 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
           query.order('likes', { ascending: sortOrder === 'asc' });
           break;
         case 'comments':
-          // Trier par nombre de commentaires
           const { data, error } = await query;
           if (error) throw error;
           return data.map(post => ({
@@ -120,9 +117,9 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
 
   return (
     <div className="w-full max-w-3xl mx-auto">
-      <div className="mb-6 space-y-4 bg-background/60 backdrop-blur-sm p-4 rounded-lg border border-border/40">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
+      <div className="sticky top-[73px] z-30 bg-background/80 backdrop-blur-lg border-b border-border/40 shadow-sm mb-4">
+        <div className="p-4 space-y-4">
+          <div className="relative flex items-center">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Rechercher dans les posts..."
@@ -132,12 +129,12 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
             />
           </div>
           
-          <div className="flex flex-wrap sm:flex-nowrap gap-2">
+          <div className="flex flex-nowrap gap-2 overflow-x-auto pb-2 scrollbar-none">
             <Select
               value={filter}
               onValueChange={setFilter}
             >
-              <SelectTrigger className="w-[180px] bg-background/50">
+              <SelectTrigger className="min-w-[140px] bg-background/50">
                 <SelectValue placeholder="Filtrer par" />
               </SelectTrigger>
               <SelectContent>
@@ -151,7 +148,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
               value={sortBy}
               onValueChange={(value: 'date' | 'likes' | 'comments') => setSortBy(value)}
             >
-              <SelectTrigger className="w-[180px] bg-background/50">
+              <SelectTrigger className="min-w-[140px] bg-background/50">
                 <SelectValue placeholder="Trier par" />
               </SelectTrigger>
               <SelectContent>
@@ -165,7 +162,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
               value={sortOrder}
               onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}
             >
-              <SelectTrigger className="w-[180px] bg-background/50">
+              <SelectTrigger className="min-w-[140px] bg-background/50">
                 <SelectValue placeholder="Ordre" />
               </SelectTrigger>
               <SelectContent>
@@ -177,7 +174,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 px-4">
         <AnimatePresence mode="popLayout">
           {filteredPosts?.map((post) => (
             <motion.div

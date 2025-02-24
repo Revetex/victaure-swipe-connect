@@ -1,8 +1,7 @@
 
 import { PostList } from "./posts/PostList";
 import { CreatePostForm } from "./posts/create/CreatePostForm";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function Feed() {
   const queryClient = useQueryClient();
@@ -12,7 +11,7 @@ export function Feed() {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-4 pt-4 pb-20">
+    <div className="w-full max-w-3xl mx-auto space-y-4 pt-16">
       <CreatePostForm onPostCreated={handlePostCreated} />
       <PostList 
         onPostDeleted={handlePostCreated}
