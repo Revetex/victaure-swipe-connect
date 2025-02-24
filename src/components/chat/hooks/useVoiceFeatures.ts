@@ -12,7 +12,6 @@ export function useVoiceFeatures() {
     try {
       setIsRecording(true);
       setIsProcessing(true);
-      toast.info("Enregistrement en cours...");
 
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
@@ -48,14 +47,13 @@ export function useVoiceFeatures() {
               setIsProcessing(false);
 
               if (data.text) {
-                toast.success("Message vocal transcrit avec succès");
+                toast.success("Message vocal transcrit");
                 return data.text;
               } else {
                 throw new Error("Aucun texte transcrit");
               }
             } catch (err) {
               console.error("Erreur de transcription:", err);
-              toast.error("Impossible de transcrire l'audio");
               setIsProcessing(false);
             }
           };
@@ -63,12 +61,15 @@ export function useVoiceFeatures() {
           reader.readAsDataURL(audioBlob);
         } catch (err) {
           console.error("Erreur de traitement audio:", err);
-          toast.error("Erreur lors du traitement de l'audio");
           setIsProcessing(false);
         }
       };
 
       mediaRecorder.start();
+      toast.info("Enregistrement en cours...", {
+        duration: 5000,
+      });
+
       setTimeout(() => {
         mediaRecorder.stop();
         stream.getTracks().forEach(track => track.stop());
@@ -77,9 +78,9 @@ export function useVoiceFeatures() {
 
     } catch (error) {
       console.error("Erreur d'enregistrement:", error);
-      toast.error("Impossible d'accéder au microphone");
       setIsRecording(false);
       setIsProcessing(false);
+      toast.error("Impossible d'accéder au microphone");
     }
   }, []);
 
@@ -92,11 +93,7 @@ export function useVoiceFeatures() {
 
       setIsSpeaking(true);
       const { data, error } = await supabase.functions.invoke("text-to-voice", {
-        body: { 
-          text,
-          voice: "alloy",
-          model: "eleven-multilingual-v2"
-        }
+        body: { text }
       });
 
       if (error) throw error;
@@ -107,14 +104,12 @@ export function useVoiceFeatures() {
       audio.onended = () => setIsSpeaking(false);
       audio.onerror = (e) => {
         console.error("Erreur de lecture audio:", e);
-        toast.error("Erreur lors de la lecture audio");
         setIsSpeaking(false);
       };
 
       await audio.play();
     } catch (error) {
       console.error("Erreur de synthèse vocale:", error);
-      toast.error("Impossible de générer la voix");
       setIsSpeaking(false);
     }
   }, [isSpeaking]);
