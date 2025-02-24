@@ -1,5 +1,5 @@
 
-import { Briefcase, Sparkles, Menu } from "lucide-react";
+import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
@@ -70,11 +70,10 @@ export function AppHeader({
 
         <Button
           onClick={() => setShowChat(true)}
-          className="bg-white/10 text-white text-sm py-1.5 px-3 h-8 rounded-lg border border-white/30 shadow-inner shadow-white/10 transition-all duration-200 touch-manipulation active:scale-95 whitespace-nowrap shrink-0"
+          className="w-8 h-8 p-0 rounded-full bg-white/10 hover:bg-white/20 border border-white/30 shadow-inner shadow-white/10 transition-all duration-200 touch-manipulation active:scale-95"
+          title="Assistant IA"
         >
-          <Sparkles className="h-3.5 w-3.5 mr-1.5 text-yellow-300" />
-          <span className="hidden sm:inline">Assistant IA</span>
-          <span className="sm:hidden">IA</span>
+          <Star className="h-4 w-4 text-yellow-300" />
         </Button>
 
         <Dialog open={showChat} onOpenChange={setShowChat}>

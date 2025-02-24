@@ -1,3 +1,4 @@
+
 import { QRCodeSVG } from "qrcode.react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
@@ -13,7 +14,7 @@ interface VCardQRProps {
 export function VCardQR({ isQRDialogOpen, setIsQRDialogOpen, profileId }: VCardQRProps) {
   const isMobile = useIsMobile();
   const publicProfileUrl = `${window.location.origin}/profile/${profileId}`;
-  const logoUrl = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png";
+  const logoUrl = "/lovable-uploads/black-white-logo.png";
 
   return (
     <>
