@@ -43,6 +43,8 @@ export function useChatMessages({
 
         if (profileError) {
           console.error("Error fetching profile:", profileError);
+          toast.error("Erreur lors de la récupération du profil");
+          return;
         }
 
         const { data, error } = await supabase.functions.invoke("victaure-chat", {
@@ -52,12 +54,18 @@ export function useChatMessages({
               { role: "user", content: "Bonjour !" }
             ],
             userId: user?.id,
-            userProfile: profile // Pass the profile to the edge function
+            userProfile: profile
           }
         });
 
-        if (error) throw error;
-        console.log("Initial response:", data);
+        if (error) {
+          console.error("Error in greetUser:", error);
+          setError(error);
+          toast.error("Mr Victaure n'est pas disponible pour le moment");
+          return;
+        }
+
+        console.log("Initial response data:", data);
 
         if (data?.choices?.[0]?.message?.content) {
           setMessages([{
@@ -74,6 +82,7 @@ export function useChatMessages({
       }
     };
 
+    // Ne déclencher le message d'accueil que si l'utilisateur est connecté
     if (user?.id) {
       greetUser();
     }
@@ -96,8 +105,8 @@ export function useChatMessages({
     try {
       setIsLoading(true);
       setError(null);
-      console.log("Sending message to assistant...");
-      
+      console.log("Sending message, current state:", { userQuestions, maxQuestions });
+
       // Add user message immediately
       setMessages(prev => [...prev, userMessage]);
       setUserQuestions(prev => prev + 1);
@@ -111,6 +120,8 @@ export function useChatMessages({
 
       if (profileError) {
         console.error("Error fetching profile:", profileError);
+        toast.error("Erreur lors de la récupération du profil");
+        return null;
       }
 
       const messageHistory = [
@@ -122,18 +133,24 @@ export function useChatMessages({
         { role: "user", content: userInput }
       ];
 
-      console.log("Message history:", messageHistory);
+      console.log("Sending to victaure-chat with history:", messageHistory);
 
       const { data, error } = await supabase.functions.invoke("victaure-chat", {
         body: { 
           messages: messageHistory,
           userId: user?.id,
-          userProfile: profile // Pass the profile to the edge function
+          userProfile: profile
         }
       });
 
-      if (error) throw error;
-      console.log("Assistant response:", data);
+      if (error) {
+        console.error("Error in sendMessage:", error);
+        setError(error);
+        toast.error("Mr Victaure n'est pas disponible pour le moment");
+        return null;
+      }
+
+      console.log("Response from victaure-chat:", data);
 
       if (data?.choices?.[0]?.message?.content) {
         const response = data.choices[0].message.content;
@@ -145,9 +162,9 @@ export function useChatMessages({
       }
       return null;
     } catch (error) {
-      console.error("Error in chat:", error);
+      console.error("Error in sendMessage:", error);
       setError(error as Error);
-      toast.error("Désolé, je ne peux pas répondre pour le moment");
+      toast.error("Une erreur est survenue lors de l'envoi du message");
       return null;
     } finally {
       setIsLoading(false);
