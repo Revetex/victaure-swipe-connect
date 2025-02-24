@@ -39,75 +39,31 @@ export function ContentRouter({
     const content = (() => {
       switch (currentPage) {
         case 1:
-          return (
-            <div className="min-h-screen pt-16 lg:pt-0 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
-              <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />
-            </div>
-          );
+          return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
         case 2:
           return <Messages />;
         case 3:
           return <Marketplace />;
         case 4:
-          return (
-            <div className="min-h-screen pt-16 lg:pt-16 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
-              <Feed />
-            </div>
-          );
+          return <Feed />;
         case 7:
-          return (
-            <div className="min-h-screen pt-16 lg:pt-0 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
-              <TasksPage />
-            </div>
-          );
+          return <TasksPage />;
         case 8:
-          return (
-            <div className="min-h-screen pt-16 lg:pt-0 bg-card/5 backdrop-blur-sm">
-              <CalculatorPage />
-            </div>
-          );
+          return <CalculatorPage />;
         case 9:
-          return (
-            <div className="min-h-screen pt-16 lg:pt-0 backdrop-blur-sm">
-              <NotificationsTab />
-            </div>
-          );
+          return <NotificationsTab />;
         case 10:
-          return (
-            <div className="min-h-screen pt-16 lg:pt-0 bg-background/80 backdrop-blur-sm">
-              <Settings />
-            </div>
-          );
+          return <Settings />;
         case 12:
-          return (
-            <div className="min-h-screen pt-16 lg:pt-0 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
-              <FriendsList />
-            </div>
-          );
+          return <FriendsList />;
         case 14:
-          return (
-            <div className="min-h-screen pt-16 lg:pt-0 bg-card/5 backdrop-blur-sm">
-              <TranslatorPage />
-            </div>
-          );
+          return <TranslatorPage />;
         case 16:
-          return (
-            <div className="min-h-screen pt-16 lg:pt-0 bg-card/5 backdrop-blur-sm">
-              <NotesSection />
-            </div>
-          );
+          return <NotesSection />;
         case 17:
-          return (
-            <div className="min-h-screen pt-16 lg:pt-0 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
-              <JobsPage />
-            </div>
-          );
+          return <JobsPage />;
         case 18:
-          return (
-            <div className="min-h-screen pt-16 lg:pt-0 bg-card/5 backdrop-blur-sm">
-              <LotteryPage />
-            </div>
-          );
+          return <LotteryPage />;
         default:
           return renderDashboardHome();
       }

@@ -2,7 +2,6 @@
 import React, { useState, useCallback } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { DashboardContent } from "./dashboard/DashboardContent";
-import { DashboardSidebar } from "./dashboard/layout/DashboardSidebar";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/header/AppHeader";
@@ -34,27 +33,16 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen w-full bg-background overflow-hidden">
-      {/* Sidebar desktop */}
-      <div className="hidden lg:block">
-        <DashboardSidebar 
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-        />
-      </div>
-
-      {/* Menu mobile */}
-      <div className="lg:hidden">
-        <DashboardMobileNav
-          currentPage={currentPage}
-          showMobileMenu={showMobileMenu}
-          setShowMobileMenu={handleMobileMenuToggle}
-          onPageChange={handlePageChange}
-        />
-      </div>
+      {/* Menu plein écran pour toutes les tailles */}
+      <DashboardMobileNav
+        currentPage={currentPage}
+        showMobileMenu={showMobileMenu}
+        setShowMobileMenu={handleMobileMenuToggle}
+        onPageChange={handlePageChange}
+      />
 
       <main className={cn(
         "flex-1",
-        "lg:ml-64",
         "min-h-screen",
         "w-full",
         "relative",
