@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
 
@@ -89,8 +90,14 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
         ...note,
         text: editedText
       });
+      toast.success("Note mise à jour");
     }
     setIsEditing(false);
+  };
+
+  const handleDelete = () => {
+    onDelete(note.id);
+    toast.success("Note supprimée");
   };
 
   const width = note.metadata?.width || 280;
@@ -132,7 +139,6 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
           </div>
         </div>
 
-        {/* Contrôles de la note avec stopPropagation pour éviter le conflit avec le drag */}
         <div className="flex flex-col gap-2" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
           {!isDragging && (
             <>
@@ -158,7 +164,7 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
                 variant="ghost"
                 size="icon"
                 className="bg-background/20 hover:bg-background/40"
-                onClick={() => onDelete(note.id)}
+                onClick={handleDelete}
               >
                 <Trash2 className="h-4 w-4" />
                 <span className="sr-only">Supprimer</span>

@@ -7,10 +7,16 @@ import { cn } from "@/lib/utils";
 interface NoteGridContainerProps {
   notes: StickyNoteType[];
   onDeleteNote: (id: string) => void;
+  onUpdateNote?: (note: StickyNoteType) => void;
   layout: 'grid' | 'masonry' | 'list';
 }
 
-export function NoteGridContainer({ notes, onDeleteNote, layout }: NoteGridContainerProps) {
+export function NoteGridContainer({ 
+  notes, 
+  onDeleteNote, 
+  onUpdateNote,
+  layout 
+}: NoteGridContainerProps) {
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -38,6 +44,7 @@ export function NoteGridContainer({ notes, onDeleteNote, layout }: NoteGridConta
           key={note.id} 
           note={note} 
           onDelete={onDeleteNote}
+          onUpdate={onUpdateNote}
           layout={layout}
         />
       ))}
