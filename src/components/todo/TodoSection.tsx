@@ -16,11 +16,11 @@ export function TodoSection() {
 
   return (
     <Card className={cn(
-      "bg-gradient-to-br from-[#F2FCE2]/50 via-[#D3E4FD]/30 to-[#FFDEE2]/20",
-      "backdrop-blur-sm border rounded-xl shadow-lg"
+      "bg-background/80 dark:bg-zinc-900/80",
+      "backdrop-blur-xl border-none shadow-lg"
     )}>
       <CardHeader>
-        <CardTitle className="text-xl font-semibold bg-gradient-to-r from-primary/90 to-primary bg-clip-text text-transparent">
+        <CardTitle className="text-xl font-medium text-foreground">
           Gestionnaire de tâches
         </CardTitle>
       </CardHeader>
