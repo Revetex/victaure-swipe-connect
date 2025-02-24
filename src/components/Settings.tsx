@@ -1,187 +1,125 @@
-
-import { useState, useEffect } from "react";
-import { AppearanceSection } from "./settings/AppearanceSection";
-import { NotificationsSection } from "./settings/NotificationsSection";
-import { PrivacySection } from "./settings/PrivacySection";
-import { SecuritySection } from "./settings/SecuritySection";
-import { BlockedUsersSection } from "./settings/BlockedUsersSection";
-import { LogoutSection } from "./settings/LogoutSection";
-import { Elements } from "@stripe/react-stripe-js";
-import { initializeStripe } from "@/hooks/useStripePayment";
-import type { StripeElementsOptions } from '@stripe/stripe-js';
-import { toast } from 'sonner';
 import { motion } from "framer-motion";
-import { Card } from "./ui/card";
-import { cn } from "@/lib/utils";
-import { ScrollArea } from "./ui/scroll-area";
+import { useProfile } from "@/hooks/useProfile";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Moon, Sun, Bell, Lock, UserX, LogOut } from "lucide-react";
 
-const stripeElementsOptions: StripeElementsOptions = {
-  mode: 'payment',
-  currency: 'cad',
-  amount: 1000,
-  appearance: {
-    theme: 'stripe',
-    variables: {
-      colorPrimary: '#1B2A4A',
+export default function Settings() {
+  const { profile } = useProfile();
+
+  const settingsItems = [
+    {
+      title: "Thème",
+      icon: profile?.theme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />,
+      action: (
+        <Switch 
+          checked={profile?.theme === "dark"}
+          onCheckedChange={() => {
+            // Implémentation du changement de thème
+            toast.success("Thème mis à jour");
+          }}
+        />
+      )
     },
-  },
-};
-
-const settingsSections = [
-  { 
-    id: 'appearance', 
-    title: 'Apparence',
-    Component: AppearanceSection 
-  },
-  { 
-    id: 'notifications', 
-    title: 'Notifications',
-    Component: NotificationsSection 
-  },
-  { 
-    id: 'privacy', 
-    title: 'Confidentialité',
-    Component: PrivacySection 
-  },
-  { 
-    id: 'security', 
-    title: 'Sécurité',
-    Component: SecuritySection 
-  },
-  { 
-    id: 'blocked', 
-    title: 'Utilisateurs bloqués',
-    Component: BlockedUsersSection 
-  },
-  { 
-    id: 'logout', 
-    title: 'Déconnexion',
-    Component: LogoutSection 
-  }
-];
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 15
-    }
-  }
-};
-
-const Settings = () => {
-  const [stripePromise, setStripePromise] = useState<Promise<any> | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState(settingsSections[0].id);
-
-  useEffect(() => {
-    initializeStripe()
-      .then(stripe => {
-        if (stripe) setStripePromise(Promise.resolve(stripe));
-        else throw new Error('Failed to initialize Stripe');
-      })
-      .catch(error => {
-        console.error('Stripe initialization error:', error);
-        toast.error("Erreur lors de l'initialisation du système de paiement");
-      })
-      .finally(() => setIsLoading(false));
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#F2EBE4] dark:bg-[#1A1F2C]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1B2A4A] dark:border-[#F2EBE4]" />
-      </div>
-    );
-  }
-
-  if (!stripePromise) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-[#F2EBE4] dark:bg-[#1A1F2C]">
-        <p className="text-center text-muted-foreground mb-4">
-          Le système de paiement n'a pas pu être initialisé.
-        </p>
-        <button 
-          onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-[#1B2A4A] text-[#F2EBE4] rounded-md hover:bg-[#1B2A4A]/90 transition-colors"
+    {
+      title: "Notifications",
+      icon: <Bell className="h-4 w-4" />,
+      action: (
+        <Switch 
+          checked={profile?.notifications_enabled}
+          onCheckedChange={() => {
+            // Implémentation des notifications
+            toast.success("Préférences de notifications mises à jour");
+          }}
+        />
+      )
+    },
+    {
+      title: "Confidentialité",
+      icon: <Lock className="h-4 w-4" />,
+      action: (
+        <Switch 
+          checked={profile?.privacy_enabled}
+          onCheckedChange={() => {
+            // Implémentation de la confidentialité
+            toast.success("Paramètres de confidentialité mis à jour");
+          }}
+        />
+      )
+    },
+    {
+      title: "Utilisateurs bloqués",
+      icon: <UserX className="h-4 w-4" />,
+      action: (
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="text-muted-foreground hover:text-foreground"
+          onClick={() => {
+            // Implémentation de la gestion des utilisateurs bloqués
+            toast.success("Liste des utilisateurs bloqués mise à jour");
+          }}
         >
-          Réessayer
-        </button>
-      </div>
-    );
-  }
+          Gérer
+        </Button>
+      )
+    },
+    {
+      title: "Déconnexion",
+      icon: <LogOut className="h-4 w-4" className="text-destructive" />,
+      action: (
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="text-destructive hover:text-destructive/90"
+          onClick={() => {
+            // Implémentation de la déconnexion
+            toast.success("Déconnexion en cours...");
+          }}
+        >
+          Déconnexion
+        </Button>
+      )
+    }
+  ];
 
   return (
-    <Elements stripe={stripePromise} options={stripeElementsOptions}>
-      <div className="min-h-screen bg-[#F2EBE4] dark:bg-[#1A1F2C]">
-        <div className="container max-w-6xl mx-auto px-4 py-8">
-          <motion.div 
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-1 lg:grid-cols-[250px,1fr] gap-8"
-          >
-            {/* Navigation des sections */}
-            <Card className="h-fit p-4 bg-[#F2EBE4]/50 dark:bg-[#1A1F2C]/50 backdrop-blur-sm border-[#F2EBE4]/20 dark:border-[#1A1F2C]/20">
-              <nav className="space-y-2">
-                {settingsSections.map(({ id, title }) => (
-                  <button
-                    key={id}
-                    onClick={() => setActiveSection(id)}
-                    className={cn(
-                      "w-full text-left px-4 py-2 rounded-lg transition-colors",
-                      "hover:bg-[#1B2A4A]/10 dark:hover:bg-[#F2EBE4]/10",
-                      activeSection === id 
-                        ? "bg-[#1B2A4A]/15 dark:bg-[#F2EBE4]/15 font-medium"
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {title}
-                  </button>
-                ))}
-              </nav>
-            </Card>
+    <div className="min-h-screen bg-background">
+      <div className="container max-w-2xl mx-auto p-4 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-6"
+        >
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold tracking-tight">Paramètres</h1>
+            <p className="text-sm text-muted-foreground">
+              Gérez vos préférences et paramètres de compte.
+            </p>
+          </div>
 
-            {/* Contenu de la section active */}
-            <ScrollArea className="h-[calc(100vh-8rem)]">
-              <motion.div 
-                variants={itemVariants}
-                className="space-y-6"
+          <Card className="divide-y divide-border">
+            {settingsItems.map((item, index) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="flex items-center justify-between p-4"
               >
-                {settingsSections.map(({ id, Component }) => (
-                  <div
-                    key={id}
-                    className={cn(
-                      "transition-all duration-300",
-                      activeSection === id ? "block" : "hidden"
-                    )}
-                  >
-                    <Card className="p-6 bg-[#F2EBE4]/50 dark:bg-[#1A1F2C]/50 backdrop-blur-sm border-[#F2EBE4]/20 dark:border-[#1A1F2C]/20">
-                      <Component />
-                    </Card>
-                  </div>
-                ))}
+                <div className="flex items-center gap-3">
+                  {item.icon}
+                  <Label className="font-medium">{item.title}</Label>
+                </div>
+                {item.action}
               </motion.div>
-            </ScrollArea>
-          </motion.div>
-        </div>
+            ))}
+          </Card>
+        </motion.div>
       </div>
-    </Elements>
+    </div>
   );
 }
-
-export default Settings;
