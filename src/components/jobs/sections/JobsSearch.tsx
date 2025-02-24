@@ -1,4 +1,3 @@
-
 import { Search, Filter, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,6 @@ import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { JobsFilters } from "./JobsFilters";
-
 interface JobsSearchProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
@@ -29,9 +27,8 @@ interface JobsSearchProps {
   onSalaryRangeChange: (value: [number, number]) => void;
   onRemoteOnlyChange: (value: boolean) => void;
 }
-
-export function JobsSearch({ 
-  searchQuery, 
+export function JobsSearch({
+  searchQuery,
   onSearchChange,
   selectedLocation,
   selectedCompanyType,
@@ -49,25 +46,19 @@ export function JobsSearch({
   onSalaryRangeChange,
   onRemoteOnlyChange
 }: JobsSearchProps) {
-  return (
-    <motion.div
-      variants={{
-        hidden: { y: 20, opacity: 0 },
-        visible: { y: 0, opacity: 1 }
-      }}
-    >
+  return <motion.div variants={{
+    hidden: {
+      y: 20,
+      opacity: 0
+    },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  }}>
       <Card className="p-6 shadow-lg border-primary/10 bg-card/50 backdrop-blur-sm">
         <div className="flex flex-col md:flex-row gap-4">
-          <div className="relative flex-1">
-            <Input
-              type="text"
-              placeholder="Rechercher par titre, entreprise ou mot-clé..."
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 h-12 text-base bg-background/50 border-primary/20"
-            />
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          </div>
+          
           
           <Dialog>
             <DialogTrigger asChild>
@@ -80,23 +71,7 @@ export function JobsSearch({
               <DialogHeader>
                 <DialogTitle>Filtres avancés</DialogTitle>
               </DialogHeader>
-              <JobsFilters
-                selectedLocation={selectedLocation}
-                selectedCompanyType={selectedCompanyType}
-                sortOrder={sortOrder}
-                experienceLevel={experienceLevel}
-                contractType={contractType}
-                locations={locations}
-                salaryRange={salaryRange}
-                remoteOnly={remoteOnly}
-                onLocationChange={onLocationChange}
-                onCompanyTypeChange={onCompanyTypeChange}
-                onSortOrderChange={onSortOrderChange}
-                onExperienceLevelChange={onExperienceLevelChange}
-                onContractTypeChange={onContractTypeChange}
-                onSalaryRangeChange={onSalaryRangeChange}
-                onRemoteOnlyChange={onRemoteOnlyChange}
-              />
+              <JobsFilters selectedLocation={selectedLocation} selectedCompanyType={selectedCompanyType} sortOrder={sortOrder} experienceLevel={experienceLevel} contractType={contractType} locations={locations} salaryRange={salaryRange} remoteOnly={remoteOnly} onLocationChange={onLocationChange} onCompanyTypeChange={onCompanyTypeChange} onSortOrderChange={onSortOrderChange} onExperienceLevelChange={onExperienceLevelChange} onContractTypeChange={onContractTypeChange} onSalaryRangeChange={onSalaryRangeChange} onRemoteOnlyChange={onRemoteOnlyChange} />
             </DialogContent>
           </Dialog>
 
@@ -116,16 +91,13 @@ export function JobsSearch({
           </Dialog>
         </div>
       </Card>
-    </motion.div>
-  );
+    </motion.div>;
 }
 
 // Créons le formulaire pour ajouter une annonce
 interface JobPostingFormProps {}
-
 function JobPostingForm({}: JobPostingFormProps) {
-  return (
-    <form className="space-y-6">
+  return <form className="space-y-6">
       <div className="grid gap-4">
         <div className="grid gap-2">
           <Label>Type d'annonce</Label>
@@ -169,6 +141,5 @@ function JobPostingForm({}: JobPostingFormProps) {
           <Button type="submit">Publier l'annonce</Button>
         </div>
       </div>
-    </form>
-  );
+    </form>;
 }
