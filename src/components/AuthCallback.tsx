@@ -1,16 +1,13 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Loader } from "./ui/loader";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 
 export function AuthCallback() {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
-  const [showErrorDialog, setShowErrorDialog] = useState(false);
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -45,7 +42,6 @@ export function AuthCallback() {
       } catch (error) {
         console.error("Auth callback error:", error);
         setError(error instanceof Error ? error.message : "Une erreur est survenue");
-        setShowErrorDialog(true);
         toast.error("Erreur d'authentification");
         navigate('/auth', { replace: true });
       }
@@ -56,22 +52,20 @@ export function AuthCallback() {
 
   if (error) {
     return (
-      <Dialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Erreur d'authentification</DialogTitle>
-          </DialogHeader>
-          <div className="mt-4">
-            <p className="text-destructive text-center">{error}</p>
-            <button 
-              onClick={() => navigate('/auth')}
-              className="mt-4 w-full text-primary hover:underline transition-colors"
-            >
-              Retour à la page de connexion
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0 }}
+        className="flex flex-col items-center justify-center min-h-screen gap-4 p-4"
+      >
+        <p className="text-destructive text-center">{error}</p>
+        <button 
+          onClick={() => navigate('/auth')}
+          className="text-primary hover:underline transition-colors"
+        >
+          Retour à la page de connexion
+        </button>
+      </motion.div>
     );
   }
 

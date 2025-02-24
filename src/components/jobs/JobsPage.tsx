@@ -1,18 +1,12 @@
-
 import { useState } from "react";
 import { Job } from "@/types/job";
 import { useJobsData } from "@/hooks/useJobsData";
-import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { toast } from "sonner";
 import { JobsSearch } from "./sections/JobsSearch";
 import { JobsFilters } from "./sections/JobsFilters";
 import { JobsResults } from "./sections/JobsResults";
 import { JobsAIAssistant } from "./sections/JobsAIAssistant";
-import { CreateJobForm } from "./CreateJobForm";
-import { ExternalSearchSection } from "./sections/ExternalSearchSection";
-import { PlusCircle } from "lucide-react";
 
 export function JobsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -67,6 +61,21 @@ export function JobsPage() {
 
   const handleJobSelect = (job: Job) => {
     setSelectedJobId(job.id);
+    toast.info("Détails de l'emploi disponibles bientôt !");
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setSelectedLocation("");
+    setSelectedCompanyType("");
+    setExperienceLevel("");
+    setContractType("");
+    setSalaryRange([0, 200000]);
+    setRemoteOnly(false);
+  };
+
+  const handleRequestAssistant = () => {
+    setIsAssistantOpen(true);
   };
 
   if (isLoading) {
@@ -78,93 +87,53 @@ export function JobsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="space-y-6"
-        >
-          {/* Header et actions */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h1 className="text-3xl font-bold">Emplois disponibles</h1>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="gap-2">
-                  <PlusCircle className="w-4 h-4" />
-                  Publier une offre
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh]">
-                <DialogTitle>Créer une offre d'emploi</DialogTitle>
-                <CreateJobForm />
-              </DialogContent>
-            </Dialog>
-          </div>
+    <motion.div 
+      variants={{
+        hidden: { opacity: 0 },
+        visible: {
+          opacity: 1,
+          transition: {
+            staggerChildren: 0.1
+          }
+        }
+      }}
+      initial="hidden"
+      animate="visible"
+      className="container mx-auto p-4 max-w-7xl"
+    >
+      <div className="space-y-6">
+        <JobsSearch 
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedLocation={selectedLocation}
+          selectedCompanyType={selectedCompanyType}
+          sortOrder={sortOrder}
+          experienceLevel={experienceLevel}
+          contractType={contractType}
+          locations={locations}
+          salaryRange={salaryRange}
+          remoteOnly={remoteOnly}
+          onLocationChange={setSelectedLocation}
+          onCompanyTypeChange={setSelectedCompanyType}
+          onSortOrderChange={setSortOrder}
+          onExperienceLevelChange={setExperienceLevel}
+          onContractTypeChange={setContractType}
+          onSalaryRangeChange={setSalaryRange}
+          onRemoteOnlyChange={setRemoteOnly}
+        />
+        
+        <JobsResults 
+          jobs={filteredJobs}
+          onJobSelect={handleJobSelect}
+          selectedJobId={selectedJobId}
+          onResetFilters={handleResetFilters}
+        />
 
-          {/* Recherche et recherche externe */}
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card className="p-6">
-              <JobsSearch 
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-              />
-            </Card>
-            <Card className="p-6">
-              <ExternalSearchSection />
-            </Card>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Filtres */}
-            <div className="lg:col-span-3">
-              <Card className="sticky top-4">
-                <JobsFilters 
-                  selectedLocation={selectedLocation}
-                  selectedCompanyType={selectedCompanyType}
-                  sortOrder={sortOrder}
-                  experienceLevel={experienceLevel}
-                  contractType={contractType}
-                  locations={locations}
-                  salaryRange={salaryRange}
-                  remoteOnly={remoteOnly}
-                  onLocationChange={setSelectedLocation}
-                  onCompanyTypeChange={setSelectedCompanyType}
-                  onSortOrderChange={setSortOrder}
-                  onExperienceLevelChange={setExperienceLevel}
-                  onContractTypeChange={setContractType}
-                  onSalaryRangeChange={setSalaryRange}
-                  onRemoteOnlyChange={setRemoteOnly}
-                />
-              </Card>
-            </div>
-
-            {/* Résultats */}
-            <div className="lg:col-span-9">
-              <JobsResults 
-                jobs={filteredJobs}
-                onJobSelect={handleJobSelect}
-                selectedJobId={selectedJobId}
-                onResetFilters={() => {
-                  setSearchQuery("");
-                  setSelectedLocation("");
-                  setSelectedCompanyType("");
-                  setExperienceLevel("");
-                  setContractType("");
-                  setSalaryRange([0, 200000]);
-                  setRemoteOnly(false);
-                }}
-              />
-            </div>
-          </div>
-        </motion.div>
+        <JobsAIAssistant 
+          isOpen={isAssistantOpen}
+          onClose={() => setIsAssistantOpen(false)}
+        />
       </div>
-
-      <JobsAIAssistant 
-        isOpen={isAssistantOpen}
-        onClose={() => setIsAssistantOpen(false)}
-      />
-    </div>
+    </motion.div>
   );
 }

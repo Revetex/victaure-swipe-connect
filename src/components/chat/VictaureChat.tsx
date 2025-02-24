@@ -7,8 +7,7 @@ import { ChatInput } from "./ChatInput";
 import { useChatMessages } from "./hooks/useChatMessages";
 import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
-import { RefreshCcw, X } from "lucide-react";
-import { DialogClose } from "@/components/ui/dialog";
+import { RefreshCcw, Globe } from "lucide-react";
 import { toast } from "sonner";
 
 interface VictaureChatProps {
@@ -19,10 +18,11 @@ interface VictaureChatProps {
 
 export function VictaureChat({ 
   maxQuestions = 3, 
-  context = "Tu es Mr. Victaure, un assistant professionnel spécialisé dans l'emploi et le recrutement. Ta mission principale est d'aider les utilisateurs à trouver un emploi et d'analyser leur profil professionnel. Reste toujours courtois et professionnel.",
+  context = "Tu es Mr. Victaure, un assistant intelligent et polyvalent. Tu peux discuter de tous les sujets de manière naturelle et engageante. Adapte ton langage au contexte tout en restant professionnel.",
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
+  const [useWebSearch, setUseWebSearch] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { 
@@ -33,7 +33,7 @@ export function VictaureChat({
     error,
     refreshMessages 
   } = useChatMessages({ 
-    context,
+    context: useWebSearch ? context + " Tu peux aussi utiliser des informations du web pour répondre de manière précise et factuelle. Assure-toi de bien vérifier les informations avant de répondre." : context,
     maxQuestions, 
     user, 
     onMaxQuestionsReached 
@@ -44,18 +44,22 @@ export function VictaureChat({
     isSpeaking,
     startRecording,
     speakText,
-    stopSpeaking,
-    cleanup
+    setIsSpeaking
   } = useVoiceFeatures();
 
   const handleSendMessage = async () => {
     if (!userInput.trim() || isLoading) return;
     
     try {
-      const response = await sendMessage(userInput, true);
+      console.log("Sending message to Mr Victaure with web search:", useWebSearch);
+      const response = await sendMessage(userInput, useWebSearch);
       setUserInput("");
       
-      if (error) {
+      if (response) {
+        console.log("Response received:", response);
+        speakText(response);
+      } else if (error) {
+        console.error("Error while sending message:", error);
         toast.error("Mr Victaure n'est pas disponible pour le moment. Veuillez réessayer dans quelques instants.");
       }
     } catch (err) {
@@ -64,30 +68,37 @@ export function VictaureChat({
     }
   };
 
-  const handleVoicePlayback = (text: string) => {
-    if (isSpeaking) {
-      stopSpeaking();
-    } else {
-      speakText(text);
-    }
-  };
-
   const handleRefresh = () => {
     refreshMessages();
-    cleanup(); // Arrêter l'audio et le micro
-    toast.success("Historique effacé");
+  };
+
+  const toggleWebSearch = () => {
+    setUseWebSearch(!useWebSearch);
+    toast.info(useWebSearch 
+      ? "Mode conversation naturelle activé" 
+      : "Mode recherche web activé - Réponses plus détaillées avec sources"
+    );
   };
 
   const isDisabled = userQuestions >= maxQuestions && !user;
   const disabledMessage = "Connectez-vous pour continuer à discuter avec Mr Victaure";
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-[#1A1F2C] to-[#151922] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-xl relative backdrop-blur-sm">
+    <div className="flex flex-col h-[85vh] bg-gradient-to-b from-[#1A1F2C] to-[#151922] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-xl relative backdrop-blur-sm">
       <div className="absolute inset-0 bg-[#64B5D9]/5 mix-blend-overlay pointer-events-none" />
       <div className="relative z-10 flex flex-col h-full">
-        <div className="flex-none flex items-center justify-between px-4 py-3 border-b border-[#64B5D9]/20">
+        <div className="flex-none flex items-center justify-between px-4 py-2 border-b border-[#64B5D9]/20">
           <ChatHeader />
-          <div className="flex items-center gap-2">
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleWebSearch}
+              className={`transition-colors ${useWebSearch ? 'text-[#64B5D9] bg-[#64B5D9]/10' : 'text-gray-400'}`}
+              title={useWebSearch ? "Mode conversation naturelle" : "Mode recherche web"}
+            >
+              <Globe className="h-4 w-4" />
+            </Button>
             <Button
               variant="ghost"
               size="icon"
@@ -97,23 +108,18 @@ export function VictaureChat({
             >
               <RefreshCcw className="h-4 w-4" />
             </Button>
-            <DialogClose className="text-gray-400 hover:text-[#64B5D9] transition-colors">
-              <X className="h-4 w-4" />
-            </DialogClose>
           </div>
         </div>
 
         <div className="flex-1 overflow-hidden">
           <MessageList 
-            ref={chatContainerRef}
+            ref={chatContainerRef} 
             messages={messages}
             isLoading={isLoading}
-            onPlayVoice={handleVoicePlayback}
-            isSpeaking={isSpeaking}
           />
         </div>
         
-        <div className="flex-none bg-[#1A1F2C] border-t border-[#64B5D9]/20 p-4">
+        <div className="flex-none bg-[#1A1F2C] border-t border-[#64B5D9]/20">
           <ChatInput
             userInput={userInput}
             setUserInput={setUserInput}
@@ -123,9 +129,9 @@ export function VictaureChat({
             isDisabled={isDisabled}
             disabledMessage={disabledMessage}
             onStartRecording={startRecording}
-            onStopSpeaking={stopSpeaking}
+            onStopSpeaking={() => setIsSpeaking(false)}
             onSendMessage={handleSendMessage}
-            webSearchEnabled={true}
+            webSearchEnabled={useWebSearch}
           />
         </div>
       </div>
