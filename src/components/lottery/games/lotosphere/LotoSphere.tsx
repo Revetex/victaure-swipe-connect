@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { PaymentProps } from "@/types/payment";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Clock, Loader2, Sparkles, Trophy } from "lucide-react";
 import { NextDraw } from "./NextDraw";
 import { PlayForm } from "./PlayForm";
@@ -111,40 +111,68 @@ export function LotoSphere({ onPaymentRequested }: PaymentProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex items-center justify-center min-h-[400px]">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          <Loader2 className="h-8 w-8 text-primary" />
+        </motion.div>
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold flex items-center justify-center gap-2">
-          <Sparkles className="h-6 w-6 text-yellow-500" />
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center space-y-4 bg-[#1A1F2C] rounded-xl p-6 glass-morphism"
+      >
+        <h2 className="text-3xl font-bold flex items-center justify-center gap-2 text-gradient">
+          <motion.div
+            animate={{ rotate: [0, 15, -15, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <Sparkles className="h-8 w-8 text-yellow-500" />
+          </motion.div>
           LotoSphere
-          <Sparkles className="h-6 w-6 text-yellow-500" />
+          <motion.div
+            animate={{ rotate: [0, -15, 15, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <Sparkles className="h-8 w-8 text-yellow-500" />
+          </motion.div>
         </h2>
-        <p className="text-muted-foreground">
+        <p className="text-lg text-white/60">
           Tentez votre chance au tirage quotidien !
         </p>
-      </div>
+      </motion.div>
 
-      {nextDraw && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-6"
-        >
-          <NextDraw draw={nextDraw} />
-          <PlayForm onSubmit={handlePlayTicket} isSubmitting={buying} />
-        </motion.div>
-      )}
+      <AnimatePresence mode="wait">
+        {nextDraw && (
+          <motion.div
+            key="next-draw"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="space-y-6"
+          >
+            <NextDraw draw={nextDraw} />
+            <PlayForm onSubmit={handlePlayTicket} isSubmitting={buying} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="grid gap-6 md:grid-cols-2"
+      >
         <MyTickets />
         <PastDraws />
-      </div>
+      </motion.div>
     </div>
   );
 }
