@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -34,30 +35,26 @@ export function useChatMessages({
   const [userQuestions, setUserQuestions] = useState(0);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    const savedMessages = localStorage.getItem(STORAGE_KEY);
-    if (savedMessages) {
-      try {
-        setMessages(JSON.parse(savedMessages));
-        setUserQuestions(JSON.parse(savedMessages).filter((m: Message) => m.isUser).length);
-      } catch (e) {
-        console.error("Error loading saved messages:", e);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-    }
-  }, [messages]);
-
   const refreshMessages = useCallback(() => {
     setMessages([]);
     setUserQuestions(0);
     setError(null);
     localStorage.removeItem(STORAGE_KEY);
     toast.success("Historique effacé");
+  }, []);
+
+  useEffect(() => {
+    const savedMessages = localStorage.getItem(STORAGE_KEY);
+    if (savedMessages) {
+      try {
+        const parsed = JSON.parse(savedMessages);
+        setMessages(parsed);
+        setUserQuestions(parsed.filter((m: Message) => m.isUser).length);
+      } catch (e) {
+        console.error("Error loading saved messages:", e);
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
   }, []);
 
   const sendMessage = useCallback(async (content: string, useWebSearch: boolean = false) => {
@@ -73,14 +70,16 @@ export function useChatMessages({
         timestamp: Date.now()
       };
       
-      setMessages(prev => [...prev, userMessage]);
+      const newMessages = [...messages, userMessage];
+      setMessages(newMessages);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newMessages));
+      
       setUserQuestions(prev => prev + 1);
 
       if (!user && userQuestions >= maxQuestions - 1) {
         onMaxQuestionsReached?.();
+        return;
       }
-
-      const messagesForContext = [...messages, userMessage];
 
       const assistantPrompt = useWebSearch 
         ? context + "\nAnalyse tout fichier partagé et donne des retours détaillés. Pour les CV, fais une analyse approfondie. Utilise les informations du web pour répondre de manière détaillée et factuelle."
@@ -88,7 +87,7 @@ export function useChatMessages({
 
       const { data, error } = await supabase.functions.invoke('victaure-chat', {
         body: { 
-          messages: messagesForContext,
+          messages: newMessages,
           context: assistantPrompt,
           userId: user?.id,
           useWebSearch,
@@ -113,7 +112,10 @@ export function useChatMessages({
         timestamp: Date.now()
       };
       
-      setMessages(prev => [...prev, assistantMessage]);
+      const updatedMessages = [...newMessages, assistantMessage];
+      setMessages(updatedMessages);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMessages));
+      
       return assistantMessage.content;
 
     } catch (err) {

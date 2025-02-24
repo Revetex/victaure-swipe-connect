@@ -1,7 +1,6 @@
 
 import { forwardRef } from "react";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
 import { Job } from "@/types/job";
 import { JobCard } from "@/components/jobs/JobCard";
 import { format } from "date-fns";
@@ -10,7 +9,6 @@ import { fr } from "date-fns/locale";
 interface Message {
   content: string;
   isUser: boolean;
-  username?: string;
   jobResults?: Job[];
   timestamp: number;
 }
@@ -28,18 +26,6 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
         className="h-full pt-4 pb-2 px-3 overflow-y-auto flex flex-col-reverse"
       >
         <div className="space-y-3">
-          {isLoading && (
-            <div className="flex items-start">
-              <div className="relative flex-1 bg-[#2A2D3E] rounded-2xl rounded-bl-sm px-4 py-3">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-white/80 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-2 h-2 bg-white/80 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-2 h-2 bg-white/80 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                </div>
-              </div>
-            </div>
-          )}
-          
           {messages.map((message, index) => (
             <motion.div 
               key={index} 
@@ -84,6 +70,26 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
               </div>
             </motion.div>
           ))}
+          
+          {isLoading && (
+            <motion.div 
+              className="flex justify-start"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <div className="flex-1 relative bg-[#2A2D3E] rounded-2xl rounded-bl-sm px-4 py-3 mr-12">
+                <div className="mb-1 flex justify-between items-center text-xs opacity-80">
+                  <span>Mr Victaure</span>
+                  <span>{format(new Date(), "d MMM à HH:mm", { locale: fr })}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-white/80 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-2 h-2 bg-white/80 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-2 h-2 bg-white/80 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
     );

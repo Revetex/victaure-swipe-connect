@@ -7,6 +7,7 @@ export function useVoiceFeatures() {
   const [isRecording, setIsRecording] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 
   const startRecording = useCallback(async () => {
     try {
@@ -85,12 +86,18 @@ export function useVoiceFeatures() {
 
   const speakText = useCallback(async (text: string) => {
     try {
+      // Si déjà en train de parler, on arrête
       if (isSpeaking) {
+        if (audioContext) {
+          await audioContext.close();
+          setAudioContext(null);
+        }
         setIsSpeaking(false);
         return;
       }
 
       setIsSpeaking(true);
+
       const { data, error } = await supabase.functions.invoke("text-to-voice", {
         body: { 
           text,
@@ -102,22 +109,35 @@ export function useVoiceFeatures() {
       if (error) throw error;
       if (!data?.audioContent) throw new Error("Pas de contenu audio reçu");
 
-      const audio = new Audio(`data:audio/mp3;base64,${data.audioContent}`);
-      
-      audio.onended = () => setIsSpeaking(false);
-      audio.onerror = (e) => {
-        console.error("Erreur de lecture audio:", e);
-        toast.error("Erreur lors de la lecture audio");
+      // Créer un nouveau contexte audio
+      const newAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+      setAudioContext(newAudioContext);
+
+      // Décoder le contenu audio base64
+      const audioData = Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0));
+      const audioBuffer = await newAudioContext.decodeAudioData(audioData.buffer);
+
+      // Créer et connecter les nœuds audio
+      const source = newAudioContext.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(newAudioContext.destination);
+
+      // Gérer la fin de la lecture
+      source.onended = () => {
         setIsSpeaking(false);
+        setAudioContext(null);
       };
 
-      await audio.play();
+      // Démarrer la lecture
+      source.start();
+
     } catch (error) {
       console.error("Erreur de synthèse vocale:", error);
       toast.error("Impossible de générer la voix");
       setIsSpeaking(false);
+      setAudioContext(null);
     }
-  }, [isSpeaking]);
+  }, [isSpeaking, audioContext]);
 
   return {
     isRecording,
