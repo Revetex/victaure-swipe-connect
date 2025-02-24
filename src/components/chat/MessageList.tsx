@@ -58,10 +58,10 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
     return (
       <div 
         ref={ref}
-        className="h-full overflow-y-auto py-4 px-3 scrollbar-none flex flex-col-reverse"
+        className="h-full overflow-y-auto py-4 px-3 scrollbar-none flex flex-col"
       >
-        <div className="flex flex-col-reverse space-y-reverse space-y-3">
-          <AnimatePresence mode="popLayout">
+        <div className="flex flex-col space-y-3">
+          <AnimatePresence mode="popLayout" initial={false}>
             {isLoading && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -75,7 +75,7 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
               </motion.div>
             )}
             
-            {messages.map((message, index) => (
+            {[...messages].map((message, index) => (
               <motion.div 
                 key={index} 
                 className={`flex mb-3 ${message.isUser ? 'justify-end' : 'justify-start'}`}
@@ -107,7 +107,7 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                         locationLoading ? (
                           <p className="text-sm">Recherche d'offres d'emploi à proximité...</p>
                         ) : (
-                          <p className="text-sm">Aucune offre d'emploi trouvée à proximité.</p>
+                          <p className="text-sm">{message.content}</p>
                         )
                       )}
                     </div>
