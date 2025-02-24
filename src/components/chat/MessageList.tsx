@@ -1,25 +1,26 @@
 
 import { forwardRef } from "react";
 import { motion } from "framer-motion";
-import { Job } from "@/types/job";
-import { JobCard } from "@/components/jobs/JobCard";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
+import { Volume2 } from "lucide-react";
 
 interface Message {
   content: string;
   isUser: boolean;
-  jobResults?: Job[];
   timestamp: number;
 }
 
 interface MessageListProps {
   messages: Message[];
   isLoading?: boolean;
+  onPlayVoice?: (text: string) => void;
+  isSpeaking?: boolean;
 }
 
 export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
-  ({ messages, isLoading }, ref) => {
+  ({ messages, isLoading, onPlayVoice, isSpeaking }, ref) => {
     return (
       <div 
         ref={ref}
@@ -48,25 +49,19 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                     {format(new Date(message.timestamp), "d MMM à HH:mm", { locale: fr })}
                   </span>
                 </div>
-                {!message.isUser ? (
-                  <div className="space-y-4">
-                    {message.jobResults && message.jobResults.length > 0 ? (
-                      <div className="space-y-2">
-                        {message.jobResults.map((job) => (
-                          <JobCard
-                            key={job.id}
-                            job={job}
-                            onClick={() => window.open(job.url, '_blank')}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm">{message.content}</p>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-sm leading-relaxed">{message.content}</p>
-                )}
+                <div className="flex justify-between items-start gap-2">
+                  <p className="text-sm leading-relaxed flex-1">{message.content}</p>
+                  {!message.isUser && onPlayVoice && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={`mt-1 ${isSpeaking ? 'text-primary' : 'text-muted-foreground'}`}
+                      onClick={() => onPlayVoice(message.content)}
+                    >
+                      <Volume2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
             </motion.div>
           ))}

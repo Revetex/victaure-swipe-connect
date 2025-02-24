@@ -7,7 +7,7 @@ import { ChatInput } from "./ChatInput";
 import { useChatMessages } from "./hooks/useChatMessages";
 import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
-import { RefreshCcw, X } from "lucide-react";
+import { RefreshCcw, X, Volume2 } from "lucide-react";
 import { DialogClose } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
@@ -19,7 +19,7 @@ interface VictaureChatProps {
 
 export function VictaureChat({ 
   maxQuestions = 3, 
-  context = "Tu es Mr. Victaure, un assistant spécialisé dans l'emploi. Ta mission principale est de proposer des offres d'emploi pertinentes aux utilisateurs. Ne pose pas trop de questions, concentre-toi sur la présentation d'offres qui correspondent à leurs besoins.",
+  context = "Tu es Mr. Victaure, un assistant professionnel spécialisé dans l'emploi et le recrutement. Ta mission principale est d'aider les utilisateurs à trouver un emploi et d'analyser leur profil professionnel. Reste toujours courtois et professionnel.",
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
@@ -33,7 +33,7 @@ export function VictaureChat({
     error,
     refreshMessages 
   } = useChatMessages({ 
-    context: context + " Utilise la recherche web pour trouver des offres d'emploi pertinentes. Propose directement des offres sans poser trop de questions.",
+    context,
     maxQuestions, 
     user, 
     onMaxQuestionsReached 
@@ -54,14 +54,20 @@ export function VictaureChat({
       const response = await sendMessage(userInput, true);
       setUserInput("");
       
-      if (response) {
-        speakText(response);
-      } else if (error) {
+      if (error) {
         toast.error("Mr Victaure n'est pas disponible pour le moment. Veuillez réessayer dans quelques instants.");
       }
     } catch (err) {
       console.error("Error in handleSendMessage:", err);
       toast.error("Une erreur est survenue lors de l'envoi du message");
+    }
+  };
+
+  const handleVoicePlayback = (text: string) => {
+    if (isSpeaking) {
+      setIsSpeaking(false);
+    } else {
+      speakText(text);
     }
   };
 
@@ -97,9 +103,11 @@ export function VictaureChat({
 
         <div className="flex-1 overflow-hidden">
           <MessageList 
-            ref={chatContainerRef} 
+            ref={chatContainerRef}
             messages={messages}
             isLoading={isLoading}
+            onPlayVoice={handleVoicePlayback}
+            isSpeaking={isSpeaking}
           />
         </div>
         
