@@ -1,3 +1,4 @@
+
 import { useNotes } from "@/hooks/useNotes";
 import { NotesSection } from "@/components/todo/NotesSection";
 
@@ -9,28 +10,33 @@ export function NotesMap() {
     setNewNote,
     setSelectedColor,
     addNote,
-    deleteNote
+    deleteNote,
+    updateNote
   } = useNotes();
 
   const colors = [
-    { value: "yellow", label: "Jaune", class: "bg-yellow-200" },
-    { value: "blue", label: "Bleu", class: "bg-blue-200" },
-    { value: "green", label: "Vert", class: "bg-green-200" },
-    { value: "pink", label: "Rose", class: "bg-pink-200" },
-    { value: "purple", label: "Violet", class: "bg-purple-200" },
-    { value: "orange", label: "Orange", class: "bg-orange-200" }
+    { value: "yellow", label: "Jaune" },
+    { value: "blue", label: "Bleu" },
+    { value: "green", label: "Vert" },
+    { value: "purple", label: "Violet" },
+    { value: "orange", label: "Orange" }
   ];
 
   return (
-    <NotesSection
-      notes={notes}
-      newNote={newNote}
-      selectedColor={selectedColor}
-      colors={colors}
-      onNoteChange={setNewNote}
-      onColorChange={setSelectedColor}
-      onAdd={addNote}
-      onDelete={deleteNote}
-    />
+    <div className="h-screen flex flex-col pt-16">
+      <div className="w-full max-w-3xl mx-auto space-y-4 px-2 sm:px-4">
+        <NotesSection
+          notes={notes}
+          newNote={newNote}
+          selectedColor={selectedColor}
+          colors={colors}
+          onNoteChange={setNewNote}
+          onColorChange={setSelectedColor}
+          onAdd={addNote}
+          onDelete={deleteNote}
+          onUpdate={updateNote}
+        />
+      </div>
+    </div>
   );
 }

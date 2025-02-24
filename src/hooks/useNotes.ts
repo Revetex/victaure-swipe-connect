@@ -37,7 +37,9 @@ export function useNotes() {
         title: note.title,
         pinned: note.pinned,
         created_at: note.created_at,
-        updated_at: note.updated_at
+        updated_at: note.updated_at,
+        metadata: note.metadata,
+        position: note.position
       })));
     } catch (error) {
       console.error('Error fetching notes:', error);
@@ -79,7 +81,9 @@ export function useNotes() {
         title: data.title,
         pinned: data.pinned,
         created_at: data.created_at,
-        updated_at: data.updated_at
+        updated_at: data.updated_at,
+        metadata: data.metadata,
+        position: data.position
       }, ...prev]);
 
       setNewNote("");
@@ -107,6 +111,29 @@ export function useNotes() {
     }
   };
 
+  const updateNote = async (updatedNote: StickyNote) => {
+    try {
+      const { error } = await supabase
+        .from('notes')
+        .update({
+          text: updatedNote.text,
+          color: updatedNote.color,
+          metadata: updatedNote.metadata,
+          position: updatedNote.position
+        })
+        .eq('id', updatedNote.id);
+
+      if (error) throw error;
+
+      setNotes(prev => prev.map(note =>
+        note.id === updatedNote.id ? updatedNote : note
+      ));
+    } catch (error) {
+      console.error('Error updating note:', error);
+      toast.error("Erreur lors de la mise à jour de la note");
+    }
+  };
+
   return {
     notes,
     newNote,
@@ -115,6 +142,7 @@ export function useNotes() {
     setNewNote,
     setSelectedColor,
     addNote,
-    deleteNote
+    deleteNote,
+    updateNote
   };
 }
