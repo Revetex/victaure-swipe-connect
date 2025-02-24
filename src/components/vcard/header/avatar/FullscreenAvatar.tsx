@@ -14,7 +14,7 @@ interface FullscreenAvatarProps {
 export function FullscreenAvatar({ isOpen, onOpenChange, imageUrl, fullName }: FullscreenAvatarProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl w-[95vw] h-[95vh] p-0">
+      <DialogContent className="fixed inset-0 p-0 max-w-none max-h-none h-screen w-screen bg-black/95 border-none z-50">
         <VisuallyHidden asChild>
           <DialogTitle>Photo de profil de {fullName || "l'utilisateur"}</DialogTitle>
         </VisuallyHidden>
@@ -28,12 +28,12 @@ export function FullscreenAvatar({ isOpen, onOpenChange, imageUrl, fullName }: F
           <X className="h-4 w-4 text-white" />
         </Button>
         
-        <div className="relative w-full h-full flex items-center justify-center bg-black/95">
+        <div className="relative w-full h-full flex items-center justify-center">
           {imageUrl ? (
             <img
               src={imageUrl}
               alt={fullName || 'Avatar'}
-              className="max-w-full max-h-full object-contain"
+              className="max-w-[90%] max-h-[90vh] object-contain"
               onError={(e) => {
                 e.currentTarget.src = '/user-icon.svg';
               }}

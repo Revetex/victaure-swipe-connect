@@ -25,7 +25,7 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
 
   return (
     <Dialog open={isOpen} onOpenChange={() => onClose()}>
-      <DialogContent className="max-w-[95vw] max-h-[95vh] w-full h-full p-0 flex items-center justify-center">
+      <DialogContent className="fixed inset-0 p-0 max-w-none max-h-none h-screen w-screen bg-black/95 border-none z-50">
         <VisuallyHidden asChild>
           <DialogTitle>Visualisation d'image {currentIndex + 1} sur {images.length}</DialogTitle>
         </VisuallyHidden>
@@ -39,7 +39,7 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
           <X className="h-4 w-4 text-white" />
         </Button>
         
-        <div className="relative w-full h-full flex items-center justify-center bg-black/90">
+        <div className="relative w-full h-full flex items-center justify-center">
           {images.length > 1 && (
             <>
               <Button
@@ -65,7 +65,7 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
           <img
             src={images[currentIndex]}
             alt={`Image ${currentIndex + 1}`}
-            className="max-w-[90%] max-h-[90%] object-contain"
+            className="max-w-[90%] max-h-[90vh] object-contain"
           />
         </div>
       </DialogContent>
