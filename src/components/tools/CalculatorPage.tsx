@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { CalculatorDisplay } from "./calculator/CalculatorDisplay";
 import { CalculatorKeypad } from "./calculator/CalculatorKeypad";
@@ -19,6 +18,7 @@ import type { TransactionType } from './calculator/types';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star } from "lucide-react";
+import { PaymentMethodForm } from "@/components/settings/payment/PaymentMethodForm";
 
 export function CalculatorPage() {
   const calculator = useCalculator();
@@ -48,6 +48,16 @@ export function CalculatorPage() {
     } catch (error) {
       console.error("Payment error:", error);
       toast.error("Erreur lors du paiement. Veuillez réessayer.");
+    }
+  };
+
+  const handleAddPaymentMethod = async (data: any) => {
+    try {
+      console.log("Nouvelles données de paiement:", data);
+      toast.success("Méthode de paiement ajoutée");
+    } catch (error) {
+      console.error("Erreur lors de l'ajout:", error);
+      toast.error("Erreur lors de l'ajout de la méthode de paiement");
     }
   };
 
@@ -105,17 +115,27 @@ export function CalculatorPage() {
           </TabsContent>
 
           <TabsContent value="methods">
-            <Card className="p-6">
-              <PaymentTypeSelector
-                selectedPaymentType={selectedType}
-                onSelect={setSelectedType}
-              />
-              <PaymentMethodsList
-                methods={paymentMethods}
-                onSetDefault={handleSetDefaultMethod}
-                onDelete={handleDeleteMethod}
-              />
-            </Card>
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4">Ajouter un moyen de paiement</h3>
+                <PaymentMethodForm onSubmit={handleAddPaymentMethod} />
+              </Card>
+              
+              <div className="space-y-6">
+                <Card className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">Moyens de paiement enregistrés</h3>
+                  <PaymentTypeSelector
+                    selectedPaymentType={selectedType}
+                    onSelect={setSelectedType}
+                  />
+                  <PaymentMethodsList
+                    methods={paymentMethods}
+                    onSetDefault={handleSetDefaultMethod}
+                    onDelete={handleDeleteMethod}
+                  />
+                </Card>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="transactions">
