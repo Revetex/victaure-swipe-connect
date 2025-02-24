@@ -1,9 +1,10 @@
+
 import { useState } from "react";
 import { MarketplaceForm } from "./marketplace/MarketplaceForm";
 import { MarketplaceList } from "./marketplace/MarketplaceList";
 import { MarketplaceFilters } from "./marketplace/MarketplaceFilters";
 import { Button } from "./ui/button";
-import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Calculator, Search, PlusCircle, Filter } from "lucide-react";
@@ -14,8 +15,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 export function Marketplace() {
-  const [showPaymentForm, setShowPaymentForm] = useState(false);
-  const [showListingForm, setShowListingForm] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [isListingFormOpen, setIsListingFormOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
@@ -68,26 +69,31 @@ export function Marketplace() {
             />
           </div>
           
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="gap-2" size={isMobile ? "sm" : "default"}>
-                <Filter className="h-4 w-4" />
-                Filtres
-              </Button>
-            </DialogTrigger>
+          <Dialog open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
+            <Button 
+              variant="outline" 
+              className="gap-2" 
+              size={isMobile ? "sm" : "default"}
+              onClick={() => setIsFiltersOpen(true)}
+            >
+              <Filter className="h-4 w-4" />
+              Filtres
+            </Button>
             <DialogContent className="max-w-2xl">
               <DialogTitle>Filtres de recherche</DialogTitle>
               <MarketplaceFilters filters={filters} onFiltersChange={setFilters} />
             </DialogContent>
           </Dialog>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="gap-2" size={isMobile ? "sm" : "default"}>
-                <PlusCircle className="h-4 w-4" />
-                Publier une annonce
-              </Button>
-            </DialogTrigger>
+          <Dialog open={isListingFormOpen} onOpenChange={setIsListingFormOpen}>
+            <Button 
+              className="gap-2" 
+              size={isMobile ? "sm" : "default"}
+              onClick={() => setIsListingFormOpen(true)}
+            >
+              <PlusCircle className="h-4 w-4" />
+              Publier une annonce
+            </Button>
             <DialogContent className="max-w-3xl">
               <DialogTitle>Nouvelle annonce</DialogTitle>
               <MarketplaceForm />
