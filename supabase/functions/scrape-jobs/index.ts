@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js'
-import FirecrawlApp from '@mendable/firecrawl-js'
+import * as cheerio from 'cheerio'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,14 +15,6 @@ Deno.serve(async (req) => {
   try {
     console.log('Starting job scraping process...')
 
-    // Configuration de Firecrawl avec l'API key depuis les secrets
-    const firecrawlApiKey = Deno.env.get('FIRECRAWL_API_KEY')
-    if (!firecrawlApiKey) {
-      throw new Error('FIRECRAWL_API_KEY not found in environment variables')
-    }
-
-    const firecrawl = new FirecrawlApp({ apiKey: firecrawlApiKey })
-
     // URLs des sites d'emploi à scraper
     const jobSites = [
       'https://ca.indeed.com/emplois?l=Quebec&sc=0kf%3Ajt%28fulltime%29%3B&lang=fr',
@@ -34,28 +26,47 @@ Deno.serve(async (req) => {
     for (const url of jobSites) {
       console.log(`Scraping jobs from: ${url}`)
       
-      const result = await firecrawl.crawlUrl(url, {
-        limit: 50,
-        scrapeOptions: {
-          extract: [{
-            name: 'jobs',
-            selector: '.job-card, .job-listing, .jobsearch-SerpJobCard',
-            multiple: true,
-            fields: {
-              title: '.title, .jobTitle, h2',
-              company: '.company, .companyName',
-              location: '.location, .companyLocation',
-              description: '.description, .job-snippet',
-              salary: '.salary, .salaryText',
-              url: 'a[href]@href',
-              posted_at: '.date, .posted-time'
-            }
-          }]
-        }
-      })
-
-      if (result.success) {
-        jobs.push(...result.data.jobs)
+      const response = await fetch(url)
+      const html = await response.text()
+      const $ = cheerio.load(html)
+      
+      // Scraping spécifique à Indeed
+      if (url.includes('indeed.com')) {
+        $('.job_seen_beacon').each((i, el) => {
+          const title = $(el).find('.jobTitle').text().trim()
+          const company = $(el).find('.companyName').text().trim()
+          const location = $(el).find('.companyLocation').text().trim()
+          const description = $(el).find('.job-snippet').text().trim()
+          const jobUrl = 'https://ca.indeed.com' + $(el).find('a').attr('href')
+          
+          if (title) {
+            jobs.push({ title, company, location, description, url: jobUrl })
+          }
+        })
+      }
+      // Scraping spécifique à LinkedIn
+      else if (url.includes('linkedin.com')) {
+        $('.job-card-container').each((i, el) => {
+          const title = $(el).find('.job-card-list__title').text().trim()
+          const company = $(el).find('.job-card-container__company-name').text().trim()
+          const location = $(el).find('.job-card-container__metadata-item').text().trim()
+          
+          if (title) {
+            jobs.push({ title, company, location, url })
+          }
+        })
+      }
+      // Scraping spécifique à Jobillico
+      else if (url.includes('jobillico.com')) {
+        $('.job-item').each((i, el) => {
+          const title = $(el).find('.job-title').text().trim()
+          const company = $(el).find('.company-name').text().trim()
+          const location = $(el).find('.job-location').text().trim()
+          
+          if (title) {
+            jobs.push({ title, company, location, url })
+          }
+        })
       }
     }
 
@@ -67,7 +78,6 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    let savedCount = 0
     for (const job of jobs) {
       try {
         const { error } = await supabase
@@ -77,10 +87,9 @@ Deno.serve(async (req) => {
             company: job.company,
             location: job.location,
             description: job.description,
-            salary_range: job.salary,
             url: job.url,
-            posted_at: job.posted_at || new Date().toISOString(),
-            source_platform: 'firecrawl',
+            posted_at: new Date().toISOString(),
+            source_platform: 'web-scraping',
             employment_type: 'FULL_TIME',
             last_checked: new Date().toISOString()
           }, {
@@ -89,20 +98,15 @@ Deno.serve(async (req) => {
 
         if (error) {
           console.error('Error saving job:', error)
-        } else {
-          savedCount++
         }
       } catch (error) {
         console.error('Error processing job:', error)
       }
     }
 
-    console.log(`Successfully saved ${savedCount} jobs`)
-
     return new Response(JSON.stringify({
       success: true,
-      jobsFound: jobs.length,
-      jobsSaved: savedCount
+      jobsFound: jobs.length
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200
