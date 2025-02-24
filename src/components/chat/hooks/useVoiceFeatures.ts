@@ -7,9 +7,17 @@ export function useVoiceFeatures() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
   const startRecording = useCallback(async () => {
-    if (isRecording) return;
+    if (isRecording) {
+      // Si on enregistre déjà, on arrête
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+        setIsRecording(false);
+      }
+      return;
+    }
 
     try {
       setIsRecording(true);
@@ -25,6 +33,7 @@ export function useVoiceFeatures() {
       });
 
       const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
       const audioChunks: BlobPart[] = [];
 
       mediaRecorder.ondataavailable = (event) => {
@@ -38,23 +47,27 @@ export function useVoiceFeatures() {
 
           reader.onloadend = () => {
             setIsProcessing(false);
-            // Ici vous pouvez ajouter la logique de transcription si nécessaire
           };
 
           reader.readAsDataURL(audioBlob);
+          stream.getTracks().forEach(track => track.stop());
         } catch (err) {
           console.error("Erreur de traitement audio:", err);
           toast.error("Erreur lors du traitement de l'audio");
+        } finally {
+          setIsRecording(false);
           setIsProcessing(false);
         }
       };
 
       mediaRecorder.start();
+      
+      // Arrêt automatique après 30 secondes
       setTimeout(() => {
-        mediaRecorder.stop();
-        stream.getTracks().forEach(track => track.stop());
-        setIsRecording(false);
-      }, 5000);
+        if (mediaRecorderRef.current?.state === "recording") {
+          mediaRecorderRef.current.stop();
+        }
+      }, 30000);
 
     } catch (error) {
       console.error("Erreur d'enregistrement:", error);
@@ -67,7 +80,7 @@ export function useVoiceFeatures() {
   const speakText = useCallback((text: string) => {
     try {
       // Si déjà en train de parler, on arrête
-      if (isSpeaking && speechSynthesisRef.current) {
+      if (isSpeaking && window.speechSynthesis) {
         window.speechSynthesis.cancel();
         setIsSpeaking(false);
         return;
@@ -102,6 +115,9 @@ export function useVoiceFeatures() {
         speechSynthesisRef.current = null;
       };
 
+      // S'assurer que toute synthèse précédente est arrêtée
+      window.speechSynthesis.cancel();
+
       // Lancement de la synthèse vocale
       window.speechSynthesis.speak(utterance);
 
@@ -112,12 +128,29 @@ export function useVoiceFeatures() {
     }
   }, [isSpeaking]);
 
+  const stopSpeaking = useCallback(() => {
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      speechSynthesisRef.current = null;
+    }
+  }, []);
+
+  // Nettoyage lors du démontage du composant
+  const cleanup = useCallback(() => {
+    if (mediaRecorderRef.current?.state === "recording") {
+      mediaRecorderRef.current.stop();
+    }
+    stopSpeaking();
+  }, [stopSpeaking]);
+
   return {
     isRecording,
     isSpeaking,
     isProcessing,
     startRecording,
     speakText,
-    setIsSpeaking
+    stopSpeaking,
+    cleanup
   };
 }
