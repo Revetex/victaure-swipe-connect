@@ -9,7 +9,6 @@ import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
 import { RefreshCcw, Globe } from "lucide-react";
 import { toast } from "sonner";
-import { pipeline } from "@huggingface/transformers";
 
 interface VictaureChatProps {
   maxQuestions?: number;
@@ -19,12 +18,11 @@ interface VictaureChatProps {
 
 export function VictaureChat({ 
   maxQuestions = 3, 
-  context = "Tu es Mr. Victaure, un assistant intelligent et polyvalent. Tu peux discuter de tous les sujets de manière naturelle et engageante. Adapte ton langage au contexte tout en restant professionnel.",
+  context = "Tu es Mr. Victaure, un assistant intelligent et polyvalent propulsé par Gemini. Tu peux discuter de tous les sujets de manière naturelle et engageante. Adapte ton langage au contexte tout en restant professionnel.",
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
   const [useWebSearch, setUseWebSearch] = useState(false);
-  const [isModelLoading, setIsModelLoading] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { 
@@ -49,35 +47,8 @@ export function VictaureChat({
     setIsSpeaking
   } = useVoiceFeatures();
 
-  // Initialize model
-  const initializeModel = async () => {
-    try {
-      setIsModelLoading(true);
-
-      const generator = await pipeline(
-        "text2text-generation",
-        "onnx-community/mt5-small-finetuned-chat",
-        {
-          revision: "main",
-          progress_callback: (progress) => {
-            console.log("Loading model progress:", progress);
-          }
-        }
-      );
-
-      console.log("Model initialized successfully");
-      setIsModelLoading(false);
-      return generator;
-    } catch (error) {
-      console.error("Error initializing model:", error);
-      toast.error("Erreur lors du chargement du modèle");
-      setIsModelLoading(false);
-      return null;
-    }
-  };
-
   const handleSendMessage = async () => {
-    if (!userInput.trim() || isLoading || isModelLoading) return;
+    if (!userInput.trim() || isLoading) return;
     
     try {
       console.log("Sending message to Mr Victaure with web search:", useWebSearch);
@@ -144,7 +115,7 @@ export function VictaureChat({
           <MessageList 
             ref={chatContainerRef} 
             messages={messages}
-            isLoading={isLoading || isModelLoading}
+            isLoading={isLoading}
           />
         </div>
         
@@ -154,7 +125,7 @@ export function VictaureChat({
             setUserInput={setUserInput}
             isRecording={isRecording}
             isSpeaking={isSpeaking}
-            isLoading={isLoading || isModelLoading}
+            isLoading={isLoading}
             isDisabled={isDisabled}
             disabledMessage={disabledMessage}
             onStartRecording={startRecording}
