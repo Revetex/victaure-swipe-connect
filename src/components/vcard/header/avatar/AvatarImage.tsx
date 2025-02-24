@@ -29,7 +29,7 @@ export function AvatarImage({ url, fullName, onError, hasError, isLoading, class
   const avatarClasses = cn(
     isMobile ? "h-32 w-32" : "h-24 w-24 sm:h-28 sm:w-28",
     "ring-2 ring-primary/20 shadow-lg",
-    "relative overflow-hidden bg-background backdrop-blur-sm",
+    "relative overflow-hidden bg-background",
     className
   );
 
@@ -46,8 +46,8 @@ export function AvatarImage({ url, fullName, onError, hasError, isLoading, class
   if (hasError) {
     return (
       <Avatar className={avatarClasses}>
-        <AvatarFallback className="bg-destructive/10">
-          <ImageOff className="h-8 w-8 text-destructive/60" />
+        <AvatarFallback>
+          <ImageOff className="h-8 w-8 text-destructive" />
         </AvatarFallback>
       </Avatar>
     );
@@ -71,7 +71,7 @@ export function AvatarImage({ url, fullName, onError, hasError, isLoading, class
       <UIAvatarImage 
         src={url}
         alt={fullName || 'Photo de profil'}
-        className="object-cover w-full h-full"
+        className="object-cover"
         onError={handleImageError}
       />
       <AvatarFallback className="bg-primary/10">
