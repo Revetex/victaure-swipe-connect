@@ -27,13 +27,13 @@ export function FriendsContent() {
       animate={{ opacity: 1 }}
     >
       <Card className={cn(
-        "bg-white/80 dark:bg-zinc-900/80",
+        "bg-background/80 dark:bg-zinc-900/80",
         "backdrop-blur-xl border-none shadow-lg"
       )}>
         <CardContent className="p-6 space-y-6">
           <div className="flex items-center gap-3">
-            <UserPlus2 className="w-6 h-6 text-blue-500" />
-            <h2 className="text-xl font-medium">
+            <UserPlus2 className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-medium text-foreground">
               Trouver des connections
             </h2>
           </div>
@@ -42,9 +42,9 @@ export function FriendsContent() {
             <ProfileSearch 
               onSelect={handleProfileSelect}
               placeholder="Rechercher par nom, compétences, location..."
-              className="w-full bg-white/50 dark:bg-zinc-800/50 backdrop-blur-sm"
+              className="w-full bg-background/50 dark:bg-zinc-800/50 backdrop-blur-sm"
             />
-            <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-zinc-400" />
+            <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           </div>
         </CardContent>
       </Card>
@@ -58,7 +58,7 @@ export function FriendsContent() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/30 backdrop-blur-sm"
           >
             <ProfilePreview
               profile={selectedProfile}
