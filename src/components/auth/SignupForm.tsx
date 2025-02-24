@@ -51,7 +51,7 @@ export function SignupForm({
           Créez votre compte
         </h1>
         <p className="text-sm text-[#F1F0FB]/80">
-          Mr. Victaure vous accompagne dans votre inscription
+          Commencez votre expérience dès maintenant
         </p>
       </div>
 
@@ -67,7 +67,7 @@ export function SignupForm({
               value={fullName}
               onChange={(e) => onFullNameChange(e.target.value)}
               disabled={loading}
-              className="pl-10 bg-[#1B2A4A]/40 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
+              className="pl-10 bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
             />
           </div>
         </div>
@@ -83,7 +83,7 @@ export function SignupForm({
               value={phone}
               onChange={(e) => onPhoneChange(e.target.value)}
               disabled={loading}
-              className="pl-10 bg-[#1B2A4A]/40 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
+              className="pl-10 bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
             />
           </div>
         </div>
@@ -99,7 +99,7 @@ export function SignupForm({
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
               disabled={loading}
-              className="pl-10 bg-[#1B2A4A]/40 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
+              className="pl-10 bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
             />
           </div>
         </div>
@@ -114,7 +114,7 @@ export function SignupForm({
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}
               disabled={loading}
-              className="pl-10 bg-[#1B2A4A]/40 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
+              className="pl-10 bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
             />
           </div>
         </div>
@@ -130,7 +130,7 @@ export function SignupForm({
               htmlFor="terms"
               className="text-sm font-medium leading-none text-[#F1F0FB]/80"
             >
-              Mr. Victaure m'assure que j'accepte la{" "}
+              J'accepte la{" "}
               <Dialog>
                 <DialogTrigger className="text-[#64B5D9] hover:underline">
                   politique de confidentialité
@@ -229,7 +229,7 @@ export function SignupForm({
       </Button>
 
       <p className="text-sm text-[#F1F0FB]/60 text-center">
-        Mr. Victaure vous remercie de votre confiance
+        Merci de votre confiance
       </p>
     </motion.div>
   );
