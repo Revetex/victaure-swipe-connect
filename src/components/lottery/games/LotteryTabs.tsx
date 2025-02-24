@@ -1,7 +1,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChessBoard, Gamepad2 } from "lucide-react";
+import { Gamepad2, ChessKnight } from "lucide-react";
 import { ChessPage } from "../../tools/ChessPage";
 import { PaymentProps } from "@/types/payment";
 import { LotoSphere } from "./lotosphere/LotoSphere";
@@ -19,7 +19,7 @@ export function LotteryTabs({ onPaymentRequested, isMobile }: LotteryTabsProps) 
           LotoSphere
         </TabsTrigger>
         <TabsTrigger value="chess">
-          <ChessBoard className="h-4 w-4 mr-2" />
+          <ChessKnight className="h-4 w-4 mr-2" />
           Échecs
         </TabsTrigger>
       </TabsList>
