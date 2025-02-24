@@ -1,3 +1,4 @@
+
 import { forwardRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
@@ -26,7 +27,7 @@ const TypewriterEffect = ({ text }: { text: string }) => {
       } else {
         clearInterval(interval);
       }
-    }, 30); // Vitesse légèrement ralentie pour plus de naturel
+    }, 30);
 
     return () => clearInterval(interval);
   }, [text]);
@@ -36,29 +37,20 @@ const TypewriterEffect = ({ text }: { text: string }) => {
 
 export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
   ({ messages, isLoading }, ref) => {
+    // Auto-scroll à chaque nouveau message
+    useEffect(() => {
+      if (ref && 'current' in ref && ref.current) {
+        ref.current.scrollTop = 0;
+      }
+    }, [messages, isLoading]);
+
     return (
       <div 
         ref={ref}
-        className="h-[400px] overflow-y-auto py-4 px-3 scrollbar-none flex flex-col-reverse"
+        className="h-[400px] overflow-y-auto py-4 px-3 scrollbar-none flex flex-col"
       >
-        <div className="flex flex-col-reverse">
+        <div className="flex flex-col space-y-3">
           <AnimatePresence mode="popLayout">
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="flex mb-3 items-end justify-start"
-              >
-                <div className="w-6 h-6 rounded-full bg-[#64B5D9] flex items-center justify-center mr-2 mb-1">
-                  <span className="text-xs text-white font-medium">MV</span>
-                </div>
-                <div className="relative bg-[#2A2D3E] rounded-2xl rounded-bl-sm px-4 py-3">
-                  <Loader2 className="w-4 h-4 text-white/80 animate-spin"/>
-                </div>
-              </motion.div>
-            )}
-
             {messages.map((message, index) => (
               <motion.div 
                 key={index} 
@@ -107,6 +99,22 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                 )}
               </motion.div>
             ))}
+
+            {isLoading && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="flex mb-3 items-end justify-start"
+              >
+                <div className="w-6 h-6 rounded-full bg-[#64B5D9] flex items-center justify-center mr-2 mb-1">
+                  <span className="text-xs text-white font-medium">MV</span>
+                </div>
+                <div className="relative bg-[#2A2D3E] rounded-2xl rounded-bl-sm px-4 py-3">
+                  <Loader2 className="w-4 h-4 text-white/80 animate-spin"/>
+                </div>
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
       </div>
