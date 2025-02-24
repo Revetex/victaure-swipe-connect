@@ -7,6 +7,7 @@ import { LoadingState } from "./content/LoadingState";
 import { FloatingButtons } from "./content/FloatingButtons";
 import { ContentRouter } from "./content/ContentRouter";
 import { DashboardHome } from "./content/DashboardHome";
+import { cn } from "@/lib/utils";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -44,7 +45,11 @@ export function DashboardContent({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen w-full bg-gradient-to-b from-background via-background/95 to-background/90 backdrop-blur-sm"
+      className={cn(
+        "pt-16 min-h-screen w-full",
+        "bg-gradient-to-b from-background via-background/95 to-background/90",
+        "backdrop-blur-sm"
+      )}
     >
       <div className="relative">
         <ContentRouter

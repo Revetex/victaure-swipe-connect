@@ -27,7 +27,7 @@ export function NoteGridContainer({ notes, onDeleteNote, layout }: NoteGridConta
       initial="hidden"
       animate="show"
       className={cn(
-        "gap-6 p-6",
+        "gap-6",
         layout === 'grid' && "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
         layout === 'masonry' && "columns-1 sm:columns-2 lg:columns-3 xl:columns-4 space-y-6",
         layout === 'list' && "flex flex-col space-y-4"
