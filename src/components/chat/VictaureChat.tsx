@@ -22,7 +22,7 @@ export function VictaureChat({
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
-  const [useWebSearch, setUseWebSearch] = useState(false);
+  const [useWebSearch, setUseWebSearch] = useState(true); // Active par défaut
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { 
@@ -33,7 +33,7 @@ export function VictaureChat({
     error,
     refreshMessages 
   } = useChatMessages({ 
-    context: useWebSearch ? context + " Tu peux aussi utiliser des informations du web pour répondre de manière précise et factuelle. Assure-toi de bien vérifier les informations avant de répondre." : context,
+    context: useWebSearch ? context + " Utilise la recherche web pour fournir des réponses précises et factuelles. N'hésite pas à chercher des informations récentes." : context,
     maxQuestions, 
     user, 
     onMaxQuestionsReached 
@@ -84,7 +84,7 @@ export function VictaureChat({
   const disabledMessage = "Connectez-vous pour continuer à discuter avec Mr Victaure";
 
   return (
-    <div className="flex flex-col h-[85vh] bg-gradient-to-b from-[#1A1F2C] to-[#151922] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-xl relative backdrop-blur-sm">
+    <div className="flex flex-col h-[85vh] bg-gradient-to-b from-[#1A1F2C] to-[#151922] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-xl relative backdrop-blur-sm mt-8">
       <div className="absolute inset-0 bg-[#64B5D9]/5 mix-blend-overlay pointer-events-none" />
       <div className="relative z-10 flex flex-col h-full">
         <div className="flex-none flex items-center justify-between px-4 py-2 border-b border-[#64B5D9]/20">

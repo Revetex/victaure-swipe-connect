@@ -57,16 +57,16 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
     return (
       <div 
         ref={ref}
-        className="h-full pt-6 pb-2 px-3 scrollbar-none flex flex-col justify-end"
+        className="h-full pt-8 pb-2 px-3 scrollbar-none flex flex-col justify-end"
       >
-        <div className="flex flex-col space-y-3 min-h-0">
+        <div className="flex flex-col-reverse space-y-reverse space-y-3">
           <AnimatePresence mode="popLayout" initial={false}>
             {isLoading && (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="flex items-start"
+                exit={{ opacity: 0, y: -10 }}
+                className="flex items-start mb-3"
               >
                 <div className="relative flex-1 bg-[#2A2D3E] rounded-2xl rounded-bl-sm px-4 py-3">
                   <Loader2 className="w-4 h-4 text-white/80 animate-spin"/>
@@ -74,11 +74,11 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
               </motion.div>
             )}
             
-            {messages.map((message, index) => (
+            {[...messages].reverse().map((message, index) => (
               <motion.div 
                 key={index} 
-                className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
-                initial={{ opacity: 0, y: 10 }}
+                className={`flex mb-3 ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
                 layout
