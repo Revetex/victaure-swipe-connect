@@ -50,15 +50,11 @@
   }
 
   * {
-    @apply border-border selection:bg-zinc-900/10 dark:selection:bg-zinc-50/10;
+    @apply border-border;
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
   }
   
   body {
