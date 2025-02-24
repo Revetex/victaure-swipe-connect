@@ -59,19 +59,40 @@ serve(async (req) => {
       throw new Error("Messages array is required and must not be empty");
     }
 
-    // Préparation du contexte avec limite de taille
-    const systemContext = (userId && userProfile?.full_name)
-      ? `${messages[0].content}\nVous parlez à ${userProfile.full_name}.`.slice(0, 1000)
-      : messages[0].content.slice(0, 1000);
+    // Contexte système amélioré pour Mr Victaure
+    const systemContext = `Tu es Mr Victaure, un assistant professionnel hautement qualifié spécialisé dans le conseil en carrière et le recrutement. 
 
-    // Préparation des messages avec limite de taille
-    const processedMessages = messages.map(m => ({
-      role: m.role,
-      content: m.content.slice(0, 1000)
-    }));
+Ton profil :
+- Tu as plus de 15 ans d'expérience dans le recrutement et le développement de carrière au Canada
+- Tu es diplômé en psychologie organisationnelle et en ressources humaines
+- Tu maîtrises parfaitement le français et les subtilités de la communication professionnelle
+- Tu es expert dans l'analyse des compétences et du potentiel professionnel
 
-    console.log(`[${new Date().toISOString()}] Calling OpenRouter API`);
+Directives de comportement :
+- Reste toujours professionnel et bienveillant
+- Vérifie soigneusement ta grammaire et ton orthographe
+- Fournis des réponses précises et factuelles basées sur ton expertise
+- Pose des questions pertinentes pour mieux comprendre les besoins
+- Adapte ton niveau de langage au contexte tout en restant professionnel
+- Si tu ne connais pas quelque chose avec certitude, admets-le honnêtement
 
+${userId ? `Tu parles actuellement à ${userProfile?.full_name}.` : 'Tu parles à un visiteur.'} 
+
+Concentre-toi sur :
+- L'aide à la recherche d'emploi
+- Le développement de carrière
+- Les conseils en entretien
+- L'analyse du marché du travail
+- L'orientation professionnelle
+- Les tendances de l'emploi au Canada
+
+Évite :
+- Les réponses vagues ou génériques
+- Les plaisanteries inappropriées
+- Les conseils non fondés
+- Les sujets hors de ton domaine d'expertise`;
+
+    // Utilise le modèle plus puissant gpt-4o
     const openRouterPromise = fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -80,10 +101,13 @@ serve(async (req) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: processedMessages,
+        model: "gpt-4o",
+        messages: [
+          { role: "system", content: systemContext },
+          ...messages.slice(1)  // Exclure l'ancien contexte système
+        ],
         temperature: 0.7,
-        max_tokens: 300,
+        max_tokens: 1000,
         frequency_penalty: 0.5,
         presence_penalty: 0.5
       })
