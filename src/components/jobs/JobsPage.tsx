@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Job } from "@/types/job";
 import { useJobsData } from "@/hooks/useJobsData";
@@ -5,6 +6,7 @@ import { motion } from "framer-motion";
 import { JobsSearch } from "./sections/JobsSearch";
 import { JobsResults } from "./sections/JobsResults";
 import { cn } from "@/lib/utils";
+import { GoogleSearch } from "@/components/google-search/GoogleSearch";
 
 export function JobsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,18 +55,6 @@ export function JobsPage() {
       return bMaxSalary - aMaxSalary;
     });
 
-  const locations = Array.from(new Set(jobs.map(job => job.location))).sort();
-
-  const handleResetFilters = () => {
-    setSearchQuery("");
-    setSelectedLocation("");
-    setSelectedCompanyType("");
-    setExperienceLevel("");
-    setContractType("");
-    setSalaryRange([0, 200000]);
-    setRemoteOnly(false);
-  };
-
   const handleJobSelect = (job: Job) => {
     console.log("Job selected:", job);
   };
@@ -77,41 +67,49 @@ export function JobsPage() {
     );
   }
 
+  const SEARCH_ENGINE_ID = "1262c5460a0314a80";
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={cn(
-        "page-container",
-        "pt-20"
+        "page-container pt-20 bg-[#1A1F2C] min-h-screen"
       )}
     >
-      <div className="space-y-6 max-w-7xl mx-auto">
-        <JobsSearch 
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          selectedLocation={selectedLocation}
-          selectedCompanyType={selectedCompanyType}
-          sortOrder={sortOrder}
-          experienceLevel={experienceLevel}
-          contractType={contractType}
-          locations={locations}
-          salaryRange={salaryRange}
-          remoteOnly={remoteOnly}
-          onLocationChange={setSelectedLocation}
-          onCompanyTypeChange={setSelectedCompanyType}
-          onSortOrderChange={setSortOrder}
-          onExperienceLevelChange={setExperienceLevel}
-          onContractTypeChange={setContractType}
-          onSalaryRangeChange={setSalaryRange}
-          onRemoteOnlyChange={setRemoteOnly}
-        />
-        
-        <JobsResults 
-          jobs={filteredJobs}
-          onJobSelect={handleJobSelect}
-          onResetFilters={handleResetFilters}
-        />
+      <div className="max-w-7xl mx-auto px-4 space-y-6">
+        <div className="grid gap-6">
+          <JobsSearch 
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedLocation={selectedLocation}
+            selectedCompanyType={selectedCompanyType}
+            sortOrder={sortOrder}
+            experienceLevel={experienceLevel}
+            contractType={contractType}
+            salaryRange={salaryRange}
+            remoteOnly={remoteOnly}
+            onLocationChange={setSelectedLocation}
+            onCompanyTypeChange={setSelectedCompanyType}
+            onSortOrderChange={setSortOrder}
+            onExperienceLevelChange={setExperienceLevel}
+            onContractTypeChange={setContractType}
+            onSalaryRangeChange={setSalaryRange}
+            onRemoteOnlyChange={setRemoteOnly}
+          />
+          
+          <div className="bg-[#1B2A4A]/50 backdrop-blur-sm border border-[#64B5D9]/10 rounded-lg p-6 shadow-lg">
+            <h2 className="text-xl font-semibold text-white mb-4">
+              Rechercher dans les offres d'emploi
+            </h2>
+            <GoogleSearch searchEngineId={SEARCH_ENGINE_ID} />
+          </div>
+          
+          <JobsResults 
+            jobs={filteredJobs}
+            onJobSelect={handleJobSelect}
+          />
+        </div>
       </div>
     </motion.div>
   );

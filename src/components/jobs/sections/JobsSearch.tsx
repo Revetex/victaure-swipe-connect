@@ -20,7 +20,6 @@ interface JobsSearchProps {
   sortOrder: "recent" | "salary";
   experienceLevel: string;
   contractType: string;
-  locations: string[];
   salaryRange: [number, number];
   remoteOnly: boolean;
   onLocationChange: (value: string) => void;
@@ -40,7 +39,6 @@ export function JobsSearch({
   sortOrder,
   experienceLevel,
   contractType,
-  locations,
   salaryRange,
   remoteOnly,
   onLocationChange,
@@ -54,132 +52,118 @@ export function JobsSearch({
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <motion.div 
-      variants={{
-        hidden: { y: 20, opacity: 0 },
-        visible: { y: 0, opacity: 1 }
-      }}
-      initial="hidden"
-      animate="visible"
-      className="sticky top-20 z-10 mb-6"
-    >
-      <Card className={cn(
-        "transition-all duration-300 border-primary/10 bg-card/50 backdrop-blur-sm shadow-lg",
-        isExpanded ? "p-6" : "p-3"
-      )}>
-        {!isExpanded ? (
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              className="flex-1 justify-start h-10 text-muted-foreground hover:text-foreground"
-              onClick={() => setIsExpanded(true)}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Publier une annonce...
-            </Button>
-            
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 border-primary/20 hover:border-primary">
-                  <Filter className="h-4 w-4" />
-                  Filtres
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>Filtres avancés</DialogTitle>
-                </DialogHeader>
-                <JobsFilters 
-                  selectedLocation={selectedLocation}
-                  selectedCompanyType={selectedCompanyType}
-                  sortOrder={sortOrder}
-                  experienceLevel={experienceLevel}
-                  contractType={contractType}
-                  locations={locations}
-                  salaryRange={salaryRange}
-                  remoteOnly={remoteOnly}
-                  onLocationChange={onLocationChange}
-                  onCompanyTypeChange={onCompanyTypeChange}
-                  onSortOrderChange={onSortOrderChange}
-                  onExperienceLevelChange={onExperienceLevelChange}
-                  onContractTypeChange={onContractTypeChange}
-                  onSalaryRangeChange={onSalaryRangeChange}
-                  onRemoteOnlyChange={onRemoteOnlyChange}
-                />
-              </DialogContent>
-            </Dialog>
-          </div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="space-y-4"
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">Créer une publication</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsExpanded(false)}
+    <Card className="bg-[#1B2A4A]/50 backdrop-blur-sm border-[#64B5D9]/10 shadow-lg p-6">
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center gap-4">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button 
+                className="flex-1 justify-start h-14 text-white bg-[#9b87f5] hover:bg-[#7E69AB]"
               >
-                Réduire
+                <Plus className="w-5 h-5 mr-2" />
+                Publier une annonce
               </Button>
-            </div>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl bg-[#1A1F2C] text-white border-[#64B5D9]/10">
+              <DialogHeader>
+                <DialogTitle>Créer une publication</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-6 py-4">
+                <div className="grid gap-4">
+                  <div className="grid gap-2">
+                    <Label>Type d'annonce</Label>
+                    <Select>
+                      <SelectTrigger className="bg-[#1B2A4A] border-[#64B5D9]/10">
+                        <SelectValue placeholder="Sélectionnez le type d'annonce" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="job">Offre d'emploi</SelectItem>
+                        <SelectItem value="service">Service</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label>Type d'annonce</Label>
-                <Select defaultValue="job">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez le type d'annonce" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="job">Offre d'emploi</SelectItem>
-                    <SelectItem value="service">Service</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                  <div className="grid gap-2">
+                    <Label>Titre</Label>
+                    <Input 
+                      placeholder="Titre de votre annonce" 
+                      className="bg-[#1B2A4A] border-[#64B5D9]/10"
+                    />
+                  </div>
 
-              <div className="grid gap-2">
-                <Label>Titre</Label>
-                <Input placeholder="Titre de votre annonce" />
-              </div>
+                  <div className="grid gap-2">
+                    <Label>Description</Label>
+                    <Textarea 
+                      placeholder="Décrivez votre offre en détail..." 
+                      className="min-h-[100px] bg-[#1B2A4A] border-[#64B5D9]/10"
+                    />
+                  </div>
 
-              <div className="grid gap-2">
-                <Label>Description</Label>
-                <Textarea 
-                  placeholder="Décrivez votre offre en détail..." 
-                  className="min-h-[100px]"
-                />
-              </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label>Localisation</Label>
+                      <Input 
+                        placeholder="Ville, région..." 
+                        className="bg-[#1B2A4A] border-[#64B5D9]/10"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Salaire / Budget</Label>
+                      <Input 
+                        type="number" 
+                        placeholder="Montant" 
+                        className="bg-[#1B2A4A] border-[#64B5D9]/10"
+                      />
+                    </div>
+                  </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Localisation</Label>
-                  <Input placeholder="Ville, région..." />
+                  <DialogFooter className="sm:justify-end gap-2 pt-4">
+                    <DialogClose asChild>
+                      <Button variant="outline" className="bg-[#1B2A4A] text-white border-[#64B5D9]/10">
+                        Annuler
+                      </Button>
+                    </DialogClose>
+                    <Button className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white">
+                      <Send className="h-4 w-4 mr-2" />
+                      Publier
+                    </Button>
+                  </DialogFooter>
                 </div>
-
-                <div className="grid gap-2">
-                  <Label>Salaire / Budget</Label>
-                  <Input type="number" placeholder="Montant" />
-                </div>
               </div>
-
-              <div className="flex items-center gap-4 pt-4">
-                <Button variant="outline" className="w-full sm:w-auto gap-2">
-                  <Image className="h-4 w-4" />
-                  Ajouter une image
-                </Button>
-                <Button className="w-full sm:w-auto gap-2">
-                  <Send className="h-4 w-4" />
-                  Publier
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </Card>
-    </motion.div>
+            </DialogContent>
+          </Dialog>
+          
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="h-14 w-14 shrink-0 bg-[#1B2A4A] border-[#64B5D9]/10 hover:bg-[#2A3B61]"
+              >
+                <Filter className="h-5 w-5" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <JobsFilters 
+                selectedLocation={selectedLocation}
+                selectedCompanyType={selectedCompanyType}
+                sortOrder={sortOrder}
+                experienceLevel={experienceLevel}
+                contractType={contractType}
+                salaryRange={salaryRange}
+                remoteOnly={remoteOnly}
+                onLocationChange={onLocationChange}
+                onCompanyTypeChange={onCompanyTypeChange}
+                onSortOrderChange={onSortOrderChange}
+                onExperienceLevelChange={onExperienceLevelChange}
+                onContractTypeChange={onContractTypeChange}
+                onSalaryRangeChange={onSalaryRangeChange}
+                onRemoteOnlyChange={onRemoteOnlyChange}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+    </Card>
   );
 }
