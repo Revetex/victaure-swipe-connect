@@ -1,4 +1,3 @@
-
 export interface UserProfile {
   id: string;
   email: string;
@@ -25,6 +24,11 @@ export interface UserProfile {
   created_at?: string;
   sections_order?: string[];
   verified?: boolean;
+  preferences?: {
+    notifications_enabled?: boolean;
+    privacy_enabled?: boolean;
+    theme?: 'light' | 'dark';
+  };
 }
 
 interface BlockedUser {

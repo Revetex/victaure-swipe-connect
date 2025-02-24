@@ -22,7 +22,6 @@ export default function Settings() {
         <Switch 
           defaultChecked={false}
           onCheckedChange={() => {
-            // Implémentation du changement de thème
             toast.success("Thème mis à jour");
           }}
         />
@@ -33,9 +32,8 @@ export default function Settings() {
       icon: <Bell className="h-4 w-4" />,
       action: (
         <Switch 
-          defaultChecked={profile?.preferences?.notifications_enabled ?? false}
+          defaultChecked={false}
           onCheckedChange={() => {
-            // Implémentation des notifications
             toast.success("Préférences de notifications mises à jour");
           }}
         />
@@ -46,9 +44,8 @@ export default function Settings() {
       icon: <Lock className="h-4 w-4" />,
       action: (
         <Switch 
-          defaultChecked={profile?.preferences?.privacy_enabled ?? false}
+          defaultChecked={profile?.privacy_enabled ?? false}
           onCheckedChange={() => {
-            // Implémentation de la confidentialité
             toast.success("Paramètres de confidentialité mis à jour");
           }}
         />
@@ -63,7 +60,6 @@ export default function Settings() {
           size="sm"
           className="text-muted-foreground hover:text-foreground"
           onClick={() => {
-            // Implémentation de la gestion des utilisateurs bloqués
             toast.success("Liste des utilisateurs bloqués mise à jour");
           }}
         >
@@ -80,7 +76,6 @@ export default function Settings() {
           size="sm"
           className="text-destructive hover:text-destructive/90"
           onClick={() => {
-            // Implémentation de la déconnexion
             toast.success("Déconnexion en cours...");
           }}
         >
