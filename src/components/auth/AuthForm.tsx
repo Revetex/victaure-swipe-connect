@@ -33,6 +33,18 @@ export function AuthForm({ redirectTo }: { redirectTo?: string }) {
             <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-[#64B5D9]/20 to-transparent" />
           </div>
 
+          <div className="relative mb-6">
+            <div className="flex items-center justify-center gap-4">
+              <img src="/lovable-uploads/color-logo.png" alt="Logo" className="w-10 h-10" />
+              <div className="relative">
+                <h2 className="text-2xl font-bold text-[#F1F0FB]">VICTAURE</h2>
+                <div className="absolute -top-2 -right-12 bg-[#64B5D9] text-white text-[10px] px-1.5 py-0.5 rounded-full border border-white/20">
+                  BETA
+                </div>
+              </div>
+            </div>
+          </div>
+
           <Tabs 
             defaultValue={activeTab} 
             onValueChange={setActiveTab}

@@ -15,7 +15,7 @@ interface VictaureChatProps {
 
 export function VictaureChat({ 
   maxQuestions = 3, 
-  context = "Tu es Mr. Victaure, un assistant concis et amical. Tu es attentif à l'orthographe et à la grammaire. Donne des réponses courtes et naturelles, en faisant toujours attention à bien écrire les mots.",
+  context = "Tu es Mr. Victaure, un assistant professionnel qui aide à la recherche d'emploi. Tu dois toujours utiliser une orthographe et une grammaire impeccables, et adopter un ton professionnel mais sympathique. Tu dois être précis dans tes réponses et veiller à ne jamais faire de fautes d'orthographe.",
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
