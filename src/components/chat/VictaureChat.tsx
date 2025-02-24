@@ -22,7 +22,6 @@ export function VictaureChat({
   const [userInput, setUserInput] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
-
   const { 
     messages, 
     isLoading, 
@@ -48,22 +47,35 @@ export function VictaureChat({
     if (!userInput.trim() || isLoading) return;
     
     try {
+      console.log("Sending message to Mr Victaure...");
       const response = await sendMessage(userInput);
       setUserInput("");
       
       if (response) {
+        console.log("Response received:", response);
         speakText(response);
       } else if (error) {
-        toast.error("Désolé, je ne peux pas répondre pour le moment. Veuillez réessayer.");
+        console.error("Error while sending message:", error);
+        toast.error("Mr Victaure n'est pas disponible pour le moment. Veuillez réessayer dans quelques instants.");
       }
     } catch (err) {
-      console.error("Error sending message:", err);
+      console.error("Error in handleSendMessage:", err);
       toast.error("Une erreur est survenue lors de l'envoi du message");
     }
   };
 
   const isDisabled = userQuestions >= maxQuestions && !user;
-  const disabledMessage = "Connectez-vous pour continuer à discuter avec Mr. Victaure";
+  const disabledMessage = "Connectez-vous pour continuer à discuter avec Mr Victaure";
+
+  // Log pour le debugging
+  console.log("Chat state:", {
+    isLoading,
+    userQuestions,
+    maxQuestions,
+    isDisabled,
+    error: error?.message,
+    messagesCount: messages.length
+  });
 
   return (
     <div className="w-full bg-gradient-to-b from-[#1A1F2C] to-[#151922] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-xl relative backdrop-blur-sm">
