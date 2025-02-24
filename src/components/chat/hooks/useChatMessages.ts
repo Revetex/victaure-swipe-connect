@@ -2,12 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-interface ChatMessage {
-  content: string;
-  isUser: boolean;
-  username?: string;
-}
+import type { ChatMessage } from "@/types/messages";
 
 interface UseChatMessagesProps {
   context: string;
@@ -44,9 +39,9 @@ export function useChatMessages({
         console.log("Initial response:", data);
 
         if (data?.choices?.[0]?.message?.content) {
-          setMessages(prevMessages => [{
-            content: data.choices[0].message.content,
-            isUser: false
+          setMessages([{
+            role: "assistant",
+            content: data.choices[0].message.content
           }]);
         }
       } catch (error) {
@@ -68,16 +63,13 @@ export function useChatMessages({
 
     if (!userInput.trim() || isLoading) return null;
 
-    const userMessage = userInput.trim();
+    const userMessage: ChatMessage = {
+      role: "user",
+      content: userInput.trim()
+    };
+
     setUserQuestions(prev => prev + 1);
-    setMessages(prevMessages => [
-      {
-        content: userMessage,
-        isUser: true,
-        username: user?.email || 'Visiteur'
-      },
-      ...prevMessages
-    ]);
+    setMessages(prevMessages => [userMessage, ...prevMessages]);
 
     try {
       setIsLoading(true);
@@ -86,13 +78,11 @@ export function useChatMessages({
       const messageHistory = [
         { role: "system", content: context },
         ...messages.map(msg => ({
-          role: msg.isUser ? "user" : "assistant",
+          role: msg.role,
           content: msg.content
         })).reverse(),
-        { role: "user", content: userMessage }
+        userMessage
       ];
-
-      console.log("Message history:", messageHistory);
 
       const { data, error } = await supabase.functions.invoke("victaure-chat", {
         body: { 
@@ -105,12 +95,12 @@ export function useChatMessages({
       console.log("Assistant response:", data);
 
       if (data?.choices?.[0]?.message?.content) {
-        const response = data.choices[0].message.content;
-        setMessages(prevMessages => [
-          { content: response, isUser: false },
-          ...prevMessages
-        ]);
-        return response;
+        const response: ChatMessage = {
+          role: "assistant",
+          content: data.choices[0].message.content
+        };
+        setMessages(prevMessages => [response, ...prevMessages]);
+        return response.content;
       }
       return null;
     } catch (error) {
