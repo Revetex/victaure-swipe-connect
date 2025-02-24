@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js'
-import * as puppeteer from 'puppeteer'
+import FirecrawlApp from '@mendable/firecrawl-js'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,70 +12,56 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders })
   }
 
-  let browser = null;
-
   try {
     console.log('Starting job scraping process...')
 
-    // Configuration spécifique pour Deno
-    browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage'
-      ]
-    });
+    // Configuration de Firecrawl avec l'API key depuis les secrets
+    const firecrawlApiKey = Deno.env.get('FIRECRAWL_API_KEY')
+    if (!firecrawlApiKey) {
+      throw new Error('FIRECRAWL_API_KEY not found in environment variables')
+    }
 
-    console.log('Browser launched successfully')
-    const page = await browser.newPage()
+    const firecrawl = new FirecrawlApp({ apiKey: firecrawlApiKey })
 
-    // Augmenter les timeouts pour être sûr
-    page.setDefaultTimeout(30000)
-    page.setDefaultNavigationTimeout(30000)
+    // URLs des sites d'emploi à scraper
+    const jobSites = [
+      'https://ca.indeed.com/emplois?l=Quebec&sc=0kf%3Ajt%28fulltime%29%3B&lang=fr',
+      'https://www.linkedin.com/jobs/search/?location=Quebec',
+      'https://www.jobillico.com/recherche-emploi?skwd=&wloc=Quebec'
+    ]
 
-    console.log('Navigating to Indeed...')
-    await page.goto('https://ca.indeed.com/jobs?l=Quebec&sc=0kf%3Ajt%28fulltime%29%3B&lang=fr', {
-      waitUntil: 'networkidle0'
-    })
-
-    console.log('Waiting for job cards to load...')
-    await page.waitForSelector('.job_seen_beacon')
-    console.log('Page loaded successfully')
-
-    const jobs = await page.evaluate(() => {
-      const jobCards = document.querySelectorAll('.job_seen_beacon')
-      console.log(`Found ${jobCards.length} job cards`)
+    const jobs = []
+    for (const url of jobSites) {
+      console.log(`Scraping jobs from: ${url}`)
       
-      return Array.from(jobCards, card => {
-        const titleElement = card.querySelector('.jobTitle')
-        const companyElement = card.querySelector('.companyName')
-        const locationElement = card.querySelector('.companyLocation')
-        const snippetElement = card.querySelector('.job-snippet')
-        const salaryElement = card.querySelector('.salary-snippet')
-        const urlElement = card.querySelector('h2.jobTitle a')
-
-        const experienceMatch = snippetElement?.textContent?.match(/(\d+).*?ans?.*?expérience/i)
-        const skillsMatch = snippetElement?.textContent?.match(/compétences?:?\s*([^.]+)/i)
-
-        return {
-          title: titleElement?.textContent?.trim() || '',
-          company: companyElement?.textContent?.trim() || '',
-          location: locationElement?.textContent?.trim() || '',
-          description: snippetElement?.textContent?.trim() || '',
-          salary_range: salaryElement?.textContent?.trim() || null,
-          url: (urlElement as HTMLAnchorElement)?.href || '',
-          posted_at: new Date().toISOString(),
-          source_platform: 'indeed',
-          employment_type: 'FULL_TIME',
-          experience_level: experienceMatch ? `${experienceMatch[1]}_years` : 'not_specified',
-          skills: skillsMatch ? skillsMatch[1].split(',').map(s => s.trim()) : []
+      const result = await firecrawl.crawlUrl(url, {
+        limit: 50,
+        scrapeOptions: {
+          extract: [{
+            name: 'jobs',
+            selector: '.job-card, .job-listing, .jobsearch-SerpJobCard',
+            multiple: true,
+            fields: {
+              title: '.title, .jobTitle, h2',
+              company: '.company, .companyName',
+              location: '.location, .companyLocation',
+              description: '.description, .job-snippet',
+              salary: '.salary, .salaryText',
+              url: 'a[href]@href',
+              posted_at: '.date, .posted-time'
+            }
+          }]
         }
       })
-    })
 
-    console.log(`Scraped ${jobs.length} jobs, preparing to save...`)
+      if (result.success) {
+        jobs.push(...result.data.jobs)
+      }
+    }
 
+    console.log(`Found ${jobs.length} jobs total`)
+
+    // Sauvegarder dans Supabase
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -91,13 +77,11 @@ Deno.serve(async (req) => {
             company: job.company,
             location: job.location,
             description: job.description,
-            salary_range: job.salary_range,
+            salary_range: job.salary,
             url: job.url,
-            posted_at: job.posted_at,
-            source_platform: job.source_platform,
-            employment_type: job.employment_type,
-            experience_level: job.experience_level,
-            skills: job.skills,
+            posted_at: job.posted_at || new Date().toISOString(),
+            source_platform: 'firecrawl',
+            employment_type: 'FULL_TIME',
             last_checked: new Date().toISOString()
           }, {
             onConflict: 'url'
@@ -133,10 +117,5 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500
     })
-  } finally {
-    if (browser) {
-      await browser.close()
-      console.log('Browser closed')
-    }
   }
 })
