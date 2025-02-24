@@ -1,7 +1,5 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { QRCodeSVG } from "qrcode.react";
-import { Check } from "lucide-react";
 
 interface PartnershipDialogProps {
   contactInfo: {
@@ -29,7 +27,6 @@ export function PartnershipDialog({ contactInfo, vCardData }: PartnershipDialogP
 
         <div className="flex justify-center">
           <div className="bg-white p-2 rounded-lg shadow-lg relative">
-            <QRCodeSVG value={vCardData} size={80} level="H" includeMargin={true} className="rounded" />
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <img src="/lovable-uploads/color-logo.png" alt="Victaure Logo" className="w-12 h-12 opacity-90" />
             </div>

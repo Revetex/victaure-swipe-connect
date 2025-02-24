@@ -2,13 +2,14 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
-import { ArrowRight } from "lucide-react";
 import { PartnershipDialog } from "./dialogs/PartnershipDialog";
 import { PricingGuideDialog } from "./dialogs/PricingGuideDialog";
 import { ContactDialog } from "./dialogs/ContactDialog";
 import { LegalDialog } from "./dialogs/LegalDialog";
 
 export function AuthFooter() {
+  const [isPartnershipOpen, setIsPartnershipOpen] = useState(false);
+  const [isPricingOpen, setIsPricingOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
@@ -33,7 +34,7 @@ END:VCARD`;
     <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center relative" role="contentinfo">
       <div className="space-y-8 border-t border-[#F1F0FB]/20 pt-8">
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
-          <Dialog>
+          <Dialog open={isPartnershipOpen} onOpenChange={setIsPartnershipOpen}>
             <DialogTrigger asChild>
               <Button className="relative group bg-gradient-to-r from-[#4A90E2] to-[#64B5D9] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <span className="relative z-10 flex items-center gap-2">
@@ -46,7 +47,7 @@ END:VCARD`;
             <PartnershipDialog contactInfo={contactInfo} vCardData={vCardData} />
           </Dialog>
 
-          <Dialog>
+          <Dialog open={isPricingOpen} onOpenChange={setIsPricingOpen}>
             <DialogTrigger asChild>
               <Button className="relative group bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <span className="relative z-10 flex items-center gap-2">
