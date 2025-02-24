@@ -65,6 +65,11 @@ export function GoogleSearch({
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 0.5rem !important;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 50 !important;
       }
       .gsc-completion-title {
         color: white !important;
@@ -123,6 +128,10 @@ export function GoogleSearch({
       }
       .gsc-cursor-current-page {
         color: #64B5D9 !important;
+      }
+      /* Fix pour le scroll */
+      body.gsc-overflow-hidden {
+        overflow: auto !important;
       }
     `;
     document.head.appendChild(style);
