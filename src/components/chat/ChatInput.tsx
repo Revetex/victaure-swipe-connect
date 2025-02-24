@@ -47,14 +47,14 @@ export function ChatInput({
   };
 
   return (
-    <div className="p-4 flex items-end gap-2">
+    <div className="p-3 flex items-end gap-2 bg-[#1B2A4A]/90 border-t border-[#64B5D9]/10 backdrop-blur-sm">
       <div className="relative flex-1">
         <Textarea
           value={userInput}
           onChange={handleInputChange}
           onKeyDown={handleKeyPress}
           placeholder="Écrivez votre message..."
-          className="min-h-[45px] max-h-[120px] resize-none pr-12 bg-background/50"
+          className="min-h-[40px] max-h-[160px] resize-none pr-12 bg-[#1A1F2C]/50 border-[#64B5D9]/20 rounded-xl placeholder:text-[#F1F0FB]/50 text-[#F1F0FB]"
           disabled={isDisabled || isLoading}
         />
       </div>
@@ -66,14 +66,14 @@ export function ChatInput({
               <Button
                 size="icon"
                 variant="ghost"
-                className="shrink-0"
+                className="shrink-0 h-10 w-10 rounded-xl bg-[#1A1F2C]/50 border border-[#64B5D9]/20 hover:bg-[#1A1F2C]/70"
                 onClick={onStartRecording}
                 disabled={isDisabled || isLoading}
               >
                 {isRecording ? (
                   <Square className="h-4 w-4 text-red-500" />
                 ) : (
-                  <Mic className="h-4 w-4" />
+                  <Mic className="h-4 w-4 text-[#64B5D9]" />
                 )}
               </Button>
             </TooltipTrigger>
@@ -90,10 +90,10 @@ export function ChatInput({
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="shrink-0"
+                  className="shrink-0 h-10 w-10 rounded-xl bg-[#1A1F2C]/50 border border-[#64B5D9]/20 hover:bg-[#1A1F2C]/70"
                   onClick={onStopSpeaking}
                 >
-                  <StopCircle className="h-4 w-4" />
+                  <StopCircle className="h-4 w-4 text-[#64B5D9]" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -108,7 +108,7 @@ export function ChatInput({
             <TooltipTrigger asChild>
               <Button
                 size="icon"
-                className="shrink-0"
+                className="shrink-0 h-10 w-10 rounded-xl bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white"
                 onClick={() => {
                   if (!isDisabled) {
                     onSendMessage();

@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { speaker } from "@/utils/speaker";
-import { toast } from "sonner";
 
 interface Message {
   content: string;
@@ -55,7 +54,6 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
           speaker.speak(text);
           setSpeakingMessageId(index);
           
-          // Arrêter automatiquement quand la lecture est terminée
           const utterance = new SpeechSynthesisUtterance(text);
           utterance.onend = () => {
             setSpeakingMessageId(null);
@@ -76,21 +74,12 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
       }
     }, [messages, typingIndex]);
 
-    useEffect(() => {
-      // Configurer la voix
-      const voices = window.speechSynthesis.getVoices();
-      const frenchVoice = voices.find(voice => voice.lang === 'fr-FR');
-      if (frenchVoice) {
-        speaker.setVoice(frenchVoice);
-      }
-    }, []);
-
     return (
       <div 
         ref={ref}
-        className="h-full overflow-y-auto py-4 px-3 scrollbar-none flex flex-col"
+        className="h-full overflow-y-auto py-4 px-3 scrollbar-none"
       >
-        <div className="flex flex-col space-y-3 mt-auto">
+        <div className="flex flex-col space-y-3">
           <AnimatePresence mode="popLayout">
             {messages.map((message, index) => (
               <motion.div 
@@ -102,18 +91,18 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                 layout
               >
                 <motion.div 
-                  className={`flex-1 relative group rounded-2xl px-4 py-3 ${
+                  className={`flex-1 relative group max-w-[85%] sm:max-w-[75%] ${
                     message.isUser 
-                      ? 'bg-[#64B5D9] text-white rounded-br-sm ml-12' 
-                      : 'bg-[#1B2A4A] text-[#F1F0FB] rounded-bl-sm mr-12'
+                      ? 'bg-[#64B5D9] text-white rounded-2xl rounded-br-sm ml-12' 
+                      : 'bg-[#1B2A4A] text-[#F1F0FB] rounded-2xl rounded-bl-sm mr-12'
                   }`}
                 >
                   {!message.isUser ? (
-                    <div className="space-y-4 pr-8">
+                    <div className="space-y-2 p-4">
                       {index === typingIndex - 1 && isTyping ? (
-                        <p className="text-sm leading-relaxed">{currentText}</p>
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{currentText}</p>
                       ) : (
-                        <p className="text-sm leading-relaxed">{message.content}</p>
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
                       )}
                       <Button
                         variant="ghost"
@@ -122,14 +111,16 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                         onClick={() => handleSpeak(message.content, index)}
                       >
                         {speakingMessageId === index ? (
-                          <VolumeX className="h-4 w-4" />
+                          <VolumeX className="h-4 w-4 text-[#64B5D9]" />
                         ) : (
-                          <Volume2 className="h-4 w-4" />
+                          <Volume2 className="h-4 w-4 text-[#64B5D9]" />
                         )}
                       </Button>
                     </div>
                   ) : (
-                    <p className="text-sm leading-relaxed">{message.content}</p>
+                    <div className="p-4">
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
+                    </div>
                   )}
                 </motion.div>
               </motion.div>
@@ -141,7 +132,7 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                 exit={{ opacity: 0, y: 10 }}
                 className="flex mb-3 items-start"
               >
-                <div className="relative flex-1 bg-[#1B2A4A] rounded-2xl px-4 py-3">
+                <div className="relative flex-1 bg-[#1B2A4A] rounded-2xl p-4">
                   <Loader2 className="w-4 h-4 text-[#64B5D9] animate-spin"/>
                 </div>
               </motion.div>
