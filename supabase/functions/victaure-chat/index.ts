@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from '../_shared/cors.ts';
 
@@ -96,17 +97,24 @@ Concentre-toi sur :
 - Les conseils non fondés
 - Les sujets hors de ton domaine d'expertise`;
 
+    const messagePayload = messages.slice(1).map(msg => ({
+      role: msg.role,
+      content: msg.content
+    }));
+
+    messagePayload.unshift({
+      role: "system",
+      content: systemContext
+    });
+
     const payload = {
       model: "google/gemini-2.0-flash-thinking-exp:free",
-      messages: [
-        { role: "system", content: systemContext }
-      ].concat(messages.slice(1)),
+      messages: messagePayload,
       temperature: 0.7,
       max_tokens: 1000,
       top_p: 1,
       frequency_penalty: 0.5,
-      presence_penalty: 0.5,
-      stream: false
+      presence_penalty: 0.5
     };
 
     console.log('Sending request to OpenRouter with payload:', {
@@ -121,7 +129,9 @@ Concentre-toi sur :
       headers: {
         'HTTP-Referer': 'https://victaure.com',
         'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Title': 'Victaure Assistant',
+        'Model': 'google/gemini-2.0-flash-thinking-exp:free'
       },
       body: JSON.stringify(payload)
     });
@@ -135,6 +145,7 @@ Concentre-toi sur :
     console.log('OpenRouter response data:', JSON.stringify(data, null, 2));
 
     if (!response.ok || data.error) {
+      console.error('OpenRouter error details:', data.error);
       throw new Error(`OpenRouter API error: ${data.error?.message || data.error || 'Unknown error'}`);
     }
 
