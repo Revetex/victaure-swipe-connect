@@ -2,7 +2,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PricingGrid } from "@/components/pricing/PricingGrid";
 import { motion } from "framer-motion";
-import { ArrowRight, Shield, Clock, CreditCard, AlertCircle } from "lucide-react";
+import { ArrowRight, Check, Shield, Clock, CreditCard, AlertCircle } from "lucide-react";
 
 interface PricingDialogProps {
   isPricingOpen: boolean;
@@ -53,7 +53,7 @@ export function PricingDialog({ isPricingOpen, setIsPricingOpen }: PricingDialog
 
             <section className="space-y-4">
               <h3 className="text-xl font-semibold text-[#F2EBE4] flex items-center gap-2">
-                <Shield className="w-5 h-5" />
+                <Check className="w-5 h-5" />
                 Promotions
               </h3>
               <div className="grid sm:grid-cols-2 gap-4">
@@ -68,6 +68,30 @@ export function PricingDialog({ isPricingOpen, setIsPricingOpen }: PricingDialog
                 <div className="bg-[#2A2D3E]/50 rounded-lg p-4">
                   <h4 className="font-medium text-[#F2EBE4] mb-2">Volume de Contrats</h4>
                   <p className="text-sm text-[#F2EBE4]/80">-10% après 25 contrats<br/>-20% après 50 contrats</p>
+                </div>
+              </div>
+            </section>
+
+            <section className="space-y-4">
+              <h3 className="text-xl font-semibold text-[#F2EBE4] flex items-center gap-2">
+                <Shield className="w-5 h-5" />
+                Services Additionnels
+              </h3>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="bg-[#2A2D3E]/50 rounded-lg p-4">
+                  <h4 className="font-medium text-[#F2EBE4] mb-2">Mise en Avant</h4>
+                  <ul className="text-sm text-[#F2EBE4]/80 space-y-2">
+                    <li>Contrat Standard : GRATUIT</li>
+                    <li>Contrat Premium (7 jours) : 29 CAD</li>
+                    <li>Contrat Urgent (14 jours) : 59 CAD</li>
+                  </ul>
+                </div>
+                <div className="bg-[#2A2D3E]/50 rounded-lg p-4">
+                  <h4 className="font-medium text-[#F2EBE4] mb-2">Formation</h4>
+                  <ul className="text-sm text-[#F2EBE4]/80 space-y-2">
+                    <li>En ligne (2h) : 299 CAD</li>
+                    <li>Sur site : 599 CAD</li>
+                  </ul>
                 </div>
               </div>
             </section>

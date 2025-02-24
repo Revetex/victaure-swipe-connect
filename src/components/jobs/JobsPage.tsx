@@ -11,6 +11,7 @@ import { JobsFilters } from "./sections/JobsFilters";
 import { JobsResults } from "./sections/JobsResults";
 import { JobsAIAssistant } from "./sections/JobsAIAssistant";
 import { CreateJobForm } from "./CreateJobForm";
+import { ExternalSearchSection } from "./sections/ExternalSearchSection";
 import { PlusCircle } from "lucide-react";
 
 export function JobsPage() {
@@ -102,13 +103,18 @@ export function JobsPage() {
             </Dialog>
           </div>
 
-          {/* Recherche unifiée */}
-          <Card className="p-6">
-            <JobsSearch 
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-            />
-          </Card>
+          {/* Recherche et recherche externe */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="p-6">
+              <JobsSearch 
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+              />
+            </Card>
+            <Card className="p-6">
+              <ExternalSearchSection />
+            </Card>
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Filtres */}

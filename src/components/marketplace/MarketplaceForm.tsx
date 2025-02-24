@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,7 +15,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { ListingType } from "@/types/marketplace";
 
-export function MarketplaceForm({ onClose }: { onClose: () => void }) {
+export function MarketplaceForm() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { imageUrls, handleImagePreview, removeImage, uploadImages, resetImages } = useListingImages();
@@ -90,7 +91,6 @@ export function MarketplaceForm({ onClose }: { onClose: () => void }) {
         auctionEndDate: null,
         minimumBid: "",
       });
-      onClose();
       
     } catch (error) {
       console.error('Erreur lors de la publication:', error);
@@ -182,9 +182,9 @@ export function MarketplaceForm({ onClose }: { onClose: () => void }) {
         />
 
         <div className="flex justify-end gap-4 pt-4">
-          <Button variant="outline" type="button" onClick={onClose}>
-            Annuler
-          </Button>
+          <DialogClose asChild>
+            <Button variant="outline" type="button">Annuler</Button>
+          </DialogClose>
           <Button type="submit" disabled={loading}>
             {loading ? "Publication en cours..." : "Publier l'annonce"}
           </Button>

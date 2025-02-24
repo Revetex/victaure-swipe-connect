@@ -32,10 +32,3 @@ export interface Post {
   }[];
   comments?: Comment[];
 }
-
-export interface PostAttachment {
-  file: File;
-  preview: string;
-}
-
-export type PostPrivacyLevel = "public" | "connections";
