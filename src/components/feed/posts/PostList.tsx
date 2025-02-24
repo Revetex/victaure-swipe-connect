@@ -119,83 +119,87 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-2 sm:px-4">
-      <div className="mb-6 space-y-4">
-        <div className="flex items-center gap-4">
+    <div className="w-full max-w-3xl mx-auto">
+      <div className="mb-6 space-y-4 bg-background/60 backdrop-blur-sm p-4 rounded-lg border border-border/40">
+        <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Rechercher dans les posts..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-background/50"
             />
           </div>
           
-          <Select
-            value={filter}
-            onValueChange={setFilter}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filtrer par" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tous les posts</SelectItem>
-              <SelectItem value="liked">Mes likes</SelectItem>
-              <SelectItem value="following">Abonnements</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex flex-wrap sm:flex-nowrap gap-2">
+            <Select
+              value={filter}
+              onValueChange={setFilter}
+            >
+              <SelectTrigger className="w-[180px] bg-background/50">
+                <SelectValue placeholder="Filtrer par" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous les posts</SelectItem>
+                <SelectItem value="liked">Mes likes</SelectItem>
+                <SelectItem value="following">Abonnements</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Select
-            value={sortBy}
-            onValueChange={(value: 'date' | 'likes' | 'comments') => setSortBy(value)}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Trier par" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="date">Date</SelectItem>
-              <SelectItem value="likes">Likes</SelectItem>
-              <SelectItem value="comments">Commentaires</SelectItem>
-            </SelectContent>
-          </Select>
+            <Select
+              value={sortBy}
+              onValueChange={(value: 'date' | 'likes' | 'comments') => setSortBy(value)}
+            >
+              <SelectTrigger className="w-[180px] bg-background/50">
+                <SelectValue placeholder="Trier par" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="date">Date</SelectItem>
+                <SelectItem value="likes">Likes</SelectItem>
+                <SelectItem value="comments">Commentaires</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Select
-            value={sortOrder}
-            onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Ordre" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="asc">Croissant</SelectItem>
-              <SelectItem value="desc">Décroissant</SelectItem>
-            </SelectContent>
-          </Select>
+            <Select
+              value={sortOrder}
+              onValueChange={(value: 'asc' | 'desc') => setSortOrder(value)}
+            >
+              <SelectTrigger className="w-[180px] bg-background/50">
+                <SelectValue placeholder="Ordre" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="asc">Croissant</SelectItem>
+                <SelectItem value="desc">Décroissant</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
-      <AnimatePresence mode="popLayout">
-        {filteredPosts?.map((post) => (
-          <motion.div
-            key={post.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            layout
-          >
-            <PostCard
-              post={post}
-              currentUserId={user?.id}
-              userEmail={user?.email}
-              onDelete={() => post.user_id === user?.id && setPostToDelete(post.id)}
-              onHide={(postId) => handleHide(postId, user?.id)}
-              onUpdate={(postId, content) => handleUpdate(postId, content)}
-            />
-          </motion.div>
-        ))}
-      </AnimatePresence>
+      <div className="space-y-4">
+        <AnimatePresence mode="popLayout">
+          {filteredPosts?.map((post) => (
+            <motion.div
+              key={post.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              layout
+            >
+              <PostCard
+                post={post}
+                currentUserId={user?.id}
+                userEmail={user?.email}
+                onDelete={() => post.user_id === user?.id && setPostToDelete(post.id)}
+                onHide={(postId) => handleHide(postId, user?.id)}
+                onUpdate={(postId, content) => handleUpdate(postId, content)}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
 
       <DeletePostDialog 
         isOpen={!!postToDelete}

@@ -16,12 +16,13 @@ export function Feed() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="w-full max-w-3xl mx-auto space-y-6 px-4 sm:px-6 mt-4"
+      className="w-full max-w-3xl mx-auto space-y-6 px-4 sm:px-6 py-6"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
+        className="bg-background/60 backdrop-blur-sm border border-border/40 rounded-lg shadow-sm"
       >
         <CreatePostForm 
           newPost=""
