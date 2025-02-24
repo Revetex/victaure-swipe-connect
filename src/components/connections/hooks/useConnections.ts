@@ -43,7 +43,6 @@ export function useConnections() {
               issuer,
               issue_date,
               expiry_date,
-              credential_id,
               credential_url,
               description
             ),
@@ -101,7 +100,6 @@ export function useConnections() {
               issuer,
               issue_date,
               expiry_date,
-              credential_id,
               credential_url,
               description
             ),
@@ -160,18 +158,22 @@ export function useConnections() {
         }) || [];
 
         // Transform certifications data with required credential_id
-        const certifications: Certification[] = (rawConnection.certifications || []).map(cert => ({
-          id: cert.id,
-          profile_id: cert.profile_id,
-          title: cert.title,
-          issuer: cert.issuer,
-          year: undefined, // Optional field
-          issue_date: cert.issue_date,
-          expiry_date: cert.expiry_date,
-          credential_id: cert.credential_id || null, // Ensure credential_id is included
-          credential_url: cert.credential_url,
-          description: cert.description
-        }));
+        const certifications: Certification[] = (rawConnection.certifications || []).map(cert => {
+          if (!cert || typeof cert !== 'object') return null;
+          
+          return {
+            id: cert.id || '',
+            profile_id: cert.profile_id || '',
+            title: cert.title || '',
+            issuer: cert.issuer || '',
+            year: undefined,
+            issue_date: cert.issue_date || null,
+            expiry_date: cert.expiry_date || null,
+            credential_id: null, // Since this column doesn't exist yet, set to null
+            credential_url: cert.credential_url || '',
+            description: cert.description || ''
+          };
+        }).filter(Boolean) as Certification[];
 
         const connection: UserProfile = {
           id: rawConnection.id,
