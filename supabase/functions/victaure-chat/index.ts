@@ -92,7 +92,7 @@ Concentre-toi sur :
 - Les conseils non fondés
 - Les sujets hors de ton domaine d'expertise`;
 
-    // Utilise le modèle plus puissant gpt-4o
+    // Utilise le modèle gemini-2.0-flash-thinking-exp:free
     const openRouterPromise = fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -101,7 +101,7 @@ Concentre-toi sur :
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: "gpt-4o",
+        model: "google/gemini-2.0-flash-thinking-exp:free",
         messages: [
           { role: "system", content: systemContext },
           ...messages.slice(1)  // Exclure l'ancien contexte système
