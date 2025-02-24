@@ -1,42 +1,65 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { Location } from '@/types/database/locations';
 
+interface GeolocationState {
+  location: { latitude: number; longitude: number } | null;
+  loading: boolean;
+  error: string | null;
+}
+
 export function useGeolocation() {
-  const [loading, setLoading] = useState(false);
+  const [state, setState] = useState<GeolocationState>({
+    location: null,
+    loading: true,
+    error: null
+  });
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setState({
+            location: {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            },
+            loading: false,
+            error: null
+          });
+        },
+        (error) => {
+          setState({
+            location: null,
+            loading: false,
+            error: error.message
+          });
+          console.error('Erreur de géolocalisation:', error);
+        }
+      );
+    } else {
+      setState({
+        location: null,
+        loading: false,
+        error: 'La géolocalisation n\'est pas supportée par votre navigateur'
+      });
+    }
+  }, []);
 
   const saveLocation = async (location: Omit<Location, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      setLoading(true);
       const { error } = await supabase
         .from('locations')
         .insert(location);
 
       if (error) throw error;
-      toast.success('Localisation enregistrée avec succès');
     } catch (error) {
       console.error('Error saving location:', error);
       toast.error("Erreur lors de l'enregistrement de la localisation");
-    } finally {
-      setLoading(false);
     }
   };
-
-  const getCurrentPosition = useCallback((): Promise<GeolocationPosition> => {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        reject(new Error('Geolocation is not supported by your browser'));
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        position => resolve(position),
-        error => reject(error)
-      );
-    });
-  }, []);
 
   const getAddressFromCoordinates = async (
     latitude: number, 
@@ -74,9 +97,8 @@ export function useGeolocation() {
   };
 
   return {
-    loading,
+    ...state,
     saveLocation,
-    getCurrentPosition,
     getAddressFromCoordinates
   };
 }
