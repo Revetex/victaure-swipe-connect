@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -35,7 +34,6 @@ export function useChatMessages({
   const [userQuestions, setUserQuestions] = useState(0);
   const [error, setError] = useState<Error | null>(null);
 
-  // Charger les messages sauvegardés au démarrage
   useEffect(() => {
     const savedMessages = localStorage.getItem(STORAGE_KEY);
     if (savedMessages) {
@@ -48,7 +46,6 @@ export function useChatMessages({
     }
   }, []);
 
-  // Sauvegarder les messages quand ils changent
   useEffect(() => {
     if (messages.length > 0) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
@@ -70,28 +67,24 @@ export function useChatMessages({
       setIsLoading(true);
       setError(null);
 
-      // Ajouter le message de l'utilisateur
       const userMessage: Message = {
         content,
         isUser: true,
         timestamp: Date.now()
       };
+      
       setMessages(prev => [...prev, userMessage]);
       setUserQuestions(prev => prev + 1);
 
-      // Vérifier si l'utilisateur a atteint la limite
       if (!user && userQuestions >= maxQuestions - 1) {
         onMaxQuestionsReached?.();
       }
 
-      const messagesForContext = [
-        ...messages,
-        userMessage
-      ];
+      const messagesForContext = [...messages, userMessage];
 
       const assistantPrompt = useWebSearch 
-        ? context + "\nUtilise les informations du web pour répondre de manière détaillée et factuelle. Cite tes sources et résume les informations pertinentes. N'oublie pas de vérifier les informations avant de répondre."
-        : context + "\nRéponds de manière conversationnelle et naturelle, sans chercher d'informations supplémentaires.";
+        ? context + "\nAnalyse tout fichier partagé et donne des retours détaillés. Pour les CV, fais une analyse approfondie. Utilise les informations du web pour répondre de manière détaillée et factuelle."
+        : context;
 
       const { data, error } = await supabase.functions.invoke('victaure-chat', {
         body: { 
@@ -101,17 +94,15 @@ export function useChatMessages({
           useWebSearch,
           userProfile: user ? await getUserProfile(user.id) : null,
           maxTokens: useWebSearch ? 2000 : 800,
-          temperature: useWebSearch ? 0.3 : 0.7, // Plus factuel en mode web
-          searchResults: useWebSearch
+          temperature: useWebSearch ? 0.3 : 0.7
         }
       });
 
       if (error) {
-        console.error("Supabase function error:", error);
         throw new Error("Erreur de communication avec l'assistant");
       }
 
-      if (!data || !data.choices || !data.choices[0]?.message?.content) {
+      if (!data?.choices?.[0]?.message?.content) {
         throw new Error("Réponse invalide de l'assistant");
       }
 
@@ -128,9 +119,7 @@ export function useChatMessages({
     } catch (err) {
       console.error('Error sending message:', err);
       setError(err instanceof Error ? err : new Error('Unknown error occurred'));
-      toast.error("Erreur lors de l'envoi du message", {
-        description: err instanceof Error ? err.message : "Une erreur inattendue s'est produite"
-      });
+      toast.error("Erreur lors de l'envoi du message");
     } finally {
       setIsLoading(false);
     }

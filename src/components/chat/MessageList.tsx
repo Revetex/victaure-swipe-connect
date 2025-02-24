@@ -1,15 +1,18 @@
 
 import { forwardRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { Job } from "@/types/job";
 import { JobCard } from "@/components/jobs/JobCard";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface Message {
   content: string;
   isUser: boolean;
   username?: string;
   jobResults?: Job[];
+  timestamp: number;
 }
 
 interface MessageListProps {
@@ -53,6 +56,12 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                     : 'bg-[#2A2D3E] text-[#F1F0FB] rounded-bl-sm mr-12'
                 }`}
               >
+                <div className="mb-1 flex justify-between items-center text-xs opacity-80">
+                  <span>{message.isUser ? 'Vous' : 'Mr Victaure'}</span>
+                  <span>
+                    {format(new Date(message.timestamp), "d MMM à HH:mm", { locale: fr })}
+                  </span>
+                </div>
                 {!message.isUser ? (
                   <div className="space-y-4">
                     {message.jobResults && message.jobResults.length > 0 ? (

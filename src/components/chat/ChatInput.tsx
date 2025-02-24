@@ -1,5 +1,5 @@
 
-import { MessagesSquare, Mic, Volume2, Globe, PaperClip } from "lucide-react";
+import { MessagesSquare, Mic, Volume2, Globe, Paperclip } from "lucide-react";
 
 interface ChatInputProps {
   userInput: string;
@@ -28,11 +28,11 @@ export function ChatInput({
   onSendMessage,
   webSearchEnabled
 }: ChatInputProps) {
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      console.log("File selected:", file);
-      // TODO: Implement file upload logic
+      setUserInput(`J'ai joint le fichier "${file.name}" pour analyse.`);
+      // Le message sera envoyé avec le nom du fichier
     }
   };
 
@@ -60,12 +60,13 @@ export function ChatInput({
           />
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
             <label className="cursor-pointer text-[#64B5D9] hover:text-[#64B5D9]/80 transition-colors">
-              <PaperClip className="w-4 h-4" />
+              <Paperclip className="w-4 h-4" />
               <input
                 type="file"
                 className="hidden"
                 onChange={handleFileChange}
                 disabled={isDisabled}
+                accept=".pdf,.doc,.docx,.txt"
               />
             </label>
             {webSearchEnabled && (
