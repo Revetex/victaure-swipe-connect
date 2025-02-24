@@ -1,3 +1,4 @@
+
 import { useRef, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatHeader } from "./ChatHeader";
@@ -49,14 +50,13 @@ export function VictaureChat({
     if (!userInput.trim() || isLoading) return;
     
     try {
-      const currentTimestamp = Date.now();
-      const messageWithTimestamp = {
+      const message = {
         content: userInput,
         isUser: true,
-        timestamp: currentTimestamp
+        timestamp: Date.now()
       };
       
-      const response = await sendMessage(messageWithTimestamp);
+      const response = await sendMessage(message);
       setUserInput("");
       
       if (response && !error) {

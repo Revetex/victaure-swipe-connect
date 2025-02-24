@@ -61,20 +61,15 @@ export function useChatMessages({
     toast.success("Historique effacé");
   }, []);
 
-  const sendMessage = useCallback(async (content: string) => {
-    if (!content.trim()) return;
+  const sendMessage = useCallback(async (message: Message) => {
+    if (!message.content.trim()) return;
 
     try {
       setIsLoading(true);
       setError(null);
 
       // Ajouter le message de l'utilisateur
-      const userMessage: Message = {
-        content,
-        isUser: true,
-        timestamp: Date.now()
-      };
-      setMessages(prev => [...prev, userMessage]);
+      setMessages(prev => [...prev, message]);
       setUserQuestions(prev => prev + 1);
 
       // Vérifier si l'utilisateur a atteint la limite
@@ -89,14 +84,14 @@ export function useChatMessages({
         const result = await geminiModel.generateContent([
           context,
           ...messages.map(m => m.content),
-          content
+          message.content
         ]);
         response = result.response.text();
       } else {
         // Fallback sur l'API Supabase
         const { data, error } = await supabase.functions.invoke('victaure-chat', {
           body: { 
-            messages: [...messages, userMessage],
+            messages: [...messages, message],
             context,
             userId: user?.id,
           }
