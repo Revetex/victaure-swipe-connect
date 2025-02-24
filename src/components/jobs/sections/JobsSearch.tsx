@@ -30,7 +30,6 @@ interface JobsSearchProps {
   onContractTypeChange: (value: string) => void;
   onSalaryRangeChange: (value: [number, number]) => void;
   onRemoteOnlyChange: (value: boolean) => void;
-  onReset: () => void;
 }
 
 export function JobsSearch({
@@ -50,8 +49,7 @@ export function JobsSearch({
   onExperienceLevelChange,
   onContractTypeChange,
   onSalaryRangeChange,
-  onRemoteOnlyChange,
-  onReset
+  onRemoteOnlyChange
 }: JobsSearchProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -107,7 +105,6 @@ export function JobsSearch({
                   onContractTypeChange={onContractTypeChange}
                   onSalaryRangeChange={onSalaryRangeChange}
                   onRemoteOnlyChange={onRemoteOnlyChange}
-                  onReset={onReset}
                 />
               </DialogContent>
             </Dialog>

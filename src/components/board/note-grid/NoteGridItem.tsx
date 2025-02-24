@@ -6,17 +6,10 @@ import { StickyNote as StickyNoteType } from "@/types/todo";
 interface NoteGridItemProps {
   note: StickyNoteType;
   onDelete: (id: string) => void;
-  onUpdate?: (note: StickyNoteType) => void;
   layout: 'grid' | 'masonry' | 'list';
 }
 
-export function NoteGridItem({ note, onDelete, onUpdate, layout }: NoteGridItemProps) {
-  const handleUpdate = (updatedNote: StickyNoteType) => {
-    if (onUpdate) {
-      onUpdate(updatedNote);
-    }
-  };
-
+export function NoteGridItem({ note, onDelete, layout }: NoteGridItemProps) {
   return (
     <motion.div
       layout
@@ -38,7 +31,6 @@ export function NoteGridItem({ note, onDelete, onUpdate, layout }: NoteGridItemP
       <StickyNote
         note={note}
         onDelete={onDelete}
-        onUpdate={handleUpdate}
         layout={layout}
       />
     </motion.div>

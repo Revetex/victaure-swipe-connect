@@ -3,47 +3,15 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { StickyNote } from "@/types/todo";
-import { Json } from "@/types/supabase";
-
-interface DatabaseNote {
-  id: string;
-  text: string;
-  color?: string;
-  user_id: string;
-  category?: string;
-  priority?: string;
-  title?: string;
-  pinned?: boolean;
-  created_at?: string;
-  updated_at?: string;
-  layout_type?: string;
-  metadata?: Json;
-  position?: Json;
-}
 
 export function useNotes() {
   const [notes, setNotes] = useState<StickyNote[]>([]);
   const [newNote, setNewNote] = useState("");
   const [selectedColor, setSelectedColor] = useState("yellow");
   const [isLoading, setIsLoading] = useState(true);
-  const [layout, setLayout] = useState<'grid' | 'masonry' | 'list'>('grid');
 
   useEffect(() => {
     fetchNotes();
-
-    const channel = supabase
-      .channel('notes_changes')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'notes' },
-        () => {
-          fetchNotes();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      channel.unsubscribe();
-    };
   }, []);
 
   const fetchNotes = async () => {
@@ -58,37 +26,19 @@ export function useNotes() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      if (!data) return;
 
-      const formattedNotes: StickyNote[] = data.map((note) => {
-        // Parse metadata and position from JSON
-        const metadata = typeof note.metadata === 'object' ? note.metadata : {};
-        const position = typeof note.position === 'object' ? note.position : {};
-
-        return {
-          id: note.id,
-          text: note.text,
-          color: note.color || 'yellow',
-          user_id: note.user_id,
-          category: note.category || 'personal',
-          priority: note.priority || 'normal',
-          title: note.title || '',
-          pinned: note.pinned || false,
-          created_at: note.created_at || new Date().toISOString(),
-          updated_at: note.updated_at || new Date().toISOString(),
-          layout_type: (note.layout_type as 'grid' | 'masonry' | 'list') || layout,
-          metadata: {
-            width: typeof metadata === 'object' && 'width' in metadata ? Number(metadata.width) || 280 : 280,
-            height: typeof metadata === 'object' && 'height' in metadata ? Number(metadata.height) || 280 : 280
-          },
-          position: {
-            x: typeof position === 'object' && 'x' in position ? Number(position.x) || 0 : 0,
-            y: typeof position === 'object' && 'y' in position ? Number(position.y) || 0 : 0
-          }
-        };
-      });
-
-      setNotes(formattedNotes);
+      setNotes(data.map(note => ({
+        id: note.id,
+        text: note.text,
+        color: note.color || 'yellow',
+        user_id: note.user_id,
+        category: note.category,
+        priority: note.priority,
+        title: note.title,
+        pinned: note.pinned,
+        created_at: note.created_at,
+        updated_at: note.updated_at
+      })));
     } catch (error) {
       console.error('Error fetching notes:', error);
       toast.error("Erreur lors du chargement des notes");
@@ -107,78 +57,36 @@ export function useNotes() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const newNoteData = {
-        text: newNote,
-        color: selectedColor,
-        user_id: user.id,
-        layout_type: layout,
-        metadata: {
-          width: 280,
-          height: 280
-        },
-        position: { x: 0, y: 0 }
-      };
-
       const { data, error } = await supabase
         .from('notes')
-        .insert(newNoteData)
+        .insert({
+          text: newNote,
+          color: selectedColor,
+          user_id: user.id
+        })
         .select()
         .single();
 
       if (error) throw error;
-      if (!data) return;
 
-      const formattedNote: StickyNote = {
+      setNotes(prev => [{
         id: data.id,
         text: data.text,
         color: data.color,
         user_id: data.user_id,
-        category: 'personal',
-        priority: 'normal',
-        title: '',
-        pinned: false,
+        category: data.category,
+        priority: data.priority,
+        title: data.title,
+        pinned: data.pinned,
         created_at: data.created_at,
-        updated_at: data.updated_at,
-        layout_type: layout,
-        metadata: {
-          width: 280,
-          height: 280
-        },
-        position: { x: 0, y: 0 }
-      };
+        updated_at: data.updated_at
+      }, ...prev]);
 
-      setNotes(prev => [formattedNote, ...prev]);
       setNewNote("");
       toast.success("Note ajoutée avec succès");
     } catch (error) {
       console.error('Error adding note:', error);
       toast.error("Erreur lors de l'ajout de la note");
-    }
-  };
-
-  const updateNote = async (note: StickyNote) => {
-    try {
-      const { error } = await supabase
-        .from('notes')
-        .update({
-          text: note.text,
-          color: note.color,
-          metadata: note.metadata,
-          position: note.position,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', note.id);
-
-      if (error) throw error;
-
-      setNotes(prev => prev.map(n => 
-        n.id === note.id ? { ...n, ...note } : n
-      ));
-      
-      toast.success("Note mise à jour avec succès");
-    } catch (error) {
-      console.error('Error updating note:', error);
-      toast.error("Erreur lors de la mise à jour de la note");
     }
   };
 
@@ -203,13 +111,10 @@ export function useNotes() {
     notes,
     newNote,
     selectedColor,
-    layout,
     isLoading,
     setNewNote,
     setSelectedColor,
-    setLayout,
     addNote,
-    updateNote,
     deleteNote
   };
 }

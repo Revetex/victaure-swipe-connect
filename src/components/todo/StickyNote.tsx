@@ -8,7 +8,6 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
 
@@ -23,7 +22,6 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(note.text);
   const [position, setPosition] = useState(note.position || { x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
 
   const getColorClass = (color: string) => {
     switch (color) {
@@ -42,33 +40,38 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
     }
   };
 
-  const handleDragStart = () => {
-    setIsDragging(true);
-  };
-
   const handleDragEnd = (event: any, info: any) => {
-    setIsDragging(false);
-    const container = event.target.closest('.notes-container');
+    // Récupérer les dimensions du conteneur parent
+    const container = document.querySelector('.notes-container');
     if (!container) return;
 
     const containerRect = container.getBoundingClientRect();
     const noteRect = event.target.getBoundingClientRect();
 
+    // Calculer les nouvelles coordonnées en tenant compte des limites
     let newX = position.x + info.offset.x;
     let newY = position.y + info.offset.y;
 
+    // Limiter les coordonnées pour que la note reste dans le conteneur
     newX = Math.max(0, Math.min(newX, containerRect.width - noteRect.width));
     newY = Math.max(0, Math.min(newY, containerRect.height - noteRect.height));
 
     const newPosition = { x: newX, y: newY };
     setPosition(newPosition);
+    onUpdate?.({
+      ...note,
+      position: newPosition
+    });
+  };
 
+  const handleSave = () => {
     if (onUpdate) {
       onUpdate({
         ...note,
-        position: newPosition
+        text: editedText
       });
     }
+    setIsEditing(false);
   };
 
   const handleResize = (e: any, { size }: { size: { width: number; height: number } }) => {
@@ -84,32 +87,20 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
     }
   };
 
-  const handleSave = () => {
-    if (onUpdate && editedText.trim() !== note.text) {
-      onUpdate({
-        ...note,
-        text: editedText
-      });
-      toast.success("Note mise à jour");
-    }
-    setIsEditing(false);
-  };
-
-  const handleDelete = () => {
-    onDelete(note.id);
-    toast.success("Note supprimée");
-  };
-
   const width = note.metadata?.width || 280;
   const height = note.metadata?.height || 280;
 
   const noteContent = (
     <div className={cn(
-      "border shadow-lg relative overflow-hidden transition-all duration-300",
+      "border shadow-lg group relative overflow-hidden",
       getColorClass(note.color),
+      "touch-manipulation cursor-grab active:cursor-grabbing",
       "before:content-[''] before:absolute before:inset-0",
       "before:bg-gradient-to-br before:from-white/5 before:to-transparent",
-      "hover:shadow-xl",
+      "after:content-[''] after:absolute after:bottom-0 after:right-0",
+      "after:w-8 after:h-8 after:bg-gradient-to-br",
+      "after:from-black/0 after:to-black/5 after:rounded-tl-2xl",
+      "hover:shadow-xl transition-all duration-300",
       layout === 'list' ? "flex items-start gap-4 rounded-lg p-4" : "rounded-lg p-6"
     )}>
       <div className="flex justify-between items-start w-full gap-2">
@@ -122,7 +113,6 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
               value={editedText}
               onChange={(e) => setEditedText(e.target.value)}
               className="min-h-[100px] bg-transparent border-none focus-visible:ring-1 focus-visible:ring-black/20"
-              autoFocus
             />
           ) : (
             <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
@@ -139,30 +129,35 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 z-10">
-          <Grip className="w-4 h-4 opacity-20 transition-opacity cursor-grab active:cursor-grabbing" />
-          
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => isEditing ? handleSave() : setIsEditing(true)}
-            className="bg-background/20 hover:bg-background/40"
-          >
-            {isEditing ? (
+        <div className="flex flex-col gap-2">
+          <Grip className="w-4 h-4 opacity-20 group-hover:opacity-100 transition-opacity" />
+          {isEditing ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSave}
+              className="bg-background/20 hover:bg-background/40"
+            >
               <Save className="h-4 w-4" />
-            ) : (
+              <span className="sr-only">Enregistrer</span>
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsEditing(true)}
+              className="bg-background/20 hover:bg-background/40"
+            >
               <Edit2 className="h-4 w-4" />
-            )}
-            <span className="sr-only">
-              {isEditing ? "Enregistrer" : "Modifier"}
-            </span>
-          </Button>
+              <span className="sr-only">Modifier</span>
+            </Button>
+          )}
           
           <Button
             variant="ghost"
             size="icon"
             className="bg-background/20 hover:bg-background/40"
-            onClick={handleDelete}
+            onClick={() => onDelete(note.id)}
           >
             <Trash2 className="h-4 w-4" />
             <span className="sr-only">Supprimer</span>
@@ -174,14 +169,16 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
 
   if (layout === 'grid' || layout === 'masonry') {
     return (
-      <motion.div 
+      <motion.div
         drag
         dragMomentum={false}
         dragConstraints={{ left: 0, top: 0, right: window.innerWidth - width, bottom: window.innerHeight - height }}
-        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         initial={false}
-        animate={{ x: position.x, y: position.y }}
+        animate={{
+          x: position.x,
+          y: position.y
+        }}
         className="absolute"
       >
         <ResizableBox

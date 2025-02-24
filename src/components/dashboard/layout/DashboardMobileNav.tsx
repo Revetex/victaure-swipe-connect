@@ -17,22 +17,18 @@ export function DashboardMobileNav({
   setShowMobileMenu,
   onPageChange
 }: DashboardMobileNavProps) {
-  const mainItems = navigationItems.slice(0, 6);
-  const networkItems = navigationItems.slice(6, 8);
-  const toolsItems = navigationItems.slice(8);
-
   return (
     <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
       <SheetContent 
         side="left" 
         className={cn(
           "w-[280px] p-0",
-          "bg-[#1A1F2C]",
-          "border-2 border-white/10",
+          "bg-[#1B2A4A]",
+          "border-2 border-black",
           "fixed inset-y-0 left-0",
           "lg:hidden",
           "z-[150]",
-          "overflow-y-auto pb-20",
+          "overflow-y-auto pb-20", // Ajout du padding-bottom et overflow
           "ios-momentum-scroll ios-safe-area"
         )}
       >
@@ -48,101 +44,37 @@ export function DashboardMobileNav({
         />
 
         {/* En-tête avec logo */}
-        <div className="p-4 border-b border-white/10 bg-white/5 relative z-10">
+        <div className="p-4 border-b-2 border-black bg-black/5 relative z-10">
           <Logo />
         </div>
 
         {/* Navigation */}
-        <nav className="p-4 space-y-6 relative z-10">
-          {/* Section principale */}
-          <div className="space-y-1">
-            {mainItems.map(item => {
-              const Icon = item.icon;
-              return (
-                <button 
-                  key={item.id} 
-                  onClick={() => {
-                    onPageChange(item.id);
-                    setShowMobileMenu(false);
-                  }} 
-                  className={cn(
-                    "w-full flex items-center gap-2 px-3 py-2.5",
-                    "rounded-lg text-sm font-medium",
-                    "transition-all duration-200",
-                    "border-2",
-                    currentPage === item.id 
-                      ? "bg-white/15 text-white border-white/20" 
-                      : "text-white/80 hover:bg-white/10 hover:text-white border-transparent hover:border-white/10"
-                  )} 
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.name}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Section réseau */}
-          <div className="space-y-1">
-            <div className="px-2 py-0.5 text-xs font-semibold text-white/60 uppercase tracking-wider">
-              Réseau
-            </div>
-            {networkItems.map(item => {
-              const Icon = item.icon;
-              return (
-                <button 
-                  key={item.id} 
-                  onClick={() => {
-                    onPageChange(item.id);
-                    setShowMobileMenu(false);
-                  }} 
-                  className={cn(
-                    "w-full flex items-center gap-2 px-3 py-2.5",
-                    "rounded-lg text-sm font-medium",
-                    "transition-all duration-200",
-                    "border-2",
-                    currentPage === item.id 
-                      ? "bg-white/15 text-white border-white/20" 
-                      : "text-white/80 hover:bg-white/10 hover:text-white border-transparent hover:border-white/10"
-                  )} 
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.name}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Section outils */}
-          <div className="space-y-1">
-            <div className="px-2 py-0.5 text-xs font-semibold text-white/60 uppercase tracking-wider">
-              Outils
-            </div>
-            {toolsItems.map(item => {
-              const Icon = item.icon;
-              return (
-                <button 
-                  key={item.id} 
-                  onClick={() => {
-                    onPageChange(item.id);
-                    setShowMobileMenu(false);
-                  }} 
-                  className={cn(
-                    "w-full flex items-center gap-2 px-3 py-2.5",
-                    "rounded-lg text-sm font-medium",
-                    "transition-all duration-200",
-                    "border-2",
-                    currentPage === item.id 
-                      ? "bg-white/15 text-white border-white/20" 
-                      : "text-white/80 hover:bg-white/10 hover:text-white border-transparent hover:border-white/10"
-                  )} 
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.name}</span>
-                </button>
-              );
-            })}
-          </div>
+        <nav className="space-y-2 p-4 relative z-10">
+          {navigationItems.map(item => {
+            const Icon = item.icon;
+            return (
+              <button 
+                key={item.id} 
+                onClick={() => {
+                  onPageChange(item.id);
+                  setShowMobileMenu(false);
+                }} 
+                className={cn(
+                  "w-full flex items-center gap-2 px-3 py-2.5",
+                  "rounded-lg text-sm font-medium",
+                  "transition-all duration-200",
+                  "border-2 shadow-sm",
+                  "mobile-friendly-button",
+                  currentPage === item.id 
+                    ? "bg-white/15 text-white border-black shadow-inner" 
+                    : "text-white/90 hover:bg-white/10 hover:text-white border-black/20 hover:border-black"
+                )} 
+              >
+                <Icon className="h-4 w-4" />
+                <span>{item.name}</span>
+              </button>
+            );
+          })}
         </nav>
       </SheetContent>
     </Sheet>

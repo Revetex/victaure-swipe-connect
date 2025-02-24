@@ -26,10 +26,10 @@ export function JobsAIAssistant({ isOpen, onClose }: JobsAIAssistantProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const { user } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
+
   const { isLoading, askAssistant } = useJobsAI({
     userProfile: user,
-    jobContext: {}
+    jobContext: { /* Contexte des jobs à ajouter */ }
   });
 
   const scrollToBottom = () => {
@@ -69,7 +69,6 @@ export function JobsAIAssistant({ isOpen, onClose }: JobsAIAssistantProps) {
       }
     } catch (error) {
       console.error('Error:', error);
-      toast.error("Erreur lors de la communication avec l'assistant");
     }
   };
 
@@ -149,7 +148,7 @@ export function JobsAIAssistant({ isOpen, onClose }: JobsAIAssistantProps) {
                           <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                         </div>
                         <span className="text-xs text-zinc-500">
-                          {message.timestamp.toLocaleTimeString()}
+                          {new Date(message.timestamp).toLocaleTimeString()}
                         </span>
                       </div>
                     </motion.div>

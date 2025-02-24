@@ -39,7 +39,7 @@ export function calculateKingMoves(
     const newCol = col + colOffset;
     
     if (canMoveToPosition(newRow, newCol, piece, board)) {
-      // Simulation du mouvement pour vérifier si le roi ne se met pas en échec
+      // Créer un nouveau tableau pour la simulation
       const tempBoard = board.map(row => [...row]);
       tempBoard[row][col] = null;
       tempBoard[newRow][newCol] = piece;
@@ -54,7 +54,7 @@ export function calculateKingMoves(
   return moves;
 }
 
-// Fonction améliorée pour vérifier l'échec
+// Vérifie si le roi est en échec sur une case donnée
 function isKingInCheck(
   kingRow: number,
   kingCol: number,
@@ -73,7 +73,7 @@ function isKingInCheck(
     const attackCol = kingCol + colOffset;
     if (isValidPosition(attackRow, attackCol)) {
       const piece = board[attackRow][attackCol];
-      if (piece?.type === 'pawn' && piece.isWhite !== isWhiteKing) {
+      if (piece && piece.type === 'pawn' && piece.isWhite !== isWhiteKing) {
         return true;
       }
     }
@@ -85,7 +85,7 @@ function isKingInCheck(
     const attackCol = kingCol + colOffset;
     if (isValidPosition(attackRow, attackCol)) {
       const piece = board[attackRow][attackCol];
-      if (piece?.type === 'knight' && piece.isWhite !== isWhiteKing) {
+      if (piece && piece.type === 'knight' && piece.isWhite !== isWhiteKing) {
         return true;
       }
     }
@@ -111,7 +111,7 @@ function isKingInCheck(
     const attackCol = kingCol + colOffset;
     if (isValidPosition(attackRow, attackCol)) {
       const piece = board[attackRow][attackCol];
-      if (piece?.type === 'king' && piece.isWhite !== isWhiteKing) {
+      if (piece && piece.type === 'king' && piece.isWhite !== isWhiteKing) {
         return true;
       }
     }
@@ -120,7 +120,6 @@ function isKingInCheck(
   return false;
 }
 
-// Fonction améliorée pour vérifier les menaces dans une direction
 function isDirectionThreatened(
   row: number,
   col: number,
@@ -136,9 +135,6 @@ function isDirectionThreatened(
   while (isValidPosition(currentRow, currentCol)) {
     const piece = board[currentRow][currentCol];
     if (piece) {
-      if (piece.isWhite === isWhiteKing) {
-        return false; // Pièce amie bloque la ligne
-      }
       return piece.isWhite !== isWhiteKing && threatTypes.includes(piece.type);
     }
     currentRow += rowDir;
@@ -148,36 +144,6 @@ function isDirectionThreatened(
   return false;
 }
 
-// Fonction utilitaire pour vérifier si une position est valide sur l'échiquier
 function isValidPosition(row: number, col: number): boolean {
   return row >= 0 && row < 8 && col >= 0 && col < 8;
 }
-
-// Nouvelle fonction pour vérifier l'échec et mat
-export function isCheckmate(
-  kingRow: number,
-  kingCol: number,
-  isWhiteKing: boolean,
-  board: (ChessPiece | null)[][]
-): boolean {
-  // Si le roi n'est pas en échec, ce n'est pas un échec et mat
-  if (!isKingInCheck(kingRow, kingCol, isWhiteKing, board)) {
-    return false;
-  }
-
-  // Vérifier tous les mouvements possibles pour toutes les pièces de la couleur du roi
-  for (let row = 0; row < 8; row++) {
-    for (let col = 0; col < 8; col++) {
-      const piece = board[row][col];
-      if (piece && piece.isWhite === isWhiteKing) {
-        const moves = calculateKingMoves(row, col, piece, board);
-        if (moves.length > 0) {
-          return false; // Il existe au moins un mouvement légal
-        }
-      }
-    }
-  }
-
-  return true; // Aucun mouvement légal n'a été trouvé
-}
-

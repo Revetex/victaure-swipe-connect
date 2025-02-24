@@ -1,18 +1,12 @@
 
-import { DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Check } from "lucide-react";
 
 export function PartnershipDialog() {
   return (
-    <DialogContent 
-      className="sm:max-w-md bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl"
-      aria-describedby="partnership-description"
-    >
+    <DialogContent className="sm:max-w-md bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl">
       <DialogHeader>
-        <DialogTitle className="text-xl font-bold mb-2 text-[#F1F0FB]">Partenariat Victaure</DialogTitle>
-        <DialogDescription id="partnership-description" className="text-[#F1F0FB]/80">
-          Découvrez les avantages exclusifs de notre programme de partenariat
-        </DialogDescription>
+        <DialogTitle className="text-xl font-bold mb-4 text-[#F1F0FB]">Partenariat Victaure</DialogTitle>
       </DialogHeader>
       <div className="space-y-4 text-[#F1F0FB]">
         <div className="text-center space-y-2">

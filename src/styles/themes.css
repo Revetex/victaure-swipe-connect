@@ -4,8 +4,6 @@
   --secondary: #1B2A4A;
   --accent: #F2EBE4;
   --text: #1B2A4A;
-  --background: #F1F0FB;
-  --card: #F2EBE4;
   --gradient: linear-gradient(135deg, #64B5D9, #1B2A4A);
   font-family: 'Inter', sans-serif;
 }
@@ -15,8 +13,6 @@
   --secondary: #1B2A4A;
   --accent: #F2EBE4;
   --text: #1B2A4A;
-  --background: #F1F0FB;
-  --card: #F2EBE4;
   --gradient: linear-gradient(135deg, #64B5D9, #1B2A4A);
   font-family: 'Playfair Display', serif;
 }
@@ -26,8 +22,6 @@
   --secondary: #1B2A4A;
   --accent: #F2EBE4;
   --text: #1B2A4A;
-  --background: #F1F0FB;
-  --card: #F2EBE4;
   --gradient: linear-gradient(135deg, #64B5D9, #1B2A4A);
   font-family: 'Oswald', sans-serif;
 }
@@ -37,8 +31,6 @@
   --secondary: #1B2A4A;
   --accent: #F2EBE4;
   --text: #1B2A4A;
-  --background: #F1F0FB;
-  --card: #F2EBE4;
   --gradient: linear-gradient(135deg, #64B5D9, #1B2A4A);
   font-family: 'Montserrat', sans-serif;
 }
@@ -48,8 +40,6 @@
   --secondary: #1B2A4A;
   --accent: #F2EBE4;
   --text: #1B2A4A;
-  --background: #F1F0FB;
-  --card: #F2EBE4;
   --gradient: linear-gradient(135deg, #64B5D9, #1B2A4A);
   font-family: 'Cormorant Garamond', serif;
 }
