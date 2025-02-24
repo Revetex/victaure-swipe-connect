@@ -29,10 +29,11 @@ export function VCardSection({ title, icon, children, variant = "default" }: VCa
       animate="visible"
       variants={variants}
       className={cn(
-        "w-full rounded-xl overflow-hidden backdrop-blur-sm",
-        "bg-white/5 dark:bg-black/10",
+        "w-full rounded-xl overflow-hidden",
+        "bg-gradient-to-br from-white/5 to-white/10 dark:from-black/20 dark:to-black/30",
         "border border-purple-500/10 dark:border-white/10",
-        "shadow-lg shadow-purple-500/5"
+        "shadow-lg shadow-purple-500/5",
+        "backdrop-blur-md"
       )}
     >
       <div className={cn(
@@ -54,7 +55,7 @@ export function VCardSection({ title, icon, children, variant = "default" }: VCa
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-lg font-semibold text-purple-700 dark:text-purple-300"
+          className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent dark:from-purple-400 dark:to-purple-200"
         >
           {title}
         </motion.h2>
