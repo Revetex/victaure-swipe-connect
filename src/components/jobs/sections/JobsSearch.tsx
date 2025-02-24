@@ -1,4 +1,3 @@
-
 import { Search, Filter, Plus, Image, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -73,19 +72,19 @@ export function JobsSearch({
   ];
 
   return (
-    <Card className="bg-[#1B2A4A]/50 backdrop-blur-sm border-[#64B5D9]/10 shadow-lg p-6">
+    <Card className="bg-card/50 dark:bg-[#1B2A4A]/50 backdrop-blur-sm border-border/10 dark:border-[#64B5D9]/10 shadow-lg p-6">
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <Dialog>
             <DialogTrigger asChild>
               <Button 
-                className="flex-1 justify-start h-14 text-white bg-[#9b87f5] hover:bg-[#7E69AB]"
+                className="flex-1 justify-start h-14 text-primary-foreground bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB] dark:text-white"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Publier une annonce
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl bg-[#1A1F2C] text-white border-[#64B5D9]/10">
+            <DialogContent className="bg-background dark:bg-[#1A1F2C] text-foreground dark:text-white border-border dark:border-[#64B5D9]/10">
               <DialogHeader>
                 <DialogTitle>Créer une publication</DialogTitle>
               </DialogHeader>
@@ -94,7 +93,7 @@ export function JobsSearch({
                   <div className="grid gap-2">
                     <Label>Type d'annonce</Label>
                     <Select>
-                      <SelectTrigger className="bg-[#1B2A4A] border-[#64B5D9]/10">
+                      <SelectTrigger className="bg-input dark:bg-[#1B2A4A] border-border/10 dark:border-[#64B5D9]/10">
                         <SelectValue placeholder="Sélectionnez le type d'annonce" />
                       </SelectTrigger>
                       <SelectContent>
@@ -108,7 +107,7 @@ export function JobsSearch({
                     <Label>Titre</Label>
                     <Input 
                       placeholder="Titre de votre annonce" 
-                      className="bg-[#1B2A4A] border-[#64B5D9]/10"
+                      className="bg-input dark:bg-[#1B2A4A] border-border/10 dark:border-[#64B5D9]/10"
                     />
                   </div>
 
@@ -116,7 +115,7 @@ export function JobsSearch({
                     <Label>Description</Label>
                     <Textarea 
                       placeholder="Décrivez votre offre en détail..." 
-                      className="min-h-[100px] bg-[#1B2A4A] border-[#64B5D9]/10"
+                      className="min-h-[100px] bg-input dark:bg-[#1B2A4A] border-border/10 dark:border-[#64B5D9]/10"
                     />
                   </div>
 
@@ -125,7 +124,7 @@ export function JobsSearch({
                       <Label>Localisation</Label>
                       <Input 
                         placeholder="Ville, région..." 
-                        className="bg-[#1B2A4A] border-[#64B5D9]/10"
+                        className="bg-input dark:bg-[#1B2A4A] border-border/10 dark:border-[#64B5D9]/10"
                       />
                     </div>
                     <div className="grid gap-2">
@@ -133,18 +132,18 @@ export function JobsSearch({
                       <Input 
                         type="number" 
                         placeholder="Montant" 
-                        className="bg-[#1B2A4A] border-[#64B5D9]/10"
+                        className="bg-input dark:bg-[#1B2A4A] border-border/10 dark:border-[#64B5D9]/10"
                       />
                     </div>
                   </div>
 
                   <DialogFooter className="sm:justify-end gap-2 pt-4">
                     <DialogClose asChild>
-                      <Button variant="outline" className="bg-[#1B2A4A] text-white border-[#64B5D9]/10">
+                      <Button variant="outline" className="bg-background dark:bg-[#1B2A4A] border-border dark:border-[#64B5D9]/10">
                         Annuler
                       </Button>
                     </DialogClose>
-                    <Button className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white">
+                    <Button className="bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB]">
                       <Send className="h-4 w-4 mr-2" />
                       Publier
                     </Button>
@@ -159,7 +158,7 @@ export function JobsSearch({
               <Button 
                 variant="outline" 
                 size="icon"
-                className="h-14 w-14 shrink-0 bg-[#1B2A4A] border-[#64B5D9]/10 hover:bg-[#2A3B61]"
+                className="h-14 w-14 shrink-0 bg-background dark:bg-[#1B2A4A] border-border dark:border-[#64B5D9]/10 hover:bg-accent dark:hover:bg-[#2A3B61]"
               >
                 <Filter className="h-5 w-5" />
               </Button>

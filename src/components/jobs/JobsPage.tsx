@@ -74,7 +74,8 @@ export function JobsPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={cn(
-        "page-container pt-20 bg-[#1A1F2C] min-h-screen"
+        "page-container pt-20 bg-background min-h-screen",
+        "dark:bg-[#1A1F2C]"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 space-y-6">
@@ -98,11 +99,11 @@ export function JobsPage() {
             onRemoteOnlyChange={setRemoteOnly}
           />
           
-          <div className="bg-[#1B2A4A]/50 backdrop-blur-sm border border-[#64B5D9]/10 rounded-lg p-6 shadow-lg">
-            <h2 className="text-xl font-semibold text-white mb-4">
+          <div className="bg-card/50 dark:bg-[#1B2A4A]/50 backdrop-blur-sm border border-border/10 dark:border-[#64B5D9]/10 rounded-lg p-6 shadow-lg">
+            <h2 className="text-xl font-semibold text-foreground dark:text-white mb-4">
               Rechercher dans les offres d'emploi
             </h2>
-            <GoogleSearch searchEngineId={SEARCH_ENGINE_ID} />
+            <GoogleSearch searchEngineId="1262c5460a0314a80" />
           </div>
           
           <JobsResults 

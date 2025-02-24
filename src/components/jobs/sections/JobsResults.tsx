@@ -12,7 +12,7 @@ export function JobsResults({ jobs, onJobSelect }: JobsResultsProps) {
   if (jobs.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-lg text-gray-400">Aucune offre d'emploi ne correspond à vos critères</p>
+        <p className="text-lg text-muted-foreground">Aucune offre d'emploi ne correspond à vos critères</p>
       </div>
     );
   }
