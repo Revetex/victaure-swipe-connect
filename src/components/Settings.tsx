@@ -9,10 +9,25 @@ import { Label } from "@/components/ui/label";
 import { Moon, Sun, Bell, Lock, UserX, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Settings() {
   const { profile } = useProfile();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast.success("Déconnexion réussie");
+      navigate("/auth");
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion:", error);
+      toast.error("Erreur lors de la déconnexion");
+    }
+  };
 
   const settingsItems = [
     {
@@ -75,9 +90,7 @@ export default function Settings() {
           variant="ghost" 
           size="sm"
           className="text-destructive hover:text-destructive/90"
-          onClick={() => {
-            toast.success("Déconnexion en cours...");
-          }}
+          onClick={handleLogout}
         >
           Déconnexion
         </Button>

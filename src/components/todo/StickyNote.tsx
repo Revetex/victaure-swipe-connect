@@ -105,7 +105,7 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
 
   const noteContent = (
     <div className={cn(
-      "border shadow-lg group relative overflow-hidden transition-all duration-300",
+      "border shadow-lg relative overflow-hidden transition-all duration-300",
       getColorClass(note.color),
       "before:content-[''] before:absolute before:inset-0",
       "before:bg-gradient-to-br before:from-white/5 before:to-transparent",
@@ -139,38 +139,34 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
           </div>
         </div>
 
-        <div className="flex flex-col gap-2" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-          {!isDragging && (
-            <>
-              <Grip className="w-4 h-4 opacity-20 group-hover:opacity-100 transition-opacity cursor-grab" />
-              
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => isEditing ? handleSave() : setIsEditing(true)}
-                className="bg-background/20 hover:bg-background/40"
-              >
-                {isEditing ? (
-                  <Save className="h-4 w-4" />
-                ) : (
-                  <Edit2 className="h-4 w-4" />
-                )}
-                <span className="sr-only">
-                  {isEditing ? "Enregistrer" : "Modifier"}
-                </span>
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="icon"
-                className="bg-background/20 hover:bg-background/40"
-                onClick={handleDelete}
-              >
-                <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Supprimer</span>
-              </Button>
-            </>
-          )}
+        <div className="flex flex-col gap-2 z-10">
+          <Grip className="w-4 h-4 opacity-20 transition-opacity cursor-grab active:cursor-grabbing" />
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+            className="bg-background/20 hover:bg-background/40"
+          >
+            {isEditing ? (
+              <Save className="h-4 w-4" />
+            ) : (
+              <Edit2 className="h-4 w-4" />
+            )}
+            <span className="sr-only">
+              {isEditing ? "Enregistrer" : "Modifier"}
+            </span>
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-background/20 hover:bg-background/40"
+            onClick={handleDelete}
+          >
+            <Trash2 className="h-4 w-4" />
+            <span className="sr-only">Supprimer</span>
+          </Button>
         </div>
       </div>
     </div>
