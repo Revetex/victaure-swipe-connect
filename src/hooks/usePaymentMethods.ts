@@ -4,6 +4,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { PaymentMethod, PaymentTransaction } from '@/types/payment';
 import { toast } from 'sonner';
 
+interface TransactionMetadata {
+  description?: string;
+  [key: string]: any;
+}
+
 export function usePaymentMethods() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [transactions, setTransactions] = useState<PaymentTransaction[]>([]);
@@ -65,7 +70,7 @@ export function usePaymentMethods() {
         status: transaction.status as 'confirmed' | 'pending' | 'cancelled' | 'frozen',
         payment_method: transaction.payment_method as 'credit_card' | 'interac',
         created_at: transaction.created_at,
-        description: transaction.metadata?.description // Récupérer la description depuis les metadata
+        description: (transaction.metadata as TransactionMetadata)?.description
       })) || [];
 
       setTransactions(typedTransactions);
