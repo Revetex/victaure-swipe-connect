@@ -3,15 +3,11 @@ import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
+import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 
 interface Message {
   content: string;
   isUser: boolean;
-  searchResults?: {
-    title: string;
-    url: string;
-    snippet: string;
-  }[];
   timestamp: number;
 }
 
@@ -20,6 +16,7 @@ interface ChatMessagesProps {
   maxQuestions: number;
   user: User | null;
   onMaxQuestionsReached?: () => void;
+  geminiModel?: GenerativeModel;
 }
 
 const STORAGE_KEY = 'victaure_chat_messages';
@@ -28,7 +25,8 @@ export function useChatMessages({
   context, 
   maxQuestions, 
   user, 
-  onMaxQuestionsReached 
+  onMaxQuestionsReached,
+  geminiModel 
 }: ChatMessagesProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -63,7 +61,7 @@ export function useChatMessages({
     toast.success("Historique effacé");
   }, []);
 
-  const sendMessage = useCallback(async (content: string, useWebSearch: boolean = false) => {
+  const sendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
 
     try {
@@ -84,41 +82,37 @@ export function useChatMessages({
         onMaxQuestionsReached?.();
       }
 
-      const messagesForContext = [
-        ...messages,
-        userMessage
-      ];
+      let response: string;
 
-      const assistantPrompt = useWebSearch 
-        ? context + "\nUtilise les informations du web pour répondre de manière détaillée et factuelle. Cite tes sources et résume les informations pertinentes. N'oublie pas de vérifier les informations avant de répondre."
-        : context + "\nRéponds de manière conversationnelle et naturelle, sans chercher d'informations supplémentaires.";
+      if (geminiModel) {
+        // Utiliser l'API Gemini
+        const result = await geminiModel.generateContent([
+          context,
+          ...messages.map(m => m.content),
+          content
+        ]);
+        response = result.response.text();
+      } else {
+        // Fallback sur l'API Supabase
+        const { data, error } = await supabase.functions.invoke('victaure-chat', {
+          body: { 
+            messages: [...messages, userMessage],
+            context,
+            userId: user?.id,
+          }
+        });
 
-      const { data, error } = await supabase.functions.invoke('victaure-chat', {
-        body: { 
-          messages: messagesForContext,
-          context: assistantPrompt,
-          userId: user?.id,
-          useWebSearch,
-          userProfile: user ? await getUserProfile(user.id) : null,
-          maxTokens: useWebSearch ? 2000 : 800,
-          temperature: useWebSearch ? 0.3 : 0.7, // Plus factuel en mode web
-          searchResults: useWebSearch
+        if (error) throw error;
+        if (!data?.choices?.[0]?.message?.content) {
+          throw new Error("Réponse invalide de l'assistant");
         }
-      });
 
-      if (error) {
-        console.error("Supabase function error:", error);
-        throw new Error("Erreur de communication avec l'assistant");
-      }
-
-      if (!data || !data.choices || !data.choices[0]?.message?.content) {
-        throw new Error("Réponse invalide de l'assistant");
+        response = data.choices[0].message.content;
       }
 
       const assistantMessage: Message = {
-        content: data.choices[0].message.content,
+        content: response,
         isUser: false,
-        searchResults: data.searchResults,
         timestamp: Date.now()
       };
       
@@ -134,16 +128,7 @@ export function useChatMessages({
     } finally {
       setIsLoading(false);
     }
-  }, [messages, user, userQuestions, maxQuestions, context, onMaxQuestionsReached]);
-
-  const getUserProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('full_name')
-      .eq('id', userId)
-      .single();
-    return data;
-  };
+  }, [messages, user, userQuestions, maxQuestions, context, onMaxQuestionsReached, geminiModel]);
 
   return {
     messages,

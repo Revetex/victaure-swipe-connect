@@ -1,18 +1,22 @@
 
-import { MessagesSquare, Mic, Volume2, Globe } from "lucide-react";
+import { ChangeEvent, useState } from "react";
+import { Button } from "../ui/button";
+import { Textarea } from "../ui/textarea";
+import { Mic, Send, Square, StopCircle } from "lucide-react";
+import { Tooltip } from "../ui/tooltip";
+import { toast } from "sonner";
 
-interface ChatInputProps {
+export interface ChatInputProps {
   userInput: string;
-  setUserInput: (input: string) => void;
+  setUserInput: (value: string) => void;
   isRecording: boolean;
   isSpeaking: boolean;
   isLoading: boolean;
   isDisabled: boolean;
-  disabledMessage?: string;
-  onStartRecording: () => void;
+  disabledMessage: string;
+  onStartRecording: () => Promise<void>;
   onStopSpeaking: () => void;
-  onSendMessage: () => void;
-  webSearchEnabled: boolean; // Ajout de la nouvelle prop
+  onSendMessage: () => Promise<void>;
 }
 
 export function ChatInput({
@@ -25,54 +29,82 @@ export function ChatInput({
   disabledMessage,
   onStartRecording,
   onStopSpeaking,
-  onSendMessage,
-  webSearchEnabled
+  onSendMessage
 }: ChatInputProps) {
+  const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setUserInput(e.target.value);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (!isDisabled) {
+        onSendMessage();
+      } else {
+        toast.error(disabledMessage);
+      }
+    }
+  };
+
   return (
-    <div className="p-3 bg-[#1A1F2C]/90 border-t border-[#64B5D9]/10">
-      <div className="flex items-center gap-2">
-        <button
-          onClick={onStartRecording}
-          disabled={isRecording || isDisabled}
-          className="h-9 w-9 flex-shrink-0 rounded-lg bg-[#2A2D3E] text-[#F1F0FB] hover:bg-[#363B4D] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-          title={isRecording ? "Enregistrement..." : "Enregistrer"}
-        >
-          <Mic className={`w-4 h-4 ${isRecording ? 'text-red-500 animate-pulse' : ''}`} />
-        </button>
+    <div className="p-4 flex items-end gap-2">
+      <div className="relative flex-1">
+        <Textarea
+          value={userInput}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyPress}
+          placeholder="Écrivez votre message..."
+          className="min-h-[60px] resize-none pr-12 bg-background/50"
+          disabled={isDisabled || isLoading}
+        />
+      </div>
 
-        <div className="flex-1 relative">
-          <input
-            type="text"
-            value={userInput}
-            onChange={e => setUserInput(e.target.value)}
-            placeholder={isDisabled ? disabledMessage : "Message..."}
-            disabled={isDisabled}
-            className="w-full h-9 px-3 rounded-lg bg-[#2A2D3E] text-[#F1F0FB] text-sm border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder-[#F1F0FB]/40"
-            onKeyPress={e => e.key === 'Enter' && onSendMessage()}
-          />
-          {webSearchEnabled && (
-            <div className="absolute right-2 top-1/2 -translate-y-1/2">
-              <Globe className="w-4 h-4 text-[#64B5D9]" />
-            </div>
-          )}
-        </div>
-
-        <button
-          onClick={onSendMessage}
-          disabled={!userInput.trim() || isLoading || isDisabled}
-          className="h-9 w-9 flex-shrink-0 rounded-lg bg-[#64B5D9] text-white hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-        >
-          <MessagesSquare className="w-4 h-4" />
-        </button>
+      <div className="flex gap-2">
+        <Tooltip content={isRecording ? "Arrêter l'enregistrement" : "Enregistrer un message"}>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="shrink-0"
+            onClick={onStartRecording}
+            disabled={isDisabled || isLoading}
+          >
+            {isRecording ? (
+              <Square className="h-4 w-4 text-red-500" />
+            ) : (
+              <Mic className="h-4 w-4" />
+            )}
+          </Button>
+        </Tooltip>
 
         {isSpeaking && (
-          <button
-            onClick={onStopSpeaking}
-            className="h-9 w-9 flex-shrink-0 rounded-lg bg-[#64B5D9] text-white animate-pulse flex items-center justify-center"
-          >
-            <Volume2 className="w-4 h-4" />
-          </button>
+          <Tooltip content="Arrêter la lecture">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="shrink-0"
+              onClick={onStopSpeaking}
+            >
+              <StopCircle className="h-4 w-4" />
+            </Button>
+          </Tooltip>
         )}
+
+        <Tooltip content="Envoyer le message">
+          <Button
+            size="icon"
+            className="shrink-0"
+            onClick={() => {
+              if (!isDisabled) {
+                onSendMessage();
+              } else {
+                toast.error(disabledMessage);
+              }
+            }}
+            disabled={!userInput.trim() || isLoading || isDisabled}
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </Tooltip>
       </div>
     </div>
   );
