@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Ticket } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface LotoTicket {
   id: string;
@@ -51,7 +52,12 @@ export function MyTickets() {
     return (
       <Card className="p-6">
         <div className="flex items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin" />
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          >
+            <Loader2 className="h-6 w-6" />
+          </motion.div>
         </div>
       </Card>
     );
@@ -59,7 +65,7 @@ export function MyTickets() {
 
   return (
     <Card className="p-6">
-      <h3 className="font-semibold mb-4 flex items-center gap-2">
+      <h3 className="font-semibold mb-4 flex items-center gap-2 text-lg">
         <Ticket className="h-5 w-5" />
         Mes derniers tickets
       </h3>
@@ -71,29 +77,36 @@ export function MyTickets() {
           </p>
         ) : (
           tickets.map(ticket => (
-            <div
+            <motion.div
               key={ticket.id}
-              className="p-4 rounded-lg border bg-card text-card-foreground"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`p-4 rounded-lg border bg-gradient-to-br 
+                ${ticket.status === 'won' 
+                  ? 'from-green-500/10 to-green-500/5 border-green-500/20' 
+                  : 'from-card-foreground/5 to-card-foreground/0'}`}
             >
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">
-                    {ticket.selected_numbers.join(' - ')}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Bonus: {ticket.bonus_color}
-                  </p>
-                </div>
+                <p className="font-medium text-lg">
+                  {ticket.selected_numbers.join(' - ')}
+                </p>
                 {ticket.winning_amount > 0 && (
-                  <div className="text-right">
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="text-right"
+                  >
                     <p className="font-bold text-green-500">
                       {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'CAD' })
                         .format(ticket.winning_amount)}
                     </p>
-                  </div>
+                  </motion.div>
                 )}
               </div>
-            </div>
+              <p className="text-sm text-muted-foreground mt-2">
+                Bonus: {ticket.bonus_color}
+              </p>
+            </motion.div>
           ))
         )}
       </div>
