@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
+import { UserProfile } from "@/types/profile";
 
 export interface NewConversationPopoverProps {
   onSelectFriend: () => void;
@@ -23,10 +24,7 @@ interface Friend {
   id: string;
   full_name: string | null;
   avatar_url: string | null;
-}
-
-interface FriendshipResponse {
-  friend: Friend | null;
+  online_status: boolean;
 }
 
 export function NewConversationPopover({ onSelectFriend }: NewConversationPopoverProps) {
@@ -41,28 +39,25 @@ export function NewConversationPopover({ onSelectFriend }: NewConversationPopove
       
       try {
         setLoading(true);
-        const { data: friendships, error } = await supabase
-          .from('friendships')
+        const { data: connections, error } = await supabase
+          .from('profiles')
           .select(`
-            friend:profiles!friendships_friend_id_fkey (
-              id,
-              full_name,
-              avatar_url
-            )
+            id,
+            full_name,
+            avatar_url,
+            online_status
           `)
-          .eq('user_id', user.id);
+          .in('id', (
+            await supabase
+              .from('friendships')
+              .select('friend_id')
+              .eq('user_id', user.id)
+          ).data?.map(f => f.friend_id) || []);
 
         if (error) throw error;
         
-        if (friendships) {
-          const formattedFriends = friendships
-            .filter((friendship): friendship is FriendshipResponse & { friend: Friend } => 
-              friendship?.friend !== null && 
-              typeof friendship.friend === 'object' &&
-              'id' in friendship.friend
-            )
-            .map(friendship => friendship.friend);
-          setFriends(formattedFriends);
+        if (connections) {
+          setFriends(connections);
         }
       } catch (error) {
         console.error('Error loading friends:', error);
@@ -92,36 +87,46 @@ export function NewConversationPopover({ onSelectFriend }: NewConversationPopove
         <DialogHeader>
           <DialogTitle>Nouvelle conversation</DialogTitle>
         </DialogHeader>
-        <ScrollArea className="h-72">
+        <ScrollArea className="h-72 pr-4">
           {loading ? (
             <div className="flex items-center justify-center h-full">
-              <span className="loading loading-spinner" />
+              <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
             </div>
           ) : friends.length === 0 ? (
             <div className="p-4 text-center text-sm text-muted-foreground">
               Aucun ami trouvé
             </div>
           ) : (
-            friends.map((friend) => (
-              <button
-                key={friend.id}
-                onClick={() => {
-                  onSelectFriend();
-                  setOpen(false);
-                }}
-                className="w-full flex items-center gap-2 p-2 hover:bg-muted/50 transition-colors"
-                title={`Démarrer une conversation avec ${friend.full_name}`}
-                aria-label={`Démarrer une conversation avec ${friend.full_name}`}
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={friend.avatar_url || ""} alt={friend.full_name || ""} />
-                  <AvatarFallback>
-                    {friend.full_name?.[0] || "?"}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm">{friend.full_name}</span>
-              </button>
-            ))
+            <div className="space-y-2">
+              {friends.map((friend) => (
+                <button
+                  key={friend.id}
+                  onClick={() => {
+                    onSelectFriend();
+                    setOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 p-3 hover:bg-muted/50 rounded-lg transition-colors"
+                >
+                  <div className="relative">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={friend.avatar_url || ""} alt={friend.full_name || ""} />
+                      <AvatarFallback>
+                        {friend.full_name?.[0] || "?"}
+                      </AvatarFallback>
+                    </Avatar>
+                    {friend.online_status && (
+                      <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
+                    )}
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="text-sm font-medium">{friend.full_name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {friend.online_status ? 'En ligne' : 'Hors ligne'}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
           )}
         </ScrollArea>
       </DialogContent>

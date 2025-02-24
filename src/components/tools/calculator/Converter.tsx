@@ -99,10 +99,13 @@ export function Converter({
   return (
     <div className="space-y-4 p-4 rounded-lg bg-muted/30">
       <Select value={conversionType} onValueChange={onConversionTypeChange}>
-        <SelectTrigger className="w-full">
+        <SelectTrigger className={cn(
+          "w-full",
+          "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        )}>
           <SelectValue placeholder="Type de conversion" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="max-h-[300px]">
           <SelectItem value="currency">Devises</SelectItem>
           <SelectItem value="crypto">Cryptomonnaies</SelectItem>
           <SelectItem value="length">Longueur</SelectItem>
@@ -115,10 +118,10 @@ export function Converter({
 
       <div className="grid grid-cols-[1fr,auto,1fr] gap-2 items-center">
         <Select value={fromUnit} onValueChange={onFromUnitChange}>
-          <SelectTrigger>
+          <SelectTrigger className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <SelectValue placeholder="De" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="max-h-[300px]">
             {getUnitOptions(conversionType).map(([value, label]) => (
               <SelectItem key={value} value={value}>{label}</SelectItem>
             ))}
@@ -128,10 +131,10 @@ export function Converter({
         <ArrowRightLeft className="h-4 w-4 opacity-50" />
 
         <Select value={toUnit} onValueChange={onToUnitChange}>
-          <SelectTrigger>
+          <SelectTrigger className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <SelectValue placeholder="Vers" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="max-h-[300px]">
             {getUnitOptions(conversionType).map(([value, label]) => (
               <SelectItem key={value} value={value}>{label}</SelectItem>
             ))}
