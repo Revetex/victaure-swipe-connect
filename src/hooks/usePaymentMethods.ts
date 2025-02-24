@@ -23,7 +23,23 @@ export function usePaymentMethods() {
         .order('is_default', { ascending: false });
 
       if (error) throw error;
-      setPaymentMethods(data || []);
+
+      // Conversion explicite des données pour s'assurer qu'elles correspondent au type PaymentMethod
+      const typedMethods: PaymentMethod[] = data?.map(method => ({
+        id: method.id,
+        user_id: method.user_id,
+        payment_type: method.payment_type as 'credit_card' | 'interac',
+        card_brand: method.card_brand,
+        card_last_four: method.card_last_four,
+        email: method.email,
+        is_default: method.is_default,
+        is_active: method.is_active,
+        created_at: method.created_at,
+        updated_at: method.updated_at,
+        stripe_payment_method_id: method.stripe_payment_method_id
+      })) || [];
+
+      setPaymentMethods(typedMethods);
     } catch (error) {
       console.error('Error loading payment methods:', error);
       toast.error("Erreur lors du chargement des méthodes de paiement");
@@ -40,7 +56,20 @@ export function usePaymentMethods() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setTransactions(data || []);
+
+      // Conversion explicite des données pour s'assurer qu'elles correspondent au type PaymentTransaction
+      const typedTransactions: PaymentTransaction[] = data?.map(transaction => ({
+        id: transaction.id,
+        user_id: transaction.user_id,
+        amount: transaction.amount,
+        currency: transaction.currency,
+        status: transaction.status as 'confirmed' | 'pending' | 'cancelled' | 'frozen',
+        payment_method: transaction.payment_method as 'credit_card' | 'interac',
+        created_at: transaction.created_at,
+        description: transaction.description
+      })) || [];
+
+      setTransactions(typedTransactions);
     } catch (error) {
       console.error('Error loading transactions:', error);
       toast.error("Erreur lors du chargement des transactions");
