@@ -74,7 +74,7 @@ export interface Certification {
   id: string;
   profile_id: string;
   title: string;
-  institution: string;
+  issuer: string;
   year?: string;
   issue_date: string | null;
   expiry_date: string | null;
@@ -151,7 +151,7 @@ function transformCertification(data: any): Certification {
     id: data.id,
     profile_id: data.profile_id,
     title: data.title || data.name || '',
-    institution: data.institution || data.issuer || '',
+    issuer: data.issuer || data.institution || '',
     year: data.year,
     issue_date: data.issue_date,
     expiry_date: data.expiry_date,

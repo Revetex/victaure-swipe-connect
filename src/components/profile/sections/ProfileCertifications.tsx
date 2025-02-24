@@ -18,7 +18,7 @@ export function ProfileCertifications({ certifications }: ProfileCertificationsP
           className="border rounded-lg p-4 space-y-2"
         >
           <h4 className="font-semibold text-lg">{cert.title}</h4>
-          <p className="text-muted-foreground">{cert.institution}</p>
+          <p className="text-muted-foreground">{cert.issuer}</p>
           <div className="flex items-center gap-4">
             <p className="text-sm text-muted-foreground">{cert.year}</p>
             {cert.credential_url && (
