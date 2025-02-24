@@ -56,7 +56,6 @@ export function AppHeader({
           />
           <span className="relative font-tiempos font-black tracking-[0.15em] text-[#F2EBE4] text-2xl shrink-0 pl-1">
             VICTAURE
-            <div className="absolute -inset-2 -z-10 bg-gradient-to-r from-[#64B5D9] to-transparent opacity-20 blur-sm" />
           </span>
         </div>
       </div>
