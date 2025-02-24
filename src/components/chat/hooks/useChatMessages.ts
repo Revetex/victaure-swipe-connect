@@ -29,17 +29,19 @@ export function useChatMessages({
   useEffect(() => {
     const greetUser = async () => {
       try {
+        setIsLoading(true);
         const { data, error } = await supabase.functions.invoke("victaure-chat", {
           body: { 
             messages: [
               { role: "system", content: context },
               { role: "user", content: "Bonjour !" }
             ],
-            hideSystem: true
           }
         });
 
         if (error) throw error;
+
+        console.log("Initial response:", data);
 
         if (data?.choices?.[0]?.message?.content) {
           setMessages(prevMessages => [{
@@ -50,6 +52,8 @@ export function useChatMessages({
       } catch (error) {
         console.error("Error getting initial message:", error);
         toast.error("Désolé, je ne suis pas disponible pour le moment");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -77,6 +81,8 @@ export function useChatMessages({
 
     try {
       setIsLoading(true);
+      console.log("Sending message to assistant...");
+      
       const messageHistory = [
         { role: "system", content: context },
         ...messages.map(msg => ({
@@ -86,11 +92,15 @@ export function useChatMessages({
         { role: "user", content: userMessage }
       ];
 
+      console.log("Message history:", messageHistory);
+
       const { data, error } = await supabase.functions.invoke("victaure-chat", {
-        body: { messages: messageHistory, hideSystem: true }
+        body: { messages: messageHistory }
       });
 
       if (error) throw error;
+
+      console.log("Assistant response:", data);
 
       if (data?.choices?.[0]?.message?.content) {
         const response = data.choices[0].message.content;

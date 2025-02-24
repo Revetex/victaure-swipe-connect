@@ -7,6 +7,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const OPENROUTER_API_KEY = Deno.env.get('OPENROUTER_API_KEY');
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -15,26 +17,28 @@ serve(async (req) => {
   try {
     const { messages, hideSystem = false } = await req.json();
 
-    // Filtrer les messages système si hideSystem est true
     const filteredMessages = hideSystem 
       ? messages.filter((msg: any) => msg.role !== "system")
       : messages;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://victaure.com',
+        'X-Title': 'Victaure Assistant',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: messages, // On garde tous les messages pour le contexte
+        model: "google/gemini-2.0-pro-exp-02-05:free",
+        messages: messages,
         temperature: 0.7,
         max_tokens: 500,
       }),
     });
 
     const data = await response.json();
+    console.log("OpenRouter response:", data);
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
