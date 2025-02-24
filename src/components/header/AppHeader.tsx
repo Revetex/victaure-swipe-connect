@@ -7,6 +7,7 @@ import { Logo } from "@/components/Logo";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState } from "react";
 import { VictaureChat } from "@/components/chat/VictaureChat";
+import { Badge } from "@/components/ui/badge";
 
 interface AppHeaderProps {
   totalJobs?: number;
@@ -33,7 +34,7 @@ export function AppHeader({
     <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed top-0 left-0 right-0 z-[100] flex h-16 items-center justify-between px-4 bg-[#1A1F2C] border-b border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.2)] backdrop-blur-none"
+      className="fixed top-0 left-0 right-0 z-[100] flex h-16 items-center justify-between px-4 bg-[#1A1F2C] border-b border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.2)]"
       style={{
         paddingTop: 'env(safe-area-inset-top)',
       }}
@@ -49,11 +50,19 @@ export function AppHeader({
         </Button>
         
         <div className="flex items-center gap-6">
-          <img
-            src="/lovable-uploads/color-logo.png"
-            alt="Victaure Logo"
-            className="h-9 w-9 object-contain shrink-0"
-          />
+          <div className="relative">
+            <img
+              src="/lovable-uploads/color-logo.png"
+              alt="Victaure Logo"
+              className="h-9 w-9 object-contain shrink-0"
+            />
+            <Badge 
+              variant="secondary" 
+              className="absolute -top-2 -right-2 bg-[#64B5D9] text-white text-[10px] px-1.5 py-0.5 rounded-full border border-white/20"
+            >
+              BETA
+            </Badge>
+          </div>
           <span className="relative font-tiempos font-black tracking-[0.15em] text-[#F2EBE4] text-2xl shrink-0 pl-1">
             VICTAURE
           </span>

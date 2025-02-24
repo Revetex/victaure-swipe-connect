@@ -59,7 +59,11 @@ export function VictaureChat({
   return (
     <div className="w-full bg-[#1A1F2C] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-lg relative">
       <ChatHeader />
-      <MessageList ref={chatContainerRef} messages={messages} />
+      <MessageList 
+        ref={chatContainerRef} 
+        messages={messages}
+        isLoading={isLoading}
+      />
       <ChatInput
         userInput={userInput}
         setUserInput={setUserInput}
