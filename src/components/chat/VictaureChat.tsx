@@ -88,8 +88,8 @@ export function VictaureChat({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-4rem)] relative bg-[#1A1F2C]">
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#1A1F2C] relative">
+      <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]" />
         
         <div className="absolute inset-0" 
@@ -98,41 +98,7 @@ export function VictaureChat({
                backgroundSize: '15px 15px'
              }} 
         />
-        
-        <div className="absolute inset-0">
-          {[...Array(2)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute h-px bg-gradient-to-r from-transparent via-[#64B5D9] to-transparent"
-              style={{
-                width: '100px',
-                transform: `rotate(-45deg)`,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animation: `shootingStars ${4 + i}s linear infinite ${i * 2}s`
-              }}
-            />
-          ))}
-        </div>
       </div>
-
-      <style>
-        {`
-          @keyframes shootingStars {
-            0% {
-              transform: translateX(-100%) translateY(-100%) rotate(-45deg);
-              opacity: 1;
-            }
-            50% {
-              opacity: 1;
-            }
-            100% {
-              transform: translateX(200%) translateY(200%) rotate(-45deg);
-              opacity: 0;
-            }
-          }
-        `}
-      </style>
 
       <div className="relative z-10 flex flex-col h-full">
         <div className="flex-none px-4 py-3 border-b border-[#64B5D9]/10 bg-[#1B2A4A]/50 backdrop-blur-sm">
@@ -156,7 +122,7 @@ export function VictaureChat({
           />
         </div>
         
-        <div className="fixed bottom-0 left-0 right-0 pb-4 px-4 bg-gradient-to-t from-[#1A1F2C] to-transparent pt-6">
+        <div className="flex-none px-4 py-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C] to-transparent">
           <ChatInput
             userInput={userInput}
             setUserInput={setUserInput}

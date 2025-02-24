@@ -48,9 +48,9 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
     return (
       <div 
         ref={ref}
-        className="flex flex-col justify-end min-h-full p-4 pb-20"
+        className="flex flex-col justify-end min-h-full p-4"
       >
-        <div className="space-y-4">
+        <div className="space-y-4 pb-2">
           <AnimatePresence mode="popLayout">
             {messages.map((message, index) => (
               <motion.div 
@@ -64,12 +64,12 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                 <div 
                   className={`relative group max-w-[85%] sm:max-w-[75%] ${
                     message.isUser 
-                      ? 'bg-[#64B5D9] text-white rounded-2xl rounded-br-sm ml-12' 
-                      : 'bg-[#1B2A4A] text-[#F1F0FB] rounded-2xl rounded-bl-sm mr-12'
+                      ? 'bg-[#64B5D9] text-white rounded-2xl rounded-br-sm ml-12 shadow-lg' 
+                      : 'bg-[#1B2A4A] text-[#F1F0FB] rounded-2xl rounded-bl-sm mr-12 shadow-lg border border-[#64B5D9]/10'
                   }`}
                 >
-                  <div className="p-3">
-                    <div className="flex items-center gap-2 mb-1">
+                  <div className="p-3 space-y-1">
+                    <div className="flex items-center gap-2">
                       <span className="text-xs font-medium opacity-90">
                         {message.isUser ? 'Vous' : 'Mr. Victaure'}
                       </span>
@@ -109,7 +109,7 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                 exit={{ opacity: 0 }}
                 className="flex items-start"
               >
-                <div className="bg-[#1B2A4A] rounded-2xl p-3">
+                <div className="bg-[#1B2A4A] rounded-2xl p-3 shadow-lg border border-[#64B5D9]/10">
                   <Loader2 className="w-4 h-4 text-[#64B5D9] animate-spin"/>
                 </div>
               </motion.div>
