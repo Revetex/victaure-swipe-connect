@@ -5,6 +5,9 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
+import { speaker } from "@/utils/speaker";
+import { Button } from "@/components/ui/button";
+import { Speaker } from "lucide-react";
 
 interface ChatMessageProps {
   message: Message;
@@ -12,6 +15,10 @@ interface ChatMessageProps {
 }
 
 export function ChatMessage({ message, isOwn }: ChatMessageProps) {
+  const handleSpeak = () => {
+    speaker.speak(message.content);
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -26,8 +33,9 @@ export function ChatMessage({ message, isOwn }: ChatMessageProps) {
         user={message.sender}
         className="h-8 w-8 flex-shrink-0"
       />
+      
       <div className={cn(
-        "flex flex-col gap-1 max-w-[70%]",
+        "flex flex-col gap-1 max-w-[70%] relative group",
         isOwn && "items-end"
       )}>
         <div className={cn(
@@ -37,7 +45,20 @@ export function ChatMessage({ message, isOwn }: ChatMessageProps) {
             : "bg-[#1B2A4A]/80 border border-[#64B5D9]/20 text-[#F2EBE4]"
         )}>
           <p className="text-sm">{message.content}</p>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleSpeak}
+            className={cn(
+              "absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity",
+              isOwn ? "-left-8" : "-right-8",
+              "h-6 w-6 rounded-full bg-[#1B2A4A]/50 hover:bg-[#1B2A4A]/70"
+            )}
+          >
+            <Speaker className="h-3 w-3 text-[#F2EBE4]" />
+          </Button>
         </div>
+        
         <span className="text-xs text-[#F2EBE4]/60">
           {format(new Date(message.created_at), "HH:mm", { locale: fr })}
         </span>

@@ -43,12 +43,12 @@ export function ConversationView() {
       if (error) throw error;
       
       if (profile) {
-        const receiverProfile: Receiver = {
+        setReceiver({
           id: profile.id,
           full_name: profile.full_name || '',
           avatar_url: profile.avatar_url,
           email: profile.email,
-          role: (profile.role as 'professional' | 'business' | 'admin') || 'professional',
+          role: profile.role || 'professional',
           bio: profile.bio,
           phone: profile.phone,
           city: profile.city,
@@ -63,8 +63,7 @@ export function ConversationView() {
           education: profile.education || [],
           experiences: profile.experiences || [],
           friends: []
-        };
-        setReceiver(receiverProfile);
+        });
         setShowConversation(true);
       }
     } catch (error) {
@@ -106,7 +105,7 @@ export function ConversationView() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-[#1A1F2C]">
       <ConversationHeader 
         receiver={receiver}
         onBack={handleBack}
