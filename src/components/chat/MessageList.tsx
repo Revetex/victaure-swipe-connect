@@ -14,6 +14,29 @@ interface MessageListProps {
   isLoading?: boolean;
 }
 
+// Composant pour l'effet machine à écrire
+const TypewriterEffect = ({ text }: { text: string }) => {
+  const [displayText, setDisplayText] = useState("");
+  
+  useEffect(() => {
+    let index = 0;
+    setDisplayText("");
+    
+    const interval = setInterval(() => {
+      if (index < text.length) {
+        setDisplayText((prev) => prev + text.charAt(index));
+        index++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 20); // Vitesse de frappe
+
+    return () => clearInterval(interval);
+  }, [text]);
+
+  return <>{displayText}</>;
+};
+
 export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
   ({ messages, isLoading }, ref) => {
     return (
@@ -93,28 +116,5 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
     );
   }
 );
-
-// Composant pour l'effet machine à écrire
-function TypewriterEffect({ text }: { text: string }) {
-  const [displayText, setDisplayText] = useState("");
-  
-  useEffect(() => {
-    let index = 0;
-    setDisplayText("");
-    
-    const interval = setInterval(() => {
-      if (index < text.length) {
-        setDisplayText((prev) => prev + text.charAt(index));
-        index++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 20); // Vitesse de frappe
-
-    return () => clearInterval(interval);
-  }, [text]);
-
-  return <>{displayText}</>;
-}
 
 MessageList.displayName = "MessageList";
