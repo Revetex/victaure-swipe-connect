@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { MarketplaceForm } from "./marketplace/MarketplaceForm";
 import { MarketplaceList } from "./marketplace/MarketplaceList";
@@ -81,7 +82,7 @@ export function Marketplace() {
             </DialogContent>
           </Dialog>
 
-          <Dialog>
+          <Dialog open={showListingForm} onOpenChange={setShowListingForm}>
             <DialogTrigger asChild>
               <Button className="gap-2" size={isMobile ? "sm" : "default"}>
                 <PlusCircle className="h-4 w-4" />
@@ -90,7 +91,7 @@ export function Marketplace() {
             </DialogTrigger>
             <DialogContent className="max-w-3xl">
               <DialogTitle>Nouvelle annonce</DialogTitle>
-              <MarketplaceForm />
+              <MarketplaceForm onClose={() => setShowListingForm(false)} />
             </DialogContent>
           </Dialog>
         </div>
