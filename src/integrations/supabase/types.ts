@@ -3321,28 +3321,28 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          language: string | null
+          language: string
           notifications_enabled: boolean | null
           privacy_enabled: boolean | null
-          theme: string | null
+          theme: string
           updated_at: string
         }
         Insert: {
           created_at?: string
           id: string
-          language?: string | null
+          language?: string
           notifications_enabled?: boolean | null
           privacy_enabled?: boolean | null
-          theme?: string | null
+          theme?: string
           updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
-          language?: string | null
+          language?: string
           notifications_enabled?: boolean | null
           privacy_enabled?: boolean | null
-          theme?: string | null
+          theme?: string
           updated_at?: string
         }
         Relationships: []
