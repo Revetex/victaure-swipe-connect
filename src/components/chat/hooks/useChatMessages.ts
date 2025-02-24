@@ -39,10 +39,11 @@ export function useChatMessages({
         console.log("Initial response:", data);
 
         if (data?.choices?.[0]?.message?.content) {
-          setMessages([{
+          const initialMessage: ChatMessage = {
             role: "assistant",
             content: data.choices[0].message.content
-          }]);
+          };
+          setMessages([initialMessage]);
         }
       } catch (error) {
         console.error("Error getting initial message:", error);
@@ -52,7 +53,9 @@ export function useChatMessages({
       }
     };
 
-    greetUser();
+    if (context) {
+      greetUser();
+    }
   }, [context, user?.id]);
 
   const sendMessage = async (userInput: string) => {
@@ -69,7 +72,7 @@ export function useChatMessages({
     };
 
     setUserQuestions(prev => prev + 1);
-    setMessages(prevMessages => [userMessage, ...prevMessages]);
+    setMessages(prevMessages => [...prevMessages, userMessage]);
 
     try {
       setIsLoading(true);
@@ -80,7 +83,7 @@ export function useChatMessages({
         ...messages.map(msg => ({
           role: msg.role,
           content: msg.content
-        })).reverse(),
+        })),
         userMessage
       ];
 
@@ -99,7 +102,7 @@ export function useChatMessages({
           role: "assistant",
           content: data.choices[0].message.content
         };
-        setMessages(prevMessages => [response, ...prevMessages]);
+        setMessages(prevMessages => [...prevMessages, response]);
         return response.content;
       }
       return null;

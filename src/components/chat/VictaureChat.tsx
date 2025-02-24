@@ -16,7 +16,7 @@ interface VictaureChatProps {
 
 export function VictaureChat({ 
   maxQuestions = 3, 
-  context = "Tu es un assistant concis et amical qui aide les utilisateurs à s'inscrire. Donne des réponses courtes et naturelles, comme si tu parlais à un ami.",
+  context = "Je suis Mr. Victaure, votre guide pour l'emploi et le développement de carrière. Je m'engage à vous aider dans votre parcours professionnel avec des conseils personnalisés et bienveillants. Comment puis-je vous être utile aujourd'hui?",
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
@@ -55,7 +55,7 @@ export function VictaureChat({
   };
 
   const isDisabled = userQuestions >= maxQuestions && !user;
-  const disabledMessage = "Connectez-vous pour continuer...";
+  const disabledMessage = "Connectez-vous pour continuer la conversation avec Mr. Victaure";
 
   return (
     <div className="w-full bg-transparent rounded-xl overflow-hidden">
