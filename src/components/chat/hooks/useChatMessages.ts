@@ -25,11 +25,15 @@ export function useChatMessages({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [userQuestions, setUserQuestions] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const greetUser = async () => {
       try {
         setIsLoading(true);
+        setError(null);
+        console.log("Sending initial greeting...");
+
         const { data, error } = await supabase.functions.invoke("victaure-chat", {
           body: { 
             messages: [
@@ -44,13 +48,14 @@ export function useChatMessages({
         console.log("Initial response:", data);
 
         if (data?.choices?.[0]?.message?.content) {
-          setMessages(prevMessages => [{
+          setMessages([{
             content: data.choices[0].message.content,
             isUser: false
           }]);
         }
       } catch (error) {
         console.error("Error getting initial message:", error);
+        setError(error as Error);
         toast.error("Désolé, je ne suis pas disponible pour le moment");
       } finally {
         setIsLoading(false);
@@ -68,28 +73,28 @@ export function useChatMessages({
 
     if (!userInput.trim() || isLoading) return null;
 
-    const userMessage = userInput.trim();
-    setUserQuestions(prev => prev + 1);
-    setMessages(prevMessages => [
-      {
-        content: userMessage,
-        isUser: true,
-        username: user?.email || 'Visiteur'
-      },
-      ...prevMessages
-    ]);
+    const userMessage = {
+      content: userInput.trim(),
+      isUser: true,
+      username: user?.email || 'Visiteur'
+    };
 
     try {
       setIsLoading(true);
+      setError(null);
       console.log("Sending message to assistant...");
       
+      // Add user message immediately
+      setMessages(prev => [...prev, userMessage]);
+      setUserQuestions(prev => prev + 1);
+
       const messageHistory = [
         { role: "system", content: context },
         ...messages.map(msg => ({
           role: msg.isUser ? "user" : "assistant",
           content: msg.content
-        })).reverse(),
-        { role: "user", content: userMessage }
+        })),
+        { role: "user", content: userInput }
       ];
 
       console.log("Message history:", messageHistory);
@@ -106,15 +111,16 @@ export function useChatMessages({
 
       if (data?.choices?.[0]?.message?.content) {
         const response = data.choices[0].message.content;
-        setMessages(prevMessages => [
-          { content: response, isUser: false },
-          ...prevMessages
-        ]);
+        setMessages(prev => [...prev, {
+          content: response,
+          isUser: false
+        }]);
         return response;
       }
       return null;
     } catch (error) {
       console.error("Error in chat:", error);
+      setError(error as Error);
       toast.error("Désolé, je ne peux pas répondre pour le moment");
       return null;
     } finally {
@@ -126,6 +132,7 @@ export function useChatMessages({
     messages,
     isLoading,
     sendMessage,
-    userQuestions
+    userQuestions,
+    error
   };
 }

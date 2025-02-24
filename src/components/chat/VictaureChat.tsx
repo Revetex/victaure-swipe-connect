@@ -6,6 +6,7 @@ import { MessageList } from "./MessageList";
 import { ChatInput } from "./ChatInput";
 import { useChatMessages } from "./hooks/useChatMessages";
 import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
+import { toast } from "sonner";
 
 interface VictaureChatProps {
   maxQuestions?: number;
@@ -26,7 +27,8 @@ export function VictaureChat({
     messages, 
     isLoading, 
     sendMessage,
-    userQuestions 
+    userQuestions,
+    error 
   } = useChatMessages({ 
     context, 
     maxQuestions, 
@@ -45,37 +47,47 @@ export function VictaureChat({
   const handleSendMessage = async () => {
     if (!userInput.trim() || isLoading) return;
     
-    const response = await sendMessage(userInput);
-    setUserInput("");
-    
-    if (response) {
-      speakText(response);
+    try {
+      const response = await sendMessage(userInput);
+      setUserInput("");
+      
+      if (response) {
+        speakText(response);
+      } else if (error) {
+        toast.error("Désolé, je ne peux pas répondre pour le moment. Veuillez réessayer.");
+      }
+    } catch (err) {
+      console.error("Error sending message:", err);
+      toast.error("Une erreur est survenue lors de l'envoi du message");
     }
   };
 
   const isDisabled = userQuestions >= maxQuestions && !user;
-  const disabledMessage = "Connectez-vous pour continuer...";
+  const disabledMessage = "Connectez-vous pour continuer à discuter avec Mr. Victaure";
 
   return (
-    <div className="w-full bg-[#1A1F2C] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-lg relative">
-      <ChatHeader />
-      <MessageList 
-        ref={chatContainerRef} 
-        messages={messages}
-        isLoading={isLoading}
-      />
-      <ChatInput
-        userInput={userInput}
-        setUserInput={setUserInput}
-        isRecording={isRecording}
-        isSpeaking={isSpeaking}
-        isLoading={isLoading}
-        isDisabled={isDisabled}
-        disabledMessage={disabledMessage}
-        onStartRecording={startRecording}
-        onStopSpeaking={() => setIsSpeaking(false)}
-        onSendMessage={handleSendMessage}
-      />
+    <div className="w-full bg-gradient-to-b from-[#1A1F2C] to-[#151922] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-xl relative backdrop-blur-sm">
+      <div className="absolute inset-0 bg-[#64B5D9]/5 mix-blend-overlay pointer-events-none" />
+      <div className="relative z-10">
+        <ChatHeader />
+        <MessageList 
+          ref={chatContainerRef} 
+          messages={messages}
+          isLoading={isLoading}
+        />
+        <ChatInput
+          userInput={userInput}
+          setUserInput={setUserInput}
+          isRecording={isRecording}
+          isSpeaking={isSpeaking}
+          isLoading={isLoading}
+          isDisabled={isDisabled}
+          disabledMessage={disabledMessage}
+          onStartRecording={startRecording}
+          onStopSpeaking={() => setIsSpeaking(false)}
+          onSendMessage={handleSendMessage}
+        />
+      </div>
     </div>
   );
 }
