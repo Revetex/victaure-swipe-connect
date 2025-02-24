@@ -7,7 +7,7 @@ import { ChatInput } from "./ChatInput";
 import { useChatMessages } from "./hooks/useChatMessages";
 import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
-import { RefreshCcw, X, Volume2 } from "lucide-react";
+import { RefreshCcw, X } from "lucide-react";
 import { DialogClose } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
@@ -44,7 +44,8 @@ export function VictaureChat({
     isSpeaking,
     startRecording,
     speakText,
-    setIsSpeaking
+    stopSpeaking,
+    cleanup
   } = useVoiceFeatures();
 
   const handleSendMessage = async () => {
@@ -65,7 +66,7 @@ export function VictaureChat({
 
   const handleVoicePlayback = (text: string) => {
     if (isSpeaking) {
-      setIsSpeaking(false);
+      stopSpeaking();
     } else {
       speakText(text);
     }
@@ -73,6 +74,7 @@ export function VictaureChat({
 
   const handleRefresh = () => {
     refreshMessages();
+    cleanup(); // Arrêter l'audio et le micro
     toast.success("Historique effacé");
   };
 
@@ -121,7 +123,7 @@ export function VictaureChat({
             isDisabled={isDisabled}
             disabledMessage={disabledMessage}
             onStartRecording={startRecording}
-            onStopSpeaking={() => setIsSpeaking(false)}
+            onStopSpeaking={stopSpeaking}
             onSendMessage={handleSendMessage}
             webSearchEnabled={true}
           />
