@@ -7,6 +7,11 @@ import { toast } from "sonner";
 interface Message {
   content: string;
   isUser: boolean;
+  searchResults?: {
+    title: string;
+    url: string;
+    snippet: string;
+  }[];
 }
 
 interface ChatMessagesProps {
@@ -61,8 +66,9 @@ export function useChatMessages({
           userId: user?.id,
           useWebSearch,
           userProfile: user ? await getUserProfile(user.id) : null,
-          maxTokens: useWebSearch ? 2000 : 800, // Augmentation des tokens
-          temperature: useWebSearch ? 0.5 : 0.7 // Plus factuel pour la recherche web
+          maxTokens: useWebSearch ? 2000 : 800,
+          temperature: useWebSearch ? 0.5 : 0.7,
+          searchResults: useWebSearch // Demander les résultats de recherche si useWebSearch est true
         }
       });
 
@@ -75,11 +81,14 @@ export function useChatMessages({
         throw new Error("Réponse invalide de l'assistant");
       }
 
-      const assistantMessage = data.choices[0].message.content;
+      const assistantMessage: Message = {
+        content: data.choices[0].message.content,
+        isUser: false,
+        searchResults: data.searchResults // Ajouter les résultats de recherche à la réponse
+      };
       
-      // Ajout du nouveau message à la fin du tableau (sera affiché en bas)
-      setMessages(prev => [...prev, { content: assistantMessage, isUser: false }]);
-      return assistantMessage;
+      setMessages(prev => [...prev, assistantMessage]);
+      return assistantMessage.content;
 
     } catch (err) {
       console.error('Error sending message:', err);
