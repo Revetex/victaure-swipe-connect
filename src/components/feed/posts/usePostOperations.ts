@@ -13,11 +13,15 @@ export const usePostOperations = () => {
     }
 
     try {
-      const { error } = await supabase.rpc('handle_post_reaction', {
-        p_post_id: postId,
-        p_user_id: userId,
-        p_reaction_type: type
-      });
+      const { error } = await supabase
+        .from('post_reactions')
+        .upsert({
+          post_id: postId,
+          user_id: userId,
+          reaction_type: type
+        }, {
+          onConflict: 'post_id,user_id'
+        });
 
       if (error) throw error;
 
