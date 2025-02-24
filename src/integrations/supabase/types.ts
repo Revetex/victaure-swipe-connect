@@ -9,33 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      ai_chat_messages: {
-        Row: {
-          content: string
-          created_at: string | null
-          id: string
-          sender: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          content: string
-          created_at?: string | null
-          id: string
-          sender: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          content?: string
-          created_at?: string | null
-          id?: string
-          sender?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       ai_interactions: {
         Row: {
           context: string | null
@@ -699,24 +672,6 @@ export type Database = {
         }
         Relationships: []
       }
-      deleted_ai_conversations: {
-        Row: {
-          created_at: string | null
-          id: string
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       deleted_conversations: {
         Row: {
           conversation_partner_id: string
@@ -802,36 +757,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      exchange_rates: {
-        Row: {
-          created_at: string | null
-          from_currency: string
-          id: string
-          last_updated: string | null
-          rate: number
-          to_currency: string
-          type: string
-        }
-        Insert: {
-          created_at?: string | null
-          from_currency: string
-          id?: string
-          last_updated?: string | null
-          rate: number
-          to_currency: string
-          type: string
-        }
-        Update: {
-          created_at?: string | null
-          from_currency?: string
-          id?: string
-          last_updated?: string | null
-          rate?: number
-          to_currency?: string
-          type?: string
-        }
-        Relationships: []
       }
       experiences: {
         Row: {
@@ -1692,42 +1617,6 @@ export type Database = {
           },
         ]
       }
-      loto_draws: {
-        Row: {
-          bonus_color: string
-          completed_at: string | null
-          created_at: string | null
-          draw_numbers: number[]
-          id: string
-          prize_pool: number
-          scheduled_for: string
-          status: string
-          winner_count: number | null
-        }
-        Insert: {
-          bonus_color: string
-          completed_at?: string | null
-          created_at?: string | null
-          draw_numbers: number[]
-          id?: string
-          prize_pool?: number
-          scheduled_for: string
-          status?: string
-          winner_count?: number | null
-        }
-        Update: {
-          bonus_color?: string
-          completed_at?: string | null
-          created_at?: string | null
-          draw_numbers?: number[]
-          id?: string
-          prize_pool?: number
-          scheduled_for?: string
-          status?: string
-          winner_count?: number | null
-        }
-        Relationships: []
-      }
       loto_number_stats: {
         Row: {
           last_drawn: string | null
@@ -1748,110 +1637,6 @@ export type Database = {
           times_picked?: number | null
         }
         Relationships: []
-      }
-      loto_tickets: {
-        Row: {
-          bonus_color: string
-          checked: boolean | null
-          draw_id: string
-          id: string
-          price: number
-          purchase_date: string | null
-          selected_numbers: number[]
-          status: string
-          transaction_id: string | null
-          user_id: string
-          winning_amount: number | null
-        }
-        Insert: {
-          bonus_color: string
-          checked?: boolean | null
-          draw_id: string
-          id?: string
-          price: number
-          purchase_date?: string | null
-          selected_numbers: number[]
-          status?: string
-          transaction_id?: string | null
-          user_id: string
-          winning_amount?: number | null
-        }
-        Update: {
-          bonus_color?: string
-          checked?: boolean | null
-          draw_id?: string
-          id?: string
-          price?: number
-          purchase_date?: string | null
-          selected_numbers?: number[]
-          status?: string
-          transaction_id?: string | null
-          user_id?: string
-          winning_amount?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "loto_tickets_draw_id_fkey"
-            columns: ["draw_id"]
-            isOneToOne: false
-            referencedRelation: "loto_draws"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      loto_wins: {
-        Row: {
-          amount: number
-          claimed: boolean
-          claimed_at: string | null
-          created_at: string | null
-          draw_id: string
-          id: string
-          matched_color: boolean
-          matched_numbers: number
-          ticket_id: string
-          user_id: string
-        }
-        Insert: {
-          amount: number
-          claimed?: boolean
-          claimed_at?: string | null
-          created_at?: string | null
-          draw_id: string
-          id?: string
-          matched_color?: boolean
-          matched_numbers: number
-          ticket_id: string
-          user_id: string
-        }
-        Update: {
-          amount?: number
-          claimed?: boolean
-          claimed_at?: string | null
-          created_at?: string | null
-          draw_id?: string
-          id?: string
-          matched_color?: boolean
-          matched_numbers?: number
-          ticket_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "loto_wins_draw_id_fkey"
-            columns: ["draw_id"]
-            isOneToOne: false
-            referencedRelation: "loto_draws"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "loto_wins_ticket_id_fkey"
-            columns: ["ticket_id"]
-            isOneToOne: false
-            referencedRelation: "loto_tickets"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       marketplace_bids: {
         Row: {
@@ -4451,22 +4236,6 @@ export type Database = {
       }
     }
     Views: {
-      recent_ai_messages: {
-        Row: {
-          content: string | null
-          created_at: string | null
-          depth: number | null
-          id: string | null
-          metadata: Json | null
-          parent_id: string | null
-          read: boolean | null
-          sender: string | null
-          thread_id: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
       relevant_jobs: {
         Row: {
           budget: number | null
@@ -4509,12 +4278,6 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
-      delete_ai_conversation: {
-        Args: {
-          p_user_id: string
-        }
-        Returns: undefined
-      }
       delete_user_data: {
         Args: {
           user_id: string
@@ -4532,14 +4295,6 @@ export type Database = {
         Returns: {
           secret: string
         }[]
-      }
-      handle_post_reaction: {
-        Args: {
-          p_post_id: string
-          p_user_id: string
-          p_reaction_type: string
-        }
-        Returns: undefined
       }
       increment_app_download_count: {
         Args: {
@@ -4578,14 +4333,6 @@ export type Database = {
       process_loto_draw: {
         Args: {
           draw_id: string
-        }
-        Returns: undefined
-      }
-      process_loto_ticket_purchase: {
-        Args: {
-          p_user_id: string
-          p_amount: number
-          p_draw_id: string
         }
         Returns: undefined
       }
