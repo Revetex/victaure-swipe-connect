@@ -1,9 +1,9 @@
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent } from "react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { Mic, Send, Square, StopCircle } from "lucide-react";
-import { Tooltip } from "../ui/tooltip";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "../ui/tooltip";
 import { toast } from "sonner";
 
 export interface ChatInputProps {
@@ -60,51 +60,72 @@ export function ChatInput({
       </div>
 
       <div className="flex gap-2">
-        <Tooltip content={isRecording ? "Arrêter l'enregistrement" : "Enregistrer un message"}>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="shrink-0"
-            onClick={onStartRecording}
-            disabled={isDisabled || isLoading}
-          >
-            {isRecording ? (
-              <Square className="h-4 w-4 text-red-500" />
-            ) : (
-              <Mic className="h-4 w-4" />
-            )}
-          </Button>
-        </Tooltip>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="shrink-0"
+                onClick={onStartRecording}
+                disabled={isDisabled || isLoading}
+              >
+                {isRecording ? (
+                  <Square className="h-4 w-4 text-red-500" />
+                ) : (
+                  <Mic className="h-4 w-4" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {isRecording ? "Arrêter l'enregistrement" : "Enregistrer un message"}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
         {isSpeaking && (
-          <Tooltip content="Arrêter la lecture">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="shrink-0"
-              onClick={onStopSpeaking}
-            >
-              <StopCircle className="h-4 w-4" />
-            </Button>
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="shrink-0"
+                  onClick={onStopSpeaking}
+                >
+                  <StopCircle className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Arrêter la lecture
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
 
-        <Tooltip content="Envoyer le message">
-          <Button
-            size="icon"
-            className="shrink-0"
-            onClick={() => {
-              if (!isDisabled) {
-                onSendMessage();
-              } else {
-                toast.error(disabledMessage);
-              }
-            }}
-            disabled={!userInput.trim() || isLoading || isDisabled}
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </Tooltip>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                className="shrink-0"
+                onClick={() => {
+                  if (!isDisabled) {
+                    onSendMessage();
+                  } else {
+                    toast.error(disabledMessage);
+                  }
+                }}
+                disabled={!userInput.trim() || isLoading || isDisabled}
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              Envoyer le message
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );

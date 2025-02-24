@@ -1,5 +1,5 @@
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatHeader } from "./ChatHeader";
 import { MessageList } from "./MessageList";
@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import { RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { supabase } from "@/integrations/supabase/client";
 
 interface VictaureChatProps {
   maxQuestions?: number;
@@ -23,9 +24,30 @@ export function VictaureChat({
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
+  const [geminiModel, setGeminiModel] = useState<any>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
-  const genAI = new GoogleGenerativeAI(process.env.VITE_GEMINI_API_KEY || "");
+
+  useEffect(() => {
+    async function initGemini() {
+      try {
+        const { data, error } = await supabase.functions.invoke('get-secret', {
+          body: { secret_name: 'GEMINI_API_KEY' }
+        });
+
+        if (error) throw error;
+        if (!data?.secret) throw new Error('API key not found');
+
+        const genAI = new GoogleGenerativeAI(data.secret);
+        setGeminiModel(genAI.getGenerativeModel({ model: "gemini-pro" }));
+      } catch (err) {
+        console.error('Error initializing Gemini:', err);
+        toast.error("Erreur lors de l'initialisation de l'assistant");
+      }
+    }
+
+    initGemini();
+  }, []);
 
   const { 
     messages, 
@@ -39,7 +61,7 @@ export function VictaureChat({
     maxQuestions, 
     user, 
     onMaxQuestionsReached,
-    geminiModel: genAI.getGenerativeModel({ model: "gemini-pro" })
+    geminiModel
   });
 
   const {
