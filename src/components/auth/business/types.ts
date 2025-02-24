@@ -9,6 +9,7 @@ export interface FormData {
   province: string;
   address: string;
   postalCode: string;
+  acceptedTerms?: boolean;
 }
 
 export interface BusinessSignupFormProps {

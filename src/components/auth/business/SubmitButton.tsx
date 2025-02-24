@@ -30,6 +30,9 @@ export function SubmitButton({ loading, disabled }: SubmitButtonProps) {
           "Créer mon compte entreprise"
         )}
       </Button>
+      <p className="text-sm text-[#F1F0FB]/60 text-center mt-4">
+        Merci de votre confiance
+      </p>
     </motion.div>
   );
 }
