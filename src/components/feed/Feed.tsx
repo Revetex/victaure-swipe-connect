@@ -1,10 +1,9 @@
 
 import { useQueryClient } from "@tanstack/react-query";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { CreatePostForm } from "./posts/create/CreatePostForm";
 import { PostList } from "./posts/PostList";
-import { Filter, User2, Globe2, Clock, TrendingUp, List } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { User2, Globe2, Clock, TrendingUp } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
@@ -14,41 +13,52 @@ export function Feed() {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [selectedSort, setSelectedSort] = useState("recent");
   const [showNewPost, setShowNewPost] = useState(false);
+  const [newPost, setNewPost] = useState("");
+  const [privacy, setPrivacy] = useState<"public" | "connections">("public");
+  const [attachments, setAttachments] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   const invalidatePosts = () => {
     queryClient.invalidateQueries({ queryKey: ["posts"] });
   };
 
+  const handleFileChange = async (files: FileList | null) => {
+    if (!files?.length) return;
+    setIsUploading(true);
+    // TODO: Implement file upload logic
+    setIsUploading(false);
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="w-full max-w-3xl mx-auto space-y-6 px-4 sm:px-6 mt-4"
-    >
+    <div className="w-full max-w-3xl mx-auto space-y-6 px-4 sm:px-6 mt-4">
       {/* Barre de partage */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-        className="sticky top-4 z-10"
-      >
+      <div className="sticky top-4 z-10">
         {showNewPost ? (
           <Card className="p-4 backdrop-blur-sm bg-card/95">
             <CreatePostForm 
-              newPost=""
-              onPostChange={() => {}}
-              privacy="public"
-              onPrivacyChange={() => {}}
-              attachments={[]}
-              isUploading={false}
-              onFileChange={() => {}}
-              onRemoveFile={() => {}}
+              newPost={newPost}
+              onPostChange={setNewPost}
+              privacy={privacy}
+              onPrivacyChange={setPrivacy}
+              attachments={attachments}
+              isUploading={isUploading}
+              onFileChange={handleFileChange}
+              onRemoveFile={handleRemoveFile}
               onCreatePost={() => {
                 invalidatePosts();
                 setShowNewPost(false);
+                setNewPost("");
+                setAttachments([]);
               }}
-              onClose={() => setShowNewPost(false)}
+              onClose={() => {
+                setShowNewPost(false);
+                setNewPost("");
+                setAttachments([]);
+              }}
             />
           </Card>
         ) : (
@@ -66,15 +76,10 @@ export function Feed() {
             </div>
           </Card>
         )}
-      </motion.div>
+      </div>
 
       {/* Filtres et tri */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.2 }}
-        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Card className="p-2">
           <Tabs defaultValue="all" value={selectedFilter} onValueChange={setSelectedFilter}>
             <TabsList className="w-full">
@@ -104,20 +109,15 @@ export function Feed() {
             </TabsList>
           </Tabs>
         </Card>
-      </motion.div>
+      </div>
 
       {/* Feed */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.3 }}
-        className="rounded-lg overflow-hidden"
-      >
+      <div className="rounded-lg overflow-hidden">
         <PostList 
           onPostDeleted={invalidatePosts}
           onPostUpdated={invalidatePosts}
         />
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
