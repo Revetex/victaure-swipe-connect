@@ -2,14 +2,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "./form/ImageUpload";
-import { ListingDetails } from "./form/ListingDetails";
-import { ListingSelectors } from "./form/ListingSelectors";
 import { useListingImages } from "./hooks/useListingImages";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,7 +15,7 @@ import type { ListingType } from "@/types/marketplace";
 
 export function MarketplaceForm() {
   const [loading, setLoading] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(true);
+  const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const { imageUrls, handleImagePreview, removeImage, uploadImages, resetImages } = useListingImages();
   
@@ -30,7 +28,7 @@ export function MarketplaceForm() {
     condition: "new",
     location: "",
     category: "",
-    saleType: "immediate", // 'immediate' ou 'auction'
+    saleType: "immediate",
     auctionEndDate: null as Date | null,
     minimumBid: "",
   });
@@ -40,26 +38,22 @@ export function MarketplaceForm() {
     setLoading(true);
 
     try {
-      // Vérifier que les champs requis sont remplis
       if (!formData.title || !formData.description || !formData.price) {
         toast.error("Veuillez remplir tous les champs requis");
         return;
       }
 
-      // Récupérer l'ID de l'utilisateur connecté
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error("Vous devez être connecté pour publier une annonce");
         return;
       }
 
-      // Upload des images si présentes
       let uploadedImageUrls: string[] = [];
       if (imageUrls.length > 0) {
         uploadedImageUrls = await uploadImages();
       }
 
-      // Créer l'annonce dans la base de données
       const { error } = await supabase
         .from('marketplace_listings')
         .insert([
@@ -92,7 +86,7 @@ export function MarketplaceForm() {
         auctionEndDate: null,
         minimumBid: "",
       });
-      setIsDialogOpen(false);
+      setOpen(false);
       
     } catch (error) {
       console.error('Erreur lors de la publication:', error);
@@ -103,8 +97,8 @@ export function MarketplaceForm() {
   };
 
   return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogContent className="max-w-2xl">
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="sm:max-w-[600px]">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid gap-4">
             <div className="grid gap-2">
@@ -185,18 +179,14 @@ export function MarketplaceForm() {
               onImageRemove={removeImage}
             />
 
-            <div className="flex justify-end gap-4 pt-4">
-              <Button 
-                variant="outline" 
-                type="button"
-                onClick={() => setIsDialogOpen(false)}
-              >
+            <DialogFooter>
+              <Button variant="outline" type="button" onClick={() => setOpen(false)}>
                 Annuler
               </Button>
               <Button type="submit" disabled={loading}>
                 {loading ? "Publication en cours..." : "Publier l'annonce"}
               </Button>
-            </div>
+            </DialogFooter>
           </div>
         </form>
       </DialogContent>
