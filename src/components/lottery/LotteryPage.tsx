@@ -13,9 +13,9 @@ export function LotteryPage() {
   const handleGamePayment = async (amount: number, gameTitle: string) => {
     try {
       await handlePayment(amount, `Paiement pour ${gameTitle}`);
-      toast("Paiement traité avec succès !");
+      toast.success("Paiement traité avec succès !");
     } catch (error) {
-      toast("Erreur lors du paiement", {
+      toast.error("Erreur lors du paiement", {
         description: "Une erreur est survenue lors du traitement du paiement",
       });
       console.error("Payment error:", error);
