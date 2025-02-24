@@ -30,11 +30,28 @@ interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof Dialo
   onOpenChange?: (open: boolean) => void;
 }
 
+const DialogWrapper = ({ 
+  open, 
+  onOpenChange, 
+  children 
+}: { 
+  open?: boolean; 
+  onOpenChange?: (open: boolean) => void; 
+  children: React.ReactNode 
+}) => {
+  if (open === undefined) return <>{children}</>
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {children}
+    </Dialog>
+  )
+}
+
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
->(({ className, children, onClose, open, onOpenChange, ...props }, ref) => {
-  const content = (
+>(({ className, children, onClose, open, onOpenChange, ...props }, ref) => (
+  <DialogWrapper open={open} onOpenChange={onOpenChange}>
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
@@ -55,18 +72,8 @@ const DialogContent = React.forwardRef<
         </DialogClose>
       </DialogPrimitive.Content>
     </DialogPortal>
-  )
-
-  if (open !== undefined) {
-    return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        {content}
-      </Dialog>
-    )
-  }
-
-  return content
-})
+  </DialogWrapper>
+))
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
 const DialogHeader = ({
