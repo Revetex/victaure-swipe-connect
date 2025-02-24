@@ -9,7 +9,7 @@ import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
 import { RefreshCcw, Globe } from "lucide-react";
 import { toast } from "sonner";
-import { pipeline, env } from "@huggingface/transformers";
+import { pipeline } from "@huggingface/transformers";
 
 interface VictaureChatProps {
   maxQuestions?: number;
@@ -49,18 +49,20 @@ export function VictaureChat({
     setIsSpeaking
   } = useVoiceFeatures();
 
-  // Initialize model with WebGPU
+  // Initialize model
   const initializeModel = async () => {
     try {
       setIsModelLoading(true);
-      // Activate WebGPU backend
-      env.useBrowserBackend = false;
-      env.useWebGPU = true;
 
       const generator = await pipeline(
         "text2text-generation",
         "onnx-community/mt5-small-finetuned-chat",
-        { device: "webgpu" }
+        { 
+          quantized: false,
+          progress_callback: (progress) => {
+            console.log("Loading model progress:", progress);
+          }
+        }
       );
 
       console.log("Model initialized successfully");
