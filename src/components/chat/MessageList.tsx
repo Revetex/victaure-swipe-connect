@@ -19,7 +19,7 @@ export function MessageList({
 
   return (
     <div className="h-[calc(85vh-120px)] overflow-y-auto py-4 px-3 scrollbar-none">
-      <div className="flex flex-col-reverse gap-4">
+      <div className="flex flex-col gap-4">
         {messages.map((message, index) => (
           <motion.div
             key={index}
