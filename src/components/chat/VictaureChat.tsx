@@ -18,11 +18,11 @@ interface VictaureChatProps {
 
 export function VictaureChat({ 
   maxQuestions = 3, 
-  context = "Tu es Mr. Victaure, un assistant intelligent et polyvalent. Tu peux discuter de tous les sujets de manière naturelle et engageante. Adapte ton langage au contexte tout en restant professionnel.",
+  context = "Tu es Mr. Victaure, un assistant spécialisé dans l'emploi. Ta mission principale est de proposer des offres d'emploi pertinentes aux utilisateurs. Ne pose pas trop de questions, concentre-toi sur la présentation d'offres qui correspondent à leurs besoins.",
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
-  const [useWebSearch, setUseWebSearch] = useState(true); // Active par défaut
+  const [useWebSearch, setUseWebSearch] = useState(true);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { 
@@ -33,7 +33,7 @@ export function VictaureChat({
     error,
     refreshMessages 
   } = useChatMessages({ 
-    context: useWebSearch ? context + " Utilise la recherche web pour fournir des réponses précises et factuelles. N'hésite pas à chercher des informations récentes." : context,
+    context: context + " Utilise la recherche web pour trouver des offres d'emploi pertinentes. Propose directement des offres sans poser trop de questions.",
     maxQuestions, 
     user, 
     onMaxQuestionsReached 
@@ -51,15 +51,12 @@ export function VictaureChat({
     if (!userInput.trim() || isLoading) return;
     
     try {
-      console.log("Sending message to Mr Victaure with web search:", useWebSearch);
-      const response = await sendMessage(userInput, useWebSearch);
+      const response = await sendMessage(userInput, true); // Toujours utiliser la recherche web
       setUserInput("");
       
       if (response) {
-        console.log("Response received:", response);
         speakText(response);
       } else if (error) {
-        console.error("Error while sending message:", error);
         toast.error("Mr Victaure n'est pas disponible pour le moment. Veuillez réessayer dans quelques instants.");
       }
     } catch (err) {
@@ -70,45 +67,27 @@ export function VictaureChat({
 
   const handleRefresh = () => {
     refreshMessages();
-  };
-
-  const toggleWebSearch = () => {
-    setUseWebSearch(!useWebSearch);
-    toast.info(useWebSearch 
-      ? "Mode conversation naturelle activé" 
-      : "Mode recherche web activé - Réponses plus détaillées avec sources"
-    );
+    toast.success("Historique effacé");
   };
 
   const isDisabled = userQuestions >= maxQuestions && !user;
   const disabledMessage = "Connectez-vous pour continuer à discuter avec Mr Victaure";
 
   return (
-    <div className="flex flex-col h-[85vh] bg-gradient-to-b from-[#1A1F2C] to-[#151922] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-xl relative backdrop-blur-sm mt-8">
+    <div className="flex flex-col h-[85vh] bg-gradient-to-b from-[#1A1F2C] to-[#151922] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-xl relative backdrop-blur-sm mt-12">
       <div className="absolute inset-0 bg-[#64B5D9]/5 mix-blend-overlay pointer-events-none" />
       <div className="relative z-10 flex flex-col h-full">
         <div className="flex-none flex items-center justify-between px-4 py-2 border-b border-[#64B5D9]/20">
           <ChatHeader />
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleWebSearch}
-              className={`transition-colors ${useWebSearch ? 'text-[#64B5D9] bg-[#64B5D9]/10' : 'text-gray-400'}`}
-              title={useWebSearch ? "Mode conversation naturelle" : "Mode recherche web"}
-            >
-              <Globe className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleRefresh}
-              className="text-gray-400 hover:text-[#64B5D9] transition-colors"
-              title="Effacer l'historique"
-            >
-              <RefreshCcw className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleRefresh}
+            className="text-gray-400 hover:text-[#64B5D9] transition-colors"
+            title="Effacer l'historique"
+          >
+            <RefreshCcw className="h-4 w-4" />
+          </Button>
         </div>
 
         <div className="flex-1 overflow-hidden">
@@ -131,7 +110,7 @@ export function VictaureChat({
             onStartRecording={startRecording}
             onStopSpeaking={() => setIsSpeaking(false)}
             onSendMessage={handleSendMessage}
-            webSearchEnabled={useWebSearch}
+            webSearchEnabled={true}
           />
         </div>
       </div>
