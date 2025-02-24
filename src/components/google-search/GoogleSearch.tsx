@@ -15,7 +15,6 @@ export function GoogleSearch({ searchEngineId }: GoogleSearchProps) {
   const [query, setQuery] = useState('');
 
   useEffect(() => {
-    // Load Google Custom Search Element script
     const script = document.createElement('script');
     script.src = `https://cse.google.com/cse.js?cx=${searchEngineId}`;
     script.async = true;
@@ -27,7 +26,6 @@ export function GoogleSearch({ searchEngineId }: GoogleSearchProps) {
     };
 
     return () => {
-      // Cleanup script when component unmounts
       const scriptElement = document.querySelector(`script[src*="cse.js?cx=${searchEngineId}"]`);
       if (scriptElement) {
         document.head.removeChild(scriptElement);
@@ -44,7 +42,6 @@ export function GoogleSearch({ searchEngineId }: GoogleSearchProps) {
     
     setIsLoading(true);
     
-    // Trigger search using Google CSE API
     const searchElement = document.querySelector('.gsc-search-box input') as HTMLInputElement;
     if (searchElement) {
       searchElement.value = query;
@@ -56,8 +53,8 @@ export function GoogleSearch({ searchEngineId }: GoogleSearchProps) {
   };
 
   return (
-    <Card className="w-full p-4">
-      <form onSubmit={handleSearch} className="flex gap-2 mb-4">
+    <Card className="p-4">
+      <form onSubmit={handleSearch} className="flex items-center gap-2">
         <Input
           type="search"
           placeholder="Rechercher des offres d'emploi..."
