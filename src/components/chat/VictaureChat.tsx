@@ -69,7 +69,7 @@ export function VictaureChat({
   const disabledMessage = "Connectez-vous pour continuer à discuter avec Mr Victaure";
 
   return (
-    <div className="flex flex-col h-full relative">
+    <div className="flex flex-col h-[calc(100dvh-4rem)] relative">
       <div className="absolute inset-0 bg-gradient-to-b from-[#1B2A4A] to-[#1A1F2C] opacity-50 pointer-events-none" />
       
       <div className="relative z-10 flex flex-col h-full">

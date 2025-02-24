@@ -34,7 +34,7 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="fixed inset-0 p-0 max-w-none max-h-none h-screen w-screen bg-black/95 border-none z-50"
+        className="fixed inset-0 p-0 max-w-none max-h-none h-[100dvh] w-screen bg-black/95 border-none z-[999] overflow-hidden"
         onKeyDown={handleKeyDown}
       >
         <VisuallyHidden asChild>
@@ -44,13 +44,13 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-4 top-4 z-50 rounded-full bg-background/10 hover:bg-background/20 backdrop-blur-sm"
+          className="absolute right-4 top-4 z-[1000] rounded-full bg-background/10 hover:bg-background/20 backdrop-blur-sm"
           onClick={onClose}
         >
-          <X className="h-4 w-4 text-[#F2EBE4]" />
+          <X className="h-4 w-4 text-white" />
         </Button>
         
-        <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8">
+        <div className="relative w-full h-full flex items-center justify-center touch-pan-y">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
@@ -63,7 +63,7 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
               <img
                 src={images[currentIndex]}
                 alt={`Image ${currentIndex + 1}`}
-                className="max-w-full max-h-full w-auto h-auto object-contain select-none"
+                className="max-w-full max-h-[90vh] w-auto h-auto object-contain select-none"
                 draggable={false}
               />
             </motion.div>
@@ -78,7 +78,7 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
                 onClick={handlePrevious}
                 aria-label="Image précédente"
               >
-                <ChevronLeft className="h-6 w-6 text-[#F2EBE4]" />
+                <ChevronLeft className="h-6 w-6 text-white" />
               </Button>
               
               <Button
@@ -88,11 +88,11 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
                 onClick={handleNext}
                 aria-label="Image suivante"
               >
-                <ChevronRight className="h-6 w-6 text-[#F2EBE4]" />
+                <ChevronRight className="h-6 w-6 text-white" />
               </Button>
 
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-background/10 backdrop-blur-sm">
-                <span className="text-[#F2EBE4] text-sm">
+                <span className="text-white text-sm">
                   {currentIndex + 1} / {images.length}
                 </span>
               </div>
