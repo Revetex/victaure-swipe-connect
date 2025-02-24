@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -58,16 +57,66 @@ END:VCARD`;
   return (
     <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center relative" role="contentinfo">
       <div className="space-y-8 border-t border-[#F1F0FB]/20 pt-8">
-        <div className="flex justify-center items-center gap-8 mb-8">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
           <Dialog>
             <DialogTrigger asChild>
-              <div className="relative w-40 h-16 cursor-pointer group">
-                <img 
-                  src="/lovable-uploads/white-signature.png"
-                  alt="Signature" 
-                  className="absolute inset-0 w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
-                />
+              <Button 
+                className="relative group bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  Charte des prix
+                  <div className="w-1.5 h-1.5 rounded-full bg-white group-hover:scale-150 transition-transform" />
+                </span>
+                <div className="absolute inset-0 bg-white/20 rounded-full transition-transform group-hover:scale-105 duration-300" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold mb-4 text-[#F1F0FB]">Charte des prix Victaure</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 text-[#F1F0FB]">
+                <div className="text-center space-y-2">
+                  <p className="font-medium text-[#64B5D9]">{contactInfo.name}</p>
+                  <p>{contactInfo.title}</p>
+                  <p>Email: {contactInfo.email}</p>
+                  <p>Tél: {contactInfo.tel}</p>
+                </div>
+
+                <div className="flex justify-center">
+                  <div className="bg-white p-2 rounded-lg shadow-lg relative">
+                    <QRCodeSVG 
+                      value={vCardData}
+                      size={80}
+                      level="H"
+                      includeMargin={true}
+                      className="rounded"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <img 
+                        src="/lovable-uploads/color-logo.png"
+                        alt="Victaure Logo"
+                        className="w-12 h-12 opacity-90"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <p>Pour plus d'informations sur nos offres de partenariat, n'hésitez pas à nous contacter.</p>
               </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button 
+                className="relative group bg-gradient-to-r from-[#4A90E2] to-[#64B5D9] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  Partenariat
+                  <div className="w-1.5 h-1.5 rounded-full bg-white group-hover:scale-150 transition-transform" />
+                </span>
+                <div className="absolute inset-0 bg-white/20 rounded-full transition-transform group-hover:scale-105 duration-300" />
+              </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl">
               <DialogHeader>
@@ -167,6 +216,14 @@ END:VCARD`;
               </div>
             </DialogContent>
           </Dialog>
+        </div>
+
+        <div className="flex justify-center mb-12">
+          <img 
+            src="/lovable-uploads/white-signature.png"
+            alt="Signature décorative" 
+            className="w-40 h-16 object-contain opacity-50"
+          />
         </div>
 
         <nav className="flex flex-wrap justify-center gap-3 text-sm text-[#F1F0FB]/80" role="navigation">
