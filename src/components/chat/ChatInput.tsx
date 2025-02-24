@@ -54,7 +54,7 @@ export function ChatInput({
           onChange={handleInputChange}
           onKeyDown={handleKeyPress}
           placeholder="Écrivez votre message..."
-          className="min-h-[60px] resize-none pr-12 bg-background/50"
+          className="min-h-[45px] max-h-[120px] resize-none pr-12 bg-background/50"
           disabled={isDisabled || isLoading}
         />
       </div>
