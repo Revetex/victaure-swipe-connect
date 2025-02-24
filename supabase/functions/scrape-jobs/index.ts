@@ -1,53 +1,110 @@
 
 import { createClient } from '@supabase/supabase-js'
+import * as cheerio from 'https://esm.sh/cheerio@1.0.0-rc.12'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-async function scrapeIndeedJobs() {
-  try {
-    const response = await fetch('https://ca.indeed.com/jobs?l=Quebec&lang=fr', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+async function scrapeJobs() {
+  const jobs = [];
+  
+  // Sites d'emploi québécois à scraper
+  const sites = [
+    {
+      url: 'https://www.jobillico.com/recherche-emploi?skwd=&wloc=Quebec',
+      scraper: async () => {
+        try {
+          const response = await fetch('https://www.jobillico.com/api/public/jobs/search', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              "query": "",
+              "location": "Quebec",
+              "page": 1,
+              "limit": 50
+            })
+          });
+          
+          const data = await response.json();
+          return data.jobs?.map(job => ({
+            title: job.title,
+            company: job.company.name,
+            location: job.location.city,
+            description: job.description,
+            url: `https://www.jobillico.com/fr/offre-emploi/${job.id}`,
+            posted_at: job.publishedDate
+          })) || [];
+        } catch (error) {
+          console.error('Error scraping Jobillico:', error);
+          return [];
+        }
       }
-    });
+    },
+    {
+      url: 'https://emploiquebec.gouv.qc.ca/regions',
+      scraper: async () => {
+        try {
+          const response = await fetch('https://placement.emploiquebec.gouv.qc.ca/mbe/ut/rechroffr/listoffr.asp?mtcle=&date=3&creg=QC');
+          const html = await response.text();
+          const $ = cheerio.load(html);
+          
+          return $('.offre').map((i, el) => ({
+            title: $(el).find('h2').text().trim(),
+            company: $(el).find('.entreprise').text().trim(),
+            location: $(el).find('.lieu').text().trim(),
+            description: $(el).find('.description').text().trim(),
+            url: 'https://placement.emploiquebec.gouv.qc.ca' + $(el).find('a').attr('href'),
+            posted_at: new Date().toISOString()
+          })).get();
+        } catch (error) {
+          console.error('Error scraping Emploi Quebec:', error);
+          return [];
+        }
+      }
+    },
+    {
+      url: 'https://www.workopolis.com/fr/emplois/quebec',
+      scraper: async () => {
+        try {
+          const response = await fetch('https://www.workopolis.com/api/v1.0/search/jobs?location=quebec');
+          const data = await response.json();
+          
+          return data.jobs?.map(job => ({
+            title: job.title,
+            company: job.company,
+            location: job.location,
+            description: job.description,
+            url: job.url,
+            posted_at: job.datePosted
+          })) || [];
+        } catch (error) {
+          console.error('Error scraping Workopolis:', error);
+          return [];
+        }
+      }
+    }
+  ];
 
-    const html = await response.text();
-    
-    // Extraction simple des données avec regex
-    const jobCards = html.match(/<div class="job_seen_beacon">(.*?)<\/div>/gs) || [];
-    
-    return jobCards.map(card => {
-      const titleMatch = card.match(/<h2[^>]*>(.*?)<\/h2>/s);
-      const companyMatch = card.match(/class="companyName"[^>]*>(.*?)<\/span>/s);
-      const locationMatch = card.match(/class="companyLocation"[^>]*>(.*?)<\/div>/s);
-      const salaryMatch = card.match(/class="salary-snippet"[^>]*>(.*?)<\/div>/s);
-      const descriptionMatch = card.match(/class="job-snippet"[^>]*>(.*?)<\/ul>/s);
-      
-      return {
-        title: titleMatch ? cleanHtml(titleMatch[1]) : '',
-        company: companyMatch ? cleanHtml(companyMatch[1]) : '',
-        location: locationMatch ? cleanHtml(locationMatch[1]) : '',
-        salary_range: salaryMatch ? cleanHtml(salaryMatch[1]) : '',
-        description: descriptionMatch ? cleanHtml(descriptionMatch[1]) : '',
-        url: `https://ca.indeed.com/viewjob?jk=${card.match(/data-jk="([^"]+)"/)?.[1] || ''}`,
-        posted_at: new Date().toISOString()
-      };
-    }).filter(job => job.title && job.company); // Ne garde que les jobs avec au moins un titre et une entreprise
-  } catch (error) {
-    console.error('Error scraping Indeed:', error);
-    return [];
-  }
-}
+  // Scraper chaque site en parallèle
+  const results = await Promise.allSettled(
+    sites.map(site => site.scraper())
+  );
 
-function cleanHtml(str: string) {
-  return str
-    .replace(/<[^>]+>/g, '') // Enlève les tags HTML
-    .replace(/&nbsp;/g, ' ') // Remplace les &nbsp; par des espaces
-    .replace(/\s+/g, ' ') // Remplace les espaces multiples par un seul espace
-    .trim();
+  // Combiner tous les résultats
+  results.forEach((result, index) => {
+    if (result.status === 'fulfilled') {
+      console.log(`Successfully scraped ${sites[index].url}: ${result.value.length} jobs found`);
+      jobs.push(...result.value);
+    } else {
+      console.error(`Failed to scrape ${sites[index].url}:`, result.reason);
+    }
+  });
+
+  return jobs;
 }
 
 Deno.serve(async (req) => {
@@ -58,22 +115,29 @@ Deno.serve(async (req) => {
   try {
     console.log('Starting job scraping process...')
 
-    const jobs = await scrapeIndeedJobs();
-    console.log(`Found ${jobs.length} jobs`)
+    const jobs = await scrapeJobs();
+    console.log(`Found ${jobs.length} jobs total`);
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    );
 
     let savedCount = 0;
     for (const job of jobs) {
+      if (!job.title || !job.company) continue;
+
       try {
         const { error } = await supabase
           .from('scraped_jobs')
           .upsert({
-            ...job,
-            source_platform: 'indeed',
+            title: job.title,
+            company: job.company,
+            location: job.location || 'Québec',
+            description: job.description || '',
+            url: job.url,
+            posted_at: job.posted_at || new Date().toISOString(),
+            source_platform: 'quebec_jobs',
             employment_type: 'FULL_TIME',
             last_checked: new Date().toISOString()
           }, {
