@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile, Friend } from "@/types/profile";
+import { UserProfile, Friend, Certification } from "@/types/profile";
 import { toast } from "sonner";
 
 export function useConnections() {
@@ -43,6 +43,7 @@ export function useConnections() {
               issuer,
               issue_date,
               expiry_date,
+              credential_id,
               credential_url,
               description
             ),
@@ -100,6 +101,7 @@ export function useConnections() {
               issuer,
               issue_date,
               expiry_date,
+              credential_id,
               credential_url,
               description
             ),
@@ -144,6 +146,8 @@ export function useConnections() {
       // Transform the data to get a flat list of connections
       const connections = friendRequests?.map(request => {
         const rawConnection = request.sender.id === user.id ? request.receiver : request.sender;
+        
+        // Transform friends data
         const friends: Friend[] = rawConnection.friend_connections?.map(fc => {
           const friend = fc.sender || fc.receiver;
           return {
@@ -154,6 +158,20 @@ export function useConnections() {
             last_seen: friend.last_seen
           };
         }) || [];
+
+        // Transform certifications data with required credential_id
+        const certifications: Certification[] = (rawConnection.certifications || []).map(cert => ({
+          id: cert.id,
+          profile_id: cert.profile_id,
+          title: cert.title,
+          issuer: cert.issuer,
+          year: undefined, // Optional field
+          issue_date: cert.issue_date,
+          expiry_date: cert.expiry_date,
+          credential_id: cert.credential_id || null, // Ensure credential_id is included
+          credential_url: cert.credential_url,
+          description: cert.description
+        }));
 
         const connection: UserProfile = {
           id: rawConnection.id,
@@ -173,7 +191,7 @@ export function useConnections() {
           privacy_enabled: rawConnection.privacy_enabled,
           created_at: rawConnection.created_at,
           sections_order: rawConnection.sections_order,
-          certifications: rawConnection.certifications || [],
+          certifications: certifications,
           education: rawConnection.education || [],
           experiences: rawConnection.experiences || [],
           friends: friends
