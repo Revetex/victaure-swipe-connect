@@ -1,8 +1,9 @@
+
 import { useState } from "react";
 import { Job } from "@/types/job";
 import { useJobsData } from "@/hooks/useJobsData";
+import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
 import { JobsSearch } from "./sections/JobsSearch";
 import { JobsFilters } from "./sections/JobsFilters";
 import { JobsResults } from "./sections/JobsResults";
@@ -61,21 +62,6 @@ export function JobsPage() {
 
   const handleJobSelect = (job: Job) => {
     setSelectedJobId(job.id);
-    toast.info("Détails de l'emploi disponibles bientôt !");
-  };
-
-  const handleResetFilters = () => {
-    setSearchQuery("");
-    setSelectedLocation("");
-    setSelectedCompanyType("");
-    setExperienceLevel("");
-    setContractType("");
-    setSalaryRange([0, 200000]);
-    setRemoteOnly(false);
-  };
-
-  const handleRequestAssistant = () => {
-    setIsAssistantOpen(true);
   };
 
   if (isLoading) {
@@ -87,53 +73,74 @@ export function JobsPage() {
   }
 
   return (
-    <motion.div 
-      variants={{
-        hidden: { opacity: 0 },
-        visible: {
-          opacity: 1,
-          transition: {
-            staggerChildren: 0.1
-          }
-        }
-      }}
-      initial="hidden"
-      animate="visible"
-      className="container mx-auto p-4 max-w-7xl"
-    >
-      <div className="space-y-6">
-        <JobsSearch 
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          selectedLocation={selectedLocation}
-          selectedCompanyType={selectedCompanyType}
-          sortOrder={sortOrder}
-          experienceLevel={experienceLevel}
-          contractType={contractType}
-          locations={locations}
-          salaryRange={salaryRange}
-          remoteOnly={remoteOnly}
-          onLocationChange={setSelectedLocation}
-          onCompanyTypeChange={setSelectedCompanyType}
-          onSortOrderChange={setSortOrder}
-          onExperienceLevelChange={setExperienceLevel}
-          onContractTypeChange={setContractType}
-          onSalaryRangeChange={setSalaryRange}
-          onRemoteOnlyChange={setRemoteOnly}
-        />
-        
-        <JobsResults 
-          jobs={filteredJobs}
-          onJobSelect={handleJobSelect}
-          selectedJobId={selectedJobId}
-          onResetFilters={handleResetFilters}
-        />
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="space-y-6"
+        >
+          {/* En-tête et recherche */}
+          <div className="space-y-4">
+            <h1 className="text-3xl font-bold">Emplois disponibles</h1>
+            <Card className="p-6">
+              <JobsSearch 
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+              />
+            </Card>
+          </div>
 
-        <JobsAIAssistant 
-          isOpen={isAssistantOpen}
-          onClose={() => setIsAssistantOpen(false)}
-        />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Filtres */}
+            <div className="lg:col-span-3">
+              <Card className="sticky top-4">
+                <JobsFilters 
+                  selectedLocation={selectedLocation}
+                  selectedCompanyType={selectedCompanyType}
+                  sortOrder={sortOrder}
+                  experienceLevel={experienceLevel}
+                  contractType={contractType}
+                  locations={locations}
+                  salaryRange={salaryRange}
+                  remoteOnly={remoteOnly}
+                  onLocationChange={setSelectedLocation}
+                  onCompanyTypeChange={setSelectedCompanyType}
+                  onSortOrderChange={setSortOrder}
+                  onExperienceLevelChange={setExperienceLevel}
+                  onContractTypeChange={setContractType}
+                  onSalaryRangeChange={setSalaryRange}
+                  onRemoteOnlyChange={setRemoteOnly}
+                />
+              </Card>
+            </div>
+
+            {/* Résultats */}
+            <div className="lg:col-span-9">
+              <JobsResults 
+                jobs={filteredJobs}
+                onJobSelect={handleJobSelect}
+                selectedJobId={selectedJobId}
+                onResetFilters={() => {
+                  setSearchQuery("");
+                  setSelectedLocation("");
+                  setSelectedCompanyType("");
+                  setExperienceLevel("");
+                  setContractType("");
+                  setSalaryRange([0, 200000]);
+                  setRemoteOnly(false);
+                }}
+              />
+            </div>
+          </div>
+        </motion.div>
       </div>
-    </motion.div>
+
+      <JobsAIAssistant 
+        isOpen={isAssistantOpen}
+        onClose={() => setIsAssistantOpen(false)}
+      />
+    </div>
   );
 }
