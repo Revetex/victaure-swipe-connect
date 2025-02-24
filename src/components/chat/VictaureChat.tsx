@@ -70,13 +70,14 @@ export function VictaureChat({
 
   const handleRefresh = () => {
     refreshMessages();
-    toast.success("Messages rafraîchis");
   };
 
   const toggleWebSearch = () => {
     setUseWebSearch(!useWebSearch);
-    toast.info(useWebSearch ? "Recherche web désactivée" : "Recherche web activée");
-    refreshMessages(); // Reset messages when toggling web search
+    toast.info(useWebSearch 
+      ? "Mode conversation naturelle activé" 
+      : "Mode recherche web activé - Réponses plus détaillées avec sources"
+    );
   };
 
   const isDisabled = userQuestions >= maxQuestions && !user;
@@ -93,8 +94,8 @@ export function VictaureChat({
               variant="ghost"
               size="icon"
               onClick={toggleWebSearch}
-              className={`transition-colors ${useWebSearch ? 'text-[#64B5D9]' : 'text-gray-400'}`}
-              title={useWebSearch ? "Désactiver la recherche web" : "Activer la recherche web"}
+              className={`transition-colors ${useWebSearch ? 'text-[#64B5D9] bg-[#64B5D9]/10' : 'text-gray-400'}`}
+              title={useWebSearch ? "Mode conversation naturelle" : "Mode recherche web"}
             >
               <Globe className="h-4 w-4" />
             </Button>
@@ -103,7 +104,7 @@ export function VictaureChat({
               size="icon"
               onClick={handleRefresh}
               className="text-gray-400 hover:text-[#64B5D9] transition-colors"
-              title="Rafraîchir les messages"
+              title="Effacer l'historique"
             >
               <RefreshCcw className="h-4 w-4" />
             </Button>
@@ -130,6 +131,7 @@ export function VictaureChat({
             onStartRecording={startRecording}
             onStopSpeaking={() => setIsSpeaking(false)}
             onSendMessage={handleSendMessage}
+            webSearchEnabled={useWebSearch}
           />
         </div>
       </div>

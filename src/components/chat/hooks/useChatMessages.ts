@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
@@ -12,6 +12,7 @@ interface Message {
     url: string;
     snippet: string;
   }[];
+  timestamp: number;
 }
 
 interface ChatMessagesProps {
@@ -20,6 +21,8 @@ interface ChatMessagesProps {
   user: User | null;
   onMaxQuestionsReached?: () => void;
 }
+
+const STORAGE_KEY = 'victaure_chat_messages';
 
 export function useChatMessages({ 
   context, 
@@ -32,10 +35,32 @@ export function useChatMessages({
   const [userQuestions, setUserQuestions] = useState(0);
   const [error, setError] = useState<Error | null>(null);
 
+  // Charger les messages sauvegardés au démarrage
+  useEffect(() => {
+    const savedMessages = localStorage.getItem(STORAGE_KEY);
+    if (savedMessages) {
+      try {
+        setMessages(JSON.parse(savedMessages));
+        setUserQuestions(JSON.parse(savedMessages).filter((m: Message) => m.isUser).length);
+      } catch (e) {
+        console.error("Error loading saved messages:", e);
+      }
+    }
+  }, []);
+
+  // Sauvegarder les messages quand ils changent
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    }
+  }, [messages]);
+
   const refreshMessages = useCallback(() => {
     setMessages([]);
     setUserQuestions(0);
     setError(null);
+    localStorage.removeItem(STORAGE_KEY);
+    toast.success("Historique effacé");
   }, []);
 
   const sendMessage = useCallback(async (content: string, useWebSearch: boolean = false) => {
@@ -46,7 +71,12 @@ export function useChatMessages({
       setError(null);
 
       // Ajouter le message de l'utilisateur
-      setMessages(prev => [...prev, { content, isUser: true }]);
+      const userMessage: Message = {
+        content,
+        isUser: true,
+        timestamp: Date.now()
+      };
+      setMessages(prev => [...prev, userMessage]);
       setUserQuestions(prev => prev + 1);
 
       // Vérifier si l'utilisateur a atteint la limite
@@ -56,19 +86,23 @@ export function useChatMessages({
 
       const messagesForContext = [
         ...messages,
-        { content, isUser: true }
+        userMessage
       ];
+
+      const assistantPrompt = useWebSearch 
+        ? context + "\nUtilise les informations du web pour répondre de manière détaillée et factuelle. Cite tes sources et résume les informations pertinentes. N'oublie pas de vérifier les informations avant de répondre."
+        : context + "\nRéponds de manière conversationnelle et naturelle, sans chercher d'informations supplémentaires.";
 
       const { data, error } = await supabase.functions.invoke('victaure-chat', {
         body: { 
           messages: messagesForContext,
-          context,
+          context: assistantPrompt,
           userId: user?.id,
           useWebSearch,
           userProfile: user ? await getUserProfile(user.id) : null,
           maxTokens: useWebSearch ? 2000 : 800,
-          temperature: useWebSearch ? 0.5 : 0.7,
-          searchResults: useWebSearch // Demander les résultats de recherche si useWebSearch est true
+          temperature: useWebSearch ? 0.3 : 0.7, // Plus factuel en mode web
+          searchResults: useWebSearch
         }
       });
 
@@ -84,7 +118,8 @@ export function useChatMessages({
       const assistantMessage: Message = {
         content: data.choices[0].message.content,
         isUser: false,
-        searchResults: data.searchResults // Ajouter les résultats de recherche à la réponse
+        searchResults: data.searchResults,
+        timestamp: Date.now()
       };
       
       setMessages(prev => [...prev, assistantMessage]);
