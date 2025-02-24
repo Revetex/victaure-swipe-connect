@@ -15,11 +15,7 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, hideSystem = false } = await req.json();
-
-    const filteredMessages = hideSystem 
-      ? messages.filter((msg: any) => msg.role !== "system")
-      : messages;
+    const { messages } = await req.json();
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
