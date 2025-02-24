@@ -37,7 +37,7 @@ export function NotesSection() {
         onColorChange={setSelectedColor}
         onAdd={addNote}
       />
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-hidden notes-container relative">
         <NoteGrid notes={notes} onDeleteNote={deleteNote} />
       </div>
     </div>

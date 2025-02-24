@@ -41,10 +41,22 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
   };
 
   const handleDragEnd = (event: any, info: any) => {
-    const newPosition = {
-      x: position.x + info.offset.x,
-      y: position.y + info.offset.y
-    };
+    // Récupérer les dimensions du conteneur parent
+    const container = document.querySelector('.notes-container');
+    if (!container) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const noteRect = event.target.getBoundingClientRect();
+
+    // Calculer les nouvelles coordonnées en tenant compte des limites
+    let newX = position.x + info.offset.x;
+    let newY = position.y + info.offset.y;
+
+    // Limiter les coordonnées pour que la note reste dans le conteneur
+    newX = Math.max(0, Math.min(newX, containerRect.width - noteRect.width));
+    newY = Math.max(0, Math.min(newY, containerRect.height - noteRect.height));
+
+    const newPosition = { x: newX, y: newY };
     setPosition(newPosition);
     onUpdate?.({
       ...note,
@@ -82,7 +94,7 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
     <div className={cn(
       "border shadow-lg group relative overflow-hidden",
       getColorClass(note.color),
-      "touch-manipulation",
+      "touch-manipulation cursor-grab active:cursor-grabbing",
       "before:content-[''] before:absolute before:inset-0",
       "before:bg-gradient-to-br before:from-white/5 before:to-transparent",
       "after:content-[''] after:absolute after:bottom-0 after:right-0",
@@ -118,6 +130,7 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
         </div>
 
         <div className="flex flex-col gap-2">
+          <Grip className="w-4 h-4 opacity-20 group-hover:opacity-100 transition-opacity" />
           {isEditing ? (
             <Button
               variant="ghost"
@@ -159,6 +172,7 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
       <motion.div
         drag
         dragMomentum={false}
+        dragConstraints={{ left: 0, top: 0, right: window.innerWidth - width, bottom: window.innerHeight - height }}
         onDragEnd={handleDragEnd}
         initial={false}
         animate={{
