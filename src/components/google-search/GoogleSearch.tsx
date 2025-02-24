@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -6,26 +5,23 @@ import { Button } from '@/components/ui/button';
 import { Search, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-
 interface GoogleSearchProps {
   searchEngineId: string;
 }
-
-export function GoogleSearch({ searchEngineId }: GoogleSearchProps) {
+export function GoogleSearch({
+  searchEngineId
+}: GoogleSearchProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState('');
-
   useEffect(() => {
     const script = document.createElement('script');
     script.src = `https://cse.google.com/cse.js?cx=${searchEngineId}`;
     script.async = true;
     document.head.appendChild(script);
-
     script.onerror = () => {
       console.error("Erreur lors du chargement du script Google Search");
       toast.error("Impossible de charger la recherche Google");
     };
-
     return () => {
       const scriptElement = document.querySelector(`script[src*="cse.js?cx=${searchEngineId}"]`);
       if (scriptElement) {
@@ -33,57 +29,26 @@ export function GoogleSearch({ searchEngineId }: GoogleSearchProps) {
       }
     };
   }, [searchEngineId]);
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) {
       toast.error("Veuillez entrer un terme de recherche");
       return;
     }
-    
     setIsLoading(true);
-    
     const searchElement = document.querySelector('.gsc-search-box input') as HTMLInputElement;
     if (searchElement) {
       searchElement.value = query;
       const searchButton = document.querySelector('.gsc-search-button button') as HTMLButtonElement;
       searchButton?.click();
     }
-
     setIsLoading(false);
   };
-
-  return (
-    <Card className="w-full bg-[#1A1F2C] border-2 border-white/10 shadow-xl">
+  return <Card className="w-full bg-[#1A1F2C] border-2 border-white/10 shadow-xl">
       <div className="p-4 space-y-4">
-        <form onSubmit={handleSearch} className="flex items-center gap-2">
-          <Input
-            type="search"
-            placeholder="Rechercher des offres d'emploi..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 bg-white/10 border-white/10 text-white placeholder:text-white/60"
-          />
-          <Button 
-            type="submit" 
-            disabled={isLoading}
-            className="bg-white/10 text-white hover:bg-white/20"
-          >
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Search className="h-4 w-4" />
-            )}
-          </Button>
-        </form>
+        
 
-        <div 
-          className="gcse-search"
-          data-personalizedAds="false"
-          data-mobileLayout="enabled"
-          data-resultsUrl="/jobs/search"
-        />
+        <div className="gcse-search" data-personalizedAds="false" data-mobileLayout="enabled" data-resultsUrl="/jobs/search" />
       </div>
-    </Card>
-  );
+    </Card>;
 }
