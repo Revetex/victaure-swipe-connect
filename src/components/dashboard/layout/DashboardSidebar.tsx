@@ -59,27 +59,30 @@ export function DashboardSidebar({
         <div className="flex-1 overflow-auto px-2 py-2 space-y-4">
           {/* Menu principal */}
           <nav className="space-y-1">
-            {mainItems.map((item, index) => (
-              <Button
-                key={index}
-                variant={currentPage === index ? "secondary" : "ghost"}
-                className={cn(
-                  "w-full justify-start",
-                  currentPage === index 
-                    ? "bg-white/10 text-white" 
-                    : "text-white/70 hover:text-white hover:bg-white/5"
-                )}
-                onClick={() => onPageChange(index)}
-              >
-                {item.icon}
-                <span className="ml-3">{item.label}</span>
-                {item.label === "Messages" && unreadCount > 0 && (
-                  <Badge variant="default" className="ml-auto">
-                    {unreadCount}
-                  </Badge>
-                )}
-              </Button>
-            ))}
+            {mainItems.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <Button
+                  key={index}
+                  variant={currentPage === index ? "secondary" : "ghost"}
+                  className={cn(
+                    "w-full justify-start",
+                    currentPage === index 
+                      ? "bg-white/10 text-white" 
+                      : "text-white/70 hover:text-white hover:bg-white/5"
+                  )}
+                  onClick={() => onPageChange(index)}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="ml-3">{item.name}</span>
+                  {item.name === "Messages" && unreadCount > 0 && (
+                    <Badge variant="default" className="ml-auto">
+                      {unreadCount}
+                    </Badge>
+                  )}
+                </Button>
+              );
+            })}
           </nav>
 
           {/* Section réseau */}
@@ -87,22 +90,25 @@ export function DashboardSidebar({
             <h3 className="px-3 text-xs font-medium text-white/40 uppercase tracking-wider">
               Réseau
             </h3>
-            {networkItems.map((item, index) => (
-              <Button
-                key={index + 6}
-                variant={currentPage === index + 6 ? "secondary" : "ghost"}
-                className={cn(
-                  "w-full justify-start",
-                  currentPage === index + 6 
-                    ? "bg-white/10 text-white" 
-                    : "text-white/70 hover:text-white hover:bg-white/5"
-                )}
-                onClick={() => onPageChange(index + 6)}
-              >
-                {item.icon}
-                <span className="ml-3">{item.label}</span>
-              </Button>
-            ))}
+            {networkItems.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <Button
+                  key={index + 6}
+                  variant={currentPage === index + 6 ? "secondary" : "ghost"}
+                  className={cn(
+                    "w-full justify-start",
+                    currentPage === index + 6 
+                      ? "bg-white/10 text-white" 
+                      : "text-white/70 hover:text-white hover:bg-white/5"
+                  )}
+                  onClick={() => onPageChange(index + 6)}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="ml-3">{item.name}</span>
+                </Button>
+              );
+            })}
           </div>
 
           {/* Section outils */}
@@ -110,22 +116,25 @@ export function DashboardSidebar({
             <h3 className="px-3 text-xs font-medium text-white/40 uppercase tracking-wider">
               Outils
             </h3>
-            {toolsItems.map((item, index) => (
-              <Button
-                key={index + 8}
-                variant={currentPage === index + 8 ? "secondary" : "ghost"}
-                className={cn(
-                  "w-full justify-start",
-                  currentPage === index + 8 
-                    ? "bg-white/10 text-white" 
-                    : "text-white/70 hover:text-white hover:bg-white/5"
-                )}
-                onClick={() => onPageChange(index + 8)}
-              >
-                {item.icon}
-                <span className="ml-3">{item.label}</span>
-              </Button>
-            ))}
+            {toolsItems.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <Button
+                  key={index + 8}
+                  variant={currentPage === index + 8 ? "secondary" : "ghost"}
+                  className={cn(
+                    "w-full justify-start",
+                    currentPage === index + 8 
+                      ? "bg-white/10 text-white" 
+                      : "text-white/70 hover:text-white hover:bg-white/5"
+                  )}
+                  onClick={() => onPageChange(index + 8)}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="ml-3">{item.name}</span>
+                </Button>
+              );
+            })}
           </div>
         </div>
 
