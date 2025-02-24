@@ -27,12 +27,6 @@ export interface Message {
   status?: string;
   system_message?: boolean;
   timestamp?: string;
-  isUser?: boolean;
-}
-
-export interface MessageListProps {
-  messages: Message[];
-  isLoading: boolean;
 }
 
 export interface Receiver {

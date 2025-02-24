@@ -58,7 +58,7 @@ export function LoginForm({
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
               disabled={loading}
-              className="pl-10 bg-[#1B2A4A]/40 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
+              className="pl-10 bg-[#F1F0FB]/10 border-[#F1F0FB]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40"
               required
               aria-required="true"
               aria-label="Adresse email"
@@ -78,7 +78,7 @@ export function LoginForm({
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}
               disabled={loading}
-              className="pl-10 bg-[#1B2A4A]/40 border-[#64B5D9]/20 text-[#F1F0FB] focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
+              className="pl-10 bg-[#F1F0FB]/10 border-[#F1F0FB]/20 text-[#F1F0FB]"
               required
               aria-required="true"
               aria-label="Mot de passe"
@@ -89,13 +89,13 @@ export function LoginForm({
         <Button
           type="submit"
           disabled={loading || !email || !password}
-          className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white transition-colors duration-200 font-medium h-11"
+          className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white transition-colors duration-200 font-medium"
           aria-label={loading ? "Connexion en cours..." : "Se connecter"}
         >
           {loading ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin mr-2" aria-hidden="true" />
-              <span>Connexion...</span>
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              <span className="sr-only">Connexion en cours...</span>
             </>
           ) : (
             "Se connecter"

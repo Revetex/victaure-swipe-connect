@@ -2,7 +2,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Message } from "@/types/messages";
+
+interface ChatMessage {
+  content: string;
+  isUser: boolean;
+  username?: string;
+}
 
 interface UseChatMessagesProps {
   context: string;
@@ -17,7 +22,7 @@ export function useChatMessages({
   user, 
   onMaxQuestionsReached 
 }: UseChatMessagesProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [userQuestions, setUserQuestions] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -39,26 +44,10 @@ export function useChatMessages({
         console.log("Initial response:", data);
 
         if (data?.choices?.[0]?.message?.content) {
-          const initialMessage: Message = {
-            id: crypto.randomUUID(),
+          setMessages(prevMessages => [{
             content: data.choices[0].message.content,
-            sender_id: "assistant",
-            receiver_id: user?.id || "anonymous",
-            created_at: new Date().toISOString(),
-            sender: {
-              id: "assistant",
-              email: "assistant@victaure.ai",
-              full_name: "Mr. Victaure",
-              avatar_url: null,
-              role: "admin",
-              certifications: [],
-              education: [],
-              experiences: [],
-              friends: []
-            },
             isUser: false
-          };
-          setMessages([initialMessage]);
+          }]);
         }
       } catch (error) {
         console.error("Error getting initial message:", error);
@@ -79,28 +68,16 @@ export function useChatMessages({
 
     if (!userInput.trim() || isLoading) return null;
 
-    const userMessage: Message = {
-      id: crypto.randomUUID(),
-      content: userInput.trim(),
-      sender_id: user?.id || "anonymous",
-      receiver_id: "assistant",
-      created_at: new Date().toISOString(),
-      sender: {
-        id: user?.id || "anonymous",
-        email: user?.email || "visitor@victaure.ai",
-        full_name: user?.email || "Visiteur",
-        avatar_url: null,
-        role: "professional",
-        certifications: [],
-        education: [],
-        experiences: [],
-        friends: []
-      },
-      isUser: true
-    };
-
+    const userMessage = userInput.trim();
     setUserQuestions(prev => prev + 1);
-    setMessages(prevMessages => [...prevMessages, userMessage]);
+    setMessages(prevMessages => [
+      {
+        content: userMessage,
+        isUser: true,
+        username: user?.email || 'Visiteur'
+      },
+      ...prevMessages
+    ]);
 
     try {
       setIsLoading(true);
@@ -111,8 +88,8 @@ export function useChatMessages({
         ...messages.map(msg => ({
           role: msg.isUser ? "user" : "assistant",
           content: msg.content
-        })),
-        { role: "user", content: userInput }
+        })).reverse(),
+        { role: "user", content: userMessage }
       ];
 
       console.log("Message history:", messageHistory);
@@ -128,27 +105,12 @@ export function useChatMessages({
       console.log("Assistant response:", data);
 
       if (data?.choices?.[0]?.message?.content) {
-        const assistantMessage: Message = {
-          id: crypto.randomUUID(),
-          content: data.choices[0].message.content,
-          sender_id: "assistant",
-          receiver_id: user?.id || "anonymous",
-          created_at: new Date().toISOString(),
-          sender: {
-            id: "assistant",
-            email: "assistant@victaure.ai",
-            full_name: "Mr. Victaure",
-            avatar_url: null,
-            role: "admin",
-            certifications: [],
-            education: [],
-            experiences: [],
-            friends: []
-          },
-          isUser: false
-        };
-        setMessages(prevMessages => [...prevMessages, assistantMessage]);
-        return assistantMessage.content;
+        const response = data.choices[0].message.content;
+        setMessages(prevMessages => [
+          { content: response, isUser: false },
+          ...prevMessages
+        ]);
+        return response;
       }
       return null;
     } catch (error) {

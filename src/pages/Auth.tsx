@@ -64,57 +64,20 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-x-hidden">
-      {/* Fond galaxie futuriste */}
-      <div className="fixed inset-0 bg-[#0B1026] overflow-hidden">
-        {/* Gradient de base */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1A1F2C] via-[#0B1026] to-[#1A1F2C] opacity-90"></div>
-        
-        {/* Étoiles scintillantes */}
-        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at center, #ffffff 1px, transparent 1px)', backgroundSize: '50px 50px', opacity: 0.3 }}></div>
-        
-        {/* Nébuleuse */}
+      {/* Fond animé futuriste */}
+      <div className="fixed inset-0 bg-[#1A1F2C] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#221F26] via-[#1A1F2C] to-[#221F26] opacity-80"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat opacity-10"></div>
         <motion.div 
-          className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/5 via-[#9B6CD9]/5 to-[#64B5D9]/5"
+          className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/20 via-transparent to-[#64B5D9]/20"
           animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.3, 0.4, 0.3]
+            x: ["-100%", "100%"],
+            opacity: [0.1, 0.2, 0.1]
           }}
           transition={{
-            duration: 20,
+            duration: 15,
             repeat: Infinity,
             ease: "linear"
-          }}
-        />
-
-        {/* Étoiles filantes multiples */}
-        {[...Array(3)].map((_, i) => (
-          <motion.div 
-            key={i}
-            className="absolute h-[1px] w-[100px] bg-gradient-to-r from-transparent via-white to-transparent"
-            animate={{
-              x: ['-100%', '200%'],
-              y: ['0%', '100%'],
-              opacity: [0, 1, 0]
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              repeatDelay: Math.random() * 5 + 2,
-              ease: "linear",
-              delay: i * 2
-            }}
-            style={{
-              top: `${20 + i * 25}%`,
-              left: `${i * 30}%`
-            }}
-          />
-        ))}
-
-        {/* Constellations améliorées */}
-        <div className="absolute inset-0" 
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='40' y1='40' x2='160' y2='160' stroke='rgba(255,255,255,0.1)' stroke-width='0.5'/%3E%3Cline x1='40' y1='160' x2='160' y2='40' stroke='rgba(255,255,255,0.1)' stroke-width='0.5'/%3E%3Ccircle cx='40' cy='40' r='1.5' fill='white' fill-opacity='0.4'/%3E%3Ccircle cx='160' cy='160' r='1.5' fill='white' fill-opacity='0.4'/%3E%3Ccircle cx='40' cy='160' r='1.5' fill='white' fill-opacity='0.4'/%3E%3Ccircle cx='160' cy='40' r='1.5' fill='white' fill-opacity='0.4'/%3E%3C/svg%3E")`,
-            backgroundSize: '200px 200px'
           }}
         />
       </div>

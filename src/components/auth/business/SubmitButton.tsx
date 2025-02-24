@@ -6,10 +6,9 @@ import { motion } from 'framer-motion';
 
 interface SubmitButtonProps {
   loading: boolean;
-  disabled?: boolean;
 }
 
-export function SubmitButton({ loading, disabled }: SubmitButtonProps) {
+export function SubmitButton({ loading }: SubmitButtonProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -18,8 +17,8 @@ export function SubmitButton({ loading, disabled }: SubmitButtonProps) {
     >
       <Button
         type="submit"
-        className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white transition-all duration-300"
-        disabled={loading || disabled}
+        className="w-full bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 transition-all duration-300"
+        disabled={loading}
       >
         {loading ? (
           <>
@@ -30,9 +29,6 @@ export function SubmitButton({ loading, disabled }: SubmitButtonProps) {
           "Créer mon compte entreprise"
         )}
       </Button>
-      <p className="text-sm text-[#F1F0FB]/60 text-center mt-4">
-        Merci de votre confiance
-      </p>
     </motion.div>
   );
 }

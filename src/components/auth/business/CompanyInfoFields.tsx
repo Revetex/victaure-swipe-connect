@@ -23,13 +23,13 @@ export function CompanyInfoFields({ formData, setFormData }: CompanyInfoFieldsPr
       <motion.div className="space-y-2" {...fadeInUp}>
         <Label htmlFor="companyName">Nom de l'entreprise</Label>
         <div className="relative">
-          <Building2 className="absolute left-3 top-3 h-4 w-4 text-[#F1F0FB]/60" />
+          <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="companyName"
             placeholder="Votre entreprise"
             value={formData.companyName}
             onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-            className="pl-10 bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
+            className="pl-10 transition-all duration-200 border-primary/20 focus:border-primary"
             required
           />
         </div>
@@ -38,14 +38,14 @@ export function CompanyInfoFields({ formData, setFormData }: CompanyInfoFieldsPr
       <motion.div className="space-y-2" {...fadeInUp} transition={{ delay: 0.1 }}>
         <Label htmlFor="email">Email professionnel</Label>
         <div className="relative">
-          <Mail className="absolute left-3 top-3 h-4 w-4 text-[#F1F0FB]/60" />
+          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="email"
             type="email"
             placeholder="vous@entreprise.com"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className="pl-10 bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
+            className="pl-10 transition-all duration-200 border-primary/20 focus:border-primary"
             required
           />
         </div>
@@ -54,14 +54,14 @@ export function CompanyInfoFields({ formData, setFormData }: CompanyInfoFieldsPr
       <motion.div className="space-y-2" {...fadeInUp} transition={{ delay: 0.2 }}>
         <Label htmlFor="password">Mot de passe</Label>
         <div className="relative">
-          <Lock className="absolute left-3 top-3 h-4 w-4 text-[#F1F0FB]/60" />
+          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="password"
             type="password"
             placeholder="••••••••"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            className="pl-10 bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
+            className="pl-10 transition-all duration-200 border-primary/20 focus:border-primary"
             required
           />
         </div>

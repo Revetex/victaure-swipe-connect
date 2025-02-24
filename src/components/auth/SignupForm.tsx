@@ -47,11 +47,11 @@ export function SignupForm({
       className="space-y-6"
     >
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight text-[#F1F0FB]">
+        <h1 className="text-2xl font-semibold tracking-tight">
           Créez votre compte
         </h1>
-        <p className="text-sm text-[#F1F0FB]/80">
-          Commencez votre expérience dès maintenant
+        <p className="text-sm text-muted-foreground">
+          Rejoignez-nous en quelques clics
         </p>
       </div>
 
@@ -59,7 +59,7 @@ export function SignupForm({
         <div className="space-y-2">
           <Label htmlFor="fullName">Nom complet</Label>
           <div className="relative">
-            <User className="absolute left-3 top-3 h-4 w-4 text-[#F1F0FB]/60" />
+            <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               id="fullName"
               placeholder="Jean Dupont"
@@ -67,7 +67,7 @@ export function SignupForm({
               value={fullName}
               onChange={(e) => onFullNameChange(e.target.value)}
               disabled={loading}
-              className="pl-10 bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
+              className="pl-10"
             />
           </div>
         </div>
@@ -75,7 +75,7 @@ export function SignupForm({
         <div className="space-y-2">
           <Label htmlFor="phone">Téléphone</Label>
           <div className="relative">
-            <Phone className="absolute left-3 top-3 h-4 w-4 text-[#F1F0FB]/60" />
+            <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               id="phone"
               placeholder="+1 (555) 555-5555"
@@ -83,7 +83,7 @@ export function SignupForm({
               value={phone}
               onChange={(e) => onPhoneChange(e.target.value)}
               disabled={loading}
-              className="pl-10 bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
+              className="pl-10"
             />
           </div>
         </div>
@@ -91,7 +91,7 @@ export function SignupForm({
         <div className="space-y-2">
           <Label htmlFor="email-signup">Email</Label>
           <div className="relative">
-            <Mail className="absolute left-3 top-3 h-4 w-4 text-[#F1F0FB]/60" />
+            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               id="email-signup"
               placeholder="nom@exemple.com"
@@ -99,7 +99,7 @@ export function SignupForm({
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
               disabled={loading}
-              className="pl-10 bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
+              className="pl-10"
             />
           </div>
         </div>
@@ -107,14 +107,14 @@ export function SignupForm({
         <div className="space-y-2">
           <Label htmlFor="password-signup">Mot de passe</Label>
           <div className="relative">
-            <Lock className="absolute left-3 top-3 h-4 w-4 text-[#F1F0FB]/60" />
+            <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               id="password-signup"
               type="password"
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}
               disabled={loading}
-              className="pl-10 bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
+              className="pl-10"
             />
           </div>
         </div>
@@ -128,11 +128,11 @@ export function SignupForm({
             />
             <label
               htmlFor="terms"
-              className="text-sm font-medium leading-none text-[#F1F0FB]/80"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               J'accepte la{" "}
               <Dialog>
-                <DialogTrigger className="text-[#64B5D9] hover:underline">
+                <DialogTrigger className="text-primary hover:underline">
                   politique de confidentialité
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl">
@@ -176,7 +176,7 @@ export function SignupForm({
               </Dialog>
               {" "}et les{" "}
               <Dialog>
-                <DialogTrigger className="text-[#64B5D9] hover:underline">
+                <DialogTrigger className="text-primary hover:underline">
                   conditions d'utilisation
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl">
@@ -219,7 +219,7 @@ export function SignupForm({
       <Button
         onClick={onSubmit}
         disabled={loading || !email || !password || !fullName || !acceptedTerms}
-        className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white transition-all duration-300 font-medium shadow-sm hover:shadow-md"
+        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 font-medium shadow-sm hover:shadow-md"
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -227,10 +227,6 @@ export function SignupForm({
           "Créer un compte"
         )}
       </Button>
-
-      <p className="text-sm text-[#F1F0FB]/60 text-center">
-        Merci de votre confiance
-      </p>
     </motion.div>
   );
 }

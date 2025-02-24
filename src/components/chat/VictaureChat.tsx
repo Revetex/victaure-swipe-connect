@@ -15,7 +15,7 @@ interface VictaureChatProps {
 
 export function VictaureChat({ 
   maxQuestions = 3, 
-  context = "Tu es Mr. Victaure, un assistant professionnel qui aide à la recherche d'emploi. Tu dois toujours utiliser une orthographe et une grammaire impeccables, et adopter un ton professionnel mais sympathique. Tu dois être précis dans tes réponses et veiller à ne jamais faire de fautes d'orthographe.",
+  context = "Tu es Mr. Victaure, un assistant concis et amical. Donne des réponses courtes et naturelles.",
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
@@ -59,12 +59,11 @@ export function VictaureChat({
   return (
     <div className="w-full bg-[#1A1F2C] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-lg relative">
       <ChatHeader />
-      <div ref={chatContainerRef}>
-        <MessageList 
-          messages={messages}
-          isLoading={isLoading}
-        />
-      </div>
+      <MessageList 
+        ref={chatContainerRef} 
+        messages={messages}
+        isLoading={isLoading}
+      />
       <ChatInput
         userInput={userInput}
         setUserInput={setUserInput}

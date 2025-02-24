@@ -20,12 +20,12 @@ export function CompanyDetailsFields({ formData, setFormData }: CompanyDetailsFi
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <motion.div {...fadeInUp}>
-        <Label htmlFor="industry" className="mb-2 block text-[#F1F0FB]">Secteur d'activité</Label>
+        <Label htmlFor="industry" className="mb-2 block">Secteur d'activité</Label>
         <Select 
           value={formData.industry}
           onValueChange={(value) => setFormData({ ...formData, industry: value })}
         >
-          <SelectTrigger className="w-full bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40">
+          <SelectTrigger className="w-full border-primary/20">
             <SelectValue placeholder="Choisir un secteur" />
           </SelectTrigger>
           <SelectContent>
@@ -40,12 +40,12 @@ export function CompanyDetailsFields({ formData, setFormData }: CompanyDetailsFi
       </motion.div>
 
       <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
-        <Label htmlFor="companySize" className="mb-2 block text-[#F1F0FB]">Taille de l'entreprise</Label>
+        <Label htmlFor="companySize" className="mb-2 block">Taille de l'entreprise</Label>
         <Select
           value={formData.companySize}
           onValueChange={(value) => setFormData({ ...formData, companySize: value })}
         >
-          <SelectTrigger className="w-full bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40">
+          <SelectTrigger className="w-full border-primary/20">
             <SelectValue placeholder="Nombre d'employés" />
           </SelectTrigger>
           <SelectContent>
