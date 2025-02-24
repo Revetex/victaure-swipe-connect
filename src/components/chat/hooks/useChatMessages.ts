@@ -1,18 +1,18 @@
 
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 
-interface ChatMessage {
+interface Message {
   content: string;
   isUser: boolean;
-  username?: string;
 }
 
-interface UseChatMessagesProps {
+interface ChatMessagesProps {
   context: string;
   maxQuestions: number;
-  user: any;
+  user: User | null;
   onMaxQuestionsReached?: () => void;
 }
 
@@ -21,168 +21,72 @@ export function useChatMessages({
   maxQuestions, 
   user, 
   onMaxQuestionsReached 
-}: UseChatMessagesProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [userQuestions, setUserQuestions] = useState(0);
+}: ChatMessagesProps) {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [userQuestions, setUserQuestions] = useState(0);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    const greetUser = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        console.log("Sending initial greeting...");
+  const refreshMessages = useCallback(() => {
+    // Pour l'instant, on vide juste les messages
+    setMessages([]);
+    setUserQuestions(0);
+    setError(null);
+  }, []);
 
-        let profile = null;
-        
-        // Ne récupérer le profil que si l'utilisateur est connecté
-        if (user?.id) {
-          const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('full_name')
-            .eq('id', user.id)
-            .maybeSingle();
-
-          if (profileError) {
-            console.error("Error fetching profile:", profileError);
-            // Ne pas afficher de toast pour les erreurs de profil pour les invités
-            if (user?.id) {
-              toast.error("Erreur lors de la récupération du profil");
-            }
-            return;
-          }
-          profile = profileData;
-        }
-
-        const { data, error } = await supabase.functions.invoke("victaure-chat", {
-          body: { 
-            messages: [
-              { role: "system", content: context },
-              { role: "user", content: "Bonjour !" }
-            ],
-            userId: user?.id,
-            userProfile: profile
-          }
-        });
-
-        if (error) {
-          console.error("Error in greetUser:", error);
-          setError(error);
-          toast.error("Mr Victaure n'est pas disponible pour le moment");
-          return;
-        }
-
-        console.log("Initial response data:", data);
-
-        if (data?.choices?.[0]?.message?.content) {
-          setMessages([{
-            content: data.choices[0].message.content,
-            isUser: false
-          }]);
-        }
-      } catch (error) {
-        console.error("Error getting initial message:", error);
-        setError(error as Error);
-        toast.error("Désolé, je ne suis pas disponible pour le moment");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // Toujours déclencher le message d'accueil, que l'utilisateur soit connecté ou non
-    greetUser();
-  }, [context, user?.id]);
-
-  const sendMessage = async (userInput: string) => {
-    if (userQuestions >= maxQuestions && !user) {
-      onMaxQuestionsReached?.();
-      return null;
-    }
-
-    if (!userInput.trim() || isLoading) return null;
-
-    const userMessage = {
-      content: userInput.trim(),
-      isUser: true,
-      username: user?.email || 'Visiteur'
-    };
+  const sendMessage = useCallback(async (content: string, useWebSearch: boolean = false) => {
+    if (!content.trim()) return;
 
     try {
       setIsLoading(true);
       setError(null);
-      console.log("Sending message, current state:", { userQuestions, maxQuestions });
 
-      // Add user message immediately
-      setMessages(prev => [...prev, userMessage]);
+      // Ajouter le message de l'utilisateur
+      setMessages(prev => [...prev, { content, isUser: true }]);
       setUserQuestions(prev => prev + 1);
 
-      let profile = null;
-      
-      // Ne récupérer le profil que si l'utilisateur est connecté
-      if (user?.id) {
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', user?.id)
-          .maybeSingle();
-
-        if (profileError) {
-          console.error("Error fetching profile:", profileError);
-          // Ne pas afficher de toast pour les erreurs de profil pour les invités
-          if (user?.id) {
-            toast.error("Erreur lors de la récupération du profil");
-          }
-          return null;
-        }
-        profile = profileData;
+      // Vérifier si l'utilisateur a atteint la limite
+      if (!user && userQuestions >= maxQuestions - 1) {
+        onMaxQuestionsReached?.();
       }
 
-      const messageHistory = [
-        { role: "system", content: context },
-        ...messages.map(msg => ({
-          role: msg.isUser ? "user" : "assistant",
-          content: msg.content
-        })),
-        { role: "user", content: userInput }
+      const messagesForContext = [
+        ...messages,
+        { content, isUser: true }
       ];
 
-      console.log("Sending to victaure-chat with history:", messageHistory);
-
-      const { data, error } = await supabase.functions.invoke("victaure-chat", {
+      const { data, error } = await supabase.functions.invoke('victaure-chat', {
         body: { 
-          messages: messageHistory,
+          messages: messagesForContext,
+          context,
           userId: user?.id,
-          userProfile: profile
+          useWebSearch,
+          userProfile: user ? await getUserProfile(user.id) : null
         }
       });
 
-      if (error) {
-        console.error("Error in sendMessage:", error);
-        setError(error);
-        toast.error("Mr Victaure n'est pas disponible pour le moment");
-        return null;
-      }
+      if (error) throw error;
 
-      console.log("Response from victaure-chat:", data);
+      const assistantMessage = data.choices[0].message.content;
+      setMessages(prev => [...prev, { content: assistantMessage, isUser: false }]);
+      return assistantMessage;
 
-      if (data?.choices?.[0]?.message?.content) {
-        const response = data.choices[0].message.content;
-        setMessages(prev => [...prev, {
-          content: response,
-          isUser: false
-        }]);
-        return response;
-      }
-      return null;
-    } catch (error) {
-      console.error("Error in sendMessage:", error);
-      setError(error as Error);
-      toast.error("Une erreur est survenue lors de l'envoi du message");
-      return null;
+    } catch (err) {
+      console.error('Error sending message:', err);
+      setError(err instanceof Error ? err : new Error('Unknown error occurred'));
+      toast.error("Erreur lors de l'envoi du message");
     } finally {
       setIsLoading(false);
     }
+  }, [messages, user, userQuestions, maxQuestions, context, onMaxQuestionsReached]);
+
+  const getUserProfile = async (userId: string) => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('id', userId)
+      .single();
+    return data;
   };
 
   return {
@@ -190,6 +94,7 @@ export function useChatMessages({
     isLoading,
     sendMessage,
     userQuestions,
-    error
+    error,
+    refreshMessages
   };
 }
