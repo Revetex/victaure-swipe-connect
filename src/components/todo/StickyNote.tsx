@@ -22,6 +22,7 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(note.text);
   const [position, setPosition] = useState(note.position || { x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
 
   const getColorClass = (color: string) => {
     switch (color) {
@@ -40,7 +41,12 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
     }
   };
 
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
   const handleDragEnd = (event: any, info: any) => {
+    setIsDragging(false);
     const container = event.target.closest('.notes-container');
     if (!container) return;
 
@@ -94,7 +100,6 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
     <div className={cn(
       "border shadow-lg group relative overflow-hidden transition-all duration-300",
       getColorClass(note.color),
-      "touch-manipulation cursor-grab active:cursor-grabbing",
       "before:content-[''] before:absolute before:inset-0",
       "before:bg-gradient-to-br before:from-white/5 before:to-transparent",
       "hover:shadow-xl",
@@ -127,34 +132,39 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <Grip className="w-4 h-4 opacity-20 group-hover:opacity-100 transition-opacity cursor-grab" />
-          
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => isEditing ? handleSave() : setIsEditing(true)}
-            className="bg-background/20 hover:bg-background/40"
-          >
-            {isEditing ? (
-              <Save className="h-4 w-4" />
-            ) : (
-              <Edit2 className="h-4 w-4" />
-            )}
-            <span className="sr-only">
-              {isEditing ? "Enregistrer" : "Modifier"}
-            </span>
-          </Button>
-          
-          <Button
-            variant="ghost"
-            size="icon"
-            className="bg-background/20 hover:bg-background/40"
-            onClick={() => onDelete(note.id)}
-          >
-            <Trash2 className="h-4 w-4" />
-            <span className="sr-only">Supprimer</span>
-          </Button>
+        {/* Contrôles de la note avec stopPropagation pour éviter le conflit avec le drag */}
+        <div className="flex flex-col gap-2" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+          {!isDragging && (
+            <>
+              <Grip className="w-4 h-4 opacity-20 group-hover:opacity-100 transition-opacity cursor-grab" />
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+                className="bg-background/20 hover:bg-background/40"
+              >
+                {isEditing ? (
+                  <Save className="h-4 w-4" />
+                ) : (
+                  <Edit2 className="h-4 w-4" />
+                )}
+                <span className="sr-only">
+                  {isEditing ? "Enregistrer" : "Modifier"}
+                </span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-background/20 hover:bg-background/40"
+                onClick={() => onDelete(note.id)}
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">Supprimer</span>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -166,6 +176,7 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
         drag
         dragMomentum={false}
         dragConstraints={{ left: 0, top: 0, right: window.innerWidth - width, bottom: window.innerHeight - height }}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         initial={false}
         animate={{ x: position.x, y: position.y }}
