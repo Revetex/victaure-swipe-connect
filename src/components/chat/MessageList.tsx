@@ -22,13 +22,17 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
     return (
       <div 
         ref={ref}
-        className="h-full pt-16 pb-2 px-3 scrollbar-none flex flex-col-reverse"
+        className="h-full pt-4 pb-2 px-3 overflow-y-auto flex flex-col-reverse"
       >
         <div className="space-y-3">
           {isLoading && (
             <div className="flex items-start">
               <div className="relative flex-1 bg-[#2A2D3E] rounded-2xl rounded-bl-sm px-4 py-3">
-                <Loader2 className="w-4 h-4 text-white/80 animate-spin"/>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-white/80 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-2 h-2 bg-white/80 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-2 h-2 bg-white/80 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
               </div>
             </div>
           )}

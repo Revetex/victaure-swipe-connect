@@ -7,7 +7,8 @@ import { ChatInput } from "./ChatInput";
 import { useChatMessages } from "./hooks/useChatMessages";
 import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
-import { RefreshCcw } from "lucide-react";
+import { RefreshCcw, X } from "lucide-react";
+import { DialogClose } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 interface VictaureChatProps {
@@ -78,15 +79,20 @@ export function VictaureChat({
       <div className="relative z-10 flex flex-col h-full">
         <div className="flex-none flex items-center justify-between px-4 py-3 border-b border-[#64B5D9]/20">
           <ChatHeader />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleRefresh}
-            className="text-gray-400 hover:text-[#64B5D9] transition-colors"
-            title="Effacer l'historique"
-          >
-            <RefreshCcw className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleRefresh}
+              className="text-gray-400 hover:text-[#64B5D9] transition-colors"
+              title="Effacer l'historique"
+            >
+              <RefreshCcw className="h-4 w-4" />
+            </Button>
+            <DialogClose className="text-gray-400 hover:text-[#64B5D9] transition-colors">
+              <X className="h-4 w-4" />
+            </DialogClose>
+          </div>
         </div>
 
         <div className="flex-1 overflow-hidden">
