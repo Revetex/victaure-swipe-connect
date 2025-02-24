@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -7,9 +7,11 @@ export function useVoiceFeatures() {
   const [isRecording, setIsRecording] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   const startRecording = useCallback(async () => {
+    if (isRecording) return;
+
     try {
       setIsRecording(true);
       setIsProcessing(true);
@@ -82,15 +84,14 @@ export function useVoiceFeatures() {
       setIsRecording(false);
       setIsProcessing(false);
     }
-  }, []);
+  }, [isRecording]);
 
   const speakText = useCallback(async (text: string) => {
     try {
-      // Si déjà en train de parler, on arrête
       if (isSpeaking) {
-        if (audioContext) {
-          await audioContext.close();
-          setAudioContext(null);
+        if (audioContextRef.current) {
+          await audioContextRef.current.close();
+          audioContextRef.current = null;
         }
         setIsSpeaking(false);
         return;
@@ -110,8 +111,8 @@ export function useVoiceFeatures() {
       if (!data?.audioContent) throw new Error("Pas de contenu audio reçu");
 
       // Créer un nouveau contexte audio
-      const newAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-      setAudioContext(newAudioContext);
+      const newAudioContext = new AudioContext();
+      audioContextRef.current = newAudioContext;
 
       // Décoder le contenu audio base64
       const audioData = Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0));
@@ -125,7 +126,10 @@ export function useVoiceFeatures() {
       // Gérer la fin de la lecture
       source.onended = () => {
         setIsSpeaking(false);
-        setAudioContext(null);
+        if (audioContextRef.current) {
+          audioContextRef.current.close();
+          audioContextRef.current = null;
+        }
       };
 
       // Démarrer la lecture
@@ -135,9 +139,12 @@ export function useVoiceFeatures() {
       console.error("Erreur de synthèse vocale:", error);
       toast.error("Impossible de générer la voix");
       setIsSpeaking(false);
-      setAudioContext(null);
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
     }
-  }, [isSpeaking, audioContext]);
+  }, [isSpeaking]);
 
   return {
     isRecording,
