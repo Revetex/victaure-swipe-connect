@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from '../_shared/cors.ts';
 
@@ -98,17 +99,16 @@ Concentre-toi sur :
 - Les conseils non fondés
 - Les sujets hors de ton domaine d'expertise`;
 
-    // Construction du payload avec logging
     const payload = {
-      model: "google/gemini-2.0-flash-thinking-exp:free",
+      model: "anthropic/claude-2",
       messages: [
         { role: "system", content: systemContext }
-      ].concat(messages.slice(1)), // Exclure le premier message et ajouter notre contexte système
+      ].concat(messages.slice(1)),
       temperature: 0.7,
       max_tokens: 1000,
       top_p: 1,
-      frequency_penalty: 0.5,
-      presence_penalty: 0.5,
+      frequency_penalty: 0,
+      presence_penalty: 0,
       stream: false
     };
 
@@ -137,18 +137,8 @@ Concentre-toi sur :
     const data = await response.json();
     console.log('OpenRouter response data:', JSON.stringify(data, null, 2));
 
-    // Vérification spécifique des erreurs de limite de taux
-    if (data.error) {
-      if (data.error.code === 429) {
-        const resetTime = new Date(parseInt(data.error.metadata?.headers?.["X-RateLimit-Reset"] || Date.now()));
-        const resetTimeString = resetTime.toLocaleString();
-        throw new Error(`Limite d'utilisation atteinte. Réessayez après ${resetTimeString}`);
-      }
-      throw new Error(`OpenRouter API error: ${JSON.stringify(data.error)}`);
-    }
-
-    if (!response.ok) {
-      throw new Error(`OpenRouter API error: Status ${response.status}`);
+    if (!response.ok || data.error) {
+      throw new Error(`OpenRouter API error: ${data.error?.message || data.error || 'Unknown error'}`);
     }
 
     if (!data.choices?.[0]?.message?.content) {
@@ -188,7 +178,7 @@ Concentre-toi sur :
       JSON.stringify(errorResponse),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: error instanceof Error && error.message.includes('Limite') ? 429 : 500,
+        status: 500
       }
     );
   }
