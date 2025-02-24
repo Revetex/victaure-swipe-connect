@@ -1,9 +1,12 @@
+
 import { useState, useEffect, useRef } from "react";
-import { Bot, MessagesSquare, Mic, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import { useVictaureChat } from "@/hooks/useVictaureChat";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { ChatHeader } from "./ChatHeader";
+import { MessageList } from "./MessageList";
+import { ChatInput } from "./ChatInput";
 
 interface ChatMessage {
   content: string;
@@ -183,86 +186,25 @@ export function VictaureChat({
     }
   };
 
+  const isDisabled = userQuestions >= maxQuestions && !user;
+  const disabledMessage = "Connectez-vous pour continuer...";
+
   return (
     <div className="w-full bg-[#1A1F2C] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-lg relative">
-      <div className="flex items-center gap-3 p-4 border-b border-[#64B5D9]/10">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Bot className="w-10 h-10 text-[#64B5D9]" />
-            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#1A1F2C]" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-[#F1F0FB]">Mr. Victaure</h3>
-            <p className="text-xs text-[#F1F0FB]/60">Assistant IA</p>
-          </div>
-        </div>
-      </div>
-
-      <div 
-        ref={chatContainerRef}
-        className="h-[400px] overflow-y-auto p-4 scrollbar-none space-y-4"
-        style={{
-          backgroundImage: "url('/lovable-uploads/60542c40-c17c-42cc-8136-f4780f09946a.png')",
-          backgroundSize: "32px",
-          backgroundRepeat: "repeat"
-        }}
-      >
-        {messages.map((message, index) => (
-          <div key={index} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[80%] rounded-2xl px-4 py-2 ${
-              message.isUser
-                ? 'bg-[#64B5D9] text-white'
-                : 'bg-[#2A2D3E] text-[#F1F0FB]'
-            }`}>
-              <p className="text-sm">{message.content}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="p-4 bg-[#1A1F2C]/80 border-t border-[#64B5D9]/10">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={startRecording}
-            disabled={isRecording || (userQuestions >= maxQuestions && !user)}
-            className="h-10 w-10 flex-shrink-0 rounded-xl bg-[#2A2D3E] text-[#F1F0FB] hover:bg-[#363B4D] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            title={isRecording ? "Enregistrement en cours..." : "Enregistrer un message vocal"}
-          >
-            <Mic className={`w-4 h-4 ${isRecording ? 'text-red-500 animate-pulse' : ''}`} />
-          </button>
-
-          <input
-            type="text"
-            value={userInput}
-            onChange={e => setUserInput(e.target.value)}
-            placeholder={
-              userQuestions >= maxQuestions && !user
-                ? "Connectez-vous pour continuer..."
-                : "Envoyez un message à Mr. Victaure..."
-            }
-            disabled={userQuestions >= maxQuestions && !user}
-            className="flex-1 h-10 px-4 rounded-xl bg-[#2A2D3E] text-[#F1F0FB] border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder-[#F1F0FB]/40"
-            onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
-          />
-
-          <button
-            onClick={handleSendMessage}
-            disabled={!userInput.trim() || isLoading || (userQuestions >= maxQuestions && !user)}
-            className="h-10 w-10 flex-shrink-0 rounded-xl bg-[#64B5D9] text-white hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-          >
-            <MessagesSquare className="w-4 h-4" />
-          </button>
-
-          {isSpeaking && (
-            <button
-              onClick={() => setIsSpeaking(false)}
-              className="h-10 w-10 flex-shrink-0 rounded-xl bg-[#64B5D9] text-white animate-pulse flex items-center justify-center"
-            >
-              <Volume2 className="w-4 h-4" />
-            </button>
-          )}
-        </div>
-      </div>
+      <ChatHeader />
+      <MessageList ref={chatContainerRef} messages={messages} />
+      <ChatInput
+        userInput={userInput}
+        setUserInput={setUserInput}
+        isRecording={isRecording}
+        isSpeaking={isSpeaking}
+        isLoading={isLoading}
+        isDisabled={isDisabled}
+        disabledMessage={disabledMessage}
+        onStartRecording={startRecording}
+        onStopSpeaking={() => setIsSpeaking(false)}
+        onSendMessage={handleSendMessage}
+      />
     </div>
   );
 }
