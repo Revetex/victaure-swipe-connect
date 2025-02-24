@@ -62,7 +62,7 @@ END:VCARD`;
             <DialogTrigger asChild>
               <div className="relative w-40 h-16 cursor-pointer group">
                 <img 
-                  src="/lovable-uploads/signaturenoir.png"
+                  src="/lovable-uploads/signature-noir.png"
                   alt="Signature" 
                   className="absolute inset-0 w-full h-full object-contain brightness-150 contrast-125 filter drop-shadow-lg transition-transform duration-300 group-hover:scale-105"
                 />
@@ -100,7 +100,7 @@ END:VCARD`;
             />
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <img 
-                src="/lovable-uploads/logocolor.png"
+                src="/lovable-uploads/logo-couleur.png"
                 alt="Victaure Logo"
                 className="w-12 h-12 opacity-90"
               />
