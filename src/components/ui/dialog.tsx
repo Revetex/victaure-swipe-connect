@@ -30,9 +30,9 @@ interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof Dialo
   onOpenChange?: (open: boolean) => void;
 }
 
-const DialogContentWithoutProvider = React.forwardRef<
+const DialogContentInner = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
-  DialogContentProps
+  Omit<DialogContentProps, 'open' | 'onOpenChange'>
 >(({ className, children, onClose, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
@@ -55,19 +55,21 @@ const DialogContentWithoutProvider = React.forwardRef<
     </DialogPrimitive.Content>
   </DialogPortal>
 ))
-DialogContentWithoutProvider.displayName = "DialogContentWithoutProvider"
+DialogContentInner.displayName = "DialogContentInner"
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
 >(({ open, onOpenChange, ...props }, ref) => {
-  if (open === undefined) {
-    return <DialogContentWithoutProvider {...props} ref={ref} />
+  // For uncontrolled dialogs (when used inside an existing Dialog context)
+  if (typeof open === 'undefined') {
+    return <DialogContentInner {...props} ref={ref} />
   }
 
+  // For controlled dialogs (standalone usage)
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContentWithoutProvider {...props} ref={ref} />
+      <DialogContentInner {...props} ref={ref} />
     </Dialog>
   )
 })
