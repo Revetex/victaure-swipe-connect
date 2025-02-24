@@ -2,12 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-interface ChatMessage {
-  content: string;
-  isUser: boolean;
-  username?: string;
-}
+import { Message } from "@/types/messages";
 
 interface UseChatMessagesProps {
   context: string;
@@ -22,7 +17,7 @@ export function useChatMessages({
   user, 
   onMaxQuestionsReached 
 }: UseChatMessagesProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [userQuestions, setUserQuestions] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -44,10 +39,21 @@ export function useChatMessages({
         console.log("Initial response:", data);
 
         if (data?.choices?.[0]?.message?.content) {
-          setMessages(prevMessages => [{
+          const initialMessage: Message = {
+            id: crypto.randomUUID(),
             content: data.choices[0].message.content,
+            sender_id: "assistant",
+            receiver_id: user?.id || "anonymous",
+            created_at: new Date().toISOString(),
+            sender: {
+              id: "assistant",
+              full_name: "Mr. Victaure",
+              avatar_url: null,
+              role: "admin"
+            },
             isUser: false
-          }]);
+          };
+          setMessages([initialMessage]);
         }
       } catch (error) {
         console.error("Error getting initial message:", error);
@@ -68,16 +74,23 @@ export function useChatMessages({
 
     if (!userInput.trim() || isLoading) return null;
 
-    const userMessage = userInput.trim();
-    setUserQuestions(prev => prev + 1);
-    setMessages(prevMessages => [
-      {
-        content: userMessage,
-        isUser: true,
-        username: user?.email || 'Visiteur'
+    const userMessage: Message = {
+      id: crypto.randomUUID(),
+      content: userInput.trim(),
+      sender_id: user?.id || "anonymous",
+      receiver_id: "assistant",
+      created_at: new Date().toISOString(),
+      sender: {
+        id: user?.id || "anonymous",
+        full_name: user?.email || "Visiteur",
+        avatar_url: null,
+        role: "professional"
       },
-      ...prevMessages
-    ]);
+      isUser: true
+    };
+
+    setUserQuestions(prev => prev + 1);
+    setMessages(prevMessages => [userMessage, ...prevMessages]);
 
     try {
       setIsLoading(true);
@@ -89,7 +102,7 @@ export function useChatMessages({
           role: msg.isUser ? "user" : "assistant",
           content: msg.content
         })).reverse(),
-        { role: "user", content: userMessage }
+        { role: "user", content: userInput }
       ];
 
       console.log("Message history:", messageHistory);
@@ -105,12 +118,22 @@ export function useChatMessages({
       console.log("Assistant response:", data);
 
       if (data?.choices?.[0]?.message?.content) {
-        const response = data.choices[0].message.content;
-        setMessages(prevMessages => [
-          { content: response, isUser: false },
-          ...prevMessages
-        ]);
-        return response;
+        const assistantMessage: Message = {
+          id: crypto.randomUUID(),
+          content: data.choices[0].message.content,
+          sender_id: "assistant",
+          receiver_id: user?.id || "anonymous",
+          created_at: new Date().toISOString(),
+          sender: {
+            id: "assistant",
+            full_name: "Mr. Victaure",
+            avatar_url: null,
+            role: "admin"
+          },
+          isUser: false
+        };
+        setMessages(prevMessages => [assistantMessage, ...prevMessages]);
+        return assistantMessage.content;
       }
       return null;
     } catch (error) {
