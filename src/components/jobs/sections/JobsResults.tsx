@@ -1,59 +1,27 @@
 
 import { Job } from "@/types/job";
-import { JobsList } from "../JobsList";
-import { JobSearch } from "../JobSearch";
-import { Button } from "@/components/ui/button";
-import { RefreshCw, X } from "lucide-react";
-import { motion } from "framer-motion";
+import { JobCard } from "../JobCard";
 
 interface JobsResultsProps {
   jobs: Job[];
   onJobSelect: (job: Job) => void;
-  selectedJobId?: string;
-  onResetFilters: () => void;
+  onResetFilters?: () => void;
 }
 
-export function JobsResults({ 
-  jobs,
-  onJobSelect,
-  selectedJobId,
-  onResetFilters
-}: JobsResultsProps) {
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-4 p-6 bg-card/50 backdrop-blur-sm rounded-lg border shadow-lg"
-    >
-      <div className="flex items-center justify-between gap-4">
-        <JobSearch />
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onResetFilters}
-            className="flex items-center gap-2"
-          >
-            <X className="h-4 w-4" />
-            Réinitialiser
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => window.location.reload()}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className="h-4 w-4" />
-            Actualiser
-          </Button>
-        </div>
+export function JobsResults({ jobs, onJobSelect }: JobsResultsProps) {
+  if (jobs.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-gray-400">Aucune offre d'emploi ne correspond à vos critères</p>
       </div>
+    );
+  }
 
-      <JobsList 
-        jobs={jobs}
-        onJobSelect={onJobSelect}
-        selectedJobId={selectedJobId}
-      />
-    </motion.div>
+  return (
+    <div className="grid gap-4">
+      {jobs.map((job) => (
+        <JobCard key={job.id} job={job} onSelect={() => onJobSelect(job)} />
+      ))}
+    </div>
   );
 }

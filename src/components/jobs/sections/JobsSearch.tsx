@@ -6,7 +6,15 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger, 
+  DialogClose,
+  DialogFooter 
+} from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { JobsFilters } from "./JobsFilters";
 import { useState } from "react";
@@ -50,6 +58,19 @@ export function JobsSearch({
   onRemoteOnlyChange
 }: JobsSearchProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const locations = [
+    "Montréal",
+    "Québec",
+    "Laval",
+    "Gatineau",
+    "Sherbrooke",
+    "Trois-Rivières",
+    "Longueuil",
+    "Saint-Jean-sur-Richelieu",
+    "Lévis",
+    "Saguenay"
+  ];
 
   return (
     <Card className="bg-[#1B2A4A]/50 backdrop-blur-sm border-[#64B5D9]/10 shadow-lg p-6">
@@ -159,6 +180,7 @@ export function JobsSearch({
                 onContractTypeChange={onContractTypeChange}
                 onSalaryRangeChange={onSalaryRangeChange}
                 onRemoteOnlyChange={onRemoteOnlyChange}
+                locations={locations}
               />
             </DialogContent>
           </Dialog>
