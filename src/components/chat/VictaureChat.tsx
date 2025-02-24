@@ -111,24 +111,27 @@ export function VictaureChat({
   useEffect(() => {
     const greetUser = async () => {
       try {
-        const initialMessage = {
-          role: "system",
-          content: context
-        };
-        
-        const userGreeting = {
-          role: "user",
-          content: "Bonjour !"
-        };
-
         const { data, error } = await supabase.functions.invoke("victaure-chat", {
-          body: { messages: [initialMessage, userGreeting] }
+          body: { 
+            messages: [
+              {
+                role: "system",
+                content: context
+              },
+              {
+                role: "user",
+                content: "Bonjour !"
+              }
+            ],
+            hideSystem: true
+          }
         });
 
         if (error) throw error;
 
-        const response = data.choices[0].message.content;
-        setMessages([{ content: response, isUser: false }]);
+        if (data?.choices?.[0]?.message?.content) {
+          setMessages([{ content: data.choices[0].message.content, isUser: false }]);
+        }
       } catch (error) {
         console.error("Error getting initial message:", error);
         toast.error("Désolé, je ne suis pas disponible pour le moment");
@@ -172,14 +175,19 @@ export function VictaureChat({
       ];
 
       const { data, error } = await supabase.functions.invoke("victaure-chat", {
-        body: { messages: messageHistory }
+        body: { 
+          messages: messageHistory,
+          hideSystem: true
+        }
       });
 
       if (error) throw error;
 
-      const response = data.choices[0].message.content;
-      setMessages(prev => [...prev, { content: response, isUser: false }]);
-      speakText(response);
+      if (data?.choices?.[0]?.message?.content) {
+        const response = data.choices[0].message.content;
+        setMessages(prev => [...prev, { content: response, isUser: false }]);
+        speakText(response);
+      }
     } catch (error) {
       console.error("Error in chat:", error);
       toast.error("Désolé, je ne peux pas répondre pour le moment");
