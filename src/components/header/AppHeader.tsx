@@ -1,3 +1,4 @@
+
 import { Star, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -86,7 +87,7 @@ export function AppHeader({
         </Button>
 
         <Dialog open={showChat} onOpenChange={setShowChat}>
-          <DialogContent className="max-w-3xl w-[95vw] h-[80vh] p-0 bg-[#1A1F2C] border border-white/10 rounded-2xl mx-auto mt-20 mb-4 overflow-hidden">
+          <DialogContent className="max-w-3xl w-[95vw] h-[85vh] p-0 bg-[#1A1F2C] border border-white/10 rounded-2xl fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden">
             <VictaureChat 
               maxQuestions={user ? undefined : 3}
               context="Tu es Mr. Victaure, un assistant professionnel spécialisé dans l'emploi. Tu aides les utilisateurs à trouver du travail et à améliorer leur carrière."

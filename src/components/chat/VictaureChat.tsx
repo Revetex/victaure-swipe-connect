@@ -7,7 +7,7 @@ import { ChatInput } from "./ChatInput";
 import { useChatMessages } from "./hooks/useChatMessages";
 import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
-import { RefreshCcw, Globe } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 
 interface VictaureChatProps {
@@ -22,7 +22,6 @@ export function VictaureChat({
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
-  const [useWebSearch, setUseWebSearch] = useState(true);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { 
@@ -51,7 +50,7 @@ export function VictaureChat({
     if (!userInput.trim() || isLoading) return;
     
     try {
-      const response = await sendMessage(userInput, true); // Toujours utiliser la recherche web
+      const response = await sendMessage(userInput, true);
       setUserInput("");
       
       if (response) {
@@ -74,10 +73,10 @@ export function VictaureChat({
   const disabledMessage = "Connectez-vous pour continuer à discuter avec Mr Victaure";
 
   return (
-    <div className="flex flex-col h-[85vh] bg-gradient-to-b from-[#1A1F2C] to-[#151922] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-xl relative backdrop-blur-sm mt-12">
+    <div className="flex flex-col h-full bg-gradient-to-b from-[#1A1F2C] to-[#151922] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-xl relative backdrop-blur-sm">
       <div className="absolute inset-0 bg-[#64B5D9]/5 mix-blend-overlay pointer-events-none" />
       <div className="relative z-10 flex flex-col h-full">
-        <div className="flex-none flex items-center justify-between px-4 py-2 border-b border-[#64B5D9]/20">
+        <div className="flex-none flex items-center justify-between px-4 py-3 border-b border-[#64B5D9]/20">
           <ChatHeader />
           <Button
             variant="ghost"
@@ -98,7 +97,7 @@ export function VictaureChat({
           />
         </div>
         
-        <div className="flex-none bg-[#1A1F2C] border-t border-[#64B5D9]/20">
+        <div className="flex-none bg-[#1A1F2C] border-t border-[#64B5D9]/20 p-4">
           <ChatInput
             userInput={userInput}
             setUserInput={setUserInput}
