@@ -33,7 +33,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen w-full bg-background overflow-hidden">
       {/* Sidebar desktop */}
       <div className="hidden lg:block">
         <DashboardSidebar 
@@ -57,7 +57,9 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "lg:ml-64",
         "min-h-screen",
         "w-full",
-        "relative"
+        "relative",
+        "ios-safe-area",
+        "ios-momentum-scroll"
       )}>
         <AppHeader 
           onRequestAssistant={handleRequestChat}
@@ -65,7 +67,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
           setShowMobileMenu={handleMobileMenuToggle}
         />
         
-        <div className="pt-16 w-full">
+        <div className="pt-16 w-full pb-safe">
           {children || (
             <DashboardContent
               currentPage={currentPage}

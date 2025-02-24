@@ -28,7 +28,8 @@ export function DashboardMobileNav({
           "fixed inset-y-0 left-0",
           "lg:hidden",
           "z-[150]",
-          "overflow-y-auto pb-20" // Ajout du padding-bottom et overflow
+          "overflow-y-auto pb-20", // Ajout du padding-bottom et overflow
+          "ios-momentum-scroll ios-safe-area"
         )}
       >
         {/* Motif de fond */}
@@ -63,7 +64,7 @@ export function DashboardMobileNav({
                   "rounded-lg text-sm font-medium",
                   "transition-all duration-200",
                   "border-2 shadow-sm",
-                  "active:scale-[0.98]",
+                  "mobile-friendly-button",
                   currentPage === item.id 
                     ? "bg-white/15 text-white border-black shadow-inner" 
                     : "text-white/90 hover:bg-white/10 hover:text-white border-black/20 hover:border-black"
