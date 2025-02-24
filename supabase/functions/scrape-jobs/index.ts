@@ -6,22 +6,17 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const SEARCH_ENGINE_ID = "22e4528bd7c6f4db0";
+const API_KEY = "AIzaSyACeSmrGf4l49R9E3-I3ZRU-R9YtxTVj60";
+
 async function searchJobs() {
   try {
-    const SEARCH_ENGINE_ID = Deno.env.get('GOOGLE_SEARCH_ENGINE_ID');
-    const API_KEY = Deno.env.get('GOOGLE_SEARCH_API_KEY');
-
-    if (!API_KEY || !SEARCH_ENGINE_ID) {
-      throw new Error('Google Search API key or Search Engine ID not configured');
-    }
-
     console.log('Fetching jobs from Google Search API...');
 
     const queries = [
-      'site:indeed.ca filetype:html intitle:"emploi" OR intitle:"job" location:"Quebec"',
-      'site:jobillico.com filetype:html intitle:"emploi" location:"Quebec"',
-      'site:linkedin.com/jobs filetype:html intitle:"emploi" OR intitle:"job" location:"Quebec"',
-      'site:emploiquebec.gouv.qc.ca filetype:html intitle:"offre" OR intitle:"emploi"'
+      'site:ca.indeed.com emploi',
+      'site:jobillico.com/fr/emploi',
+      'site:emploiquebec.gouv.qc.ca offre'
     ];
 
     const allJobs = [];
@@ -30,6 +25,7 @@ async function searchJobs() {
       try {
         const url = `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${encodeURIComponent(query)}&num=10`;
         
+        console.log(`Searching with query: ${query}`);
         const response = await fetch(url);
         const data = await response.json();
         
@@ -72,13 +68,12 @@ async function searchJobs() {
 function cleanTitle(title: string): string {
   return title
     .replace(/\s*-\s*Indeed\.com|\s*\|\s*Jobillico|\s*\|\s*LinkedIn/gi, '')
-    .replace(/\([^)]*\)/g, '') // Remove text in parentheses
-    .replace(/\s+/g, ' ') // Remove extra spaces
+    .replace(/\([^)]*\)/g, '')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
 function extractCompany(title: string, url: string): string {
-  // Patterns pour trouver le nom de l'entreprise
   const patterns = [
     /(?:at|@|chez)\s+([^|.-]+)/i,
     /(.+?)\s+(?:is hiring|embauche|recherche)/i,
@@ -92,9 +87,8 @@ function extractCompany(title: string, url: string): string {
     }
   }
   
-  // Extraction depuis l'URL pour LinkedIn
-  if (url.includes('linkedin.com/jobs')) {
-    const companyMatch = url.match(/company\/([^/]+)/);
+  if (url.includes('indeed.com')) {
+    const companyMatch = url.match(/cmp\/([^/]+)/);
     if (companyMatch) {
       return companyMatch[1].replace(/-/g, ' ').trim();
     }
@@ -116,7 +110,6 @@ function extractLocation(title: string, description: string): string {
     }
   }
   
-  // Chercher un code postal québécois
   const postalCodeMatch = content.match(/[ABCEGHJKLMNPRSTVXY]\d[ABCEGHJKLMNPRSTVWXYZ]\s*\d[ABCEGHJKLMNPRSTVWXYZ]\d/i);
   if (postalCodeMatch) {
     return 'Québec';
@@ -126,10 +119,9 @@ function extractLocation(title: string, description: string): string {
 }
 
 function determineSource(url: string): string {
-  if (url.includes('indeed')) return 'indeed';
-  if (url.includes('jobillico')) return 'jobillico';
-  if (url.includes('emploiquebec')) return 'emploi_quebec';
-  if (url.includes('linkedin.com/jobs')) return 'linkedin';
+  if (url.includes('indeed.com')) return 'indeed';
+  if (url.includes('jobillico.com')) return 'jobillico';
+  if (url.includes('emploiquebec.gouv.qc.ca')) return 'emploi_quebec';
   return 'other';
 }
 
@@ -159,7 +151,6 @@ function extractSalary(description: string): string | null {
     let min = salaryMatch[1].replace(/\s/g, '');
     let max = salaryMatch[3]?.replace(/\s/g, '');
     
-    // Convertir k/K en milliers
     if (min.toLowerCase().endsWith('k')) {
       min = String(parseFloat(min.slice(0, -1)) * 1000);
     }
@@ -197,7 +188,6 @@ Deno.serve(async (req) => {
           .upsert(
             {
               ...job,
-              // Générer un ID unique basé sur l'URL pour éviter les doublons
               id: await crypto.subtle.digest(
                 "SHA-256",
                 new TextEncoder().encode(job.url)
