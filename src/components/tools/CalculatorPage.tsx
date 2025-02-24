@@ -15,6 +15,7 @@ import { PaymentTypeSelector } from "@/components/settings/payment/PaymentTypeSe
 import { TabsList, TabsTrigger, Tabs, TabsContent } from "@/components/ui/tabs";
 import { CreditCard, Receipt, Calculator } from "lucide-react";
 import { TransactionsList } from "@/components/settings/payment/TransactionsList";
+import { usePaymentMethods } from "@/hooks/usePaymentMethods";
 import type { TransactionType } from './calculator/types';
 
 export function CalculatorPage() {
@@ -23,6 +24,14 @@ export function CalculatorPage() {
   const [transactionType, setTransactionType] = useState<TransactionType>('fixed');
   const [amount, setAmount] = useState(0);
   const { handlePayment, loading } = usePaymentHandler();
+  const { 
+    paymentMethods, 
+    selectedType, 
+    setSelectedType,
+    handleDeleteMethod,
+    handleSetDefaultMethod,
+    transactions
+  } = usePaymentMethods();
 
   const handlePaymentSubmit = async () => {
     try {
@@ -76,7 +85,6 @@ export function CalculatorPage() {
                   amount={amount}
                   onAmountChange={setAmount}
                   onSubmit={handlePaymentSubmit}
-                  loading={loading}
                 />
               </div>
               <Converter 
@@ -96,14 +104,21 @@ export function CalculatorPage() {
 
           <TabsContent value="methods">
             <Card className="p-6">
-              <PaymentTypeSelector />
-              <PaymentMethodsList />
+              <PaymentTypeSelector
+                selectedPaymentType={selectedType}
+                onSelect={setSelectedType}
+              />
+              <PaymentMethodsList
+                methods={paymentMethods}
+                onSetDefault={handleSetDefaultMethod}
+                onDelete={handleDeleteMethod}
+              />
             </Card>
           </TabsContent>
 
           <TabsContent value="transactions">
             <Card className="p-6">
-              <TransactionsList />
+              <TransactionsList transactions={transactions} />
             </Card>
           </TabsContent>
         </Tabs>
