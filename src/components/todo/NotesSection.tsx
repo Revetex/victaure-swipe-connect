@@ -1,6 +1,6 @@
 
 import { StickyNote } from "@/types/todo";
-import { NotesGrid } from "@/components/board/NoteGrid";
+import { NoteGrid } from "@/components/board/NoteGrid";
 import { NotesToolbar } from "./NotesToolbar";
 
 interface NotesSectionProps {
@@ -37,7 +37,7 @@ export function NotesSection({
         onAdd={onAdd}
       />
       <div className="flex-1 relative">
-        <NotesGrid 
+        <NoteGrid 
           notes={notes} 
           onDeleteNote={onDelete}
           onUpdateNote={onUpdate}

@@ -61,12 +61,13 @@ export function useNotes() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const newNoteData: Partial<StickyNote> = {
+      // Remove Partial type and explicitly provide all required fields
+      const newNoteData = {
         text: newNote,
         color: selectedColor,
         user_id: user.id,
-        metadata: { width: 280, height: 280 },
-        position: { x: 0, y: 0 }
+        metadata: JSON.stringify({ width: 280, height: 280 }),
+        position: JSON.stringify({ x: 0, y: 0 })
       };
 
       const { data, error } = await supabase
