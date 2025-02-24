@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { PartnershipDialog } from "./dialogs/PartnershipDialog";
@@ -43,6 +42,7 @@ END:VCARD`;
             </span>
             <div className="absolute inset-0 bg-white/20 rounded-full transition-transform group-hover:scale-105 duration-300" />
           </Button>
+
           <Button
             className="relative group bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105"
             onClick={() => setIsPricingOpen(true)}
@@ -159,6 +159,11 @@ END:VCARD`;
         onOpenChange={setIsPartnershipOpen}
         contactInfo={contactInfo}
         vCardData={vCardData}
+      />
+
+      <PricingGuideDialog
+        open={isPricingOpen}
+        onOpenChange={setIsPricingOpen}
       />
     </footer>
   );
