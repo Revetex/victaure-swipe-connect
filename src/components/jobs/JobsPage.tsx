@@ -65,6 +65,10 @@ export function JobsPage() {
 
   const locations = Array.from(new Set(jobs.map(job => job.location))).sort();
 
+  const handleJobSelect = (job: Job) => {
+    setSelectedJobId(job.id);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -140,7 +144,7 @@ export function JobsPage() {
             <div className="lg:col-span-9">
               <JobsResults 
                 jobs={filteredJobs}
-                onJobSelect={setSelectedJobId}
+                onJobSelect={handleJobSelect}
                 selectedJobId={selectedJobId}
                 onResetFilters={() => {
                   setSearchQuery("");

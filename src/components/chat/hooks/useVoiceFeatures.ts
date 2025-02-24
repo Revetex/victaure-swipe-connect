@@ -1,13 +1,12 @@
 
 import { useState, useCallback, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export function useVoiceFeatures() {
   const [isRecording, setIsRecording] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const audioContextRef = useRef<AudioContext | null>(null);
+  const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   const startRecording = useCallback(async () => {
     if (isRecording) return;
@@ -21,8 +20,7 @@ export function useVoiceFeatures() {
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
-          autoGainControl: true,
-          sampleRate: 24000
+          autoGainControl: true
         }
       });
 
@@ -33,34 +31,14 @@ export function useVoiceFeatures() {
         audioChunks.push(event.data);
       };
 
-      mediaRecorder.onstop = async () => {
+      mediaRecorder.onstop = () => {
         try {
           const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
           const reader = new FileReader();
 
-          reader.onloadend = async () => {
-            try {
-              const base64Audio = reader.result?.toString().split(",")[1];
-              if (!base64Audio) throw new Error("Échec de la conversion audio");
-
-              const { data, error } = await supabase.functions.invoke("voice-to-text", {
-                body: { audio: base64Audio }
-              });
-
-              if (error) throw error;
-              setIsProcessing(false);
-
-              if (data.text) {
-                toast.success("Message vocal transcrit avec succès");
-                return data.text;
-              } else {
-                throw new Error("Aucun texte transcrit");
-              }
-            } catch (err) {
-              console.error("Erreur de transcription:", err);
-              toast.error("Impossible de transcrire l'audio");
-              setIsProcessing(false);
-            }
+          reader.onloadend = () => {
+            setIsProcessing(false);
+            // Ici vous pouvez ajouter la logique de transcription si nécessaire
           };
 
           reader.readAsDataURL(audioBlob);
@@ -86,63 +64,51 @@ export function useVoiceFeatures() {
     }
   }, [isRecording]);
 
-  const speakText = useCallback(async (text: string) => {
+  const speakText = useCallback((text: string) => {
     try {
-      if (isSpeaking) {
-        if (audioContextRef.current) {
-          await audioContextRef.current.close();
-          audioContextRef.current = null;
-        }
+      // Si déjà en train de parler, on arrête
+      if (isSpeaking && speechSynthesisRef.current) {
+        window.speechSynthesis.cancel();
         setIsSpeaking(false);
         return;
       }
 
-      setIsSpeaking(true);
+      // Création d'une nouvelle instance de SpeechSynthesisUtterance
+      const utterance = new SpeechSynthesisUtterance(text);
+      speechSynthesisRef.current = utterance;
 
-      const { data, error } = await supabase.functions.invoke("text-to-voice", {
-        body: { 
-          text,
-          voice: "alloy",
-          model: "eleven-multilingual-v2"
-        }
-      });
+      // Configuration de la voix en français
+      const voices = window.speechSynthesis.getVoices();
+      const frenchVoice = voices.find(voice => voice.lang.includes('fr'));
+      utterance.voice = frenchVoice || null;
+      utterance.lang = 'fr-FR';
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
 
-      if (error) throw error;
-      if (!data?.audioContent) throw new Error("Pas de contenu audio reçu");
-
-      // Créer un nouveau contexte audio
-      const newAudioContext = new AudioContext();
-      audioContextRef.current = newAudioContext;
-
-      // Décoder le contenu audio base64
-      const audioData = Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0));
-      const audioBuffer = await newAudioContext.decodeAudioData(audioData.buffer);
-
-      // Créer et connecter les nœuds audio
-      const source = newAudioContext.createBufferSource();
-      source.buffer = audioBuffer;
-      source.connect(newAudioContext.destination);
-
-      // Gérer la fin de la lecture
-      source.onended = () => {
-        setIsSpeaking(false);
-        if (audioContextRef.current) {
-          audioContextRef.current.close();
-          audioContextRef.current = null;
-        }
+      // Gestion des événements
+      utterance.onstart = () => {
+        setIsSpeaking(true);
       };
 
-      // Démarrer la lecture
-      source.start();
+      utterance.onend = () => {
+        setIsSpeaking(false);
+        speechSynthesisRef.current = null;
+      };
+
+      utterance.onerror = (event) => {
+        console.error('Erreur de synthèse vocale:', event);
+        toast.error("Erreur lors de la lecture vocale");
+        setIsSpeaking(false);
+        speechSynthesisRef.current = null;
+      };
+
+      // Lancement de la synthèse vocale
+      window.speechSynthesis.speak(utterance);
 
     } catch (error) {
       console.error("Erreur de synthèse vocale:", error);
       toast.error("Impossible de générer la voix");
       setIsSpeaking(false);
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-        audioContextRef.current = null;
-      }
     }
   }, [isSpeaking]);
 
