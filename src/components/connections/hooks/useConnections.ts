@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, Friend } from "@/types/profile";
 import { toast } from "sonner";
 
 export function useConnections() {
@@ -15,7 +15,6 @@ export function useConnections() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Get all accepted friend requests where user is either sender or receiver
       const { data: friendRequests, error: friendRequestsError } = await supabase
         .from("friend_requests")
         .select(`
@@ -26,18 +25,28 @@ export function useConnections() {
             avatar_url,
             role,
             bio,
-            certifications (
+            phone,
+            city,
+            state,
+            country,
+            online_status,
+            last_seen,
+            website,
+            company_name,
+            privacy_enabled,
+            created_at,
+            sections_order,
+            certifications(
               id,
               profile_id,
               title,
               issuer,
               issue_date,
               expiry_date,
-              credential_id,
               credential_url,
               description
             ),
-            education (
+            education(
               id,
               profile_id,
               school_name,
@@ -47,7 +56,7 @@ export function useConnections() {
               end_date,
               description
             ),
-            experiences (
+            experiences(
               id,
               profile_id,
               position,
@@ -56,12 +65,14 @@ export function useConnections() {
               end_date,
               description
             ),
-            friends:friendships(
-              id,
-              full_name,
-              avatar_url,
-              online_status,
-              last_seen
+            friend_connections:friend_requests!friend_requests_sender_id_fkey(
+              receiver:profiles!friend_requests_receiver_id_fkey(
+                id,
+                full_name,
+                avatar_url,
+                online_status,
+                last_seen
+              )
             )
           ),
           receiver:profiles!friend_requests_receiver_id_fkey(
@@ -71,18 +82,28 @@ export function useConnections() {
             avatar_url,
             role,
             bio,
-            certifications (
+            phone,
+            city,
+            state,
+            country,
+            online_status,
+            last_seen,
+            website,
+            company_name,
+            privacy_enabled,
+            created_at,
+            sections_order,
+            certifications(
               id,
               profile_id,
               title,
               issuer,
               issue_date,
               expiry_date,
-              credential_id,
               credential_url,
               description
             ),
-            education (
+            education(
               id,
               profile_id,
               school_name,
@@ -92,7 +113,7 @@ export function useConnections() {
               end_date,
               description
             ),
-            experiences (
+            experiences(
               id,
               profile_id,
               position,
@@ -101,12 +122,14 @@ export function useConnections() {
               end_date,
               description
             ),
-            friends:friendships(
-              id,
-              full_name,
-              avatar_url,
-              online_status,
-              last_seen
+            friend_connections:friend_requests!friend_requests_receiver_id_fkey(
+              sender:profiles!friend_requests_sender_id_fkey(
+                id,
+                full_name,
+                avatar_url,
+                online_status,
+                last_seen
+              )
             )
           )
         `)
@@ -120,14 +143,43 @@ export function useConnections() {
 
       // Transform the data to get a flat list of connections
       const connections = friendRequests?.map(request => {
-        const connection = request.sender.id === user.id ? request.receiver : request.sender;
-        return {
-          ...connection,
-          friends: connection.friends || [],
-          certifications: connection.certifications || [],
-          education: connection.education || [],
-          experiences: connection.experiences || []
-        } as UserProfile;
+        const rawConnection = request.sender.id === user.id ? request.receiver : request.sender;
+        const friends: Friend[] = rawConnection.friend_connections?.map(fc => {
+          const friend = fc.sender || fc.receiver;
+          return {
+            id: friend.id,
+            full_name: friend.full_name,
+            avatar_url: friend.avatar_url,
+            online_status: friend.online_status || false,
+            last_seen: friend.last_seen
+          };
+        }) || [];
+
+        const connection: UserProfile = {
+          id: rawConnection.id,
+          email: rawConnection.email,
+          full_name: rawConnection.full_name || "",
+          avatar_url: rawConnection.avatar_url,
+          role: rawConnection.role,
+          bio: rawConnection.bio,
+          phone: rawConnection.phone,
+          city: rawConnection.city,
+          state: rawConnection.state,
+          country: rawConnection.country,
+          online_status: rawConnection.online_status,
+          last_seen: rawConnection.last_seen,
+          website: rawConnection.website,
+          company_name: rawConnection.company_name,
+          privacy_enabled: rawConnection.privacy_enabled,
+          created_at: rawConnection.created_at,
+          sections_order: rawConnection.sections_order,
+          certifications: rawConnection.certifications || [],
+          education: rawConnection.education || [],
+          experiences: rawConnection.experiences || [],
+          friends: friends
+        };
+
+        return connection;
       });
 
       return connections || [];
