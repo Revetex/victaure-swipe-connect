@@ -36,11 +36,11 @@ export function useChatMessages({
               { role: "system", content: context },
               { role: "user", content: "Bonjour !" }
             ],
+            userId: user?.id
           }
         });
 
         if (error) throw error;
-
         console.log("Initial response:", data);
 
         if (data?.choices?.[0]?.message?.content) {
@@ -58,7 +58,7 @@ export function useChatMessages({
     };
 
     greetUser();
-  }, [context]);
+  }, [context, user?.id]);
 
   const sendMessage = async (userInput: string) => {
     if (userQuestions >= maxQuestions && !user) {
@@ -95,11 +95,13 @@ export function useChatMessages({
       console.log("Message history:", messageHistory);
 
       const { data, error } = await supabase.functions.invoke("victaure-chat", {
-        body: { messages: messageHistory }
+        body: { 
+          messages: messageHistory,
+          userId: user?.id
+        }
       });
 
       if (error) throw error;
-
       console.log("Assistant response:", data);
 
       if (data?.choices?.[0]?.message?.content) {
