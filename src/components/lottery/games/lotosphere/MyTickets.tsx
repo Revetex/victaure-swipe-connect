@@ -13,6 +13,15 @@ interface Ticket {
   created_at: string;
 }
 
+type LotoTicketRow = {
+  id: string;
+  selected_numbers: number[];
+  bonus_color: string;
+  status: string;
+  winning_amount: number;
+  created_at: string;
+}
+
 export function MyTickets() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,13 +30,18 @@ export function MyTickets() {
     const fetchTickets = async () => {
       try {
         const { data, error } = await supabase
-          .from('loto_tickets')
-          .select('*')
+          .from<'loto_tickets', LotoTicketRow>('loto_tickets')
+          .select()
           .order('created_at', { ascending: false })
           .limit(5);
 
         if (error) throw error;
-        setTickets(data);
+        if (data) {
+          setTickets(data.map(ticket => ({
+            ...ticket,
+            winning_amount: Number(ticket.winning_amount)
+          })));
+        }
       } catch (error) {
         console.error('Error fetching tickets:', error);
       } finally {

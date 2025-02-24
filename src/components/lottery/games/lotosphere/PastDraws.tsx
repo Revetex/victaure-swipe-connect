@@ -13,6 +13,13 @@ interface Draw {
   completed_at: string;
 }
 
+type LotoDrawRow = {
+  id: string;
+  draw_numbers: number[];
+  bonus_color: string;
+  completed_at: string;
+}
+
 export function PastDraws() {
   const [draws, setDraws] = useState<Draw[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,14 +28,16 @@ export function PastDraws() {
     const fetchDraws = async () => {
       try {
         const { data, error } = await supabase
-          .from('loto_draws')
-          .select('*')
+          .from<'loto_draws', LotoDrawRow>('loto_draws')
+          .select()
           .eq('status', 'completed')
           .order('completed_at', { ascending: false })
           .limit(5);
 
         if (error) throw error;
-        setDraws(data);
+        if (data) {
+          setDraws(data);
+        }
       } catch (error) {
         console.error('Error fetching draws:', error);
       } finally {

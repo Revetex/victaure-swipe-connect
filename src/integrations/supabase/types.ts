@@ -1617,6 +1617,39 @@ export type Database = {
           },
         ]
       }
+      loto_draws: {
+        Row: {
+          bonus_color: string | null
+          completed_at: string | null
+          created_at: string | null
+          draw_numbers: number[] | null
+          id: string
+          prize_pool: number | null
+          scheduled_for: string
+          status: string
+        }
+        Insert: {
+          bonus_color?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          draw_numbers?: number[] | null
+          id?: string
+          prize_pool?: number | null
+          scheduled_for: string
+          status?: string
+        }
+        Update: {
+          bonus_color?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          draw_numbers?: number[] | null
+          id?: string
+          prize_pool?: number | null
+          scheduled_for?: string
+          status?: string
+        }
+        Relationships: []
+      }
       loto_number_stats: {
         Row: {
           last_drawn: string | null
@@ -1637,6 +1670,112 @@ export type Database = {
           times_picked?: number | null
         }
         Relationships: []
+      }
+      loto_tickets: {
+        Row: {
+          bonus_color: string
+          checked: boolean | null
+          created_at: string | null
+          draw_id: string
+          id: string
+          selected_numbers: number[]
+          status: string
+          user_id: string
+          winning_amount: number | null
+        }
+        Insert: {
+          bonus_color: string
+          checked?: boolean | null
+          created_at?: string | null
+          draw_id: string
+          id?: string
+          selected_numbers: number[]
+          status?: string
+          user_id: string
+          winning_amount?: number | null
+        }
+        Update: {
+          bonus_color?: string
+          checked?: boolean | null
+          created_at?: string | null
+          draw_id?: string
+          id?: string
+          selected_numbers?: number[]
+          status?: string
+          user_id?: string
+          winning_amount?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loto_tickets_draw_id_fkey"
+            columns: ["draw_id"]
+            isOneToOne: false
+            referencedRelation: "loto_draws"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loto_tickets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loto_wins: {
+        Row: {
+          amount: number
+          created_at: string | null
+          draw_id: string
+          id: string
+          matched_color: boolean
+          matched_numbers: number
+          ticket_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          draw_id: string
+          id?: string
+          matched_color: boolean
+          matched_numbers: number
+          ticket_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          draw_id?: string
+          id?: string
+          matched_color?: boolean
+          matched_numbers?: number
+          ticket_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loto_wins_draw_id_fkey"
+            columns: ["draw_id"]
+            isOneToOne: false
+            referencedRelation: "loto_draws"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loto_wins_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "loto_tickets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loto_wins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       marketplace_bids: {
         Row: {

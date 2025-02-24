@@ -10,8 +10,6 @@ import { NextDraw } from "./NextDraw";
 import { PlayForm } from "./PlayForm";
 import { PastDraws } from "./PastDraws";
 import { MyTickets } from "./MyTickets";
-import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
 
 interface Draw {
   id: string;
@@ -22,6 +20,15 @@ interface Draw {
   bonus_color?: string;
 }
 
+type LotoDrawsRow = {
+  id: string;
+  scheduled_for: string;
+  prize_pool: number;
+  status: string;
+  draw_numbers: number[] | null;
+  bonus_color: string | null;
+}
+
 export function LotoSphere({ onPaymentRequested }: PaymentProps) {
   const [nextDraw, setNextDraw] = useState<Draw | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,16 +36,25 @@ export function LotoSphere({ onPaymentRequested }: PaymentProps) {
 
   const fetchNextDraw = async () => {
     try {
-      const { data: draw, error } = await supabase
-        .from('loto_draws')
-        .select('*')
+      const { data, error } = await supabase
+        .from<'loto_draws', LotoDrawsRow>('loto_draws')
+        .select()
         .eq('status', 'pending')
         .order('scheduled_for', { ascending: true })
         .limit(1)
         .single();
 
       if (error) throw error;
-      setNextDraw(draw);
+      if (data) {
+        setNextDraw({
+          id: data.id,
+          scheduled_for: data.scheduled_for,
+          prize_pool: Number(data.prize_pool),
+          status: data.status,
+          draw_numbers: data.draw_numbers || undefined,
+          bonus_color: data.bonus_color || undefined
+        });
+      }
     } catch (error) {
       console.error('Error fetching next draw:', error);
       toast.error("Erreur lors de la récupération du prochain tirage");
@@ -50,7 +66,6 @@ export function LotoSphere({ onPaymentRequested }: PaymentProps) {
   useEffect(() => {
     fetchNextDraw();
 
-    // Subscribe to draw changes
     const channel = supabase
       .channel('loto_draws')
       .on('postgres_changes', 
@@ -74,12 +89,14 @@ export function LotoSphere({ onPaymentRequested }: PaymentProps) {
 
     setBuying(true);
     try {
-      // Try payment first
       await onPaymentRequested(5, "Ticket LotoSphere");
 
-      // If payment successful, create ticket
       const { error } = await supabase
-        .from('loto_tickets')
+        .from<'loto_tickets', {
+          draw_id: string;
+          selected_numbers: number[];
+          bonus_color: string;
+        }>('loto_tickets')
         .insert({
           draw_id: nextDraw.id,
           selected_numbers: numbers,
@@ -87,7 +104,6 @@ export function LotoSphere({ onPaymentRequested }: PaymentProps) {
         });
 
       if (error) throw error;
-
       toast.success("Ticket acheté avec succès!");
     } catch (error) {
       console.error('Error buying ticket:', error);
