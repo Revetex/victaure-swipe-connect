@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,19 +5,24 @@ import { LoginForm } from "./LoginForm";
 import { SignupForm } from "./SignupForm";
 import { BusinessSignupForm } from "./BusinessSignupForm";
 import { useAuth } from "@/hooks/useAuth";
-
-export function AuthForm({ redirectTo }: { redirectTo?: string }) {
+export function AuthForm({
+  redirectTo
+}: {
+  redirectTo?: string;
+}) {
   const [activeTab, setActiveTab] = useState("login");
-  const { signIn, signUp, loading } = useAuth();
+  const {
+    signIn,
+    signUp,
+    loading
+  } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     fullName: '',
     phone: ''
   });
-
-  return (
-    <div className="w-full">
+  return <div className="w-full">
       <div className="relative group">
         {/* Effet de brillance au survol */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/20 to-[#9B6CD9]/20 dark:from-[#64B5D9]/10 dark:to-[#9B6CD9]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl blur-xl"></div>
@@ -34,86 +38,43 @@ export function AuthForm({ redirectTo }: { redirectTo?: string }) {
           </div>
 
           <div className="relative mb-6">
-            <div className="flex items-center justify-center gap-4">
-              <img src="/lovable-uploads/color-logo.png" alt="Logo" className="w-10 h-10" />
-              <div className="relative">
-                <h2 className="text-2xl font-bold text-[#F1F0FB]">VICTAURE</h2>
-                <div className="absolute -top-2 -right-12 bg-[#64B5D9] text-white text-[10px] px-1.5 py-0.5 rounded-full border border-white/20">
-                  BETA
-                </div>
-              </div>
-            </div>
+            
           </div>
 
-          <Tabs 
-            defaultValue={activeTab} 
-            onValueChange={setActiveTab}
-            className="relative z-10"
-          >
-            <TabsList className="grid w-full mb-6 grid-cols-3 bg-[#64B5D9]/5 rounded-xl p-1.5">
-              <TabsTrigger 
-                value="login"
-                className="rounded-lg px-4 py-2.5 text-[#F1F0FB]/80 data-[state=active]:bg-[#64B5D9] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 hover:text-white hover:bg-[#64B5D9]/10"
-              >
-                Connexion
-              </TabsTrigger>
-              <TabsTrigger 
-                value="signup"
-                className="rounded-lg px-4 py-2.5 text-[#F1F0FB]/80 data-[state=active]:bg-[#64B5D9] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 hover:text-white hover:bg-[#64B5D9]/10"
-              >
-                Inscription
-              </TabsTrigger>
-              <TabsTrigger 
-                value="business"
-                className="rounded-lg px-4 py-2.5 text-[#F1F0FB]/80 data-[state=active]:bg-[#64B5D9] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 hover:text-white hover:bg-[#64B5D9]/10"
-              >
-                Entreprise
-              </TabsTrigger>
-            </TabsList>
+          <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="relative z-10">
+            
 
-            <TabsContent 
-              value="login"
-              className="mt-0 space-y-6"
-            >
-              <LoginForm 
-                email={formData.email}
-                password={formData.password}
-                loading={loading}
-                redirectTo={redirectTo}
-                onEmailChange={(value) => setFormData(prev => ({ ...prev, email: value }))}
-                onPasswordChange={(value) => setFormData(prev => ({ ...prev, password: value }))}
-                onSubmit={() => signIn(formData.email, formData.password, redirectTo)}
-              />
+            <TabsContent value="login" className="mt-0 space-y-6">
+              <LoginForm email={formData.email} password={formData.password} loading={loading} redirectTo={redirectTo} onEmailChange={value => setFormData(prev => ({
+              ...prev,
+              email: value
+            }))} onPasswordChange={value => setFormData(prev => ({
+              ...prev,
+              password: value
+            }))} onSubmit={() => signIn(formData.email, formData.password, redirectTo)} />
             </TabsContent>
 
-            <TabsContent 
-              value="signup"
-              className="mt-0 space-y-6"
-            >
-              <SignupForm 
-                email={formData.email}
-                password={formData.password}
-                fullName={formData.fullName}
-                phone={formData.phone}
-                loading={loading}
-                redirectTo={redirectTo}
-                onEmailChange={(value) => setFormData(prev => ({ ...prev, email: value }))}
-                onPasswordChange={(value) => setFormData(prev => ({ ...prev, password: value }))}
-                onFullNameChange={(value) => setFormData(prev => ({ ...prev, fullName: value }))}
-                onPhoneChange={(value) => setFormData(prev => ({ ...prev, phone: value }))}
-                onSubmit={() => signUp(formData.email, formData.password, formData.fullName, formData.phone, redirectTo)}
-              />
+            <TabsContent value="signup" className="mt-0 space-y-6">
+              <SignupForm email={formData.email} password={formData.password} fullName={formData.fullName} phone={formData.phone} loading={loading} redirectTo={redirectTo} onEmailChange={value => setFormData(prev => ({
+              ...prev,
+              email: value
+            }))} onPasswordChange={value => setFormData(prev => ({
+              ...prev,
+              password: value
+            }))} onFullNameChange={value => setFormData(prev => ({
+              ...prev,
+              fullName: value
+            }))} onPhoneChange={value => setFormData(prev => ({
+              ...prev,
+              phone: value
+            }))} onSubmit={() => signUp(formData.email, formData.password, formData.fullName, formData.phone, redirectTo)} />
             </TabsContent>
 
-            <TabsContent 
-              value="business"
-              className="mt-0 space-y-6"
-            >
+            <TabsContent value="business" className="mt-0 space-y-6">
               <BusinessSignupForm redirectTo={redirectTo} />
             </TabsContent>
           </Tabs>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 }
