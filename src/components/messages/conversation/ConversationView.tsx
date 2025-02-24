@@ -9,7 +9,7 @@ import { ConversationHeader } from "./components/ConversationHeader";
 import { MessageList } from "./components/MessageList";
 import { MessageInput } from "./components/MessageInput";
 import { useMessages } from "./hooks/useMessages";
-import type { Receiver } from "@/types/messages";
+import type { Receiver, UserRole } from "@/types/messages";
 
 export function ConversationView() {
   const { receiver, setReceiver, setShowConversation } = useReceiver();
@@ -43,13 +43,18 @@ export function ConversationView() {
       if (error) throw error;
       
       if (profile) {
-        const userRole = profile.role as "professional" | "business" | "admin";
+        // Vérifions que le rôle est valide
+        const validRoles: UserRole[] = ['professional', 'business', 'admin'];
+        const userRole: UserRole = validRoles.includes(profile.role as UserRole) 
+          ? (profile.role as UserRole)
+          : 'professional';
+
         setReceiver({
           id: profile.id,
           full_name: profile.full_name || '',
           avatar_url: profile.avatar_url,
           email: profile.email,
-          role: userRole || 'professional',
+          role: userRole,
           bio: profile.bio,
           phone: profile.phone,
           city: profile.city,

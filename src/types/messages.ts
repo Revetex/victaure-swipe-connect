@@ -29,12 +29,14 @@ export interface Message {
   timestamp?: string;
 }
 
+export type UserRole = 'professional' | 'business' | 'admin';
+
 export interface Receiver {
   id: string;
   full_name: string;
   avatar_url: string | null;
   email: string | null;
-  role: 'professional' | 'business' | 'admin';
+  role: UserRole;
   bio: string | null;
   phone: string | null;
   city: string | null;
