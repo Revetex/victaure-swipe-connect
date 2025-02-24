@@ -15,7 +15,7 @@ export function LegalDialog({ title, children, open, onOpenChange }: LegalDialog
         <DialogHeader>
           <DialogTitle className="text-xl font-bold mb-4 text-[#F1F0FB]">{title}</DialogTitle>
         </DialogHeader>
-        <div className="prose prose-sm prose-invert max-w-none">
+        <div className="prose prose-sm prose-invert max-w-none text-[#F1F0FB]/80">
           {children}
         </div>
       </DialogContent>

@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { PartnershipDialog } from "./dialogs/PartnershipDialog";
@@ -67,26 +68,6 @@ END:VCARD`;
           >
             Conditions d'utilisation
           </Button>
-          <LegalDialog 
-            title="Conditions d'utilisation" 
-            open={isTermsOpen} 
-            onOpenChange={setIsTermsOpen}
-          >
-            <h3>1. Acceptation des conditions</h3>
-            <p>En accédant à Victaure, vous acceptez d'être lié par ces conditions d'utilisation, toutes les lois et réglementations applicables.</p>
-            
-            <h3>2. Utilisation du service</h3>
-            <p>Vous vous engagez à utiliser le service de manière éthique et légale. Toute utilisation frauduleuse ou abusive est strictement interdite.</p>
-            
-            <h3>3. Responsabilité</h3>
-            <p>Victaure ne peut être tenu responsable des dommages directs ou indirects résultant de l'utilisation de la plateforme.</p>
-            
-            <h3>4. Protection des données</h3>
-            <p>Nous nous engageons à protéger vos données personnelles conformément à notre politique de confidentialité.</p>
-            
-            <h3>5. Propriété intellectuelle</h3>
-            <p>Tout le contenu sur Victaure est protégé par les droits d'auteur et autres lois sur la propriété intellectuelle.</p>
-          </LegalDialog>
 
           <Button 
             variant="link" 
@@ -95,23 +76,6 @@ END:VCARD`;
           >
             Politique de confidentialité
           </Button>
-          <LegalDialog 
-            title="Politique de confidentialité" 
-            open={isPrivacyOpen} 
-            onOpenChange={setIsPrivacyOpen}
-          >
-            <h3>1. Collecte des données</h3>
-            <p>Nous collectons uniquement les données nécessaires au bon fonctionnement du service et à l'amélioration de votre expérience.</p>
-            
-            <h3>2. Utilisation des données</h3>
-            <p>Vos données sont utilisées pour personnaliser votre expérience, améliorer nos services et vous proposer des offres pertinentes.</p>
-            
-            <h3>3. Protection des données</h3>
-            <p>Nous mettons en œuvre des mesures de sécurité strictes pour protéger vos données personnelles.</p>
-            
-            <h3>4. Vos droits</h3>
-            <p>Vous avez le droit d'accéder, de modifier ou de supprimer vos données personnelles à tout moment.</p>
-          </LegalDialog>
 
           <Button 
             variant="link" 
@@ -120,23 +84,6 @@ END:VCARD`;
           >
             Politique des cookies
           </Button>
-          <LegalDialog 
-            title="Politique des cookies" 
-            open={isCookiesOpen} 
-            onOpenChange={setIsCookiesOpen}
-          >
-            <h3>1. Utilisation des cookies</h3>
-            <p>Nous utilisons des cookies pour améliorer votre expérience de navigation et personnaliser nos services.</p>
-            
-            <h3>2. Types de cookies</h3>
-            <p>Nous utilisons des cookies essentiels, analytiques et de performance pour optimiser notre plateforme.</p>
-            
-            <h3>3. Gestion des cookies</h3>
-            <p>Vous pouvez modifier vos préférences de cookies à tout moment dans les paramètres de votre navigateur.</p>
-            
-            <h3>4. Conservation</h3>
-            <p>Les cookies sont conservés pour une durée maximale de 13 mois conformément aux recommandations de la CNIL.</p>
-          </LegalDialog>
 
           <Button 
             variant="link" 
@@ -145,7 +92,6 @@ END:VCARD`;
           >
             Nous contacter
           </Button>
-          <ContactDialog isOpen={isContactOpen} onOpenChange={setIsContactOpen} />
         </nav>
 
         <div className="text-sm text-[#F1F0FB]/80 relative">
@@ -165,6 +111,65 @@ END:VCARD`;
         open={isPricingOpen}
         onOpenChange={setIsPricingOpen}
       />
+
+      <LegalDialog 
+        title="Conditions d'utilisation" 
+        open={isTermsOpen} 
+        onOpenChange={setIsTermsOpen}
+      >
+        <h3>1. Acceptation des conditions</h3>
+        <p>En accédant à Victaure, vous acceptez d'être lié par ces conditions d'utilisation, toutes les lois et réglementations applicables.</p>
+        
+        <h3>2. Utilisation du service</h3>
+        <p>Vous vous engagez à utiliser le service de manière éthique et légale. Toute utilisation frauduleuse ou abusive est strictement interdite.</p>
+        
+        <h3>3. Responsabilité</h3>
+        <p>Victaure ne peut être tenu responsable des dommages directs ou indirects résultant de l'utilisation de la plateforme.</p>
+        
+        <h3>4. Protection des données</h3>
+        <p>Nous nous engageons à protéger vos données personnelles conformément à notre politique de confidentialité.</p>
+        
+        <h3>5. Propriété intellectuelle</h3>
+        <p>Tout le contenu sur Victaure est protégé par les droits d'auteur et autres lois sur la propriété intellectuelle.</p>
+      </LegalDialog>
+
+      <LegalDialog 
+        title="Politique de confidentialité" 
+        open={isPrivacyOpen} 
+        onOpenChange={setIsPrivacyOpen}
+      >
+        <h3>1. Collecte des données</h3>
+        <p>Nous collectons uniquement les données nécessaires au bon fonctionnement du service et à l'amélioration de votre expérience.</p>
+        
+        <h3>2. Utilisation des données</h3>
+        <p>Vos données sont utilisées pour personnaliser votre expérience, améliorer nos services et vous proposer des offres pertinentes.</p>
+        
+        <h3>3. Protection des données</h3>
+        <p>Nous mettons en œuvre des mesures de sécurité strictes pour protéger vos données personnelles.</p>
+        
+        <h3>4. Vos droits</h3>
+        <p>Vous avez le droit d'accéder, de modifier ou de supprimer vos données personnelles à tout moment.</p>
+      </LegalDialog>
+
+      <LegalDialog 
+        title="Politique des cookies" 
+        open={isCookiesOpen} 
+        onOpenChange={setIsCookiesOpen}
+      >
+        <h3>1. Utilisation des cookies</h3>
+        <p>Nous utilisons des cookies pour améliorer votre expérience de navigation et personnaliser nos services.</p>
+        
+        <h3>2. Types de cookies</h3>
+        <p>Nous utilisons des cookies essentiels, analytiques et de performance pour optimiser notre plateforme.</p>
+        
+        <h3>3. Gestion des cookies</h3>
+        <p>Vous pouvez modifier vos préférences de cookies à tout moment dans les paramètres de votre navigateur.</p>
+        
+        <h3>4. Conservation</h3>
+        <p>Les cookies sont conservés pour une durée maximale de 13 mois conformément aux recommandations de la CNIL.</p>
+      </LegalDialog>
+
+      <ContactDialog isOpen={isContactOpen} onOpenChange={setIsContactOpen} />
     </footer>
   );
 }
