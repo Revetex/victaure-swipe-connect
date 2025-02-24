@@ -63,16 +63,31 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#1A1F2C] relative overflow-x-hidden">
-      <div className="absolute inset-0 bg-pattern animate-[pulse_4s_ease-in-out_infinite]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80" />
+    <div className="min-h-screen flex flex-col relative overflow-x-hidden">
+      {/* Fond animé futuriste */}
+      <div className="fixed inset-0 bg-[#1A1F2C] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#221F26] via-[#1A1F2C] to-[#221F26] opacity-80"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat opacity-10"></div>
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/20 via-transparent to-[#64B5D9]/20"
+          animate={{
+            x: ["-100%", "100%"],
+            opacity: [0.1, 0.2, 0.1]
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+      </div>
       
       <ThemeSelector />
       
       <main className="flex-1 flex flex-col items-center justify-center w-full px-3 sm:px-4 py-4 sm:py-6 lg:py-8 relative z-10">
         <div className="w-full max-w-lg lg:max-w-2xl mx-auto space-y-4 sm:space-y-6">
           <AuthHeader />
-
+          
           <div className="space-y-4 sm:space-y-6 animate-fade-in">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -84,8 +99,10 @@ export default function Auth() {
               <div className="relative bg-[#2A2D3E]/80 backdrop-blur-md border border-[#64B5D9]/20 rounded-lg p-3 sm:p-4 shadow-lg overflow-hidden hover:border-[#64B5D9]/30 transition-all duration-300">
                 <VictaureChat 
                   maxQuestions={3}
-                  onMaxQuestionsReached={handleMaxQuestionsReached}
-                  context="Tu es un assistant de recrutement professionnel qui aide les utilisateurs à s'inscrire sur la plateforme Victaure. Encourage-les à créer un compte après 3 messages."
+                  onMaxQuestionsReached={() => {
+                    toast.error("Veuillez vous connecter pour continuer la conversation avec Mr. Victaure");
+                  }}
+                  context="Tu es un assistant concis et amical qui aide les utilisateurs à s'inscrire. Donne des réponses courtes et naturelles, comme si tu parlais à un ami."
                 />
               </div>
             </motion.div>

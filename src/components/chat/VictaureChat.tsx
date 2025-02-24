@@ -15,7 +15,7 @@ interface VictaureChatProps {
 
 export function VictaureChat({ 
   maxQuestions = 3, 
-  context = "Tu es Mr. Victaure, un assistant professionnel spécialisé dans l'emploi et le recrutement. Tu es chaleureux, empathique et très professionnel.",
+  context = "Tu es Mr. Victaure, un assistant concis et amical. Donne des réponses courtes et naturelles.",
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");

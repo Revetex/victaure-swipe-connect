@@ -1,4 +1,3 @@
-
 import { forwardRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
@@ -14,13 +13,11 @@ interface MessageListProps {
   isLoading?: boolean;
 }
 
-// Composant pour l'effet machine à écrire
 const TypewriterEffect = ({ text }: { text: string }) => {
-  const [displayText, setDisplayText] = useState("");
+  const [displayText, setDisplayText] = useState(text.charAt(0));
   
   useEffect(() => {
-    let index = 0;
-    setDisplayText("");
+    let index = 1;
     
     const interval = setInterval(() => {
       if (index < text.length) {
@@ -29,7 +26,7 @@ const TypewriterEffect = ({ text }: { text: string }) => {
       } else {
         clearInterval(interval);
       }
-    }, 20); // Vitesse de frappe
+    }, 30); // Vitesse légèrement ralentie pour plus de naturel
 
     return () => clearInterval(interval);
   }, [text]);
