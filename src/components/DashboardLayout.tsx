@@ -42,7 +42,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         />
       </div>
 
-      {/* Menu mobile avec z-index élevé */}
+      {/* Menu mobile */}
       <div className="lg:hidden">
         <DashboardMobileNav
           currentPage={currentPage}
@@ -59,7 +59,9 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "w-full",
         "relative",
         "ios-safe-area",
-        "ios-momentum-scroll"
+        "ios-momentum-scroll",
+        "bg-gradient-to-b from-background via-background/95 to-background/90",
+        "backdrop-blur-sm"
       )}>
         <AppHeader 
           onRequestAssistant={handleRequestChat}

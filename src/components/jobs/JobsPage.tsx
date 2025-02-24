@@ -1,12 +1,11 @@
+
 import { useState } from "react";
 import { Job } from "@/types/job";
 import { useJobsData } from "@/hooks/useJobsData";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
 import { JobsSearch } from "./sections/JobsSearch";
-import { JobsFilters } from "./sections/JobsFilters";
 import { JobsResults } from "./sections/JobsResults";
-import { JobsAIAssistant } from "./sections/JobsAIAssistant";
+import { cn } from "@/lib/utils";
 
 export function JobsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -18,8 +17,6 @@ export function JobsPage() {
   const [salaryRange, setSalaryRange] = useState<[number, number]>([0, 200000]);
   const [remoteOnly, setRemoteOnly] = useState(false);
   const { data: jobs = [], isLoading } = useJobsData();
-  const [selectedJobId, setSelectedJobId] = useState<string>();
-  const [isAssistantOpen, setIsAssistantOpen] = useState(false);
 
   const filteredJobs = jobs
     .filter(job => {
@@ -59,11 +56,6 @@ export function JobsPage() {
 
   const locations = Array.from(new Set(jobs.map(job => job.location))).sort();
 
-  const handleJobSelect = (job: Job) => {
-    setSelectedJobId(job.id);
-    toast.info("Détails de l'emploi disponibles bientôt !");
-  };
-
   const handleResetFilters = () => {
     setSearchQuery("");
     setSelectedLocation("");
@@ -74,13 +66,9 @@ export function JobsPage() {
     setRemoteOnly(false);
   };
 
-  const handleRequestAssistant = () => {
-    setIsAssistantOpen(true);
-  };
-
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
@@ -88,18 +76,13 @@ export function JobsPage() {
 
   return (
     <motion.div 
-      variants={{
-        hidden: { opacity: 0 },
-        visible: {
-          opacity: 1,
-          transition: {
-            staggerChildren: 0.1
-          }
-        }
-      }}
-      initial="hidden"
-      animate="visible"
-      className="container mx-auto p-4 max-w-7xl"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className={cn(
+        "container mx-auto p-4 max-w-7xl",
+        "min-h-[calc(100vh-4rem)]",
+        "pt-20"
+      )}
     >
       <div className="space-y-6">
         <JobsSearch 
@@ -124,14 +107,7 @@ export function JobsPage() {
         
         <JobsResults 
           jobs={filteredJobs}
-          onJobSelect={handleJobSelect}
-          selectedJobId={selectedJobId}
           onResetFilters={handleResetFilters}
-        />
-
-        <JobsAIAssistant 
-          isOpen={isAssistantOpen}
-          onClose={() => setIsAssistantOpen(false)}
         />
       </div>
     </motion.div>
