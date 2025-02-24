@@ -15,7 +15,7 @@ interface VictaureChatProps {
 
 export function VictaureChat({ 
   maxQuestions = 3, 
-  context = "Tu es Mr. Victaure, assistant professionnel. Réponds de manière concise et claire. Evite les longues phrases. Maximum 2-3 phrases par réponse. Pour ton premier message, dis simplement 'Bonjour ! Je suis Mr. Victaure, comment puis-je vous aider ?'",
+  context = "Tu es un assistant concis et amical qui aide les utilisateurs à s'inscrire. Donne des réponses courtes et naturelles, comme si tu parlais à un ami.",
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
@@ -57,12 +57,13 @@ export function VictaureChat({
   const disabledMessage = "Connectez-vous pour continuer...";
 
   return (
-    <div className="w-full bg-[#1A1F2C] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-lg relative">
+    <div className="w-full bg-transparent rounded-xl overflow-hidden">
       <ChatHeader />
       <MessageList 
         ref={chatContainerRef} 
         messages={messages}
         isLoading={isLoading}
+        className="font-inter text-[15px] leading-relaxed"
       />
       <ChatInput
         userInput={userInput}
@@ -75,6 +76,7 @@ export function VictaureChat({
         onStartRecording={startRecording}
         onStopSpeaking={() => setIsSpeaking(false)}
         onSendMessage={handleSendMessage}
+        className="bg-[#2A2D3E] border-t border-[#64B5D9]/10"
       />
     </div>
   );
