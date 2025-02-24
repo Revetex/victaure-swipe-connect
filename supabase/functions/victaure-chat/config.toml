@@ -1,2 +1,5 @@
 
 project_id = "mfjllillnpleasclqabb"
+[functions.victaure-chat]
+verify_jwt = false
+

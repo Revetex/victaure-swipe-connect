@@ -1,77 +1,133 @@
 
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { getUserProfile, saveInteractionToDb } from './db.ts';
-import { getRelevantInteractions } from './learning.ts';
-import { buildAppContext } from './context.ts';
-import { ChatMessage } from './types.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { Configuration, OpenAIApi } from 'https://esm.sh/openai@3.1.0';
+import { corsHeaders } from '../_shared/cors.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+interface Message {
+  role: "system" | "user" | "assistant";
+  content: string;
+}
 
-const OPENROUTER_API_KEY = Deno.env.get('OPENROUTER_API_KEY');
+interface RequestBody {
+  messages: Message[];
+  userId?: string;
+  userProfile?: {
+    full_name?: string;
+  };
+}
+
+console.log("Starting victaure-chat function");
+
+// Création du client OpenAI
+const openAIKey = Deno.env.get('OPENAI_API_KEY');
+if (!openAIKey) {
+  console.error("OPENAI_API_KEY is not set");
+  throw new Error("OPENAI_API_KEY is not set");
+}
+
+const configuration = new Configuration({
+  apiKey: openAIKey,
+});
+
+const openai = new OpenAIApi(configuration);
 
 serve(async (req) => {
+  console.log("Received request:", req.method);
+
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    const { messages, userId } = await req.json();
-    const currentUserMessage = messages[messages.length - 1]?.content || '';
-
-    // Récupérer le profil et les interactions pertinentes
-    const userProfile = userId ? await getUserProfile(userId) : null;
-    const relevantInteractions = await getRelevantInteractions(currentUserMessage);
-    
-    // Construire le contexte de l'application
-    const appContext = buildAppContext(userProfile, relevantInteractions);
-
-    // Préparer les messages pour l'API
-    const messagesWithContext: ChatMessage[] = [
-      { role: "system", content: appContext },
-      ...messages.slice(1)
-    ];
-
-    // Appeler l'API OpenRouter
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://victaure.com',
-        'X-Title': 'Victaure Assistant',
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.0-pro-exp-02-05:free",
-        messages: messagesWithContext,
-        temperature: 0.7,
-        max_tokens: 500,
-      }),
+    const { messages, userId, userProfile } = await req.json() as RequestBody;
+    console.log("Received message payload:", {
+      messageCount: messages.length,
+      userId: userId ? 'present' : 'absent',
+      hasProfile: !!userProfile
     });
 
-    const data = await response.json();
-    
-    // Sauvegarder l'interaction pour l'apprentissage
-    if (data?.choices?.[0]?.message?.content) {
-      await saveInteractionToDb(
-        currentUserMessage,
-        data.choices[0].message.content,
-        userId,
-        { profile: userProfile }
-      );
+    // Validation des données
+    if (!messages || !Array.isArray(messages)) {
+      console.error("Invalid messages format");
+      throw new Error("Messages must be an array");
     }
 
-    return new Response(JSON.stringify(data), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    // Ajout de contexte supplémentaire si l'utilisateur est connecté
+    let systemContext = messages[0].content;
+    if (userId && userProfile?.full_name) {
+      systemContext = `${systemContext}\nVous parlez à ${userProfile.full_name}.`;
+    }
+    messages[0].content = systemContext;
+
+    console.log("Preparing OpenAI request");
+    
+    // Appel à l'API OpenAI
+    const completion = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: messages.map(m => ({
+        role: m.role,
+        content: m.content
+      })),
+      temperature: 0.7,
+      max_tokens: 500,
+      frequency_penalty: 0.5,
+      presence_penalty: 0.5,
     });
+
+    console.log("OpenAI response received:", {
+      status: completion.status,
+      hasChoices: !!completion.data.choices?.length
+    });
+
+    // Vérification de la réponse
+    if (!completion.data.choices || completion.data.choices.length === 0) {
+      console.error("No response from OpenAI");
+      throw new Error("No response generated");
+    }
+
+    // Log pour debug
+    console.log("Sending response back to client");
+
+    // Retour de la réponse
+    return new Response(
+      JSON.stringify({
+        choices: completion.data.choices,
+      }),
+      {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json',
+        },
+        status: 200,
+      },
+    );
+
   } catch (error) {
-    console.error('Error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error("Error in victaure-chat function:", error);
+    
+    // Formatage détaillé de l'erreur
+    const errorMessage = error instanceof Error ? 
+      {
+        message: error.message,
+        name: error.name,
+        stack: error.stack
+      } : 
+      { message: "An unknown error occurred" };
+
+    return new Response(
+      JSON.stringify({
+        error: errorMessage
+      }),
+      {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json',
+        },
+        status: 500,
+      },
+    );
   }
 });
+
