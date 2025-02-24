@@ -1,7 +1,6 @@
 
 import { useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 
 export function useVoiceFeatures() {
   const [isRecording, setIsRecording] = useState(false);
@@ -9,19 +8,14 @@ export function useVoiceFeatures() {
   const [isProcessing, setIsProcessing] = useState(false);
   const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
 
   const startRecording = useCallback(async () => {
-    // Si on enregistre déjà, on arrête
     if (isRecording) {
+      // Si on enregistre déjà, on arrête
       if (mediaRecorderRef.current) {
         mediaRecorderRef.current.stop();
+        setIsRecording(false);
       }
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-      setIsRecording(false);
-      setIsProcessing(false);
       return;
     }
 
@@ -38,7 +32,6 @@ export function useVoiceFeatures() {
         }
       });
 
-      streamRef.current = stream;
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       const audioChunks: BlobPart[] = [];
@@ -47,37 +40,21 @@ export function useVoiceFeatures() {
         audioChunks.push(event.data);
       };
 
-      mediaRecorder.onstop = async () => {
+      mediaRecorder.onstop = () => {
         try {
           const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-          const base64Audio = await new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.readAsDataURL(audioBlob);
-          });
+          const reader = new FileReader();
 
-          // Appeler l'edge function voice-to-text
-          const { data, error } = await supabase.functions.invoke('voice-to-text', {
-            body: { audio: base64Audio.split(',')[1] }
-          });
+          reader.onloadend = () => {
+            setIsProcessing(false);
+          };
 
-          if (error) {
-            throw error;
-          }
-
-          if (data.text) {
-            // Mettre le texte transcrit dans le champ de saisie
-            // Cette fonction doit être passée en props
-            toast.success("Transcription réussie");
-          }
-
+          reader.readAsDataURL(audioBlob);
+          stream.getTracks().forEach(track => track.stop());
         } catch (err) {
           console.error("Erreur de traitement audio:", err);
           toast.error("Erreur lors du traitement de l'audio");
         } finally {
-          if (streamRef.current) {
-            streamRef.current.getTracks().forEach(track => track.stop());
-          }
           setIsRecording(false);
           setIsProcessing(false);
         }
@@ -163,9 +140,6 @@ export function useVoiceFeatures() {
   const cleanup = useCallback(() => {
     if (mediaRecorderRef.current?.state === "recording") {
       mediaRecorderRef.current.stop();
-    }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
     }
     stopSpeaking();
   }, [stopSpeaking]);
