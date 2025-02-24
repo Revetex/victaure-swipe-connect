@@ -26,7 +26,7 @@ export function DashboardMobileNav({
           "bg-[#1B2A4A]",
           "border-2 border-black",
           "fixed inset-y-0 left-0",
-          "lg:hidden",
+          "lg:block",
           "z-[150]",
           "overflow-y-auto pb-20", // Ajout du padding-bottom et overflow
           "ios-momentum-scroll ios-safe-area"
@@ -51,7 +51,7 @@ export function DashboardMobileNav({
         {/* Navigation */}
         <nav className="space-y-2 p-4 relative z-10">
           {navigationItems.map(item => {
-            const Icon = item.icon;
+            const IconComponent = item.icon;
             return (
               <button 
                 key={item.id} 
@@ -70,7 +70,7 @@ export function DashboardMobileNav({
                     : "text-white/90 hover:bg-white/10 hover:text-white border-black/20 hover:border-black"
                 )} 
               >
-                <Icon className="h-4 w-4" />
+                {IconComponent && <IconComponent className="h-4 w-4" />}
                 <span>{item.name}</span>
               </button>
             );
