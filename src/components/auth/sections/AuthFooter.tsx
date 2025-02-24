@@ -62,12 +62,10 @@ END:VCARD`;
             <DialogTrigger asChild>
               <div className="relative w-40 h-16 cursor-pointer group">
                 <img 
-                  src="/lovable-uploads/black-signature.png"
+                  src="/lovable-uploads/white-signature.png"
                   alt="Signature" 
-                  className="absolute inset-0 w-full h-full object-contain brightness-150 contrast-125 filter drop-shadow-lg transition-transform duration-300 group-hover:scale-105"
+                  className="absolute inset-0 w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#64B5D9]/10 to-transparent mix-blend-overlay"></div>
-                <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
               </div>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl">
