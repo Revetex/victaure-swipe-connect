@@ -7,17 +7,26 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 export type PostPrivacyLevel = "public" | "connections";
 
 interface CreatePostFormProps {
   onPostCreated?: () => void;
+  initialText?: string;
+  initialPrivacy?: PostPrivacyLevel;
+  onClose?: () => void;
 }
 
-export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
+export function CreatePostForm({ 
+  onPostCreated, 
+  initialText = "", 
+  initialPrivacy = "public",
+  onClose
+}: CreatePostFormProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [content, setContent] = useState("");
-  const [privacy, setPrivacy] = useState<PostPrivacyLevel>("public");
+  const [content, setContent] = useState(initialText);
+  const [privacy, setPrivacy] = useState<PostPrivacyLevel>(initialPrivacy);
   const { profile } = useProfile();
   const isMobile = useIsMobile();
 
@@ -27,10 +36,22 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
     if (!content.trim()) return;
     
     try {
-      // Implémentation de la soumission ici
+      const { error } = await supabase
+        .from('posts')
+        .insert([
+          {
+            content,
+            privacy_level: privacy,
+            user_id: profile.id
+          }
+        ]);
+
+      if (error) throw error;
+
       onPostCreated?.();
       setContent("");
       setIsExpanded(false);
+      onClose?.();
     } catch (error) {
       console.error("Error creating post:", error);
     }
@@ -39,6 +60,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
   const handleCancel = () => {
     setContent("");
     setIsExpanded(false);
+    onClose?.();
   };
 
   return (
