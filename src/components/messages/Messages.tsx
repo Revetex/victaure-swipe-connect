@@ -8,7 +8,7 @@ export function Messages() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90"
+      className="min-h-screen bg-[#1B2A4A]"
     >
       <MessagesContainer />
     </motion.div>

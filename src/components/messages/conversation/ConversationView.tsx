@@ -111,7 +111,7 @@ export function ConversationView() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#1A1F2C]">
+    <div className="flex flex-col h-full bg-[#1A1F2C]">
       <ConversationHeader 
         receiver={receiver}
         onBack={handleBack}
@@ -126,7 +126,7 @@ export function ConversationView() {
         />
       </div>
 
-      <div className="sticky bottom-0 w-full">
+      <div className="w-full">
         <MessageInput
           value={messageInput}
           onChange={setMessageInput}

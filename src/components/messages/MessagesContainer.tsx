@@ -8,7 +8,7 @@ export function MessagesContainer() {
   const { receiver, showConversation } = useReceiver();
 
   return (
-    <Card className="fixed inset-0 flex h-screen w-full border-0 rounded-none bg-background overflow-hidden">
+    <Card className="fixed inset-0 top-16 flex h-[calc(100vh-4rem)] w-full border-0 rounded-none bg-background overflow-hidden">
       <ConversationList 
         className={
           showConversation 
