@@ -37,7 +37,6 @@ const TypewriterEffect = ({ text }: { text: string }) => {
 
 export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
   ({ messages, isLoading }, ref) => {
-    // Auto-scroll à chaque nouveau message
     useEffect(() => {
       if (ref && 'current' in ref && ref.current) {
         ref.current.scrollTop = ref.current.scrollHeight;
@@ -47,7 +46,7 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
     return (
       <div 
         ref={ref}
-        className="h-[400px] overflow-y-auto py-4 px-3 scrollbar-none flex flex-col justify-end"
+        className="h-full overflow-y-auto py-4 px-3 scrollbar-none"
       >
         <div className="flex flex-col space-y-3">
           <AnimatePresence mode="popLayout">

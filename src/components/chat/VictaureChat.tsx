@@ -33,7 +33,7 @@ export function VictaureChat({
     error,
     refreshMessages 
   } = useChatMessages({ 
-    context, 
+    context: useWebSearch ? context + " Tu peux aussi utiliser des informations du web pour répondre." : context,
     maxQuestions, 
     user, 
     onMaxQuestionsReached 
@@ -51,7 +51,7 @@ export function VictaureChat({
     if (!userInput.trim() || isLoading) return;
     
     try {
-      console.log("Sending message to Mr Victaure...");
+      console.log("Sending message to Mr Victaure with web search:", useWebSearch);
       const response = await sendMessage(userInput, useWebSearch);
       setUserInput("");
       
@@ -76,16 +76,17 @@ export function VictaureChat({
   const toggleWebSearch = () => {
     setUseWebSearch(!useWebSearch);
     toast.info(useWebSearch ? "Recherche web désactivée" : "Recherche web activée");
+    refreshMessages(); // Reset messages when toggling web search
   };
 
   const isDisabled = userQuestions >= maxQuestions && !user;
   const disabledMessage = "Connectez-vous pour continuer à discuter avec Mr Victaure";
 
   return (
-    <div className="w-full bg-gradient-to-b from-[#1A1F2C] to-[#151922] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-xl relative backdrop-blur-sm mt-16">
+    <div className="flex flex-col h-[85vh] bg-gradient-to-b from-[#1A1F2C] to-[#151922] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-xl relative backdrop-blur-sm">
       <div className="absolute inset-0 bg-[#64B5D9]/5 mix-blend-overlay pointer-events-none" />
-      <div className="relative z-10">
-        <div className="flex items-center justify-between px-4 py-2 border-b border-[#64B5D9]/20">
+      <div className="relative z-10 flex flex-col h-full">
+        <div className="flex-none flex items-center justify-between px-4 py-2 border-b border-[#64B5D9]/20">
           <ChatHeader />
           <div className="flex gap-2">
             <Button
@@ -109,13 +110,15 @@ export function VictaureChat({
           </div>
         </div>
 
-        <MessageList 
-          ref={chatContainerRef} 
-          messages={messages}
-          isLoading={isLoading}
-        />
+        <div className="flex-1 overflow-hidden">
+          <MessageList 
+            ref={chatContainerRef} 
+            messages={messages}
+            isLoading={isLoading}
+          />
+        </div>
         
-        <div className="sticky bottom-0 w-full bg-gradient-to-t from-[#1A1F2C] to-transparent py-2">
+        <div className="flex-none bg-[#1A1F2C] border-t border-[#64B5D9]/20">
           <ChatInput
             userInput={userInput}
             setUserInput={setUserInput}
