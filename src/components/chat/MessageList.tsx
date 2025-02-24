@@ -40,14 +40,14 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
     // Auto-scroll à chaque nouveau message
     useEffect(() => {
       if (ref && 'current' in ref && ref.current) {
-        ref.current.scrollTop = 0;
+        ref.current.scrollTop = ref.current.scrollHeight;
       }
     }, [messages, isLoading]);
 
     return (
       <div 
         ref={ref}
-        className="h-[400px] overflow-y-auto py-4 px-3 scrollbar-none flex flex-col"
+        className="h-[400px] overflow-y-auto py-4 px-3 scrollbar-none flex flex-col justify-end"
       >
         <div className="flex flex-col space-y-3">
           <AnimatePresence mode="popLayout">
