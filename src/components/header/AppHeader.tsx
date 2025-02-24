@@ -48,13 +48,13 @@ export function AppHeader({
           <Menu className="h-4 w-4" />
         </Button>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <img
             src="/lovable-uploads/color-logo.png"
             alt="Victaure Logo"
             className="h-9 w-9 object-contain shrink-0"
           />
-          <span className="relative font-tiempos font-black tracking-[0.2em] text-[#F2EBE4] text-2xl">
+          <span className="relative font-tiempos font-black tracking-[0.15em] text-[#F2EBE4] text-2xl shrink-0 pl-1">
             VICTAURE
             <div className="absolute -inset-2 -z-10 bg-gradient-to-r from-[#64B5D9] to-transparent opacity-20 blur-sm" />
           </span>
