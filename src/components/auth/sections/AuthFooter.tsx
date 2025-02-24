@@ -206,7 +206,7 @@ END:VCARD`;
                       <div>
                         <h5 className="font-medium mb-2">Support</h5>
                         <ul className="text-sm space-y-1">
-                          <li>• Email (< 24h)</li>
+                          <li>• Réponse en moins de 24h</li>
                           <li>• Documentation</li>
                           <li>• Tutoriels vidéo</li>
                           <li>• Chat 9h-17h</li>
@@ -252,7 +252,7 @@ END:VCARD`;
                       <div>
                         <h5 className="font-medium mb-2">Support PRO</h5>
                         <ul className="text-sm space-y-1">
-                          <li>• Prioritaire (< 4h)</li>
+                          <li>• Réponse en moins de 4h</li>
                           <li>• Formation en ligne</li>
                           <li>• Chat 24/5</li>
                           <li>• Webinaires mensuels</li>
