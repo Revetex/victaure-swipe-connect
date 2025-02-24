@@ -1,6 +1,5 @@
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
 import { PartnershipDialog } from "./dialogs/PartnershipDialog";
 import { PricingGuideDialog } from "./dialogs/PricingGuideDialog";
@@ -34,31 +33,26 @@ END:VCARD`;
     <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center relative" role="contentinfo">
       <div className="space-y-8 border-t border-[#F1F0FB]/20 pt-8">
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
-          <Dialog open={isPartnershipOpen} onOpenChange={setIsPartnershipOpen}>
-            <DialogTrigger asChild>
-              <Button className="relative group bg-gradient-to-r from-[#4A90E2] to-[#64B5D9] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
-                <span className="relative z-10 flex items-center gap-2">
-                  Partenariat
-                  <div className="w-1.5 h-1.5 rounded-full bg-white group-hover:scale-150 transition-transform" />
-                </span>
-                <div className="absolute inset-0 bg-white/20 rounded-full transition-transform group-hover:scale-105 duration-300" />
-              </Button>
-            </DialogTrigger>
-            <PartnershipDialog contactInfo={contactInfo} vCardData={vCardData} />
-          </Dialog>
-
-          <Dialog open={isPricingOpen} onOpenChange={setIsPricingOpen}>
-            <DialogTrigger asChild>
-              <Button className="relative group bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
-                <span className="relative z-10 flex items-center gap-2">
-                  Guide tarifaire complet
-                  <div className="w-1.5 h-1.5 rounded-full bg-white group-hover:scale-150 transition-transform" />
-                </span>
-                <div className="absolute inset-0 bg-white/20 rounded-full transition-transform group-hover:scale-105 duration-300" />
-              </Button>
-            </DialogTrigger>
-            <PricingGuideDialog />
-          </Dialog>
+          <Button
+            className="relative group bg-gradient-to-r from-[#4A90E2] to-[#64B5D9] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105"
+            onClick={() => setIsPartnershipOpen(true)}
+          >
+            <span className="relative z-10 flex items-center gap-2">
+              Partenariat
+              <div className="w-1.5 h-1.5 rounded-full bg-white group-hover:scale-150 transition-transform" />
+            </span>
+            <div className="absolute inset-0 bg-white/20 rounded-full transition-transform group-hover:scale-105 duration-300" />
+          </Button>
+          <Button
+            className="relative group bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105"
+            onClick={() => setIsPricingOpen(true)}
+          >
+            <span className="relative z-10 flex items-center gap-2">
+              Guide tarifaire complet
+              <div className="w-1.5 h-1.5 rounded-full bg-white group-hover:scale-150 transition-transform" />
+            </span>
+            <div className="absolute inset-0 bg-white/20 rounded-full transition-transform group-hover:scale-105 duration-300" />
+          </Button>
         </div>
 
         <div className="flex justify-center mb-12">
@@ -159,6 +153,13 @@ END:VCARD`;
           <p className="relative">© 2025 Victaure Technologies inc.</p>
         </div>
       </div>
+
+      <PartnershipDialog
+        open={isPartnershipOpen}
+        onOpenChange={setIsPartnershipOpen}
+        contactInfo={contactInfo}
+        vCardData={vCardData}
+      />
     </footer>
   );
 }
