@@ -116,6 +116,7 @@ export function JobsPage() {
             onContractTypeChange={setContractType}
             onSalaryRangeChange={setSalaryRange}
             onRemoteOnlyChange={setRemoteOnly}
+            onReset={handleResetFilters}
           />
 
           <div className="grid lg:grid-cols-[280px,1fr] gap-6">
@@ -123,14 +124,18 @@ export function JobsPage() {
               <JobsFilters
                 locations={locations}
                 selectedLocation={selectedLocation}
-                onLocationChange={setSelectedLocation}
+                selectedCompanyType={selectedCompanyType}
+                sortOrder={sortOrder}
                 experienceLevel={experienceLevel}
-                onExperienceLevelChange={setExperienceLevel}
                 contractType={contractType}
-                onContractTypeChange={setContractType}
                 salaryRange={salaryRange}
-                onSalaryRangeChange={setSalaryRange}
                 remoteOnly={remoteOnly}
+                onLocationChange={setSelectedLocation}
+                onCompanyTypeChange={setSelectedCompanyType}
+                onSortOrderChange={setSortOrder}
+                onExperienceLevelChange={setExperienceLevel}
+                onContractTypeChange={setContractType}
+                onSalaryRangeChange={setSalaryRange}
                 onRemoteOnlyChange={setRemoteOnly}
                 onReset={handleResetFilters}
               />
