@@ -27,28 +27,6 @@
     --radius: 1rem;
   }
 
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-  }
-
   * {
     @apply border-border selection:bg-zinc-900/10 dark:selection:bg-zinc-50/10;
     text-size-adjust: 100%;
@@ -62,7 +40,7 @@
   }
   
   body {
-    @apply bg-[#F1F0FB] text-foreground antialiased overflow-x-hidden font-sans min-w-full dark:bg-background;
+    @apply bg-[#F2EBE4] text-foreground antialiased overflow-x-hidden font-sans;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -75,7 +53,7 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-[#F1F0FB]/80 dark:bg-zinc-900/80 backdrop-blur supports-[backdrop-filter]:bg-[#F1F0FB]/60 dark:supports-[backdrop-filter]:bg-zinc-900/60;
+    @apply bg-[#F2EBE4]/80 dark:bg-zinc-900/80 backdrop-blur supports-[backdrop-filter]:bg-[#F2EBE4]/60 dark:supports-[backdrop-filter]:bg-zinc-900/60;
   }
 }
 
