@@ -1,6 +1,5 @@
-
 import { useState, useEffect, useRef } from "react";
-import { Bot, Wand2, MessagesSquare, Mic, Volume2 } from "lucide-react";
+import { Bot, MessagesSquare, Mic, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import { useVictaureChat } from "@/hooks/useVictaureChat";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,16 +19,14 @@ interface VictaureChatProps {
 
 export function VictaureChat({ 
   maxQuestions = 3, 
-  context = "Tu es Mr. Victaure, un assistant professionnel spécialisé dans l'emploi et le recrutement. Ton objectif est d'aider les utilisateurs à s'inscrire et trouver du travail. Tu es chaleureux, empathique et très professionnel.",
+  context = "Tu es Mr. Victaure, un assistant professionnel spécialisé dans l'emploi et le recrutement. Tu es chaleureux, empathique et très professionnel.",
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isTyping, setIsTyping] = useState(false);
-  const [showThinking, setShowThinking] = useState(false);
-  const [userQuestions, setUserQuestions] = useState(0);
-  const [userInput, setUserInput] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [userInput, setUserInput] = useState("");
+  const [userQuestions, setUserQuestions] = useState(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { sendMessage, isLoading } = useVictaureChat({
@@ -108,10 +105,8 @@ export function VictaureChat({
     }
   }, [messages]);
 
-  // Initial greeting from Mr Victaure
   useEffect(() => {
     const greetUser = async () => {
-      setShowThinking(true);
       try {
         const initialMessage = {
           role: "system",
@@ -134,8 +129,6 @@ export function VictaureChat({
       } catch (error) {
         console.error("Error getting initial message:", error);
         toast.error("Désolé, je ne suis pas disponible pour le moment");
-      } finally {
-        setShowThinking(false);
       }
     };
 
@@ -158,10 +151,8 @@ export function VictaureChat({
       username: user?.email || 'Visiteur'
     }]);
     setUserInput("");
-    setShowThinking(true);
 
     try {
-      // Préparer les messages pour l'API
       const messageHistory = [
         {
           role: "system",
@@ -189,72 +180,52 @@ export function VictaureChat({
     } catch (error) {
       console.error("Error in chat:", error);
       toast.error("Désolé, je ne peux pas répondre pour le moment");
-    } finally {
-      setShowThinking(false);
     }
   };
 
   return (
-    <div className="w-full glass-panel rounded-xl overflow-hidden border-2 border-black/10 shadow-lg relative">
-      <div className="flex items-center gap-3 bg-[#F1F0FB] dark:bg-zinc-900/80 p-4 border-b border-black/10">
+    <div className="w-full bg-[#1A1F2C] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-lg relative">
+      <div className="flex items-center gap-3 p-4 border-b border-[#64B5D9]/10">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Bot className="w-10 h-10 text-[#1B2A4A]" />
-            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
+            <Bot className="w-10 h-10 text-[#64B5D9]" />
+            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#1A1F2C]" />
           </div>
           <div>
-            <h3 className="font-semibold text-[#1B2A4A] dark:text-gray-200">Mr. Victaure</h3>
-            <p className="text-xs text-[#1B2A4A]/60 dark:text-gray-400">Assistant IA</p>
+            <h3 className="font-semibold text-[#F1F0FB]">Mr. Victaure</h3>
+            <p className="text-xs text-[#F1F0FB]/60">Assistant IA</p>
           </div>
         </div>
-        {showThinking && (
-          <div className="flex items-center gap-1 ml-auto">
-            <Wand2 className="w-4 h-4 text-[#64B5D9] animate-pulse" />
-            <span className="text-xs text-[#64B5D9]">réfléchit...</span>
-          </div>
-        )}
       </div>
 
       <div 
-        className="relative p-4"
+        ref={chatContainerRef}
+        className="h-[400px] overflow-y-auto p-4 scrollbar-none space-y-4"
         style={{
-          backgroundColor: "rgba(27, 42, 74, 0.03)",
           backgroundImage: "url('/lovable-uploads/60542c40-c17c-42cc-8136-f4780f09946a.png')",
           backgroundSize: "32px",
           backgroundRepeat: "repeat"
         }}
       >
-        <div 
-          ref={chatContainerRef}
-          className="flex flex-col justify-end h-[400px] overflow-y-auto mb-4 scrollbar-none"
-        >
-          <div className="space-y-4">
-            {messages.map((message, index) => (
-              <div key={index} className="space-y-1">
-                {message.isUser && message.username && (
-                  <p className="text-xs text-right text-gray-500 dark:text-gray-400 px-2">
-                    {message.username}
-                  </p>
-                )}
-                <div
-                  className={`p-3 rounded-lg ${
-                    message.isUser
-                      ? "ml-auto bg-[#64B5D9] text-white border-transparent max-w-[80%]"
-                      : "mr-auto bg-[#F1F0FB] dark:bg-zinc-800/90 text-[#1B2A4A] dark:text-gray-200 border-[#64B5D9]/10 max-w-[80%]"
-                  }`}
-                >
-                  <p className="text-sm font-medium whitespace-pre-wrap">{message.content}</p>
-                </div>
-              </div>
-            ))}
+        {messages.map((message, index) => (
+          <div key={index} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
+            <div className={`max-w-[80%] rounded-2xl px-4 py-2 ${
+              message.isUser
+                ? 'bg-[#64B5D9] text-white'
+                : 'bg-[#2A2D3E] text-[#F1F0FB]'
+            }`}>
+              <p className="text-sm">{message.content}</p>
+            </div>
           </div>
-        </div>
+        ))}
+      </div>
 
+      <div className="p-4 bg-[#1A1F2C]/80 border-t border-[#64B5D9]/10">
         <div className="flex items-center gap-2">
           <button
             onClick={startRecording}
             disabled={isRecording || (userQuestions >= maxQuestions && !user)}
-            className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#F1F0FB] dark:bg-zinc-800 text-[#1B2A4A] dark:text-gray-200 hover:bg-[#E5E3F7] dark:hover:bg-zinc-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="h-10 w-10 flex-shrink-0 rounded-xl bg-[#2A2D3E] text-[#F1F0FB] hover:bg-[#363B4D] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             title={isRecording ? "Enregistrement en cours..." : "Enregistrer un message vocal"}
           >
             <Mic className={`w-4 h-4 ${isRecording ? 'text-red-500 animate-pulse' : ''}`} />
@@ -267,19 +238,17 @@ export function VictaureChat({
             placeholder={
               userQuestions >= maxQuestions && !user
                 ? "Connectez-vous pour continuer..."
-                : "Posez une question à Mr. Victaure..."
+                : "Envoyez un message à Mr. Victaure..."
             }
             disabled={userQuestions >= maxQuestions && !user}
-            className="flex-1 h-10 px-4 rounded-lg bg-[#F1F0FB] dark:bg-zinc-800 border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[#1B2A4A] dark:text-gray-200 placeholder-[#1B2A4A]/40 dark:placeholder-gray-400"
+            className="flex-1 h-10 px-4 rounded-xl bg-[#2A2D3E] text-[#F1F0FB] border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder-[#F1F0FB]/40"
             onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
-            aria-label="Message input"
           />
 
           <button
             onClick={handleSendMessage}
-            disabled={userQuestions >= maxQuestions && !user || !userInput.trim()}
-            className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#64B5D9] text-white hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            title="Envoyer le message"
+            disabled={!userInput.trim() || isLoading || (userQuestions >= maxQuestions && !user)}
+            className="h-10 w-10 flex-shrink-0 rounded-xl bg-[#64B5D9] text-white hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             <MessagesSquare className="w-4 h-4" />
           </button>
@@ -287,8 +256,7 @@ export function VictaureChat({
           {isSpeaking && (
             <button
               onClick={() => setIsSpeaking(false)}
-              className="h-10 w-10 flex-shrink-0 rounded-lg bg-[#64B5D9] text-white animate-pulse"
-              title="Arrêter la lecture vocale"
+              className="h-10 w-10 flex-shrink-0 rounded-xl bg-[#64B5D9] text-white animate-pulse flex items-center justify-center"
             >
               <Volume2 className="w-4 h-4" />
             </button>
