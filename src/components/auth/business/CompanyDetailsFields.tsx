@@ -3,6 +3,7 @@ import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FormData } from './types';
+import { motion } from 'framer-motion';
 
 interface CompanyDetailsFieldsProps {
   formData: FormData;
@@ -10,15 +11,21 @@ interface CompanyDetailsFieldsProps {
 }
 
 export function CompanyDetailsFields({ formData, setFormData }: CompanyDetailsFieldsProps) {
+  const fadeInUp = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.3 }
+  };
+
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <div>
-        <Label htmlFor="industry">Secteur d'activité</Label>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <motion.div {...fadeInUp}>
+        <Label htmlFor="industry" className="mb-2 block">Secteur d'activité</Label>
         <Select 
           value={formData.industry}
           onValueChange={(value) => setFormData({ ...formData, industry: value })}
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-full border-primary/20">
             <SelectValue placeholder="Choisir un secteur" />
           </SelectTrigger>
           <SelectContent>
@@ -30,15 +37,15 @@ export function CompanyDetailsFields({ formData, setFormData }: CompanyDetailsFi
             <SelectItem value="other">Autre</SelectItem>
           </SelectContent>
         </Select>
-      </div>
+      </motion.div>
 
-      <div>
-        <Label htmlFor="companySize">Taille de l'entreprise</Label>
+      <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
+        <Label htmlFor="companySize" className="mb-2 block">Taille de l'entreprise</Label>
         <Select
           value={formData.companySize}
           onValueChange={(value) => setFormData({ ...formData, companySize: value })}
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-full border-primary/20">
             <SelectValue placeholder="Nombre d'employés" />
           </SelectTrigger>
           <SelectContent>
@@ -49,7 +56,7 @@ export function CompanyDetailsFields({ formData, setFormData }: CompanyDetailsFi
             <SelectItem value="501+">501+ employés</SelectItem>
           </SelectContent>
         </Select>
-      </div>
+      </motion.div>
     </div>
   );
 }
