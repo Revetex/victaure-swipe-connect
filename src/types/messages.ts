@@ -1,13 +1,9 @@
 
 import type { UserProfile } from './profile';
 
-export interface ChatMessage {
-  role: "system" | "user" | "assistant";
-  content: string;
-}
-
-export interface Message extends ChatMessage {
+export interface Message {
   id: string;
+  content: string;
   sender_id: string;
   receiver_id: string;
   created_at: string;

@@ -1,6 +1,5 @@
 
 import { MessagesSquare, Mic, Volume2 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface ChatInputProps {
   userInput: string;
@@ -13,7 +12,6 @@ interface ChatInputProps {
   onStartRecording: () => void;
   onStopSpeaking: () => void;
   onSendMessage: () => void;
-  className?: string;
 }
 
 export function ChatInput({
@@ -26,11 +24,10 @@ export function ChatInput({
   disabledMessage,
   onStartRecording,
   onStopSpeaking,
-  onSendMessage,
-  className
+  onSendMessage
 }: ChatInputProps) {
   return (
-    <div className={cn("p-3 bg-[#1A1F2C]/90 border-t border-[#64B5D9]/10", className)}>
+    <div className="p-3 bg-[#1A1F2C]/90 border-t border-[#64B5D9]/10">
       <div className="flex items-center gap-2">
         <button
           onClick={onStartRecording}

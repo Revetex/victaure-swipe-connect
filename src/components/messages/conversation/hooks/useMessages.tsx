@@ -85,10 +85,9 @@ export function useMessages(receiver: Receiver | null) {
           ...msg,
           metadata: typeof msg.metadata === 'string' ? JSON.parse(msg.metadata) : msg.metadata || {},
           deleted_by: typeof msg.deleted_by === 'string' ? JSON.parse(msg.deleted_by) : msg.deleted_by || {},
-          sender: transformToFullProfile(msg.sender),
-          role: msg.sender_id === "ai-assistant" ? "assistant" : "user" // Ajout du champ role
-        })) as Message[];
-        setMessages(formattedMessages);
+          sender: transformToFullProfile(msg.sender)
+        }));
+        setMessages(formattedMessages as Message[]);
       }
     } catch (error) {
       console.error('Error loading messages:', error);

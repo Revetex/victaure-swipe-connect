@@ -2,7 +2,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import type { ChatMessage } from "@/types/messages";
+
+interface ChatMessage {
+  content: string;
+  isUser: boolean;
+  username?: string;
+}
 
 interface UseChatMessagesProps {
   context: string;
@@ -39,11 +44,10 @@ export function useChatMessages({
         console.log("Initial response:", data);
 
         if (data?.choices?.[0]?.message?.content) {
-          const initialMessage: ChatMessage = {
-            role: "assistant",
-            content: data.choices[0].message.content
-          };
-          setMessages([initialMessage]);
+          setMessages(prevMessages => [{
+            content: data.choices[0].message.content,
+            isUser: false
+          }]);
         }
       } catch (error) {
         console.error("Error getting initial message:", error);
@@ -53,9 +57,7 @@ export function useChatMessages({
       }
     };
 
-    if (context) {
-      greetUser();
-    }
+    greetUser();
   }, [context, user?.id]);
 
   const sendMessage = async (userInput: string) => {
@@ -66,13 +68,16 @@ export function useChatMessages({
 
     if (!userInput.trim() || isLoading) return null;
 
-    const userMessage: ChatMessage = {
-      role: "user",
-      content: userInput.trim()
-    };
-
+    const userMessage = userInput.trim();
     setUserQuestions(prev => prev + 1);
-    setMessages(prevMessages => [...prevMessages, userMessage]);
+    setMessages(prevMessages => [
+      {
+        content: userMessage,
+        isUser: true,
+        username: user?.email || 'Visiteur'
+      },
+      ...prevMessages
+    ]);
 
     try {
       setIsLoading(true);
@@ -81,11 +86,13 @@ export function useChatMessages({
       const messageHistory = [
         { role: "system", content: context },
         ...messages.map(msg => ({
-          role: msg.role,
+          role: msg.isUser ? "user" : "assistant",
           content: msg.content
-        })),
-        userMessage
+        })).reverse(),
+        { role: "user", content: userMessage }
       ];
+
+      console.log("Message history:", messageHistory);
 
       const { data, error } = await supabase.functions.invoke("victaure-chat", {
         body: { 
@@ -98,12 +105,12 @@ export function useChatMessages({
       console.log("Assistant response:", data);
 
       if (data?.choices?.[0]?.message?.content) {
-        const response: ChatMessage = {
-          role: "assistant",
-          content: data.choices[0].message.content
-        };
-        setMessages(prevMessages => [...prevMessages, response]);
-        return response.content;
+        const response = data.choices[0].message.content;
+        setMessages(prevMessages => [
+          { content: response, isUser: false },
+          ...prevMessages
+        ]);
+        return response;
       }
       return null;
     } catch (error) {

@@ -1,3 +1,4 @@
+
 import { Suspense } from "react";
 import { useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -62,13 +63,13 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-x-hidden ios-safe-area">
+    <div className="min-h-screen flex flex-col relative overflow-x-hidden">
       {/* Fond galaxie futuriste */}
       <div className="fixed inset-0 bg-[#0B1026] overflow-hidden">
         {/* Gradient de base */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#1A1F2C] via-[#0B1026] to-[#1A1F2C] opacity-90"></div>
         
-        {/* Étoiles scintillantes et autres effets de fond */}
+        {/* Étoiles scintillantes */}
         <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at center, #ffffff 1px, transparent 1px)', backgroundSize: '50px 50px', opacity: 0.3 }}></div>
         
         {/* Nébuleuse */}
@@ -120,52 +121,38 @@ export default function Auth() {
       
       <ThemeSelector />
       
-      <main className="flex-1 flex flex-col items-center justify-start w-full px-3 sm:px-4 py-12 sm:py-16 relative z-10">
-        {/* En-tête avec logo et titre */}
-        <div className="w-full max-w-lg lg:max-w-2xl mx-auto mb-8">
-          <div className="flex items-center justify-center space-x-3">
-            <img src="/lovable-uploads/color-logo.png" alt="Logo" className="w-12 h-12" />
-            <div className="relative flex items-center">
-              <h1 className="text-3xl font-tiempos font-black tracking-[0.2em] text-[#F2EBE4] uppercase">
-                Victaure
-              </h1>
-              <span className="ml-3 px-2 py-0.5 text-[10px] font-medium tracking-wider uppercase bg-[#64B5D9]/10 text-[#64B5D9] rounded-full border border-[#64B5D9]/20">
-                Beta
-              </span>
-            </div>
-          </div>
-        </div>
+      <main className="flex-1 flex flex-col items-center justify-center w-full px-3 sm:px-4 py-4 sm:py-6 lg:py-8 relative z-10">
+        <div className="w-full max-w-lg lg:max-w-2xl mx-auto space-y-4 sm:space-y-6">
+          <AuthHeader />
+          
+          <div className="space-y-4 sm:space-y-6 animate-fade-in">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="relative w-full max-w-sm sm:max-w-md mx-auto"
+              transition={{ duration: 0.3 }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#221F26]/50 to-[#1A1F2C]/50 blur-xl" />
+              <div className="relative bg-[#2A2D3E]/80 backdrop-blur-md border border-[#64B5D9]/20 rounded-lg p-3 sm:p-4 shadow-lg overflow-hidden hover:border-[#64B5D9]/30 transition-all duration-300">
+                <VictaureChat 
+                  maxQuestions={3}
+                  onMaxQuestionsReached={() => {
+                    toast.error("Veuillez vous connecter pour continuer la conversation avec Mr. Victaure");
+                  }}
+                  context="Tu es un assistant concis et amical qui aide les utilisateurs à s'inscrire. Donne des réponses courtes et naturelles, comme si tu parlais à un ami."
+                />
+              </div>
+            </motion.div>
 
-        <div className="w-full max-w-lg lg:max-w-2xl mx-auto space-y-6 sm:space-y-8">
-          {/* Chat de Mr. Victaure */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="relative w-full max-w-sm sm:max-w-md mx-auto"
-            transition={{ duration: 0.3 }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-[#221F26]/50 to-[#1A1F2C]/50 blur-xl" />
-            <div className="relative bg-[#2A2D3E]/90 backdrop-blur-xl border border-[#64B5D9]/20 rounded-xl p-4 sm:p-5 shadow-lg overflow-hidden hover:border-[#64B5D9]/30 transition-all duration-300">
-              <VictaureChat 
-                maxQuestions={3}
-                onMaxQuestionsReached={handleMaxQuestionsReached}
-                context="Tu es un assistant concis et amical qui aide les utilisateurs à s'inscrire. Donne des réponses courtes et naturelles, comme si tu parlais à un ami."
-              />
-            </div>
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
+              className="border-2 border-[#64B5D9]/20 rounded-xl p-4 sm:p-6 bg-[#2A2D3E]/80 backdrop-blur-md w-full max-w-sm sm:max-w-md mx-auto"
+            >
+              <AuthForm />
+            </motion.div>
 
-          {/* Formulaire d'authentification */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.3 }}
-            className="w-full max-w-sm sm:max-w-md mx-auto"
-          >
-            <AuthForm />
-          </motion.div>
-
-          {/* Sections supplémentaires */}
-          <div className="space-y-8 sm:space-y-12 mt-8 sm:mt-12">
             <InnovationsSection />
             <CountdownSection countdown={countdown} />
             <FeaturesSection />
@@ -173,7 +160,7 @@ export default function Auth() {
         </div>
       </main>
 
-      <div className="relative z-10 mt-auto">
+      <div className="relative z-10">
         <AuthFooter />
       </div>
     </div>

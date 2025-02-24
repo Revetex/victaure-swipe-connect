@@ -6,7 +6,6 @@ import { MessageList } from "./MessageList";
 import { ChatInput } from "./ChatInput";
 import { useChatMessages } from "./hooks/useChatMessages";
 import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
-import type { ChatMessage } from "@/types/messages";
 
 interface VictaureChatProps {
   maxQuestions?: number;
@@ -16,7 +15,7 @@ interface VictaureChatProps {
 
 export function VictaureChat({ 
   maxQuestions = 3, 
-  context = "Je suis Mr. Victaure, votre guide pour l'emploi et le développement de carrière. Je m'engage à vous aider dans votre parcours professionnel avec des conseils personnalisés et bienveillants. Comment puis-je vous être utile aujourd'hui?",
+  context = "Tu es Mr. Victaure, un assistant professionnel qui aide à la recherche d'emploi. Tu dois toujours utiliser une orthographe et une grammaire impeccables, et adopter un ton professionnel mais sympathique. Tu dois être précis dans tes réponses et veiller à ne jamais faire de fautes d'orthographe.",
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
@@ -55,16 +54,15 @@ export function VictaureChat({
   };
 
   const isDisabled = userQuestions >= maxQuestions && !user;
-  const disabledMessage = "Connectez-vous pour continuer la conversation avec Mr. Victaure";
+  const disabledMessage = "Connectez-vous pour continuer...";
 
   return (
-    <div className="w-full bg-transparent rounded-xl overflow-hidden">
+    <div className="w-full bg-[#1A1F2C] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-lg relative">
       <ChatHeader />
       <MessageList 
         ref={chatContainerRef} 
         messages={messages}
         isLoading={isLoading}
-        className="font-inter text-[15px] leading-relaxed"
       />
       <ChatInput
         userInput={userInput}
