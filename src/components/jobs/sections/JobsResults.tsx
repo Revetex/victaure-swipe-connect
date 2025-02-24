@@ -20,7 +20,7 @@ export function JobsResults({ jobs, onJobSelect }: JobsResultsProps) {
   return (
     <div className="grid gap-4">
       {jobs.map((job) => (
-        <JobCard key={job.id} job={job} onSelect={() => onJobSelect(job)} />
+        <JobCard key={job.id} job={job} onClick={() => onJobSelect(job)} />
       ))}
     </div>
   );

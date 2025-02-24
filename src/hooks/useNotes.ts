@@ -27,7 +27,7 @@ export function useNotes() {
 
       if (error) throw error;
 
-      setNotes(data.map(note => ({
+      const formattedNotes: StickyNote[] = data.map(note => ({
         id: note.id,
         text: note.text,
         color: note.color || 'yellow',
@@ -38,9 +38,11 @@ export function useNotes() {
         pinned: note.pinned,
         created_at: note.created_at,
         updated_at: note.updated_at,
-        metadata: note.metadata,
-        position: note.position
-      })));
+        metadata: note.metadata ? JSON.parse(note.metadata as string) : { width: 280, height: 280 },
+        position: note.position ? JSON.parse(note.position as string) : { x: 0, y: 0 }
+      }));
+
+      setNotes(formattedNotes);
     } catch (error) {
       console.error('Error fetching notes:', error);
       toast.error("Erreur lors du chargement des notes");
@@ -59,19 +61,23 @@ export function useNotes() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      const newNoteData: Partial<StickyNote> = {
+        text: newNote,
+        color: selectedColor,
+        user_id: user.id,
+        metadata: { width: 280, height: 280 },
+        position: { x: 0, y: 0 }
+      };
+
       const { data, error } = await supabase
         .from('notes')
-        .insert({
-          text: newNote,
-          color: selectedColor,
-          user_id: user.id
-        })
+        .insert(newNoteData)
         .select()
         .single();
 
       if (error) throw error;
 
-      setNotes(prev => [{
+      const formattedNote: StickyNote = {
         id: data.id,
         text: data.text,
         color: data.color,
@@ -82,10 +88,11 @@ export function useNotes() {
         pinned: data.pinned,
         created_at: data.created_at,
         updated_at: data.updated_at,
-        metadata: data.metadata,
-        position: data.position
-      }, ...prev]);
+        metadata: { width: 280, height: 280 },
+        position: { x: 0, y: 0 }
+      };
 
+      setNotes(prev => [formattedNote, ...prev]);
       setNewNote("");
       toast.success("Note ajoutée avec succès");
     } catch (error) {
@@ -118,8 +125,8 @@ export function useNotes() {
         .update({
           text: updatedNote.text,
           color: updatedNote.color,
-          metadata: updatedNote.metadata,
-          position: updatedNote.position
+          metadata: JSON.stringify(updatedNote.metadata),
+          position: JSON.stringify(updatedNote.position)
         })
         .eq('id', updatedNote.id);
 
