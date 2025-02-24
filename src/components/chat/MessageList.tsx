@@ -16,9 +16,9 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
     return (
       <div 
         ref={ref}
-        className="h-[400px] overflow-y-auto py-4 px-3 scrollbar-none space-y-2.5 flex flex-col"
+        className="h-[400px] overflow-y-auto py-4 px-3 scrollbar-none flex flex-col-reverse"
       >
-        <div className="flex-1">
+        <div className="flex flex-col-reverse">
           {messages.map((message, index) => (
             <div 
               key={index} 

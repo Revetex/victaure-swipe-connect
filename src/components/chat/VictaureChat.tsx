@@ -104,7 +104,7 @@ export function VictaureChat({
 
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop = 0;
     }
   }, [messages]);
 
@@ -130,7 +130,10 @@ export function VictaureChat({
         if (error) throw error;
 
         if (data?.choices?.[0]?.message?.content) {
-          setMessages([{ content: data.choices[0].message.content, isUser: false }]);
+          setMessages(prevMessages => [{
+            content: data.choices[0].message.content,
+            isUser: false
+          }]);
         }
       } catch (error) {
         console.error("Error getting initial message:", error);
@@ -151,11 +154,14 @@ export function VictaureChat({
 
     const userMessage = userInput.trim();
     setUserQuestions(prev => prev + 1);
-    setMessages(prev => [...prev, { 
-      content: userMessage, 
-      isUser: true,
-      username: user?.email || 'Visiteur'
-    }]);
+    setMessages(prevMessages => [
+      {
+        content: userMessage,
+        isUser: true,
+        username: user?.email || 'Visiteur'
+      },
+      ...prevMessages
+    ]);
     setUserInput("");
 
     try {
@@ -167,7 +173,7 @@ export function VictaureChat({
         ...messages.map(msg => ({
           role: msg.isUser ? "user" : "assistant",
           content: msg.content
-        })),
+        })).reverse(),
         {
           role: "user",
           content: userMessage
@@ -185,7 +191,13 @@ export function VictaureChat({
 
       if (data?.choices?.[0]?.message?.content) {
         const response = data.choices[0].message.content;
-        setMessages(prev => [...prev, { content: response, isUser: false }]);
+        setMessages(prevMessages => [
+          {
+            content: response,
+            isUser: false
+          },
+          ...prevMessages
+        ]);
         speakText(response);
       }
     } catch (error) {
