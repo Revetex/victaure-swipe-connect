@@ -77,29 +77,28 @@ const Settings = () => {
 
   return (
     <Elements stripe={stripePromise} options={stripeElementsOptions}>
-      <div className="min-h-screen overflow-x-hidden">
-        <ScrollArea className="h-[calc(100vh-5rem)]">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            {settingsSections.map(({ id, Component }, index) => (
-              <motion.div
-                key={id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="w-full max-w-4xl mx-auto px-4 py-4"
-              >
-                <div className="glass-card bg-white/5 dark:bg-[#1B2A4A]">
-                  <Component />
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </ScrollArea>
-      </div>
+      <ScrollArea className="h-[calc(100vh-5rem)]">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-4xl mx-auto px-4 py-4"
+        >
+          {settingsSections.map(({ id, Component }, index) => (
+            <motion.div
+              key={id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="mb-4"
+            >
+              <div className="glass-card bg-white/5 dark:bg-[#1B2A4A]">
+                <Component />
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </ScrollArea>
     </Elements>
   );
 }
