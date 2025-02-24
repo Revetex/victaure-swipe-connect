@@ -126,105 +126,269 @@ END:VCARD`;
                 <div className="absolute inset-0 bg-white/20 rounded-full transition-transform group-hover:scale-105 duration-300" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl">
+            <DialogContent className="md:max-w-4xl w-11/12 h-[80vh] overflow-y-auto bg-[#1B2A4A] border-2 border-[#F1F0FB]/20">
               <DialogHeader>
-                <DialogTitle className="text-xl font-bold mb-4 text-[#F1F0FB]">Charte des prix Victaure</DialogTitle>
+                <DialogTitle className="text-2xl font-bold text-center text-[#F1F0FB] mb-2">Guide Tarifaire Victaure 2025</DialogTitle>
+                <p className="text-[#F1F0FB]/70 text-center text-sm">En vigueur au 29 février 2025</p>
               </DialogHeader>
-              <div className="space-y-6 text-[#F1F0FB]">
-                <div className="grid gap-4">
-                  <div className="p-5 bg-gradient-to-br from-[#4A90E2]/10 to-[#64B5D9]/10 rounded-lg border border-[#64B5D9]/20">
-                    <h4 className="font-medium text-lg mb-3 text-[#64B5D9]">Plan Starter <span className="text-sm font-normal text-[#F1F0FB]/70">299 CAD/mois</span></h4>
-                    <ul className="text-sm space-y-2 text-[#F1F0FB]/90">
-                      <li className="flex items-center gap-2">
-                        <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                        8 offres d'emploi actives
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                        Gestion des candidatures
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                        30 jours d'affichage
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                        Commission standard
-                      </li>
-                    </ul>
-                  </div>
-                    
-                  <div className="p-5 bg-gradient-to-br from-[#4A90E2]/20 to-[#64B5D9]/20 rounded-lg border-2 border-[#64B5D9]/30 relative">
-                    <div className="absolute -top-3 right-4 bg-[#64B5D9] text-white px-3 py-1 rounded-full text-xs font-medium">
-                      POPULAIRE
+              <div className="space-y-8 p-4 text-[#F1F0FB]">
+                <section className="space-y-4">
+                  <h3 className="text-xl font-semibold text-[#64B5D9] mb-4">Formules d'abonnement et flexibilité</h3>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="p-4 bg-gradient-to-br from-[#4A90E2]/10 to-[#64B5D9]/10 rounded-lg border border-[#64B5D9]/20">
+                      <h4 className="font-medium text-lg mb-2">Formule Flex</h4>
+                      <p className="text-sm text-[#F1F0FB]/70 mb-3">Liberté totale sans engagement</p>
+                      <ul className="text-sm space-y-2">
+                        <li>• Paiement mensuel</li>
+                        <li>• Prix standard</li>
+                        <li>• Annulation à tout moment</li>
+                        <li>• Modification mensuelle possible</li>
+                      </ul>
                     </div>
-                    <h4 className="font-medium text-lg mb-3 text-[#64B5D9]">Plan Pro <span className="text-sm font-normal text-[#F1F0FB]/70">799 CAD/mois</span></h4>
-                    <ul className="text-sm space-y-2 text-[#F1F0FB]/90">
-                      <li className="flex items-center gap-2">
-                        <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                        Offres illimitées
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                        500 CV dans la base
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                        45 jours d'affichage
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                        -10% sur commissions
-                      </li>
-                    </ul>
+                    <div className="p-4 bg-gradient-to-br from-[#4A90E2]/20 to-[#64B5D9]/20 rounded-lg border-2 border-[#64B5D9]/30 relative">
+                      <div className="absolute -top-3 right-4 bg-[#64B5D9] text-white px-3 py-1 rounded-full text-xs font-medium">
+                        POPULAIRE
+                      </div>
+                      <h4 className="font-medium text-lg mb-2">Formule Smart</h4>
+                      <p className="text-sm text-[#F1F0FB]/70 mb-3">Engagement optimisé 3 mois</p>
+                      <ul className="text-sm space-y-2">
+                        <li>• -5% sur tous les prix</li>
+                        <li>• Paiement trimestriel</li>
+                        <li>• Renouvellement automatique</li>
+                        <li>• Changement trimestriel possible</li>
+                      </ul>
+                    </div>
+                    <div className="p-4 bg-gradient-to-br from-[#4A90E2]/10 to-[#64B5D9]/10 rounded-lg border border-[#64B5D9]/20">
+                      <h4 className="font-medium text-lg mb-2">Formule Premium</h4>
+                      <p className="text-sm text-[#F1F0FB]/70 mb-3">Engagement annuel privilégié</p>
+                      <ul className="text-sm space-y-2">
+                        <li>• 2 mois gratuits (-17%)</li>
+                        <li>• Paiement annuel unique</li>
+                        <li>• Garantie satisfait ou remboursé</li>
+                        <li>• Prix bloqués 12 mois</li>
+                      </ul>
+                    </div>
                   </div>
-                    
-                  <div className="p-5 bg-gradient-to-br from-[#4A90E2]/10 to-[#64B5D9]/10 rounded-lg border border-[#64B5D9]/20">
-                    <h4 className="font-medium text-lg mb-3 text-[#64B5D9]">Plan Enterprise <span className="text-sm font-normal text-[#F1F0FB]/70">2499 CAD/mois</span></h4>
-                    <ul className="text-sm space-y-2 text-[#F1F0FB]/90">
-                      <li className="flex items-center gap-2">
-                        <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                        CV illimités
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                        Visibilité maximale
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                        Account manager dédié
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                        -20% sur commissions
-                      </li>
-                    </ul>
-                  </div>
-                </div>
+                </section>
 
-                <div className="p-4 bg-[#64B5D9]/10 rounded-lg border border-[#64B5D9]/20">
-                  <h4 className="font-medium mb-3 text-[#64B5D9]">Structure des Commissions</h4>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                      Contrats {"< 1 000 CAD"}
+                <section className="space-y-6">
+                  <h3 className="text-xl font-semibold text-[#64B5D9] mb-4">Plans d'abonnement détaillés</h3>
+                  
+                  <div className="p-6 bg-white/5 rounded-lg border border-[#64B5D9]/20">
+                    <h4 className="text-lg font-medium text-[#64B5D9] mb-4">Plan Starter</h4>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                      <div>
+                        <h5 className="font-medium mb-2">Tarification</h5>
+                        <ul className="text-sm space-y-1">
+                          <li>• Mensuel: 299 CAD/mois</li>
+                          <li>• Trimestriel: 284 CAD/mois</li>
+                          <li>• Annuel: 249 CAD/mois</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="font-medium mb-2">Fonctionnalités</h5>
+                        <ul className="text-sm space-y-1">
+                          <li>• 8 offres actives</li>
+                          <li>• 30 jours d'affichage</li>
+                          <li>• Base de 100 CV</li>
+                          <li>• 1 admin + 2 utilisateurs</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="font-medium mb-2">Outils</h5>
+                        <ul className="text-sm space-y-1">
+                          <li>• Publication d'offres</li>
+                          <li>• Gestion candidatures</li>
+                          <li>• 5 templates</li>
+                          <li>• Tableau de bord</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="font-medium mb-2">Support</h5>
+                        <ul className="text-sm space-y-1">
+                          <li>• Email (< 24h)</li>
+                          <li>• Documentation</li>
+                          <li>• Tutoriels vidéo</li>
+                          <li>• Chat 9h-17h</li>
+                        </ul>
+                      </div>
                     </div>
-                    <div>5%</div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                      1 000-5 000 CAD
-                    </div>
-                    <div>4%</div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-1 h-1 rounded-full bg-[#64B5D9]" />
-                      {"> 5 000 CAD"}
-                    </div>
-                    <div>3%</div>
                   </div>
-                  <div className="mt-4 pt-4 border-t border-[#64B5D9]/20">
-                    <p className="text-sm">Système d'enchères: 6-8% selon la compétition</p>
+
+                  <div className="p-6 bg-white/5 rounded-lg border-2 border-[#64B5D9]/30 relative">
+                    <div className="absolute -top-3 right-4 bg-[#64B5D9] text-white px-3 py-1 rounded-full text-xs font-medium">
+                      RECOMMANDÉ
+                    </div>
+                    <h4 className="text-lg font-medium text-[#64B5D9] mb-4">Plan Pro</h4>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                      <div>
+                        <h5 className="font-medium mb-2">Tarification</h5>
+                        <ul className="text-sm space-y-1">
+                          <li>• Mensuel: 799 CAD/mois</li>
+                          <li>• Trimestriel: 759 CAD/mois</li>
+                          <li>• Annuel: 666 CAD/mois</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="font-medium mb-2">Fonctionnalités</h5>
+                        <ul className="text-sm space-y-1">
+                          <li>• Offres illimitées</li>
+                          <li>• 45 jours d'affichage</li>
+                          <li>• Base de 500 CV</li>
+                          <li>• 3 admin + 5 utilisateurs</li>
+                          <li>• -10% commissions</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="font-medium mb-2">Outils avancés</h5>
+                        <ul className="text-sm space-y-1">
+                          <li>• Tests de compétences</li>
+                          <li>• Filtres avancés</li>
+                          <li>• 20 templates</li>
+                          <li>• Analytics</li>
+                          <li>• API basique</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="font-medium mb-2">Support PRO</h5>
+                        <ul className="text-sm space-y-1">
+                          <li>• Prioritaire (< 4h)</li>
+                          <li>• Formation en ligne</li>
+                          <li>• Chat 24/5</li>
+                          <li>• Webinaires mensuels</li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
-                </div>
+
+                  <div className="p-6 bg-white/5 rounded-lg border border-[#64B5D9]/20">
+                    <h4 className="text-lg font-medium text-[#64B5D9] mb-4">Plan Enterprise</h4>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                      <div>
+                        <h5 className="font-medium mb-2">Tarification</h5>
+                        <ul className="text-sm space-y-1">
+                          <li>• Mensuel: 2 499 CAD/mois</li>
+                          <li>• Trimestriel: 2 374 CAD/mois</li>
+                          <li>• Annuel: 2 082 CAD/mois</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="font-medium mb-2">Tout illimité</h5>
+                        <ul className="text-sm space-y-1">
+                          <li>• Offres illimitées</li>
+                          <li>• CV illimités</li>
+                          <li>• 60 jours d'affichage</li>
+                          <li>• Utilisateurs illimités</li>
+                          <li>• -20% commissions</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="font-medium mb-2">Outils enterprise</h5>
+                        <ul className="text-sm space-y-1">
+                          <li>• API complète</li>
+                          <li>• Intégration SIRH</li>
+                          <li>• Analyses prédictives</li>
+                          <li>• Multi-sites/langues</li>
+                          <li>• Templates illimités</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="font-medium mb-2">Support VIP</h5>
+                        <ul className="text-sm space-y-1">
+                          <li>• Account manager</li>
+                          <li>• Support 24/7</li>
+                          <li>• Formation sur site</li>
+                          <li>• Audits trimestriels</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <section className="space-y-6">
+                  <h3 className="text-xl font-semibold text-[#64B5D9] mb-4">Système de contrats</h3>
+                  
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="p-4 bg-[#64B5D9]/10 rounded-lg border border-[#64B5D9]/20">
+                        <h4 className="font-medium mb-3">Commissions standards</h4>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div>{"< 1 000 CAD"}</div><div>5%</div>
+                          <div>1 000-5 000 CAD</div><div>4%</div>
+                          <div>{"> 5 000 CAD"}</div><div>3%</div>
+                          <div>{"> 10 000 CAD"}</div><div>Négociable</div>
+                        </div>
+                      </div>
+
+                      <div className="p-4 bg-[#64B5D9]/10 rounded-lg border border-[#64B5D9]/20">
+                        <h4 className="font-medium mb-3">Système d'enchères</h4>
+                        <ul className="text-sm space-y-2">
+                          <li>• Taux de base : 6%</li>
+                          <li>• Bonus multi-enchères : +1%</li>
+                          <li>• Plafond : 8%</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="p-4 bg-white/5 rounded-lg border border-[#64B5D9]/20">
+                        <h4 className="font-medium mb-3">Options de publication</h4>
+                        <div className="space-y-3">
+                          <div>
+                            <p className="font-medium text-sm">Standard (Gratuit)</p>
+                            <ul className="text-sm mt-1 text-[#F1F0FB]/80">
+                              <li>• Visibilité normale</li>
+                              <li>• 30 jours de publication</li>
+                            </ul>
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">Boost (29 CAD)</p>
+                            <ul className="text-sm mt-1 text-[#F1F0FB]/80">
+                              <li>• Mise en avant 7 jours</li>
+                              <li>• Alertes email ciblées</li>
+                            </ul>
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">Premium (59 CAD)</p>
+                            <ul className="text-sm mt-1 text-[#F1F0FB]/80">
+                              <li>• Badge "Urgent"</li>
+                              <li>• Mise en avant 14 jours</li>
+                              <li>• Top des résultats</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-xl font-semibold text-[#64B5D9] mb-4">Services additionnels</h3>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="p-4 bg-white/5 rounded-lg">
+                        <h4 className="font-medium mb-3">Services marketing</h4>
+                        <ul className="text-sm space-y-2">
+                          <li>• Email ciblé : 299 CAD</li>
+                          <li>• Bannière homepage : 499 CAD/semaine</li>
+                          <li>• Post réseau social : 199 CAD</li>
+                          <li>• Push notification : 99 CAD</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="p-4 bg-white/5 rounded-lg">
+                        <h4 className="font-medium mb-3">Formation</h4>
+                        <ul className="text-sm space-y-2">
+                          <li>• Formation en ligne (2h) : 299 CAD</li>
+                          <li>• Formation sur site (4h) : 599 CAD</li>
+                          <li>• Consulting RH (2h) : 399 CAD</li>
+                          <li>• Pack complet : 999 CAD</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </section>
               </div>
             </DialogContent>
           </Dialog>
