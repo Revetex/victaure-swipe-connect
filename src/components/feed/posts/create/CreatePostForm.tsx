@@ -8,9 +8,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
-export function CreatePostForm() {
+export type PostPrivacyLevel = "public" | "connections";
+
+interface CreatePostFormProps {
+  onPostCreated?: () => void;
+}
+
+export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [content, setContent] = useState("");
+  const [privacy, setPrivacy] = useState<PostPrivacyLevel>("public");
   const { profile } = useProfile();
   const isMobile = useIsMobile();
 
@@ -18,9 +25,15 @@ export function CreatePostForm() {
 
   const handleSubmit = async () => {
     if (!content.trim()) return;
-    // ... implémentation de la soumission
-    setContent("");
-    setIsExpanded(false);
+    
+    try {
+      // Implémentation de la soumission ici
+      onPostCreated?.();
+      setContent("");
+      setIsExpanded(false);
+    } catch (error) {
+      console.error("Error creating post:", error);
+    }
   };
 
   const handleCancel = () => {
@@ -47,13 +60,23 @@ export function CreatePostForm() {
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                   />
-                  <div className="flex items-center justify-end gap-2">
-                    <Button variant="secondary" size="sm" onClick={handleCancel}>
-                      Annuler
-                    </Button>
-                    <Button size="sm" onClick={handleSubmit}>
-                      Publier
-                    </Button>
+                  <div className="flex items-center justify-between gap-2">
+                    <select
+                      value={privacy}
+                      onChange={(e) => setPrivacy(e.target.value as PostPrivacyLevel)}
+                      className="bg-transparent text-sm text-muted-foreground border border-border/20 rounded-md px-2 py-1"
+                    >
+                      <option value="public">Public</option>
+                      <option value="connections">Connections</option>
+                    </select>
+                    <div className="flex items-center gap-2">
+                      <Button variant="secondary" size="sm" onClick={handleCancel}>
+                        Annuler
+                      </Button>
+                      <Button size="sm" onClick={handleSubmit}>
+                        Publier
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>

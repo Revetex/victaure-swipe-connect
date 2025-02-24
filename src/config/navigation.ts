@@ -20,8 +20,8 @@ export const navigationItems = [
   { id: 1, icon: User, name: "Mon profil", route: "/profile" },
   { id: 4, icon: Newspaper, name: "Actualité", route: "/feed" },
   { id: 2, icon: MessageSquare, name: "Messages", route: "/messages" },
-  { id: 17, icon: BriefcaseIcon, name: "Emplois", route: "/marketplace" },
-  { id: 3, icon: ShoppingBag, name: "Marketplace", route: "/jobs" },
+  { id: 3, icon: ShoppingBag, name: "Marketplace", route: "/marketplace" },
+  { id: 17, icon: BriefcaseIcon, name: "Emplois", route: "/jobs" },
   { id: 18, icon: Gamepad2, name: "Jeux", route: "/lottery" },
   
   // Section réseau
