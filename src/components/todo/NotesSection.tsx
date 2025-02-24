@@ -1,77 +1,70 @@
 
-import { StickyNoteIcon } from "lucide-react";
-import { NotesInput } from "./NotesInput";
-import { StickyNote } from "./StickyNote";
-import { ColorOption, StickyNote as StickyNoteType } from "@/types/todo";
+import { useNotes } from "@/hooks/useNotes";
+import { NotesToolbar } from "./NotesToolbar";
+import { NoteGrid } from "@/components/board/NoteGrid";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
+import { Move } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface NotesSectionProps {
-  notes?: StickyNoteType[];
-  newNote?: string;
-  selectedColor?: string;
-  colors?: ColorOption[];
-  onNoteChange?: (value: string) => void;
-  onColorChange?: (color: string) => void;
-  onAdd?: () => void;
-  onDelete?: (id: string) => void;
-}
+export function NotesSection() {
+  const isMobile = useIsMobile();
+  const [isDraggable, setIsDraggable] = useState(false);
+  const {
+    notes,
+    newNote,
+    selectedColor,
+    setNewNote,
+    setSelectedColor,
+    addNote,
+    deleteNote,
+    updateNote
+  } = useNotes();
 
-export function NotesSection({
-  notes = [],
-  newNote = "",
-  selectedColor = "yellow",
-  colors = [],
-  onNoteChange = () => {},
-  onColorChange = () => {},
-  onAdd = () => {},
-  onDelete = () => {},
-}: NotesSectionProps) {
+  const colors = [
+    { value: "yellow", label: "Jaune" },
+    { value: "blue", label: "Bleu" },
+    { value: "green", label: "Vert" },
+    { value: "purple", label: "Violet" },
+    { value: "orange", label: "Orange" }
+  ];
+
   return (
-    <div className="flex flex-col h-full max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-12rem)]">
-      <div className="p-4 sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <NotesInput
-          newNote={newNote}
-          selectedColor={selectedColor}
-          colors={colors}
-          onNoteChange={onNoteChange}
-          onColorChange={onColorChange}
-          onAdd={onAdd}
+    <div className="h-screen flex flex-col pt-16">
+      <div className="w-full max-w-3xl mx-auto space-y-4 px-2 sm:px-4">
+        <div className="flex items-center justify-between gap-2">
+          <NotesToolbar
+            newNote={newNote}
+            selectedColor={selectedColor}
+            colors={colors}
+            onNoteChange={setNewNote}
+            onColorChange={setSelectedColor}
+            onAdd={addNote}
+          />
+          <Button
+            variant={isDraggable ? "default" : "secondary"}
+            size="icon"
+            onClick={() => setIsDraggable(!isDraggable)}
+            className={cn(
+              "shrink-0",
+              isDraggable && "bg-[#9b87f5] hover:bg-[#7E69AB] text-white"
+            )}
+            title={isDraggable ? "Désactiver le déplacement" : "Activer le déplacement"}
+          >
+            <Move className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      <div className="flex-1 overflow-hidden notes-container relative">
+        <NoteGrid 
+          notes={notes} 
+          onDeleteNote={deleteNote} 
+          onUpdateNote={updateNote} 
+          isDraggable={isDraggable}
         />
       </div>
-
-      <ScrollArea className="flex-1 relative px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-h-[600px] relative pb-4">
-          <AnimatePresence mode="popLayout">
-            {notes.map((note) => (
-              <StickyNote
-                key={note.id}
-                note={note}
-                onDelete={onDelete}
-              />
-            ))}
-            {notes.length === 0 && (
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className={cn(
-                  "text-center text-muted-foreground py-12",
-                  "col-span-full",
-                  "bg-muted/30 rounded-lg backdrop-blur-sm",
-                  "border border-border/50 mx-auto w-64"
-                )}
-              >
-                <StickyNoteIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg">Aucune note pour le moment</p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Créez votre première note en utilisant le formulaire ci-dessus
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </ScrollArea>
     </div>
   );
 }

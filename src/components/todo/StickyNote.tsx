@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import { Trash2, Edit2, Save, Grip } from "lucide-react";
+import { Trash2, Edit2, Save, Grip, Move } from "lucide-react";
 import { StickyNote as StickyNoteType } from "@/types/todo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -16,9 +16,10 @@ interface StickyNoteProps {
   onDelete: (id: string) => void;
   onUpdate?: (note: StickyNoteType) => void;
   layout?: 'grid' | 'masonry' | 'list';
+  isDraggable?: boolean;
 }
 
-export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: StickyNoteProps) {
+export function StickyNote({ note, onDelete, onUpdate, layout = 'grid', isDraggable = false }: StickyNoteProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(note.text);
   const [position, setPosition] = useState(note.position || { x: 0, y: 0 });
@@ -41,20 +42,17 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
   };
 
   const handleDragEnd = (event: any, info: any) => {
-    if (!onUpdate) return;
+    if (!onUpdate || !isDraggable) return;
     
-    // Récupérer les dimensions du conteneur parent
     const container = document.querySelector('.notes-container');
     if (!container) return;
 
     const containerRect = container.getBoundingClientRect();
     const noteRect = event.target.getBoundingClientRect();
 
-    // Calculer les nouvelles coordonnées en tenant compte des limites
     let newX = position.x + info.offset.x;
     let newY = position.y + info.offset.y;
 
-    // Limiter les coordonnées pour que la note reste dans le conteneur
     newX = Math.max(0, Math.min(newX, containerRect.width - noteRect.width));
     newY = Math.max(0, Math.min(newY, containerRect.height - noteRect.height));
 
@@ -96,7 +94,7 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
     <div className={cn(
       "border shadow-lg group relative overflow-hidden",
       getColorClass(note.color),
-      "touch-manipulation cursor-grab active:cursor-grabbing",
+      isDraggable ? "cursor-grab active:cursor-grabbing" : "",
       "before:content-[''] before:absolute before:inset-0",
       "before:bg-gradient-to-br before:from-white/5 before:to-transparent",
       "after:content-[''] after:absolute after:bottom-0 after:right-0",
@@ -171,7 +169,7 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
   if (layout === 'grid' || layout === 'masonry') {
     return (
       <motion.div
-        drag
+        drag={isDraggable}
         dragMomentum={false}
         dragConstraints={{ left: 0, top: 0, right: window.innerWidth - width, bottom: window.innerHeight - height }}
         onDragEnd={handleDragEnd}

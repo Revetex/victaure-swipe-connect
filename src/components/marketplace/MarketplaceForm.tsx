@@ -98,16 +98,16 @@ export function MarketplaceForm() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="w-full max-w-3xl mx-auto px-2 sm:px-4 bg-[#1A1F2C] text-white border-[#64B5D9]/10">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label>Type de vente</Label>
+              <Label className="text-white">Type de vente</Label>
               <Select 
                 value={formData.saleType} 
                 onValueChange={(value) => setFormData(prev => ({ ...prev, saleType: value }))}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white">
                   <SelectValue placeholder="Choisissez le type de vente" />
                 </SelectTrigger>
                 <SelectContent>
@@ -118,20 +118,21 @@ export function MarketplaceForm() {
             </div>
 
             <div className="grid gap-2">
-              <Label>Titre de l'annonce</Label>
+              <Label className="text-white">Titre de l'annonce</Label>
               <Input 
                 placeholder="Titre de votre annonce" 
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                 required
+                className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white placeholder:text-white/50"
               />
             </div>
 
             <div className="grid gap-2">
-              <Label>Description</Label>
+              <Label className="text-white">Description</Label>
               <Textarea 
                 placeholder="Décrivez votre article en détail..." 
-                className="min-h-[100px]"
+                className="min-h-[100px] bg-[#1B2A4A] border-[#64B5D9]/10 text-white placeholder:text-white/50"
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 required
@@ -140,34 +141,37 @@ export function MarketplaceForm() {
 
             {formData.saleType === 'immediate' ? (
               <div className="grid gap-2">
-                <Label>Prix fixe</Label>
+                <Label className="text-white">Prix fixe</Label>
                 <Input 
                   type="number" 
                   placeholder="Prix en CAD"
                   value={formData.price}
                   onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
                   required
+                  className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white placeholder:text-white/50"
                 />
               </div>
             ) : (
               <div className="space-y-4">
                 <div className="grid gap-2">
-                  <Label>Prix de départ</Label>
+                  <Label className="text-white">Prix de départ</Label>
                   <Input 
                     type="number" 
                     placeholder="Prix minimal en CAD"
                     value={formData.minimumBid}
                     onChange={(e) => setFormData(prev => ({ ...prev, minimumBid: e.target.value }))}
                     required
+                    className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white placeholder:text-white/50"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Fin des enchères</Label>
+                  <Label className="text-white">Fin des enchères</Label>
                   <Input 
                     type="datetime-local"
                     value={formData.auctionEndDate?.toISOString().slice(0, 16) || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, auctionEndDate: new Date(e.target.value) }))}
                     required
+                    className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white"
                   />
                 </div>
               </div>
@@ -183,7 +187,11 @@ export function MarketplaceForm() {
               <Button variant="outline" type="button" onClick={() => setOpen(false)}>
                 Annuler
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button 
+                type="submit" 
+                disabled={loading}
+                className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white"
+              >
                 {loading ? "Publication en cours..." : "Publier l'annonce"}
               </Button>
             </DialogFooter>
