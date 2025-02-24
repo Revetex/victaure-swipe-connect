@@ -45,7 +45,6 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
       });
     };
 
-    // Obtenir les emplois immédiatement au premier message
     useEffect(() => {
       if (messages.length === 1 && !messages[0].isUser) {
         const nearbyJobs = getNearbyJobs();
@@ -58,16 +57,16 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
     return (
       <div 
         ref={ref}
-        className="h-full overflow-y-auto py-4 px-3 scrollbar-none flex flex-col"
+        className="h-full pt-6 pb-2 px-3 scrollbar-none flex flex-col justify-end"
       >
-        <div className="flex flex-col space-y-3">
+        <div className="flex flex-col space-y-3 min-h-0">
           <AnimatePresence mode="popLayout" initial={false}>
             {isLoading && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                className="flex mb-3 items-start"
+                className="flex items-start"
               >
                 <div className="relative flex-1 bg-[#2A2D3E] rounded-2xl rounded-bl-sm px-4 py-3">
                   <Loader2 className="w-4 h-4 text-white/80 animate-spin"/>
@@ -75,10 +74,10 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
               </motion.div>
             )}
             
-            {[...messages].map((message, index) => (
+            {messages.map((message, index) => (
               <motion.div 
                 key={index} 
-                className={`flex mb-3 ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
