@@ -2,11 +2,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
 
 export const usePostOperations = () => {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
 
   const handleReaction = async (postId: string, userId: string | undefined, type: 'like' | 'dislike') => {
     if (!userId) {
@@ -15,67 +13,22 @@ export const usePostOperations = () => {
     }
 
     try {
-      const { error } = await supabase.rpc('handle_post_reaction', {
-        p_post_id: postId,
-        p_user_id: userId,
-        p_reaction_type: type
-      });
+      const { error } = await supabase
+        .from('post_reactions')
+        .upsert({
+          post_id: postId,
+          user_id: userId,
+          reaction_type: type
+        }, {
+          onConflict: 'post_id,user_id'
+        });
 
       if (error) throw error;
 
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      await queryClient.invalidateQueries({ queryKey: ["posts"] });
     } catch (error) {
       console.error('Error handling reaction:', error);
       toast("Une erreur est survenue lors de la réaction");
-    }
-  };
-
-  const handleCommentReaction = async (commentId: string, userId: string | undefined, type: 'like' | 'dislike') => {
-    if (!userId) {
-      toast("Vous devez être connecté pour réagir aux commentaires");
-      return;
-    }
-
-    try {
-      const { error } = await supabase.rpc('handle_post_reaction', {
-        p_post_id: commentId,
-        p_user_id: userId,
-        p_reaction_type: type
-      });
-
-      if (error) throw error;
-
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-    } catch (error) {
-      console.error('Error handling comment reaction:', error);
-      toast("Une erreur est survenue lors de la réaction");
-    }
-  };
-
-  const handleShare = async (
-    itemType: 'post' | 'comment' | 'conversation',
-    itemId: string,
-    receiverId: string,
-    message?: string
-  ) => {
-    if (!user?.id) {
-      toast.error("Vous devez être connecté pour partager du contenu");
-      return;
-    }
-
-    try {
-      const { error } = await supabase.rpc('handle_post_reaction', {
-        p_post_id: itemId,
-        p_user_id: receiverId,
-        p_reaction_type: 'share'
-      });
-
-      if (error) throw error;
-
-      toast.success("Élément partagé avec succès");
-    } catch (error) {
-      console.error('Error sharing item:', error);
-      toast.error("Erreur lors du partage");
     }
   };
 
@@ -153,8 +106,6 @@ export const usePostOperations = () => {
 
   return {
     handleReaction,
-    handleCommentReaction,
-    handleShare,
     handleDelete,
     handleHide,
     handleUpdate
