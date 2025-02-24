@@ -11,6 +11,14 @@ export const useJobsData = () => {
       try {
         console.log("Fetching jobs...");
         
+        // Lancer le scraping d'abord
+        const { data: scrapingResult, error: scrapingError } = await supabase.functions.invoke('scrape-jobs');
+        if (scrapingError) {
+          console.error("Error running scraping:", scrapingError);
+        } else {
+          console.log("Scraping results:", scrapingResult);
+        }
+        
         // Récupérer les emplois de la base de données
         const { data: jobs, error } = await supabase
           .from('jobs')
