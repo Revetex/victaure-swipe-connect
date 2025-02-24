@@ -4,16 +4,7 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Ticket } from "lucide-react";
 
-interface Ticket {
-  id: string;
-  selected_numbers: number[];
-  bonus_color: string;
-  status: string;
-  winning_amount: number;
-  created_at: string;
-}
-
-type LotoTicketRow = {
+interface LotoTicket {
   id: string;
   selected_numbers: number[];
   bonus_color: string;
@@ -23,23 +14,27 @@ type LotoTicketRow = {
 }
 
 export function MyTickets() {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [tickets, setTickets] = useState<LotoTicket[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTickets = async () => {
       try {
         const { data, error } = await supabase
-          .from<'loto_tickets', LotoTicketRow>('loto_tickets')
-          .select()
+          .from('loto_tickets')
+          .select('*')
           .order('created_at', { ascending: false })
           .limit(5);
 
         if (error) throw error;
         if (data) {
           setTickets(data.map(ticket => ({
-            ...ticket,
-            winning_amount: Number(ticket.winning_amount)
+            id: ticket.id,
+            selected_numbers: ticket.selected_numbers,
+            bonus_color: ticket.bonus_color,
+            status: ticket.status,
+            winning_amount: Number(ticket.winning_amount),
+            created_at: ticket.created_at
           })));
         }
       } catch (error) {

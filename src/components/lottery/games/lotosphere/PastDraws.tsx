@@ -6,14 +6,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { History, Loader2 } from "lucide-react";
 
-interface Draw {
-  id: string;
-  draw_numbers: number[];
-  bonus_color: string;
-  completed_at: string;
-}
-
-type LotoDrawRow = {
+interface CompletedDraw {
   id: string;
   draw_numbers: number[];
   bonus_color: string;
@@ -21,22 +14,27 @@ type LotoDrawRow = {
 }
 
 export function PastDraws() {
-  const [draws, setDraws] = useState<Draw[]>([]);
+  const [draws, setDraws] = useState<CompletedDraw[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDraws = async () => {
       try {
         const { data, error } = await supabase
-          .from<'loto_draws', LotoDrawRow>('loto_draws')
-          .select()
+          .from('loto_draws')
+          .select('id, draw_numbers, bonus_color, completed_at')
           .eq('status', 'completed')
           .order('completed_at', { ascending: false })
           .limit(5);
 
         if (error) throw error;
         if (data) {
-          setDraws(data);
+          setDraws(data.map(draw => ({
+            id: draw.id,
+            draw_numbers: draw.draw_numbers,
+            bonus_color: draw.bonus_color,
+            completed_at: draw.completed_at
+          })));
         }
       } catch (error) {
         console.error('Error fetching draws:', error);

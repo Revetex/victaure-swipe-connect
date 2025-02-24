@@ -20,15 +20,6 @@ interface Draw {
   bonus_color?: string;
 }
 
-type LotoDrawsRow = {
-  id: string;
-  scheduled_for: string;
-  prize_pool: number;
-  status: string;
-  draw_numbers: number[] | null;
-  bonus_color: string | null;
-}
-
 export function LotoSphere({ onPaymentRequested }: PaymentProps) {
   const [nextDraw, setNextDraw] = useState<Draw | null>(null);
   const [loading, setLoading] = useState(true);
@@ -37,8 +28,8 @@ export function LotoSphere({ onPaymentRequested }: PaymentProps) {
   const fetchNextDraw = async () => {
     try {
       const { data, error } = await supabase
-        .from<'loto_draws', LotoDrawsRow>('loto_draws')
-        .select()
+        .from('loto_draws')
+        .select('*')
         .eq('status', 'pending')
         .order('scheduled_for', { ascending: true })
         .limit(1)
@@ -92,11 +83,7 @@ export function LotoSphere({ onPaymentRequested }: PaymentProps) {
       await onPaymentRequested(5, "Ticket LotoSphere");
 
       const { error } = await supabase
-        .from<'loto_tickets', {
-          draw_id: string;
-          selected_numbers: number[];
-          bonus_color: string;
-        }>('loto_tickets')
+        .from('loto_tickets')
         .insert({
           draw_id: nextDraw.id,
           selected_numbers: numbers,
