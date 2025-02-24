@@ -2,16 +2,11 @@
 import { forwardRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import { Job } from "@/types/job";
-import { JobCard } from "@/components/jobs/JobCard";
-import { useJobsData } from "@/hooks/useJobsData";
-import { useGeolocation } from "@/hooks/useGeolocation";
 
 interface Message {
   content: string;
   isUser: boolean;
   username?: string;
-  jobResults?: Job[];
 }
 
 interface MessageListProps {
@@ -21,8 +16,6 @@ interface MessageListProps {
 
 export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
   ({ messages, isLoading }, ref) => {
-    const { location, loading: locationLoading } = useGeolocation();
-    const { data: allJobs } = useJobsData();
     const [typingIndex, setTypingIndex] = useState(0);
     const [currentText, setCurrentText] = useState("");
     const [isTyping, setIsTyping] = useState(false);
@@ -56,35 +49,6 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
       }
     }, [messages, typingIndex]);
 
-    const getNearbyJobs = (radius: number = 50) => {
-      if (!location || !allJobs) return [];
-      
-      return allJobs.filter(job => {
-        if (!job.latitude || !job.longitude) return false;
-        
-        const R = 6371;
-        const dLat = (job.latitude - location.latitude) * Math.PI / 180;
-        const dLon = (job.longitude - location.longitude) * Math.PI / 180;
-        const a = 
-          Math.sin(dLat/2) * Math.sin(dLat/2) +
-          Math.cos(location.latitude * Math.PI / 180) * Math.cos(job.latitude * Math.PI / 180) * 
-          Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        const distance = R * c;
-        
-        return distance <= radius;
-      });
-    };
-
-    useEffect(() => {
-      if (messages.length === 1 && !messages[0].isUser) {
-        const nearbyJobs = getNearbyJobs();
-        if (nearbyJobs.length > 0) {
-          messages[0].jobResults = nearbyJobs;
-        }
-      }
-    }, [messages, location]);
-
     return (
       <div 
         ref={ref}
@@ -114,17 +78,6 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                         <p className="text-sm">{currentText}</p>
                       ) : (
                         <p className="text-sm">{message.content}</p>
-                      )}
-                      {message.jobResults && message.jobResults.length > 0 && (
-                        <div className="space-y-2">
-                          {message.jobResults.map((job) => (
-                            <JobCard
-                              key={job.id}
-                              job={job}
-                              onClick={() => window.open(job.url, '_blank')}
-                            />
-                          ))}
-                        </div>
                       )}
                     </div>
                   ) : (

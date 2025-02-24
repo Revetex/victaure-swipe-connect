@@ -1,5 +1,5 @@
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatHeader } from "./ChatHeader";
 import { MessageList } from "./MessageList";
@@ -8,9 +8,6 @@ import { useChatMessages } from "./hooks/useChatMessages";
 import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
 import { RefreshCcw } from "lucide-react";
-import { toast } from "sonner";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { supabase } from "@/integrations/supabase/client";
 
 interface VictaureChatProps {
   maxQuestions?: number;
@@ -24,31 +21,9 @@ export function VictaureChat({
   onMaxQuestionsReached 
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
-  const [geminiModel, setGeminiModel] = useState<any>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
-
-  useEffect(() => {
-    async function initGemini() {
-      try {
-        const { data, error } = await supabase.functions.invoke('get-secret', {
-          body: { secret_name: 'GEMINI_API_KEY' }
-        });
-
-        if (error) throw error;
-        if (!data?.secret) throw new Error('API key not found');
-
-        const genAI = new GoogleGenerativeAI(data.secret);
-        setGeminiModel(genAI.getGenerativeModel({ model: "gemini-pro" }));
-      } catch (err) {
-        console.error('Error initializing Gemini:', err);
-        toast.error("Erreur lors de l'initialisation de l'assistant");
-      }
-    }
-
-    initGemini();
-  }, []);
-
+  
   const { 
     messages, 
     isLoading, 
@@ -60,8 +35,7 @@ export function VictaureChat({
     context,
     maxQuestions, 
     user, 
-    onMaxQuestionsReached,
-    geminiModel
+    onMaxQuestionsReached
   });
 
   const {
@@ -79,15 +53,11 @@ export function VictaureChat({
       const response = await sendMessage(userInput);
       setUserInput("");
       
-      if (response) {
+      if (response && !error) {
         speakText(response);
-      } else if (error) {
-        console.error("Error while sending message:", error);
-        toast.error("Mr Victaure n'est pas disponible pour le moment. Veuillez réessayer dans quelques instants.");
       }
     } catch (err) {
       console.error("Error in handleSendMessage:", err);
-      toast.error("Une erreur est survenue lors de l'envoi du message");
     }
   };
 
