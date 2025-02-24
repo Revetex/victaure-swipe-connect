@@ -1,14 +1,11 @@
+
 import React from "react";
 import { Loader } from "@/components/ui/loader";
 import { cn } from "@/lib/utils";
-
-interface Message {
-  role: "system" | "user" | "assistant";
-  content: string;
-}
+import { ChatMessage } from "@/types/messages";
 
 interface MessageListProps {
-  messages: Message[];
+  messages: ChatMessage[];
   isLoading: boolean;
   className?: string;
 }
