@@ -47,9 +47,14 @@ export function useChatMessages({
             created_at: new Date().toISOString(),
             sender: {
               id: "assistant",
+              email: "assistant@victaure.ai",
               full_name: "Mr. Victaure",
               avatar_url: null,
-              role: "admin"
+              role: "admin",
+              certifications: [],
+              education: [],
+              experiences: [],
+              friends: []
             },
             isUser: false
           };
@@ -82,9 +87,14 @@ export function useChatMessages({
       created_at: new Date().toISOString(),
       sender: {
         id: user?.id || "anonymous",
+        email: user?.email || "visitor@victaure.ai",
         full_name: user?.email || "Visiteur",
         avatar_url: null,
-        role: "professional"
+        role: "professional",
+        certifications: [],
+        education: [],
+        experiences: [],
+        friends: []
       },
       isUser: true
     };
@@ -126,9 +136,14 @@ export function useChatMessages({
           created_at: new Date().toISOString(),
           sender: {
             id: "assistant",
+            email: "assistant@victaure.ai",
             full_name: "Mr. Victaure",
             avatar_url: null,
-            role: "admin"
+            role: "admin",
+            certifications: [],
+            education: [],
+            experiences: [],
+            friends: []
           },
           isUser: false
         };
