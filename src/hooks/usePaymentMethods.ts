@@ -31,7 +31,6 @@ export function usePaymentMethods() {
         payment_type: method.payment_type as 'credit_card' | 'interac',
         card_brand: method.card_brand,
         card_last_four: method.card_last_four,
-        email: method.email,
         is_default: method.is_default,
         is_active: method.is_active,
         created_at: method.created_at,
@@ -66,7 +65,7 @@ export function usePaymentMethods() {
         status: transaction.status as 'confirmed' | 'pending' | 'cancelled' | 'frozen',
         payment_method: transaction.payment_method as 'credit_card' | 'interac',
         created_at: transaction.created_at,
-        description: transaction.description
+        description: transaction.metadata?.description // Récupérer la description depuis les metadata
       })) || [];
 
       setTransactions(typedTransactions);
