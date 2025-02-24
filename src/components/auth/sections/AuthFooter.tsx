@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -53,7 +54,8 @@ END:VCARD`;
     }
   };
 
-  return <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center relative" role="contentinfo">
+  return (
+    <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center relative" role="contentinfo">
       <div className="space-y-8 border-t border-[#F1F0FB]/20 pt-8">
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
           <Dialog>
@@ -479,28 +481,50 @@ END:VCARD`;
                   <label htmlFor="contact-name" className="text-sm font-medium text-[#F1F0FB]">
                     Nom
                   </label>
-                  <Input id="contact-name" required value={formData.name} onChange={e => setFormData(prev => ({
-                  ...prev,
-                  name: e.target.value
-                }))} className="bg-white text-[#1B2A4A]" autoFocus={false} />
+                  <Input 
+                    id="contact-name" 
+                    required 
+                    value={formData.name} 
+                    onChange={e => setFormData(prev => ({
+                      ...prev,
+                      name: e.target.value
+                    }))} 
+                    className="bg-white text-[#1B2A4A]" 
+                    autoFocus={false}
+                  />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="contact-email" className="text-sm font-medium text-[#F1F0FB]">
                     Email
                   </label>
-                  <Input id="contact-email" type="email" required value={formData.email} onChange={e => setFormData(prev => ({
-                  ...prev,
-                  email: e.target.value
-                }))} className="bg-white text-[#1B2A4A]" autoFocus={false} />
+                  <Input 
+                    id="contact-email" 
+                    type="email" 
+                    required 
+                    value={formData.email} 
+                    onChange={e => setFormData(prev => ({
+                      ...prev,
+                      email: e.target.value
+                    }))} 
+                    className="bg-white text-[#1B2A4A]" 
+                    autoFocus={false}
+                  />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="contact-message" className="text-sm font-medium text-[#F1F0FB]">
                     Message
                   </label>
-                  <Textarea id="contact-message" required value={formData.message} onChange={e => setFormData(prev => ({
-                  ...prev,
-                  message: e.target.value
-                }))} className="bg-white text-[#1B2A4A] min-h-[100px]" autoFocus={false} />
+                  <Textarea 
+                    id="contact-message" 
+                    required 
+                    value={formData.message} 
+                    onChange={e => setFormData(prev => ({
+                      ...prev,
+                      message: e.target.value
+                    }))} 
+                    className="bg-white text-[#1B2A4A] min-h-[100px]" 
+                    autoFocus={false}
+                  />
                 </div>
                 <Button type="submit" className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white">
                   Envoyer
@@ -515,5 +539,6 @@ END:VCARD`;
           <p className="relative">© 2025 Victaure Technologies inc.</p>
         </div>
       </div>
-    </footer>;
+    </footer>
+  );
 }
