@@ -39,7 +39,7 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQue
               avatar_url
             )
           )
-        `)
+        `);
 
       if (filter === "liked") {
         query.eq("user_id", userId);
