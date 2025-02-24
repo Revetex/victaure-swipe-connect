@@ -114,7 +114,7 @@ export function VictaureChat({
           </Button>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto pb-[76px]">
           <MessageList 
             ref={chatContainerRef} 
             messages={messages}
@@ -122,7 +122,7 @@ export function VictaureChat({
           />
         </div>
         
-        <div className="flex-none px-4 py-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C] to-transparent">
+        <div className="flex-none px-4 py-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C] to-transparent absolute bottom-0 left-0 right-0">
           <ChatInput
             userInput={userInput}
             setUserInput={setUserInput}
