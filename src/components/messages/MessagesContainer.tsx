@@ -8,7 +8,7 @@ export function MessagesContainer() {
   const { receiver, showConversation } = useReceiver();
 
   return (
-    <Card className="fixed inset-0 flex h-screen w-full border-0 rounded-none bg-background">
+    <Card className="fixed inset-0 flex h-screen w-full border-0 rounded-none bg-background overflow-hidden">
       <ConversationList 
         className={
           showConversation 
@@ -18,7 +18,7 @@ export function MessagesContainer() {
       />
       
       {(showConversation || receiver) && (
-        <div className="flex-1 flex flex-col h-full">
+        <div className="flex-1 flex flex-col h-full overflow-hidden">
           <ConversationView />
         </div>
       )}

@@ -43,12 +43,13 @@ export function ConversationView() {
       if (error) throw error;
       
       if (profile) {
+        const userRole = profile.role as "professional" | "business" | "admin";
         setReceiver({
           id: profile.id,
           full_name: profile.full_name || '',
           avatar_url: profile.avatar_url,
           email: profile.email,
-          role: profile.role || 'professional',
+          role: userRole || 'professional',
           bio: profile.bio,
           phone: profile.phone,
           city: profile.city,
@@ -105,24 +106,28 @@ export function ConversationView() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#1A1F2C]">
+    <div className="flex flex-col h-screen bg-[#1A1F2C]">
       <ConversationHeader 
         receiver={receiver}
         onBack={handleBack}
       />
       
-      <MessageList
-        messages={messages}
-        currentUserId={user?.id}
-        onDeleteMessage={handleDeleteMessage}
-        messagesEndRef={messagesEndRef}
-      />
+      <div className="flex-1 overflow-y-auto">
+        <MessageList
+          messages={messages}
+          currentUserId={user?.id}
+          onDeleteMessage={handleDeleteMessage}
+          messagesEndRef={messagesEndRef}
+        />
+      </div>
 
-      <MessageInput
-        value={messageInput}
-        onChange={setMessageInput}
-        onSubmit={handleSendMessage}
-      />
+      <div className="sticky bottom-0 w-full">
+        <MessageInput
+          value={messageInput}
+          onChange={setMessageInput}
+          onSubmit={handleSendMessage}
+        />
+      </div>
     </div>
   );
 }

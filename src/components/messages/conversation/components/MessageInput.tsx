@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ interface MessageInputProps {
 
 export function MessageInput({ value, onChange, onSubmit }: MessageInputProps) {
   const [isFocused, setIsFocused] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -29,6 +30,13 @@ export function MessageInput({ value, onChange, onSubmit }: MessageInputProps) {
     }
   };
 
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+    }
+  }, [value]);
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -43,6 +51,7 @@ export function MessageInput({ value, onChange, onSubmit }: MessageInputProps) {
         isFocused && "border-[#64B5D9]/30 bg-[#1A1F2C]/70"
       )}>
         <textarea
+          ref={textareaRef}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyPress}
@@ -54,11 +63,11 @@ export function MessageInput({ value, onChange, onSubmit }: MessageInputProps) {
             "text-[#F2EBE4] placeholder-[#F2EBE4]/30",
             "focus:outline-none",
             "min-h-[40px] max-h-[120px]",
+            "py-2 px-3",
             "scrollbar-thin scrollbar-thumb-[#64B5D9]/10 scrollbar-track-transparent"
           )}
           style={{
             minHeight: '40px',
-            height: 'auto'
           }}
           rows={1}
         />
@@ -68,7 +77,7 @@ export function MessageInput({ value, onChange, onSubmit }: MessageInputProps) {
           disabled={!value.trim()}
           size="icon"
           className={cn(
-            "h-8 w-8 rounded-full",
+            "h-8 w-8 rounded-full shrink-0",
             "bg-[#64B5D9] hover:bg-[#64B5D9]/80",
             "transition-all duration-300",
             "disabled:opacity-50 disabled:cursor-not-allowed"
