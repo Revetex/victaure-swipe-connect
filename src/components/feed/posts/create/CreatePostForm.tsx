@@ -49,7 +49,7 @@ export function CreatePostForm({
       {!isExpanded ? (
         <Button
           variant="ghost"
-          className="w-full justify-start text-white/60 hover:text-white hover:bg-white/5"
+          className="w-full justify-start text-[#9b87f5] hover:text-[#7E69AB] hover:bg-white/5"
           onClick={() => setIsExpanded(true)}
         >
           Créer une publication...

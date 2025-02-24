@@ -44,7 +44,7 @@ export function AppHeader({
           variant="ghost"
           size="sm"
           onClick={handleMenuClick}
-          className="lg:hidden text-white hover:bg-white/10 border border-white/10 active:scale-95 transition-transform touch-manipulation"
+          className="text-white hover:bg-white/10 border border-white/10 active:scale-95 transition-transform touch-manipulation"
         >
           <Menu className="h-4 w-4" />
         </Button>
