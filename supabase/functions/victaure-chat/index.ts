@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from '../_shared/cors.ts';
 
@@ -18,7 +17,7 @@ interface RequestBody {
   };
 }
 
-console.log("Starting victaure-chat function with OpenRouter");
+console.log("Starting victaure-chat function with OpenRouter (Gemini)");
 
 if (!OPENROUTER_API_KEY) {
   console.error("OPENROUTER_API_KEY is not set");
@@ -54,7 +53,6 @@ serve(async (req) => {
   try {
     const { messages, userId, userProfile } = await req.json() as RequestBody;
     
-    // Debug logs
     console.log('Received request body:', { 
       messageCount: messages?.length,
       firstMessage: messages?.[0],
@@ -66,7 +64,6 @@ serve(async (req) => {
       throw new Error("Messages array is required and must not be empty");
     }
 
-    // Contexte système amélioré pour Mr Victaure
     const systemContext = `Tu es Mr Victaure, un assistant professionnel hautement qualifié spécialisé dans le conseil en carrière et le recrutement. 
 
 Ton profil :
@@ -100,15 +97,15 @@ Concentre-toi sur :
 - Les sujets hors de ton domaine d'expertise`;
 
     const payload = {
-      model: "anthropic/claude-2",
+      model: "google/gemini-2.0-flash-thinking-exp:free",
       messages: [
         { role: "system", content: systemContext }
       ].concat(messages.slice(1)),
       temperature: 0.7,
       max_tokens: 1000,
       top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      frequency_penalty: 0.5,
+      presence_penalty: 0.5,
       stream: false
     };
 
