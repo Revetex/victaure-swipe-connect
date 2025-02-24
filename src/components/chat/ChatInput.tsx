@@ -1,5 +1,5 @@
 
-import { MessagesSquare, Mic, Volume2 } from "lucide-react";
+import { MessagesSquare, Mic, Volume2, Globe } from "lucide-react";
 
 interface ChatInputProps {
   userInput: string;
@@ -12,6 +12,7 @@ interface ChatInputProps {
   onStartRecording: () => void;
   onStopSpeaking: () => void;
   onSendMessage: () => void;
+  webSearchEnabled: boolean; // Ajout de la nouvelle prop
 }
 
 export function ChatInput({
@@ -24,7 +25,8 @@ export function ChatInput({
   disabledMessage,
   onStartRecording,
   onStopSpeaking,
-  onSendMessage
+  onSendMessage,
+  webSearchEnabled
 }: ChatInputProps) {
   return (
     <div className="p-3 bg-[#1A1F2C]/90 border-t border-[#64B5D9]/10">
@@ -38,15 +40,22 @@ export function ChatInput({
           <Mic className={`w-4 h-4 ${isRecording ? 'text-red-500 animate-pulse' : ''}`} />
         </button>
 
-        <input
-          type="text"
-          value={userInput}
-          onChange={e => setUserInput(e.target.value)}
-          placeholder={isDisabled ? disabledMessage : "Message..."}
-          disabled={isDisabled}
-          className="flex-1 h-9 px-3 rounded-lg bg-[#2A2D3E] text-[#F1F0FB] text-sm border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder-[#F1F0FB]/40"
-          onKeyPress={e => e.key === 'Enter' && onSendMessage()}
-        />
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            value={userInput}
+            onChange={e => setUserInput(e.target.value)}
+            placeholder={isDisabled ? disabledMessage : "Message..."}
+            disabled={isDisabled}
+            className="w-full h-9 px-3 rounded-lg bg-[#2A2D3E] text-[#F1F0FB] text-sm border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder-[#F1F0FB]/40"
+            onKeyPress={e => e.key === 'Enter' && onSendMessage()}
+          />
+          {webSearchEnabled && (
+            <div className="absolute right-2 top-1/2 -translate-y-1/2">
+              <Globe className="w-4 h-4 text-[#64B5D9]" />
+            </div>
+          )}
+        </div>
 
         <button
           onClick={onSendMessage}
