@@ -30,9 +30,11 @@ export function GoogleSearch({
         background: transparent !important;
         border: none !important;
         padding: 0 !important;
+        position: static !important;
       }
       .gsc-search-box {
         margin: 0 !important;
+        position: relative !important;
       }
       .gsc-input-box {
         background: #1A1F2C !important;
@@ -66,7 +68,7 @@ export function GoogleSearch({
         border-radius: 0.5rem !important;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
         position: absolute !important;
-        top: 100% !important;
+        top: calc(100% + 4px) !important;
         left: 0 !important;
         right: 0 !important;
         z-index: 50 !important;
@@ -80,17 +82,18 @@ export function GoogleSearch({
       /* Style pour le conteneur de résultats */
       .gsc-results-wrapper-overlay {
         position: fixed !important;
-        top: 4rem !important;
+        top: 8rem !important;
         left: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
         background: #1A1F2C !important;
         border: none !important;
         border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
-        height: calc(100vh - 4rem) !important;
+        height: calc(100vh - 8rem) !important;
         max-height: none !important;
         padding: 1rem !important;
         overflow-y: auto !important;
+        z-index: 30 !important;
       }
       .gsc-results-wrapper-visible {
         display: block !important;
