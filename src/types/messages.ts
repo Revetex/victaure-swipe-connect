@@ -1,4 +1,6 @@
 
+import type { UserProfile } from './profile';
+
 export interface ChatMessage {
   role: "system" | "user" | "assistant";
   content: string;
@@ -29,4 +31,26 @@ export interface Message extends ChatMessage {
   status?: string;
   system_message?: boolean;
   timestamp?: string;
+}
+
+export interface Receiver {
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
+  email: string | null;
+  role: 'professional' | 'business' | 'admin';
+  bio: string | null;
+  phone: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  skills: string[];
+  latitude: number | null;
+  longitude: number | null;
+  online_status: 'online' | 'offline';
+  last_seen: string | null;
+  certifications: any[];
+  education: any[];
+  experiences: any[];
+  friends: string[];
 }

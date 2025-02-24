@@ -6,7 +6,7 @@ import { MessageList } from "./MessageList";
 import { ChatInput } from "./ChatInput";
 import { useChatMessages } from "./hooks/useChatMessages";
 import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
-import { ChatMessage } from "@/types/messages";
+import type { ChatMessage } from "@/types/messages";
 
 interface VictaureChatProps {
   maxQuestions?: number;
@@ -62,7 +62,7 @@ export function VictaureChat({
       <ChatHeader />
       <MessageList 
         ref={chatContainerRef} 
-        messages={messages as ChatMessage[]}
+        messages={messages}
         isLoading={isLoading}
         className="font-inter text-[15px] leading-relaxed"
       />

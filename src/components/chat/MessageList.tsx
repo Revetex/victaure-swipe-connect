@@ -2,7 +2,7 @@
 import React from "react";
 import { Loader } from "@/components/ui/loader";
 import { cn } from "@/lib/utils";
-import { ChatMessage } from "@/types/messages";
+import type { ChatMessage } from "@/types/messages";
 
 interface MessageListProps {
   messages: ChatMessage[];
