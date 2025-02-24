@@ -27,13 +27,13 @@ export function ChatInput({
   onSendMessage
 }: ChatInputProps) {
   return (
-    <div className="p-4 bg-[#1A1F2C]/80 border-t border-[#64B5D9]/10">
+    <div className="p-3 bg-[#1A1F2C]/90 border-t border-[#64B5D9]/10">
       <div className="flex items-center gap-2">
         <button
           onClick={onStartRecording}
           disabled={isRecording || isDisabled}
-          className="h-10 w-10 flex-shrink-0 rounded-xl bg-[#2A2D3E] text-[#F1F0FB] hover:bg-[#363B4D] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-          title={isRecording ? "Enregistrement en cours..." : "Enregistrer un message vocal"}
+          className="h-9 w-9 flex-shrink-0 rounded-lg bg-[#2A2D3E] text-[#F1F0FB] hover:bg-[#363B4D] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          title={isRecording ? "Enregistrement..." : "Enregistrer"}
         >
           <Mic className={`w-4 h-4 ${isRecording ? 'text-red-500 animate-pulse' : ''}`} />
         </button>
@@ -42,16 +42,16 @@ export function ChatInput({
           type="text"
           value={userInput}
           onChange={e => setUserInput(e.target.value)}
-          placeholder={isDisabled ? disabledMessage : "Envoyez un message à Mr. Victaure..."}
+          placeholder={isDisabled ? disabledMessage : "Message..."}
           disabled={isDisabled}
-          className="flex-1 h-10 px-4 rounded-xl bg-[#2A2D3E] text-[#F1F0FB] border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder-[#F1F0FB]/40"
+          className="flex-1 h-9 px-3 rounded-lg bg-[#2A2D3E] text-[#F1F0FB] text-sm border border-[#64B5D9]/20 focus:outline-none focus:border-[#64B5D9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder-[#F1F0FB]/40"
           onKeyPress={e => e.key === 'Enter' && onSendMessage()}
         />
 
         <button
           onClick={onSendMessage}
           disabled={!userInput.trim() || isLoading || isDisabled}
-          className="h-10 w-10 flex-shrink-0 rounded-xl bg-[#64B5D9] text-white hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="h-9 w-9 flex-shrink-0 rounded-lg bg-[#64B5D9] text-white hover:bg-[#64B5D9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
         >
           <MessagesSquare className="w-4 h-4" />
         </button>
@@ -59,7 +59,7 @@ export function ChatInput({
         {isSpeaking && (
           <button
             onClick={onStopSpeaking}
-            className="h-10 w-10 flex-shrink-0 rounded-xl bg-[#64B5D9] text-white animate-pulse flex items-center justify-center"
+            className="h-9 w-9 flex-shrink-0 rounded-lg bg-[#64B5D9] text-white animate-pulse flex items-center justify-center"
           >
             <Volume2 className="w-4 h-4" />
           </button>
