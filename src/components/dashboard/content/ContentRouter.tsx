@@ -1,3 +1,4 @@
+
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/Marketplace";
@@ -34,12 +35,12 @@ export function ContentRouter({
     exit: { opacity: 0, x: 20 }
   };
 
-  const renderContent = () => {
+  const renderPage = () => {
     const content = (() => {
       switch (currentPage) {
         case 1:
           return (
-            <div className="min-h-screen pt-2 lg:pt-2 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
+            <div className="min-h-screen pt-16 lg:pt-0 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
               <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />
             </div>
           );
@@ -49,61 +50,61 @@ export function ContentRouter({
           return <Marketplace />;
         case 4:
           return (
-            <div className="min-h-screen pt-2 lg:pt-16 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
+            <div className="min-h-screen pt-16 lg:pt-16 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
               <Feed />
             </div>
           );
         case 7:
           return (
-            <div className="min-h-screen pt-2 lg:pt-0 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
+            <div className="min-h-screen pt-16 lg:pt-0 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
               <TasksPage />
             </div>
           );
         case 8:
           return (
-            <div className="min-h-screen pt-2 lg:pt-0 bg-card/5 backdrop-blur-sm">
+            <div className="min-h-screen pt-16 lg:pt-0 bg-card/5 backdrop-blur-sm">
               <CalculatorPage />
             </div>
           );
         case 9:
           return (
-            <div className="min-h-screen pt-2 lg:pt-0 backdrop-blur-sm">
+            <div className="min-h-screen pt-16 lg:pt-0 backdrop-blur-sm">
               <NotificationsTab />
             </div>
           );
         case 10:
           return (
-            <div className="min-h-screen pt-2 lg:pt-0 bg-background/80 backdrop-blur-sm">
+            <div className="min-h-screen pt-16 lg:pt-0 bg-background/80 backdrop-blur-sm">
               <Settings />
             </div>
           );
         case 12:
           return (
-            <div className="min-h-screen pt-2 lg:pt-0 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
+            <div className="min-h-screen pt-16 lg:pt-0 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
               <FriendsList />
             </div>
           );
         case 14:
           return (
-            <div className="min-h-screen pt-2 lg:pt-0 bg-card/5 backdrop-blur-sm">
+            <div className="min-h-screen pt-16 lg:pt-0 bg-card/5 backdrop-blur-sm">
               <TranslatorPage />
             </div>
           );
         case 16:
           return (
-            <div className="min-h-screen pt-2 lg:pt-0 bg-card/5 backdrop-blur-sm">
+            <div className="min-h-screen pt-16 lg:pt-0 bg-card/5 backdrop-blur-sm">
               <NotesSection />
             </div>
           );
         case 17:
           return (
-            <div className="min-h-screen pt-2 lg:pt-0 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
+            <div className="min-h-screen pt-16 lg:pt-0 bg-gradient-to-b from-background/80 via-background/60 to-background/40 backdrop-blur-sm">
               <JobsPage />
             </div>
           );
         case 18:
           return (
-            <div className="min-h-screen pt-2 lg:pt-0 bg-card/5 backdrop-blur-sm">
+            <div className="min-h-screen pt-16 lg:pt-0 bg-card/5 backdrop-blur-sm">
               <LotteryPage />
             </div>
           );
@@ -127,7 +128,7 @@ export function ContentRouter({
 
   return (
     <div className="h-full relative overflow-hidden">
-      {renderContent()}
+      {renderPage()}
     </div>
   );
 }
