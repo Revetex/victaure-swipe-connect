@@ -61,8 +61,7 @@ export const updateProfile = async (tempProfile: UserProfile) => {
       const certifications = tempProfile.certifications.map(cert => ({
         profile_id: user.id,
         title: cert.title,
-        institution: cert.institution,
-        issuer: cert.institution, // Utiliser l'institution comme issuer
+        issuer: cert.issuer,
         year: cert.year,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()

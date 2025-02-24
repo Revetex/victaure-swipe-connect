@@ -1,3 +1,4 @@
+
 import { ExtendedJsPDF } from '../../types';
 import { Certification } from '@/types/profile';
 
@@ -27,7 +28,7 @@ export const renderCertifications = (
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text(cert.institution, 20, currentY);
+    doc.text(cert.issuer, 20, currentY);
     currentY += 6;
 
     if (cert.year) {

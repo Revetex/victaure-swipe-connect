@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { UserProfile } from "@/types/profile";
@@ -18,7 +19,7 @@ interface BioContext {
   }[];
   certifications: {
     title: string;
-    institution: string;
+    issuer: string;
   }[];
 }
 
@@ -61,7 +62,7 @@ export async function generateBio(profile: UserProfile): Promise<string> {
     })),
     certifications: (profile.certifications || []).map((cert) => ({
       title: cert.title,
-      institution: cert.institution
+      issuer: cert.issuer
     }))
   };
 
