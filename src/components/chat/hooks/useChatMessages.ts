@@ -34,17 +34,25 @@ export function useChatMessages({
         setError(null);
         console.log("Sending initial greeting...");
 
-        // Get user profile first
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', user?.id)
-          .maybeSingle();
+        let profile = null;
+        
+        // Ne récupérer le profil que si l'utilisateur est connecté
+        if (user?.id) {
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('id', user.id)
+            .maybeSingle();
 
-        if (profileError) {
-          console.error("Error fetching profile:", profileError);
-          toast.error("Erreur lors de la récupération du profil");
-          return;
+          if (profileError) {
+            console.error("Error fetching profile:", profileError);
+            // Ne pas afficher de toast pour les erreurs de profil pour les invités
+            if (user?.id) {
+              toast.error("Erreur lors de la récupération du profil");
+            }
+            return;
+          }
+          profile = profileData;
         }
 
         const { data, error } = await supabase.functions.invoke("victaure-chat", {
@@ -82,10 +90,8 @@ export function useChatMessages({
       }
     };
 
-    // Ne déclencher le message d'accueil que si l'utilisateur est connecté
-    if (user?.id) {
-      greetUser();
-    }
+    // Toujours déclencher le message d'accueil, que l'utilisateur soit connecté ou non
+    greetUser();
   }, [context, user?.id]);
 
   const sendMessage = async (userInput: string) => {
@@ -111,17 +117,25 @@ export function useChatMessages({
       setMessages(prev => [...prev, userMessage]);
       setUserQuestions(prev => prev + 1);
 
-      // Get user profile first
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', user?.id)
-        .maybeSingle();
+      let profile = null;
+      
+      // Ne récupérer le profil que si l'utilisateur est connecté
+      if (user?.id) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user?.id)
+          .maybeSingle();
 
-      if (profileError) {
-        console.error("Error fetching profile:", profileError);
-        toast.error("Erreur lors de la récupération du profil");
-        return null;
+        if (profileError) {
+          console.error("Error fetching profile:", profileError);
+          // Ne pas afficher de toast pour les erreurs de profil pour les invités
+          if (user?.id) {
+            toast.error("Erreur lors de la récupération du profil");
+          }
+          return null;
+        }
+        profile = profileData;
       }
 
       const messageHistory = [
