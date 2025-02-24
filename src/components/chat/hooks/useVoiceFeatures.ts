@@ -1,6 +1,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export function useVoiceFeatures() {
   const [isRecording, setIsRecording] = useState(false);
@@ -56,7 +57,7 @@ export function useVoiceFeatures() {
           });
 
           // Appeler l'edge function voice-to-text
-          const { data, error } = await window.supabase.functions.invoke('voice-to-text', {
+          const { data, error } = await supabase.functions.invoke('voice-to-text', {
             body: { audio: base64Audio.split(',')[1] }
           });
 
