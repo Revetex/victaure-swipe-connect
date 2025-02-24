@@ -1,6 +1,8 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
 
 interface JobsFiltersProps {
   selectedLocation: string;
@@ -18,6 +20,7 @@ interface JobsFiltersProps {
   onContractTypeChange: (value: string) => void;
   onSalaryRangeChange: (value: [number, number]) => void;
   onRemoteOnlyChange: (value: boolean) => void;
+  onReset: () => void;
 }
 
 export function JobsFilters({
@@ -35,11 +38,25 @@ export function JobsFilters({
   onExperienceLevelChange,
   onContractTypeChange,
   onSalaryRangeChange,
-  onRemoteOnlyChange
+  onRemoteOnlyChange,
+  onReset
 }: JobsFiltersProps) {
   return (
     <div className="grid gap-4 p-4 border rounded-lg bg-card">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold">Filtres</h3>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onReset}
+          className="flex items-center gap-2"
+        >
+          <RefreshCw className="h-4 w-4" />
+          Réinitialiser
+        </Button>
+      </div>
+
+      <div className="space-y-4">
         <div className="space-y-2">
           <Label>Localisation</Label>
           <Select value={selectedLocation} onValueChange={onLocationChange}>
@@ -47,7 +64,7 @@ export function JobsFilters({
               <SelectValue placeholder="Toutes les localisations" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Toutes les localisations</SelectItem>
+              <SelectItem value="">Toutes les localisations</SelectItem>
               {locations.map((location) => (
                 <SelectItem key={location} value={location}>
                   {location}
@@ -64,7 +81,7 @@ export function JobsFilters({
               <SelectValue placeholder="Tous les types" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tous les types</SelectItem>
+              <SelectItem value="">Tous les types</SelectItem>
               <SelectItem value="internal">Interne</SelectItem>
               <SelectItem value="external">Externe</SelectItem>
             </SelectContent>
@@ -91,7 +108,7 @@ export function JobsFilters({
               <SelectValue placeholder="Niveau d'expérience" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tous les niveaux</SelectItem>
+              <SelectItem value="">Tous les niveaux</SelectItem>
               <SelectItem value="junior">Junior</SelectItem>
               <SelectItem value="intermediate">Intermédiaire</SelectItem>
               <SelectItem value="senior">Senior</SelectItem>
@@ -106,7 +123,7 @@ export function JobsFilters({
               <SelectValue placeholder="Type de contrat" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tous les types</SelectItem>
+              <SelectItem value="">Tous les types</SelectItem>
               <SelectItem value="permanent">CDI</SelectItem>
               <SelectItem value="temporary">CDD</SelectItem>
               <SelectItem value="contract">Freelance</SelectItem>
