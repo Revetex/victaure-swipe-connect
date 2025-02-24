@@ -45,9 +45,9 @@ export function DashboardSidebar({
   }, [getUnreadCount]);
 
   // Grouper les éléments de navigation par catégorie
-  const mainItems = navigationItems.slice(0, 6);
-  const networkItems = navigationItems.slice(6, 8);
-  const toolsItems = navigationItems.slice(8);
+  const mainItems = navigationItems.slice(0, 4);
+  const networkItems = navigationItems.slice(4, 6);
+  const toolsItems = navigationItems.slice(6);
 
   return (
     <div className="fixed inset-y-0 left-0 w-64 bg-[#1A1F2C] border-r border-white/10">
@@ -94,15 +94,15 @@ export function DashboardSidebar({
               const Icon = item.icon;
               return (
                 <Button
-                  key={index + 6}
-                  variant={currentPage === index + 6 ? "secondary" : "ghost"}
+                  key={index + 4}
+                  variant={currentPage === index + 4 ? "secondary" : "ghost"}
                   className={cn(
                     "w-full justify-start",
-                    currentPage === index + 6 
+                    currentPage === index + 4 
                       ? "bg-white/10 text-white" 
                       : "text-white/70 hover:text-white hover:bg-white/5"
                   )}
-                  onClick={() => onPageChange(index + 6)}
+                  onClick={() => onPageChange(index + 4)}
                 >
                   <Icon className="h-4 w-4" />
                   <span className="ml-3">{item.name}</span>
@@ -120,15 +120,15 @@ export function DashboardSidebar({
               const Icon = item.icon;
               return (
                 <Button
-                  key={index + 8}
-                  variant={currentPage === index + 8 ? "secondary" : "ghost"}
+                  key={index + 6}
+                  variant={currentPage === index + 6 ? "secondary" : "ghost"}
                   className={cn(
                     "w-full justify-start",
-                    currentPage === index + 8 
+                    currentPage === index + 6 
                       ? "bg-white/10 text-white" 
                       : "text-white/70 hover:text-white hover:bg-white/5"
                   )}
-                  onClick={() => onPageChange(index + 8)}
+                  onClick={() => onPageChange(index + 6)}
                 >
                   <Icon className="h-4 w-4" />
                   <span className="ml-3">{item.name}</span>
