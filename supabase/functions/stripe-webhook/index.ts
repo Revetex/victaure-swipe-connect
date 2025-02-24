@@ -1,141 +1,87 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import Stripe from 'https://esm.sh/stripe@12.18.0';
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { stripe } from '../_shared/stripe.ts'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const endpointSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET')
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+  const signature = req.headers.get('stripe-signature')
+  if (!signature) {
+    return new Response('No signature', { status: 400 })
   }
 
   try {
-    const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
-    if (!stripeKey) {
-      throw new Error('Missing Stripe secret key');
-    }
+    const body = await req.text()
+    const event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      endpointSecret!
+    )
 
-    const stripe = new Stripe(stripeKey, {
-      apiVersion: '2023-10-16',
-      httpClient: Stripe.createFetchHttpClient(),
-    });
-
-    // Récupérer la signature webhook depuis les headers
-    const sig = req.headers.get('stripe-signature');
-    if (!sig) {
-      throw new Error('No Stripe signature found');
-    }
-
-    const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
-    if (!webhookSecret) {
-      throw new Error('Missing Stripe webhook secret');
-    }
-
-    // Récupérer le body de la requête
-    const body = await req.text();
-    
-    // Vérifier la signature
-    const event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
-
-    // Initialiser le client Supabase
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    )
 
-    // Gérer les différents événements
     switch (event.type) {
-      case 'payment_intent.succeeded':
-        const paymentIntent = event.data.object;
-        await handleSuccessfulPayment(paymentIntent, supabaseClient);
-        break;
+      case 'payment_intent.succeeded': {
+        const paymentIntent = event.data.object
+        await supabaseClient
+          .from('payment_transactions')
+          .insert([
+            {
+              user_id: paymentIntent.metadata.user_id,
+              amount: paymentIntent.amount / 100,
+              currency: paymentIntent.currency,
+              status: 'confirmed',
+              payment_method: 'credit_card',
+              metadata: {
+                stripe_payment_intent_id: paymentIntent.id,
+                description: paymentIntent.description,
+              },
+            },
+          ])
+        break
+      }
 
-      case 'customer.subscription.created':
-      case 'customer.subscription.updated':
-        const subscription = event.data.object;
-        await handleSubscriptionUpdate(subscription, supabaseClient);
-        break;
+      case 'payment_method.attached': {
+        const paymentMethod = event.data.object
+        if (paymentMethod.customer) {
+          const { data: customerData } = await supabaseClient
+            .from('stripe_customers')
+            .select('user_id')
+            .eq('stripe_customer_id', paymentMethod.customer)
+            .single()
 
-      default:
-        console.log(`Unhandled event type ${event.type}`);
+          if (customerData) {
+            await supabaseClient.from('payment_methods').insert([
+              {
+                user_id: customerData.user_id,
+                payment_type: 'credit_card',
+                card_brand: paymentMethod.card?.brand,
+                card_last_four: paymentMethod.card?.last4,
+                stripe_payment_method_id: paymentMethod.id,
+              },
+            ])
+          }
+        }
+        break
+      }
     }
 
     return new Response(JSON.stringify({ received: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' },
       status: 200,
-    });
-
-  } catch (error) {
-    console.error('Error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
-    });
-  }
-});
-
-async function handleSuccessfulPayment(paymentIntent: Stripe.PaymentIntent, supabaseClient: any) {
-  const customerId = paymentIntent.customer;
-  if (!customerId) return;
-
-  // Récupérer l'utilisateur associé au customer Stripe
-  const { data: customerData, error: customerError } = await supabaseClient
-    .from('stripe_customers')
-    .select('user_id')
-    .eq('stripe_customer_id', customerId)
-    .single();
-
-  if (customerError) {
-    console.error('Error fetching customer:', customerError);
-    return;
-  }
-
-  // Mettre à jour la transaction
-  await supabaseClient
-    .from('payment_transactions')
-    .insert({
-      user_id: customerData.user_id,
-      amount: paymentIntent.amount / 100,
-      currency: paymentIntent.currency,
-      status: 'confirmed',
-      payment_method: 'credit_card',
-      transaction_type: 'payment',
-      metadata: {
-        stripe_payment_id: paymentIntent.id,
-        description: paymentIntent.description
+    })
+  } catch (err) {
+    console.error('Error processing webhook:', err)
+    return new Response(
+      JSON.stringify({ error: err.message }),
+      {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
       }
-    });
-}
-
-async function handleSubscriptionUpdate(subscription: Stripe.Subscription, supabaseClient: any) {
-  const customerId = subscription.customer;
-  if (typeof customerId !== 'string') return;
-
-  // Récupérer l'utilisateur associé au customer Stripe
-  const { data: customerData, error: customerError } = await supabaseClient
-    .from('stripe_customers')
-    .select('user_id')
-    .eq('stripe_customer_id', customerId)
-    .single();
-
-  if (customerError) {
-    console.error('Error fetching customer:', customerError);
-    return;
+    )
   }
-
-  // Mettre à jour l'abonnement
-  await supabaseClient
-    .from('subscriptions')
-    .upsert({
-      user_id: customerData.user_id,
-      stripe_subscription_id: subscription.id,
-      status: subscription.status,
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-      cancel_at_period_end: subscription.cancel_at_period_end
-    });
-}
+})
