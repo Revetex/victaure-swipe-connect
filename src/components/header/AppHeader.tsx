@@ -50,7 +50,7 @@ export function AppHeader({
         
         <div className="flex items-center gap-3">
           <img
-            src="/lovable-uploads/logo-couleur.png"
+            src="/lovable-uploads/color-logo.png"
             alt="Victaure Logo"
             className="h-9 w-9 object-contain"
           />

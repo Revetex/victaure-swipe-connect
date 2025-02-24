@@ -92,7 +92,7 @@ export function Logo({ size = "md", className }: LogoProps) {
     >
       {isAuthPage && (
         <img 
-          src="/lovable-uploads/logo-couleur.png" 
+          src="/lovable-uploads/color-logo.png" 
           alt="Victaure Logo" 
           loading="eager"
           className={cn(
