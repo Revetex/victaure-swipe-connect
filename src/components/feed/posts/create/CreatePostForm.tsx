@@ -1,4 +1,5 @@
 
+import { useState } from "react"; // Ajout de l'import manquant
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Image, Send, Loader2, ImagePlus, X, ChevronDown, ChevronUp } from "lucide-react";
