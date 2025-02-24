@@ -64,20 +64,53 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-x-hidden">
-      {/* Fond animé futuriste */}
-      <div className="fixed inset-0 bg-[#1A1F2C] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#221F26] via-[#1A1F2C] to-[#221F26] opacity-80"></div>
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat opacity-10"></div>
+      {/* Fond galaxie futuriste */}
+      <div className="fixed inset-0 bg-[#0B1026] overflow-hidden">
+        {/* Gradient de base */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1A1F2C] via-[#0B1026] to-[#1A1F2C] opacity-90"></div>
+        
+        {/* Étoiles scintillantes */}
+        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at center, #ffffff 1px, transparent 1px)', backgroundSize: '50px 50px', opacity: 0.3 }}></div>
+        
+        {/* Nébuleuse */}
         <motion.div 
-          className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/20 via-transparent to-[#64B5D9]/20"
+          className="absolute inset-0 bg-gradient-to-r from-[#64B5D9]/5 via-[#9B6CD9]/5 to-[#64B5D9]/5"
           animate={{
-            x: ["-100%", "100%"],
-            opacity: [0.1, 0.2, 0.1]
+            scale: [1, 1.1, 1],
+            opacity: [0.3, 0.4, 0.3]
           }}
           transition={{
-            duration: 15,
+            duration: 20,
             repeat: Infinity,
             ease: "linear"
+          }}
+        />
+
+        {/* Étoile filante */}
+        <motion.div 
+          className="absolute h-[1px] w-[100px] bg-gradient-to-r from-transparent via-white to-transparent"
+          animate={{
+            x: ['-100%', '200%'],
+            y: ['0%', '100%'],
+            opacity: [0, 1, 0]
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            repeatDelay: 7,
+            ease: "linear"
+          }}
+          style={{
+            top: '20%',
+            left: '0%'
+          }}
+        />
+
+        {/* Constellations */}
+        <div className="absolute inset-0" 
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='20' y1='20' x2='80' y2='80' stroke='rgba(255,255,255,0.1)' stroke-width='0.5'/%3E%3Ccircle cx='20' cy='20' r='1' fill='white' fill-opacity='0.3'/%3E%3Ccircle cx='80' cy='80' r='1' fill='white' fill-opacity='0.3'/%3E%3C/svg%3E")`,
+            backgroundSize: '200px 200px'
           }}
         />
       </div>
