@@ -66,18 +66,18 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                 layout
               >
                 <motion.div 
-                  className={`flex-1 relative rounded-2xl px-3.5 py-2 ${
+                  className={`flex-1 relative rounded-2xl px-4 py-3 ${
                     message.isUser 
                       ? 'bg-[#64B5D9] text-white rounded-br-sm ml-12' 
-                      : 'bg-[#2A2D3E] text-[#F1F0FB] rounded-bl-sm mr-12'
+                      : 'bg-[#1B2A4A] text-[#F1F0FB] rounded-bl-sm mr-12'
                   }`}
                 >
                   {!message.isUser ? (
                     <div className="space-y-4">
                       {index === typingIndex - 1 && isTyping ? (
-                        <p className="text-sm">{currentText}</p>
+                        <p className="text-sm leading-relaxed">{currentText}</p>
                       ) : (
-                        <p className="text-sm">{message.content}</p>
+                        <p className="text-sm leading-relaxed">{message.content}</p>
                       )}
                     </div>
                   ) : (
@@ -93,8 +93,8 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                 exit={{ opacity: 0, y: 10 }}
                 className="flex mb-3 items-start"
               >
-                <div className="relative flex-1 bg-[#2A2D3E] rounded-2xl rounded-bl-sm px-4 py-3">
-                  <Loader2 className="w-4 h-4 text-white/80 animate-spin"/>
+                <div className="relative flex-1 bg-[#1B2A4A] rounded-2xl px-4 py-3">
+                  <Loader2 className="w-4 h-4 text-[#64B5D9] animate-spin"/>
                 </div>
               </motion.div>
             )}

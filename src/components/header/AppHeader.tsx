@@ -1,5 +1,5 @@
 
-import { Star, Menu } from "lucide-react";
+import { Star, Menu, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
@@ -80,14 +80,15 @@ export function AppHeader({
 
         <Button
           onClick={() => setShowChat(true)}
-          className="w-8 h-8 p-0 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 shadow-inner shadow-white/5 transition-all duration-200 touch-manipulation active:scale-95"
+          className="group relative flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#64B5D9]/20 to-[#64B5D9]/10 hover:from-[#64B5D9]/30 hover:to-[#64B5D9]/20 border border-[#64B5D9]/20 rounded-full transition-all duration-300 shadow-lg shadow-black/20"
           title="Assistant IA"
         >
-          <Star className="h-4 w-4 text-yellow-300" />
+          <Bot className="h-4 w-4 text-[#64B5D9] group-hover:scale-110 transition-transform" />
+          <span className="text-sm font-medium text-white/90 hidden sm:block">Assistant IA</span>
         </Button>
 
         <Dialog open={showChat} onOpenChange={setShowChat}>
-          <DialogContent className="max-w-3xl w-[95vw] h-[85vh] p-0 bg-[#1A1F2C] border border-white/10 rounded-2xl mx-auto my-auto overflow-hidden">
+          <DialogContent className="max-w-3xl w-[95vw] h-[85vh] p-0 bg-[#1A1F2C] border border-[#64B5D9]/20 rounded-2xl mx-auto my-auto overflow-hidden">
             <VictaureChat 
               maxQuestions={user ? undefined : 3}
               context="Tu es Mr. Victaure, un assistant professionnel spécialisé dans l'emploi. Tu aides les utilisateurs à trouver du travail et à améliorer leur carrière."

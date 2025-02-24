@@ -69,16 +69,17 @@ export function VictaureChat({
   const disabledMessage = "Connectez-vous pour continuer à discuter avec Mr Victaure";
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] bg-gradient-to-b from-[#1A1F2C] to-[#151922] rounded-xl overflow-hidden border border-[#64B5D9]/20 shadow-xl relative backdrop-blur-sm">
-      <div className="absolute inset-0 bg-[#64B5D9]/5 mix-blend-overlay pointer-events-none" />
+    <div className="flex flex-col h-full relative">
+      <div className="absolute inset-0 bg-gradient-to-b from-[#1B2A4A] to-[#1A1F2C] opacity-50 pointer-events-none" />
+      
       <div className="relative z-10 flex flex-col h-full">
-        <div className="flex-none px-4 py-2 border-b border-[#64B5D9]/20">
+        <div className="flex-none px-4 py-3 border-b border-[#64B5D9]/10 bg-[#1B2A4A]/50 backdrop-blur-sm">
           <ChatHeader />
           <Button
             variant="ghost"
             size="icon"
             onClick={handleRefresh}
-            className="absolute right-4 top-2 text-gray-400 hover:text-[#64B5D9] transition-colors"
+            className="absolute right-4 top-2 text-[#64B5D9]/80 hover:text-[#64B5D9] transition-colors"
             title="Effacer l'historique"
           >
             <RefreshCcw className="h-4 w-4" />
@@ -93,7 +94,7 @@ export function VictaureChat({
           />
         </div>
         
-        <div className="flex-none bg-[#1A1F2C] border-t border-[#64B5D9]/20">
+        <div className="flex-none bg-[#1B2A4A]/90 border-t border-[#64B5D9]/10 backdrop-blur-sm">
           <ChatInput
             userInput={userInput}
             setUserInput={setUserInput}
