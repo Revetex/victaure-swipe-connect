@@ -34,13 +34,25 @@ export function useChatMessages({
         setError(null);
         console.log("Sending initial greeting...");
 
+        // Get user profile first
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user?.id)
+          .maybeSingle();
+
+        if (profileError) {
+          console.error("Error fetching profile:", profileError);
+        }
+
         const { data, error } = await supabase.functions.invoke("victaure-chat", {
           body: { 
             messages: [
               { role: "system", content: context },
               { role: "user", content: "Bonjour !" }
             ],
-            userId: user?.id
+            userId: user?.id,
+            userProfile: profile // Pass the profile to the edge function
           }
         });
 
@@ -62,7 +74,9 @@ export function useChatMessages({
       }
     };
 
-    greetUser();
+    if (user?.id) {
+      greetUser();
+    }
   }, [context, user?.id]);
 
   const sendMessage = async (userInput: string) => {
@@ -88,6 +102,17 @@ export function useChatMessages({
       setMessages(prev => [...prev, userMessage]);
       setUserQuestions(prev => prev + 1);
 
+      // Get user profile first
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user?.id)
+        .maybeSingle();
+
+      if (profileError) {
+        console.error("Error fetching profile:", profileError);
+      }
+
       const messageHistory = [
         { role: "system", content: context },
         ...messages.map(msg => ({
@@ -102,7 +127,8 @@ export function useChatMessages({
       const { data, error } = await supabase.functions.invoke("victaure-chat", {
         body: { 
           messages: messageHistory,
-          userId: user?.id
+          userId: user?.id,
+          userProfile: profile // Pass the profile to the edge function
         }
       });
 
