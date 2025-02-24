@@ -41,6 +41,8 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
   };
 
   const handleDragEnd = (event: any, info: any) => {
+    if (!onUpdate) return;
+    
     // Récupérer les dimensions du conteneur parent
     const container = document.querySelector('.notes-container');
     if (!container) return;
@@ -58,7 +60,7 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
 
     const newPosition = { x: newX, y: newY };
     setPosition(newPosition);
-    onUpdate?.({
+    onUpdate({
       ...note,
       position: newPosition
     });
@@ -129,14 +131,13 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <Grip className="w-4 h-4 opacity-20 group-hover:opacity-100 transition-opacity" />
+        <div className="flex gap-2">
           {isEditing ? (
             <Button
               variant="ghost"
               size="icon"
               onClick={handleSave}
-              className="bg-background/20 hover:bg-background/40"
+              className="bg-black/5 hover:bg-black/10 z-10"
             >
               <Save className="h-4 w-4" />
               <span className="sr-only">Enregistrer</span>
@@ -146,7 +147,7 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
               variant="ghost"
               size="icon"
               onClick={() => setIsEditing(true)}
-              className="bg-background/20 hover:bg-background/40"
+              className="bg-black/5 hover:bg-black/10 z-10"
             >
               <Edit2 className="h-4 w-4" />
               <span className="sr-only">Modifier</span>
@@ -156,7 +157,7 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid' }: Sticky
           <Button
             variant="ghost"
             size="icon"
-            className="bg-background/20 hover:bg-background/40"
+            className="bg-black/5 hover:bg-black/10 z-10"
             onClick={() => onDelete(note.id)}
           >
             <Trash2 className="h-4 w-4" />
