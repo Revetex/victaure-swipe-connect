@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { StickyNote } from "@/types/todo";
+import { Json } from "@/types/supabase";
 
 interface DatabaseNote {
   id: string;
@@ -16,14 +17,8 @@ interface DatabaseNote {
   created_at?: string;
   updated_at?: string;
   layout_type?: string;
-  metadata?: {
-    width?: number;
-    height?: number;
-  };
-  position?: {
-    x?: number;
-    y?: number;
-  };
+  metadata?: Json;
+  position?: Json;
 }
 
 export function useNotes() {
@@ -65,27 +60,33 @@ export function useNotes() {
       if (error) throw error;
       if (!data) return;
 
-      const formattedNotes: StickyNote[] = data.map((note: DatabaseNote) => ({
-        id: note.id,
-        text: note.text,
-        color: note.color || 'yellow',
-        user_id: note.user_id,
-        category: note.category || 'personal',
-        priority: note.priority || 'normal',
-        title: note.title || '',
-        pinned: note.pinned || false,
-        created_at: note.created_at || new Date().toISOString(),
-        updated_at: note.updated_at || new Date().toISOString(),
-        layout_type: (note.layout_type as 'grid' | 'masonry' | 'list') || layout,
-        metadata: {
-          width: note.metadata?.width || 280,
-          height: note.metadata?.height || 280
-        },
-        position: {
-          x: note.position?.x || 0,
-          y: note.position?.y || 0
-        }
-      }));
+      const formattedNotes: StickyNote[] = data.map((note) => {
+        // Parse metadata and position from JSON
+        const metadata = typeof note.metadata === 'object' ? note.metadata : {};
+        const position = typeof note.position === 'object' ? note.position : {};
+
+        return {
+          id: note.id,
+          text: note.text,
+          color: note.color || 'yellow',
+          user_id: note.user_id,
+          category: note.category || 'personal',
+          priority: note.priority || 'normal',
+          title: note.title || '',
+          pinned: note.pinned || false,
+          created_at: note.created_at || new Date().toISOString(),
+          updated_at: note.updated_at || new Date().toISOString(),
+          layout_type: (note.layout_type as 'grid' | 'masonry' | 'list') || layout,
+          metadata: {
+            width: typeof metadata === 'object' && 'width' in metadata ? Number(metadata.width) || 280 : 280,
+            height: typeof metadata === 'object' && 'height' in metadata ? Number(metadata.height) || 280 : 280
+          },
+          position: {
+            x: typeof position === 'object' && 'x' in position ? Number(position.x) || 0 : 0,
+            y: typeof position === 'object' && 'y' in position ? Number(position.y) || 0 : 0
+          }
+        };
+      });
 
       setNotes(formattedNotes);
     } catch (error) {
