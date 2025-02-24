@@ -80,6 +80,13 @@ export function LotoSphere({ onPaymentRequested }: PaymentProps) {
 
     setBuying(true);
     try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      if (!user) {
+        toast.error("Vous devez être connecté pour acheter un ticket");
+        return;
+      }
+
       await onPaymentRequested(5, "Ticket LotoSphere");
 
       const { error } = await supabase
@@ -87,7 +94,9 @@ export function LotoSphere({ onPaymentRequested }: PaymentProps) {
         .insert({
           draw_id: nextDraw.id,
           selected_numbers: numbers,
-          bonus_color: color
+          bonus_color: color,
+          user_id: user.id,
+          status: 'pending'
         });
 
       if (error) throw error;
