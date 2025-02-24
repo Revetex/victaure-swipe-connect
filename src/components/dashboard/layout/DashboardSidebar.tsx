@@ -49,7 +49,5 @@ export function DashboardSidebar({
   const mainItems = navigationItems.slice(0, 6);
   const networkItems = navigationItems.slice(6, 8);
   const toolsItems = navigationItems.slice(8);
-  return <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64">
-      
-    </div>;
+  return;
 }
