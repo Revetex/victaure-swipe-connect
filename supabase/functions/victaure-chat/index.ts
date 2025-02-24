@@ -3,7 +3,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from '../_shared/cors.ts';
 
 const TIMEOUT_DURATION = 25000;
-const OPENROUTER_API_KEY = Deno.env.get('OPENROUTER_API_KEY');
+const GEMINI_API_KEY = Deno.env.get('GOOGLE_GEMINI_API_KEY');
 
 interface Message {
   role: "system" | "user" | "assistant";
@@ -18,11 +18,11 @@ interface RequestBody {
   };
 }
 
-console.log("Starting victaure-chat function with OpenRouter (Gemini)");
+console.log("Starting victaure-chat function with Google Gemini API");
 
-if (!OPENROUTER_API_KEY) {
-  console.error("OPENROUTER_API_KEY is not set");
-  throw new Error("OPENROUTER_API_KEY is not set");
+if (!GEMINI_API_KEY) {
+  console.error("GOOGLE_GEMINI_API_KEY is not set");
+  throw new Error("GOOGLE_GEMINI_API_KEY is not set");
 }
 
 async function fetchWithTimeout(promise: Promise<any>, timeout: number) {
@@ -97,68 +97,59 @@ Concentre-toi sur :
 - Les conseils non fondés
 - Les sujets hors de ton domaine d'expertise`;
 
-    const messagePayload = messages.slice(1).map(msg => ({
-      role: msg.role,
-      content: msg.content
-    }));
+    // Combine all messages into a single content string for Gemini
+    const allMessages = messages.map(msg => 
+      `${msg.role === 'user' ? 'Utilisateur' : 'Assistant'}: ${msg.content}`
+    ).join('\n\n');
 
-    messagePayload.unshift({
-      role: "system",
-      content: systemContext
-    });
+    const fullPrompt = `${systemContext}\n\nHistorique de la conversation:\n${allMessages}`;
 
     const payload = {
-      model: "google/gemini-2.0-flash-thinking-exp:free",
-      messages: messagePayload,
-      temperature: 0.7,
-      max_tokens: 1000,
-      top_p: 1,
-      frequency_penalty: 0.5,
-      presence_penalty: 0.5
+      contents: [{
+        parts: [{
+          text: fullPrompt
+        }]
+      }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 1000,
+        topP: 1,
+      }
     };
 
-    console.log('Sending request to OpenRouter with payload:', {
-      model: payload.model,
-      messageCount: payload.messages.length,
-      temperature: payload.temperature,
-      maxTokens: payload.max_tokens
-    });
+    console.log('Sending request to Google Gemini API with payload length:', fullPrompt.length);
 
-    const openRouterPromise = fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const geminiPromise = fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: {
-        'HTTP-Referer': 'https://victaure.com',
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'X-Title': 'Victaure Assistant',
-        'Model': 'google/gemini-2.0-flash-thinking-exp:free'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload)
     });
 
-    const response = await fetchWithTimeout(openRouterPromise, TIMEOUT_DURATION);
+    const response = await fetchWithTimeout(geminiPromise, TIMEOUT_DURATION);
     
-    console.log('OpenRouter response status:', response.status);
-    console.log('OpenRouter response headers:', Object.fromEntries(response.headers.entries()));
+    console.log('Gemini response status:', response.status);
 
     const data = await response.json();
-    console.log('OpenRouter response data:', JSON.stringify(data, null, 2));
+    console.log('Gemini response data:', JSON.stringify(data, null, 2));
 
     if (!response.ok || data.error) {
-      console.error('OpenRouter error details:', data.error);
-      throw new Error(`OpenRouter API error: ${data.error?.message || data.error || 'Unknown error'}`);
+      console.error('Gemini error details:', data.error);
+      throw new Error(`Gemini API error: ${data.error?.message || data.error || 'Unknown error'}`);
     }
 
-    if (!data.choices?.[0]?.message?.content) {
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!content) {
       console.error('Invalid response structure:', data);
-      throw new Error("Structure de réponse invalide de OpenRouter");
+      throw new Error("Structure de réponse invalide de Gemini");
     }
 
     const formattedResponse = {
       choices: [{
         message: {
           role: "assistant",
-          content: data.choices[0].message.content
+          content: content
         }
       }]
     };
