@@ -70,15 +70,61 @@ export function VictaureChat({
 
   return (
     <div className="flex flex-col h-[calc(100dvh-4rem)] relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#1B2A4A] to-[#1A1F2C] opacity-50 pointer-events-none" />
-      
+      {/* Fond galaxie avec étoiles filantes */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]" />
+        
+        {/* Étoiles statiques */}
+        <div className="absolute inset-0" 
+             style={{
+               backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
+               backgroundSize: '15px 15px'
+             }} 
+        />
+        
+        {/* Étoiles filantes */}
+        <div className="absolute inset-0">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute h-px bg-gradient-to-r from-transparent via-[#64B5D9] to-transparent"
+              style={{
+                width: '100px',
+                transform: `rotate(-45deg)`,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animation: `shootingStars ${3 + i}s linear infinite ${i * 1.5}s`
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      <style>
+        {`
+          @keyframes shootingStars {
+            0% {
+              transform: translateX(-100%) translateY(-100%) rotate(-45deg);
+              opacity: 1;
+            }
+            50% {
+              opacity: 1;
+            }
+            100% {
+              transform: translateX(200%) translateY(200%) rotate(-45deg);
+              opacity: 0;
+            }
+          }
+        `}
+      </style>
+
       <div className="relative z-10 flex flex-col h-full">
         <div className="flex-none px-4 py-3 border-b border-[#64B5D9]/10 bg-[#1B2A4A]/50 backdrop-blur-sm">
           <ChatHeader />
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleRefresh}
+            onClick={refreshMessages}
             className="absolute right-4 top-2 text-[#64B5D9]/80 hover:text-[#64B5D9] transition-colors"
             title="Effacer l'historique"
           >
@@ -94,7 +140,7 @@ export function VictaureChat({
           />
         </div>
         
-        <div className="flex-none bg-[#1B2A4A]/90 border-t border-[#64B5D9]/10 backdrop-blur-sm">
+        <div className="flex-none mt-auto border-t border-[#64B5D9]/10 backdrop-blur-sm">
           <ChatInput
             userInput={userInput}
             setUserInput={setUserInput}
