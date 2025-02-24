@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -186,9 +186,13 @@ export function MarketplaceForm() {
             />
 
             <div className="flex justify-end gap-4 pt-4">
-              <DialogClose asChild>
-                <Button variant="outline" type="button">Annuler</Button>
-              </DialogClose>
+              <Button 
+                variant="outline" 
+                type="button"
+                onClick={() => setIsDialogOpen(false)}
+              >
+                Annuler
+              </Button>
               <Button type="submit" disabled={loading}>
                 {loading ? "Publication en cours..." : "Publier l'annonce"}
               </Button>
