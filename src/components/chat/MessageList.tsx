@@ -19,7 +19,7 @@ export function MessageList({
 
   return (
     <div className="h-[calc(85vh-120px)] overflow-y-auto py-4 px-3 scrollbar-none">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col-reverse gap-4">
         {messages.map((message, index) => (
           <motion.div
             key={index}
@@ -38,7 +38,7 @@ export function MessageList({
                 </div>
               ) : (
                 <div className="w-8 h-8 rounded-full bg-[#1B2A4A] flex items-center justify-center">
-                  <Bot className="h-4 w-4 text-[#F1F0FB]" />
+                  <Bot className="h-4 w-4 text-white" />
                 </div>
               )}
             </div>
@@ -53,7 +53,7 @@ export function MessageList({
                   "rounded-lg px-4 py-2",
                   message.isUser
                     ? "bg-[#64B5D9] text-white"
-                    : "bg-[#1B2A4A] text-[#F1F0FB]"
+                    : "bg-[#1B2A4A] text-white"
                 )}
               >
                 <p className="text-sm whitespace-pre-wrap">{message.content}</p>
@@ -70,7 +70,7 @@ export function MessageList({
           >
             <div className="flex-shrink-0">
               <div className="w-8 h-8 rounded-full bg-[#1B2A4A] flex items-center justify-center">
-                <Bot className="h-4 w-4 text-[#F1F0FB]" />
+                <Bot className="h-4 w-4 text-white" />
               </div>
             </div>
             <div className="flex space-x-2 items-center bg-[#1B2A4A] rounded-lg px-4 py-2">
