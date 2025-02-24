@@ -59,9 +59,40 @@ export function GoogleSearch({
         border-radius: 0.375rem !important;
         margin-left: 4px !important;
       }
-      .gsc-results-wrapper-overlay {
+      /* Style pour les prédictions de recherche */
+      .gsc-completion-container {
         background: #1A1F2C !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 0.5rem !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+      }
+      .gsc-completion-title {
+        color: white !important;
+      }
+      .gsc-completion-selected {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+      }
+      /* Style pour le conteneur de résultats */
+      .gsc-results-wrapper-overlay {
+        position: fixed !important;
+        top: 4rem !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background: #1A1F2C !important;
+        border: none !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        height: calc(100vh - 4rem) !important;
+        max-height: none !important;
+        padding: 1rem !important;
+        overflow-y: auto !important;
+      }
+      .gsc-results-wrapper-visible {
+        display: block !important;
+        transform: none !important;
+      }
+      .gsc-modal-background-image {
+        display: none !important;
       }
       .gs-result {
         background: transparent !important;
@@ -74,6 +105,10 @@ export function GoogleSearch({
       }
       .gsc-results {
         background: transparent !important;
+        width: 100% !important;
+        max-width: 900px !important;
+        margin: 0 auto !important;
+        padding: 1rem !important;
       }
       .gsc-webResult.gsc-result {
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -81,6 +116,13 @@ export function GoogleSearch({
         margin: 8px 0 !important;
         padding: 12px !important;
         border-radius: 0.5rem !important;
+        width: 100% !important;
+      }
+      .gsc-cursor-page {
+        color: white !important;
+      }
+      .gsc-cursor-current-page {
+        color: #64B5D9 !important;
       }
     `;
     document.head.appendChild(style);
@@ -119,7 +161,7 @@ export function GoogleSearch({
 
   return (
     <Card className={cn(
-      "fixed top-[4rem] left-0 right-0 z-40",
+      "fixed top-16 left-0 right-0 z-40",
       "bg-[#1A1F2C]/95 backdrop-blur-md",
       "border-b border-white/5",
       "shadow-lg"
