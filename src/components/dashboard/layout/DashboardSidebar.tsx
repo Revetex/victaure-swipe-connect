@@ -1,3 +1,4 @@
+
 import { navigationItems } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
@@ -43,14 +44,13 @@ export function DashboardSidebar({
     return () => clearInterval(interval);
   }, [getUnreadCount]);
 
-  // Grouper les éléments de navigation par catégorie
   const mainItems = navigationItems.slice(0, 6);
   const networkItems = navigationItems.slice(6, 8);
   const toolsItems = navigationItems.slice(8);
 
   return (
     <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64">
-      <div className="flex flex-col h-full pt-16 bg-[#1B2A4A] dark:bg-[#1B2A4A]/95 relative overflow-hidden border-r-2 border-black">
+      <div className="flex flex-col h-full pt-16 bg-[#1A1F2C] dark:bg-[#1A1F2C]/95 relative overflow-hidden border-r-2 border-black/20">
         {/* Motif de fond */}
         <div 
           className="absolute inset-0 opacity-[0.03] pointer-events-none" 
@@ -76,10 +76,10 @@ export function DashboardSidebar({
                     onClick={() => onPageChange(item.id)}
                     className={cn(
                       "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm",
-                      "transition-all duration-200 border-2 shadow-sm",
+                      "transition-all duration-200 border-2",
                       currentPage === item.id
-                        ? "bg-white/15 text-white font-medium border-black shadow-inner"
-                        : "text-white/90 hover:bg-white/10 hover:text-white border-black/20 hover:border-black"
+                        ? "bg-white/15 text-white font-medium border-white/20"
+                        : "text-white/80 hover:bg-white/10 hover:text-white border-transparent hover:border-white/10"
                     )}
                   >
                     <Icon className="h-3.5 w-3.5" />
@@ -107,10 +107,10 @@ export function DashboardSidebar({
                     onClick={() => onPageChange(item.id)}
                     className={cn(
                       "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm",
-                      "transition-all duration-200 border-2 shadow-sm",
+                      "transition-all duration-200 border-2",
                       currentPage === item.id
-                        ? "bg-white/15 text-white font-medium border-black shadow-inner"
-                        : "text-white/90 hover:bg-white/10 hover:text-white border-black/20 hover:border-black"
+                        ? "bg-white/15 text-white font-medium border-white/20"
+                        : "text-white/80 hover:bg-white/10 hover:text-white border-transparent hover:border-white/10"
                     )}
                   >
                     <Icon className="h-3.5 w-3.5" />
@@ -133,10 +133,10 @@ export function DashboardSidebar({
                     onClick={() => onPageChange(item.id)}
                     className={cn(
                       "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm",
-                      "transition-all duration-200 border-2 shadow-sm",
+                      "transition-all duration-200 border-2",
                       currentPage === item.id
-                        ? "bg-white/15 text-white font-medium border-black shadow-inner"
-                        : "text-white/90 hover:bg-white/10 hover:text-white border-black/20 hover:border-black"
+                        ? "bg-white/15 text-white font-medium border-white/20"
+                        : "text-white/80 hover:bg-white/10 hover:text-white border-transparent hover:border-white/10"
                     )}
                   >
                     <Icon className="h-3.5 w-3.5" />
