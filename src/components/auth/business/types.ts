@@ -1,14 +1,16 @@
 
 export interface FormData {
+  companyName: string;
   email: string;
   password: string;
-  companyName: string;
-  phone: string;
   industry: string;
   companySize: string;
-  province: string;
-  address: string;
-  postalCode: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  colorScheme?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
 }
 
 export interface BusinessSignupFormProps {
