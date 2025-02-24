@@ -1,40 +1,81 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { ListTodo } from "lucide-react";
-import { TodoItem } from "../todo/TodoItem";
-import { Todo } from "@/types/todo";
+
+import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Task } from '@/types/todo';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Trash2 } from 'lucide-react';
 
 interface TodoListProps {
-  todos: Todo[];
-  onToggleTodo: (id: string) => void;
-  onDeleteTodo: (id: string) => void;
+  tasks: Task[];
+  onToggleTask: (taskId: string, completed: boolean) => Promise<void>;
+  onDeleteTask: (taskId: string) => Promise<void>;
 }
 
-export function TodoList({ todos, onToggleTodo, onDeleteTodo }: TodoListProps) {
+export function TodoList({ tasks, onToggleTask, onDeleteTask }: TodoListProps) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState('');
+
+  const handleToggle = async (taskId: string, currentCompleted: boolean) => {
+    await onToggleTask(taskId, !currentCompleted);
+  };
+
+  const handleDelete = async (taskId: string) => {
+    await onDeleteTask(taskId);
+  };
+
   return (
-    <motion.div layout className="space-y-3 max-w-3xl mx-auto">
-      <AnimatePresence mode="popLayout">
-        {todos?.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onToggle={onToggleTodo}
-            onDelete={onDeleteTodo}
-          />
-        ))}
-        {(!todos || todos.length === 0) && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center text-muted-foreground py-12"
+    <div className="space-y-2">
+      <AnimatePresence initial={false}>
+        {tasks.map((task) => (
+          <motion.div
+            key={task.id}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
           >
-            <ListTodo className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="text-lg">Aucune tâche</p>
-            <p className="text-sm mt-2">
-              Ajoutez votre première tâche
-            </p>
+            <Card className="p-4 flex items-center gap-3">
+              <Checkbox 
+                checked={task.completed}
+                onCheckedChange={() => handleToggle(task.id, task.completed)}
+                className="data-[state=checked]:bg-primary"
+              />
+              
+              {editingId === task.id ? (
+                <Input
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onBlur={() => setEditingId(null)}
+                  autoFocus
+                  className="flex-1"
+                />
+              ) : (
+                <span 
+                  className={`flex-1 ${task.completed ? 'line-through text-muted-foreground' : ''}`}
+                  onDoubleClick={() => {
+                    setEditingId(task.id);
+                    setEditValue(task.text);
+                  }}
+                >
+                  {task.text}
+                </span>
+              )}
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleDelete(task.id)}
+                className="text-destructive hover:text-destructive/90"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </Card>
           </motion.div>
-        )}
+        ))}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }
