@@ -1,3 +1,4 @@
+
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/Marketplace";
@@ -25,86 +26,86 @@ export function ContentRouter({
   onRequestChat,
   renderDashboardHome 
 }: ContentRouterProps) {
-  const commonClassName = "min-h-screen pt-14 lg:pt-0";
+  const renderPage = () => {
+    switch (currentPage) {
+      case 1:
+        return (
+          <div className="min-h-screen pt-16 lg:pt-0 bg-gradient-to-b from-background via-background/95 to-background/90">
+            <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />
+          </div>
+        );
+      case 2:
+        return <Messages />;
+      case 3:
+        return <Marketplace />;
+      case 4:
+        return (
+          <div className="min-h-screen pt-16 lg:pt-16 bg-gradient-to-b from-background via-background/95 to-background/90">
+            <Feed />
+          </div>
+        );
+      case 7:
+        return (
+          <div className="min-h-screen pt-16 lg:pt-0 bg-gradient-to-b from-background via-background/95 to-background/90">
+            <TasksPage />
+          </div>
+        );
+      case 8:
+        return (
+          <div className="min-h-screen pt-16 lg:pt-0 bg-card/5">
+            <CalculatorPage />
+          </div>
+        );
+      case 9:
+        return (
+          <div className="min-h-screen pt-16 lg:pt-0">
+            <NotificationsTab />
+          </div>
+        );
+      case 10:
+        return (
+          <div className="min-h-screen pt-16 lg:pt-0 bg-background">
+            <Settings />
+          </div>
+        );
+      case 12:
+        return (
+          <div className="min-h-screen pt-16 lg:pt-0 bg-gradient-to-b from-background via-background/95 to-background/90">
+            <FriendsList />
+          </div>
+        );
+      case 14:
+        return (
+          <div className="min-h-screen pt-16 lg:pt-0 bg-card/5">
+            <TranslatorPage />
+          </div>
+        );
+      case 16:
+        return (
+          <div className="min-h-screen pt-16 lg:pt-0 bg-card/5">
+            <NotesSection />
+          </div>
+        );
+      case 17:
+        return (
+          <div className="min-h-screen pt-16 lg:pt-0 bg-gradient-to-b from-background via-background/95 to-background/90">
+            <JobsPage />
+          </div>
+        );
+      case 18:
+        return (
+          <div className="min-h-screen pt-16 lg:pt-0 bg-card/5">
+            <LotteryPage />
+          </div>
+        );
+      default:
+        return renderDashboardHome();
+    }
+  };
 
   return (
     <div className="h-full">
-      {(() => {
-        switch (currentPage) {
-          case 1:
-            return (
-              <div className={commonClassName}>
-                <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />
-              </div>
-            );
-          case 2:
-            return <Messages />;
-          case 3:
-            return <Marketplace />;
-          case 4:
-            return (
-              <div className="min-h-screen pt-16 lg:pt-16">
-                <Feed />
-              </div>
-            );
-          case 7:
-            return (
-              <div className={commonClassName}>
-                <TasksPage />
-              </div>
-            );
-          case 8:
-            return (
-              <div className={`${commonClassName} bg-card/5`}>
-                <CalculatorPage />
-              </div>
-            );
-          case 9:
-            return (
-              <div className={commonClassName}>
-                <NotificationsTab />
-              </div>
-            );
-          case 10:
-            return (
-              <div className={`${commonClassName} bg-background`}>
-                <Settings />
-              </div>
-            );
-          case 12:
-            return (
-              <div className={commonClassName}>
-                <FriendsList />
-              </div>
-            );
-          case 14:
-            return (
-              <div className={`${commonClassName} bg-card/5`}>
-                <TranslatorPage />
-              </div>
-            );
-          case 16:
-            return (
-              <div className={`${commonClassName} bg-card/5`}>
-                <NotesSection />
-              </div>
-            );
-          case 17:
-            return (
-              <div className={commonClassName}>
-                <JobsPage />
-              </div>
-            );
-          case 18:
-            return (
-              <div className={`${commonClassName} bg-card/5`}>
-                <LotteryPage />
-              </div>
-            );
-          default:
-            return renderDashboardHome();
-        }
-      })()}
+      {renderPage()}
     </div>
   );
 }
