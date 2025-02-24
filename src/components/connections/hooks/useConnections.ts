@@ -19,8 +19,96 @@ export function useConnections() {
       const { data: friendRequests, error: friendRequestsError } = await supabase
         .from("friend_requests")
         .select(`
-          sender:profiles!friend_requests_sender_id_fkey(*),
-          receiver:profiles!friend_requests_receiver_id_fkey(*)
+          sender:profiles!friend_requests_sender_id_fkey(
+            id,
+            email,
+            full_name,
+            avatar_url,
+            role,
+            bio,
+            certifications (
+              id,
+              profile_id,
+              title,
+              issuer,
+              issue_date,
+              expiry_date,
+              credential_id,
+              credential_url,
+              description
+            ),
+            education (
+              id,
+              profile_id,
+              school_name,
+              degree,
+              field_of_study,
+              start_date,
+              end_date,
+              description
+            ),
+            experiences (
+              id,
+              profile_id,
+              position,
+              company,
+              start_date,
+              end_date,
+              description
+            ),
+            friends:friendships(
+              id,
+              full_name,
+              avatar_url,
+              online_status,
+              last_seen
+            )
+          ),
+          receiver:profiles!friend_requests_receiver_id_fkey(
+            id,
+            email,
+            full_name,
+            avatar_url,
+            role,
+            bio,
+            certifications (
+              id,
+              profile_id,
+              title,
+              issuer,
+              issue_date,
+              expiry_date,
+              credential_id,
+              credential_url,
+              description
+            ),
+            education (
+              id,
+              profile_id,
+              school_name,
+              degree,
+              field_of_study,
+              start_date,
+              end_date,
+              description
+            ),
+            experiences (
+              id,
+              profile_id,
+              position,
+              company,
+              start_date,
+              end_date,
+              description
+            ),
+            friends:friendships(
+              id,
+              full_name,
+              avatar_url,
+              online_status,
+              last_seen
+            )
+          )
         `)
         .eq("status", "accepted")
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
@@ -33,7 +121,13 @@ export function useConnections() {
       // Transform the data to get a flat list of connections
       const connections = friendRequests?.map(request => {
         const connection = request.sender.id === user.id ? request.receiver : request.sender;
-        return connection as UserProfile;
+        return {
+          ...connection,
+          friends: connection.friends || [],
+          certifications: connection.certifications || [],
+          education: connection.education || [],
+          experiences: connection.experiences || []
+        } as UserProfile;
       });
 
       return connections || [];
