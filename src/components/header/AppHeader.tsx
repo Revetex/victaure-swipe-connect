@@ -1,5 +1,5 @@
 
-import { Star } from "lucide-react";
+import { Star, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
