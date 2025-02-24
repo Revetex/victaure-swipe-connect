@@ -24,18 +24,7 @@ export function Feed() {
         transition={{ duration: 0.4, delay: 0.1 }}
         className="bg-background/60 backdrop-blur-sm border border-border/40 rounded-lg shadow-sm"
       >
-        <CreatePostForm 
-          newPost=""
-          onPostChange={() => {}}
-          privacy="public"
-          onPrivacyChange={() => {}}
-          attachments={[]}
-          isUploading={false}
-          onFileChange={() => {}}
-          onRemoveFile={() => {}}
-          onCreatePost={invalidatePosts}
-          onClose={() => {}}
-        />
+        <CreatePostForm />
       </motion.div>
 
       <motion.div
