@@ -22,31 +22,31 @@ export function ContactFields({ formData, setFormData }: ContactFieldsProps) {
   return (
     <div className="space-y-4">
       <motion.div className="space-y-2" {...fadeInUp}>
-        <Label htmlFor="phone">Téléphone</Label>
+        <Label htmlFor="phone" className="text-[#F1F0FB]">Téléphone</Label>
         <div className="relative">
-          <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Phone className="absolute left-3 top-3 h-4 w-4 text-[#F1F0FB]/60" />
           <Input
             id="phone"
             type="tel"
             placeholder="(514) 555-0123"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            className="pl-10 transition-all duration-200 border-primary/20 focus:border-primary"
+            className="pl-10 bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
             required
           />
         </div>
       </motion.div>
 
       <motion.div className="space-y-2" {...fadeInUp} transition={{ delay: 0.1 }}>
-        <Label htmlFor="address">Adresse</Label>
+        <Label htmlFor="address" className="text-[#F1F0FB]">Adresse</Label>
         <div className="relative">
-          <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <MapPin className="absolute left-3 top-3 h-4 w-4 text-[#F1F0FB]/60" />
           <Input
             id="address"
             placeholder="123 rue Principale"
             value={formData.address}
             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-            className="pl-10 transition-all duration-200 border-primary/20 focus:border-primary"
+            className="pl-10 bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
             required
           />
         </div>
@@ -58,12 +58,12 @@ export function ContactFields({ formData, setFormData }: ContactFieldsProps) {
         transition={{ delay: 0.2 }}
       >
         <div className="space-y-2">
-          <Label htmlFor="province">Province</Label>
+          <Label htmlFor="province" className="text-[#F1F0FB]">Province</Label>
           <Select
             value={formData.province}
             onValueChange={(value) => setFormData({ ...formData, province: value })}
           >
-            <SelectTrigger className="w-full border-primary/20">
+            <SelectTrigger className="w-full bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40">
               <SelectValue placeholder="Sélectionner" />
             </SelectTrigger>
             <SelectContent>
@@ -85,13 +85,13 @@ export function ContactFields({ formData, setFormData }: ContactFieldsProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="postalCode">Code postal</Label>
+          <Label htmlFor="postalCode" className="text-[#F1F0FB]">Code postal</Label>
           <Input
             id="postalCode"
             placeholder="A1A 1A1"
             value={formData.postalCode}
             onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
-            className="transition-all duration-200 border-primary/20 focus:border-primary"
+            className="bg-[#1B2A4A]/20 border-[#64B5D9]/20 text-[#F1F0FB] placeholder-[#F1F0FB]/40 focus:border-[#64B5D9] focus:ring-1 focus:ring-[#64B5D9] transition-all"
             required
           />
         </div>
