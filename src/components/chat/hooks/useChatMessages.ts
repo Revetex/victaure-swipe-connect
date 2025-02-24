@@ -28,7 +28,6 @@ export function useChatMessages({
   const [error, setError] = useState<Error | null>(null);
 
   const refreshMessages = useCallback(() => {
-    // Pour l'instant, on vide juste les messages
     setMessages([]);
     setUserQuestions(0);
     setError(null);
@@ -62,8 +61,8 @@ export function useChatMessages({
           userId: user?.id,
           useWebSearch,
           userProfile: user ? await getUserProfile(user.id) : null,
-          maxTokens: useWebSearch ? 1000 : 500, // Plus de tokens pour la recherche web
-          temperature: useWebSearch ? 0.7 : 0.9 // Plus factuel pour la recherche web
+          maxTokens: useWebSearch ? 2000 : 800, // Augmentation des tokens
+          temperature: useWebSearch ? 0.5 : 0.7 // Plus factuel pour la recherche web
         }
       });
 
@@ -77,6 +76,8 @@ export function useChatMessages({
       }
 
       const assistantMessage = data.choices[0].message.content;
+      
+      // Ajout du nouveau message à la fin du tableau (sera affiché en bas)
       setMessages(prev => [...prev, { content: assistantMessage, isUser: false }]);
       return assistantMessage;
 

@@ -46,10 +46,26 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
     return (
       <div 
         ref={ref}
-        className="h-full overflow-y-auto py-4 px-3 scrollbar-none"
+        className="h-full overflow-y-auto py-4 px-3 scrollbar-none flex flex-col-reverse"
       >
-        <div className="flex flex-col space-y-3">
+        <div className="flex flex-col-reverse space-y-reverse space-y-3">
           <AnimatePresence mode="popLayout">
+            {isLoading && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="flex mb-3 items-end justify-start"
+              >
+                <div className="w-6 h-6 rounded-full bg-[#64B5D9] flex items-center justify-center mr-2 mb-1">
+                  <span className="text-xs text-white font-medium">MV</span>
+                </div>
+                <div className="relative bg-[#2A2D3E] rounded-2xl rounded-bl-sm px-4 py-3">
+                  <Loader2 className="w-4 h-4 text-white/80 animate-spin"/>
+                </div>
+              </motion.div>
+            )}
+            
             {messages.map((message, index) => (
               <motion.div 
                 key={index} 
@@ -98,22 +114,6 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                 )}
               </motion.div>
             ))}
-
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="flex mb-3 items-end justify-start"
-              >
-                <div className="w-6 h-6 rounded-full bg-[#64B5D9] flex items-center justify-center mr-2 mb-1">
-                  <span className="text-xs text-white font-medium">MV</span>
-                </div>
-                <div className="relative bg-[#2A2D3E] rounded-2xl rounded-bl-sm px-4 py-3">
-                  <Loader2 className="w-4 h-4 text-white/80 animate-spin"/>
-                </div>
-              </motion.div>
-            )}
           </AnimatePresence>
         </div>
       </div>
