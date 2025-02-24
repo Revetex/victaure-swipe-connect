@@ -47,7 +47,7 @@ export function ChatInput({
   };
 
   return (
-    <div className="flex items-end gap-2 pt-4">
+    <div className="flex items-end gap-2">
       <div className="relative flex-1">
         <Textarea
           value={userInput}
@@ -65,13 +65,17 @@ export function ChatInput({
             <TooltipTrigger asChild>
               <Button
                 size="icon"
-                variant="ghost"
-                className="shrink-0 h-11 w-11 rounded-xl bg-[#1A1F2C]/60 border border-[#64B5D9]/30 hover:bg-[#1A1F2C]/80 hover:border-[#64B5D9]/60 transition-all"
+                variant={isRecording ? "destructive" : "ghost"}
+                className={`shrink-0 h-11 w-11 rounded-xl border transition-all ${
+                  isRecording 
+                    ? 'bg-red-500/20 border-red-500/50 hover:bg-red-500/30 hover:border-red-500' 
+                    : 'bg-[#1A1F2C]/60 border-[#64B5D9]/30 hover:bg-[#1A1F2C]/80 hover:border-[#64B5D9]/60'
+                }`}
                 onClick={onStartRecording}
                 disabled={isDisabled || isLoading}
               >
                 {isRecording ? (
-                  <Square className="h-5 w-5 text-red-500" />
+                  <Square className="h-5 w-5 text-red-500 animate-pulse" />
                 ) : (
                   <Mic className="h-5 w-5 text-[#64B5D9]" />
                 )}
@@ -90,10 +94,10 @@ export function ChatInput({
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="shrink-0 h-11 w-11 rounded-xl bg-[#1A1F2C]/60 border border-[#64B5D9]/30 hover:bg-[#1A1F2C]/80 hover:border-[#64B5D9]/60 transition-all"
+                  className="shrink-0 h-11 w-11 rounded-xl bg-[#64B5D9]/20 border border-[#64B5D9]/50 hover:bg-[#64B5D9]/30 hover:border-[#64B5D9]"
                   onClick={onStopSpeaking}
                 >
-                  <StopCircle className="h-5 w-5 text-[#64B5D9]" />
+                  <StopCircle className="h-5 w-5 text-[#64B5D9] animate-pulse" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>

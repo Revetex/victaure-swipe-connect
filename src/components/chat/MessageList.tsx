@@ -1,13 +1,17 @@
+
 import { forwardRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { speaker } from "@/utils/speaker";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface Message {
   content: string;
   isUser: boolean;
   username?: string;
+  timestamp?: number;
 }
 
 interface MessageListProps {
@@ -17,29 +21,7 @@ interface MessageListProps {
 
 export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
   ({ messages, isLoading }, ref) => {
-    const [typingIndex, setTypingIndex] = useState(0);
-    const [currentText, setCurrentText] = useState("");
-    const [isTyping, setIsTyping] = useState(false);
     const [speakingMessageId, setSpeakingMessageId] = useState<number | null>(null);
-
-    const typeMessage = async (text: string, speed = 30) => {
-      setIsTyping(true);
-      let currentIndex = 0;
-      setCurrentText("");
-
-      return new Promise<void>((resolve) => {
-        const interval = setInterval(() => {
-          if (currentIndex < text.length) {
-            setCurrentText((prev) => prev + text[currentIndex]);
-            currentIndex++;
-          } else {
-            clearInterval(interval);
-            setIsTyping(false);
-            resolve();
-          }
-        }, speed);
-      });
-    };
 
     const handleSpeak = (text: string, index: number) => {
       try {
@@ -63,22 +45,12 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
       }
     };
 
-    useEffect(() => {
-      if (messages.length > typingIndex && !messages[typingIndex].isUser) {
-        typeMessage(messages[typingIndex].content).then(() => {
-          setTypingIndex(typingIndex + 1);
-        });
-      } else if (messages.length > typingIndex && messages[typingIndex].isUser) {
-        setTypingIndex(typingIndex + 1);
-      }
-    }, [messages, typingIndex]);
-
     return (
       <div 
         ref={ref}
-        className="flex flex-col justify-end min-h-full p-4"
+        className="flex flex-col justify-end min-h-full p-4 pb-20"
       >
-        <div className="space-y-3">
+        <div className="space-y-4">
           <AnimatePresence mode="popLayout">
             {messages.map((message, index) => (
               <motion.div 
@@ -97,6 +69,18 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                   }`}
                 >
                   <div className="p-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-medium opacity-90">
+                        {message.isUser ? 'Vous' : 'Mr. Victaure'}
+                      </span>
+                      <span className="text-xs opacity-50">
+                        {message.timestamp ? (
+                          format(new Date(message.timestamp), 'HH:mm', { locale: fr })
+                        ) : (
+                          format(new Date(), 'HH:mm', { locale: fr })
+                        )}
+                      </span>
+                    </div>
                     <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
                       {message.content}
                     </p>
@@ -104,7 +88,7 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute -right-10 top-2 opacity-70 hover:opacity-100 transition-opacity bg-[#1B2A4A]/40 hover:bg-[#1B2A4A]/60"
                         onClick={() => handleSpeak(message.content, index)}
                       >
                         {speakingMessageId === index ? (

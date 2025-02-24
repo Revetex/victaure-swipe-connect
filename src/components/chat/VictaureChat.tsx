@@ -49,7 +49,14 @@ export function VictaureChat({
     if (!userInput.trim() || isLoading) return;
     
     try {
-      const response = await sendMessage(userInput);
+      const currentTimestamp = Date.now();
+      const messageWithTimestamp = {
+        content: userInput,
+        isUser: true,
+        timestamp: currentTimestamp
+      };
+      
+      const response = await sendMessage(messageWithTimestamp);
       setUserInput("");
       
       if (response && !error) {
@@ -82,11 +89,9 @@ export function VictaureChat({
 
   return (
     <div className="flex flex-col h-[calc(100dvh-4rem)] relative bg-[#1A1F2C]">
-      {/* Fond galaxie avec étoiles filantes */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]" />
         
-        {/* Étoiles statiques */}
         <div className="absolute inset-0" 
              style={{
                backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
@@ -94,7 +99,6 @@ export function VictaureChat({
              }} 
         />
         
-        {/* Étoiles filantes */}
         <div className="absolute inset-0">
           {[...Array(2)].map((_, i) => (
             <div
@@ -152,7 +156,7 @@ export function VictaureChat({
           />
         </div>
         
-        <div className="flex-none pb-4 px-4 bg-[#1A1F2C]/95 backdrop-blur-md border-t border-[#64B5D9]/10">
+        <div className="fixed bottom-0 left-0 right-0 pb-4 px-4 bg-gradient-to-t from-[#1A1F2C] to-transparent pt-6">
           <ChatInput
             userInput={userInput}
             setUserInput={setUserInput}
