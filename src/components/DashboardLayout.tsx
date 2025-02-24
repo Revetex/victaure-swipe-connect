@@ -33,7 +33,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen w-full bg-background overflow-hidden">
+    <div className="flex h-screen w-full bg-[#F2EBE4] dark:bg-[#1A1F2C] overflow-hidden">
       {/* Sidebar desktop */}
       <div className="hidden lg:block">
         <DashboardSidebar 
@@ -55,11 +55,12 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       <main className={cn(
         "flex-1",
         "lg:ml-64",
-        "min-h-screen",
+        "h-screen",
         "w-full",
         "relative",
         "ios-safe-area",
-        "ios-momentum-scroll"
+        "overflow-y-auto",
+        "bg-[#F2EBE4] dark:bg-[#1A1F2C]"
       )}>
         <AppHeader 
           onRequestAssistant={handleRequestChat}

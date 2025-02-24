@@ -77,12 +77,13 @@ const Settings = () => {
 
   return (
     <Elements stripe={stripePromise} options={stripeElementsOptions}>
-      <div className="min-h-screen overflow-x-hidden">
-        <ScrollArea className="h-[calc(100vh-5rem)]">
+      <div className="min-h-screen bg-[#F2EBE4] dark:bg-[#1A1F2C] overflow-auto">
+        <div className="h-full max-w-4xl mx-auto px-4 py-6">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
+            className="space-y-6"
           >
             {settingsSections.map(({ id, Component }, index) => (
               <motion.div
@@ -90,15 +91,15 @@ const Settings = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="w-full max-w-4xl mx-auto px-4 py-4"
+                className="w-full"
               >
-                <div className="glass-card bg-white/5 dark:bg-[#1B2A4A]">
+                <div className="bg-[#F2EBE4]/50 dark:bg-[#1A1F2C]/50 backdrop-blur-sm rounded-lg shadow-sm border border-[#F2EBE4]/20 dark:border-[#1A1F2C]/20">
                   <Component />
                 </div>
               </motion.div>
             ))}
           </motion.div>
-        </ScrollArea>
+        </div>
       </div>
     </Elements>
   );

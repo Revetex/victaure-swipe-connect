@@ -14,7 +14,7 @@ export function FriendsList() {
       transition={{ duration: 0.3 }}
       className={cn(
         "min-h-screen w-full",
-        "bg-gradient-to-br from-[#F2FCE2]/50 via-[#D3E4FD]/30 to-[#FFDEE2]/20",
+        "bg-[#F2EBE4] dark:bg-[#1A1F2C]",
         "backdrop-blur-sm",
         isMobile ? "pb-20" : "pb-6",
         "pt-16"
