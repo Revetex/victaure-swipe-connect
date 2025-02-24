@@ -50,22 +50,22 @@ export function AuthForm({ redirectTo }: { redirectTo?: string }) {
             onValueChange={setActiveTab}
             className="relative z-10"
           >
-            <TabsList className="grid grid-cols-3 w-full mb-6 bg-[#1B2A4A]/40 dark:bg-[#D3E4FD]/5 border border-[#64B5D9]/20 rounded-xl p-1 gap-1">
+            <TabsList className="grid w-full mb-6 grid-cols-3 bg-[#64B5D9]/5 rounded-xl p-1.5">
               <TabsTrigger 
                 value="login"
-                className="px-4 py-2.5 rounded-lg text-[#F1F0FB]/80 data-[state=active]:bg-[#64B5D9] data-[state=active]:text-white data-[state=active]:shadow-none transition-all duration-200 hover:text-white"
+                className="rounded-lg px-4 py-2.5 text-[#F1F0FB]/80 data-[state=active]:bg-[#64B5D9] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 hover:text-white hover:bg-[#64B5D9]/10"
               >
                 Connexion
               </TabsTrigger>
               <TabsTrigger 
                 value="signup"
-                className="px-4 py-2.5 rounded-lg text-[#F1F0FB]/80 data-[state=active]:bg-[#64B5D9] data-[state=active]:text-white data-[state=active]:shadow-none transition-all duration-200 hover:text-white"
+                className="rounded-lg px-4 py-2.5 text-[#F1F0FB]/80 data-[state=active]:bg-[#64B5D9] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 hover:text-white hover:bg-[#64B5D9]/10"
               >
                 Inscription
               </TabsTrigger>
               <TabsTrigger 
                 value="business"
-                className="px-4 py-2.5 rounded-lg text-[#F1F0FB]/80 data-[state=active]:bg-[#64B5D9] data-[state=active]:text-white data-[state=active]:shadow-none transition-all duration-200 hover:text-white"
+                className="rounded-lg px-4 py-2.5 text-[#F1F0FB]/80 data-[state=active]:bg-[#64B5D9] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 hover:text-white hover:bg-[#64B5D9]/10"
               >
                 Entreprise
               </TabsTrigger>

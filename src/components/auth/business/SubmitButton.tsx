@@ -6,9 +6,10 @@ import { motion } from 'framer-motion';
 
 interface SubmitButtonProps {
   loading: boolean;
+  disabled?: boolean;
 }
 
-export function SubmitButton({ loading }: SubmitButtonProps) {
+export function SubmitButton({ loading, disabled }: SubmitButtonProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -17,8 +18,8 @@ export function SubmitButton({ loading }: SubmitButtonProps) {
     >
       <Button
         type="submit"
-        className="w-full bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 transition-all duration-300"
-        disabled={loading}
+        className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white transition-all duration-300"
+        disabled={loading || disabled}
       >
         {loading ? (
           <>
