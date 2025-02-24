@@ -4,6 +4,28 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { StickyNote } from "@/types/todo";
 
+interface DatabaseNote {
+  id: string;
+  text: string;
+  color?: string;
+  user_id: string;
+  category?: string;
+  priority?: string;
+  title?: string;
+  pinned?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  layout_type?: string;
+  metadata?: {
+    width?: number;
+    height?: number;
+  };
+  position?: {
+    x?: number;
+    y?: number;
+  };
+}
+
 export function useNotes() {
   const [notes, setNotes] = useState<StickyNote[]>([]);
   const [newNote, setNewNote] = useState("");
@@ -41,10 +63,9 @@ export function useNotes() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-
       if (!data) return;
 
-      const formattedNotes: StickyNote[] = data.map(note => ({
+      const formattedNotes: StickyNote[] = data.map((note: DatabaseNote) => ({
         id: note.id,
         text: note.text,
         color: note.color || 'yellow',
@@ -57,13 +78,13 @@ export function useNotes() {
         updated_at: note.updated_at || new Date().toISOString(),
         layout_type: (note.layout_type as 'grid' | 'masonry' | 'list') || layout,
         metadata: {
-          width: typeof note.metadata === 'object' ? note.metadata?.width || 280 : 280,
-          height: typeof note.metadata === 'object' ? note.metadata?.height || 280 : 280
+          width: note.metadata?.width || 280,
+          height: note.metadata?.height || 280
         },
-        position: typeof note.position === 'object' ? {
+        position: {
           x: note.position?.x || 0,
           y: note.position?.y || 0
-        } : { x: 0, y: 0 }
+        }
       }));
 
       setNotes(formattedNotes);
@@ -104,31 +125,30 @@ export function useNotes() {
         .single();
 
       if (error) throw error;
+      if (!data) return;
 
-      if (data) {
-        const formattedNote: StickyNote = {
-          id: data.id,
-          text: data.text,
-          color: data.color,
-          user_id: data.user_id,
-          category: data.category || 'personal',
-          priority: data.priority || 'normal',
-          title: data.title || '',
-          pinned: data.pinned || false,
-          created_at: data.created_at,
-          updated_at: data.updated_at,
-          layout_type: data.layout_type || layout,
-          metadata: {
-            width: 280,
-            height: 280
-          },
-          position: { x: 0, y: 0 }
-        };
+      const formattedNote: StickyNote = {
+        id: data.id,
+        text: data.text,
+        color: data.color,
+        user_id: data.user_id,
+        category: 'personal',
+        priority: 'normal',
+        title: '',
+        pinned: false,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        layout_type: layout,
+        metadata: {
+          width: 280,
+          height: 280
+        },
+        position: { x: 0, y: 0 }
+      };
 
-        setNotes(prev => [formattedNote, ...prev]);
-        setNewNote("");
-        toast.success("Note ajoutée avec succès");
-      }
+      setNotes(prev => [formattedNote, ...prev]);
+      setNewNote("");
+      toast.success("Note ajoutée avec succès");
     } catch (error) {
       console.error('Error adding note:', error);
       toast.error("Erreur lors de l'ajout de la note");
