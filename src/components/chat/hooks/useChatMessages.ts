@@ -61,11 +61,20 @@ export function useChatMessages({
           context,
           userId: user?.id,
           useWebSearch,
-          userProfile: user ? await getUserProfile(user.id) : null
+          userProfile: user ? await getUserProfile(user.id) : null,
+          maxTokens: useWebSearch ? 1000 : 500, // Plus de tokens pour la recherche web
+          temperature: useWebSearch ? 0.7 : 0.9 // Plus factuel pour la recherche web
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase function error:", error);
+        throw new Error("Erreur de communication avec l'assistant");
+      }
+
+      if (!data || !data.choices || !data.choices[0]?.message?.content) {
+        throw new Error("Réponse invalide de l'assistant");
+      }
 
       const assistantMessage = data.choices[0].message.content;
       setMessages(prev => [...prev, { content: assistantMessage, isUser: false }]);
@@ -74,7 +83,9 @@ export function useChatMessages({
     } catch (err) {
       console.error('Error sending message:', err);
       setError(err instanceof Error ? err : new Error('Unknown error occurred'));
-      toast.error("Erreur lors de l'envoi du message");
+      toast.error("Erreur lors de l'envoi du message", {
+        description: err instanceof Error ? err.message : "Une erreur inattendue s'est produite"
+      });
     } finally {
       setIsLoading(false);
     }
