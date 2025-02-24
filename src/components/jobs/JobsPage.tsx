@@ -4,10 +4,15 @@ import { Job } from "@/types/job";
 import { useJobsData } from "@/hooks/useJobsData";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { JobsSearch } from "./sections/JobsSearch";
 import { JobsFilters } from "./sections/JobsFilters";
 import { JobsResults } from "./sections/JobsResults";
 import { JobsAIAssistant } from "./sections/JobsAIAssistant";
+import { CreateJobForm } from "./CreateJobForm";
+import { ExternalSearchSection } from "./sections/ExternalSearchSection";
+import { PlusCircle } from "lucide-react";
 
 export function JobsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -60,10 +65,6 @@ export function JobsPage() {
 
   const locations = Array.from(new Set(jobs.map(job => job.location))).sort();
 
-  const handleJobSelect = (job: Job) => {
-    setSelectedJobId(job.id);
-  };
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -81,14 +82,33 @@ export function JobsPage() {
           transition={{ duration: 0.5 }}
           className="space-y-6"
         >
-          {/* En-tête et recherche */}
-          <div className="space-y-4">
+          {/* Header et actions */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h1 className="text-3xl font-bold">Emplois disponibles</h1>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="gap-2">
+                  <PlusCircle className="w-4 h-4" />
+                  Publier une offre
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh]">
+                <DialogTitle>Créer une offre d'emploi</DialogTitle>
+                <CreateJobForm />
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {/* Recherche et recherche externe */}
+          <div className="grid gap-6 md:grid-cols-2">
             <Card className="p-6">
               <JobsSearch 
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
               />
+            </Card>
+            <Card className="p-6">
+              <ExternalSearchSection />
             </Card>
           </div>
 
@@ -120,7 +140,7 @@ export function JobsPage() {
             <div className="lg:col-span-9">
               <JobsResults 
                 jobs={filteredJobs}
-                onJobSelect={handleJobSelect}
+                onJobSelect={setSelectedJobId}
                 selectedJobId={selectedJobId}
                 onResetFilters={() => {
                   setSearchQuery("");
