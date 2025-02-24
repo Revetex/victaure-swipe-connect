@@ -6,7 +6,8 @@ import { PostList } from "./posts/PostList";
 import { User2, Globe2, Clock, TrendingUp } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
+import type { PostAttachment } from "@/types/posts";
 
 export function Feed() {
   const queryClient = useQueryClient();
@@ -15,15 +16,17 @@ export function Feed() {
   const [showNewPost, setShowNewPost] = useState(false);
   const [newPost, setNewPost] = useState("");
   const [privacy, setPrivacy] = useState<"public" | "connections">("public");
-  const [attachments, setAttachments] = useState<string[]>([]);
+  const [attachments, setAttachments] = useState<PostAttachment[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
   const invalidatePosts = () => {
     queryClient.invalidateQueries({ queryKey: ["posts"] });
   };
 
-  const handleFileChange = async (files: FileList | null) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
     if (!files?.length) return;
+    
     setIsUploading(true);
     // TODO: Implement file upload logic
     setIsUploading(false);
