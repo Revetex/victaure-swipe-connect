@@ -100,7 +100,7 @@ export function useChatMessages({
     };
 
     setUserQuestions(prev => prev + 1);
-    setMessages(prevMessages => [userMessage, ...prevMessages]);
+    setMessages(prevMessages => [...prevMessages, userMessage]);
 
     try {
       setIsLoading(true);
@@ -111,7 +111,7 @@ export function useChatMessages({
         ...messages.map(msg => ({
           role: msg.isUser ? "user" : "assistant",
           content: msg.content
-        })).reverse(),
+        })),
         { role: "user", content: userInput }
       ];
 
@@ -147,7 +147,7 @@ export function useChatMessages({
           },
           isUser: false
         };
-        setMessages(prevMessages => [assistantMessage, ...prevMessages]);
+        setMessages(prevMessages => [...prevMessages, assistantMessage]);
         return assistantMessage.content;
       }
       return null;
