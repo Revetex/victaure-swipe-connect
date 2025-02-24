@@ -23,6 +23,38 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
   ({ messages, isLoading }, ref) => {
     const { location, loading: locationLoading } = useGeolocation();
     const { data: allJobs } = useJobsData();
+    const [typingIndex, setTypingIndex] = useState(0);
+    const [currentText, setCurrentText] = useState("");
+    const [isTyping, setIsTyping] = useState(false);
+
+    const typeMessage = async (text: string, speed = 30) => {
+      setIsTyping(true);
+      let currentIndex = 0;
+      setCurrentText("");
+
+      return new Promise<void>((resolve) => {
+        const interval = setInterval(() => {
+          if (currentIndex < text.length) {
+            setCurrentText((prev) => prev + text[currentIndex]);
+            currentIndex++;
+          } else {
+            clearInterval(interval);
+            setIsTyping(false);
+            resolve();
+          }
+        }, speed);
+      });
+    };
+
+    useEffect(() => {
+      if (messages.length > typingIndex && !messages[typingIndex].isUser) {
+        typeMessage(messages[typingIndex].content).then(() => {
+          setTypingIndex(typingIndex + 1);
+        });
+      } else if (messages.length > typingIndex && messages[typingIndex].isUser) {
+        setTypingIndex(typingIndex + 1);
+      }
+    }, [messages, typingIndex]);
 
     const getNearbyJobs = (radius: number = 50) => {
       if (!location || !allJobs) return [];
@@ -30,8 +62,7 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
       return allJobs.filter(job => {
         if (!job.latitude || !job.longitude) return false;
         
-        // Calcul de la distance en km
-        const R = 6371; // Rayon de la Terre en km
+        const R = 6371;
         const dLat = (job.latitude - location.latitude) * Math.PI / 180;
         const dLon = (job.longitude - location.longitude) * Math.PI / 180;
         const a = 
@@ -45,7 +76,6 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
       });
     };
 
-    // Obtenir les emplois immédiatement au premier message
     useEffect(() => {
       if (messages.length === 1 && !messages[0].isUser) {
         const nearbyJobs = getNearbyJobs();
@@ -58,28 +88,15 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
     return (
       <div 
         ref={ref}
-        className="h-full overflow-y-auto py-4 px-3 scrollbar-none flex flex-col-reverse"
+        className="h-full overflow-y-auto py-4 px-3 scrollbar-none flex flex-col"
       >
-        <div className="flex flex-col-reverse space-y-reverse space-y-3">
+        <div className="flex flex-col space-y-3 mt-auto">
           <AnimatePresence mode="popLayout">
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="flex mb-3 items-start"
-              >
-                <div className="relative flex-1 bg-[#2A2D3E] rounded-2xl rounded-bl-sm px-4 py-3">
-                  <Loader2 className="w-4 h-4 text-white/80 animate-spin"/>
-                </div>
-              </motion.div>
-            )}
-            
             {messages.map((message, index) => (
               <motion.div 
-                key={index} 
+                key={index}
                 className={`flex mb-3 ${message.isUser ? 'justify-end' : 'justify-start'}`}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
                 layout
@@ -93,7 +110,12 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                 >
                   {!message.isUser ? (
                     <div className="space-y-4">
-                      {message.jobResults && message.jobResults.length > 0 ? (
+                      {index === typingIndex - 1 && isTyping ? (
+                        <p className="text-sm">{currentText}</p>
+                      ) : (
+                        <p className="text-sm">{message.content}</p>
+                      )}
+                      {message.jobResults && message.jobResults.length > 0 && (
                         <div className="space-y-2">
                           {message.jobResults.map((job) => (
                             <JobCard
@@ -103,12 +125,6 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                             />
                           ))}
                         </div>
-                      ) : (
-                        locationLoading ? (
-                          <p className="text-sm">Recherche d'offres d'emploi à proximité...</p>
-                        ) : (
-                          <p className="text-sm">Aucune offre d'emploi trouvée à proximité.</p>
-                        )
                       )}
                     </div>
                   ) : (
@@ -117,6 +133,18 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                 </motion.div>
               </motion.div>
             ))}
+            {isLoading && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="flex mb-3 items-start"
+              >
+                <div className="relative flex-1 bg-[#2A2D3E] rounded-2xl rounded-bl-sm px-4 py-3">
+                  <Loader2 className="w-4 h-4 text-white/80 animate-spin"/>
+                </div>
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
       </div>
