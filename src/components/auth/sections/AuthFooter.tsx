@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
-
 export function AuthFooter() {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -16,14 +15,12 @@ export function AuthFooter() {
     email: "",
     message: ""
   });
-
   const contactInfo = {
     name: "Thomas Blanchet",
     title: "Développement / Conception",
     email: "tblanchet@hotmail.com",
     tel: "+1(819) 668-0473"
   };
-
   const vCardData = `BEGIN:VCARD
 VERSION:3.0
 FN:${contactInfo.name}
@@ -31,7 +28,6 @@ TITLE:${contactInfo.title}
 EMAIL:${contactInfo.email}
 TEL:${contactInfo.tel}
 END:VCARD`;
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -53,16 +49,12 @@ END:VCARD`;
       console.error(error);
     }
   };
-
-  return (
-    <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center relative" role="contentinfo">
+  return <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center relative" role="contentinfo">
       <div className="space-y-8 border-t border-[#F1F0FB]/20 pt-8">
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
           <Dialog>
             <DialogTrigger asChild>
-              <Button 
-                className="relative group bg-gradient-to-r from-[#4A90E2] to-[#64B5D9] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105"
-              >
+              <Button className="relative group bg-gradient-to-r from-[#4A90E2] to-[#64B5D9] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <span className="relative z-10 flex items-center gap-2">
                   Partenariat
                   <div className="w-1.5 h-1.5 rounded-full bg-white group-hover:scale-150 transition-transform" />
@@ -84,19 +76,9 @@ END:VCARD`;
 
                 <div className="flex justify-center">
                   <div className="bg-white p-2 rounded-lg shadow-lg relative">
-                    <QRCodeSVG 
-                      value={vCardData}
-                      size={80}
-                      level="H"
-                      includeMargin={true}
-                      className="rounded"
-                    />
+                    <QRCodeSVG value={vCardData} size={80} level="H" includeMargin={true} className="rounded" />
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <img 
-                        src="/lovable-uploads/color-logo.png"
-                        alt="Victaure Logo"
-                        className="w-12 h-12 opacity-90"
-                      />
+                      <img src="/lovable-uploads/color-logo.png" alt="Victaure Logo" className="w-12 h-12 opacity-90" />
                     </div>
                   </div>
                 </div>
@@ -116,9 +98,7 @@ END:VCARD`;
 
           <Dialog>
             <DialogTrigger asChild>
-              <Button 
-                className="relative group bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105"
-              >
+              <Button className="relative group bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <span className="relative z-10 flex items-center gap-2">
                   Charte des prix officielle
                   <div className="w-1.5 h-1.5 rounded-full bg-white group-hover:scale-150 transition-transform" />
@@ -129,47 +109,10 @@ END:VCARD`;
             <DialogContent className="md:max-w-4xl w-11/12 h-[80vh] overflow-y-auto bg-[#1B2A4A] border-2 border-[#F1F0FB]/20">
               <DialogHeader>
                 <DialogTitle className="text-2xl font-bold text-center text-[#F1F0FB] mb-2">Guide Tarifaire Victaure 2025</DialogTitle>
-                <p className="text-[#F1F0FB]/70 text-center text-sm">En vigueur au 29 février 2025</p>
+                
               </DialogHeader>
               <div className="space-y-8 p-4 text-[#F1F0FB]">
-                <section className="space-y-4">
-                  <h3 className="text-xl font-semibold text-[#64B5D9] mb-4">Formules d'abonnement et flexibilité</h3>
-                  <div className="grid md:grid-cols-3 gap-4">
-                    <div className="p-4 bg-gradient-to-br from-[#4A90E2]/10 to-[#64B5D9]/10 rounded-lg border border-[#64B5D9]/20">
-                      <h4 className="font-medium text-lg mb-2">Formule Flex</h4>
-                      <p className="text-sm text-[#F1F0FB]/70 mb-3">Liberté totale sans engagement</p>
-                      <ul className="text-sm space-y-2">
-                        <li>• Paiement mensuel</li>
-                        <li>• Prix standard</li>
-                        <li>• Annulation à tout moment</li>
-                        <li>• Modification mensuelle possible</li>
-                      </ul>
-                    </div>
-                    <div className="p-4 bg-gradient-to-br from-[#4A90E2]/20 to-[#64B5D9]/20 rounded-lg border-2 border-[#64B5D9]/30 relative">
-                      <div className="absolute -top-3 right-4 bg-[#64B5D9] text-white px-3 py-1 rounded-full text-xs font-medium">
-                        POPULAIRE
-                      </div>
-                      <h4 className="font-medium text-lg mb-2">Formule Smart</h4>
-                      <p className="text-sm text-[#F1F0FB]/70 mb-3">Engagement optimisé 3 mois</p>
-                      <ul className="text-sm space-y-2">
-                        <li>• -5% sur tous les prix</li>
-                        <li>• Paiement trimestriel</li>
-                        <li>• Renouvellement automatique</li>
-                        <li>• Changement trimestriel possible</li>
-                      </ul>
-                    </div>
-                    <div className="p-4 bg-gradient-to-br from-[#4A90E2]/10 to-[#64B5D9]/10 rounded-lg border border-[#64B5D9]/20">
-                      <h4 className="font-medium text-lg mb-2">Formule Premium</h4>
-                      <p className="text-sm text-[#F1F0FB]/70 mb-3">Engagement annuel privilégié</p>
-                      <ul className="text-sm space-y-2">
-                        <li>• 2 mois gratuits (-17%)</li>
-                        <li>• Paiement annuel unique</li>
-                        <li>• Garantie satisfait ou remboursé</li>
-                        <li>• Prix bloqués 12 mois</li>
-                      </ul>
-                    </div>
-                  </div>
-                </section>
+                
 
                 <section className="space-y-6">
                   <h3 className="text-xl font-semibold text-[#64B5D9] mb-4">Plans d'abonnement détaillés</h3>
@@ -362,44 +305,14 @@ END:VCARD`;
                   </div>
                 </section>
 
-                <section>
-                  <h3 className="text-xl font-semibold text-[#64B5D9] mb-4">Services additionnels</h3>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div className="p-4 bg-white/5 rounded-lg">
-                        <h4 className="font-medium mb-3">Services marketing</h4>
-                        <ul className="text-sm space-y-2">
-                          <li>• Email ciblé : 299 CAD</li>
-                          <li>• Bannière homepage : 499 CAD/semaine</li>
-                          <li>• Post réseau social : 199 CAD</li>
-                          <li>• Push notification : 99 CAD</li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <div className="p-4 bg-white/5 rounded-lg">
-                        <h4 className="font-medium mb-3">Formation</h4>
-                        <ul className="text-sm space-y-2">
-                          <li>• Formation en ligne (2h) : 299 CAD</li>
-                          <li>• Formation sur site (4h) : 599 CAD</li>
-                          <li>• Consulting RH (2h) : 399 CAD</li>
-                          <li>• Pack complet : 999 CAD</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </section>
+                
               </div>
             </DialogContent>
           </Dialog>
         </div>
 
         <div className="flex justify-center mb-12">
-          <img 
-            src="/lovable-uploads/white-signature.png"
-            alt="Signature décorative" 
-            className="w-40 h-16 object-contain opacity-50"
-          />
+          <img src="/lovable-uploads/white-signature.png" alt="Signature décorative" className="w-40 h-16 object-contain opacity-50" />
         </div>
 
         <nav className="flex flex-wrap justify-center gap-3 text-sm text-[#F1F0FB]/80" role="navigation">
@@ -499,50 +412,28 @@ END:VCARD`;
                   <label htmlFor="contact-name" className="text-sm font-medium text-[#F1F0FB]">
                     Nom
                   </label>
-                  <Input 
-                    id="contact-name" 
-                    required 
-                    value={formData.name} 
-                    onChange={e => setFormData(prev => ({
-                      ...prev,
-                      name: e.target.value
-                    }))} 
-                    className="bg-white text-[#1B2A4A]" 
-                    autoFocus={false}
-                  />
+                  <Input id="contact-name" required value={formData.name} onChange={e => setFormData(prev => ({
+                  ...prev,
+                  name: e.target.value
+                }))} className="bg-white text-[#1B2A4A]" autoFocus={false} />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="contact-email" className="text-sm font-medium text-[#F1F0FB]">
                     Email
                   </label>
-                  <Input 
-                    id="contact-email" 
-                    type="email" 
-                    required 
-                    value={formData.email} 
-                    onChange={e => setFormData(prev => ({
-                      ...prev,
-                      email: e.target.value
-                    }))} 
-                    className="bg-white text-[#1B2A4A]" 
-                    autoFocus={false}
-                  />
+                  <Input id="contact-email" type="email" required value={formData.email} onChange={e => setFormData(prev => ({
+                  ...prev,
+                  email: e.target.value
+                }))} className="bg-white text-[#1B2A4A]" autoFocus={false} />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="contact-message" className="text-sm font-medium text-[#F1F0FB]">
                     Message
                   </label>
-                  <Textarea 
-                    id="contact-message" 
-                    required 
-                    value={formData.message} 
-                    onChange={e => setFormData(prev => ({
-                      ...prev,
-                      message: e.target.value
-                    }))} 
-                    className="bg-white text-[#1B2A4A] min-h-[100px]" 
-                    autoFocus={false}
-                  />
+                  <Textarea id="contact-message" required value={formData.message} onChange={e => setFormData(prev => ({
+                  ...prev,
+                  message: e.target.value
+                }))} className="bg-white text-[#1B2A4A] min-h-[100px]" autoFocus={false} />
                 </div>
                 <Button type="submit" className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white">
                   Envoyer
@@ -557,6 +448,5 @@ END:VCARD`;
           <p className="relative">© 2025 Victaure Technologies inc.</p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 }
