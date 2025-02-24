@@ -8,35 +8,37 @@ const corsHeaders = {
 
 async function searchJobs() {
   try {
-    const SEARCH_ENGINE_ID = Deno.env.get('GOOGLE_SEARCH_ENGINE_ID');
-    const API_KEY = Deno.env.get('GOOGLE_SEARCH_API_KEY');
-    
-    console.log('Fetching jobs from Google Custom Search...');
+    const API_KEY = 'AIzaSyACeSmrGf4l49R9E3-I3ZRU-R9YtxTVj60';
+    console.log('Fetching jobs from Google Search API...');
 
     const queries = [
-      'site:indeed.ca emploi quebec',
-      'site:jobillico.com emploi quebec',
-      'site:emploiquebec.gouv.qc.ca offre emploi'
+      'site:indeed.ca job OR emploi quebec',
+      'site:jobillico.com job OR emploi quebec',
+      'site:emploiquebec.gouv.qc.ca offre emploi',
+      'site:linkedin.com/jobs quebec'
     ];
 
     const allJobs = [];
 
     for (const query of queries) {
-      const url = `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${encodeURIComponent(query)}`;
-      
       try {
+        const url = `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&q=${encodeURIComponent(query)}&num=10`;
+        
         const response = await fetch(url);
         const data = await response.json();
         
         if (data.items) {
+          console.log(`Found ${data.items.length} results for query: ${query}`);
+          
           const jobs = data.items.map(item => ({
-            title: item.title,
+            title: cleanTitle(item.title),
             description: item.snippet,
             url: item.link,
-            company: extractCompany(item.title),
-            location: 'Québec',
+            company: extractCompany(item.title, item.link),
+            location: extractLocation(item.title, item.snippet),
             posted_at: new Date().toISOString(),
-            source_platform: determineSource(item.link)
+            source_platform: determineSource(item.link),
+            last_checked: new Date().toISOString()
           }));
           
           allJobs.push(...jobs);
@@ -46,6 +48,7 @@ async function searchJobs() {
       }
     }
 
+    console.log(`Total jobs found: ${allJobs.length}`);
     return allJobs;
   } catch (error) {
     console.error('Error in searchJobs:', error);
@@ -53,16 +56,47 @@ async function searchJobs() {
   }
 }
 
-function extractCompany(title: string): string {
-  // Essaie d'extraire le nom de l'entreprise du titre
-  const parts = title.split('-').map(p => p.trim());
-  return parts.length > 1 ? parts[parts.length - 1] : 'Non spécifié';
+function cleanTitle(title: string): string {
+  return title.replace(/\s*-\s*Indeed\.com|\s*\|\s*Jobillico|\s*\|\s*LinkedIn/gi, '').trim();
+}
+
+function extractCompany(title: string, url: string): string {
+  // D'abord essayer d'extraire depuis le titre
+  const parts = title.split(/[-|]/);
+  if (parts.length > 1) {
+    return parts[parts.length - 1].trim();
+  }
+  
+  // Sinon extraire depuis l'URL pour LinkedIn
+  if (url.includes('linkedin.com/jobs')) {
+    const urlParts = url.split('/');
+    const companyIndex = urlParts.indexOf('company');
+    if (companyIndex !== -1 && urlParts[companyIndex + 1]) {
+      return urlParts[companyIndex + 1].replace(/-/g, ' ').trim();
+    }
+  }
+  
+  return 'Non spécifié';
+}
+
+function extractLocation(title: string, description: string): string {
+  const locations = ['Montréal', 'Québec', 'Laval', 'Gatineau', 'Sherbrooke', 'Trois-Rivières', 'Longueuil'];
+  const content = (title + ' ' + description).toLowerCase();
+  
+  for (const location of locations) {
+    if (content.toLowerCase().includes(location.toLowerCase())) {
+      return location;
+    }
+  }
+  
+  return 'Québec'; // Default location
 }
 
 function determineSource(url: string): string {
   if (url.includes('indeed')) return 'indeed';
   if (url.includes('jobillico')) return 'jobillico';
   if (url.includes('emploiquebec')) return 'emploi_quebec';
+  if (url.includes('linkedin.com/jobs')) return 'linkedin';
   return 'other';
 }
 
@@ -72,7 +106,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    console.log('Starting job search process...')
+    console.log('Starting job search process...');
 
     const jobs = await searchJobs();
     console.log(`Found ${jobs.length} jobs total`);
@@ -87,10 +121,7 @@ Deno.serve(async (req) => {
       try {
         const { error } = await supabase
           .from('scraped_jobs')
-          .upsert({
-            ...job,
-            last_checked: new Date().toISOString()
-          }, {
+          .upsert(job, {
             onConflict: 'url'
           });
 
