@@ -1,3 +1,4 @@
+
 import { Search, Filter, Plus, Image, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -72,7 +73,7 @@ export function JobsSearch({
   ];
 
   return (
-    <Card className="bg-card/50 dark:bg-[#1B2A4A]/50 backdrop-blur-sm border-border/10 dark:border-[#64B5D9]/10 shadow-lg p-6">
+    <Card className="bg-background dark:bg-[#1B2A4A]/50 backdrop-blur-sm border-border/10 dark:border-[#64B5D9]/10 shadow-lg p-6">
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <Dialog>
@@ -84,16 +85,16 @@ export function JobsSearch({
                 Publier une annonce
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-background dark:bg-[#1A1F2C] text-foreground dark:text-white border-border dark:border-[#64B5D9]/10">
+            <DialogContent className="bg-background dark:bg-[#1A1F2C] text-foreground dark:text-white border-border dark:border-[#64B5D9]/10 w-full max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Créer une publication</DialogTitle>
+                <DialogTitle className="text-xl font-semibold">Créer une publication</DialogTitle>
               </DialogHeader>
-              <div className="space-y-6 py-4">
-                <div className="grid gap-4">
+              <div className="space-y-6 py-6">
+                <div className="grid gap-6">
                   <div className="grid gap-2">
-                    <Label>Type d'annonce</Label>
+                    <Label className="text-sm font-medium">Type d'annonce</Label>
                     <Select>
-                      <SelectTrigger className="bg-input dark:bg-[#1B2A4A] border-border/10 dark:border-[#64B5D9]/10">
+                      <SelectTrigger className="h-12 bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10">
                         <SelectValue placeholder="Sélectionnez le type d'annonce" />
                       </SelectTrigger>
                       <SelectContent>
@@ -104,46 +105,46 @@ export function JobsSearch({
                   </div>
 
                   <div className="grid gap-2">
-                    <Label>Titre</Label>
+                    <Label className="text-sm font-medium">Titre</Label>
                     <Input 
                       placeholder="Titre de votre annonce" 
-                      className="bg-input dark:bg-[#1B2A4A] border-border/10 dark:border-[#64B5D9]/10"
+                      className="h-12 bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10"
                     />
                   </div>
 
                   <div className="grid gap-2">
-                    <Label>Description</Label>
+                    <Label className="text-sm font-medium">Description</Label>
                     <Textarea 
                       placeholder="Décrivez votre offre en détail..." 
-                      className="min-h-[100px] bg-input dark:bg-[#1B2A4A] border-border/10 dark:border-[#64B5D9]/10"
+                      className="min-h-[200px] bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10 resize-none"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label>Localisation</Label>
+                      <Label className="text-sm font-medium">Localisation</Label>
                       <Input 
                         placeholder="Ville, région..." 
-                        className="bg-input dark:bg-[#1B2A4A] border-border/10 dark:border-[#64B5D9]/10"
+                        className="h-12 bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10"
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>Salaire / Budget</Label>
+                      <Label className="text-sm font-medium">Salaire / Budget</Label>
                       <Input 
                         type="number" 
                         placeholder="Montant" 
-                        className="bg-input dark:bg-[#1B2A4A] border-border/10 dark:border-[#64B5D9]/10"
+                        className="h-12 bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10"
                       />
                     </div>
                   </div>
 
-                  <DialogFooter className="sm:justify-end gap-2 pt-4">
+                  <DialogFooter className="flex justify-end gap-2 pt-6">
                     <DialogClose asChild>
-                      <Button variant="outline" className="bg-background dark:bg-[#1B2A4A] border-border dark:border-[#64B5D9]/10">
+                      <Button variant="outline" className="h-12 px-6 bg-white hover:bg-gray-50 dark:bg-[#1B2A4A] dark:hover:bg-[#2A3B61] border-input/20 dark:border-[#64B5D9]/10">
                         Annuler
                       </Button>
                     </DialogClose>
-                    <Button className="bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB]">
+                    <Button className="h-12 px-6 bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB]">
                       <Send className="h-4 w-4 mr-2" />
                       Publier
                     </Button>
@@ -158,7 +159,7 @@ export function JobsSearch({
               <Button 
                 variant="outline" 
                 size="icon"
-                className="h-14 w-14 shrink-0 bg-background dark:bg-[#1B2A4A] border-border dark:border-[#64B5D9]/10 hover:bg-accent dark:hover:bg-[#2A3B61]"
+                className="h-14 w-14 shrink-0 bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10 hover:bg-gray-50 dark:hover:bg-[#2A3B61]"
               >
                 <Filter className="h-5 w-5" />
               </Button>

@@ -78,7 +78,7 @@ export function JobsPage() {
         "dark:bg-[#1A1F2C]"
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 space-y-6">
+      <div className="max-w-5xl mx-auto px-4 space-y-6">
         <div className="grid gap-6">
           <JobsSearch 
             searchQuery={searchQuery}
@@ -99,7 +99,7 @@ export function JobsPage() {
             onRemoteOnlyChange={setRemoteOnly}
           />
           
-          <div className="bg-card/50 dark:bg-[#1B2A4A]/50 backdrop-blur-sm border border-border/10 dark:border-[#64B5D9]/10 rounded-lg p-6 shadow-lg">
+          <div className="bg-white dark:bg-[#1B2A4A]/50 backdrop-blur-sm border border-input/20 dark:border-[#64B5D9]/10 rounded-lg p-6 shadow-lg">
             <h2 className="text-xl font-semibold text-foreground dark:text-white mb-4">
               Rechercher dans les offres d'emploi
             </h2>
