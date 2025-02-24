@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
+import { Check, Shield, Star, ArrowRight } from "lucide-react";
+
 export function AuthFooter() {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -28,6 +30,7 @@ TITLE:${contactInfo.title}
 EMAIL:${contactInfo.email}
 TEL:${contactInfo.tel}
 END:VCARD`;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -49,6 +52,7 @@ END:VCARD`;
       console.error(error);
     }
   };
+
   return <footer className="mt-24 w-full max-w-xl mx-auto px-4 text-center relative" role="contentinfo">
       <div className="space-y-8 border-t border-[#F1F0FB]/20 pt-8">
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
@@ -100,7 +104,7 @@ END:VCARD`;
             <DialogTrigger asChild>
               <Button className="relative group bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <span className="relative z-10 flex items-center gap-2">
-                  Charte des prix officielle
+                  Guide tarifaire complet
                   <div className="w-1.5 h-1.5 rounded-full bg-white group-hover:scale-150 transition-transform" />
                 </span>
                 <div className="absolute inset-0 bg-white/20 rounded-full transition-transform group-hover:scale-105 duration-300" />
@@ -108,204 +112,267 @@ END:VCARD`;
             </DialogTrigger>
             <DialogContent className="md:max-w-4xl w-11/12 h-[80vh] overflow-y-auto bg-[#1B2A4A] border-2 border-[#F1F0FB]/20">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-bold text-center text-[#F1F0FB] mb-2">Guide Tarifaire Victaure 2025</DialogTitle>
-                
+                <DialogTitle className="text-3xl font-bold text-center text-[#F1F0FB] mb-6">Guide Tarifaire Victaure 2025</DialogTitle>
               </DialogHeader>
-              <div className="space-y-8 p-4 text-[#F1F0FB]">
-                
-
-                <section className="space-y-6">
-                  <h3 className="text-xl font-semibold text-[#64B5D9] mb-4">Plans d'abonnement détaillés</h3>
+              
+              <div className="space-y-12 p-6 text-[#F1F0FB]">
+                <section className="space-y-8">
+                  <div className="text-center space-y-2 mb-8">
+                    <h3 className="text-2xl font-semibold text-[#64B5D9]">Plans d'abonnement</h3>
+                    <p className="text-[#F1F0FB]/80">Choisissez le plan qui correspond à vos besoins</p>
+                  </div>
                   
-                  <div className="p-6 bg-white/5 rounded-lg border border-[#64B5D9]/20">
-                    <h4 className="text-lg font-medium text-[#64B5D9] mb-4">Plan Starter</h4>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                      <div>
-                        <h5 className="font-medium mb-2">Tarification</h5>
-                        <ul className="text-sm space-y-1">
-                          <li>• Mensuel: 299 CAD/mois</li>
-                          <li>• Trimestriel: 284 CAD/mois</li>
-                          <li>• Annuel: 249 CAD/mois</li>
-                        </ul>
+                  <div className="grid gap-8">
+                    <div className="p-8 bg-white/5 rounded-xl border-2 border-[#64B5D9]/20 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 bg-[#64B5D9]/10 px-4 py-2 rounded-bl-xl">
+                        <span className="text-sm font-medium">STARTER</span>
                       </div>
-                      <div>
-                        <h5 className="font-medium mb-2">Fonctionnalités</h5>
-                        <ul className="text-sm space-y-1">
-                          <li>• 8 offres actives</li>
-                          <li>• 30 jours d'affichage</li>
-                          <li>• Base de 100 CV</li>
-                          <li>• 1 admin + 2 utilisateurs</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <h5 className="font-medium mb-2">Outils</h5>
-                        <ul className="text-sm space-y-1">
-                          <li>• Publication d'offres</li>
-                          <li>• Gestion candidatures</li>
-                          <li>• 5 templates</li>
-                          <li>• Tableau de bord</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <h5 className="font-medium mb-2">Support</h5>
-                        <ul className="text-sm space-y-1">
-                          <li>• Réponse en moins de 24h</li>
-                          <li>• Documentation</li>
-                          <li>• Tutoriels vidéo</li>
-                          <li>• Chat 9h-17h</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-6 bg-white/5 rounded-lg border-2 border-[#64B5D9]/30 relative">
-                    <div className="absolute -top-3 right-4 bg-[#64B5D9] text-white px-3 py-1 rounded-full text-xs font-medium">
-                      RECOMMANDÉ
-                    </div>
-                    <h4 className="text-lg font-medium text-[#64B5D9] mb-4">Plan Pro</h4>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                      <div>
-                        <h5 className="font-medium mb-2">Tarification</h5>
-                        <ul className="text-sm space-y-1">
-                          <li>• Mensuel: 799 CAD/mois</li>
-                          <li>• Trimestriel: 759 CAD/mois</li>
-                          <li>• Annuel: 666 CAD/mois</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <h5 className="font-medium mb-2">Fonctionnalités</h5>
-                        <ul className="text-sm space-y-1">
-                          <li>• Offres illimitées</li>
-                          <li>• 45 jours d'affichage</li>
-                          <li>• Base de 500 CV</li>
-                          <li>• 3 admin + 5 utilisateurs</li>
-                          <li>• -10% commissions</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <h5 className="font-medium mb-2">Outils avancés</h5>
-                        <ul className="text-sm space-y-1">
-                          <li>• Tests de compétences</li>
-                          <li>• Filtres avancés</li>
-                          <li>• 20 templates</li>
-                          <li>• Analytics</li>
-                          <li>• API basique</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <h5 className="font-medium mb-2">Support PRO</h5>
-                        <ul className="text-sm space-y-1">
-                          <li>• Réponse en moins de 4h</li>
-                          <li>• Formation en ligne</li>
-                          <li>• Chat 24/5</li>
-                          <li>• Webinaires mensuels</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-6 bg-white/5 rounded-lg border border-[#64B5D9]/20">
-                    <h4 className="text-lg font-medium text-[#64B5D9] mb-4">Plan Enterprise</h4>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                      <div>
-                        <h5 className="font-medium mb-2">Tarification</h5>
-                        <ul className="text-sm space-y-1">
-                          <li>• Mensuel: 2 499 CAD/mois</li>
-                          <li>• Trimestriel: 2 374 CAD/mois</li>
-                          <li>• Annuel: 2 082 CAD/mois</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <h5 className="font-medium mb-2">Tout illimité</h5>
-                        <ul className="text-sm space-y-1">
-                          <li>• Offres illimitées</li>
-                          <li>• CV illimités</li>
-                          <li>• 60 jours d'affichage</li>
-                          <li>• Utilisateurs illimités</li>
-                          <li>• -20% commissions</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <h5 className="font-medium mb-2">Outils enterprise</h5>
-                        <ul className="text-sm space-y-1">
-                          <li>• API complète</li>
-                          <li>• Intégration SIRH</li>
-                          <li>• Analyses prédictives</li>
-                          <li>• Multi-sites/langues</li>
-                          <li>• Templates illimités</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <h5 className="font-medium mb-2">Support VIP</h5>
-                        <ul className="text-sm space-y-1">
-                          <li>• Account manager</li>
-                          <li>• Support 24/7</li>
-                          <li>• Formation sur site</li>
-                          <li>• Audits trimestriels</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-
-                <section className="space-y-6">
-                  <h3 className="text-xl font-semibold text-[#64B5D9] mb-4">Système de contrats</h3>
-                  
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div className="p-4 bg-[#64B5D9]/10 rounded-lg border border-[#64B5D9]/20">
-                        <h4 className="font-medium mb-3">Commissions standards</h4>
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                          <div>{"< 1 000 CAD"}</div><div>5%</div>
-                          <div>1 000-5 000 CAD</div><div>4%</div>
-                          <div>{"> 5 000 CAD"}</div><div>3%</div>
-                          <div>{"> 10 000 CAD"}</div><div>Négociable</div>
+                      
+                      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div>
+                          <h5 className="font-semibold text-xl mb-4 text-[#64B5D9]">Tarification</h5>
+                          <div className="space-y-2">
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-3xl font-bold text-[#64B5D9]">299</span>
+                              <span className="text-lg">CAD/mois</span>
+                            </div>
+                            <p className="text-sm text-[#F1F0FB]/60">284 CAD/mois si trimestriel</p>
+                            <p className="text-sm text-[#F1F0FB]/60">249 CAD/mois si annuel</p>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <h5 className="font-medium mb-4">Fonctionnalités</h5>
+                          <ul className="space-y-2 text-sm">
+                            {["8 offres actives", "30 jours d'affichage", "Base de 100 CV", "1 admin + 2 utilisateurs"].map((item) => (
+                              <li key={item} className="flex items-center gap-2">
+                                <Check className="h-4 w-4 text-[#64B5D9]" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        
+                        <div>
+                          <h5 className="font-medium mb-4">Outils</h5>
+                          <ul className="space-y-2 text-sm">
+                            {["Publication d'offres", "Gestion candidatures", "5 templates", "Tableau de bord"].map((item) => (
+                              <li key={item} className="flex items-center gap-2">
+                                <Check className="h-4 w-4 text-[#64B5D9]" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        
+                        <div>
+                          <h5 className="font-medium mb-4">Support</h5>
+                          <ul className="space-y-2 text-sm">
+                            {["Réponse en moins de 24h", "Documentation", "Tutoriels vidéo", "Chat 9h-17h"].map((item) => (
+                              <li key={item} className="flex items-center gap-2">
+                                <Check className="h-4 w-4 text-[#64B5D9]" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
                       </div>
+                    </div>
 
-                      <div className="p-4 bg-[#64B5D9]/10 rounded-lg border border-[#64B5D9]/20">
-                        <h4 className="font-medium mb-3">Système d'enchères</h4>
-                        <ul className="text-sm space-y-2">
-                          <li>• Taux de base : 6%</li>
-                          <li>• Bonus multi-enchères : +1%</li>
-                          <li>• Plafond : 8%</li>
-                        </ul>
+                    <div className="p-8 bg-white/5 rounded-xl border-2 border-[#64B5D9] relative overflow-hidden">
+                      <div className="absolute -top-3 right-4 bg-[#64B5D9] text-white px-4 py-1 rounded-full text-sm font-medium">
+                        RECOMMANDÉ
+                      </div>
+                      
+                      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div>
+                          <h5 className="font-semibold text-xl mb-4 text-[#64B5D9]">Tarification PRO</h5>
+                          <div className="space-y-2">
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-4xl font-bold text-[#64B5D9]">799</span>
+                              <span className="text-lg">CAD/mois</span>
+                            </div>
+                            <p className="text-sm text-[#F1F0FB]/60">759 CAD/mois si trimestriel</p>
+                            <p className="text-sm text-[#F1F0FB]/60">666 CAD/mois si annuel</p>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <h5 className="font-medium mb-4">Fonctionnalités</h5>
+                          <ul className="space-y-2 text-sm">
+                            {["Offres illimitées", "45 jours d'affichage", "Base de 500 CV", "3 admin + 5 utilisateurs", "-10% commissions"].map((item) => (
+                              <li key={item} className="flex items-center gap-2">
+                                <Star className="h-4 w-4 text-[#64B5D9]" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        
+                        <div>
+                          <h5 className="font-medium mb-4">Outils avancés</h5>
+                          <ul className="space-y-2 text-sm">
+                            {["Tests de compétences", "Filtres avancés", "20 templates", "Analytics", "API basique"].map((item) => (
+                              <li key={item} className="flex items-center gap-2">
+                                <Star className="h-4 w-4 text-[#64B5D9]" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        
+                        <div>
+                          <h5 className="font-medium mb-4">Support PRO</h5>
+                          <ul className="space-y-2 text-sm">
+                            {["Réponse en moins de 4h", "Formation en ligne", "Chat 24/5", "Webinaires mensuels"].map((item) => (
+                              <li key={item} className="flex items-center gap-2">
+                                <Check className="h-4 w-4 text-[#64B5D9]" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="p-4 bg-white/5 rounded-lg border border-[#64B5D9]/20">
-                        <h4 className="font-medium mb-3">Options de publication</h4>
-                        <div className="space-y-3">
-                          <div>
-                            <p className="font-medium text-sm">Standard (Gratuit)</p>
-                            <ul className="text-sm mt-1 text-[#F1F0FB]/80">
-                              <li>• Visibilité normale</li>
-                              <li>• 30 jours de publication</li>
-                            </ul>
+                    <div className="p-8 bg-white/5 rounded-xl border-2 border-[#64B5D9]/20 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 bg-[#64B5D9]/10 px-4 py-2 rounded-bl-xl">
+                        <span className="text-sm font-medium">ENTERPRISE</span>
+                      </div>
+                      
+                      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div>
+                          <h5 className="font-semibold text-xl mb-4 text-[#64B5D9]">Tarification</h5>
+                          <div className="space-y-2">
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-3xl font-bold text-[#64B5D9]">2 499</span>
+                              <span className="text-lg">CAD/mois</span>
+                            </div>
+                            <p className="text-sm text-[#F1F0FB]/60">2 374 CAD/mois si trimestriel</p>
+                            <p className="text-sm text-[#F1F0FB]/60">2 082 CAD/mois si annuel</p>
                           </div>
-                          <div>
-                            <p className="font-medium text-sm">Boost (29 CAD)</p>
-                            <ul className="text-sm mt-1 text-[#F1F0FB]/80">
-                              <li>• Mise en avant 7 jours</li>
-                              <li>• Alertes email ciblées</li>
-                            </ul>
-                          </div>
-                          <div>
-                            <p className="font-medium text-sm">Premium (59 CAD)</p>
-                            <ul className="text-sm mt-1 text-[#F1F0FB]/80">
-                              <li>• Badge "Urgent"</li>
-                              <li>• Mise en avant 14 jours</li>
-                              <li>• Top des résultats</li>
-                            </ul>
-                          </div>
+                        </div>
+                        
+                        <div>
+                          <h5 className="font-medium mb-4">Tout illimité</h5>
+                          <ul className="space-y-2 text-sm">
+                            {["Offres illimitées", "CV illimités", "60 jours d'affichage", "Utilisateurs illimités", "-20% commissions"].map((item) => (
+                              <li key={item} className="flex items-center gap-2">
+                                <Shield className="h-4 w-4 text-[#64B5D9]" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        
+                        <div>
+                          <h5 className="font-medium mb-4">Outils enterprise</h5>
+                          <ul className="space-y-2 text-sm">
+                            {["API complète", "Intégration SIRH", "Analyses prédictives", "Multi-sites/langues", "Templates illimités"].map((item) => (
+                              <li key={item} className="flex items-center gap-2">
+                                <Shield className="h-4 w-4 text-[#64B5D9]" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        
+                        <div>
+                          <h5 className="font-medium mb-4">Support VIP</h5>
+                          <ul className="space-y-2 text-sm">
+                            {["Account manager", "Support 24/7", "Formation sur site", "Audits trimestriels"].map((item) => (
+                              <li key={item} className="flex items-center gap-2">
+                                <Check className="h-4 w-4 text-[#64B5D9]" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
                       </div>
                     </div>
                   </div>
                 </section>
 
-                
+                <section className="space-y-6">
+                  <h3 className="text-2xl font-semibold text-[#64B5D9] mb-6 text-center">Commissions et Options</h3>
+                  
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-6">
+                      <div className="p-6 bg-[#64B5D9]/10 rounded-xl border border-[#64B5D9]/20">
+                        <h4 className="text-lg font-medium mb-4 text-[#64B5D9]">Commissions standards</h4>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="p-3 bg-white/5 rounded-lg">{"< 1 000 CAD"}</div>
+                          <div className="p-3 bg-white/5 rounded-lg font-semibold">5%</div>
+                          <div className="p-3 bg-white/5 rounded-lg">1 000-5 000 CAD</div>
+                          <div className="p-3 bg-white/5 rounded-lg font-semibold">4%</div>
+                          <div className="p-3 bg-white/5 rounded-lg">{"> 5 000 CAD"}</div>
+                          <div className="p-3 bg-white/5 rounded-lg font-semibold">3%</div>
+                          <div className="p-3 bg-white/5 rounded-lg">{"> 10 000 CAD"}</div>
+                          <div className="p-3 bg-white/5 rounded-lg font-semibold">Négociable</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="p-6 bg-white/5 rounded-xl border border-[#64B5D9]/20">
+                        <h4 className="text-lg font-medium mb-4 text-[#64B5D9]">Options de publication</h4>
+                        <div className="space-y-4">
+                          <div className="p-4 bg-white/5 rounded-lg">
+                            <p className="font-medium">Standard (Gratuit)</p>
+                            <ul className="mt-2 space-y-1 text-sm text-[#F1F0FB]/80">
+                              <li className="flex items-center gap-2">
+                                <Check className="h-4 w-4" />
+                                Visibilité normale
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <Check className="h-4 w-4" />
+                                30 jours de publication
+                              </li>
+                            </ul>
+                          </div>
+                          
+                          <div className="p-4 bg-white/5 rounded-lg border border-[#64B5D9]/20">
+                            <div className="flex justify-between items-center">
+                              <p className="font-medium">Boost</p>
+                              <span className="text-[#64B5D9] font-semibold">29 CAD</span>
+                            </div>
+                            <ul className="mt-2 space-y-1 text-sm text-[#F1F0FB]/80">
+                              <li className="flex items-center gap-2">
+                                <Star className="h-4 w-4 text-[#64B5D9]" />
+                                Mise en avant 7 jours
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <Star className="h-4 w-4 text-[#64B5D9]" />
+                                Alertes email ciblées
+                              </li>
+                            </ul>
+                          </div>
+                          
+                          <div className="p-4 bg-white/5 rounded-lg border border-[#64B5D9]/20">
+                            <div className="flex justify-between items-center">
+                              <p className="font-medium">Premium</p>
+                              <span className="text-[#64B5D9] font-semibold">59 CAD</span>
+                            </div>
+                            <ul className="mt-2 space-y-1 text-sm text-[#F1F0FB]/80">
+                              <li className="flex items-center gap-2">
+                                <Shield className="h-4 w-4 text-[#64B5D9]" />
+                                Badge "Urgent"
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <Shield className="h-4 w-4 text-[#64B5D9]" />
+                                Mise en avant 14 jours
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <Shield className="h-4 w-4 text-[#64B5D9]" />
+                                Top des résultats
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
               </div>
             </DialogContent>
           </Dialog>
