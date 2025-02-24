@@ -6,9 +6,9 @@ import { X } from "lucide-react"
 
 const Dialog = DialogPrimitive.Root
 const DialogTrigger = DialogPrimitive.Trigger
-const DialogClose = DialogPrimitive.Close
 const DialogPortal = DialogPrimitive.Portal
 const DialogOverlay = DialogPrimitive.Overlay
+const DialogClose = DialogPrimitive.Close
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
@@ -97,11 +97,11 @@ export {
   Dialog,
   DialogPortal,
   DialogOverlay,
+  DialogClose,
   DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogFooter,
   DialogTitle,
   DialogDescription,
-  DialogClose
 }
