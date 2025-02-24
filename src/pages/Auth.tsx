@@ -86,30 +86,34 @@ export default function Auth() {
           }}
         />
 
-        {/* Étoile filante */}
-        <motion.div 
-          className="absolute h-[1px] w-[100px] bg-gradient-to-r from-transparent via-white to-transparent"
-          animate={{
-            x: ['-100%', '200%'],
-            y: ['0%', '100%'],
-            opacity: [0, 1, 0]
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            repeatDelay: 7,
-            ease: "linear"
-          }}
-          style={{
-            top: '20%',
-            left: '0%'
-          }}
-        />
+        {/* Étoiles filantes multiples */}
+        {[...Array(3)].map((_, i) => (
+          <motion.div 
+            key={i}
+            className="absolute h-[1px] w-[100px] bg-gradient-to-r from-transparent via-white to-transparent"
+            animate={{
+              x: ['-100%', '200%'],
+              y: ['0%', '100%'],
+              opacity: [0, 1, 0]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              repeatDelay: Math.random() * 5 + 2,
+              ease: "linear",
+              delay: i * 2
+            }}
+            style={{
+              top: `${20 + i * 25}%`,
+              left: `${i * 30}%`
+            }}
+          />
+        ))}
 
-        {/* Constellations */}
+        {/* Constellations améliorées */}
         <div className="absolute inset-0" 
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='20' y1='20' x2='80' y2='80' stroke='rgba(255,255,255,0.1)' stroke-width='0.5'/%3E%3Ccircle cx='20' cy='20' r='1' fill='white' fill-opacity='0.3'/%3E%3Ccircle cx='80' cy='80' r='1' fill='white' fill-opacity='0.3'/%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='40' y1='40' x2='160' y2='160' stroke='rgba(255,255,255,0.1)' stroke-width='0.5'/%3E%3Cline x1='40' y1='160' x2='160' y2='40' stroke='rgba(255,255,255,0.1)' stroke-width='0.5'/%3E%3Ccircle cx='40' cy='40' r='1.5' fill='white' fill-opacity='0.4'/%3E%3Ccircle cx='160' cy='160' r='1.5' fill='white' fill-opacity='0.4'/%3E%3Ccircle cx='40' cy='160' r='1.5' fill='white' fill-opacity='0.4'/%3E%3Ccircle cx='160' cy='40' r='1.5' fill='white' fill-opacity='0.4'/%3E%3C/svg%3E")`,
             backgroundSize: '200px 200px'
           }}
         />
