@@ -1,5 +1,4 @@
-
-import { useRef, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatHeader } from "./ChatHeader";
 import { MessageList } from "./MessageList";
@@ -68,8 +67,21 @@ export function VictaureChat({
   const isDisabled = userQuestions >= maxQuestions && !user;
   const disabledMessage = "Connectez-vous pour continuer à discuter avec Mr Victaure";
 
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   return (
-    <div className="flex flex-col h-[calc(100dvh-4rem)] relative">
+    <div className="flex flex-col h-[calc(100dvh-4rem)] relative bg-[#1A1F2C]">
       {/* Fond galaxie avec étoiles filantes */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]" />
@@ -84,7 +96,7 @@ export function VictaureChat({
         
         {/* Étoiles filantes */}
         <div className="absolute inset-0">
-          {[...Array(3)].map((_, i) => (
+          {[...Array(2)].map((_, i) => (
             <div
               key={i}
               className="absolute h-px bg-gradient-to-r from-transparent via-[#64B5D9] to-transparent"
@@ -93,7 +105,7 @@ export function VictaureChat({
                 transform: `rotate(-45deg)`,
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
-                animation: `shootingStars ${3 + i}s linear infinite ${i * 1.5}s`
+                animation: `shootingStars ${4 + i}s linear infinite ${i * 2}s`
               }}
             />
           ))}
@@ -132,7 +144,7 @@ export function VictaureChat({
           </Button>
         </div>
 
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-y-auto">
           <MessageList 
             ref={chatContainerRef} 
             messages={messages}
@@ -140,7 +152,7 @@ export function VictaureChat({
           />
         </div>
         
-        <div className="flex-none mt-auto border-t border-[#64B5D9]/10 backdrop-blur-sm">
+        <div className="flex-none pb-4 px-4 bg-[#1A1F2C]/95 backdrop-blur-md border-t border-[#64B5D9]/10">
           <ChatInput
             userInput={userInput}
             setUserInput={setUserInput}

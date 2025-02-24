@@ -1,4 +1,3 @@
-
 import { forwardRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Volume2, VolumeX } from "lucide-react";
@@ -77,33 +76,31 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
     return (
       <div 
         ref={ref}
-        className="h-full overflow-y-auto py-4 px-3 scrollbar-none"
+        className="flex flex-col justify-end min-h-full p-4"
       >
-        <div className="flex flex-col space-y-3">
+        <div className="space-y-3">
           <AnimatePresence mode="popLayout">
             {messages.map((message, index) => (
               <motion.div 
                 key={index}
-                className={`flex mb-3 ${message.isUser ? 'justify-end' : 'justify-start'}`}
-                initial={{ opacity: 0, y: 20 }}
+                className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-                layout
+                transition={{ duration: 0.15 }}
+                layout="position"
               >
-                <motion.div 
-                  className={`flex-1 relative group max-w-[85%] sm:max-w-[75%] ${
+                <div 
+                  className={`relative group max-w-[85%] sm:max-w-[75%] ${
                     message.isUser 
                       ? 'bg-[#64B5D9] text-white rounded-2xl rounded-br-sm ml-12' 
                       : 'bg-[#1B2A4A] text-[#F1F0FB] rounded-2xl rounded-bl-sm mr-12'
                   }`}
                 >
-                  {!message.isUser ? (
-                    <div className="space-y-2 p-4">
-                      {index === typingIndex - 1 && isTyping ? (
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{currentText}</p>
-                      ) : (
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
-                      )}
+                  <div className="p-3">
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                      {message.content}
+                    </p>
+                    {!message.isUser && (
                       <Button
                         variant="ghost"
                         size="icon"
@@ -116,23 +113,19 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                           <Volume2 className="h-4 w-4 text-[#64B5D9]" />
                         )}
                       </Button>
-                    </div>
-                  ) : (
-                    <div className="p-4">
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
-                    </div>
-                  )}
-                </motion.div>
+                    )}
+                  </div>
+                </div>
               </motion.div>
             ))}
             {isLoading && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="flex mb-3 items-start"
+                exit={{ opacity: 0 }}
+                className="flex items-start"
               >
-                <div className="relative flex-1 bg-[#1B2A4A] rounded-2xl p-4">
+                <div className="bg-[#1B2A4A] rounded-2xl p-3">
                   <Loader2 className="w-4 h-4 text-[#64B5D9] animate-spin"/>
                 </div>
               </motion.div>
