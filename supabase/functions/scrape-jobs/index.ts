@@ -6,45 +6,64 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-async function fetchJobsFromAPI() {
+async function searchJobs() {
   try {
-    const apiUrl = 'https://api.emploiquebec.gouv.qc.ca/partenaires/v1/offres-emploi';
-    const response = await fetch(apiUrl, {
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${Deno.env.get('EMPLOI_QUEBEC_API_KEY')}`
-      }
-    });
+    const SEARCH_ENGINE_ID = Deno.env.get('GOOGLE_SEARCH_ENGINE_ID');
+    const API_KEY = Deno.env.get('GOOGLE_SEARCH_API_KEY');
+    
+    console.log('Fetching jobs from Google Custom Search...');
 
-    if (!response.ok) {
-      throw new Error(`API response error: ${response.status}`);
+    const queries = [
+      'site:indeed.ca emploi quebec',
+      'site:jobillico.com emploi quebec',
+      'site:emploiquebec.gouv.qc.ca offre emploi'
+    ];
+
+    const allJobs = [];
+
+    for (const query of queries) {
+      const url = `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${encodeURIComponent(query)}`;
+      
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.items) {
+          const jobs = data.items.map(item => ({
+            title: item.title,
+            description: item.snippet,
+            url: item.link,
+            company: extractCompany(item.title),
+            location: 'Québec',
+            posted_at: new Date().toISOString(),
+            source_platform: determineSource(item.link)
+          }));
+          
+          allJobs.push(...jobs);
+        }
+      } catch (error) {
+        console.error(`Error fetching results for query "${query}":`, error);
+      }
     }
 
-    const data = await response.json();
-    return data.offres || [];
+    return allJobs;
   } catch (error) {
-    console.error('Error fetching jobs from API:', error);
-    
-    // Plan B: Utiliser des données de test pour le développement
-    return [{
-      titre: "Développeur Full Stack",
-      entreprise: "Tech Québec Inc",
-      ville: "Québec",
-      description: "Nous recherchons un développeur full stack passionné",
-      salaire: "65000-85000",
-      type: "Temps plein",
-      url: "https://example.com/job1"
-    },
-    {
-      titre: "Designer UI/UX",
-      entreprise: "Studio Design",
-      ville: "Québec",
-      description: "Poste créatif en design d'interface",
-      salaire: "55000-75000",
-      type: "Temps plein",
-      url: "https://example.com/job2"
-    }];
+    console.error('Error in searchJobs:', error);
+    return [];
   }
+}
+
+function extractCompany(title: string): string {
+  // Essaie d'extraire le nom de l'entreprise du titre
+  const parts = title.split('-').map(p => p.trim());
+  return parts.length > 1 ? parts[parts.length - 1] : 'Non spécifié';
+}
+
+function determineSource(url: string): string {
+  if (url.includes('indeed')) return 'indeed';
+  if (url.includes('jobillico')) return 'jobillico';
+  if (url.includes('emploiquebec')) return 'emploi_quebec';
+  return 'other';
 }
 
 Deno.serve(async (req) => {
@@ -53,9 +72,9 @@ Deno.serve(async (req) => {
   }
 
   try {
-    console.log('Starting job fetching process...')
+    console.log('Starting job search process...')
 
-    const jobs = await fetchJobsFromAPI();
+    const jobs = await searchJobs();
     console.log(`Found ${jobs.length} jobs total`);
 
     const supabase = createClient(
@@ -69,15 +88,7 @@ Deno.serve(async (req) => {
         const { error } = await supabase
           .from('scraped_jobs')
           .upsert({
-            title: job.titre || job.title,
-            company: job.entreprise || job.company,
-            location: job.ville || job.location || 'Québec',
-            description: job.description || '',
-            salary_range: job.salaire || job.salary || '',
-            url: job.url || '',
-            posted_at: job.date_publication || new Date().toISOString(),
-            source_platform: 'emploi_quebec',
-            employment_type: job.type || 'FULL_TIME',
+            ...job,
             last_checked: new Date().toISOString()
           }, {
             onConflict: 'url'
@@ -105,7 +116,7 @@ Deno.serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('Error in job fetching:', error);
+    console.error('Error in job search:', error);
     return new Response(JSON.stringify({
       success: false,
       error: error.message
