@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -28,11 +29,14 @@
 
   * {
     -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
   }
 
   html {
     @apply text-base antialiased scroll-smooth;
     -webkit-touch-callout: none;
+    touch-action: manipulation;
   }
 
   body {
@@ -47,8 +51,9 @@
   textarea,
   select,
   button {
-    @apply appearance-none;
-    font-size: 16px; /* Évite le zoom sur iOS */
+    @apply appearance-none text-base;
+    font-size: 16px !important; /* Évite le zoom sur iOS */
+    min-height: 44px; /* Taille minimale pour les cibles tactiles iOS */
   }
 
   /* Style des inputs */

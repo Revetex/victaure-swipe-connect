@@ -63,7 +63,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-x-hidden">
+    <div className="min-h-screen flex flex-col relative overflow-x-hidden ios-safe-area">
       {/* Fond galaxie futuriste */}
       <div className="fixed inset-0 bg-[#0B1026] overflow-hidden">
         {/* Gradient de base */}
@@ -136,9 +136,7 @@ export default function Auth() {
               <div className="relative bg-[#2A2D3E]/80 backdrop-blur-md border border-[#64B5D9]/20 rounded-lg p-3 sm:p-4 shadow-lg overflow-hidden hover:border-[#64B5D9]/30 transition-all duration-300">
                 <VictaureChat 
                   maxQuestions={3}
-                  onMaxQuestionsReached={() => {
-                    toast.error("Veuillez vous connecter pour continuer la conversation avec Mr. Victaure");
-                  }}
+                  onMaxQuestionsReached={handleMaxQuestionsReached}
                   context="Tu es un assistant concis et amical qui aide les utilisateurs à s'inscrire. Donne des réponses courtes et naturelles, comme si tu parlais à un ami."
                 />
               </div>
@@ -148,7 +146,7 @@ export default function Auth() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.3 }}
-              className="border-2 border-[#64B5D9]/20 rounded-xl p-4 sm:p-6 bg-[#2A2D3E]/80 backdrop-blur-md w-full max-w-sm sm:max-w-md mx-auto"
+              className="border-2 border-[#64B5D9]/20 rounded-xl p-4 sm:p-6 bg-[#2A2D3E]/80 backdrop-blur-md w-full max-w-sm sm:max-w-md mx-auto mobile-friendly-form"
             >
               <AuthForm />
             </motion.div>
