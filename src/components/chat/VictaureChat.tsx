@@ -57,8 +57,8 @@ export function VictaureChat({
       const generator = await pipeline(
         "text2text-generation",
         "onnx-community/mt5-small-finetuned-chat",
-        { 
-          quantized: false,
+        {
+          revision: "main",
           progress_callback: (progress) => {
             console.log("Loading model progress:", progress);
           }
