@@ -1,8 +1,8 @@
+
 import { useState } from "react";
 import { Job } from "@/types/job";
 import { useJobsData } from "@/hooks/useJobsData";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
 import { JobsSearch } from "./sections/JobsSearch";
 import { JobsFilters } from "./sections/JobsFilters";
 import { JobsResults } from "./sections/JobsResults";
@@ -61,7 +61,6 @@ export function JobsPage() {
 
   const handleJobSelect = (job: Job) => {
     setSelectedJobId(job.id);
-    toast.info("Détails de l'emploi disponibles bientôt !");
   };
 
   const handleResetFilters = () => {
@@ -74,66 +73,87 @@ export function JobsPage() {
     setRemoteOnly(false);
   };
 
-  const handleRequestAssistant = () => {
-    setIsAssistantOpen(true);
-  };
-
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <motion.div 
-      variants={{
-        hidden: { opacity: 0 },
-        visible: {
-          opacity: 1,
-          transition: {
-            staggerChildren: 0.1
-          }
-        }
-      }}
-      initial="hidden"
-      animate="visible"
-      className="container mx-auto p-4 max-w-7xl"
-    >
-      <div className="space-y-6">
-        <JobsSearch 
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          selectedLocation={selectedLocation}
-          selectedCompanyType={selectedCompanyType}
-          sortOrder={sortOrder}
-          experienceLevel={experienceLevel}
-          contractType={contractType}
-          locations={locations}
-          salaryRange={salaryRange}
-          remoteOnly={remoteOnly}
-          onLocationChange={setSelectedLocation}
-          onCompanyTypeChange={setSelectedCompanyType}
-          onSortOrderChange={setSortOrder}
-          onExperienceLevelChange={setExperienceLevel}
-          onContractTypeChange={setContractType}
-          onSalaryRangeChange={setSalaryRange}
-          onRemoteOnlyChange={setRemoteOnly}
-        />
-        
-        <JobsResults 
-          jobs={filteredJobs}
-          onJobSelect={handleJobSelect}
-          selectedJobId={selectedJobId}
-          onResetFilters={handleResetFilters}
-        />
+    <div className="bg-gradient-to-b from-background to-background/95 min-h-screen">
+      <div className="container mx-auto px-4 py-8 max-w-7xl space-y-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-6"
+        >
+          <header className="text-center space-y-4 mb-8">
+            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/50">
+              Trouvez votre prochain emploi
+            </h1>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Découvrez les meilleures opportunités d'emploi adaptées à votre profil
+            </p>
+          </header>
 
-        <JobsAIAssistant 
-          isOpen={isAssistantOpen}
-          onClose={() => setIsAssistantOpen(false)}
-        />
+          <JobsSearch 
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedLocation={selectedLocation}
+            selectedCompanyType={selectedCompanyType}
+            sortOrder={sortOrder}
+            experienceLevel={experienceLevel}
+            contractType={contractType}
+            locations={locations}
+            salaryRange={salaryRange}
+            remoteOnly={remoteOnly}
+            onLocationChange={setSelectedLocation}
+            onCompanyTypeChange={setSelectedCompanyType}
+            onSortOrderChange={setSortOrder}
+            onExperienceLevelChange={setExperienceLevel}
+            onContractTypeChange={setContractType}
+            onSalaryRangeChange={setSalaryRange}
+            onRemoteOnlyChange={setRemoteOnly}
+          />
+
+          <div className="grid lg:grid-cols-[280px,1fr] gap-6">
+            <aside className="hidden lg:block">
+              <JobsFilters
+                locations={locations}
+                selectedLocation={selectedLocation}
+                onLocationChange={setSelectedLocation}
+                experienceLevel={experienceLevel}
+                onExperienceLevelChange={setExperienceLevel}
+                contractType={contractType}
+                onContractTypeChange={setContractType}
+                salaryRange={salaryRange}
+                onSalaryRangeChange={setSalaryRange}
+                remoteOnly={remoteOnly}
+                onRemoteOnlyChange={setRemoteOnly}
+                onReset={handleResetFilters}
+              />
+            </aside>
+
+            <main>
+              <JobsResults 
+                jobs={filteredJobs}
+                onJobSelect={handleJobSelect}
+                selectedJobId={selectedJobId}
+                onResetFilters={handleResetFilters}
+              />
+            </main>
+          </div>
+
+          {isAssistantOpen && (
+            <JobsAIAssistant 
+              isOpen={isAssistantOpen}
+              onClose={() => setIsAssistantOpen(false)}
+            />
+          )}
+        </motion.div>
       </div>
-    </motion.div>
+    </div>
   );
 }
