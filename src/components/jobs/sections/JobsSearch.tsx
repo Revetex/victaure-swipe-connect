@@ -105,7 +105,7 @@ export function JobsSearch({
                   onSortOrderChange={onSortOrderChange}
                   onExperienceLevelChange={onExperienceLevelChange}
                   onContractTypeChange={onContractTypeChange}
-                  onSalaryRangeChange={onSalaryRange}
+                  onSalaryRangeChange={onSalaryRangeChange}
                   onRemoteOnlyChange={onRemoteOnlyChange}
                   onReset={onReset}
                 />
