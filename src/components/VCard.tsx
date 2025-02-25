@@ -59,118 +59,41 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
 
   return (
     <VCardContainer isEditing={isEditing}>
-      {/* Effet de fond avec motif de circuit */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.1 }}
-          className="absolute inset-0"
-        >
-          {/* Lignes horizontales animées */}
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={`h-line-${i}`}
-              className="absolute h-px bg-gradient-to-r from-[#64B5D9]/20 via-[#64B5D9]/40 to-[#64B5D9]/20"
-              style={{ top: `${i * 5}%`, left: 0, right: 0 }}
-              initial={{ scaleX: 0, opacity: 0 }}
-              animate={{ 
-                scaleX: 1, 
-                opacity: 1,
-                transition: { 
-                  delay: i * 0.1,
-                  duration: 1.5,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }
-              }}
-            />
-          ))}
-          
-          {/* Lignes verticales animées */}
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={`v-line-${i}`}
-              className="absolute w-px bg-gradient-to-b from-[#64B5D9]/20 via-[#64B5D9]/40 to-[#64B5D9]/20"
-              style={{ left: `${i * 5}%`, top: 0, bottom: 0 }}
-              initial={{ scaleY: 0, opacity: 0 }}
-              animate={{ 
-                scaleY: 1, 
-                opacity: 1,
-                transition: { 
-                  delay: i * 0.1,
-                  duration: 1.5,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }
-              }}
-            />
-          ))}
-
-          {/* Points de circuit animés */}
-          {[...Array(15)].map((_, i) => (
-            <motion.div
-              key={`node-${i}`}
-              className="absolute w-2 h-2 rounded-full bg-[#64B5D9]/30"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`
-              }}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{
-                scale: [1, 1.5, 1],
-                opacity: [0.3, 0.7, 0.3],
-                transition: {
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  delay: i * 0.2
-                }
-              }}
-            />
-          ))}
-        </motion.div>
-      </div>
-
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-3xl mx-auto bg-[#F1F0FB]/60 dark:bg-gray-900/60 rounded-xl shadow-xl overflow-hidden backdrop-blur-sm relative z-10 mt-16 sm:mt-6 font-sans border border-white/10"
+        className="max-w-3xl mx-auto rounded-xl relative z-10 mt-16 sm:mt-6 space-y-6"
       >
-        <div className="relative p-6 sm:p-8 bg-gradient-to-br from-[#F1F0FB]/40 to-[#E6E9F0]/40 dark:from-gray-900/40 dark:to-gray-800/40">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#64B5D9]/5 via-transparent to-[#1B2A4A]/5" />
-          
-          <div className="relative space-y-8">
-            <VCardHeader 
-              profile={activeProfile}
-              isEditing={isEditing && !isPublic}
-              setProfile={setProfile}
-              isPdfGenerating={isPdfGenerating}
-              isProcessing={isProcessing}
-              onEditToggle={!isPublic ? handleEditToggle : undefined}
-              onSave={handleSave}
-              onDownloadBusinessCard={handleDownloadBusinessCard}
-            />
+        <VCardHeader 
+          profile={activeProfile}
+          isEditing={isEditing && !isPublic}
+          setProfile={setProfile}
+          isPdfGenerating={isPdfGenerating}
+          isProcessing={isProcessing}
+          onEditToggle={!isPublic ? handleEditToggle : undefined}
+          onSave={handleSave}
+          onDownloadBusinessCard={handleDownloadBusinessCard}
+        />
 
-            <div className="space-y-6">
-              <div className="bg-white/20 dark:bg-gray-800/20 backdrop-blur-md rounded-lg p-6 border border-white/10">
-                <VCardContact
-                  profile={activeProfile}
-                  isEditing={isEditing && !isPublic}
-                  setProfile={setProfile}
-                />
-              </div>
-              
-              <div className="bg-white/20 dark:bg-gray-800/20 backdrop-blur-md rounded-lg p-6 border border-white/10">
-                <VCardSectionsManager
-                  profile={activeProfile}
-                  isEditing={isEditing && !isPublic}
-                  setProfile={setProfile}
-                  selectedStyle={selectedStyle}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <motion.div 
+          className="space-y-6 backdrop-blur-sm bg-white/10 dark:bg-gray-900/10 rounded-xl border border-white/10 p-6"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <VCardContact
+            profile={activeProfile}
+            isEditing={isEditing && !isPublic}
+            setProfile={setProfile}
+          />
+          
+          <VCardSectionsManager
+            profile={activeProfile}
+            isEditing={isEditing && !isPublic}
+            setProfile={setProfile}
+            selectedStyle={selectedStyle}
+          />
+        </motion.div>
       </motion.div>
     </VCardContainer>
   );

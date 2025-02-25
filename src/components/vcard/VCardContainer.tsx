@@ -1,12 +1,15 @@
+
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import "@/styles/shared.css";
+
 interface VCardContainerProps {
   children: ReactNode;
   className?: string;
   isEditing?: boolean;
 }
+
 export function VCardContainer({
   children,
   className,
@@ -25,10 +28,18 @@ export function VCardContainer({
         <div className="absolute inset-0 bg-[#E6E9F0]/30 dark:bg-[#1A1F2C]/30 backdrop-blur-md" />
         <div className="absolute inset-0">
           {/* Coins colorés avec dégradés plus doux */}
-          
-          
-          
-          
+          <div className="absolute w-32 h-32">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#64B5D9]/20 to-transparent rounded-tl-3xl" />
+          </div>
+          <div className="absolute top-0 right-0 w-32 h-32">
+            <div className="absolute inset-0 bg-gradient-to-bl from-[#1B2A4A]/20 to-transparent rounded-tr-3xl" />
+          </div>
+          <div className="absolute bottom-0 left-0 w-32 h-32">
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#1B2A4A]/20 to-transparent rounded-bl-3xl" />
+          </div>
+          <div className="absolute bottom-0 right-0 w-32 h-32">
+            <div className="absolute inset-0 bg-gradient-to-tl from-[#64B5D9]/20 to-transparent rounded-br-3xl" />
+          </div>
           
           {/* Motif de points avec opacité réduite */}
           <div className="absolute inset-0 opacity-3" style={{
