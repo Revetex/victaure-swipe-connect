@@ -82,9 +82,5 @@ export function ContentRouter({
     );
   };
 
-  return (
-    <div className="h-full relative overflow-hidden">
-      {renderPage()}
-    </div>
-  );
+  return renderPage();
 }
