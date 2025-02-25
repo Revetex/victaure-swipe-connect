@@ -134,12 +134,12 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-3xl mx-auto bg-white/90 dark:bg-gray-900/90 rounded-xl shadow-xl overflow-hidden backdrop-blur-sm relative z-10 mt-16 sm:mt-6 font-sans"
+        className="max-w-3xl mx-auto bg-[#F1F0FB]/60 dark:bg-gray-900/60 rounded-xl shadow-xl overflow-hidden backdrop-blur-sm relative z-10 mt-16 sm:mt-6 font-sans border border-white/10"
       >
-        <div className="relative p-6 sm:p-8">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#64B5D9]/5 to-transparent dark:from-[#1B2A4A]/20 dark:to-transparent" />
+        <div className="relative p-6 sm:p-8 bg-gradient-to-br from-[#F1F0FB]/40 to-[#E6E9F0]/40 dark:from-gray-900/40 dark:to-gray-800/40">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#64B5D9]/5 via-transparent to-[#1B2A4A]/5" />
           
-          <div className="relative">
+          <div className="relative space-y-8">
             <VCardHeader 
               profile={activeProfile}
               isEditing={isEditing && !isPublic}
@@ -151,18 +151,23 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
               onDownloadBusinessCard={handleDownloadBusinessCard}
             />
 
-            <div className="mt-8 space-y-6">
-              <VCardContact
-                profile={activeProfile}
-                isEditing={isEditing && !isPublic}
-                setProfile={setProfile}
-              />
-              <VCardSectionsManager
-                profile={activeProfile}
-                isEditing={isEditing && !isPublic}
-                setProfile={setProfile}
-                selectedStyle={selectedStyle}
-              />
+            <div className="space-y-6">
+              <div className="bg-white/20 dark:bg-gray-800/20 backdrop-blur-md rounded-lg p-6 border border-white/10">
+                <VCardContact
+                  profile={activeProfile}
+                  isEditing={isEditing && !isPublic}
+                  setProfile={setProfile}
+                />
+              </div>
+              
+              <div className="bg-white/20 dark:bg-gray-800/20 backdrop-blur-md rounded-lg p-6 border border-white/10">
+                <VCardSectionsManager
+                  profile={activeProfile}
+                  isEditing={isEditing && !isPublic}
+                  setProfile={setProfile}
+                  selectedStyle={selectedStyle}
+                />
+              </div>
             </div>
           </div>
         </div>
