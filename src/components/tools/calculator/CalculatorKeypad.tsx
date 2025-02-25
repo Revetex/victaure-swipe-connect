@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -37,8 +38,6 @@ export function CalculatorKeypad({
       <Button variant="outline" className={buttonClass} onClick={() => onNumber(".")}>.</Button>
       <Button variant="outline" className={cn(buttonClass, "bg-primary text-primary-foreground hover:bg-primary/90")} onClick={onCalculate}>=</Button>
       <Button variant="outline" className={cn(buttonClass, "bg-muted/50")} onClick={() => onOperation("+")}>+</Button>
-      
-      <Button variant="outline" className={cn(buttonClass, "col-span-4 bg-destructive/10 hover:bg-destructive/20")} onClick={onClear}>Clear</Button>
     </div>
   );
 }

@@ -8,10 +8,10 @@ import { SubscriptionPlans } from "./calculator/SubscriptionPlans";
 
 export function CalculatorPage() {
   return (
-    <div className="min-h-screen pt-16 space-y-8">
+    <div className="min-h-screen pt-8 space-y-8">
       <div className="container max-w-6xl mx-auto p-4">
         <Tabs defaultValue="calculator" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="calculator" className="flex items-center gap-2">
               <Calculator className="h-4 w-4" />
               Calculatrice

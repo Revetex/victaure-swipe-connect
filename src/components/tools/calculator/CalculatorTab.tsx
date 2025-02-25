@@ -9,7 +9,6 @@ import { useConverter } from "./hooks/useConverter";
 import { useState } from "react";
 import { usePaymentHandler } from "@/hooks/usePaymentHandler";
 import { toast } from "sonner";
-import { TransactionType } from "./types";
 
 export function CalculatorTab() {
   const calculator = useCalculator();
@@ -34,9 +33,17 @@ export function CalculatorTab() {
   };
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid gap-6 md:grid-cols-2 mt-4">
       <div className="space-y-6">
-        <Card className="p-6 relative overflow-hidden backdrop-blur-sm bg-card/95 border-primary/10">
+        <Card className="p-4 relative overflow-hidden backdrop-blur-sm bg-card/95 border-primary/10 shadow-lg">
+          <div className="mb-4 flex justify-between items-center">
+            <button 
+              onClick={calculator.clear}
+              className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 px-4 py-2 rounded-lg transition-colors duration-200"
+            >
+              Effacer tout
+            </button>
+          </div>
           <CalculatorDisplay value={calculator.display} />
           <CalculatorKeypad 
             onNumber={calculator.handleNumber}
