@@ -7,6 +7,7 @@ import { JobsSearch } from "./sections/JobsSearch";
 import { JobsResults } from "./sections/JobsResults";
 import { cn } from "@/lib/utils";
 import { JobScraper } from "./JobScraper";
+import { GoogleSearch } from "@/components/google-search/GoogleSearch";
 
 export function JobsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -75,8 +76,9 @@ export function JobsPage() {
         "min-h-screen bg-background dark:bg-[#1A1F2C]",
       )}
     >
-      <div className="sticky top-0 z-10 bg-background/95 dark:bg-[#1A1F2C]/95 backdrop-blur-sm border-b border-[#64B5D9]/10 pb-4">
-        <div className="max-w-5xl mx-auto px-4 pt-8 space-y-4">
+      <div className="sticky top-16 z-10 bg-background/95 dark:bg-[#1A1F2C]/95 backdrop-blur-sm border-b border-[#64B5D9]/10">
+        <div className="max-w-5xl mx-auto px-4 py-4 space-y-4">
+          <GoogleSearch />
           <JobScraper />
           <JobsSearch 
             searchQuery={searchQuery}
