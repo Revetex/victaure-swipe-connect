@@ -9,6 +9,7 @@ import "./GoogleSearchStyles.css";
 export function GoogleSearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const { profile } = useProfile();
 
   useEffect(() => {
@@ -29,6 +30,7 @@ export function GoogleSearch() {
     if (!searchTerm.trim()) return;
 
     setIsSearching(true);
+    setIsExpanded(true);
     triggerSearch(searchTerm);
   };
 
@@ -46,7 +48,6 @@ export function GoogleSearch() {
   const generateRandomSearch = () => {
     if (!profile) return;
 
-    // Créer une recherche basée sur le profil
     const searchTerms = [
       ...profile.skills || [],
       profile.company_name,
@@ -54,19 +55,19 @@ export function GoogleSearch() {
     ].filter(Boolean);
 
     if (searchTerms.length > 0) {
-      // Sélectionner 2-3 termes aléatoires
       const selectedTerms = searchTerms
         .sort(() => Math.random() - 0.5)
         .slice(0, Math.floor(Math.random() * 2) + 2);
       
       const query = selectedTerms.join(' ') + ' emploi';
       setSearchTerm(query);
+      setIsExpanded(true);
       triggerSearch(query);
     }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 transition-all duration-300">
       <div className="flex gap-2">
         <form onSubmit={handleSearch} className="flex-1 flex gap-2">
           <Input
@@ -74,29 +75,32 @@ export function GoogleSearch() {
             placeholder="Rechercher des offres d'emploi..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 h-12 bg-background dark:bg-[#1B2A4A]/50 border-border/10 dark:border-[#64B5D9]/10"
+            onClick={() => setIsExpanded(true)}
+            className="h-10 bg-background dark:bg-[#1B2A4A]/50 border-border/10 dark:border-[#64B5D9]/10 transition-all duration-300"
           />
           <Button 
             type="submit" 
             disabled={isSearching}
-            className="h-12 px-6 bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB]"
+            className="h-10 px-4 bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB]"
           >
-            <SearchIcon className="h-5 w-5" />
+            <SearchIcon className="h-4 w-4" />
           </Button>
         </form>
         <Button
           type="button"
           onClick={generateRandomSearch}
-          className="h-12 px-6 bg-secondary hover:bg-secondary/90 dark:bg-[#1B2A4A] dark:hover:bg-[#1B2A4A]/80"
+          className="h-10 px-4 bg-secondary hover:bg-secondary/90 dark:bg-[#1B2A4A] dark:hover:bg-[#1B2A4A]/80"
           title="Générer une recherche basée sur votre profil"
         >
-          <Wand2 className="h-5 w-5" />
+          <Wand2 className="h-4 w-4" />
         </Button>
       </div>
       
-      <div className="mt-4 border border-border/10 dark:border-[#64B5D9]/10 rounded-lg overflow-hidden bg-white dark:bg-[#1B2A4A] p-4">
-        <div className="gcse-searchresults-only"></div>
-      </div>
+      {isExpanded && (
+        <div className="mt-4 border border-border/10 dark:border-[#64B5D9]/10 rounded-lg overflow-hidden bg-white dark:bg-[#1B2A4A] p-4">
+          <div className="gcse-searchresults-only"></div>
+        </div>
+      )}
     </div>
   );
 }
