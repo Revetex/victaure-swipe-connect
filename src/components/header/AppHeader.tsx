@@ -1,4 +1,3 @@
-
 import { Star, Menu, Bot, Search, MapPin, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +24,13 @@ export function AppHeader({
 }: AppHeaderProps) {
   const [showChat, setShowChat] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showResults, setShowResults] = useState(false);
   const { user } = useAuth();
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setShowResults(e.target.value.length > 0);
+  };
 
   const handleMenuClick = () => {
     if (setShowMobileMenu) {
@@ -81,7 +86,7 @@ export function AppHeader({
                     <Input
                       type="text"
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={handleSearch}
                       placeholder="Rechercher un emploi, une entreprise..."
                       className="h-10 pl-10 pr-4 w-full bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:bg-white/10 transition-colors"
                     />
@@ -144,7 +149,6 @@ export function AppHeader({
             </div>
           </div>
 
-          {/* Barre de recherche mobile */}
           <div className="lg:hidden w-full pb-4">
             <div className="grid grid-cols-[1fr,auto] gap-2">
               <div className="relative">
@@ -152,7 +156,7 @@ export function AppHeader({
                 <Input
                   type="text"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearch}
                   placeholder="Rechercher un emploi..."
                   className="h-10 pl-10 pr-4 w-full bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:bg-white/10 transition-colors"
                 />
@@ -168,14 +172,28 @@ export function AppHeader({
         </div>
       </motion.header>
 
-      {/* Conteneur des résultats */}
-      <div className="fixed top-[4.5rem] left-0 right-0 z-[99] px-4 bg-[#1A1F2C]/95 backdrop-blur-sm border-b border-white/5">
-        <div className="w-full max-w-3xl mx-auto py-4">
-          <div id="search-results" className="bg-[#1B2A4A] rounded-lg shadow-xl border border-[#64B5D9]/10">
-            {/* Les résultats de recherche seront injectés ici */}
+      {showResults && (
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="fixed top-[4.5rem] left-0 right-0 z-[99] px-4 bg-[#1A1F2C]/95 backdrop-blur-sm border-b border-white/5"
+        >
+          <div className="w-full max-w-3xl mx-auto py-4">
+            <div className="bg-[#1B2A4A] rounded-lg shadow-xl border border-[#64B5D9]/10 p-4">
+              {searchQuery ? (
+                <div className="text-white/60">
+                  Recherche en cours pour "{searchQuery}"...
+                </div>
+              ) : (
+                <div className="text-white/60">
+                  Commencez à taper pour rechercher
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      )}
     </>
   );
 }
