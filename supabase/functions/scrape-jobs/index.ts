@@ -8,145 +8,118 @@ const corsHeaders = {
 }
 
 async function searchJobs(url?: string) {
-  console.log('Searching jobs with URL:', url);
+  console.log('Démarrage de la recherche d\'emplois...');
   
   try {
-    // Use provided URL or default search URL with a reasonable limit
-    const searchUrl = url || 'https://www.jobillico.com/recherche-emploi?limit=25';
-    console.log('Fetching URL:', searchUrl);
+    // URL de base pour Emploi-Québec avec les paramètres de recherche
+    const searchUrl = url || 'https://placement.emploiquebec.gouv.qc.ca/mbe/ut/rechroffr/listoffr.asp?date=3&CL=french';
+    console.log('URL de recherche:', searchUrl);
     
     const response = await fetch(searchUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'fr-CA,fr;q=0.9,en-CA;q=0.8,en;q=0.7'
       },
-      timeout: 10000 // 10 second timeout
+      timeout: 30000 // Augmentation du timeout à 30 secondes
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      console.error(`Erreur HTTP: ${response.status}`);
+      throw new Error(`Erreur HTTP! statut: ${response.status}`);
     }
     
     const html = await response.text();
-    console.log('Got HTML response length:', html.length);
-    
-    if (html.length < 1000) {
-      console.warn('Suspiciously small HTML response, might be blocked or invalid');
-      return [];
-    }
+    console.log('Longueur de la réponse HTML:', html.length);
     
     const $ = cheerio.load(html);
     const jobs: any[] = [];
-    let processedCount = 0;
     
-    $('.search-results .job-item').each((_, element) => {
+    // Sélecteur spécifique pour Emploi-Québec
+    $('.tableauOffres tr:not(:first-child)').each((_, element) => {
       try {
-        // Limit processing to 25 jobs per run to avoid timeouts
-        if (processedCount >= 25) return false;
+        const $row = $(element);
+        const title = $row.find('td:nth-child(2)').text().trim();
+        const company = $row.find('td:nth-child(3)').text().trim();
+        const location = $row.find('td:nth-child(4)').text().trim();
+        const url = $row.find('a').attr('href');
         
-        const salary = $(element).find('.salary').text().trim();
-        const salaryRange = parseSalaryRange(salary);
-        
-        const job = {
-          title: $(element).find('.job-title').text().trim(),
-          company: $(element).find('.company-name').text().trim(),
-          location: $(element).find('.city').text().trim(),
-          description: $(element).find('.description').text().trim(),
-          created_at: new Date().toISOString(),
-          url: 'https://www.jobillico.com' + ($(element).find('a.main-link').attr('href') || ''),
-          salary_min: salaryRange.min,
-          salary_max: salaryRange.max,
-          contract_type: $(element).find('.job-type').text().trim() || 'Full Time',
-          source: 'jobillico.com',
-          remote_type: detectRemoteType($(element).find('.description').text()),
-          experience_level: detectExperienceLevel($(element).find('.description').text())
-        };
-        
-        if (job.title && job.company) {
-          console.log('Found job:', job.title);
+        // Ne traiter que les lignes avec un titre et une entreprise
+        if (title && company) {
+          const job = {
+            title,
+            company,
+            location,
+            description: '', // Sera rempli lors d'une future amélioration
+            created_at: new Date().toISOString(),
+            url: url ? `https://placement.emploiquebec.gouv.qc.ca${url}` : null,
+            salary_min: null,
+            salary_max: null,
+            contract_type: 'Non spécifié',
+            source: 'emploi-quebec.gouv.qc.ca',
+            remote_type: 'not_specified',
+            experience_level: 'not_specified',
+            posted_at: new Date().toISOString()
+          };
+          
+          console.log('Emploi trouvé:', job.title);
           jobs.push(job);
-          processedCount++;
         }
       } catch (err) {
-        console.error('Error parsing job item:', err);
+        console.error('Erreur lors du parsing d\'une offre:', err);
       }
     });
     
-    console.log(`Found ${jobs.length} jobs`);
+    console.log(`Nombre total d'emplois trouvés: ${jobs.length}`);
     return jobs;
   } catch (error) {
-    console.error('Error searching jobs:', error);
+    console.error('Erreur lors de la recherche d\'emplois:', error);
     throw error;
   }
 }
 
-function parseSalaryRange(salaryText: string) {
-  try {
-    const numbers = salaryText.match(/\d+(?:[,.]\d+)?/g);
-    if (!numbers) return { min: null, max: null };
-    
-    const values = numbers.map(n => parseFloat(n.replace(',', '')));
-    return {
-      min: Math.min(...values),
-      max: Math.max(...values)
-    };
-  } catch {
-    return { min: null, max: null };
-  }
-}
-
-function detectRemoteType(description: string): string {
-  const text = description.toLowerCase();
-  if (text.includes('100% remote') || text.includes('fully remote')) return 'full';
-  if (text.includes('hybrid') || text.includes('flexible')) return 'hybrid';
-  return 'office';
-}
-
-function detectExperienceLevel(description: string): string {
-  const text = description.toLowerCase();
-  if (text.includes('senior') || text.includes('lead')) return 'senior';
-  if (text.includes('junior') || text.includes('entry')) return 'junior';
-  if (text.includes('intermediate')) return 'intermediate';
-  return 'not_specified';
-}
-
 Deno.serve(async (req) => {
-  console.log('Received request:', req.method);
+  console.log('Requête reçue:', req.method);
   
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    console.log('Parsing request body...');
+    console.log('Analyse du corps de la requête...');
     const { url } = await req.json().catch(() => ({}));
-    console.log('Request URL:', url);
+    console.log('URL demandée:', url);
 
     const startTime = Date.now();
     const jobs = await searchJobs(url);
     const duration = Date.now() - startTime;
-    console.log(`Scraping completed in ${duration}ms`);
+    console.log(`Scraping terminé en ${duration}ms`);
 
     if (jobs.length === 0) {
-      console.warn('No jobs found in search results');
+      console.warn('Aucun emploi trouvé dans les résultats de recherche');
       return new Response(
-        JSON.stringify({ success: true, data: [], message: 'No jobs found' }),
+        JSON.stringify({ 
+          success: true, 
+          data: [], 
+          message: 'Aucun emploi trouvé' 
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Connect to Supabase
-    console.log('Connecting to Supabase...');
+    // Connexion à Supabase
+    console.log('Connexion à Supabase...');
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
     if (!supabaseUrl || !supabaseKey) {
-      throw new Error('Missing Supabase credentials');
+      throw new Error('Identifiants Supabase manquants');
     }
 
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-    // Store jobs in database with upsert to avoid duplicates
-    console.log('Storing jobs in database...');
+    // Stockage des emplois dans la base de données
+    console.log('Enregistrement des emplois dans la base de données...');
     const { error: insertError } = await supabaseClient
       .from('scraped_jobs')
       .upsert(
@@ -158,23 +131,23 @@ Deno.serve(async (req) => {
       );
 
     if (insertError) {
-      console.error('Database insert error:', insertError);
+      console.error('Erreur lors de l\'insertion dans la base de données:', insertError);
       throw insertError;
     }
     
-    console.log('Jobs stored successfully');
+    console.log('Emplois enregistrés avec succès');
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         data: jobs,
-        message: `Successfully scraped and stored ${jobs.length} jobs`
+        message: `${jobs.length} emplois ont été scrapés et enregistrés avec succès`
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Function error:', error);
+    console.error('Erreur de la fonction:', error);
     return new Response(
       JSON.stringify({ 
         success: false,
