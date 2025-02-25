@@ -9,7 +9,7 @@ import "./GoogleSearchStyles.css";
 export function GoogleSearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [showResults, setShowResults] = useState(false);
   const { profile } = useProfile();
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export function GoogleSearch() {
     if (!searchTerm.trim()) return;
 
     setIsSearching(true);
-    setIsExpanded(true);
+    setShowResults(true);
     triggerSearch(searchTerm);
   };
 
@@ -61,7 +61,7 @@ export function GoogleSearch() {
       
       const query = selectedTerms.join(' ') + ' emploi';
       setSearchTerm(query);
-      setIsExpanded(true);
+      setShowResults(true);
       triggerSearch(query);
     }
   };
@@ -75,7 +75,6 @@ export function GoogleSearch() {
             placeholder="Rechercher des offres d'emploi..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            onClick={() => setIsExpanded(true)}
             className="h-10 bg-background dark:bg-[#1B2A4A]/50 border-border/10 dark:border-[#64B5D9]/10 transition-all duration-300"
           />
           <Button 
@@ -96,7 +95,7 @@ export function GoogleSearch() {
         </Button>
       </div>
       
-      {isExpanded && (
+      {showResults && (
         <div className="mt-4 border border-border/10 dark:border-[#64B5D9]/10 rounded-lg overflow-hidden bg-white dark:bg-[#1B2A4A] p-4">
           <div className="gcse-searchresults-only"></div>
         </div>
