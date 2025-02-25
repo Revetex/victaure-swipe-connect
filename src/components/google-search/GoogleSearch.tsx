@@ -4,40 +4,51 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
-interface GoogleSearchProps {
-  searchEngineId: string;
-}
-
-export function GoogleSearch({ searchEngineId }: GoogleSearchProps) {
+export function GoogleSearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [searchUrl, setSearchUrl] = useState("");
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchTerm.trim()) return;
 
     setIsSearching(true);
-    const searchUrl = `https://cse.google.com/cse?cx=${searchEngineId}&q=${encodeURIComponent(searchTerm)}`;
-    window.open(searchUrl, '_blank');
-    setIsSearching(false);
+    const encodedQuery = encodeURIComponent(searchTerm);
+    // Utilisation du moteur de recherche personnalisé Google pour les offres d'emploi au Québec
+    const newSearchUrl = `https://cse.google.com/cse?cx=1262c5460a0314a80&q=${encodedQuery}`;
+    setSearchUrl(newSearchUrl);
   };
 
   return (
-    <form onSubmit={handleSearch} className="flex gap-2">
-      <Input
-        type="text"
-        placeholder="Rechercher des offres d'emploi..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="flex-1 h-12 bg-background dark:bg-[#1B2A4A]/50 border-border/10 dark:border-[#64B5D9]/10"
-      />
-      <Button 
-        type="submit" 
-        disabled={isSearching}
-        className="h-12 px-6 bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB]"
-      >
-        <SearchIcon className="h-5 w-5" />
-      </Button>
-    </form>
+    <div className="space-y-4">
+      <form onSubmit={handleSearch} className="flex gap-2">
+        <Input
+          type="text"
+          placeholder="Rechercher des offres d'emploi..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="flex-1 h-12 bg-background dark:bg-[#1B2A4A]/50 border-border/10 dark:border-[#64B5D9]/10"
+        />
+        <Button 
+          type="submit" 
+          disabled={isSearching}
+          className="h-12 px-6 bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB]"
+        >
+          <SearchIcon className="h-5 w-5" />
+        </Button>
+      </form>
+      
+      {searchUrl && (
+        <div className="mt-4 border border-border/10 dark:border-[#64B5D9]/10 rounded-lg overflow-hidden">
+          <iframe
+            src={searchUrl}
+            className="w-full h-[600px] bg-white"
+            frameBorder="0"
+            allowFullScreen
+          />
+        </div>
+      )}
+    </div>
   );
 }
