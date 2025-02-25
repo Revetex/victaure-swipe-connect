@@ -1,3 +1,4 @@
+
 export interface DashboardStats {
   activeJobs: number;
   unreadMessages: number;
