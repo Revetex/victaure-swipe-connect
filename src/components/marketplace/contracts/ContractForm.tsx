@@ -56,10 +56,20 @@ export function ContractForm({ onSuccess }: { onSuccess?: () => void }) {
       const { error } = await supabase
         .from('marketplace_contracts')
         .insert({
-          ...values,
+          title: values.title,
+          description: values.description || null,
+          budget_min: values.budget_min || null,
+          budget_max: values.budget_max || null,
+          deadline: values.deadline || null,
+          category: values.category || null,
+          location: values.location || null,
+          requirements: values.requirements || null,
+          currency: values.currency,
           creator_id: user.id,
           status: 'open',
+          documents: [],
           created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         });
 
       if (error) throw error;

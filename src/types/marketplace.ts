@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 export const contractFormSchema = z.object({
@@ -159,7 +160,9 @@ export interface MarketplaceContract {
   currency: string;
   category: string | null;
   requirements: string[] | null;
+  documents: string[] | null;
   created_at: string;
+  updated_at: string | null;
   creator_id: string;
   creator?: {
     full_name: string | null;

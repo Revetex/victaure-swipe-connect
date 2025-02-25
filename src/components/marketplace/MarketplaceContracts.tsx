@@ -20,7 +20,21 @@ export function MarketplaceContracts() {
       const { data, error } = await supabase
         .from('marketplace_contracts')
         .select(`
-          *,
+          id,
+          title,
+          description,
+          budget_min,
+          budget_max,
+          deadline,
+          status,
+          location,
+          currency,
+          category,
+          requirements,
+          documents,
+          created_at,
+          updated_at,
+          creator_id,
           creator:profiles!marketplace_contracts_creator_id_fkey (
             full_name,
             avatar_url
@@ -31,7 +45,7 @@ export function MarketplaceContracts() {
 
       if (error) throw error;
       
-      setContracts((data || []) as MarketplaceContract[]);
+      setContracts(data || []);
     } catch (error) {
       console.error('Erreur lors du chargement des contrats:', error);
       toast.error("Erreur lors du chargement des contrats");
