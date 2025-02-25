@@ -2679,53 +2679,6 @@ export type Database = {
           },
         ]
       }
-      obsolete_features: {
-        Row: {
-          alternatives: string | null
-          created_at: string | null
-          description: string | null
-          id: string
-          metadata: Json | null
-          name: string
-          profile_id: string | null
-          reason: string | null
-          removal_date: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          alternatives?: string | null
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          metadata?: Json | null
-          name: string
-          profile_id?: string | null
-          reason?: string | null
-          removal_date?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          alternatives?: string | null
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          metadata?: Json | null
-          name?: string
-          profile_id?: string | null
-          reason?: string | null
-          removal_date?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "obsolete_features_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       payment_escrows: {
         Row: {
           amount: number
