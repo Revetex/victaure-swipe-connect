@@ -1,84 +1,47 @@
-import { cn } from "@/lib/utils";
-import { navigationItems } from "@/config/navigation";
-import { User } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { useState } from "react";
-import { ProfilePreview } from "@/components/ProfilePreview";
-import { UserProfile, createEmptyProfile } from "@/types/profile";
-import { useProfile } from "@/hooks/useProfile";
 
-interface DashboardNavigationProps {
-  currentPage: number;
-  onPageChange: (page: number) => void;
-  isEditing?: boolean;
-  className?: string;
+import { useProfileAccess } from '@/hooks/useProfileAccess';
+import { navigationItems } from '@/config/navigation';
+import { cn } from '@/lib/utils';
+
+interface NavigationItemProps {
+  id: number;
+  icon: any;
+  name: string;
+  route: string;
 }
 
-export function DashboardNavigation({ 
-  currentPage, 
-  onPageChange,
-  isEditing,
-  className 
-}: DashboardNavigationProps) {
-  const { user } = useAuth();
-  const { profile } = useProfile();
-  const [showProfilePreview, setShowProfilePreview] = useState(false);
+export function DashboardNavigation() {
+  const permissions = useProfileAccess();
 
-  if (isEditing) return null;
+  const filteredItems = navigationItems.filter(item => {
+    if (permissions.isBusinessProfile) {
+      // Filtrer les éléments spécifiques aux entreprises
+      return !['lottery', 'translator'].includes(item.route.replace('/', ''));
+    } else {
+      // Filtrer les éléments spécifiques aux professionnels
+      return !['jobs/manage', 'analytics'].includes(item.route.replace('/', ''));
+    }
+  });
 
-  const userProfile: UserProfile = profile || {
-    ...createEmptyProfile(user?.id || '', user?.email || ''),
-    certifications: [],
-    education: [],
-    experiences: []
-  };
+  const NavigationItem = ({ id, icon: Icon, name, route }: NavigationItemProps) => (
+    <a
+      href={route}
+      className={cn(
+        "flex items-center gap-2 px-4 py-2 text-sm rounded-lg",
+        "hover:bg-primary/10 transition-colors",
+        "text-foreground/80 hover:text-foreground"
+      )}
+    >
+      <Icon className="h-4 w-4" />
+      <span>{name}</span>
+    </a>
+  );
 
   return (
-    <>
-      <div className={cn("flex items-center justify-around w-full max-w-2xl mx-auto", className)}>
-        {navigationItems.map(({ id, icon: Icon, name }) => (
-          <button
-            key={id}
-            onClick={() => onPageChange(id)}
-            className={cn(
-              "p-3 rounded-xl transition-colors",
-              "touch-manipulation min-h-[44px] min-w-[44px]",
-              "active:scale-95",
-              currentPage === id
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-primary"
-            )}
-            title={name}
-            aria-label={name}
-          >
-            <Icon className="h-5 w-5" />
-            <span className="text-xs font-medium mt-1">{name}</span>
-          </button>
-        ))}
-        
-        <button
-          onClick={() => setShowProfilePreview(true)}
-          className={cn(
-            "p-3 rounded-xl transition-colors",
-            "touch-manipulation min-h-[44px] min-w-[44px]",
-            "active:scale-95",
-            "text-muted-foreground hover:text-primary"
-          )}
-          title="Mon profil"
-          aria-label="Mon profil"
-        >
-          <User className="h-5 w-5" />
-          <span className="text-xs font-medium mt-1">Profil</span>
-        </button>
-      </div>
-
-      {userProfile && (
-        <ProfilePreview
-          profile={userProfile}
-          isOpen={showProfilePreview}
-          onClose={() => setShowProfilePreview(false)}
-        />
-      )}
-    </>
+    <nav className="space-y-1 py-4">
+      {filteredItems.map((item) => (
+        <NavigationItem key={item.id} {...item} />
+      ))}
+    </nav>
   );
 }
