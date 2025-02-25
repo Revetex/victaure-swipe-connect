@@ -637,6 +637,57 @@ export type Database = {
           },
         ]
       }
+      crawled_jobs: {
+        Row: {
+          company: string | null
+          created_at: string
+          description: string | null
+          id: string
+          job_type: string | null
+          location: string | null
+          parsed_at: string | null
+          raw_data: Json | null
+          salary_range: string | null
+          source: string
+          status: string | null
+          title: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          job_type?: string | null
+          location?: string | null
+          parsed_at?: string | null
+          raw_data?: Json | null
+          salary_range?: string | null
+          source: string
+          status?: string | null
+          title: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          job_type?: string | null
+          location?: string | null
+          parsed_at?: string | null
+          raw_data?: Json | null
+          salary_range?: string | null
+          source?: string
+          status?: string | null
+          title?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       cv_templates: {
         Row: {
           created_at: string

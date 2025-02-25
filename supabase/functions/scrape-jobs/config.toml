@@ -1,5 +1,3 @@
 
 project_id = "mfjllillnpleasclqabb"
-
-[functions.scrape-jobs]
-verify_jwt = false
+command = "deno run --allow-net --allow-env index.ts"
