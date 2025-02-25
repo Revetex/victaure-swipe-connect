@@ -21,26 +21,29 @@ export function PostGrid({
   onUpdate
 }: PostGridProps) {
   return (
-    <AnimatePresence mode="popLayout">
-      {posts.map((post) => (
-        <motion.article
-          key={post.id}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.2 }}
-          layout
-        >
-          <PostCard
-            post={post}
-            currentUserId={currentUserId}
-            userEmail={userEmail}
-            onDelete={() => post.user_id === currentUserId && onDelete(post.id)}
-            onHide={(postId) => onHide(postId, currentUserId)}
-            onUpdate={onUpdate}
-          />
-        </motion.article>
-      ))}
-    </AnimatePresence>
+    <div className="grid gap-6">
+      <AnimatePresence mode="popLayout">
+        {posts.map((post) => (
+          <motion.article
+            key={post.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            layout
+            className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <PostCard
+              post={post}
+              currentUserId={currentUserId}
+              userEmail={userEmail}
+              onDelete={() => post.user_id === currentUserId && onDelete(post.id)}
+              onHide={(postId) => onHide(postId, currentUserId)}
+              onUpdate={onUpdate}
+            />
+          </motion.article>
+        ))}
+      </AnimatePresence>
+    </div>
   );
 }

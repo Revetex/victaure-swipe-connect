@@ -25,59 +25,63 @@ export function PostFilters({
   onSortOrderChange
 }: PostFiltersProps) {
   return (
-    <section className="flex flex-col gap-4 sm:flex-row sm:items-center">
-      <div className="relative flex-1">
-        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Rechercher dans les publications..."
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10"
-          aria-label="Rechercher dans les publications"
-        />
-      </div>
-      
-      <div className="flex gap-2 sm:gap-4">
-        <Select
-          value={filter}
-          onValueChange={onFilterChange}
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="Filtrer par" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Toutes</SelectItem>
-            <SelectItem value="liked">Mes favoris</SelectItem>
-            <SelectItem value="following">Abonnements</SelectItem>
-          </SelectContent>
-        </Select>
+    <section className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-4">
+      <div className="flex flex-col sm:flex-row gap-4">
+        {/* Barre de recherche */}
+        <div className="flex-1 relative">
+          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Rechercher dans les publications..."
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-10 bg-white/50 dark:bg-gray-800/50"
+            aria-label="Rechercher dans les publications"
+          />
+        </div>
+        
+        {/* Filtres et tri */}
+        <div className="flex flex-wrap gap-2 sm:gap-4">
+          <Select
+            value={filter}
+            onValueChange={onFilterChange}
+          >
+            <SelectTrigger className="w-[140px] bg-white/50 dark:bg-gray-800/50">
+              <SelectValue placeholder="Filtrer par" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes</SelectItem>
+              <SelectItem value="liked">Mes favoris</SelectItem>
+              <SelectItem value="following">Abonnements</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Select
-          value={sortBy}
-          onValueChange={onSortByChange}
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="Trier par" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="date">Date</SelectItem>
-            <SelectItem value="likes">J'aime</SelectItem>
-            <SelectItem value="comments">Commentaires</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select
+            value={sortBy}
+            onValueChange={onSortByChange}
+          >
+            <SelectTrigger className="w-[140px] bg-white/50 dark:bg-gray-800/50">
+              <SelectValue placeholder="Trier par" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="date">Date</SelectItem>
+              <SelectItem value="likes">J'aime</SelectItem>
+              <SelectItem value="comments">Commentaires</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Select
-          value={sortOrder}
-          onValueChange={onSortOrderChange}
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="Ordre" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="asc">Plus ancien</SelectItem>
-            <SelectItem value="desc">Plus récent</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select
+            value={sortOrder}
+            onValueChange={onSortOrderChange}
+          >
+            <SelectTrigger className="w-[140px] bg-white/50 dark:bg-gray-800/50">
+              <SelectValue placeholder="Ordre" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="desc">Plus récent</SelectItem>
+              <SelectItem value="asc">Plus ancien</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
     </section>
   );
