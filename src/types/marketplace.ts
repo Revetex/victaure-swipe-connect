@@ -145,8 +145,8 @@ export interface MarketplaceContract {
   requirements: string[] | null;
   created_at: string;
   creator_id: string;
-  creator: {
+  creator?: {
     full_name: string | null;
     avatar_url: string | null;
-  } | null;
+  };
 }

@@ -31,7 +31,7 @@ export function MarketplaceContracts() {
 
       if (error) throw error;
       
-      setContracts(data as MarketplaceContract[] || []);
+      setContracts(data || []);
     } catch (error) {
       console.error('Erreur lors du chargement des contrats:', error);
       toast.error("Erreur lors du chargement des contrats");
