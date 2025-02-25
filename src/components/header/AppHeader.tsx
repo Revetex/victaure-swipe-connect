@@ -1,3 +1,4 @@
+
 import { Star, Menu, Bot, Search, MapPin, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,13 @@ export function AppHeader({
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     setShowResults(e.target.value.length > 0);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      console.log('Recherche effectuée pour:', searchQuery);
+      // Ici vous pouvez ajouter la logique de recherche
+    }
   };
 
   const handleMenuClick = () => {
@@ -87,6 +95,7 @@ export function AppHeader({
                       type="text"
                       value={searchQuery}
                       onChange={handleSearch}
+                      onKeyPress={handleKeyPress}
                       placeholder="Rechercher un emploi, une entreprise..."
                       className="h-10 pl-10 pr-4 w-full bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:bg-white/10 transition-colors"
                     />
@@ -157,6 +166,7 @@ export function AppHeader({
                   type="text"
                   value={searchQuery}
                   onChange={handleSearch}
+                  onKeyPress={handleKeyPress}
                   placeholder="Rechercher un emploi..."
                   className="h-10 pl-10 pr-4 w-full bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:bg-white/10 transition-colors"
                 />
