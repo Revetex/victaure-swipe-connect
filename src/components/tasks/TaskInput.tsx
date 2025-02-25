@@ -37,11 +37,10 @@ export function TaskInput({ onAddTask, className }: TaskInputProps) {
       animate={{ opacity: 1, y: 0 }}
       className={cn(
         "w-full max-w-2xl mx-auto",
-        "bg-[#2A3441]/50",
-        "backdrop-blur-lg",
+        "bg-[#2A3441]/80 backdrop-blur-lg",
         "rounded-xl",
-        "border border-white/5",
-        "shadow-lg shadow-black/5",
+        "border border-white/10",
+        "shadow-lg shadow-black/10",
         "p-4",
         "space-y-4",
         className
@@ -54,20 +53,20 @@ export function TaskInput({ onAddTask, className }: TaskInputProps) {
             value={taskText}
             onChange={(e) => setTaskText(e.target.value)}
             placeholder="Ajouter une nouvelle tâche..."
-            className="flex-1 bg-[#1A1F2C]/50 text-[#eee] border-white/5 placeholder:text-[#eee]/40"
+            className="flex-1 bg-[#1A1F2C]/50 text-[#F2EBE4] border-white/10 placeholder:text-[#F2EBE4]/50"
           />
           <Button
             type="button"
             variant="outline"
             size="icon"
             onClick={() => setShowDateInput(!showDateInput)}
-            className="bg-[#1A1F2C]/50 border-white/5 hover:bg-[#2A3441]/50 hover:border-purple-500/20"
+            className="bg-[#1A1F2C]/50 border-white/10 hover:bg-purple-500/20 hover:border-purple-500/30"
           >
-            <Calendar className="h-4 w-4 text-[#eee]/60" />
+            <Calendar className="h-4 w-4 text-[#F2EBE4]" />
           </Button>
           <Button 
             type="submit"
-            className="bg-gradient-to-r from-purple-500/80 to-purple-600/80 hover:from-purple-500 hover:to-purple-600 text-white"
+            className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
             Ajouter
@@ -86,7 +85,7 @@ export function TaskInput({ onAddTask, className }: TaskInputProps) {
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="w-full bg-[#1A1F2C]/50 text-[#eee] border-white/5"
+                className="w-full bg-[#1A1F2C]/50 text-[#F2EBE4] border-white/10"
               />
             </motion.div>
           )}
