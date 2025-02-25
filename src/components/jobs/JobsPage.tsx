@@ -55,10 +55,6 @@ export function JobsPage() {
       return bMaxSalary - aMaxSalary;
     });
 
-  const handleJobSelect = (job: Job) => {
-    console.log("Job selected:", job);
-  };
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
@@ -72,7 +68,7 @@ export function JobsPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={cn(
-        "min-h-screen bg-background dark:bg-[#1A1F2C] py-20 px-4",
+        "min-h-screen bg-background dark:bg-[#1A1F2C] pt-20 px-4"
       )}
     >
       <div className="max-w-5xl mx-auto space-y-6">
@@ -104,7 +100,7 @@ export function JobsPage() {
         
         <JobsResults 
           jobs={filteredJobs}
-          onJobSelect={handleJobSelect}
+          onJobSelect={() => {}}
         />
       </div>
     </motion.div>
