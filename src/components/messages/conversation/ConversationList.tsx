@@ -8,12 +8,23 @@ import { NewConversationPopover } from "./components/NewConversationPopover";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import type { UserProfile } from "@/types/profile";
+
+interface Conversation {
+  id: string;
+  participant1_id: string;
+  participant2_id: string;
+  participant1: UserProfile;
+  participant2: UserProfile;
+  last_message?: string;
+  last_message_time?: string;
+}
 
 export function ConversationList({ className }: { className?: string }) {
   const { user } = useAuth();
   const { setSelectedConversationId } = useReceiver();
   const [searchTerm, setSearchTerm] = useState("");
-  const [conversations, setConversations] = useState([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
   const selectedConversationId = useReceiver().selectedConversationId;
   
@@ -35,14 +46,24 @@ export function ConversationList({ className }: { className?: string }) {
 
         if (error) throw error;
         
+        const formattedConversations = existingConversations.map(conv => {
+          if (conv.participant1_id === user.id) {
+            return conv;
+          }
+          // Swap participants if needed to always have current user as participant1
+          return {
+            ...conv,
+            participant1: conv.participant2,
+            participant2: conv.participant1,
+            participant1_id: conv.participant2_id,
+            participant2_id: conv.participant1_id
+          };
+        });
+        
         // Filtrer par le terme de recherche si nécessaire
-        const filteredConversations = existingConversations.filter(conv => {
-          const otherParticipant = conv.participant1_id === user.id
-            ? conv.participant2
-            : conv.participant1;
-
-          return otherParticipant.full_name
-            .toLowerCase()
+        const filteredConversations = formattedConversations.filter(conv => {
+          return conv.participant2?.full_name
+            ?.toLowerCase()
             .includes(searchTerm.toLowerCase());
         });
 
@@ -107,7 +128,6 @@ export function ConversationList({ className }: { className?: string }) {
             <ConversationItem
               key={conversation.id}
               conversation={conversation}
-              currentUserId={user?.id}
               isSelected={selectedConversationId === conversation.id}
               onClick={() => setSelectedConversationId(conversation.id)}
             />
