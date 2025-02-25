@@ -46,7 +46,6 @@ export function CommentInput({
       setContent("");
       onCommentAdded();
 
-      // Create notification for post author if it's not their own comment
       if (postAuthorId !== currentUserId) {
         await supabase
           .from('notifications')
@@ -74,20 +73,25 @@ export function CommentInput({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2">
+    <form onSubmit={handleSubmit} className="px-4 py-3 bg-white/5 rounded-lg space-y-2">
       <Textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="Ajouter un commentaire..."
-        className="resize-none mobile-friendly-input"
+        className="resize-none bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-white/90 placeholder:text-white/40"
+        rows={1}
       />
-      <Button 
-        type="submit" 
-        disabled={!content.trim() || isSubmitting}
-        className="w-full sm:w-auto"
-      >
-        {isSubmitting ? "Envoi..." : "Commenter"}
-      </Button>
+      <div className="flex justify-end">
+        <Button 
+          type="submit" 
+          variant="secondary"
+          size="sm"
+          disabled={!content.trim() || isSubmitting}
+          className="bg-white/10 hover:bg-white/20 text-white"
+        >
+          {isSubmitting ? "Envoi..." : "Commenter"}
+        </Button>
+      </div>
     </form>
   );
 }
