@@ -38,25 +38,39 @@ export function ConversationList({ className }: { className?: string }) {
           .from('conversations')
           .select(`
             *,
-            participant1:profiles!conversations_participant1_id_fkey(*),
-            participant2:profiles!conversations_participant2_id_fkey(*)
+            participant1:profiles!conversations_participant1_id_fkey(
+              id, full_name, avatar_url, online_status, last_seen
+            ),
+            participant2:profiles!conversations_participant2_id_fkey(
+              id, full_name, avatar_url, online_status, last_seen
+            )
           `)
           .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
           .order('last_message_time', { ascending: false });
 
         if (error) throw error;
         
-        const formattedConversations = existingConversations.map(conv => {
+        const formattedConversations: Conversation[] = (existingConversations || []).map(conv => {
           if (conv.participant1_id === user.id) {
-            return conv;
+            return {
+              id: conv.id,
+              participant1_id: conv.participant1_id,
+              participant2_id: conv.participant2_id,
+              participant1: conv.participant1 as UserProfile,
+              participant2: conv.participant2 as UserProfile,
+              last_message: conv.last_message,
+              last_message_time: conv.last_message_time
+            };
           }
           // Swap participants if needed to always have current user as participant1
           return {
-            ...conv,
-            participant1: conv.participant2,
-            participant2: conv.participant1,
+            id: conv.id,
             participant1_id: conv.participant2_id,
-            participant2_id: conv.participant1_id
+            participant2_id: conv.participant1_id,
+            participant1: conv.participant2 as UserProfile,
+            participant2: conv.participant1 as UserProfile,
+            last_message: conv.last_message,
+            last_message_time: conv.last_message_time
           };
         });
         
