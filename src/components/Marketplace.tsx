@@ -1,6 +1,8 @@
+
 import { useState } from "react";
 import { MarketplaceForm } from "./marketplace/MarketplaceForm";
 import { MarketplaceList } from "./marketplace/MarketplaceList";
+import { MarketplaceContracts } from "./marketplace/MarketplaceContracts";
 import { MarketplaceFilters } from "./marketplace/MarketplaceFilters";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "./ui/dialog";
@@ -96,11 +98,12 @@ export function Marketplace() {
         </div>
 
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 sm:w-auto sm:inline-flex">
+          <TabsList className="grid w-full grid-cols-5 sm:w-auto sm:inline-flex">
             <TabsTrigger value="all">Tout</TabsTrigger>
             <TabsTrigger value="sale">Vente</TabsTrigger>
             <TabsTrigger value="rent">Location</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
+            <TabsTrigger value="contracts">Contrats</TabsTrigger>
           </TabsList>
 
           <TabsContent value="all">
@@ -138,6 +141,9 @@ export function Marketplace() {
               page={currentPage} 
               onPageChange={setCurrentPage} 
             />
+          </TabsContent>
+          <TabsContent value="contracts">
+            <MarketplaceContracts />
           </TabsContent>
         </Tabs>
       </div>
