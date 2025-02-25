@@ -1,4 +1,3 @@
-
 import { Star, Menu, Bot, Search, MapPin, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,19 +10,13 @@ import { VictaureChat } from "@/components/chat/VictaureChat";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { Job } from "@/types/job";
 
 interface AppHeaderProps {
   totalJobs?: number;
   onRequestAssistant?: () => void;
   showMobileMenu?: boolean;
   setShowMobileMenu?: (show: boolean) => void;
-}
-
-interface SearchResult {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
 }
 
 export function AppHeader({
@@ -34,7 +27,7 @@ export function AppHeader({
   const [showChat, setShowChat] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showResults, setShowResults] = useState(false);
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchResults, setSearchResults] = useState<Job[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const { user } = useAuth();
 
@@ -49,36 +42,20 @@ export function AppHeader({
       console.log('Recherche effectuée pour:', searchQuery);
       
       try {
-        // Simuler des résultats de recherche pour démonstration
-        const mockResults: SearchResult[] = [
-          {
-            id: '1',
-            title: 'Développeur Frontend',
-            company: 'TechCorp',
-            location: 'Montréal'
+        const response = await fetch('https://mfjllillnpleasclqabb.supabase.co/functions/v1/search-jobs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
           },
-          {
-            id: '2',
-            title: 'Développeur Backend',
-            company: 'WebSolutions',
-            location: 'Québec'
-          },
-          {
-            id: '3',
-            title: 'Développeur Full Stack',
-            company: 'DigitalCo',
-            location: 'Laval'
-          }
-        ];
+          body: JSON.stringify({ query: searchQuery })
+        });
 
-        // Simuler un délai de chargement
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        setSearchResults(mockResults.filter(result => 
-          result.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          result.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          result.location.toLowerCase().includes(searchQuery.toLowerCase())
-        ));
+        if (!response.ok) {
+          throw new Error('Erreur lors de la recherche');
+        }
+
+        const data = await response.json();
+        setSearchResults(data.data || []);
       } catch (error) {
         console.error('Erreur de recherche:', error);
         toast.error("Erreur lors de la recherche");
@@ -247,16 +224,18 @@ export function AppHeader({
               ) : searchQuery ? (
                 searchResults.length > 0 ? (
                   <div className="space-y-4">
-                    {searchResults.map(result => (
+                    {searchResults.map(job => (
                       <div 
-                        key={result.id}
+                        key={job.id}
                         className="p-4 bg-white/5 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
                       >
-                        <h3 className="text-white font-medium">{result.title}</h3>
+                        <h3 className="text-white font-medium">{job.title}</h3>
                         <div className="flex items-center gap-2 mt-2 text-sm text-white/60">
-                          <span>{result.company}</span>
+                          <span>{job.company}</span>
                           <span>•</span>
-                          <span>{result.location}</span>
+                          <span>{job.location}</span>
+                          {job.salary && <span>•</span>}
+                          {job.salary && <span>{job.salary}</span>}
                         </div>
                       </div>
                     ))}
