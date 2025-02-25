@@ -1,5 +1,5 @@
 
-import { RefObject } from "react";
+import { RefObject, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,10 @@ interface Message {
 interface MessageListProps {
   messages: Message[];
   isLoading?: boolean;
+  ref?: RefObject<HTMLDivElement>;
 }
 
-export const MessageList = ({ messages, isLoading }: MessageListProps) => {
+export const MessageList = ({ messages, isLoading, ref }: MessageListProps) => {
   const [speakingMessageId, setSpeakingMessageId] = useState<number | null>(null);
 
   const handleSpeak = (text: string, index: number) => {
@@ -46,7 +47,7 @@ export const MessageList = ({ messages, isLoading }: MessageListProps) => {
 
   return (
     <div className="flex flex-col min-h-full bg-gradient-to-b from-[#F1F0FB]/80 via-[#F1F0FB]/60 to-[#F1F0FB]/40 dark:from-[#1A1F2C]/90 dark:via-[#1B2A4A]/70 dark:to-[#1B2A4A]/50">
-      <div className="flex-1 p-6 space-y-6 overflow-y-auto">
+      <div ref={ref} className="flex-1 p-6 space-y-6 overflow-y-auto">
         <AnimatePresence mode="popLayout">
           {messages.map((message, index) => (
             <motion.div 

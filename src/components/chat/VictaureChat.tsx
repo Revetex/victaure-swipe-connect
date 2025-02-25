@@ -125,9 +125,9 @@ export function VictaureChat({
 
         <div className="flex-1 min-h-0 overflow-y-auto pb-24">
           <MessageList 
-            ref={chatContainerRef} 
             messages={messages}
             isLoading={isLoading}
+            ref={chatContainerRef}
           />
         </div>
         
