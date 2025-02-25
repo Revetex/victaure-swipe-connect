@@ -9,6 +9,7 @@ import { useConverter } from "./hooks/useConverter";
 import { useState } from "react";
 import { usePaymentHandler } from "@/hooks/usePaymentHandler";
 import { toast } from "sonner";
+import { TransactionType } from "./types";
 
 export function CalculatorTab() {
   const calculator = useCalculator();
@@ -45,6 +46,7 @@ export function CalculatorTab() {
           />
         </Card>
         <PaymentPanel 
+          type="fixed"
           amount={amount}
           onAmountChange={setAmount}
           onSubmit={handlePaymentSubmit}
