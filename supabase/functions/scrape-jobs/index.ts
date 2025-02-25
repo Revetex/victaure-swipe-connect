@@ -7,53 +7,90 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const SUPPORTED_SITES = {
+interface ExtractionSchema {
+  name: string;
+  baseSelector: string;
+  fields: {
+    name: string;
+    selector: string;
+    type: 'text' | 'attribute';
+    attribute?: string;
+  }[];
+}
+
+const SITE_SCHEMAS: Record<string, ExtractionSchema> = {
   'jobboom.com': {
-    title: '.job-title, h1',
-    company: '.company-name, .employer-name',
-    location: '.location',
-    description: '.job-description',
-    salary: '.salary',
-    type: '.job-type'
+    name: 'Jobboom Job',
+    baseSelector: '.job-posting',
+    fields: [
+      { name: 'title', selector: '.job-title, h1', type: 'text' },
+      { name: 'company', selector: '.company-name, .employer-name', type: 'text' },
+      { name: 'location', selector: '.location', type: 'text' },
+      { name: 'description', selector: '.job-description', type: 'text' },
+      { name: 'salary', selector: '.salary', type: 'text' },
+      { name: 'type', selector: '.job-type', type: 'text' },
+      { name: 'applyLink', selector: 'a.apply-button', type: 'attribute', attribute: 'href' }
+    ]
   },
   'jobillico.com': {
-    title: '.offer-title, h1',
-    company: '.company-name',
-    location: '.location',
-    description: '#description',
-    salary: '.salary-range',
-    type: '.employment-type'
-  },
-  'joblist.com': {
-    title: '.posting-title, h1',
-    company: '.company-info',
-    location: '.location',
-    description: '.description',
-    salary: '.compensation',
-    type: '.employment-type'
+    name: 'Jobillico Job',
+    baseSelector: '.job-offer',
+    fields: [
+      { name: 'title', selector: '.offer-title, h1', type: 'text' },
+      { name: 'company', selector: '.company-name', type: 'text' },
+      { name: 'location', selector: '.location', type: 'text' },
+      { name: 'description', selector: '#description', type: 'text' },
+      { name: 'salary', selector: '.salary-range', type: 'text' },
+      { name: 'type', selector: '.employment-type', type: 'text' },
+      { name: 'applyLink', selector: '.apply-now', type: 'attribute', attribute: 'href' }
+    ]
   },
   'guichetemplois.gc.ca': {
-    title: '.title, h1',
-    company: '.business-name',
-    location: '.location',
-    description: '#job-description',
-    salary: '.salary',
-    type: '.work-type'
+    name: 'Guichet Emplois Job',
+    baseSelector: '.job-posting',
+    fields: [
+      { name: 'title', selector: '.title, h1', type: 'text' },
+      { name: 'company', selector: '.business-name', type: 'text' },
+      { name: 'location', selector: '.location', type: 'text' },
+      { name: 'description', selector: '#job-description', type: 'text' },
+      { name: 'salary', selector: '.salary', type: 'text' },
+      { name: 'type', selector: '.work-type', type: 'text' },
+      { name: 'applyLink', selector: '.apply-button', type: 'attribute', attribute: 'href' }
+    ]
   },
   'quebecemploi.gouv.qc.ca': {
-    title: '.job-title, h1',
-    company: '.employer-name',
-    location: '.location',
-    description: '.description',
-    salary: '.salary-info',
-    type: '.job-type'
+    name: 'Quebec Emploi Job',
+    baseSelector: '.job-details',
+    fields: [
+      { name: 'title', selector: '.job-title, h1', type: 'text' },
+      { name: 'company', selector: '.employer-name', type: 'text' },
+      { name: 'location', selector: '.location', type: 'text' },
+      { name: 'description', selector: '.description', type: 'text' },
+      { name: 'salary', selector: '.salary-info', type: 'text' },
+      { name: 'type', selector: '.job-type', type: 'text' },
+      { name: 'applyLink', selector: '.apply-link', type: 'attribute', attribute: 'href' }
+    ]
   }
 };
 
-const getSiteSelectors = (url: string) => {
+function extractWithSchema($: cheerio.CheerioAPI, schema: ExtractionSchema) {
+  const result: Record<string, string> = {};
+  
+  schema.fields.forEach(field => {
+    if (field.type === 'text') {
+      result[field.name] = $(field.selector).first().text().trim();
+    } else if (field.type === 'attribute' && field.attribute) {
+      result[field.name] = $(field.selector).first().attr(field.attribute) || '';
+    }
+  });
+  
+  return result;
+}
+
+function getSiteSchema(url: string): ExtractionSchema | undefined {
   const hostname = new URL(url).hostname;
-  return Object.entries(SUPPORTED_SITES).find(([domain]) => hostname.includes(domain))?.[1];
-};
+  return Object.entries(SITE_SCHEMAS).find(([domain]) => hostname.includes(domain))?.[1];
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -73,8 +110,8 @@ Deno.serve(async (req) => {
       )
     }
 
-    const selectors = getSiteSelectors(url);
-    if (!selectors) {
+    const schema = getSiteSchema(url);
+    if (!schema) {
       return new Response(
         JSON.stringify({ error: 'Unsupported job site' }), 
         { 
@@ -85,36 +122,40 @@ Deno.serve(async (req) => {
     }
 
     console.log('Starting job search process...');
-    const response = await fetch(url)
-    const html = await response.text()
-    const $ = cheerio.load(html)
+    const response = await fetch(url);
+    const html = await response.text();
+    const $ = cheerio.load(html);
+    
+    const extractedData = extractWithSchema($, schema);
     
     const scrapedJob = {
       url,
-      title: $(selectors.title).first().text().trim() || 'Unknown Title',
-      company: $(selectors.company).first().text().trim(),
-      location: $(selectors.location).first().text().trim(),
-      description: $(selectors.description).first().text().trim(),
-      salary_range: $(selectors.salary).first().text().trim(),
-      job_type: $(selectors.type).first().text().trim(),
+      title: extractedData.title || 'Unknown Title',
+      company: extractedData.company || 'Unknown Company',
+      location: extractedData.location || '',
+      description: extractedData.description || '',
+      salary_range: extractedData.salary || '',
+      job_type: extractedData.type || '',
+      apply_url: extractedData.applyLink || url,
       source: new URL(url).hostname,
       raw_data: {
         fullHtml: html,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        extracted: extractedData
       }
-    }
+    };
 
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    );
 
     const { error: insertError } = await supabaseClient
       .from('crawled_jobs')
-      .insert(scrapedJob)
+      .insert(scrapedJob);
 
     if (insertError) {
-      throw insertError
+      throw insertError;
     }
 
     return new Response(
@@ -122,15 +163,16 @@ Deno.serve(async (req) => {
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
-    )
+    );
 
   } catch (error) {
+    console.error('Error in scrape-jobs function:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
-    )
+    );
   }
-})
+});
