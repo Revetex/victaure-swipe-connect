@@ -7,17 +7,53 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-interface ScrapedJob {
-  url: string
-  title: string
-  company?: string
-  location?: string
-  description?: string
-  salary_range?: string
-  job_type?: string
-  source: string
-  raw_data: Record<string, any>
-}
+const SUPPORTED_SITES = {
+  'jobboom.com': {
+    title: '.job-title, h1',
+    company: '.company-name, .employer-name',
+    location: '.location',
+    description: '.job-description',
+    salary: '.salary',
+    type: '.job-type'
+  },
+  'jobillico.com': {
+    title: '.offer-title, h1',
+    company: '.company-name',
+    location: '.location',
+    description: '#description',
+    salary: '.salary-range',
+    type: '.employment-type'
+  },
+  'joblist.com': {
+    title: '.posting-title, h1',
+    company: '.company-info',
+    location: '.location',
+    description: '.description',
+    salary: '.compensation',
+    type: '.employment-type'
+  },
+  'guichetemplois.gc.ca': {
+    title: '.title, h1',
+    company: '.business-name',
+    location: '.location',
+    description: '#job-description',
+    salary: '.salary',
+    type: '.work-type'
+  },
+  'quebecemploi.gouv.qc.ca': {
+    title: '.job-title, h1',
+    company: '.employer-name',
+    location: '.location',
+    description: '.description',
+    salary: '.salary-info',
+    type: '.job-type'
+  }
+};
+
+const getSiteSelectors = (url: string) => {
+  const hostname = new URL(url).hostname;
+  return Object.entries(SUPPORTED_SITES).find(([domain]) => hostname.includes(domain))?.[1];
+};
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -37,22 +73,29 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Fetch the webpage
+    const selectors = getSiteSelectors(url);
+    if (!selectors) {
+      return new Response(
+        JSON.stringify({ error: 'Unsupported job site' }), 
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
     const response = await fetch(url)
     const html = await response.text()
-    
-    // Use cheerio to parse the HTML
     const $ = cheerio.load(html)
     
-    // Basic scraping logic - adjust selectors based on target sites
-    const scrapedJob: ScrapedJob = {
+    const scrapedJob = {
       url,
-      title: $('h1').first().text().trim() || 'Unknown Title',
-      company: $('.company-name, [data-company]').first().text().trim(),
-      location: $('.location, [data-location]').first().text().trim(),
-      description: $('.description, [data-description]').first().text().trim(),
-      salary_range: $('.salary, [data-salary]').first().text().trim(),
-      job_type: $('.job-type, [data-job-type]').first().text().trim(),
+      title: $(selectors.title).first().text().trim() || 'Unknown Title',
+      company: $(selectors.company).first().text().trim(),
+      location: $(selectors.location).first().text().trim(),
+      description: $(selectors.description).first().text().trim(),
+      salary_range: $(selectors.salary).first().text().trim(),
+      job_type: $(selectors.type).first().text().trim(),
       source: new URL(url).hostname,
       raw_data: {
         fullHtml: html,
@@ -60,7 +103,6 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Store in Supabase
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''

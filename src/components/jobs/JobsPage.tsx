@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { JobsSearch } from "./sections/JobsSearch";
 import { JobsResults } from "./sections/JobsResults";
 import { cn } from "@/lib/utils";
-import { GoogleSearch } from "@/components/google-search/GoogleSearch";
+import { JobScraper } from "./JobScraper";
 
 export function JobsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,36 +72,34 @@ export function JobsPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={cn(
-        "min-h-screen bg-background dark:bg-[#1A1F2C] py-20 px-4",
+        "min-h-screen bg-background dark:bg-[#1A1F2C]",
       )}
     >
-      <div className="max-w-5xl mx-auto space-y-6">
-        <JobsSearch 
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          selectedLocation={selectedLocation}
-          selectedCompanyType={selectedCompanyType}
-          sortOrder={sortOrder}
-          experienceLevel={experienceLevel}
-          contractType={contractType}
-          salaryRange={salaryRange}
-          remoteOnly={remoteOnly}
-          onLocationChange={setSelectedLocation}
-          onCompanyTypeChange={setSelectedCompanyType}
-          onSortOrderChange={setSortOrder}
-          onExperienceLevelChange={setExperienceLevel}
-          onContractTypeChange={setContractType}
-          onSalaryRangeChange={setSalaryRange}
-          onRemoteOnlyChange={setRemoteOnly}
-        />
-        
-        <section className="bg-card dark:bg-[#1B2A4A]/50 backdrop-blur-sm border border-border/10 dark:border-[#64B5D9]/10 rounded-lg p-6 shadow-lg">
-          <h2 className="text-xl font-semibold text-foreground dark:text-white mb-4">
-            Rechercher dans les offres d'emploi
-          </h2>
-          <GoogleSearch searchEngineId="1262c5460a0314a80" />
-        </section>
-        
+      <div className="sticky top-0 z-10 bg-background/95 dark:bg-[#1A1F2C]/95 backdrop-blur-sm border-b border-[#64B5D9]/10 pb-4">
+        <div className="max-w-5xl mx-auto px-4 pt-8 space-y-4">
+          <JobScraper />
+          <JobsSearch 
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedLocation={selectedLocation}
+            selectedCompanyType={selectedCompanyType}
+            sortOrder={sortOrder}
+            experienceLevel={experienceLevel}
+            contractType={contractType}
+            salaryRange={salaryRange}
+            remoteOnly={remoteOnly}
+            onLocationChange={setSelectedLocation}
+            onCompanyTypeChange={setSelectedCompanyType}
+            onSortOrderChange={setSortOrder}
+            onExperienceLevelChange={setExperienceLevel}
+            onContractTypeChange={setContractType}
+            onSalaryRangeChange={setSalaryRange}
+            onRemoteOnlyChange={setRemoteOnly}
+          />
+        </div>
+      </div>
+      
+      <div className="max-w-5xl mx-auto px-4 py-6">
         <JobsResults 
           jobs={filteredJobs}
           onJobSelect={handleJobSelect}
