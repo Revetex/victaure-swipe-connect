@@ -45,7 +45,22 @@ export function MarketplaceContracts() {
 
       if (error) throw error;
       
-      setContracts(data || []);
+      // Assurons-nous que les données correspondent au type attendu
+      const typedData: MarketplaceContract[] = data?.map(contract => ({
+        ...contract,
+        description: contract.description || null,
+        budget_min: contract.budget_min || null,
+        budget_max: contract.budget_max || null,
+        deadline: contract.deadline || null,
+        location: contract.location || null,
+        category: contract.category || null,
+        requirements: contract.requirements || null,
+        documents: contract.documents || null,
+        updated_at: contract.updated_at || null,
+        creator: contract.creator || null
+      })) || [];
+      
+      setContracts(typedData);
     } catch (error) {
       console.error('Erreur lors du chargement des contrats:', error);
       toast.error("Erreur lors du chargement des contrats");
