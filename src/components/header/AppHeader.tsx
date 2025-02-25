@@ -1,6 +1,7 @@
 
-import { Star, Menu, Bot } from "lucide-react";
+import { Star, Menu, Bot, Search, MapPin, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/Logo";
@@ -8,7 +9,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState } from "react";
 import { VictaureChat } from "@/components/chat/VictaureChat";
 import { Badge } from "@/components/ui/badge";
-import { GoogleSearch } from "@/components/google-search/GoogleSearch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface AppHeaderProps {
   totalJobs?: number;
@@ -106,7 +107,39 @@ export function AppHeader({
           </div>
 
           <div className="w-full max-w-3xl mx-auto pb-4">
-            <GoogleSearch />
+            <div className="grid md:grid-cols-[1fr,auto,auto] gap-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/40" />
+                <Input
+                  type="text"
+                  placeholder="Rechercher un emploi, une entreprise..."
+                  className="h-10 pl-10 pr-4 w-full bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:bg-white/10 transition-colors"
+                />
+              </div>
+              
+              <Select>
+                <SelectTrigger className="h-10 bg-white/5 border-white/10 text-white min-w-[140px]">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    <SelectValue placeholder="Lieu" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="montreal">Montréal</SelectItem>
+                  <SelectItem value="quebec">Québec</SelectItem>
+                  <SelectItem value="laval">Laval</SelectItem>
+                  // ... autres villes
+                </SelectContent>
+              </Select>
+
+              <Button
+                variant="outline"
+                className="h-10 px-4 bg-white/5 border-white/10 text-white hover:bg-white/10"
+              >
+                <Filter className="h-4 w-4 mr-2" />
+                Filtres
+              </Button>
+            </div>
           </div>
         </div>
       </motion.header>
