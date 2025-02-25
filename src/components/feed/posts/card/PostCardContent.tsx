@@ -23,12 +23,12 @@ export function PostCardContent({
         <Textarea
           value={editContent}
           onChange={(e) => onEditContentChange(e.target.value)}
-          className="min-h-[80px] resize-none mobile-friendly-input"
+          className="min-h-[80px] resize-none mobile-friendly-input text-[#F2EBE4]"
           placeholder="Que voulez-vous partager ?"
         />
       ) : (
         content && (
-          <div className="text-sm text-foreground/90 whitespace-pre-wrap">
+          <div className="text-sm text-[#F2EBE4] whitespace-pre-wrap">
             {content}
           </div>
         )
