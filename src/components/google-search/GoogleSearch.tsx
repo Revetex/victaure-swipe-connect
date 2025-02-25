@@ -2,22 +2,39 @@
 import { SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function GoogleSearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [searchUrl, setSearchUrl] = useState("");
+
+  useEffect(() => {
+    // Ajouter le script Google Custom Search
+    const script = document.createElement("script");
+    script.src = "https://cse.google.com/cse.js?cx=22e4528bd7c6f4db0";
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      // Nettoyer le script lors du démontage du composant
+      document.head.removeChild(script);
+    };
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchTerm.trim()) return;
 
     setIsSearching(true);
-    const encodedQuery = encodeURIComponent(searchTerm);
-    // Utilisation du moteur de recherche personnalisé Google pour les offres d'emploi au Québec
-    const newSearchUrl = `https://cse.google.com/cse/publicurl?cx=1262c5460a0314a80&q=${encodedQuery}`;
-    setSearchUrl(newSearchUrl);
+    // Déclencher une nouvelle recherche
+    const element = document.querySelector('.gsc-search-box input') as HTMLInputElement;
+    if (element) {
+      element.value = searchTerm;
+      const searchButton = document.querySelector('.gsc-search-button button') as HTMLButtonElement;
+      if (searchButton) {
+        searchButton.click();
+      }
+    }
   };
 
   return (
@@ -39,22 +56,9 @@ export function GoogleSearch() {
         </Button>
       </form>
       
-      {searchUrl && (
-        <div className="mt-4 border border-border/10 dark:border-[#64B5D9]/10 rounded-lg overflow-hidden">
-          <iframe
-            src={searchUrl}
-            className="w-full h-[800px] bg-white dark:bg-[#1B2A4A]"
-            style={{
-              border: "none",
-              display: "block",
-              width: "100%",
-            }}
-            frameBorder="0"
-            scrolling="yes"
-            allowFullScreen
-          />
-        </div>
-      )}
+      <div className="mt-4 border border-border/10 dark:border-[#64B5D9]/10 rounded-lg overflow-hidden bg-white dark:bg-[#1B2A4A] p-4">
+        <div className="gcse-searchresults-only"></div>
+      </div>
     </div>
   );
 }
