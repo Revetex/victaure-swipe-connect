@@ -47,13 +47,15 @@ export function CreatePostForm({
       layout
     >
       {!isExpanded ? (
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-[#9b87f5] hover:text-[#7E69AB] hover:bg-white/5"
-          onClick={() => setIsExpanded(true)}
-        >
-          Créer une publication...
-        </Button>
+        <div className="flex items-center w-full gap-3 p-2">
+          <Button
+            variant="ghost"
+            className="w-full text-left text-[#F2EBE4] hover:text-[#F2EBE4]/80 hover:bg-white/5"
+            onClick={() => setIsExpanded(true)}
+          >
+            Créer une publication...
+          </Button>
+        </div>
       ) : (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
