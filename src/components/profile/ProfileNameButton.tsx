@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
 import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 interface ProfileNameButtonProps {
   profile: Partial<UserProfile> & { id: string; full_name: string | null };
