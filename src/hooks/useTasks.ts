@@ -11,6 +11,7 @@ export interface Task {
   due_date?: string;
   due_time?: string;
   all_day?: boolean;
+  created_at: string;
 }
 
 export const useTasks = () => {
@@ -31,29 +32,23 @@ export const useTasks = () => {
     }
   });
 
-  const addTask = async (
-    newTask: string, 
-    selectedDate?: Date, 
-    selectedTime?: string, 
-    allDay?: boolean
-  ) => {
-    if (!newTask.trim()) return;
+  const addTask = async (text: string, dueDate?: string) => {
+    if (!text.trim()) return false;
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error("Vous devez être connecté pour ajouter des tâches");
-        return;
+        return false;
       }
 
       const { error } = await supabase
         .from('todos')
         .insert([{ 
-          text: newTask,
+          text,
           user_id: user.id,
-          due_date: selectedDate?.toISOString(),
-          due_time: !allDay ? selectedTime : null,
-          all_day: allDay
+          due_date: dueDate,
+          created_at: new Date().toISOString()
         }]);
 
       if (error) throw error;
@@ -68,11 +63,14 @@ export const useTasks = () => {
     }
   };
 
-  const toggleTask = async (taskId: string, completed: boolean) => {
+  const toggleTask = async (taskId: string) => {
     try {
+      const task = tasks?.find(t => t.id === taskId);
+      if (!task) return;
+
       const { error } = await supabase
         .from('todos')
-        .update({ completed: !completed })
+        .update({ completed: !task.completed })
         .eq('id', taskId);
 
       if (error) throw error;
@@ -101,7 +99,11 @@ export const useTasks = () => {
   };
 
   return {
-    tasks,
+    tasks: tasks?.map(task => ({
+      ...task,
+      createdAt: task.created_at,
+      dueDate: task.due_date
+    })) || [],
     addTask,
     toggleTask,
     deleteTask
