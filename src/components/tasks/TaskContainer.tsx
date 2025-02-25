@@ -33,14 +33,14 @@ export function TaskContainer() {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen w-full bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6 lg:p-8"
+      className="min-h-screen w-full bg-gradient-to-br from-[#1A1F2C] to-[#2A3441] p-4 sm:p-6 lg:p-8"
     >
       <div className="max-w-4xl mx-auto space-y-6">
         <header className="text-center space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#eee] font-tiempos">
             Mes Tâches
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-[#eee]/80">
             Organisez votre journée efficacement
           </p>
         </header>
