@@ -27,8 +27,8 @@ export function PostFilters({
   onSortOrderChange,
 }: PostFiltersProps) {
   return (
-    <section className="bg-card/95 backdrop-blur-sm rounded-lg border shadow-sm p-4 space-y-4">
-      <div className="flex items-center gap-4">
+    <section className="bg-card/95 backdrop-blur-sm rounded-lg border shadow-sm p-4">
+      <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -39,24 +39,11 @@ export function PostFilters({
             className="pl-9 bg-background/50"
           />
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onSortOrderChange(sortOrder === 'asc' ? 'desc' : 'asc')}
-          className="shrink-0"
-        >
-          {sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
-        </Button>
-      </div>
-
-      <Separator />
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Filtrer par</label>
+        
+        <div className="flex gap-2">
           <Select value={filter} onValueChange={onFilterChange}>
-            <SelectTrigger>
-              <SelectValue placeholder="Sélectionner un filtre" />
+            <SelectTrigger className="min-w-[140px] bg-background/50">
+              <SelectValue placeholder="Filtrer par" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tous les posts</SelectItem>
@@ -65,13 +52,10 @@ export function PostFilters({
               <SelectItem value="saved">Posts sauvegardés</SelectItem>
             </SelectContent>
           </Select>
-        </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Trier par</label>
           <Select value={sortBy} onValueChange={onSortByChange}>
-            <SelectTrigger>
-              <SelectValue placeholder="Sélectionner un tri" />
+            <SelectTrigger className="min-w-[140px] bg-background/50">
+              <SelectValue placeholder="Trier par" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="date">Date</SelectItem>
@@ -79,6 +63,15 @@ export function PostFilters({
               <SelectItem value="comments">Commentaires</SelectItem>
             </SelectContent>
           </Select>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onSortOrderChange(sortOrder === 'asc' ? 'desc' : 'asc')}
+            className="shrink-0 bg-background/50"
+          >
+            {sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
+          </Button>
         </div>
       </div>
     </section>

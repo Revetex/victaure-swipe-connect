@@ -8,6 +8,7 @@ import { DeletePostDialog } from "./DeletePostDialog";
 import { PostFilters } from "./sections/PostFilters";
 import { PostGrid } from "./sections/PostGrid";
 import { usePostsQuery } from "./hooks/usePostsQuery";
+import { motion } from "framer-motion";
 
 interface PostListProps {
   onPostDeleted: () => void;
@@ -42,39 +43,42 @@ export function PostList({
   if (!posts?.length) return <EmptyPostState />;
 
   return (
-    <main className="relative w-full max-w-3xl mx-auto space-y-4 px-2 sm:px-4 py-4">
-      <div className="relative z-10 space-y-4">
-        <PostFilters 
-          searchTerm={searchTerm} 
-          onSearchChange={setSearchTerm}
-          filter={filter} 
-          onFilterChange={setFilter}
-          sortBy={sortBy} 
-          onSortByChange={setSortBy}
-          sortOrder={sortOrder} 
-          onSortOrderChange={setSortOrder}
-        />
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
+      <PostFilters 
+        searchTerm={searchTerm} 
+        onSearchChange={setSearchTerm}
+        filter={filter} 
+        onFilterChange={setFilter}
+        sortBy={sortBy} 
+        onSortByChange={setSortBy}
+        sortOrder={sortOrder} 
+        onSortOrderChange={setSortOrder}
+      />
 
-        <PostGrid 
-          posts={filteredPosts || []} 
-          currentUserId={user?.id}
-          userEmail={user?.email}
-          onDelete={postId => setPostToDelete(postId)}
-          onHide={handleHide}
-          onUpdate={handleUpdate}
-        />
+      <PostGrid 
+        posts={filteredPosts || []} 
+        currentUserId={user?.id}
+        userEmail={user?.email}
+        onDelete={postId => setPostToDelete(postId)}
+        onHide={handleHide}
+        onUpdate={handleUpdate}
+      />
 
-        <DeletePostDialog 
-          isOpen={!!postToDelete}
-          onClose={() => setPostToDelete(null)}
-          onConfirm={() => {
-            if (postToDelete && user?.id) {
-              handleDelete(postToDelete, user.id);
-              setPostToDelete(null);
-            }
-          }}
-        />
-      </div>
-    </main>
+      <DeletePostDialog 
+        isOpen={!!postToDelete}
+        onClose={() => setPostToDelete(null)}
+        onConfirm={() => {
+          if (postToDelete && user?.id) {
+            handleDelete(postToDelete, user.id);
+            setPostToDelete(null);
+          }
+        }}
+      />
+    </motion.div>
   );
 }
