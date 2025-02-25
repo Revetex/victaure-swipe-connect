@@ -42,8 +42,8 @@ export function PostList({
   if (!posts?.length) return <EmptyPostState />;
 
   return (
-    <main className="relative w-full max-w-3xl mx-auto space-y-6 px-2 sm:px-4 py-6">
-      <div className="relative z-10 space-y-6">
+    <main className="relative w-full max-w-3xl mx-auto space-y-4 px-2 sm:px-4 py-4">
+      <div className="relative z-10 space-y-4">
         <PostFilters 
           searchTerm={searchTerm} 
           onSearchChange={setSearchTerm}
