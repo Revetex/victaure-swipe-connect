@@ -14,8 +14,8 @@ interface Conversation {
   id: string;
   participant1_id: string;
   participant2_id: string;
-  participant1: UserProfile;
-  participant2: UserProfile;
+  participant1: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url' | 'online_status' | 'last_seen'>;
+  participant2: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url' | 'online_status' | 'last_seen'>;
   last_message?: string;
   last_message_time?: string;
 }
@@ -56,8 +56,8 @@ export function ConversationList({ className }: { className?: string }) {
               id: conv.id,
               participant1_id: conv.participant1_id,
               participant2_id: conv.participant2_id,
-              participant1: conv.participant1 as UserProfile,
-              participant2: conv.participant2 as UserProfile,
+              participant1: conv.participant1[0] || {},
+              participant2: conv.participant2[0] || {},
               last_message: conv.last_message,
               last_message_time: conv.last_message_time
             };
@@ -67,8 +67,8 @@ export function ConversationList({ className }: { className?: string }) {
             id: conv.id,
             participant1_id: conv.participant2_id,
             participant2_id: conv.participant1_id,
-            participant1: conv.participant2 as UserProfile,
-            participant2: conv.participant1 as UserProfile,
+            participant1: conv.participant2[0] || {},
+            participant2: conv.participant1[0] || {},
             last_message: conv.last_message,
             last_message_time: conv.last_message_time
           };

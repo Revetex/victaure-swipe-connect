@@ -6,8 +6,8 @@ import type { UserProfile } from "@/types/profile";
 export interface ConversationItemProps {
   conversation: {
     id: string;
-    participant1: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url'>;
-    participant2: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url'>;
+    participant1: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url' | 'online_status' | 'last_seen'>;
+    participant2: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url' | 'online_status' | 'last_seen'>;
     participant1_id: string;
     participant2_id: string;
     last_message?: string;
