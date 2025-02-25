@@ -54,7 +54,7 @@ export function PostCard({
   const isOwnPost = currentUserId === post.user_id;
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden text-[#F2EBE4]">
       <div className="p-4 space-y-4">
         <PostCardHeader 
           profile={post.profiles}
