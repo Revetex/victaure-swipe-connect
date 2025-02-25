@@ -1,121 +1,97 @@
 
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Plus, Calendar as CalendarIcon, Clock } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
+import { Plus, Calendar } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { TimeSelector } from "@/components/todo/TimeSelector";
 
 interface TaskInputProps {
-  onAddTask: (task: string, date?: Date, time?: string, allDay?: boolean) => Promise<boolean>;
+  onAddTask: (task: string, dueDate?: string) => void;
+  className?: string;
 }
 
-export function TaskInput({ onAddTask }: TaskInputProps) {
-  const [newTask, setNewTask] = useState("");
-  const [selectedDate, setSelectedDate] = useState<Date>();
-  const [selectedTime, setSelectedTime] = useState<string>();
-  const [allDay, setAllDay] = useState(false);
+export function TaskInput({ onAddTask, className }: TaskInputProps) {
+  const [taskText, setTaskText] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [showDateInput, setShowDateInput] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await onAddTask(newTask, selectedDate, selectedTime, allDay);
-    if (success) {
-      setNewTask("");
-      setSelectedDate(undefined);
-      setSelectedTime(undefined);
-      setAllDay(false);
+    
+    if (!taskText.trim()) {
+      toast.error("La tâche ne peut pas être vide");
+      return;
     }
+
+    onAddTask(taskText, dueDate || undefined);
+    setTaskText("");
+    setDueDate("");
+    toast.success("Tâche ajoutée avec succès");
   };
 
   return (
-    <Card className="p-4 mb-6">
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={cn(
+        "w-full max-w-2xl mx-auto",
+        "bg-white/50 dark:bg-gray-900/50",
+        "backdrop-blur-lg",
+        "rounded-xl",
+        "border border-gray-200/50 dark:border-gray-700/50",
+        "shadow-lg",
+        "p-4",
+        "space-y-4",
+        className
+      )}
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex gap-2">
           <Input
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
+            type="text"
+            value={taskText}
+            onChange={(e) => setTaskText(e.target.value)}
             placeholder="Ajouter une nouvelle tâche..."
-            className="flex-1"
+            className="flex-1 bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50"
           />
-          <Button type="submit" size="icon">
-            <Plus className="h-4 w-4" />
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => setShowDateInput(!showDateInput)}
+            className="bg-white/50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <Calendar className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+          </Button>
+          <Button 
+            type="submit"
+            className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Ajouter
           </Button>
         </div>
 
-        <div className="flex items-center gap-4 flex-wrap">
-          <div className="flex items-center gap-2">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={cn(
-                    "flex items-center gap-2",
-                    selectedDate && "text-primary"
-                  )}
-                >
-                  <CalendarIcon className="h-4 w-4" />
-                  {selectedDate ? (
-                    format(selectedDate, "d MMMM yyyy", { locale: fr })
-                  ) : (
-                    "Date"
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  locale={fr}
-                />
-              </PopoverContent>
-            </Popover>
-
-            {!allDay && (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={cn(
-                      "flex items-center gap-2",
-                      selectedTime && "text-primary"
-                    )}
-                  >
-                    <Clock className="h-4 w-4" />
-                    {selectedTime || "Heure"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <TimeSelector
-                    selectedTime={selectedTime}
-                    onTimeChange={setSelectedTime}
-                  />
-                </PopoverContent>
-              </Popover>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="allDay"
-              checked={allDay}
-              onCheckedChange={(checked) => setAllDay(checked as boolean)}
-            />
-            <Label htmlFor="allDay">
-              Toute la journée
-            </Label>
-          </div>
-        </div>
+        <AnimatePresence>
+          {showDateInput && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <Input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="w-full bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </form>
-    </Card>
+    </motion.div>
   );
 }

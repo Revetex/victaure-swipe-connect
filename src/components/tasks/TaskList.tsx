@@ -1,57 +1,90 @@
 
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Task } from "@/types/tasks";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle, Circle, Calendar, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { type Task } from "@/hooks/useTasks";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface TaskListProps {
-  tasks?: Task[];
-  onToggleTask: (taskId: string, completed: boolean) => void;
+  tasks: Task[];
+  onToggleTask: (taskId: string) => void;
   onDeleteTask: (taskId: string) => void;
 }
 
 export function TaskList({ tasks, onToggleTask, onDeleteTask }: TaskListProps) {
   return (
-    <ScrollArea className="h-[calc(100vh-16rem)]">
-      <div className="space-y-2">
-        {tasks?.map((task) => (
-          <Card key={task.id} className="p-4">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3 flex-1">
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  onChange={() => onToggleTask(task.id, task.completed)}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                <div className="flex-1">
-                  <span className={task.completed ? "line-through text-muted-foreground" : ""}>
-                    {task.text}
-                  </span>
-                  {task.due_date && (
-                    <div className="text-sm text-muted-foreground">
-                      {format(new Date(task.due_date), "d MMMM yyyy", { locale: fr })}
-                      {task.due_time && !task.all_day && ` à ${task.due_time}`}
-                      {task.all_day && " (toute la journée)"}
-                    </div>
-                  )}
-                </div>
+    <div className="w-full max-w-2xl mx-auto space-y-4">
+      <AnimatePresence mode="popLayout">
+        {tasks.map((task) => (
+          <motion.div
+            key={task.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, x: -100 }}
+            layout
+            className={cn(
+              "group relative",
+              "bg-white/50 dark:bg-gray-900/50",
+              "backdrop-blur-lg",
+              "rounded-xl",
+              "border border-gray-200/50 dark:border-gray-700/50",
+              "shadow-sm hover:shadow-md",
+              "transition-all duration-200",
+              "p-4"
+            )}
+          >
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => onToggleTask(task.id)}
+                className="flex-shrink-0"
+              >
+                {task.completed ? (
+                  <CheckCircle className="h-6 w-6 text-green-500" />
+                ) : (
+                  <Circle className="h-6 w-6 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
+                )}
+              </button>
+
+              <div className="flex-1 min-w-0">
+                <p className={cn(
+                  "text-sm sm:text-base",
+                  "text-gray-900 dark:text-gray-100",
+                  task.completed && "line-through text-gray-500 dark:text-gray-400"
+                )}>
+                  {task.text}
+                </p>
+                {task.dueDate && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    {format(new Date(task.dueDate), 'PPP', { locale: fr })}
+                  </p>
+                )}
               </div>
+
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => onDeleteTask(task.id)}
-                className="text-destructive hover:text-destructive"
+                className="opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-4 w-4 text-red-500" />
               </Button>
             </div>
-          </Card>
+          </motion.div>
         ))}
-      </div>
-    </ScrollArea>
+      </AnimatePresence>
+
+      {tasks.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center py-8 text-gray-500 dark:text-gray-400"
+        >
+          Aucune tâche pour le moment
+        </motion.div>
+      )}
+    </div>
   );
 }
