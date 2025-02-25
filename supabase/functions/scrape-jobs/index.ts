@@ -21,14 +21,15 @@ interface ExtractionSchema {
 const SITE_SCHEMAS: Record<string, ExtractionSchema> = {
   'jobillico.com': {
     name: 'Jobillico Job',
-    baseSelector: '.job-posting',
+    baseSelector: '.search-results .job-item',
     fields: [
-      { name: 'title', selector: '.offer-title, h1.job-title', type: 'text' },
-      { name: 'company', selector: '.employer-name, .company-name', type: 'text' },
-      { name: 'location', selector: '.location, .city', type: 'text' },
-      { name: 'description', selector: '.description, .job-description', type: 'text' },
+      { name: 'title', selector: '.job-title', type: 'text' },
+      { name: 'company', selector: '.company-name', type: 'text' },
+      { name: 'location', selector: '.city', type: 'text' },
+      { name: 'description', selector: '.description', type: 'text' },
       { name: 'salary', selector: '.salary', type: 'text' },
-      { name: 'type', selector: '.job-type, .contract-type', type: 'text' }
+      { name: 'type', selector: '.job-type', type: 'text' },
+      { name: 'url', selector: 'a.main-link', type: 'attribute', attribute: 'href' }
     ]
   }
 };
@@ -40,6 +41,7 @@ async function searchJobs(searchQuery: string) {
     const baseUrl = 'https://www.jobillico.com/search-jobs';
     const searchUrl = `${baseUrl}?skwd=${encodeURIComponent(searchQuery)}`;
     
+    console.log('Fetching URL:', searchUrl);
     const response = await fetch(searchUrl);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -51,22 +53,28 @@ async function searchJobs(searchQuery: string) {
     const jobs: any[] = [];
     
     $('.search-results .job-item').each((_, element) => {
-      const job = {
-        title: $(element).find('.job-title').text().trim(),
-        company: $(element).find('.company-name').text().trim(),
-        location: $(element).find('.city').text().trim(),
-        description: $(element).find('.description').text().trim(),
-        posted_at: $(element).find('.date').text().trim(),
-        url: 'https://www.jobillico.com' + ($(element).find('a.main-link').attr('href') || ''),
-        salary_range: $(element).find('.salary').text().trim(),
-        employment_type: $(element).find('.job-type').text().trim()
-      };
-      
-      if (job.title && job.company) {
-        jobs.push(job);
+      try {
+        const job = {
+          title: $(element).find('.job-title').text().trim(),
+          company: $(element).find('.company-name').text().trim(),
+          location: $(element).find('.city').text().trim(),
+          description: $(element).find('.description').text().trim(),
+          posted_at: $(element).find('.date').text().trim(),
+          url: 'https://www.jobillico.com' + ($(element).find('a.main-link').attr('href') || ''),
+          salary_range: $(element).find('.salary').text().trim(),
+          employment_type: $(element).find('.job-type').text().trim()
+        };
+        
+        if (job.title && job.company) {
+          console.log('Found job:', job.title);
+          jobs.push(job);
+        }
+      } catch (err) {
+        console.error('Error parsing job item:', err);
       }
     });
     
+    console.log(`Found ${jobs.length} jobs`);
     return jobs;
   } catch (error) {
     console.error('Error searching jobs:', error);
@@ -74,35 +82,21 @@ async function searchJobs(searchQuery: string) {
   }
 }
 
-function extractWithSchema($: cheerio.CheerioAPI, schema: ExtractionSchema) {
-  const result: Record<string, string> = {};
-  
-  schema.fields.forEach(field => {
-    if (field.type === 'text') {
-      result[field.name] = $(field.selector).first().text().trim();
-    } else if (field.type === 'attribute' && field.attribute) {
-      result[field.name] = $(field.selector).first().attr(field.attribute) || '';
-    }
-  });
-  
-  return result;
-}
-
-function getSiteSchema(url: string): ExtractionSchema | undefined {
-  const hostname = new URL(url).hostname;
-  return Object.entries(SITE_SCHEMAS).find(([domain]) => hostname.includes(domain))?.[1];
-}
-
 Deno.serve(async (req) => {
+  console.log('Received request:', req.method);
+  
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
+    console.log('Parsing request body...');
     const { url } = await req.json();
-    
+    console.log('Request URL:', url);
+
     // If no URL is provided, perform a general job search
     if (!url) {
+      console.log('No URL provided, performing general search');
       const jobs = await searchJobs('site:jobillico.com/fr/emploi');
       return new Response(
         JSON.stringify({ success: true, data: jobs }),
@@ -110,59 +104,80 @@ Deno.serve(async (req) => {
       );
     }
 
-    // If URL is provided, scrape the specific job
-    const schema = getSiteSchema(url);
-    if (!schema) {
-      throw new Error('Unsupported job site');
+    // If URL is provided, validate it
+    try {
+      console.log('Validating URL:', url);
+      new URL(url); // This will throw if URL is invalid
+    } catch (err) {
+      console.error('Invalid URL:', err);
+      throw new Error('Invalid URL provided');
     }
 
+    console.log('Fetching URL:', url);
     const response = await fetch(url);
     if (!response.ok) {
+      console.error('Fetch failed:', response.status, response.statusText);
       throw new Error(`Failed to fetch URL: ${response.status}`);
     }
 
     const html = await response.text();
+    console.log('HTML length:', html.length);
+
     const $ = cheerio.load(html);
-    
-    const extractedData = extractWithSchema($, schema);
-    
-    const scrapedJob = {
+    console.log('Cheerio loaded');
+
+    // Extract job details
+    const job = {
       url,
-      title: extractedData.title || 'Unknown Title',
-      company: extractedData.company || 'Unknown Company',
-      location: extractedData.location || '',
-      description: extractedData.description || '',
-      salary_range: extractedData.salary || '',
-      employment_type: extractedData.type || '',
+      title: $('.job-title, h1').first().text().trim() || 'Unknown Title',
+      company: $('.company-name, .employer-name').first().text().trim() || 'Unknown Company',
+      location: $('.city, .location').first().text().trim() || '',
+      description: $('.description, .job-description').first().text().trim() || '',
+      salary_range: $('.salary').first().text().trim() || '',
+      employment_type: $('.job-type').first().text().trim() || '',
       posted_at: new Date().toISOString(),
       source: new URL(url).hostname
     };
 
-    // Store in database
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    console.log('Extracted job:', job);
 
+    // Connect to Supabase
+    console.log('Connecting to Supabase...');
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Missing Supabase credentials');
+    }
+
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    // Store in database
+    console.log('Storing job in database...');
     const { error: insertError } = await supabaseClient
       .from('scraped_jobs')
-      .insert(scrapedJob);
+      .insert([job]);
 
     if (insertError) {
+      console.error('Database insert error:', insertError);
       throw insertError;
     }
 
+    console.log('Job stored successfully');
+
     return new Response(
-      JSON.stringify({ success: true, data: scrapedJob }),
+      JSON.stringify({ success: true, data: job }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Error in scrape-jobs function:', error);
+    console.error('Function error:', error);
+    console.error('Error stack:', error.stack);
     return new Response(
       JSON.stringify({ 
         error: error.message,
-        details: error.stack
+        stack: error.stack,
+        details: error.toString()
       }),
       { 
         status: 500,
