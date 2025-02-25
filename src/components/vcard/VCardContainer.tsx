@@ -1,15 +1,12 @@
-
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import "@/styles/shared.css";
-
 interface VCardContainerProps {
   children: ReactNode;
   className?: string;
   isEditing?: boolean;
 }
-
 export function VCardContainer({
   children,
   className,
@@ -34,24 +31,14 @@ export function VCardContainer({
           <div className="absolute top-0 right-0 w-32 h-32">
             <div className="absolute inset-0 bg-gradient-to-bl from-[#1B2A4A]/20 to-transparent rounded-tr-3xl" />
           </div>
-          <div className="absolute bottom-0 left-0 w-32 h-32">
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#1B2A4A]/20 to-transparent rounded-bl-3xl" />
-          </div>
-          <div className="absolute bottom-0 right-0 w-32 h-32">
-            <div className="absolute inset-0 bg-gradient-to-tl from-[#64B5D9]/20 to-transparent rounded-br-3xl" />
-          </div>
+          
+          
           
           {/* Motif de points avec opacité réduite */}
-          <div className="absolute inset-0 opacity-3" style={{
-          backgroundImage: 'radial-gradient(circle, #64B5D9 1px, transparent 1px)',
-          backgroundSize: '24px 24px'
-        }} />
+          
           
           {/* Ajout d'un motif de grille subtil */}
-          <div className="absolute inset-0 opacity-2" style={{
-          backgroundImage: 'linear-gradient(to right, #64B5D9 1px, transparent 1px), linear-gradient(to bottom, #64B5D9 1px, transparent 1px)',
-          backgroundSize: '32px 32px'
-        }} />
+          
         </div>
         {children}
       </div>
