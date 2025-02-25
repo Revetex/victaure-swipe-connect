@@ -25,27 +25,27 @@ export function PostFilters({
   onSortOrderChange
 }: PostFiltersProps) {
   return (
-    <section className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-4">
-      <div className="flex flex-col sm:flex-row gap-4">
+    <section className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-3">
+      <div className="flex flex-col sm:flex-row gap-2">
         {/* Barre de recherche */}
         <div className="flex-1 relative">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Rechercher dans les publications..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 bg-white/50 dark:bg-gray-800/50"
+            className="pl-8 bg-white/50 dark:bg-gray-800/50 h-9"
             aria-label="Rechercher dans les publications"
           />
         </div>
         
         {/* Filtres et tri */}
-        <div className="flex flex-wrap gap-2 sm:gap-4">
+        <div className="flex flex-wrap gap-2">
           <Select
             value={filter}
             onValueChange={onFilterChange}
           >
-            <SelectTrigger className="w-[140px] bg-white/50 dark:bg-gray-800/50">
+            <SelectTrigger className="w-[120px] h-9 bg-white/50 dark:bg-gray-800/50">
               <SelectValue placeholder="Filtrer par" />
             </SelectTrigger>
             <SelectContent>
@@ -59,7 +59,7 @@ export function PostFilters({
             value={sortBy}
             onValueChange={onSortByChange}
           >
-            <SelectTrigger className="w-[140px] bg-white/50 dark:bg-gray-800/50">
+            <SelectTrigger className="w-[120px] h-9 bg-white/50 dark:bg-gray-800/50">
               <SelectValue placeholder="Trier par" />
             </SelectTrigger>
             <SelectContent>
@@ -73,7 +73,7 @@ export function PostFilters({
             value={sortOrder}
             onValueChange={onSortOrderChange}
           >
-            <SelectTrigger className="w-[140px] bg-white/50 dark:bg-gray-800/50">
+            <SelectTrigger className="w-[120px] h-9 bg-white/50 dark:bg-gray-800/50">
               <SelectValue placeholder="Ordre" />
             </SelectTrigger>
             <SelectContent>

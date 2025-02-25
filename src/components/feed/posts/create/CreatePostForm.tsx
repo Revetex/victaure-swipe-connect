@@ -42,12 +42,12 @@ export function CreatePostForm({
     <motion.div 
       className={cn(
         "rounded-xl bg-[#1A1F2C] border border-white/10 transition-all duration-300",
-        isExpanded ? "p-4" : "p-3"
+        isExpanded ? "p-3" : "p-2"
       )}
       layout
     >
       {!isExpanded ? (
-        <div className="flex items-center w-full gap-3 p-2">
+        <div className="flex items-center w-full gap-2 px-1">
           <Button
             variant="ghost"
             className="w-full text-left text-[#F2EBE4] hover:text-[#F2EBE4]/80 hover:bg-white/5"
@@ -57,7 +57,7 @@ export function CreatePostForm({
           </Button>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="flex justify-between items-center">
             <h3 className="text-sm font-medium text-white/90">Créer une publication</h3>
             <Button 
