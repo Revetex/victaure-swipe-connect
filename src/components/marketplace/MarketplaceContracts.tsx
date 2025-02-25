@@ -18,14 +18,8 @@ export function MarketplaceContracts() {
   const fetchContracts = async () => {
     try {
       const { data: contractsData, error: contractsError } = await supabase
-        .from('marketplace_contracts')
-        .select(`
-          *,
-          creator:profiles!marketplace_contracts_creator_id_fkey (
-            full_name,
-            avatar_url
-          )
-        `)
+        .from('mv_marketplace_contracts')
+        .select('*')
         .eq('status', 'open')
         .order('created_at', { ascending: false });
 
@@ -47,10 +41,10 @@ export function MarketplaceContracts() {
         created_at: contract.created_at,
         updated_at: contract.updated_at || null,
         creator_id: contract.creator_id,
-        creator: contract.creator ? {
-          full_name: contract.creator.full_name || null,
-          avatar_url: contract.creator.avatar_url || null
-        } : null
+        creator: {
+          full_name: contract.creator_full_name || null,
+          avatar_url: contract.creator_avatar_url || null
+        }
       }));
       
       setContracts(typedContracts);

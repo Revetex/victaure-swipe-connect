@@ -489,6 +489,13 @@ export type Database = {
             referencedRelation: "marketplace_contracts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "contract_bids_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "mv_marketplace_contracts"
+            referencedColumns: ["id"]
+          },
         ]
       }
       conversation_participants: {
@@ -4374,6 +4381,29 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      mv_marketplace_contracts: {
+        Row: {
+          budget_max: number | null
+          budget_min: number | null
+          category: string | null
+          created_at: string | null
+          creator_avatar_url: string | null
+          creator_full_name: string | null
+          creator_id: string | null
+          currency: string | null
+          deadline: string | null
+          description: string | null
+          documents: string[] | null
+          id: string | null
+          location: string | null
+          requirements: string[] | null
+          searchable_text: unknown | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: []
       }
       relevant_jobs: {
         Row: {
