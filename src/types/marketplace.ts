@@ -1,4 +1,3 @@
-
 export type ListingType = 'vente' | 'location' | 'service';
 
 export interface MarketplaceListing {
@@ -130,4 +129,24 @@ export interface MarketplaceStats {
     listingId: string;
     timestamp: string;
   }>;
+}
+
+export interface MarketplaceContract {
+  id: string;
+  title: string;
+  description: string | null;
+  budget_min: number | null;
+  budget_max: number | null;
+  deadline: string | null;
+  status: string;
+  location: string | null;
+  currency: string;
+  category: string | null;
+  requirements: string[] | null;
+  created_at: string;
+  creator_id: string;
+  creator: {
+    full_name: string | null;
+    avatar_url: string | null;
+  } | null;
 }
