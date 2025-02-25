@@ -67,7 +67,7 @@ export function GoogleSearch() {
   };
 
   return (
-    <div className="space-y-4 transition-all duration-300">
+    <>
       <div className="flex gap-2">
         <form onSubmit={handleSearch} className="flex-1 flex gap-2">
           <Input
@@ -96,10 +96,10 @@ export function GoogleSearch() {
       </div>
       
       {showResults && (
-        <div className="mt-4 border border-border/10 dark:border-[#64B5D9]/10 rounded-lg overflow-hidden bg-white dark:bg-[#1B2A4A] p-4">
+        <div className="h-0">
           <div className="gcse-searchresults-only"></div>
         </div>
       )}
-    </div>
+    </>
   );
 }
