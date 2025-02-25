@@ -17,44 +17,43 @@ export function MarketplaceContracts() {
 
   const fetchContracts = async () => {
     try {
-      // Requête séparée pour obtenir les contrats et leurs créateurs
       const { data: contractsData, error: contractsError } = await supabase
         .from('marketplace_contracts')
-        .select('*')
+        .select(`
+          *,
+          creator:profiles!marketplace_contracts_creator_id_fkey (
+            full_name,
+            avatar_url
+          )
+        `)
         .eq('status', 'open')
         .order('created_at', { ascending: false });
 
       if (contractsError) throw contractsError;
 
-      // Pour chaque contrat, récupérer les informations du créateur
-      const contractsWithCreators: MarketplaceContract[] = await Promise.all(
-        (contractsData || []).map(async (contract) => {
-          const { data: creatorData } = await supabase
-            .from('profiles')
-            .select('full_name, avatar_url')
-            .eq('id', contract.creator_id)
-            .single();
-
-          return {
-            ...contract,
-            description: contract.description || null,
-            budget_min: contract.budget_min || null,
-            budget_max: contract.budget_max || null,
-            deadline: contract.deadline || null,
-            location: contract.location || null,
-            category: contract.category || null,
-            requirements: contract.requirements || null,
-            documents: contract.documents || null,
-            updated_at: contract.updated_at || null,
-            creator: creatorData ? {
-              full_name: creatorData.full_name || null,
-              avatar_url: creatorData.avatar_url || null
-            } : null
-          };
-        })
-      );
+      const typedContracts: MarketplaceContract[] = (contractsData || []).map(contract => ({
+        id: contract.id,
+        title: contract.title,
+        description: contract.description || null,
+        budget_min: contract.budget_min || null,
+        budget_max: contract.budget_max || null,
+        deadline: contract.deadline || null,
+        status: contract.status,
+        location: contract.location || null,
+        currency: contract.currency,
+        category: contract.category || null,
+        requirements: contract.requirements || null,
+        documents: contract.documents || null,
+        created_at: contract.created_at,
+        updated_at: contract.updated_at || null,
+        creator_id: contract.creator_id,
+        creator: contract.creator ? {
+          full_name: contract.creator.full_name || null,
+          avatar_url: contract.creator.avatar_url || null
+        } : null
+      }));
       
-      setContracts(contractsWithCreators);
+      setContracts(typedContracts);
     } catch (error) {
       console.error('Erreur lors du chargement des contrats:', error);
       toast.error("Erreur lors du chargement des contrats");
