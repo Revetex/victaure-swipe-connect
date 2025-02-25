@@ -20,6 +20,14 @@ interface Conversation {
   last_message_time?: string;
 }
 
+const defaultParticipant: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url' | 'online_status' | 'last_seen'> = {
+  id: '',
+  full_name: '',
+  avatar_url: null,
+  online_status: false,
+  last_seen: new Date().toISOString()
+};
+
 export function ConversationList({ className }: { className?: string }) {
   const { user } = useAuth();
   const { setSelectedConversationId } = useReceiver();
@@ -56,8 +64,8 @@ export function ConversationList({ className }: { className?: string }) {
               id: conv.id,
               participant1_id: conv.participant1_id,
               participant2_id: conv.participant2_id,
-              participant1: conv.participant1[0] || {},
-              participant2: conv.participant2[0] || {},
+              participant1: conv.participant1[0] || { ...defaultParticipant, id: conv.participant1_id },
+              participant2: conv.participant2[0] || { ...defaultParticipant, id: conv.participant2_id },
               last_message: conv.last_message,
               last_message_time: conv.last_message_time
             };
@@ -67,14 +75,14 @@ export function ConversationList({ className }: { className?: string }) {
             id: conv.id,
             participant1_id: conv.participant2_id,
             participant2_id: conv.participant1_id,
-            participant1: conv.participant2[0] || {},
-            participant2: conv.participant1[0] || {},
+            participant1: conv.participant2[0] || { ...defaultParticipant, id: conv.participant2_id },
+            participant2: conv.participant1[0] || { ...defaultParticipant, id: conv.participant1_id },
             last_message: conv.last_message,
             last_message_time: conv.last_message_time
           };
         });
         
-        // Filtrer par le terme de recherche si nécessaire
+        // Filter by search term if needed
         const filteredConversations = formattedConversations.filter(conv => {
           return conv.participant2?.full_name
             ?.toLowerCase()
@@ -83,13 +91,13 @@ export function ConversationList({ className }: { className?: string }) {
 
         setConversations(filteredConversations);
       } catch (error) {
-        console.error("Erreur lors du chargement des conversations:", error);
+        console.error("Error loading conversations:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    // Configuration de la souscription en temps réel
+    // Real-time subscription setup
     const channel = supabase
       .channel('conversations')
       .on(
