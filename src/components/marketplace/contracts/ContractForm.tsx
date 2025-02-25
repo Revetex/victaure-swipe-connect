@@ -1,132 +1,76 @@
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import { toast } from "sonner";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/hooks/useUser";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { CalendarIcon, Upload } from "lucide-react";
-import { useUser } from "@/hooks/useUser";
-import { supabase } from "@/integrations/supabase/client";
-import { ListingType } from "@/types/marketplace";
-import * as z from "zod";
+import { DialogFooter } from "@/components/ui/dialog";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { contractFormSchema, type ContractFormValues } from "@/types/marketplace";
 
-const contractFormSchema = z.object({
-  title: z.string().min(1, "Le titre est requis"),
-  description: z.string().min(1, "La description est requise"),
-  category: z.string().min(1, "La catégorie est requise"),
-  type: z.enum(["service", "location", "vente"] as const),
-  location: z.string().min(1, "La localisation est requise"),
-  budget_min: z.number().min(0, "Le budget minimum doit être positif"),
-  budget_max: z.number().min(0, "Le budget maximum doit être positif"),
-  deadline: z.date().optional(),
-  requirements: z.array(z.string()),
-});
+const categories = [
+  "Développement Web",
+  "Design",
+  "Marketing",
+  "Rédaction",
+  "Traduction",
+  "Autre"
+];
 
-type ContractFormValues = z.infer<typeof contractFormSchema>;
-
-export function ContractForm() {
+export function ContractForm({ onSuccess }: { onSuccess?: () => void }) {
   const { user } = useUser();
-  const [uploading, setUploading] = useState(false);
-  const [files, setFiles] = useState<File[]>([]);
 
   const form = useForm<ContractFormValues>({
     resolver: zodResolver(contractFormSchema),
     defaultValues: {
+      currency: "CAD",
       requirements: [],
-      type: "service",
-      category: "technology",
     },
   });
 
-  const onSubmit = async (data: ContractFormValues) => {
-    if (!user) {
-      toast.error("Vous devez être connecté pour créer un contrat");
-      return;
-    }
-
+  const onSubmit = async (values: ContractFormValues) => {
     try {
-      setUploading(true);
-
-      // Upload documents first
-      const documentUrls: string[] = [];
-      for (const file of files) {
-        const fileName = `${crypto.randomUUID()}-${file.name}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("contract-documents")
-          .upload(fileName, file);
-
-        if (uploadError) {
-          toast.error(`Erreur lors de l'upload du fichier ${file.name}`);
-          continue;
-        }
-
-        const { data: { publicUrl } } = supabase.storage
-          .from("contract-documents")
-          .getPublicUrl(fileName);
-
-        documentUrls.push(publicUrl);
+      if (!user) {
+        toast.error("Vous devez être connecté pour créer un contrat");
+        return;
       }
 
-      // Create contract with listing
       const { error } = await supabase
-        .from("marketplace_contracts")
+        .from('marketplace_contracts')
         .insert({
-          title: data.title,
-          description: data.description,
-          budget_min: data.budget_min,
-          budget_max: data.budget_max,
-          deadline: data.deadline?.toISOString(),
-          requirements: data.requirements,
-          category: data.category,
-          location: data.location,
-          currency: "CAD",
+          ...values,
           creator_id: user.id,
-          documents: documentUrls,
-          status: "open",
+          status: 'open',
+          created_at: new Date().toISOString(),
         });
 
       if (error) throw error;
 
-      // Créer également une annonce marketplace
-      const listingData = {
-        title: data.title,
-        description: data.description,
-        price: data.budget_max,
-        type: data.type as ListingType,
-        currency: "CAD",
-        seller_id: user.id,
-        status: "active",
-      };
-
-      const { error: listingError } = await supabase
-        .from("marketplace_listings")
-        .insert(listingData);
-
-      if (listingError) throw listingError;
-
-      toast.success("Contrat et annonce créés avec succès");
+      toast.success("Contrat créé avec succès");
       form.reset();
-      setFiles([]);
+      onSuccess?.();
     } catch (error) {
-      console.error("Error creating contract:", error);
+      console.error('Erreur lors de la création du contrat:', error);
       toast.error("Erreur lors de la création du contrat");
-    } finally {
-      setUploading(false);
     }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-    setFiles(Array.from(e.target.files));
   };
 
   return (
@@ -137,59 +81,10 @@ export function ContractForm() {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Titre de l'annonce</FormLabel>
+              <FormLabel>Titre du contrat</FormLabel>
               <FormControl>
-                <Input placeholder="Titre du contrat" {...field} />
+                <Input {...field} placeholder="Ex: Développement d'une application web" />
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Type d'annonce</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez un type" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="service">Service</SelectItem>
-                  <SelectItem value="location">Location</SelectItem>
-                  <SelectItem value="vente">Vente</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Catégorie</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez une catégorie" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="technology">Technologie</SelectItem>
-                  <SelectItem value="design">Design</SelectItem>
-                  <SelectItem value="writing">Rédaction</SelectItem>
-                  <SelectItem value="marketing">Marketing</SelectItem>
-                  <SelectItem value="legal">Juridique</SelectItem>
-                  <SelectItem value="other">Autre</SelectItem>
-                </SelectContent>
-              </Select>
               <FormMessage />
             </FormItem>
           )}
@@ -200,12 +95,12 @@ export function ContractForm() {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description détaillée</FormLabel>
+              <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea 
-                  placeholder="Description détaillée du contrat"
-                  className="min-h-[100px]"
                   {...field} 
+                  placeholder="Décrivez votre projet en détail..."
+                  className="min-h-[100px]"
                 />
               </FormControl>
               <FormMessage />
@@ -213,34 +108,19 @@ export function ContractForm() {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Localisation</FormLabel>
-              <FormControl>
-                <Input placeholder="Ville, Province" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField
             control={form.control}
             name="budget_min"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Budget minimum (CAD)</FormLabel>
+                <FormLabel>Budget minimum</FormLabel>
                 <FormControl>
                   <Input 
-                    type="number" 
-                    min={0}
-                    placeholder="0"
+                    type="number"
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    onChange={e => field.onChange(Number(e.target.value))}
+                    placeholder="0"
                   />
                 </FormControl>
                 <FormMessage />
@@ -253,14 +133,61 @@ export function ContractForm() {
             name="budget_max"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Budget maximum (CAD)</FormLabel>
+                <FormLabel>Budget maximum</FormLabel>
                 <FormControl>
                   <Input 
                     type="number"
-                    min={0}
-                    placeholder="0"
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    onChange={e => field.onChange(Number(e.target.value))}
+                    placeholder="1000"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Catégorie</FormLabel>
+                <Select 
+                  onValueChange={field.onChange} 
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner une catégorie" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="deadline"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date limite</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="date"
+                    {...field}
+                    min={format(new Date(), 'yyyy-MM-dd')}
                   />
                 </FormControl>
                 <FormMessage />
@@ -271,74 +198,23 @@ export function ContractForm() {
 
         <FormField
           control={form.control}
-          name="deadline"
+          name="location"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Date limite</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP", { locale: fr })
-                      ) : (
-                        <span>Choisir une date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date < new Date() || date < new Date("1900-01-01")
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <FormLabel>Localisation</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Ex: Montréal, QC" />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <div className="space-y-2">
-          <FormLabel>Documents (PDF)</FormLabel>
-          <div className="flex items-center gap-4">
-            <Input
-              type="file"
-              accept=".pdf"
-              multiple
-              onChange={handleFileChange}
-              className="flex-1"
-            />
-            <Upload className="h-5 w-5 text-muted-foreground" />
-          </div>
-          {files.length > 0 && (
-            <ul className="text-sm text-muted-foreground">
-              {files.map((file, index) => (
-                <li key={index}>{file.name}</li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <Button 
-          type="submit" 
-          className="w-full"
-          disabled={uploading}
-        >
-          {uploading ? "Création en cours..." : "Publier l'annonce"}
-        </Button>
+        <DialogFooter>
+          <Button type="submit" className="w-full sm:w-auto">
+            Créer le contrat
+          </Button>
+        </DialogFooter>
       </form>
     </Form>
   );

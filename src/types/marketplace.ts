@@ -1,3 +1,19 @@
+import { z } from "zod";
+
+export const contractFormSchema = z.object({
+  title: z.string().min(3, "Le titre doit contenir au moins 3 caractères"),
+  description: z.string().optional(),
+  budget_min: z.number().nullable(),
+  budget_max: z.number().nullable(),
+  deadline: z.string().optional(),
+  category: z.string().optional(),
+  location: z.string().optional(),
+  requirements: z.array(z.string()).optional(),
+  currency: z.string().default("CAD"),
+});
+
+export type ContractFormValues = z.infer<typeof contractFormSchema>;
+
 export type ListingType = 'vente' | 'location' | 'service';
 
 export interface MarketplaceListing {
@@ -148,5 +164,5 @@ export interface MarketplaceContract {
   creator?: {
     full_name: string | null;
     avatar_url: string | null;
-  };
+  } | null;
 }
