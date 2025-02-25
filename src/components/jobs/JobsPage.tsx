@@ -99,7 +99,7 @@ export function JobsPage() {
           <h2 className="text-xl font-semibold text-foreground dark:text-white mb-4">
             Rechercher dans les offres d'emploi
           </h2>
-          <GoogleSearch searchEngineId="1262c5460a0314a80" />
+          <GoogleSearch />
         </section>
         
         <JobsResults 
