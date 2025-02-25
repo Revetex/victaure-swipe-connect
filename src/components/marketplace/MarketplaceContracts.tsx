@@ -35,7 +35,7 @@ export function MarketplaceContracts() {
           created_at,
           updated_at,
           creator_id,
-          creator:profiles!marketplace_contracts_creator_id_fkey (
+          creator:profiles (
             full_name,
             avatar_url
           )
@@ -57,7 +57,10 @@ export function MarketplaceContracts() {
         requirements: contract.requirements || null,
         documents: contract.documents || null,
         updated_at: contract.updated_at || null,
-        creator: contract.creator || null
+        creator: contract.creator ? {
+          full_name: contract.creator.full_name || null,
+          avatar_url: contract.creator.avatar_url || null
+        } : null
       })) || [];
       
       setContracts(typedData);
