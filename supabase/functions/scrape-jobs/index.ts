@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js'
-import { cheerio } from 'https://esm.sh/cheerio@1.0.0-rc.12'
+import cheerio from 'https://esm.sh/cheerio@1.0.0-rc.12'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -84,6 +84,7 @@ Deno.serve(async (req) => {
       )
     }
 
+    console.log('Starting job search process...');
     const response = await fetch(url)
     const html = await response.text()
     const $ = cheerio.load(html)
