@@ -10,12 +10,20 @@ import { useState } from "react";
 import { VictaureChat } from "@/components/chat/VictaureChat";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
 
 interface AppHeaderProps {
   totalJobs?: number;
   onRequestAssistant?: () => void;
   showMobileMenu?: boolean;
   setShowMobileMenu?: (show: boolean) => void;
+}
+
+interface SearchResult {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
 }
 
 export function AppHeader({
@@ -26,6 +34,8 @@ export function AppHeader({
   const [showChat, setShowChat] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showResults, setShowResults] = useState(false);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const { user } = useAuth();
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,10 +43,48 @@ export function AppHeader({
     setShowResults(e.target.value.length > 0);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
+      setIsSearching(true);
       console.log('Recherche effectuée pour:', searchQuery);
-      // Ici vous pouvez ajouter la logique de recherche
+      
+      try {
+        // Simuler des résultats de recherche pour démonstration
+        const mockResults: SearchResult[] = [
+          {
+            id: '1',
+            title: 'Développeur Frontend',
+            company: 'TechCorp',
+            location: 'Montréal'
+          },
+          {
+            id: '2',
+            title: 'Développeur Backend',
+            company: 'WebSolutions',
+            location: 'Québec'
+          },
+          {
+            id: '3',
+            title: 'Développeur Full Stack',
+            company: 'DigitalCo',
+            location: 'Laval'
+          }
+        ];
+
+        // Simuler un délai de chargement
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        setSearchResults(mockResults.filter(result => 
+          result.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          result.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          result.location.toLowerCase().includes(searchQuery.toLowerCase())
+        ));
+      } catch (error) {
+        console.error('Erreur de recherche:', error);
+        toast.error("Erreur lors de la recherche");
+      } finally {
+        setIsSearching(false);
+      }
     }
   };
 
@@ -191,12 +239,35 @@ export function AppHeader({
         >
           <div className="w-full max-w-3xl mx-auto py-4">
             <div className="bg-[#1B2A4A] rounded-lg shadow-xl border border-[#64B5D9]/10 p-4">
-              {searchQuery ? (
-                <div className="text-white/60">
-                  Recherche en cours pour "{searchQuery}"...
+              {isSearching ? (
+                <div className="flex items-center justify-center text-white/60 py-4">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                  Recherche en cours...
                 </div>
+              ) : searchQuery ? (
+                searchResults.length > 0 ? (
+                  <div className="space-y-4">
+                    {searchResults.map(result => (
+                      <div 
+                        key={result.id}
+                        className="p-4 bg-white/5 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                      >
+                        <h3 className="text-white font-medium">{result.title}</h3>
+                        <div className="flex items-center gap-2 mt-2 text-sm text-white/60">
+                          <span>{result.company}</span>
+                          <span>•</span>
+                          <span>{result.location}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-white/60 py-4 text-center">
+                    Aucun résultat trouvé pour "{searchQuery}"
+                  </div>
+                )
               ) : (
-                <div className="text-white/60">
+                <div className="text-white/60 py-4 text-center">
                   Commencez à taper pour rechercher
                 </div>
               )}
