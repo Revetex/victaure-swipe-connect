@@ -23,7 +23,10 @@ export function ProfileNameButton({ profile, className }: ProfileNameButtonProps
     <>
       <Button
         variant="link"
-        className={className}
+        className={cn(
+          "text-[#F2EBE4] hover:text-[#F2EBE4]/80 transition-colors",
+          className
+        )}
         onClick={() => setShowPreview(true)}
       >
         {profile.full_name || "Utilisateur"}
