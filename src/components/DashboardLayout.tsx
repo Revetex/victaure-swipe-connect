@@ -32,7 +32,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen w-full bg-background overflow-hidden">
+    <div className="flex min-h-screen w-full bg-[#F1F0FB] dark:bg-[#1A1F2C] overflow-hidden">
       {/* Menu plein écran pour toutes les tailles */}
       <DashboardMobileNav
         currentPage={currentPage}
@@ -48,8 +48,11 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "relative",
         "ios-safe-area",
         "ios-momentum-scroll",
-        "bg-gradient-to-b from-background via-background/95 to-background/90",
-        "backdrop-blur-sm"
+        "bg-gradient-to-b from-[#F1F0FB] via-[#F1F0FB]/95 to-[#F1F0FB]/90",
+        "dark:bg-gradient-to-b dark:from-[#1A1F2C] dark:via-[#1B2A4A]/95 dark:to-[#1B2A4A]/90",
+        "backdrop-blur-sm",
+        "shadow-[inset_0_-20px_60px_-20px_rgba(0,0,0,0.05)]",
+        "dark:shadow-[inset_0_-20px_60px_-20px_rgba(0,0,0,0.25)]"
       )}>
         <AppHeader 
           onRequestAssistant={handleRequestChat}
