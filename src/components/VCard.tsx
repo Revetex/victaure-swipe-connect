@@ -59,18 +59,18 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
 
   return (
     <VCardContainer isEditing={isEditing}>
-      {/* Circuit Pattern Background */}
+      {/* Effet de fond avec motif de circuit */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.1 }}
           className="absolute inset-0"
         >
-          {/* Horizontal Lines */}
+          {/* Lignes horizontales animées */}
           {[...Array(20)].map((_, i) => (
             <motion.div
               key={`h-line-${i}`}
-              className="absolute h-px bg-gradient-to-r from-purple-500/20 via-purple-500/40 to-purple-500/20"
+              className="absolute h-px bg-gradient-to-r from-[#64B5D9]/20 via-[#64B5D9]/40 to-[#64B5D9]/20"
               style={{ top: `${i * 5}%`, left: 0, right: 0 }}
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ 
@@ -86,11 +86,11 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
             />
           ))}
           
-          {/* Vertical Lines */}
+          {/* Lignes verticales animées */}
           {[...Array(20)].map((_, i) => (
             <motion.div
               key={`v-line-${i}`}
-              className="absolute w-px bg-gradient-to-b from-purple-500/20 via-purple-500/40 to-purple-500/20"
+              className="absolute w-px bg-gradient-to-b from-[#64B5D9]/20 via-[#64B5D9]/40 to-[#64B5D9]/20"
               style={{ left: `${i * 5}%`, top: 0, bottom: 0 }}
               initial={{ scaleY: 0, opacity: 0 }}
               animate={{ 
@@ -106,11 +106,11 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
             />
           ))}
 
-          {/* Circuit Nodes */}
+          {/* Points de circuit animés */}
           {[...Array(15)].map((_, i) => (
             <motion.div
               key={`node-${i}`}
-              className="absolute w-2 h-2 rounded-full bg-purple-500/30"
+              className="absolute w-2 h-2 rounded-full bg-[#64B5D9]/30"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`
@@ -134,10 +134,10 @@ export function VCard({ profile: providedProfile, onEditStateChange, onRequestCh
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-3xl mx-auto bg-white/90 dark:bg-gray-900/90 rounded-xl shadow-xl overflow-hidden backdrop-blur-sm relative z-10 mt-16 sm:mt-6" // Added top margin
+        className="max-w-3xl mx-auto bg-white/90 dark:bg-gray-900/90 rounded-xl shadow-xl overflow-hidden backdrop-blur-sm relative z-10 mt-16 sm:mt-6 font-sans"
       >
         <div className="relative p-6 sm:p-8">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#9b87f5]/10 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#64B5D9]/5 to-transparent dark:from-[#1B2A4A]/20 dark:to-transparent" />
           
           <div className="relative">
             <VCardHeader 
