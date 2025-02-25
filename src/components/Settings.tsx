@@ -12,6 +12,7 @@ import { initializeStripe } from "@/hooks/useStripePayment";
 import type { StripeElementsOptions } from '@stripe/stripe-js';
 import { toast } from 'sonner';
 import { motion } from "framer-motion";
+import { Card } from "./ui/card";
 
 const stripeElementsOptions: StripeElementsOptions = {
   mode: 'payment',
@@ -20,7 +21,7 @@ const stripeElementsOptions: StripeElementsOptions = {
   appearance: {
     theme: 'stripe',
     variables: {
-      colorPrimary: '#0F172A',
+      colorPrimary: '#9b87f5',
     },
   },
 };
@@ -77,27 +78,28 @@ const Settings = () => {
 
   return (
     <Elements stripe={stripePromise} options={stripeElementsOptions}>
-      <ScrollArea className="h-[calc(100vh-5rem)]">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="max-w-4xl mx-auto px-4 py-4"
-        >
-          {settingsSections.map(({ id, Component }, index) => (
-            <motion.div
-              key={id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="mb-4"
-            >
-              <div className="glass-card bg-white/5 dark:bg-[#1B2A4A]">
-                <Component />
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+      <ScrollArea className="h-[calc(100vh-5rem)] w-full">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-6"
+          >
+            {settingsSections.map(({ id, Component }, index) => (
+              <motion.div
+                key={id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card className="bg-white/5 dark:bg-[#1B2A4A] border border-border/50 dark:border-[#64B5D9]/10 p-6 rounded-lg shadow-lg">
+                  <Component />
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
       </ScrollArea>
     </Elements>
   );
