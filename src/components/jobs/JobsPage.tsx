@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { JobsSearch } from "./sections/JobsSearch";
 import { JobsResults } from "./sections/JobsResults";
 import { cn } from "@/lib/utils";
+import { GoogleSearch } from "@/components/google-search/GoogleSearch";
 
 export function JobsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -93,6 +94,13 @@ export function JobsPage() {
           onSalaryRangeChange={setSalaryRange}
           onRemoteOnlyChange={setRemoteOnly}
         />
+        
+        <section className="bg-card dark:bg-[#1B2A4A]/50 backdrop-blur-sm border border-border/10 dark:border-[#64B5D9]/10 rounded-lg p-6 shadow-lg">
+          <h2 className="text-xl font-semibold text-foreground dark:text-white mb-4">
+            Rechercher dans les offres d'emploi
+          </h2>
+          <GoogleSearch />
+        </section>
         
         <JobsResults 
           jobs={filteredJobs}
