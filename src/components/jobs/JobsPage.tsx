@@ -68,7 +68,7 @@ export function JobsPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={cn(
-        "min-h-screen bg-background dark:bg-[#1A1F2C] pt-20 px-4"
+        "min-h-screen bg-background dark:bg-[#1A1F2C] px-4"
       )}
     >
       <div className="max-w-5xl mx-auto space-y-6">

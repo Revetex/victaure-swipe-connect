@@ -57,7 +57,8 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
           setShowMobileMenu={handleMobileMenuToggle}
         />
         
-        <div className="pt-16 w-full pb-safe">
+        <div className="h-16" /> {/* Spacer pour le header */}
+        <div className="w-full pb-safe">
           {children || (
             <DashboardContent
               currentPage={currentPage}
