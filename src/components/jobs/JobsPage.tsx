@@ -67,50 +67,45 @@ export function JobsPage() {
     );
   }
 
-  const SEARCH_ENGINE_ID = "1262c5460a0314a80";
-
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={cn(
-        "page-container pt-20 bg-background min-h-screen",
-        "dark:bg-[#1A1F2C]"
+        "min-h-screen bg-background dark:bg-[#1A1F2C] py-20 px-4",
       )}
     >
-      <div className="max-w-5xl mx-auto px-4 space-y-6">
-        <div className="grid gap-6">
-          <JobsSearch 
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            selectedLocation={selectedLocation}
-            selectedCompanyType={selectedCompanyType}
-            sortOrder={sortOrder}
-            experienceLevel={experienceLevel}
-            contractType={contractType}
-            salaryRange={salaryRange}
-            remoteOnly={remoteOnly}
-            onLocationChange={setSelectedLocation}
-            onCompanyTypeChange={setSelectedCompanyType}
-            onSortOrderChange={setSortOrder}
-            onExperienceLevelChange={setExperienceLevel}
-            onContractTypeChange={setContractType}
-            onSalaryRangeChange={setSalaryRange}
-            onRemoteOnlyChange={setRemoteOnly}
-          />
-          
-          <div className="bg-white dark:bg-[#1B2A4A]/50 backdrop-blur-sm border border-input/20 dark:border-[#64B5D9]/10 rounded-lg p-6 shadow-lg">
-            <h2 className="text-xl font-semibold text-foreground dark:text-white mb-4">
-              Rechercher dans les offres d'emploi
-            </h2>
-            <GoogleSearch searchEngineId="1262c5460a0314a80" />
-          </div>
-          
-          <JobsResults 
-            jobs={filteredJobs}
-            onJobSelect={handleJobSelect}
-          />
-        </div>
+      <div className="max-w-5xl mx-auto space-y-6">
+        <JobsSearch 
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedLocation={selectedLocation}
+          selectedCompanyType={selectedCompanyType}
+          sortOrder={sortOrder}
+          experienceLevel={experienceLevel}
+          contractType={contractType}
+          salaryRange={salaryRange}
+          remoteOnly={remoteOnly}
+          onLocationChange={setSelectedLocation}
+          onCompanyTypeChange={setSelectedCompanyType}
+          onSortOrderChange={setSortOrder}
+          onExperienceLevelChange={setExperienceLevel}
+          onContractTypeChange={setContractType}
+          onSalaryRangeChange={setSalaryRange}
+          onRemoteOnlyChange={setRemoteOnly}
+        />
+        
+        <section className="bg-card dark:bg-[#1B2A4A]/50 backdrop-blur-sm border border-border/10 dark:border-[#64B5D9]/10 rounded-lg p-6 shadow-lg">
+          <h2 className="text-xl font-semibold text-foreground dark:text-white mb-4">
+            Rechercher dans les offres d'emploi
+          </h2>
+          <GoogleSearch searchEngineId="1262c5460a0314a80" />
+        </section>
+        
+        <JobsResults 
+          jobs={filteredJobs}
+          onJobSelect={handleJobSelect}
+        />
       </div>
     </motion.div>
   );

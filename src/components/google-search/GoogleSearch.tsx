@@ -1,84 +1,43 @@
 
-import { useEffect, useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Search, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { SearchIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface GoogleSearchProps {
   searchEngineId: string;
 }
 
 export function GoogleSearch({ searchEngineId }: GoogleSearchProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [query, setQuery] = useState('');
-
-  useEffect(() => {
-    // Load Google Custom Search Element script
-    const script = document.createElement('script');
-    script.src = `https://cse.google.com/cse.js?cx=${searchEngineId}`;
-    script.async = true;
-    document.head.appendChild(script);
-
-    script.onerror = () => {
-      console.error("Erreur lors du chargement du script Google Search");
-      toast.error("Impossible de charger la recherche Google");
-    };
-
-    return () => {
-      // Cleanup script when component unmounts
-      const scriptElement = document.querySelector(`script[src*="cse.js?cx=${searchEngineId}"]`);
-      if (scriptElement) {
-        document.head.removeChild(scriptElement);
-      }
-    };
-  }, [searchEngineId]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query.trim()) {
-      toast.error("Veuillez entrer un terme de recherche");
-      return;
-    }
-    
-    setIsLoading(true);
-    
-    // Trigger search using Google CSE API
-    const searchElement = document.querySelector('.gsc-search-box input') as HTMLInputElement;
-    if (searchElement) {
-      searchElement.value = query;
-      const searchButton = document.querySelector('.gsc-search-button button') as HTMLButtonElement;
-      searchButton?.click();
-    }
+    if (!searchTerm.trim()) return;
 
-    setIsLoading(false);
+    setIsSearching(true);
+    const searchUrl = `https://cse.google.com/cse?cx=${searchEngineId}&q=${encodeURIComponent(searchTerm)}`;
+    window.open(searchUrl, '_blank');
+    setIsSearching(false);
   };
 
   return (
-    <Card className="w-full p-4">
-      <form onSubmit={handleSearch} className="flex gap-2 mb-4">
-        <Input
-          type="search"
-          placeholder="Rechercher des offres d'emploi..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="flex-1"
-        />
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Search className="h-4 w-4" />
-          )}
-        </Button>
-      </form>
-
-      <div className="gcse-search" 
-        data-personalizedAds="false"
-        data-mobileLayout="enabled"
-        data-resultsUrl="/jobs/search"
+    <form onSubmit={handleSearch} className="flex gap-2">
+      <Input
+        type="text"
+        placeholder="Rechercher des offres d'emploi..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="flex-1 h-12 bg-background dark:bg-[#1B2A4A]/50 border-border/10 dark:border-[#64B5D9]/10"
       />
-    </Card>
+      <Button 
+        type="submit" 
+        disabled={isSearching}
+        className="h-12 px-6 bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB]"
+      >
+        <SearchIcon className="h-5 w-5" />
+      </Button>
+    </form>
   );
 }

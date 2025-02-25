@@ -31,10 +31,12 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
     if (e.key === 'Escape') onClose();
   }, [handlePrevious, handleNext, onClose]);
 
+  if (!isOpen) return null;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="fixed inset-0 p-0 max-w-none max-h-none h-[100dvh] w-screen bg-black/95 border-none z-[999] overflow-hidden"
+        className="fixed inset-0 p-0 max-w-none h-screen w-screen bg-black/95 border-none overflow-hidden"
         onKeyDown={handleKeyDown}
       >
         <VisuallyHidden asChild>
@@ -44,7 +46,7 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-4 top-4 z-[1000] rounded-full bg-background/10 hover:bg-background/20 backdrop-blur-sm"
+          className="absolute right-4 top-4 z-50 rounded-full bg-background/10 hover:bg-background/20 backdrop-blur-sm"
           onClick={onClose}
         >
           <X className="h-4 w-4 text-white" />
@@ -63,8 +65,18 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
               <img
                 src={images[currentIndex]}
                 alt={`Image ${currentIndex + 1}`}
-                className="max-w-full max-h-[90vh] w-auto h-auto object-contain select-none"
+                className="max-w-full max-h-[90vh] w-auto h-auto object-contain select-none cursor-zoom-in"
                 draggable={false}
+                onClick={(e) => {
+                  const img = e.target as HTMLImageElement;
+                  if (img.classList.contains('zoomed')) {
+                    img.classList.remove('zoomed');
+                    img.style.transform = '';
+                  } else {
+                    img.classList.add('zoomed');
+                    img.style.transform = 'scale(1.5)';
+                  }
+                }}
               />
             </motion.div>
           </AnimatePresence>
