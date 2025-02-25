@@ -1,11 +1,11 @@
 
 import { Star, Menu, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/Logo";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { VictaureChat } from "@/components/chat/VictaureChat";
 import { Badge } from "@/components/ui/badge";
 
@@ -23,6 +23,17 @@ export function AppHeader({
 }: AppHeaderProps) {
   const [showChat, setShowChat] = useState(false);
   const { user } = useAuth();
+
+  // Gérer l'échap pour fermer proprement
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowChat(false);
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, []);
 
   const handleMenuClick = () => {
     if (setShowMobileMenu) {
@@ -87,17 +98,31 @@ export function AppHeader({
           <span className="text-sm font-medium text-white/90 hidden sm:block">Assistant IA</span>
         </Button>
 
-        <Dialog open={showChat} onOpenChange={setShowChat}>
-          <DialogContent className="max-w-3xl w-[95vw] h-[85vh] p-0 bg-[#1A1F2C] border border-[#64B5D9]/20 rounded-2xl mx-auto my-auto overflow-hidden">
-            <VictaureChat 
-              maxQuestions={user ? undefined : 3}
-              context="Tu es Mr. Victaure, un assistant professionnel spécialisé dans l'emploi. Tu aides les utilisateurs à trouver du travail et à améliorer leur carrière."
-              onMaxQuestionsReached={() => {
-                setShowChat(false);
+        <AnimatePresence>
+          {showChat && (
+            <Dialog 
+              open={showChat} 
+              onOpenChange={(open) => {
+                if (!open) {
+                  setShowChat(false);
+                }
               }}
-            />
-          </DialogContent>
-        </Dialog>
+            >
+              <DialogContent 
+                className="fixed inset-0 p-0 bg-[#1A1F2C] border-0 rounded-none max-w-none w-full h-full overflow-hidden"
+                style={{ transform: 'none' }}
+              >
+                <VictaureChat 
+                  maxQuestions={user ? undefined : 3}
+                  context="Tu es Mr. Victaure, un assistant professionnel spécialisé dans l'emploi. Tu aides les utilisateurs à trouver du travail et à améliorer leur carrière."
+                  onMaxQuestionsReached={() => {
+                    setShowChat(false);
+                  }}
+                />
+              </DialogContent>
+            </Dialog>
+          )}
+        </AnimatePresence>
       </div>
     </motion.header>
   );
