@@ -16,7 +16,7 @@ export function GoogleSearch() {
     setIsSearching(true);
     const encodedQuery = encodeURIComponent(searchTerm);
     // Utilisation du moteur de recherche personnalisé Google pour les offres d'emploi au Québec
-    const newSearchUrl = `https://cse.google.com/cse?cx=1262c5460a0314a80&q=${encodedQuery}`;
+    const newSearchUrl = `https://cse.google.com/cse/publicurl?cx=1262c5460a0314a80&q=${encodedQuery}`;
     setSearchUrl(newSearchUrl);
   };
 
@@ -43,8 +43,14 @@ export function GoogleSearch() {
         <div className="mt-4 border border-border/10 dark:border-[#64B5D9]/10 rounded-lg overflow-hidden">
           <iframe
             src={searchUrl}
-            className="w-full h-[600px] bg-white"
+            className="w-full h-[800px] bg-white dark:bg-[#1B2A4A]"
+            style={{
+              border: "none",
+              display: "block",
+              width: "100%",
+            }}
             frameBorder="0"
+            scrolling="yes"
             allowFullScreen
           />
         </div>
