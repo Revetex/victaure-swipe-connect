@@ -46,19 +46,17 @@ export function DashboardContent({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className={cn(
-        "pt-16 min-h-screen w-full",
+        "w-full",
         "bg-gradient-to-b from-background via-background/95 to-background/90",
         "backdrop-blur-sm"
       )}
     >
-      <div className="relative">
-        <ContentRouter
-          currentPage={currentPage}
-          onEditStateChange={onEditStateChange}
-          onRequestChat={onRequestChat}
-          renderDashboardHome={renderDashboardHome}
-        />
-      </div>
+      <ContentRouter
+        currentPage={currentPage}
+        onEditStateChange={onEditStateChange}
+        onRequestChat={onRequestChat}
+        renderDashboardHome={renderDashboardHome}
+      />
 
       {!isMobile && <FloatingButtons />}
     </motion.div>
