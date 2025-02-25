@@ -4328,6 +4328,53 @@ export type Database = {
       }
     }
     Views: {
+      mv_active_marketplace_items: {
+        Row: {
+          availability: Json | null
+          category_id: string | null
+          condition: string | null
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          external_data: Json | null
+          external_id: string | null
+          external_source: string | null
+          external_url: string | null
+          favorites_count: number | null
+          id: string | null
+          images: string[] | null
+          location: Json | null
+          metadata: Json | null
+          price: number | null
+          searchable_text: unknown | null
+          seller_avatar: string | null
+          seller_id: string | null
+          seller_name: string | null
+          service_duration: string | null
+          status: string | null
+          title: string | null
+          type: string | null
+          updated_at: string | null
+          user_rating: number | null
+          views_count: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_items_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       relevant_jobs: {
         Row: {
           budget: number | null
