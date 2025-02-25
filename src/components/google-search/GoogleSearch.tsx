@@ -49,7 +49,7 @@ export function GoogleSearch() {
     // Créer une recherche basée sur le profil
     const searchTerms = [
       ...profile.skills || [],
-      profile.title,
+      profile.company_name,
       profile.city,
     ].filter(Boolean);
 
