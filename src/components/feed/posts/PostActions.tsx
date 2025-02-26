@@ -128,8 +128,13 @@ export function PostActions({
         },
         (payload: RealtimePostgresChangesPayload<PostPayload>) => {
           if (!isProcessing && payload.new) {
-            const newPost = payload.new;
-            if (typeof newPost.likes === 'number' && typeof newPost.dislikes === 'number') {
+            const newPost = payload.new as PostPayload; // Type assertion explicite
+            // Vérification stricte des types et valeurs
+            if (newPost && 
+                'likes' in newPost && 
+                'dislikes' in newPost && 
+                typeof newPost.likes === 'number' && 
+                typeof newPost.dislikes === 'number') {
               setLocalLikes(newPost.likes);
               setLocalDislikes(newPost.dislikes);
             }
