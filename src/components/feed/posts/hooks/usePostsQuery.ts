@@ -46,21 +46,31 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQue
         case "my":
           query = query.eq("user_id", userId);
           break;
-        case "liked":
-          query = query.in("id", supabase
+        case "liked": {
+          const likedPostsQuery = await supabase
             .from("post_reactions")
             .select("post_id")
             .eq("user_id", userId)
-            .eq("reaction_type", "like")
-          );
+            .eq("reaction_type", "like");
+          
+          if (likedPostsQuery.data) {
+            const likedPostIds = likedPostsQuery.data.map(reaction => reaction.post_id);
+            query = query.in("id", likedPostIds);
+          }
           break;
-        case "saved":
-          query = query.in("id", supabase
+        }
+        case "saved": {
+          const savedPostsQuery = await supabase
             .from("saved_posts")
             .select("post_id")
-            .eq("user_id", userId)
-          );
+            .eq("user_id", userId);
+          
+          if (savedPostsQuery.data) {
+            const savedPostIds = savedPostsQuery.data.map(saved => saved.post_id);
+            query = query.in("id", savedPostIds);
+          }
           break;
+        }
       }
 
       // Appliquer le tri
@@ -83,16 +93,28 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQue
         throw error;
       }
 
+      // Transformer les données pour correspondre au type Post
+      const transformedData = data?.map(post => ({
+        ...post,
+        privacy_level: post.privacy_level as "public" | "connections",
+        reactions: post.reactions?.map(reaction => ({
+          ...reaction,
+          reaction_type: reaction.reaction_type as "like" | "dislike"
+        }))
+      })) as Post[];
+
       // Si le tri est par commentaires, nous devons trier manuellement
       if (sortBy === "comments") {
-        return data.sort((a: Post, b: Post) => {
+        return transformedData.sort((a, b) => {
           const aCount = a.comments?.length || 0;
           const bCount = b.comments?.length || 0;
           return sortOrder === "asc" ? aCount - bCount : bCount - aCount;
         });
       }
 
-      return data;
-    }
+      return transformedData;
+    },
+    staleTime: 1000 * 60, // 1 minute
+    gcTime: 1000 * 60 * 5, // 5 minutes
   });
 }
