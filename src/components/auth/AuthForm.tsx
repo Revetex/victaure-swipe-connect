@@ -1,13 +1,12 @@
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoginForm } from "./LoginForm";
 import { SignupForm } from "./SignupForm";
-import { BusinessSignupForm } from "./BusinessSignupForm";
+import { BusinessSignupForm } from "./business/BusinessSignupForm";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
-import { VictaureChat } from "@/components/chat/VictaureChat";
+import { AuthChat } from "@/components/chat/AuthChat";
 
 export function AuthForm({
   redirectTo
@@ -87,10 +86,10 @@ export function AuthForm({
         </div>
 
         {/* Section Chat */}
-        <div className="flex-1 max-h-[600px] bg-[#1A1F2C]/90 backdrop-blur-sm rounded-2xl border border-[#64B5D9]/10 overflow-hidden">
-          <VictaureChat 
+        <div className="flex-1">
+          <AuthChat 
             maxQuestions={3} 
-            context="Je suis Mr. Victaure, votre assistant pour l'inscription. Je peux vous aider à comprendre les différentes options et répondre à vos questions. Comment puis-je vous aider aujourd'hui ?"
+            context="Je suis l'assistant d'inscription. Je peux vous aider à comprendre les différentes options et répondre à vos questions. Comment puis-je vous aider aujourd'hui ?"
           />
         </div>
       </div>
