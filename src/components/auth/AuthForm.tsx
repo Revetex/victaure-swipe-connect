@@ -64,7 +64,19 @@ export function AuthForm({
               </TabsContent>
 
               <TabsContent value="signup">
-                <SignupForm redirectTo={redirectTo} />
+                <SignupForm 
+                  email={formData.email}
+                  password={formData.password}
+                  fullName={formData.fullName}
+                  phone={formData.phone}
+                  loading={loading}
+                  redirectTo={redirectTo}
+                  onEmailChange={(value) => setFormData({ ...formData, email: value })}
+                  onPasswordChange={(value) => setFormData({ ...formData, password: value })}
+                  onFullNameChange={(value) => setFormData({ ...formData, fullName: value })}
+                  onPhoneChange={(value) => setFormData({ ...formData, phone: value })}
+                  onSubmit={() => signUp(formData)}
+                />
               </TabsContent>
 
               <TabsContent value="business">
