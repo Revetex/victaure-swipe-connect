@@ -41,7 +41,7 @@ export function AuthHeader() {
     }} className="text-[#F2EBE4]/80 text-lg text-center max-w-2xl">
         Propulsée par l'IA, conçue pour les professionnels d'aujourd'hui
         <br />
-        <span className="text-inherit font-thin">Une entreprise fièrement québécoise</span>
+        <span className="text-inherit font-thin my-0 mx-0 text-xs py-0">Une entreprise fièrement québécoise</span>
       </motion.p>
     </div>;
 }
