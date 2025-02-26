@@ -11,6 +11,7 @@ import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
 import { RefreshCcw, X } from "lucide-react";
 import { HfInference } from "@huggingface/inference";
+import { toast } from "sonner";
 
 interface VictaureChatProps {
   maxQuestions?: number;
@@ -28,6 +29,8 @@ export function VictaureChat({
   const { user } = useAuth();
   const { suggestions, isLoadingSuggestions, generateSuggestions } = useSuggestions();
 
+  const hf = new HfInference(import.meta.env.VITE_HUGGINGFACE_API_KEY);
+
   const {
     messages,
     isLoading,
@@ -39,7 +42,8 @@ export function VictaureChat({
     context,
     maxQuestions,
     user,
-    onMaxQuestionsReached
+    onMaxQuestionsReached,
+    hf
   });
 
   const {
@@ -67,6 +71,7 @@ export function VictaureChat({
       }
     } catch (err) {
       console.error("Error in handleSendMessage:", err);
+      toast.error("Une erreur est survenue lors de l'envoi du message");
     }
   };
 
