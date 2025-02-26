@@ -12,9 +12,9 @@ interface UsePostsQueryProps {
 
 export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQueryProps) {
   return useQuery({
-    queryKey: ["posts", filter, sortBy, sortOrder],
+    queryKey: ["posts", filter, sortBy, sortOrder, userId],
     queryFn: async () => {
-      const query = supabase
+      let query = supabase
         .from("posts")
         .select(`
           *,
@@ -23,12 +23,12 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQue
             full_name,
             avatar_url
           ),
-          reactions:post_reactions(
+          reactions:post_reactions (
             id,
-            reaction_type,
-            user_id
+            user_id,
+            reaction_type
           ),
-          comments:post_comments(
+          comments:post_comments (
             id,
             content,
             created_at,
@@ -41,46 +41,58 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQue
           )
         `);
 
-      if (filter === "liked") {
-        query.eq("user_id", userId);
+      // Appliquer les filtres
+      switch (filter) {
+        case "my":
+          query = query.eq("user_id", userId);
+          break;
+        case "liked":
+          query = query.in("id", supabase
+            .from("post_reactions")
+            .select("post_id")
+            .eq("user_id", userId)
+            .eq("reaction_type", "like")
+          );
+          break;
+        case "saved":
+          query = query.in("id", supabase
+            .from("saved_posts")
+            .select("post_id")
+            .eq("user_id", userId)
+          );
+          break;
       }
 
+      // Appliquer le tri
       switch (sortBy) {
-        case 'date':
-          query.order('created_at', { ascending: sortOrder === 'asc' });
+        case "date":
+          query = query.order("created_at", { ascending: sortOrder === "asc" });
           break;
-        case 'likes':
-          query.order('likes', { ascending: sortOrder === 'asc' });
+        case "likes":
+          query = query.order("likes", { ascending: sortOrder === "asc" });
           break;
-        case 'comments':
-          const { data, error } = await query;
-          if (error) throw error;
-          return data.map(post => ({
-            ...post,
-            privacy_level: post.privacy_level as "public" | "connections",
-            reactions: post.reactions?.map(reaction => ({
-              ...reaction,
-              reaction_type: reaction.reaction_type as "like" | "dislike"
-            }))
-          })).sort((a: Post, b: Post) => {
-            const aComments = a.comments?.length || 0;
-            const bComments = b.comments?.length || 0;
-            return sortOrder === 'asc' ? aComments - bComments : bComments - aComments;
-          });
+        case "comments":
+          // Pour le tri par commentaires, nous devons trier après avoir récupéré les données
+          break;
       }
 
       const { data, error } = await query;
-      if (error) throw error;
-      return data.map(post => ({
-        ...post,
-        privacy_level: post.privacy_level as "public" | "connections",
-        reactions: post.reactions?.map(reaction => ({
-          ...reaction,
-          reaction_type: reaction.reaction_type as "like" | "dislike"
-        }))
-      }));
-    },
-    staleTime: 1000 * 60,
-    gcTime: 1000 * 60 * 5,
+
+      if (error) {
+        console.error("Error fetching posts:", error);
+        throw error;
+      }
+
+      // Si le tri est par commentaires, nous devons trier manuellement
+      if (sortBy === "comments") {
+        return data.sort((a: Post, b: Post) => {
+          const aCount = a.comments?.length || 0;
+          const bCount = b.comments?.length || 0;
+          return sortOrder === "asc" ? aCount - bCount : bCount - aCount;
+        });
+      }
+
+      return data;
+    }
   });
 }

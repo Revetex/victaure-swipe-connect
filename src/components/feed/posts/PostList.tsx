@@ -2,6 +2,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import { usePostOperations } from "./usePostOperations";
+import { usePostsQuery } from "./hooks/usePostsQuery";
 import { PostSkeleton } from "./PostSkeleton";
 import { EmptyPostState } from "./EmptyPostState";
 import { DeletePostDialog } from "./DeletePostDialog";
