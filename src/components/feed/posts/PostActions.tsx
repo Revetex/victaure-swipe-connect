@@ -2,7 +2,7 @@
 import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import { useReactions } from "./actions/useReactions";
 import { ReactionButton } from "./actions/ReactionButton";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
@@ -42,13 +42,59 @@ export function PostActions({
   onToggleComments,
   onReaction
 }: PostActionsProps) {
+  const [localLikes, setLocalLikes] = useState(likes);
+  const [localDislikes, setLocalDislikes] = useState(dislikes);
+  const [localUserReaction, setLocalUserReaction] = useState(userReaction);
+
+  useEffect(() => {
+    setLocalLikes(likes);
+    setLocalDislikes(dislikes);
+    setLocalUserReaction(userReaction);
+  }, [likes, dislikes, userReaction]);
+
   const { handleReaction } = useReactions({
     postId,
     postAuthorId,
     currentUserId,
     userEmail,
-    userReaction
+    userReaction: localUserReaction
   });
+
+  const handleLocalReaction = async (type: 'like' | 'dislike') => {
+    // Mise à jour optimiste de l'UI
+    if (localUserReaction === type) {
+      // Si on retire la réaction
+      setLocalUserReaction(undefined);
+      if (type === 'like') {
+        setLocalLikes(prev => Math.max(0, prev - 1));
+      } else {
+        setLocalDislikes(prev => Math.max(0, prev - 1));
+      }
+    } else {
+      // Si on change de réaction ou on ajoute une nouvelle
+      if (localUserReaction) {
+        // Si on change de type de réaction
+        if (localUserReaction === 'like') {
+          setLocalLikes(prev => Math.max(0, prev - 1));
+          setLocalDislikes(prev => prev + 1);
+        } else {
+          setLocalDislikes(prev => Math.max(0, prev - 1));
+          setLocalLikes(prev => prev + 1);
+        }
+      } else {
+        // Si on ajoute une nouvelle réaction
+        if (type === 'like') {
+          setLocalLikes(prev => prev + 1);
+        } else {
+          setLocalDislikes(prev => prev + 1);
+        }
+      }
+      setLocalUserReaction(type);
+    }
+
+    // Appel à l'API pour mettre à jour en base
+    await handleReaction(type);
+  };
 
   useEffect(() => {
     const channel = supabase
@@ -62,17 +108,9 @@ export function PostActions({
           filter: `id=eq.${postId}`
         },
         (payload: RealtimePostgresChangesPayload<PostPayload>) => {
-          if (payload.new && onReaction) {
-            const oldLikes = (payload.old as PostPayload)?.likes ?? 0;
-            const oldDislikes = (payload.old as PostPayload)?.dislikes ?? 0;
-            const newLikes = (payload.new as PostPayload).likes;
-            const newDislikes = (payload.new as PostPayload).dislikes;
-            
-            if (newLikes > oldLikes) {
-              onReaction(postId, 'like');
-            } else if (newDislikes > oldDislikes) {
-              onReaction(postId, 'dislike');
-            }
+          if (payload.new) {
+            setLocalLikes(payload.new.likes);
+            setLocalDislikes(payload.new.dislikes);
           }
         }
       )
@@ -81,23 +119,23 @@ export function PostActions({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [postId, onReaction]);
+  }, [postId]);
 
   return (
     <div className="flex gap-2 items-center py-2">
       <div className="flex items-center gap-2">
         <ReactionButton
           icon={ThumbsUp}
-          count={likes}
-          isActive={userReaction === 'like'}
-          onClick={() => handleReaction('like')}
+          count={localLikes}
+          isActive={localUserReaction === 'like'}
+          onClick={() => handleLocalReaction('like')}
           activeClassName="bg-primary/10 hover:bg-primary/20 text-primary"
         />
         <ReactionButton
           icon={ThumbsDown}
-          count={dislikes}
-          isActive={userReaction === 'dislike'}
-          onClick={() => handleReaction('dislike')}
+          count={localDislikes}
+          isActive={localUserReaction === 'dislike'}
+          onClick={() => handleLocalReaction('dislike')}
           activeClassName="bg-destructive/10 hover:bg-destructive/20 text-destructive"
         />
       </div>
