@@ -7,9 +7,8 @@
            sm:touch-none
            active:shadow-lg
            active:scale-[0.98]
-           w-full sm:w-[280px] min-h-[280px];
-
-    animation: fadeIn 0.3s ease-out;
+           w-full sm:w-[280px] min-h-[280px]
+           animate-fade-in;
   }
 
   .sticky-note-preview {
@@ -39,16 +38,5 @@
   .sticky-note-orange {
     @apply bg-[#FEC6A1]/90 hover:bg-[#FEC6A1] border border-orange-200/50;
     box-shadow: 0 8px 24px rgba(249, 115, 22, 0.15);
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
 }

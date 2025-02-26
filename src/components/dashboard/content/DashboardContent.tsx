@@ -1,9 +1,8 @@
 
-import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useViewport } from "@/hooks/useViewport";
-import { cn } from "@/lib/utils";
 import { LoadingState } from "./LoadingState";
 import { FloatingButtons } from "./FloatingButtons";
 import { ContentRouter } from "./ContentRouter";
@@ -36,25 +35,25 @@ export function DashboardContent({
     return <LoadingState />;
   }
 
+  const renderDashboardHome = () => {
+    return <DashboardHome onRequestChat={onRequestChat} />;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className={cn(
-        "w-full min-h-[calc(100vh-4rem)]",
-        "bg-[#1A1F2C]",
-        "relative"
-      )}
+      className="min-h-screen w-full"
     >
-      <ContentRouter
-        currentPage={currentPage}
-        onEditStateChange={onEditStateChange}
-        onRequestChat={onRequestChat}
-        renderDashboardHome={() => (
-          <DashboardHome onRequestChat={onRequestChat} />
-        )}
-      />
+      <div className="h-full">
+        <ContentRouter
+          currentPage={currentPage}
+          onEditStateChange={onEditStateChange}
+          onRequestChat={onRequestChat}
+          renderDashboardHome={renderDashboardHome}
+        />
+      </div>
 
       {!isMobile && <FloatingButtons />}
     </motion.div>

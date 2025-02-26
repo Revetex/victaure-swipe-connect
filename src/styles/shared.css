@@ -4,118 +4,91 @@
 @tailwind utilities;
 
 @layer components {
-  /* Structure de base */
+  /* Layout de base */
   .page-container {
-    @apply min-h-screen w-full bg-[#1A1F2C];
+    @apply relative min-h-screen w-full 
+           bg-gradient-to-br from-[#F1F0FB] via-[#F7F7FC] to-[#FFFFFF]
+           dark:from-[#1A1F2C] dark:via-[#1A1F2C]/95 dark:to-[#1A1F2C]/90
+           pb-6;
   }
 
-  /* Composants communs */
-  .card {
-    @apply bg-white/5 border border-white/10 rounded-lg p-4;
+  /* Sections de contenu */
+  .content-section {
+    @apply bg-white/30 dark:bg-black/20
+           backdrop-blur-md
+           border border-[#64B5D9]/10
+           rounded-lg shadow-sm
+           p-4 sm:p-6
+           transition-all duration-300
+           hover:shadow-md;
   }
 
-  .button-primary {
-    @apply bg-[#64B5D9] text-white px-4 py-2 rounded-lg;
-  }
-
-  .button-secondary {
-    @apply bg-white/5 text-white px-4 py-2 rounded-lg border border-white/10;
-  }
-
-  .input-field {
-    @apply bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white w-full;
+  /* En-têtes de section */
+  .section-header {
+    @apply flex items-center justify-between
+           border-b border-[#64B5D9]/10
+           pb-4 mb-4;
   }
 
   .section-title {
-    @apply text-xl font-semibold text-white mb-4;
+    @apply text-xl font-semibold 
+           bg-gradient-to-r from-[#64B5D9] to-[#1B2A4A]
+           bg-clip-text text-transparent
+           flex items-center gap-2;
+  }
+
+  /* Cartes */
+  .glass-card {
+    @apply bg-white/30 dark:bg-black/20 
+           backdrop-blur-md
+           border border-[#64B5D9]/10
+           rounded-lg shadow-sm
+           p-4
+           transition-all duration-300
+           hover:bg-white/40 dark:hover:bg-black/30
+           hover:shadow-md;
+  }
+
+  .hover-card {
+    @apply transition-all duration-300
+           hover:scale-[1.02] 
+           hover:shadow-lg
+           active:scale-[0.98];
   }
 
   /* Navigation */
   .nav-item {
-    @apply flex items-center gap-2 px-4 py-2 rounded-lg text-white/80 hover:bg-white/5;
+    @apply flex items-center gap-2 
+           px-3 py-2
+           rounded-lg 
+           text-sm text-foreground/70
+           transition-colors duration-200
+           hover:bg-[#64B5D9]/10 hover:text-foreground;
   }
 
   .nav-item-active {
-    @apply bg-[#64B5D9]/20 text-white;
+    @apply bg-[#64B5D9]/20 
+           text-foreground
+           border border-[#64B5D9]/20;
   }
 
-  /* Layout */
-  .page-header {
-    @apply fixed top-0 left-0 right-0 z-50 h-16 
-           flex items-center justify-between px-4
-           bg-[#1A1F2C] border-b border-white/10;
-  }
-
-  .page-content {
-    @apply pt-20 px-4 pb-4 max-w-7xl mx-auto;
-  }
-
-  /* Lists */
-  .list-item {
-    @apply flex items-center justify-between p-4 
-           border-b border-white/10 last:border-0;
-  }
-
-  /* Cards grids */
-  .cards-grid {
-    @apply grid gap-4 sm:grid-cols-2 lg:grid-cols-3;
-  }
-
-  /* Forms */
-  .form-group {
-    @apply space-y-2 mb-4;
-  }
-
-  .form-label {
-    @apply text-sm text-white/80;
-  }
-
-  /* Dialog */
-  .dialog-content {
-    @apply bg-[#1A1F2C] text-white p-6 rounded-lg border border-white/10;
-  }
-
-  .dialog-title {
-    @apply text-xl font-semibold mb-4;
-  }
-
-  /* Tables */
-  .table-container {
-    @apply w-full overflow-x-auto;
-  }
-
-  .table {
-    @apply w-full border-collapse;
-  }
-
-  .table th {
-    @apply text-left p-4 border-b border-white/10 text-white/80;
-  }
-
-  .table td {
-    @apply p-4 border-b border-white/10;
-  }
-
-  /* Messages */
-  .message-bubble {
-    @apply p-3 rounded-lg max-w-[80%];
-  }
-
-  .message-own {
-    @apply bg-[#64B5D9] text-white ml-auto;
-  }
-
-  .message-other {
-    @apply bg-white/5 text-white;
-  }
-
-  /* Notifications */
-  .notification-item {
-    @apply p-4 border-b border-white/10 last:border-0;
-  }
-
-  /* Scrollbar */
+  /* Scrollbars */
   .custom-scrollbar {
-    @apply scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 181, 217, 0.2) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-1.5;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-[#64B5D9]/10 hover:bg-[#64B5D9]/20
+           rounded-full
+           transition-colors duration-200;
   }
 }
