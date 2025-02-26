@@ -4,23 +4,20 @@
 @tailwind utilities;
 
 @layer components {
-  /* Layout Components */
+  /* Layout Base */
   .page-container {
-    @apply relative min-h-screen w-full 
-           bg-background/5 dark:bg-background 
-           px-0 pb-6 
-           border-x border-border/10;
+    @apply relative min-h-screen w-full bg-background dark:bg-background pb-6;
   }
 
+  /* Content Sections */
   .content-section {
-    @apply bg-background/50 dark:bg-card/30 
-           backdrop-blur-sm
+    @apply bg-card/30 dark:bg-card/20
            border border-border/10
-           rounded-lg
+           rounded-lg shadow-sm
            p-4 sm:p-6;
   }
 
-  /* Section Components */
+  /* Section Headers */
   .section-header {
     @apply flex items-center justify-between
            border-b border-border/10
@@ -33,16 +30,14 @@
            flex items-center gap-2;
   }
 
-  /* Card Components */
+  /* Cards */
   .glass-card {
     @apply bg-background/30 dark:bg-card/20 
-           backdrop-blur-sm
            border border-border/10
-           rounded-lg
+           rounded-lg shadow-sm
            p-4
            transition-all duration-300
-           hover:bg-background/40 dark:hover:bg-card/30 
-           hover:border-border/20;
+           hover:bg-background/40 dark:hover:bg-card/30;
   }
 
   .hover-card {
@@ -51,17 +46,7 @@
            active:scale-[0.98];
   }
 
-  /* Navigation Components */
-  .app-header {
-    @apply fixed top-0 left-0 right-0 
-           h-16 px-4
-           z-50
-           bg-background/80 dark:bg-card/80 
-           backdrop-blur-md
-           border-b border-border/10
-           flex items-center justify-between;
-  }
-
+  /* Navigation */
   .nav-item {
     @apply flex items-center gap-2 
            px-3 py-2
@@ -77,7 +62,7 @@
            border border-border/20;
   }
 
-  /* Custom Scrollbar */
+  /* Scrollbars */
   .custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: rgba(100, 181, 217, 0.1) transparent;
@@ -95,16 +80,5 @@
     @apply bg-[#64B5D9]/10 hover:bg-[#64B5D9]/20
            rounded-full
            transition-colors duration-200;
-  }
-
-  /* Smooth Scroll Container */
-  .smooth-scroll {
-    @apply scrollbar-thin
-           scrollbar-thumb-[#64B5D9]/10
-           scrollbar-track-transparent
-           hover:scrollbar-thumb-[#64B5D9]/20;
-    scroll-behavior: smooth;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
   }
 }
