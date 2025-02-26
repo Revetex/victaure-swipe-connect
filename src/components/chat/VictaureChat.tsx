@@ -12,11 +12,13 @@ import { Button } from "../ui/button";
 import { RefreshCcw, X } from "lucide-react";
 import { HfInference } from "@huggingface/inference";
 import { toast } from "sonner";
+
 interface VictaureChatProps {
   maxQuestions?: number;
   context?: string;
   onMaxQuestionsReached?: () => void;
 }
+
 export function VictaureChat({
   maxQuestions = 3,
   context = "Tu es Mr. Victaure, un assistant intelligent et polyvalent. Tu peux discuter de tous les sujets de manière naturelle et engageante.",
@@ -54,6 +56,7 @@ export function VictaureChat({
     speakText,
     setIsSpeaking
   } = useVoiceFeatures();
+
   const handleSendMessage = async () => {
     if (!userInput.trim() || isLoading) return;
     try {
@@ -73,11 +76,14 @@ export function VictaureChat({
       toast.error("Une erreur est survenue lors de l'envoi du message");
     }
   };
+
   const handleSuggestionSelect = (suggestion: string) => {
     setUserInput(suggestion);
   };
+
   const isDisabled = userQuestions >= maxQuestions && !user;
   const disabledMessage = "Connectez-vous pour continuer à discuter avec Mr Victaure";
+
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTo({
@@ -86,16 +92,20 @@ export function VictaureChat({
       });
     }
   };
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
   return <div className="flex flex-col h-[calc(100dvh-4rem)] relative overflow-hidden p-4 my-0 py-0 px-0 bg-transparent rounded-none">
       <div className="absolute inset-0 bg-gradient-to-b from-[#1B2A4A]/50 to-[#1A1F2C]/50 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col h-full backdrop-blur-sm border border-[#64B5D9]/10 bg-transparent rounded-sm">
         <div className="flex-none backdrop-blur-md border-b border-[#64B5D9]/10">
           <div className="relative flex items-center justify-between">
-            <ChatHeader />
+            <ChatHeader 
+              title="Chat Victaure"
+            />
             <div className="flex items-center gap-2 px-4">
               <Button variant="ghost" size="icon" onClick={refreshMessages} className="text-[#F2EBE4]/80 hover:text-[#F2EBE4] transition-colors h-8 w-8" title="Effacer l'historique">
                 <RefreshCcw className="h-4 w-4" />

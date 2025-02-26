@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Message } from '@/types/messages';
 
 interface Message {
   role: 'system' | 'user' | 'assistant';
@@ -11,13 +12,16 @@ interface Message {
 type RequestType = 'chat' | 'function' | 'vision';
 
 interface UseVictaureChatProps {
-  onResponse?: (response: string) => void;
+  maxQuestions?: number;
+  context?: string;
 }
 
-export function useVictaureChat({ onResponse }: UseVictaureChatProps = {}) {
+export function useVictaureChat({ maxQuestions = 3, context }: UseVictaureChatProps = {}) {
   const [isLoading, setIsLoading] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [questionsLeft, setQuestionsLeft] = useState(maxQuestions);
 
-  const sendMessage = async (userMessage: string, context?: string, type: RequestType = 'chat') => {
+  const sendMessage = async (userMessage: string) => {
     setIsLoading(true);
     try {
       const messages: Message[] = [];
@@ -35,13 +39,19 @@ export function useVictaureChat({ onResponse }: UseVictaureChatProps = {}) {
       });
 
       const { data, error } = await supabase.functions.invoke('victaure-chat', {
-        body: { messages, type }
+        body: { messages, type: 'chat' }
       });
 
       if (error) throw error;
 
+      setQuestionsLeft(prev => Math.max(0, prev - 1));
       const response = data.choices[0].message.content;
-      onResponse?.(response);
+      
+      setMessages(prev => [...prev, 
+        { role: 'user', content: userMessage },
+        { role: 'assistant', content: response }
+      ]);
+
       return response;
 
     } catch (error) {
@@ -55,6 +65,8 @@ export function useVictaureChat({ onResponse }: UseVictaureChatProps = {}) {
 
   return {
     sendMessage,
-    isLoading
+    isLoading,
+    messages,
+    questionsLeft
   };
 }

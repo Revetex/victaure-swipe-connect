@@ -5,9 +5,10 @@ import { motion } from "framer-motion";
 interface QuickSuggestionsProps {
   suggestions: string[];
   onSelect: (suggestion: string) => void;
+  isLoading?: boolean; // Ajout de la propriété optionnelle isLoading
 }
 
-export function QuickSuggestions({ suggestions, onSelect }: QuickSuggestionsProps) {
+export function QuickSuggestions({ suggestions, onSelect, isLoading }: QuickSuggestionsProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {suggestions.map((suggestion, index) => (
@@ -21,6 +22,7 @@ export function QuickSuggestions({ suggestions, onSelect }: QuickSuggestionsProp
             variant="outline"
             size="sm"
             onClick={() => onSelect(suggestion)}
+            disabled={isLoading}
             className="border-[#64B5D9]/20 text-[#F1F0FB]/80 hover:bg-[#64B5D9]/10 hover:text-[#F1F0FB]"
           >
             {suggestion}
