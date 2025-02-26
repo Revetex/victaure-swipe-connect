@@ -13,6 +13,17 @@ export const usePostOperations = () => {
     }
 
     try {
+      // Récupérer d'abord les compteurs actuels du post
+      const { data: post } = await supabase
+        .from('posts')
+        .select('likes, dislikes')
+        .eq('id', postId)
+        .single();
+
+      if (!post) {
+        throw new Error('Post not found');
+      }
+
       // Vérifier si l'utilisateur a déjà réagi
       const { data: existingReaction } = await supabase
         .from('post_reactions')
@@ -32,11 +43,11 @@ export const usePostOperations = () => {
 
           if (error) throw error;
 
-          // Mettre à jour le compteur dans la table posts
+          // Décrémenter le compteur
           await supabase
             .from('posts')
             .update({
-              [type === 'like' ? 'likes' : 'dislikes']: supabase.raw(`${type === 'like' ? 'likes' : 'dislikes'} - 1`)
+              [type === 'like' ? 'likes' : 'dislikes']: Math.max(0, (type === 'like' ? post.likes : post.dislikes) - 1)
             })
             .eq('id', postId);
 
@@ -50,12 +61,12 @@ export const usePostOperations = () => {
 
           if (error) throw error;
 
-          // Mettre à jour les compteurs dans la table posts
+          // Mettre à jour les compteurs
           await supabase
             .from('posts')
             .update({
-              [type === 'like' ? 'likes' : 'dislikes']: supabase.raw(`${type === 'like' ? 'likes' : 'dislikes'} + 1`),
-              [type === 'like' ? 'dislikes' : 'likes']: supabase.raw(`${type === 'like' ? 'dislikes' : 'likes'} - 1`)
+              [type === 'like' ? 'likes' : 'dislikes']: (type === 'like' ? post.likes : post.dislikes) + 1,
+              [type === 'like' ? 'dislikes' : 'likes']: Math.max(0, (type === 'like' ? post.dislikes : post.likes) - 1)
             })
             .eq('id', postId);
         }
@@ -71,11 +82,11 @@ export const usePostOperations = () => {
 
         if (error) throw error;
 
-        // Incrémenter le compteur dans la table posts
+        // Incrémenter le compteur
         await supabase
           .from('posts')
           .update({
-            [type === 'like' ? 'likes' : 'dislikes']: supabase.raw(`${type === 'like' ? 'likes' : 'dislikes'} + 1`)
+            [type === 'like' ? 'likes' : 'dislikes']: (type === 'like' ? post.likes : post.dislikes) + 1
           })
           .eq('id', postId);
       }
