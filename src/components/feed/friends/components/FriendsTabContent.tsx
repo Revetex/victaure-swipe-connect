@@ -1,16 +1,13 @@
-
 import { UserProfile } from "@/types/profile";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FriendCard } from "./FriendCard";
 import { EmptyConnectionsState } from "../EmptyConnectionsState";
-
 interface FriendsTabContentProps {
   friends: UserProfile[];
   currentPage: number;
   itemsPerPage: number;
   showOnlineOnly?: boolean;
 }
-
 export function FriendsTabContent({
   friends,
   currentPage,
@@ -21,24 +18,14 @@ export function FriendsTabContent({
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const displayedFriends = filteredFriends.slice(startIndex, endIndex);
-
   if (!displayedFriends.length) {
-    return showOnlineOnly ? (
-      <div className="text-center text-muted-foreground py-8">
+    return showOnlineOnly ? <div className="text-center text-muted-foreground py-8">
         Aucune connexion en ligne
-      </div>
-    ) : (
-      <EmptyConnectionsState />
-    );
+      </div> : <EmptyConnectionsState />;
   }
-
-  return (
-    <ScrollArea className="h-[600px]">
-      <div className="space-y-3 p-1">
-        {displayedFriends.map(friend => (
-          <FriendCard key={friend.id} friend={friend} />
-        ))}
+  return <ScrollArea className="h-[600px]">
+      <div className="space-y-3 p-1 bg-transparent rounded">
+        {displayedFriends.map(friend => <FriendCard key={friend.id} friend={friend} />)}
       </div>
-    </ScrollArea>
-  );
+    </ScrollArea>;
 }
