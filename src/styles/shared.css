@@ -7,14 +7,13 @@
   /* Layout de base */
   .page-container {
     @apply relative min-h-screen w-full 
-           bg-gradient-to-br from-[#F1F0FB] via-[#F7F7FC] to-[#FFFFFF]
-           dark:from-[#1A1F2C] dark:via-[#1A1F2C]/95 dark:to-[#1A1F2C]/90
-           pb-6;
+           bg-gradient-to-br from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]
+           text-[#F2EBE4] pb-6;
   }
 
   /* Sections de contenu */
   .content-section {
-    @apply bg-white/30 dark:bg-black/20
+    @apply bg-white/5 dark:bg-black/20
            backdrop-blur-md
            border border-[#64B5D9]/10
            rounded-lg shadow-sm
@@ -32,20 +31,20 @@
 
   .section-title {
     @apply text-xl font-semibold 
-           bg-gradient-to-r from-[#64B5D9] to-[#1B2A4A]
+           bg-gradient-to-r from-[#64B5D9] to-[#F2EBE4]
            bg-clip-text text-transparent
            flex items-center gap-2;
   }
 
   /* Cartes */
   .glass-card {
-    @apply bg-white/30 dark:bg-black/20 
+    @apply bg-white/5 dark:bg-black/20 
            backdrop-blur-md
            border border-[#64B5D9]/10
            rounded-lg shadow-sm
            p-4
            transition-all duration-300
-           hover:bg-white/40 dark:hover:bg-black/30
+           hover:bg-white/10 dark:hover:bg-black/30
            hover:shadow-md;
   }
 
@@ -61,14 +60,14 @@
     @apply flex items-center gap-2 
            px-3 py-2
            rounded-lg 
-           text-sm text-foreground/70
+           text-sm text-[#F2EBE4]/70
            transition-colors duration-200
-           hover:bg-[#64B5D9]/10 hover:text-foreground;
+           hover:bg-[#64B5D9]/10 hover:text-[#F2EBE4];
   }
 
   .nav-item-active {
     @apply bg-[#64B5D9]/20 
-           text-foreground
+           text-[#F2EBE4]
            border border-[#64B5D9]/20;
   }
 
@@ -90,5 +89,31 @@
     @apply bg-[#64B5D9]/10 hover:bg-[#64B5D9]/20
            rounded-full
            transition-colors duration-200;
+  }
+
+  /* Inputs et boutons */
+  .input-base {
+    @apply bg-white/5 border-[#64B5D9]/20 
+           text-[#F2EBE4] placeholder-[#F2EBE4]/50
+           rounded-lg;
+  }
+
+  .button-base {
+    @apply bg-gradient-to-r from-[#64B5D9]/80 to-[#64B5D9]/60
+           hover:from-[#64B5D9] hover:to-[#64B5D9]/80
+           text-white font-medium
+           rounded-lg shadow-lg
+           transition-all duration-300;
+  }
+
+  /* Layout des pages */
+  .page-header {
+    @apply fixed top-0 left-0 right-0 z-50
+           bg-[#1A1F2C]/80 backdrop-blur-md
+           border-b border-white/5;
+  }
+
+  .page-content {
+    @apply pt-16 px-4 min-h-screen;
   }
 }

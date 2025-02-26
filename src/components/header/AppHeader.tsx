@@ -84,7 +84,7 @@ export function AppHeader({
             <Dialog open={showChat} onOpenChange={setShowChat}>
               <DialogContent className="bg-[#1A1F2C] border-white/10 text-white max-w-2xl">
                 <DialogTitle>Chat avec M. Victaure</DialogTitle>
-                <VictaureChat onClose={() => setShowChat(false)} />
+                <VictaureChat />
               </DialogContent>
             </Dialog>
           )}
