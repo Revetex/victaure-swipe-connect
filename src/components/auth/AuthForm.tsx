@@ -75,7 +75,7 @@ export function AuthForm({
                   onPasswordChange={(value) => setFormData({ ...formData, password: value })}
                   onFullNameChange={(value) => setFormData({ ...formData, fullName: value })}
                   onPhoneChange={(value) => setFormData({ ...formData, phone: value })}
-                  onSubmit={() => signUp(formData)}
+                  onSubmit={() => signUp(formData.email, formData.password, formData.fullName, formData.phone)}
                 />
               </TabsContent>
 
