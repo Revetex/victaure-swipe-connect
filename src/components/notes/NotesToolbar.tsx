@@ -44,7 +44,7 @@ export function NotesToolbar({
         return 'bg-[#FEF7CD] text-zinc-800';
     }
   };
-  return <div className="flex flex-col gap-4 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b py-[8px] px-[8px]">
+  return <div className="flex flex-col gap-4 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b px-[8px] py-[8px]">
       <div className="flex gap-2">
         <Input value={newNote} onChange={e => onNoteChange(e.target.value)} placeholder="Nouvelle note..." className="flex-1" onKeyPress={e => e.key === 'Enter' && handleAddNote()} />
         <Select value={selectedColor} onValueChange={onColorChange}>
