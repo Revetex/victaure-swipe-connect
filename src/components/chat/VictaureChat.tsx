@@ -98,14 +98,14 @@ export function VictaureChat({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#1A1F2C] relative overflow-hidden">
+    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#1A1F2C] relative overflow-hidden p-4">
       <div className="absolute inset-0 bg-gradient-to-b from-[#1B2A4A]/50 to-[#1A1F2C]/50 pointer-events-none" />
 
-      <div className="relative z-10 flex flex-col h-full">
-        <div className="flex-none bg-[#1B2A4A]/80 backdrop-blur-md border-b border-[#64B5D9]/10">
-          <div className="relative flex items-center justify-between p-3">
+      <div className="relative z-10 flex flex-col h-full bg-[#1B2A4A]/20 backdrop-blur-sm rounded-2xl border border-[#64B5D9]/10">
+        <div className="flex-none backdrop-blur-md border-b border-[#64B5D9]/10">
+          <div className="relative flex items-center justify-between">
             <ChatHeader />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-4">
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -135,7 +135,7 @@ export function VictaureChat({
           <MessageList messages={messages} isLoading={isLoading} />
         </div>
         
-        <div className="relative bg-gradient-to-t from-[#1B2A4A]/80 via-[#1B2A4A]/50 to-transparent p-3 space-y-3">
+        <div className="relative bg-gradient-to-t from-[#1B2A4A]/20 via-[#1B2A4A]/10 to-transparent space-y-3">
           <QuickSuggestions 
             suggestions={suggestions} 
             isLoading={isLoadingSuggestions} 

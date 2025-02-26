@@ -7,9 +7,9 @@ export function ChatHeader() {
     <motion.div 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-center gap-2.5"
+      className="flex items-center gap-3 px-4 py-3"
     >
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-3">
         <div className="relative">
           <motion.div 
             animate={{
@@ -21,12 +21,12 @@ export function ChatHeader() {
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            className="p-2 rounded-lg bg-[#1A1F2C]/90 border border-[#64B5D9]/10 relative"
+            className="relative bg-[#1A1F2C]/90 border border-[#64B5D9]/10 rounded-lg"
           >
             <img 
               src="/lovable-uploads/black-white-logo.png"
               alt="Victaure Logo"
-              className="w-5 h-5 object-contain opacity-90"
+              className="w-7 h-7 object-contain opacity-90"
             />
             <motion.div 
               animate={{ 
