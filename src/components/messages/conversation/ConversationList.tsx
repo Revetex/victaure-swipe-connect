@@ -53,16 +53,18 @@ export function ConversationList({ className }: { className?: string }) {
     try {
       console.log("Fetching conversations for user:", user.id);
       
-      // Optimisé pour éviter les duplications
       const { data: existingConversations, error } = await supabase
         .from('conversations')
         .select(`
-          distinct on (participant1_id, participant2_id)
-          *,
-          participant1:profiles!conversations_participant1_id_fkey(
+          id,
+          participant1_id,
+          participant2_id,
+          last_message,
+          last_message_time,
+          participant1:profiles!conversations_participant1_id_fkey (
             id, full_name, avatar_url, online_status, last_seen
           ),
-          participant2:profiles!conversations_participant2_id_fkey(
+          participant2:profiles!conversations_participant2_id_fkey (
             id, full_name, avatar_url, online_status, last_seen
           )
         `)
@@ -76,51 +78,33 @@ export function ConversationList({ className }: { className?: string }) {
       }
 
       // Transformation des données avec déduplication
-      const formattedConversations: Conversation[] = [];
       const seenParticipants = new Set<string>();
+      const formattedConversations: Conversation[] = [];
 
-      (existingConversations || []).forEach(conv => {
-        let participant2Id;
-        let conversation: Conversation;
-
-        if (conv.participant1_id === user.id) {
-          participant2Id = conv.participant2_id;
-          conversation = {
+      existingConversations?.forEach(conv => {
+        const otherParticipantId = conv.participant1_id === user.id ? conv.participant2_id : conv.participant1_id;
+        
+        if (!seenParticipants.has(otherParticipantId)) {
+          seenParticipants.add(otherParticipantId);
+          
+          const conversation: Conversation = {
             id: conv.id,
-            participant1_id: conv.participant1_id,
-            participant2_id: conv.participant2_id,
-            participant1: conv.participant1[0] || { ...defaultParticipant, id: conv.participant1_id },
-            participant2: conv.participant2[0] || { ...defaultParticipant, id: conv.participant2_id },
+            participant1_id: user.id,
+            participant2_id: otherParticipantId,
+            participant1: Array.isArray(conv.participant1) ? 
+              conv.participant1[0] || { ...defaultParticipant, id: conv.participant1_id } :
+              conv.participant1 || { ...defaultParticipant, id: conv.participant1_id },
+            participant2: Array.isArray(conv.participant2) ? 
+              conv.participant2[0] || { ...defaultParticipant, id: conv.participant2_id } :
+              conv.participant2 || { ...defaultParticipant, id: conv.participant2_id },
             last_message: conv.last_message,
             last_message_time: conv.last_message_time
           };
-        } else {
-          participant2Id = conv.participant1_id;
-          conversation = {
-            id: conv.id,
-            participant1_id: conv.participant2_id,
-            participant2_id: conv.participant1_id,
-            participant1: conv.participant2[0] || { ...defaultParticipant, id: conv.participant2_id },
-            participant2: conv.participant1[0] || { ...defaultParticipant, id: conv.participant1_id },
-            last_message: conv.last_message,
-            last_message_time: conv.last_message_time
-          };
-        }
-
-        if (!seenParticipants.has(participant2Id)) {
-          seenParticipants.add(participant2Id);
+          
           formattedConversations.push(conversation);
         }
       });
 
-      // Tri par date du dernier message
-      formattedConversations.sort((a, b) => {
-        const dateA = a.last_message_time ? new Date(a.last_message_time).getTime() : 0;
-        const dateB = b.last_message_time ? new Date(b.last_message_time).getTime() : 0;
-        return dateB - dateA;
-      });
-
-      console.log("Formatted conversations (no duplicates):", formattedConversations);
       setConversations(formattedConversations);
       
     } catch (error) {
