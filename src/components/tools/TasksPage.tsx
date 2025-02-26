@@ -20,7 +20,7 @@ export function TasksPage() {
         animate={{ opacity: 1, y: 0 }}
         className="container mx-auto p-4 max-w-4xl pt-20 relative"
       >
-        {/* Background gradient décoration */}
+        {/* Background gradient decoration */}
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/5 pointer-events-none" />
         
         <div className="relative">

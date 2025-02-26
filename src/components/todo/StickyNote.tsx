@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import { Trash2, Edit2, Save, Grip, Move } from "lucide-react";
+import { Trash2, Edit2, Save, Grip } from "lucide-react";
 import { StickyNote as StickyNoteType } from "@/types/todo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -65,26 +65,26 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid', isDragga
   };
 
   const handleSave = () => {
-    if (onUpdate) {
-      onUpdate({
-        ...note,
-        text: editedText
-      });
-    }
+    if (!onUpdate) return;
+    
+    onUpdate({
+      ...note,
+      text: editedText
+    });
     setIsEditing(false);
   };
 
   const handleResize = (e: any, { size }: { size: { width: number; height: number } }) => {
-    if (onUpdate) {
-      onUpdate({
-        ...note,
-        metadata: {
-          ...note.metadata,
-          width: size.width,
-          height: size.height
-        }
-      });
-    }
+    if (!onUpdate) return;
+    
+    onUpdate({
+      ...note,
+      metadata: {
+        ...note.metadata,
+        width: size.width,
+        height: size.height
+      }
+    });
   };
 
   const width = note.metadata?.width || 280;
@@ -92,15 +92,13 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid', isDragga
 
   const noteContent = (
     <div className={cn(
-      "border shadow-lg group relative overflow-hidden",
+      "border shadow-lg group relative overflow-hidden transition-all duration-300",
       getColorClass(note.color),
       isDraggable ? "cursor-grab active:cursor-grabbing" : "",
-      "before:content-[''] before:absolute before:inset-0",
-      "before:bg-gradient-to-br before:from-white/5 before:to-transparent",
-      "after:content-[''] after:absolute after:bottom-0 after:right-0",
-      "after:w-8 after:h-8 after:bg-gradient-to-br",
+      "before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/5 before:to-transparent",
+      "after:content-[''] after:absolute after:bottom-0 after:right-0 after:w-8 after:h-8 after:bg-gradient-to-br",
       "after:from-black/0 after:to-black/5 after:rounded-tl-2xl",
-      "hover:shadow-xl transition-all duration-300",
+      "hover:shadow-xl hover:scale-[1.02]",
       layout === 'list' ? "flex items-start gap-4 rounded-lg p-4" : "rounded-lg p-6"
     )}>
       <div className="flex justify-between items-start w-full gap-2">
@@ -112,7 +110,8 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid', isDragga
             <Textarea
               value={editedText}
               onChange={(e) => setEditedText(e.target.value)}
-              className="min-h-[100px] bg-transparent border-none focus-visible:ring-1 focus-visible:ring-black/20"
+              className="min-h-[100px] bg-transparent border-none focus-visible:ring-1 focus-visible:ring-black/20 resize-none"
+              autoFocus
             />
           ) : (
             <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
@@ -129,37 +128,34 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid', isDragga
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           {isEditing ? (
             <Button
               variant="ghost"
               size="icon"
               onClick={handleSave}
-              className="bg-black/5 hover:bg-black/10 z-10"
+              className="bg-black/5 hover:bg-black/10"
             >
               <Save className="h-4 w-4" />
-              <span className="sr-only">Enregistrer</span>
             </Button>
           ) : (
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsEditing(true)}
-              className="bg-black/5 hover:bg-black/10 z-10"
+              className="bg-black/5 hover:bg-black/10"
             >
               <Edit2 className="h-4 w-4" />
-              <span className="sr-only">Modifier</span>
             </Button>
           )}
           
           <Button
             variant="ghost"
             size="icon"
-            className="bg-black/5 hover:bg-black/10 z-10"
+            className="bg-black/5 hover:bg-black/10 hover:text-red-500"
             onClick={() => onDelete(note.id)}
           >
             <Trash2 className="h-4 w-4" />
-            <span className="sr-only">Supprimer</span>
           </Button>
         </div>
       </div>
@@ -176,7 +172,8 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid', isDragga
         initial={false}
         animate={{
           x: position.x,
-          y: position.y
+          y: position.y,
+          scale: isEditing ? 1.02 : 1
         }}
         className="absolute"
       >
@@ -187,7 +184,11 @@ export function StickyNote({ note, onDelete, onUpdate, layout = 'grid', isDragga
           minConstraints={[200, 200]}
           maxConstraints={[500, 500]}
           resizeHandles={['se']}
-          handle={<div className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize" />}
+          handle={
+            <div className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize flex items-center justify-center">
+              <Grip className="h-3 w-3 text-muted-foreground/40" />
+            </div>
+          }
         >
           {noteContent}
         </ResizableBox>
