@@ -1,9 +1,7 @@
-
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, SortAsc, SortDesc } from "lucide-react";
-
 interface PostFiltersProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
@@ -14,7 +12,6 @@ interface PostFiltersProps {
   sortOrder: 'asc' | 'desc';
   onSortOrderChange: (value: 'asc' | 'desc') => void;
 }
-
 export function PostFilters({
   searchTerm,
   onSearchChange,
@@ -25,18 +22,11 @@ export function PostFilters({
   sortOrder,
   onSortOrderChange
 }: PostFiltersProps) {
-  return (
-    <section className="bg-card backdrop-blur-sm rounded-lg border shadow-sm p-4">
+  return <section className="bg-card backdrop-blur-sm border shadow-sm p-4 rounded-none">
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input 
-            type="search" 
-            placeholder="Rechercher dans les publications..." 
-            value={searchTerm} 
-            onChange={e => onSearchChange(e.target.value)} 
-            className="pl-9 bg-black/[0.29]" 
-          />
+          <Input type="search" placeholder="Rechercher dans les publications..." value={searchTerm} onChange={e => onSearchChange(e.target.value)} className="pl-9 bg-black/[0.29]" />
         </div>
         
         <div className="flex gap-2">
@@ -63,16 +53,10 @@ export function PostFilters({
             </SelectContent>
           </Select>
 
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={() => onSortOrderChange(sortOrder === 'asc' ? 'desc' : 'asc')} 
-            className="shrink-0 bg-background"
-          >
+          <Button variant="outline" size="icon" onClick={() => onSortOrderChange(sortOrder === 'asc' ? 'desc' : 'asc')} className="shrink-0 bg-background">
             {sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
           </Button>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 }
