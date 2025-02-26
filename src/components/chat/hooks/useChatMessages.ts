@@ -32,33 +32,26 @@ export function useChatMessages({
   const [userQuestions, setUserQuestions] = useState(0);
   const [error, setError] = useState<Error | null>(null);
 
-  // Charger les messages sauvegardés au démarrage
   useEffect(() => {
     const savedMessages = localStorage.getItem(STORAGE_KEY);
     if (savedMessages) {
       try {
-        setMessages(JSON.parse(savedMessages));
-        setUserQuestions(JSON.parse(savedMessages).filter((m: Message) => m.isUser).length);
+        const parsedMessages = JSON.parse(savedMessages);
+        console.log("Loading saved messages:", parsedMessages); // Log pour déboguer
+        setMessages(parsedMessages);
+        setUserQuestions(parsedMessages.filter((m: Message) => m.isUser).length);
       } catch (e) {
         console.error("Error loading saved messages:", e);
       }
     }
   }, []);
 
-  // Sauvegarder les messages quand ils changent
   useEffect(() => {
     if (messages.length > 0) {
+      console.log("Saving messages:", messages); // Log pour déboguer
       localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
     }
   }, [messages]);
-
-  const refreshMessages = useCallback(() => {
-    setMessages([]);
-    setUserQuestions(0);
-    setError(null);
-    localStorage.removeItem(STORAGE_KEY);
-    toast.success("Historique effacé");
-  }, []);
 
   const sendMessage = useCallback(async (message: Message) => {
     if (!message.content.trim() || !geminiModel) return;
@@ -68,7 +61,9 @@ export function useChatMessages({
       setError(null);
 
       // Ajouter le message de l'utilisateur
-      setMessages(prev => [...prev, message]);
+      const updatedMessages = [...messages, message];
+      console.log("Adding user message:", message); // Log pour déboguer
+      setMessages(updatedMessages);
       setUserQuestions(prev => prev + 1);
 
       // Vérifier si l'utilisateur a atteint la limite
@@ -78,15 +73,17 @@ export function useChatMessages({
       }
 
       // Construire le contexte complet pour l'IA
-      const historyPrompt = messages
+      const historyPrompt = updatedMessages
         .map(m => `${m.isUser ? "Utilisateur" : "Assistant"}: ${m.content}`)
         .join("\n");
 
       const fullPrompt = `${context}\n\nHistorique de la conversation:\n${historyPrompt}\n\nUtilisateur: ${message.content}\n\nAssistant:`;
+      console.log("Sending prompt to Gemini:", fullPrompt); // Log pour déboguer
 
       // Utiliser l'API Gemini
       const result = await geminiModel.generateContent(fullPrompt);
       const response = result.response.text();
+      console.log("Received response from Gemini:", response); // Log pour déboguer
 
       if (!response) {
         throw new Error("Pas de réponse de l'assistant");
@@ -104,13 +101,20 @@ export function useChatMessages({
     } catch (err) {
       console.error('Error sending message:', err);
       setError(err instanceof Error ? err : new Error('Unknown error occurred'));
-      toast.error("Erreur lors de l'envoi du message", {
-        description: err instanceof Error ? err.message : "Une erreur inattendue s'est produite"
-      });
+      toast.error("Erreur lors de l'envoi du message");
     } finally {
       setIsLoading(false);
     }
   }, [context, messages, user, userQuestions, maxQuestions, onMaxQuestionsReached, geminiModel]);
+
+  const refreshMessages = useCallback(() => {
+    console.log("Refreshing messages"); // Log pour déboguer
+    setMessages([]);
+    setUserQuestions(0);
+    setError(null);
+    localStorage.removeItem(STORAGE_KEY);
+    toast.success("Historique effacé");
+  }, []);
 
   return {
     messages,
