@@ -5,7 +5,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-
 export function AuthFooterLinks() {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -13,29 +12,32 @@ export function AuthFooterLinks() {
     email: "",
     message: ""
   });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { error } = await supabase.functions.invoke('send-contact-email', {
+      const {
+        error
+      } = await supabase.functions.invoke('send-contact-email', {
         body: formData
       });
       if (error) throw error;
       toast.success("Message envoyé avec succès!");
       setIsOpen(false);
-      setFormData({ name: "", email: "", message: "" });
+      setFormData({
+        name: "",
+        email: "",
+        message: ""
+      });
     } catch (error) {
       toast.error("Erreur lors de l'envoi du message");
       console.error(error);
     }
   };
-
-  return (
-    <nav className="flex flex-wrap justify-center gap-3 text-sm text-[#F1F0FB]/80" role="navigation">
+  return <nav className="flex flex-wrap justify-center gap-3 text-sm text-[#F1F0FB]/80" role="navigation">
       {/* Terms Dialog */}
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB]">
+          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB] font-thin">
             Conditions d'utilisation
           </Button>
         </DialogTrigger>
@@ -65,7 +67,7 @@ export function AuthFooterLinks() {
       {/* Privacy Dialog */}
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB]">
+          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB] font-thin">
             Politique de confidentialité
           </Button>
         </DialogTrigger>
@@ -161,6 +163,5 @@ export function AuthFooterLinks() {
           </form>
         </DialogContent>
       </Dialog>
-    </nav>
-  );
+    </nav>;
 }
