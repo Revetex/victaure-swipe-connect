@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatHeader } from "./ChatHeader";
@@ -18,10 +17,10 @@ interface VictaureChatProps {
   onMaxQuestionsReached?: () => void;
 }
 
-export function VictaureChat({ 
-  maxQuestions = 3, 
+export function VictaureChat({
+  maxQuestions = 3,
   context = "Tu es Mr. Victaure, un assistant intelligent et polyvalent. Tu peux discuter de tous les sujets de manière naturelle et engageante.",
-  onMaxQuestionsReached 
+  onMaxQuestionsReached
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -111,70 +110,50 @@ export function VictaureChat({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#1A1F2C] relative">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]" />
-        
-        <div className="absolute inset-0" 
-             style={{
-               backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
-               backgroundSize: '15px 15px'
-             }} 
-        />
+    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#1C1C1C]">
+      <div className="flex-none px-4 py-3 border-b border-[#3C3C3C] bg-[#2C2C2C]">
+        <ChatHeader />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={refreshMessages}
+          className="absolute right-14 top-2 text-[#808080] hover:text-[#E0E0E0] transition-colors"
+          title="Effacer l'historique"
+        >
+          <RefreshCcw className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onMaxQuestionsReached}
+          className="absolute right-4 top-2 text-[#808080] hover:text-[#E0E0E0] transition-colors"
+          title="Fermer"
+        >
+          <X className="h-4 w-4" />
+        </Button>
       </div>
 
-      <div className="relative z-10 flex flex-col h-full">
-        <div className="flex-none px-4 py-3 border-b border-[#64B5D9]/10 bg-[#1B2A4A]/50 backdrop-blur-sm">
-          <ChatHeader />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={refreshMessages}
-            className="absolute right-14 top-2 text-[#64B5D9]/80 hover:text-[#64B5D9] transition-colors"
-            title="Effacer l'historique"
-          >
-            <RefreshCcw className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onMaxQuestionsReached}
-            className="absolute right-4 top-2 text-[#64B5D9]/80 hover:text-[#64B5D9] transition-colors"
-            title="Fermer"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div className="flex-1 min-h-0 overflow-y-auto pb-24">
-          <MessageList 
-            messages={messages}
-            isLoading={isLoading}
-            ref={chatContainerRef}
-          />
-        </div>
-        
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C] to-transparent">
-          <QuickSuggestions
-            suggestions={suggestions}
-            isLoading={isLoadingSuggestions}
-            onSelect={handleSuggestionSelect}
-            className="mb-4"
-          />
-          
-          <ChatInput
-            userInput={userInput}
-            setUserInput={setUserInput}
-            isRecording={isRecording}
-            isSpeaking={isSpeaking}
-            isLoading={isLoading}
-            isDisabled={isDisabled}
-            disabledMessage={disabledMessage}
-            onStartRecording={startRecording}
-            onStopSpeaking={() => setIsSpeaking(false)}
-            onSendMessage={handleSendMessage}
-          />
-        </div>
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <MessageList 
+          messages={messages}
+          isLoading={isLoading}
+          ref={chatContainerRef}
+        />
+      </div>
+      
+      <div className="flex-none p-4 border-t border-[#3C3C3C] bg-[#2C2C2C]">
+        <ChatInput
+          userInput={userInput}
+          setUserInput={setUserInput}
+          isRecording={isRecording}
+          isSpeaking={isSpeaking}
+          isLoading={isLoading}
+          isDisabled={isDisabled}
+          disabledMessage={disabledMessage}
+          onStartRecording={startRecording}
+          onStopSpeaking={() => setIsSpeaking(false)}
+          onSendMessage={handleSendMessage}
+        />
       </div>
     </div>
   );
