@@ -41,26 +41,68 @@ export const useReactions = ({
     try {
       // Si la même réaction existe, on la supprime
       if (userReaction === type) {
-        const { error } = await supabase
+        // Supprimer la réaction
+        const { error: deleteError } = await supabase
           .from('post_reactions')
           .delete()
           .eq('post_id', postId)
           .eq('user_id', currentUserId);
 
-        if (error) throw error;
-      } else {
-        // Sinon, on ajoute/met à jour la réaction
-        const { error } = await supabase
-          .from('post_reactions')
-          .upsert({
-            post_id: postId,
-            user_id: currentUserId,
-            reaction_type: type
-          }, {
-            onConflict: 'post_id,user_id'
-          });
+        if (deleteError) throw deleteError;
 
-        if (error) throw error;
+        // Mettre à jour le compteur dans la table posts
+        const { error: updateError } = await supabase
+          .from('posts')
+          .update({
+            [type === 'like' ? 'likes' : 'dislikes']: supabase.sql`${type === 'like' ? 'likes' : 'dislikes'} - 1`
+          })
+          .eq('id', postId);
+
+        if (updateError) throw updateError;
+      } else {
+        // Si une réaction différente existe, on la met à jour
+        if (userReaction) {
+          // Mettre à jour la réaction existante
+          const { error: updateReactionError } = await supabase
+            .from('post_reactions')
+            .update({ reaction_type: type })
+            .eq('post_id', postId)
+            .eq('user_id', currentUserId);
+
+          if (updateReactionError) throw updateReactionError;
+
+          // Mettre à jour les compteurs
+          const { error: updateCountsError } = await supabase
+            .from('posts')
+            .update({
+              [type === 'like' ? 'likes' : 'dislikes']: supabase.sql`${type === 'like' ? 'likes' : 'dislikes'} + 1`,
+              [type === 'like' ? 'dislikes' : 'likes']: supabase.sql`${type === 'like' ? 'dislikes' : 'likes'} - 1`
+            })
+            .eq('id', postId);
+
+          if (updateCountsError) throw updateCountsError;
+        } else {
+          // Créer une nouvelle réaction
+          const { error: insertError } = await supabase
+            .from('post_reactions')
+            .insert({
+              post_id: postId,
+              user_id: currentUserId,
+              reaction_type: type
+            });
+
+          if (insertError) throw insertError;
+
+          // Incrémenter le compteur
+          const { error: updateError } = await supabase
+            .from('posts')
+            .update({
+              [type === 'like' ? 'likes' : 'dislikes']: supabase.sql`${type === 'like' ? 'likes' : 'dislikes'} + 1`
+            })
+            .eq('id', postId);
+
+          if (updateError) throw updateError;
+        }
 
         // Envoyer une notification seulement pour les likes sur les posts d'autres utilisateurs
         if (type === 'like' && postAuthorId !== currentUserId) {
