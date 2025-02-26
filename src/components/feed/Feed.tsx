@@ -6,6 +6,8 @@ import { PostList } from "./posts/PostList";
 import { PostFilters } from "./posts/sections/PostFilters";
 import { useState } from "react";
 import { PostAttachment, PostPrivacyLevel } from "./posts/types";
+import { Button } from "../ui/button";
+import { PenLine } from "lucide-react";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -57,17 +59,28 @@ export function Feed() {
     >
       <div className="space-y-6">
         <motion.div variants={itemVariants}>
-          <CreatePostForm
-            newPost={newPost}
-            onPostChange={handlePostChange}
-            privacy={privacy}
-            onPrivacyChange={handlePrivacyChange}
-            attachments={attachments}
-            isUploading={isUploading}
-            onCreatePost={handleCreatePost}
-            onClose={() => setIsExpanded(false)}
-            isExpanded={isExpanded}
-          />
+          {!isExpanded ? (
+            <Button
+              onClick={() => setIsExpanded(true)}
+              variant="ghost"
+              className="w-full bg-white/5 hover:bg-white/10 text-white/80 justify-start px-4 py-6 rounded-xl border border-white/10"
+            >
+              <PenLine className="h-5 w-5 mr-2" />
+              Partagez quelque chose...
+            </Button>
+          ) : (
+            <CreatePostForm
+              newPost={newPost}
+              onPostChange={handlePostChange}
+              privacy={privacy}
+              onPrivacyChange={handlePrivacyChange}
+              attachments={attachments}
+              isUploading={isUploading}
+              onCreatePost={handleCreatePost}
+              onClose={() => setIsExpanded(false)}
+              isExpanded={isExpanded}
+            />
+          )}
         </motion.div>
 
         <motion.div variants={itemVariants}>
