@@ -10,7 +10,7 @@ import { useChatMessages } from "./hooks/useChatMessages";
 import { useSuggestions } from "./hooks/useSuggestions";
 import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
-import { RefreshCcw, X, Sun, Moon } from "lucide-react";
+import { RefreshCcw, X } from "lucide-react";
 import { HfInference } from "@huggingface/inference";
 import { toast } from "sonner";
 
@@ -28,7 +28,7 @@ export function VictaureChat({
   const [userInput, setUserInput] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
-  const { theme, setTheme } = useTheme();
+  
   const { suggestions, isLoadingSuggestions, generateSuggestions } = useSuggestions();
 
   const hf = new HfInference(import.meta.env.VITE_HUGGINGFACE_API_KEY);
@@ -98,42 +98,19 @@ export function VictaureChat({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-background relative overflow-hidden">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-background via-secondary/50 to-background opacity-90" />
-        
-        <div 
-          className="absolute inset-0" 
-          style={{
-            backgroundImage: 'radial-gradient(circle, var(--gradient-dots) 1px, transparent 1px)',
-            backgroundSize: '15px 15px'
-          }}
-        />
-      </div>
+    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#1A1F2C] relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-[#1B2A4A]/50 to-[#1A1F2C]/50 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col h-full">
-        <div className="flex-none border-b border-border/10 bg-secondary/5 backdrop-blur-sm">
-          <div className="relative flex items-center justify-between px-4 py-2">
+        <div className="flex-none bg-[#1B2A4A]/80 backdrop-blur-md border-b border-[#64B5D9]/10">
+          <div className="relative flex items-center justify-between p-3">
             <ChatHeader />
             <div className="flex items-center gap-2">
               <Button 
                 variant="ghost" 
                 size="icon" 
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="text-foreground/80 hover:text-foreground transition-colors"
-                title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
-              >
-                {theme === 'dark' ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
                 onClick={refreshMessages} 
-                className="text-foreground/80 hover:text-foreground transition-colors"
+                className="text-[#F2EBE4]/80 hover:text-[#F2EBE4] transition-colors h-8 w-8"
                 title="Effacer l'historique"
               >
                 <RefreshCcw className="h-4 w-4" />
@@ -142,7 +119,7 @@ export function VictaureChat({
                 variant="ghost" 
                 size="icon" 
                 onClick={onMaxQuestionsReached} 
-                className="text-foreground/80 hover:text-foreground transition-colors"
+                className="text-[#F2EBE4]/80 hover:text-[#F2EBE4] transition-colors h-8 w-8"
                 title="Fermer"
               >
                 <X className="h-4 w-4" />
@@ -153,17 +130,16 @@ export function VictaureChat({
 
         <div 
           ref={chatContainerRef} 
-          className="flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-foreground/10 scrollbar-track-transparent hover:scrollbar-thumb-foreground/20"
+          className="flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-[#64B5D9]/10 scrollbar-track-transparent hover:scrollbar-thumb-[#64B5D9]/20"
         >
           <MessageList messages={messages} isLoading={isLoading} />
         </div>
         
-        <div className="relative p-4 bg-gradient-to-t from-background via-background to-transparent">
+        <div className="relative bg-gradient-to-t from-[#1B2A4A]/80 via-[#1B2A4A]/50 to-transparent p-3 space-y-3">
           <QuickSuggestions 
             suggestions={suggestions} 
             isLoading={isLoadingSuggestions} 
-            onSelect={handleSuggestionSelect} 
-            className="mb-4" 
+            onSelect={handleSuggestionSelect}
           />
           
           <ChatInput 

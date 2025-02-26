@@ -2,9 +2,10 @@
 import { ChangeEvent } from "react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import { Mic, Send, Square, StopCircle } from "lucide-react";
+import { Mic, Send, Square } from "lucide-react";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "../ui/tooltip";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 export interface ChatInputProps {
   userInput: string;
@@ -47,14 +48,14 @@ export function ChatInput({
   };
 
   return (
-    <div className="p-4 border-t bg-background/80 backdrop-blur-sm">
-      <div className="flex items-end gap-2">
+    <div className="flex gap-2 items-end">
+      <div className="flex-1 relative">
         <Textarea
           value={userInput}
           onChange={handleInputChange}
           onKeyDown={handleKeyPress}
-          placeholder="Écrivez votre message..."
-          className="min-h-[44px] max-h-[200px]"
+          placeholder="Message..."
+          className="min-h-[44px] max-h-[120px] pr-24 resize-none bg-[#1A1F2C]/80 border-[#64B5D9]/10 placeholder:text-[#F2EBE4]/30 text-[#F2EBE4] focus-visible:ring-[#64B5D9]/20"
           disabled={isDisabled || isLoading}
         />
         
@@ -63,12 +64,21 @@ export function ChatInput({
             <TooltipTrigger asChild>
               <Button
                 size="icon"
-                variant="outline"
-                className="shrink-0"
+                variant="ghost"
                 onClick={isRecording ? onStopSpeaking : onStartRecording}
                 disabled={isDisabled || isLoading}
+                className="absolute right-2 bottom-2 h-8 w-8 bg-[#1A1F2C]/50 hover:bg-[#1A1F2C] border border-[#64B5D9]/10"
               >
-                {isRecording ? <StopCircle className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                <motion.div
+                  animate={isRecording ? { scale: [1, 1.2, 1] } : {}}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                >
+                  {isRecording ? (
+                    <Square className="h-4 w-4 text-red-500" />
+                  ) : (
+                    <Mic className="h-4 w-4 text-[#F2EBE4]" />
+                  )}
+                </motion.div>
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -76,16 +86,15 @@ export function ChatInput({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-
-        <Button
-          size="icon"
-          className="shrink-0"
-          onClick={() => !isDisabled && onSendMessage()}
-          disabled={isDisabled || isLoading || !userInput.trim()}
-        >
-          <Send className="h-4 w-4" />
-        </Button>
       </div>
+
+      <Button
+        onClick={() => !isDisabled && onSendMessage()}
+        disabled={isDisabled || isLoading || !userInput.trim()}
+        className="bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white h-[44px] px-4"
+      >
+        <Send className="h-4 w-4" />
+      </Button>
     </div>
   );
 }
