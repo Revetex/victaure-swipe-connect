@@ -98,12 +98,15 @@ export function VictaureChat({
   return (
     <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#1A1F2C] relative overflow-hidden">
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C] opacity-90" />
         
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)',
-          backgroundSize: '15px 15px'
-        }} />
+        <div 
+          className="absolute inset-0" 
+          style={{
+            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)',
+            backgroundSize: '15px 15px'
+          }} 
+        />
       </div>
 
       <div className="relative z-10 flex flex-col h-full">
