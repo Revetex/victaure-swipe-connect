@@ -1,10 +1,11 @@
-
 import { useRef, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatHeader } from "./ChatHeader";
 import { MessageList } from "./MessageList";
 import { ChatInput } from "./ChatInput";
+import { QuickSuggestions } from "./QuickSuggestions";
 import { useChatMessages } from "./hooks/useChatMessages";
+import { useSuggestions } from "./hooks/useSuggestions";
 import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
 import { RefreshCcw, X } from "lucide-react";
@@ -26,7 +27,8 @@ export function VictaureChat({
   const { user } = useAuth();
   const [geminiModel, setGeminiModel] = useState<any>(null);
 
-  // Initialiser l'API Gemini
+  const { suggestions, isLoadingSuggestions, generateSuggestions } = useSuggestions();
+
   useEffect(() => {
     const API_KEY = "AIzaSyDBwg2972gQl98lVOXj3w5fx0_vEAs3JCQ"; // Clé API publique de test
     const genAI = new GoogleGenerativeAI(API_KEY);
@@ -72,10 +74,15 @@ export function VictaureChat({
       
       if (response && !error) {
         speakText(response);
+        generateSuggestions(context, messages);
       }
     } catch (err) {
       console.error("Error in handleSendMessage:", err);
     }
+  };
+
+  const handleSuggestionSelect = (suggestion: string) => {
+    setUserInput(suggestion);
   };
 
   const handleRefresh = () => {
@@ -100,7 +107,6 @@ export function VictaureChat({
 
   return (
     <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#1A1F2C] relative">
-      {/* Background avec effet de gradient et grille */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]" />
         
@@ -112,7 +118,6 @@ export function VictaureChat({
         />
       </div>
 
-      {/* Contenu du chat */}
       <div className="relative z-10 flex flex-col h-full">
         <div className="flex-none px-4 py-3 border-b border-[#64B5D9]/10 bg-[#1B2A4A]/50 backdrop-blur-sm">
           <ChatHeader />
@@ -145,6 +150,13 @@ export function VictaureChat({
         </div>
         
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C] to-transparent">
+          <QuickSuggestions
+            suggestions={suggestions}
+            isLoading={isLoadingSuggestions}
+            onSelect={handleSuggestionSelect}
+            className="mb-4"
+          />
+          
           <ChatInput
             userInput={userInput}
             setUserInput={setUserInput}
