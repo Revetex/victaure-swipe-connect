@@ -29,7 +29,7 @@ export function InnovationsSection() {
   }}>
       <div className="absolute inset-0 bg-pattern animate-[pulse_4s_ease-in-out_infinite]" />
       <div className="relative bg-gradient-to-r from-[#64B5D9]/20 to-[#64B5D9]/10 p-4 sm:p-6 rounded-xl border border-[#64B5D9]/30 shadow-lg backdrop-blur-sm py-0 px-0">
-        <div className="flex items-center gap-2 mb-4 sm:mb-6 px-[5px] py-[5px]">
+        <div className="flex items-center gap-2 mb-4 sm:mb-6 py-[8px] px-[8px]">
           <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-[#64B5D9]" />
           <h3 className="text-[#F2EBE4] font-semibold text-sm sm:text-base">Nouvelles Fonctionnalités</h3>
         </div>
