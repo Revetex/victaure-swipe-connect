@@ -94,7 +94,7 @@ export function AuthFooterLinks() {
       {/* Cookies Dialog */}
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB]">
+          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB] font-thin text-sm">
             Politique des cookies
           </Button>
         </DialogTrigger>
@@ -121,7 +121,7 @@ export function AuthFooterLinks() {
       {/* Contact Dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB]">
+          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB] text-sm font-thin">
             Nous contacter
           </Button>
         </DialogTrigger>

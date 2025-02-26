@@ -153,7 +153,7 @@ export default function Auth() {
               delay: 0.2,
               duration: 0.3
             }} className="mx-auto w-full max-w-sm sm:max-w-md">
-                <div className="bg-[#1B2A4A]/60 backdrop-blur-lg p-6 sm:p-8 rounded-2xl border-2 border-[#64B5D9]/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative">
+                <div className="backdrop-blur-lg p-6 sm:p-8 border-2 border-[#64B5D9]/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative py-0 px-0 rounded bg-transparent">
                   {/* Effet de brillance sur les bords */}
                   <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#64B5D9]/20 to-transparent" />
