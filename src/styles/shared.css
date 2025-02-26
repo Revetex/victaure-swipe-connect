@@ -4,86 +4,118 @@
 @tailwind utilities;
 
 @layer components {
+  /* Structure de base */
   .page-container {
-    @apply relative min-h-screen w-full 
-           bg-[#1A1F2C]
-           text-[#F2EBE4] pb-6;
+    @apply min-h-screen w-full bg-[#1A1F2C];
   }
 
-  .content-section {
-    @apply bg-white/5
-           border border-[#64B5D9]/10
-           rounded-lg
-           p-4;
+  /* Composants communs */
+  .card {
+    @apply bg-white/5 border border-white/10 rounded-lg p-4;
   }
 
-  .section-header {
-    @apply flex items-center justify-between
-           border-b border-[#64B5D9]/10
-           pb-4 mb-4;
+  .button-primary {
+    @apply bg-[#64B5D9] text-white px-4 py-2 rounded-lg;
+  }
+
+  .button-secondary {
+    @apply bg-white/5 text-white px-4 py-2 rounded-lg border border-white/10;
+  }
+
+  .input-field {
+    @apply bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white w-full;
   }
 
   .section-title {
-    @apply text-xl font-semibold 
-           text-[#F2EBE4];
+    @apply text-xl font-semibold text-white mb-4;
   }
 
-  .glass-card {
-    @apply bg-white/5
-           border border-[#64B5D9]/10
-           rounded-lg
-           p-4;
-  }
-
+  /* Navigation */
   .nav-item {
-    @apply flex items-center gap-2 
-           px-3 py-2
-           rounded-lg 
-           text-sm text-[#F2EBE4]/70;
+    @apply flex items-center gap-2 px-4 py-2 rounded-lg text-white/80 hover:bg-white/5;
   }
 
   .nav-item-active {
-    @apply bg-[#64B5D9]/20 
-           text-[#F2EBE4];
+    @apply bg-[#64B5D9]/20 text-white;
   }
 
-  .custom-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(100, 181, 217, 0.2) transparent;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar {
-    @apply w-1.5;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-track {
-    @apply bg-transparent;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-[#64B5D9]/10
-           rounded-full;
-  }
-
-  .input-base {
-    @apply bg-white/5
-           text-[#F2EBE4]
-           rounded-lg;
-  }
-
-  .button-base {
-    @apply bg-[#64B5D9]
-           text-white
-           rounded-lg;
-  }
-
+  /* Layout */
   .page-header {
-    @apply fixed top-0 left-0 right-0 z-50
-           bg-[#1A1F2C]
-           border-b border-white/5;
+    @apply fixed top-0 left-0 right-0 z-50 h-16 
+           flex items-center justify-between px-4
+           bg-[#1A1F2C] border-b border-white/10;
   }
 
   .page-content {
-    @apply pt-16 px-4;
+    @apply pt-20 px-4 pb-4 max-w-7xl mx-auto;
+  }
+
+  /* Lists */
+  .list-item {
+    @apply flex items-center justify-between p-4 
+           border-b border-white/10 last:border-0;
+  }
+
+  /* Cards grids */
+  .cards-grid {
+    @apply grid gap-4 sm:grid-cols-2 lg:grid-cols-3;
+  }
+
+  /* Forms */
+  .form-group {
+    @apply space-y-2 mb-4;
+  }
+
+  .form-label {
+    @apply text-sm text-white/80;
+  }
+
+  /* Dialog */
+  .dialog-content {
+    @apply bg-[#1A1F2C] text-white p-6 rounded-lg border border-white/10;
+  }
+
+  .dialog-title {
+    @apply text-xl font-semibold mb-4;
+  }
+
+  /* Tables */
+  .table-container {
+    @apply w-full overflow-x-auto;
+  }
+
+  .table {
+    @apply w-full border-collapse;
+  }
+
+  .table th {
+    @apply text-left p-4 border-b border-white/10 text-white/80;
+  }
+
+  .table td {
+    @apply p-4 border-b border-white/10;
+  }
+
+  /* Messages */
+  .message-bubble {
+    @apply p-3 rounded-lg max-w-[80%];
+  }
+
+  .message-own {
+    @apply bg-[#64B5D9] text-white ml-auto;
+  }
+
+  .message-other {
+    @apply bg-white/5 text-white;
+  }
+
+  /* Notifications */
+  .notification-item {
+    @apply p-4 border-b border-white/10 last:border-0;
+  }
+
+  /* Scrollbar */
+  .custom-scrollbar {
+    @apply scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent;
   }
 }
