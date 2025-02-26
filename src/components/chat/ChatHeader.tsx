@@ -21,12 +21,12 @@ export function ChatHeader() {
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            className="p-1.5 rounded-lg bg-[#1A1F2C]/90 border border-[#64B5D9]/10 relative"
+            className="p-2 rounded-lg bg-[#1A1F2C]/90 border border-[#64B5D9]/10 relative"
           >
             <img 
               src="/lovable-uploads/black-white-logo.png"
               alt="Victaure Logo"
-              className="w-4 h-4 object-contain opacity-90"
+              className="w-5 h-5 object-contain opacity-90"
             />
             <motion.div 
               animate={{ 
@@ -38,7 +38,7 @@ export function ChatHeader() {
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
-              className="absolute bottom-0 right-0 w-1.5 h-1.5 bg-green-400/80 rounded-full border border-[#1A1F2C]"
+              className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-green-400/80 rounded-full border border-[#1A1F2C]"
             />
           </motion.div>
         </div>
