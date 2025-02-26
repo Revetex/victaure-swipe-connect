@@ -1,6 +1,5 @@
 
-import { useState, useCallback, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
@@ -79,31 +78,18 @@ export function useChatMessages({
 
       let response: string;
 
-      if (geminiModel) {
-        // Utiliser l'API Gemini
-        const result = await geminiModel.generateContent([
-          context,
-          ...messages.map(m => m.content),
-          message.content
-        ]);
-        response = result.response.text();
-      } else {
-        // Fallback sur l'API Supabase
-        const { data, error } = await supabase.functions.invoke('victaure-chat', {
-          body: { 
-            messages: [...messages, message],
-            context,
-            userId: user?.id,
-          }
-        });
+      // Utiliser l'API Gemini
+      const result = await geminiModel?.generateContent([
+        context,
+        ...messages.map(m => m.content),
+        message.content
+      ]);
 
-        if (error) throw error;
-        if (!data?.choices?.[0]?.message?.content) {
-          throw new Error("Réponse invalide de l'assistant");
-        }
-
-        response = data.choices[0].message.content;
+      if (!result) {
+        throw new Error("Pas de réponse de l'assistant");
       }
+
+      response = result.response.text();
 
       const assistantMessage: Message = {
         content: response,
@@ -123,7 +109,7 @@ export function useChatMessages({
     } finally {
       setIsLoading(false);
     }
-  }, [messages, user, userQuestions, maxQuestions, context, onMaxQuestionsReached, geminiModel]);
+  }, [context, messages, user, userQuestions, maxQuestions, onMaxQuestionsReached, geminiModel]);
 
   return {
     messages,

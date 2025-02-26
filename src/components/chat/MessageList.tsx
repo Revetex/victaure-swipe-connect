@@ -47,9 +47,9 @@ export const MessageList = ({ messages, isLoading, ref }: MessageListProps) => {
 
   return (
     <div className="flex flex-col min-h-full">
-      <div ref={ref} className="flex-1 p-6 space-y-6 overflow-y-auto">
+      <div ref={ref} className="flex-1 p-6 space-y-6 overflow-y-auto flex flex-col-reverse">
         <AnimatePresence mode="popLayout">
-          {messages.map((message, index) => (
+          {messages.slice().reverse().map((message, index) => (
             <motion.div 
               key={index}
               className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
