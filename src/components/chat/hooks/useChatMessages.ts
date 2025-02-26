@@ -61,7 +61,7 @@ export function useChatMessages({
   }, []);
 
   const sendMessage = useCallback(async (message: Message) => {
-    if (!message.content.trim()) return;
+    if (!message.content.trim() || !geminiModel) return;
 
     try {
       setIsLoading(true);
@@ -74,22 +74,23 @@ export function useChatMessages({
       // Vérifier si l'utilisateur a atteint la limite
       if (!user && userQuestions >= maxQuestions - 1) {
         onMaxQuestionsReached?.();
+        return;
       }
 
-      let response: string;
+      // Construire le contexte complet pour l'IA
+      const historyPrompt = messages
+        .map(m => `${m.isUser ? "Utilisateur" : "Assistant"}: ${m.content}`)
+        .join("\n");
+
+      const fullPrompt = `${context}\n\nHistorique de la conversation:\n${historyPrompt}\n\nUtilisateur: ${message.content}\n\nAssistant:`;
 
       // Utiliser l'API Gemini
-      const result = await geminiModel?.generateContent([
-        context,
-        ...messages.map(m => m.content),
-        message.content
-      ]);
+      const result = await geminiModel.generateContent(fullPrompt);
+      const response = result.response.text();
 
-      if (!result) {
+      if (!response) {
         throw new Error("Pas de réponse de l'assistant");
       }
-
-      response = result.response.text();
 
       const assistantMessage: Message = {
         content: response,

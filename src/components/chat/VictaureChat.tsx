@@ -8,6 +8,7 @@ import { useChatMessages } from "./hooks/useChatMessages";
 import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
 import { RefreshCcw, X } from "lucide-react";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 interface VictaureChatProps {
   maxQuestions?: number;
@@ -23,6 +24,15 @@ export function VictaureChat({
   const [userInput, setUserInput] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+  const [geminiModel, setGeminiModel] = useState<any>(null);
+
+  // Initialiser l'API Gemini
+  useEffect(() => {
+    const API_KEY = "AIzaSyDBwg2972gQl98lVOXj3w5fx0_vEAs3JCQ"; // Clé API publique de test
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    setGeminiModel(model);
+  }, []);
   
   const { 
     messages, 
@@ -34,8 +44,9 @@ export function VictaureChat({
   } = useChatMessages({ 
     context,
     maxQuestions, 
-    user, 
-    onMaxQuestionsReached
+    user,
+    onMaxQuestionsReached,
+    geminiModel
   });
 
   const {
