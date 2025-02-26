@@ -5,9 +5,10 @@ import { cn } from "@/lib/utils";
 import { ConversationItem } from "./components/ConversationItem";
 import { ConversationSearch } from "./components/ConversationSearch";
 import { NewConversationPopover } from "./components/NewConversationPopover";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import type { UserProfile } from "@/types/profile";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
@@ -45,62 +46,79 @@ export function ConversationList({ className }: { className?: string }) {
   const [loading, setLoading] = useState(true);
   const selectedConversationId = useReceiver().selectedConversationId;
   
-  useEffect(() => {
+  const fetchConversations = useCallback(async () => {
     if (!user?.id) return;
     
-    const fetchConversations = async () => {
-      setLoading(true);
-      try {
-        const { data: existingConversations, error } = await supabase
-          .from('conversations')
-          .select(`
-            *,
-            participant1:profiles!conversations_participant1_id_fkey(
-              id, full_name, avatar_url, online_status, last_seen
-            ),
-            participant2:profiles!conversations_participant2_id_fkey(
-              id, full_name, avatar_url, online_status, last_seen
-            )
-          `)
-          .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
-          .order('last_message_time', { ascending: false });
+    setLoading(true);
+    try {
+      console.log("Fetching conversations for user:", user.id);
+      
+      const { data: existingConversations, error } = await supabase
+        .from('conversations')
+        .select(`
+          *,
+          participant1:profiles!conversations_participant1_id_fkey(
+            id, full_name, avatar_url, online_status, last_seen
+          ),
+          participant2:profiles!conversations_participant2_id_fkey(
+            id, full_name, avatar_url, online_status, last_seen
+          )
+        `)
+        .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
+        .order('last_message_time', { ascending: false });
 
-        if (error) throw error;
-        
-        const formattedConversations: Conversation[] = (existingConversations || []).map(conv => {
-          if (conv.participant1_id === user.id) {
-            return {
-              id: conv.id,
-              participant1_id: conv.participant1_id,
-              participant2_id: conv.participant2_id,
-              participant1: conv.participant1[0] || { ...defaultParticipant, id: conv.participant1_id },
-              participant2: conv.participant2[0] || { ...defaultParticipant, id: conv.participant2_id },
-              last_message: conv.last_message,
-              last_message_time: conv.last_message_time
-            };
-          }
+      if (error) {
+        console.error("Error fetching conversations:", error);
+        toast.error("Erreur lors du chargement des conversations");
+        throw error;
+      }
+      
+      console.log("Raw conversations data:", existingConversations);
+      
+      const formattedConversations: Conversation[] = (existingConversations || []).map(conv => {
+        if (conv.participant1_id === user.id) {
           return {
             id: conv.id,
-            participant1_id: conv.participant2_id,
-            participant2_id: conv.participant1_id,
-            participant1: conv.participant2[0] || { ...defaultParticipant, id: conv.participant2_id },
-            participant2: conv.participant1[0] || { ...defaultParticipant, id: conv.participant1_id },
+            participant1_id: conv.participant1_id,
+            participant2_id: conv.participant2_id,
+            participant1: conv.participant1[0] || { ...defaultParticipant, id: conv.participant1_id },
+            participant2: conv.participant2[0] || { ...defaultParticipant, id: conv.participant2_id },
             last_message: conv.last_message,
             last_message_time: conv.last_message_time
           };
-        });
-        
-        const uniqueConversations = formattedConversations.filter((conv, index, self) =>
-          index === self.findIndex((c) => c.participant2_id === conv.participant2_id)
-        );
-        
-        setConversations(uniqueConversations);
-      } catch (error) {
-        console.error("Error loading conversations:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+        }
+        return {
+          id: conv.id,
+          participant1_id: conv.participant2_id,
+          participant2_id: conv.participant1_id,
+          participant1: conv.participant2[0] || { ...defaultParticipant, id: conv.participant2_id },
+          participant2: conv.participant1[0] || { ...defaultParticipant, id: conv.participant1_id },
+          last_message: conv.last_message,
+          last_message_time: conv.last_message_time
+        };
+      });
+      
+      console.log("Formatted conversations:", formattedConversations);
+      
+      const uniqueConversations = formattedConversations.filter((conv, index, self) =>
+        index === self.findIndex((c) => c.participant2_id === conv.participant2_id)
+      );
+      
+      console.log("Unique conversations:", uniqueConversations);
+      setConversations(uniqueConversations);
+      
+    } catch (error) {
+      console.error("Error in fetchConversations:", error);
+      toast.error("Erreur lors du chargement des conversations");
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    console.log("Setting up realtime subscription for conversations");
 
     const channel = supabase
       .channel('conversations')
@@ -112,29 +130,38 @@ export function ConversationList({ className }: { className?: string }) {
           table: 'conversations'
         },
         (payload: RealtimePostgresChangesPayload<ConversationPayload>) => {
-          const newConversation = payload.new;
-          if (newConversation && (newConversation.participant1_id === user.id || newConversation.participant2_id === user.id)) {
+          console.log("Received realtime update:", payload);
+          
+          const newConversation = payload.new as ConversationPayload;
+          if (newConversation?.participant1_id === user.id || newConversation?.participant2_id === user.id) {
+            console.log("Relevant conversation update detected, refreshing...");
             fetchConversations();
           }
         }
       )
-      .subscribe();
+      .subscribe(status => {
+        console.log("Realtime subscription status:", status);
+      });
 
     fetchConversations();
 
     return () => {
+      console.log("Cleaning up realtime subscription");
       supabase.removeChannel(channel);
     };
-  }, [user?.id]);
+  }, [user?.id, fetchConversations]);
 
-  const handleConversationSelect = (conversation: Conversation) => {
+  const handleConversationSelect = useCallback((conversation: Conversation) => {
+    console.log("Selecting conversation:", conversation);
     setSelectedConversationId(conversation.id);
     setReceiver(conversation.participant2 as any);
-  };
+  }, [setSelectedConversationId, setReceiver]);
 
   const filteredConversations = conversations.filter(conv => 
     conv.participant2?.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  console.log("Rendering conversations list, count:", filteredConversations.length);
 
   return (
     <div className={cn("flex flex-col h-full", className)}>
