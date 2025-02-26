@@ -33,7 +33,7 @@ export function AuthForm({
     duration: 0.5
   }} className="w-full space-y-6">
       <div className="flex flex-col lg:flex-row gap-6 bg-transparent">
-        <div className="flex-1 p-6 bg-[#1A1F2C]/90 backdrop-blur-sm rounded-2xl border border-[#64B5D9]/10">
+        <div className="flex-1 p-6 bg-[#1A1F2C]/90 backdrop-blur-sm border border-[#64B5D9]/10 rounded-none">
           <Tabs defaultValue="login" className="w-full" value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-3 bg-[#1B2A4A]/20">
               <TabsTrigger value="login" className="text-[#F2EBE4]/80">

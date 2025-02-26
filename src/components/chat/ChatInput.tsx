@@ -44,7 +44,7 @@ export function ChatInput({
   };
   return <div className="flex gap-3 items-end pb-4 px-0">
       <div className="flex-1 relative">
-        <Textarea value={userInput} onChange={handleInputChange} onKeyDown={handleKeyPress} placeholder="Message..." className="min-h-[52px] max-h-[120px] pr-24 resize-none bg-[#1A1F2C] border-[#64B5D9]/20 rounded-xl placeholder:text-[#F2EBE4]/30 text-[#F2EBE4] focus-visible:ring-[#64B5D9]/20" disabled={isDisabled || isLoading} />
+        <Textarea value={userInput} onChange={handleInputChange} onKeyDown={handleKeyPress} placeholder="Message..." disabled={isDisabled || isLoading} className="min-h-[52px] max-h-[120px] pr-24 resize-none bg-[#1A1F2C] border-[#64B5D9]/20 placeholder:text-[#F2EBE4]/30 text-[#F2EBE4] focus-visible:ring-[#64B5D9]/20 rounded-sm" />
         
         <TooltipProvider>
           <Tooltip>
