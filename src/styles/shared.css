@@ -76,4 +76,35 @@
            text-foreground
            border border-border/20;
   }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 181, 217, 0.1) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-1.5;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-[#64B5D9]/10 hover:bg-[#64B5D9]/20
+           rounded-full
+           transition-colors duration-200;
+  }
+
+  /* Smooth Scroll Container */
+  .smooth-scroll {
+    @apply scrollbar-thin
+           scrollbar-thumb-[#64B5D9]/10
+           scrollbar-track-transparent
+           hover:scrollbar-thumb-[#64B5D9]/20;
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
 }
