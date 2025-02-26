@@ -1,4 +1,3 @@
-
 /* Cacher les éléments non désirés */
 .gsc-above-wrapper-area,
 .gcsc-find-more-on-google,
@@ -118,26 +117,32 @@
 }
 
 /* Correction des liens dédoublés */
-.gs-title b {
+.gsc-thumbnail-inside a.gs-title {
+  display: block !important;
+}
+
+.gsc-thumbnail-inside a.gs-title:not(:first-of-type) {
   display: none !important;
 }
 
-.gs-title:not(:first-child) {
+/* Masquer les éléments dupliqués */
+.gsc-url-bottom {
+  display: none !important;
+}
+
+.gs-bidi-start-align {
   display: none !important;
 }
 
 /* Assurez-vous que les liens ne sont pas coupés */
 .gsc-thumbnail-inside,
-.gsc-url-top,
-.gsc-url-bottom {
+.gsc-url-top {
   padding: 0 !important;
   word-break: break-word !important;
 }
 
-.gs-result .gsc-url-top,
-.gs-result .gsc-url-bottom {
+.gs-result .gsc-url-top {
   display: block !important;
   margin: 0 !important;
   width: 100% !important;
 }
-
