@@ -45,7 +45,7 @@ export function AppHeader({
     <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed top-0 left-0 right-0 z-[100] flex h-16 items-center justify-between px-4 bg-[#1A1F2C] border-b border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.2)]"
+      className="fixed top-0 left-0 right-0 z-[100] flex h-16 items-center justify-between px-4 bg-[#1C1C1C]/95 border-b border-[#3C3C3C]/20 shadow-[0_2px_10px_rgba(0,0,0,0.2)] backdrop-blur-sm"
       style={{
         paddingTop: 'env(safe-area-inset-top)',
       }}
@@ -55,7 +55,7 @@ export function AppHeader({
           variant="ghost"
           size="sm"
           onClick={handleMenuClick}
-          className="text-white hover:bg-white/10 border border-white/10 active:scale-95 transition-transform touch-manipulation"
+          className="text-[#E0E0E0] hover:bg-[#3C3C3C]/20 border border-[#3C3C3C]/10 active:scale-95 transition-transform touch-manipulation"
         >
           <Menu className="h-4 w-4" />
         </Button>
@@ -74,7 +74,7 @@ export function AppHeader({
               BETA
             </Badge>
           </div>
-          <span className="relative font-tiempos font-black tracking-[0.15em] text-[#F2EBE4] text-2xl shrink-0 pl-1">
+          <span className="relative font-tiempos font-black tracking-[0.15em] text-[#E0E0E0] text-2xl shrink-0 pl-1">
             VICTAURE
           </span>
         </div>
@@ -82,8 +82,8 @@ export function AppHeader({
 
       <div className="flex items-center gap-3">
         {totalJobs !== undefined && (
-          <div className="hidden sm:flex items-center px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
-            <span className="text-xs text-white/80 whitespace-nowrap">
+          <div className="hidden sm:flex items-center px-3 py-1.5 bg-[#2C2C2C]/80 border border-[#3C3C3C]/20 rounded-full backdrop-blur-sm">
+            <span className="text-xs text-[#E0E0E0]/80 whitespace-nowrap">
               {totalJobs} offres disponibles
             </span>
           </div>
@@ -95,7 +95,7 @@ export function AppHeader({
           title="Assistant IA"
         >
           <Bot className="h-4 w-4 text-[#64B5D9] group-hover:scale-110 transition-transform" />
-          <span className="text-sm font-medium text-white/90 hidden sm:block">Assistant IA</span>
+          <span className="text-sm font-medium text-[#E0E0E0]/90 hidden sm:block">Assistant IA</span>
         </Button>
 
         <AnimatePresence>
@@ -109,7 +109,7 @@ export function AppHeader({
               }}
             >
               <DialogContent 
-                className="fixed inset-0 p-0 bg-[#1A1F2C] border-0 rounded-none max-w-none w-full h-full overflow-hidden"
+                className="fixed inset-0 p-0 bg-[#1C1C1C] border-0 rounded-none max-w-none w-full h-full overflow-hidden"
                 style={{ transform: 'none' }}
               >
                 <VictaureChat 
