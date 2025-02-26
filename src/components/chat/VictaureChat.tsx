@@ -1,3 +1,4 @@
+
 import { useRef, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatHeader } from "./ChatHeader";
@@ -30,7 +31,7 @@ export function VictaureChat({
   const { suggestions, isLoadingSuggestions, generateSuggestions } = useSuggestions();
 
   useEffect(() => {
-    const API_KEY = import.meta.env.GEMINI_API_KEY || "";
+    const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
     if (!API_KEY) return;
     
     const genAI = new GoogleGenerativeAI(API_KEY);
