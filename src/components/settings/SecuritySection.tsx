@@ -13,7 +13,7 @@ export function SecuritySection() {
         transition={{ duration: 0.3 }}
         className="w-full space-y-1"
       >
-        <div className="p-2 rounded-lg transition-colors hover:bg-accent">
+        <div className="p-2 rounded-lg transition-colors hover:bg-[#3C3C3C]/20">
           <PasswordChangeSection />
         </div>
       </motion.div>
