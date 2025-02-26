@@ -42,33 +42,5 @@ export function ChatInput({
       }
     }
   };
-  return <div className="flex gap-3 items-end pb-4 my-0 bg-transparent rounded-none mx-0 px-0 py-0">
-      <div className="flex-1 relative px-[3px]">
-        <Textarea value={userInput} onChange={handleInputChange} onKeyDown={handleKeyPress} placeholder="Message..." disabled={isDisabled || isLoading} className="min-h-[52px] max-h-[120px] pr-24 resize-none border-[#64B5D9]/20 placeholder:text-[#F2EBE4]/30 text-[#F2EBE4] focus-visible:ring-[#64B5D9]/20 bg-transparent rounded-sm" />
-        
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size="icon" variant="ghost" onClick={isRecording ? onStopSpeaking : onStartRecording} disabled={isDisabled || isLoading} className="absolute right-2 bottom-2 h-9 w-9 bg-[#1A1F2C]/80 hover:bg-[#1A1F2C] border border-[#64B5D9]/20 rounded-lg">
-                <motion.div animate={isRecording ? {
-                scale: [1, 1.2, 1]
-              } : {}} transition={{
-                repeat: Infinity,
-                duration: 1.5
-              }}>
-                  {isRecording ? <Square className="h-4 w-4 text-red-500" /> : <Mic className="h-4 w-4 text-[#F2EBE4]" />}
-                </motion.div>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {isRecording ? "Arrêter l'enregistrement" : "Démarrer l'enregistrement"}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-
-      <Button onClick={() => !isDisabled && onSendMessage()} disabled={isDisabled || isLoading || !userInput.trim()} className="h-[52px] rounded bg-gray-200 hover:bg-gray-100 font-light text-gray-950 px-[9px] py-0 mx-0 my-[3px] text-xs">
-        <Send className="h-5 w-5" />
-      </Button>
-    </div>;
+  return;
 }
