@@ -34,7 +34,7 @@ export function Feed() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#1A1F2C] overflow-hidden">
+    <div className="fixed inset-0 bg-[#1A1F2C] overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]" />
       
       <div className="absolute inset-0" 
@@ -46,7 +46,7 @@ export function Feed() {
 
       <div 
         ref={scrollRef}
-        className="relative z-10 h-screen overflow-y-auto scrollbar-thin scrollbar-thumb-[#64B5D9]/10 scrollbar-track-transparent hover:scrollbar-thumb-[#64B5D9]/20"
+        className="relative z-10 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-[#64B5D9]/10 scrollbar-track-transparent hover:scrollbar-thumb-[#64B5D9]/20"
         style={{
           scrollbarGutter: 'stable',
           overscrollBehavior: 'contain',
