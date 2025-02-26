@@ -1,3 +1,4 @@
+
 import { Suspense } from "react";
 import { useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,7 +13,6 @@ import { CountdownSection } from "@/components/auth/sections/CountdownSection";
 import { InnovationsSection } from "@/components/auth/sections/InnovationsSection";
 import { FeaturesSection } from "@/components/auth/sections/FeaturesSection";
 import { PricingDialog } from "@/components/auth/sections/PricingDialog";
-import { toast } from "sonner";
 import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import { PartnershipDialog } from "@/components/auth/sections/PartnershipDialog";
@@ -20,6 +20,7 @@ import { PartnershipDialog } from "@/components/auth/sections/PartnershipDialog"
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+  const [isPricingOpen, setIsPricingOpen] = useState(false);
   const [countdown, setCountdown] = useState({
     days: 0,
     hours: 0,
@@ -64,6 +65,7 @@ export default function Auth() {
 
   return (
     <div className="relative min-h-screen bg-[#0B1026] overflow-hidden">
+      {/* Background */}
       <div className="fixed inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-[#1A1F2C] via-[#0B1026] to-[#1A1F2C] opacity-90" />
         <div className="absolute inset-0" style={{
@@ -98,13 +100,13 @@ export default function Auth() {
             <PartnershipDialog />
           </Dialog>
 
-          <Dialog>
+          <Dialog open={isPricingOpen} onOpenChange={setIsPricingOpen}>
             <DialogTrigger asChild>
               <Button className="relative bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
                 Guide tarifaire complet
               </Button>
             </DialogTrigger>
-            <PricingDialog />
+            <PricingDialog isPricingOpen={isPricingOpen} setIsPricingOpen={setIsPricingOpen} />
           </Dialog>
         </div>
 
