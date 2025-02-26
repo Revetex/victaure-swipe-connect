@@ -40,6 +40,11 @@
   margin-bottom: 0.25rem !important;
   display: block !important;
   font-weight: 500 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  width: 100% !important;
+  max-width: none !important;
 }
 
 .gs-title:hover, .gs-title *:hover {
@@ -51,6 +56,14 @@
   font-size: 0.875rem !important;
   line-height: 1.4 !important;
   color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Cacher les vignettes et images */
+.gs-image-box,
+.gsc-thumbnail,
+.gs-promotion-image-box,
+.gs-image {
+  display: none !important;
 }
 
 /* Mode clair */
@@ -88,4 +101,17 @@
   color: rgba(155, 135, 245, 0.7) !important;
   font-size: 0.75rem !important;
   margin-top: 0.25rem !important;
+}
+
+/* Ajustements pour le conteneur des résultats */
+.gsc-resultsbox-visible,
+.gsc-results gsc-webResult {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Empêcher le débordement du texte */
+.gs-result * {
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
 }
