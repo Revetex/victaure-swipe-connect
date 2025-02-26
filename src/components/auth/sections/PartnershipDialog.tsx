@@ -1,12 +1,15 @@
 
 import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Check } from "lucide-react";
+import { Check, Handshake } from "lucide-react";
 
 export function PartnershipDialog() {
   return (
     <DialogContent className="sm:max-w-md bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl">
       <DialogHeader>
-        <DialogTitle className="text-xl font-bold mb-4 text-[#F1F0FB]">Partenariat Victaure</DialogTitle>
+        <DialogTitle className="text-xl font-bold mb-4 text-[#F1F0FB] flex items-center gap-2">
+          <Handshake className="h-5 w-5 text-[#64B5D9]" />
+          Partenariat Victaure
+        </DialogTitle>
       </DialogHeader>
       <div className="space-y-4 text-[#F1F0FB]">
         <div className="text-center space-y-2">
