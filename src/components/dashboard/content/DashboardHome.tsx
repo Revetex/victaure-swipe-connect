@@ -18,7 +18,10 @@ export function DashboardHome({ onRequestChat }: DashboardHomeProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <MrVictaureWelcome onRequestChat={onRequestChat} />
+        <MrVictaureWelcome 
+          onDismiss={() => {}} 
+          onStartChat={onRequestChat}
+        />
       </motion.div>
 
       <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -37,7 +40,7 @@ export function DashboardHome({ onRequestChat }: DashboardHomeProps) {
           transition={{ delay: 0.2, duration: 0.3 }}
           className="glass-card h-full"
         >
-          <QuickActions />
+          <QuickActions onRequestChat={onRequestChat} />
         </motion.div>
       </div>
 
