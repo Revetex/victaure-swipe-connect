@@ -35,19 +35,7 @@ export function AuthChat({ maxQuestions = 3, context }: AuthChatProps) {
       <div className="flex-1 overflow-y-auto scrollbar-none">
         <div className="flex flex-col justify-between h-full">
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            <MessageList messages={messages.map((msg, index) => ({
-              id: `msg-${index}`,
-              content: msg.content,
-              sender_id: msg.role === 'user' ? 'user' : 'assistant',
-              receiver_id: msg.role === 'user' ? 'assistant' : 'user',
-              created_at: new Date().toISOString(),
-              is_assistant: msg.role === 'assistant',
-              sender: {
-                id: msg.role === 'user' ? 'user' : 'assistant',
-                full_name: msg.role === 'user' ? 'Vous' : 'Assistant',
-                role: 'professional'
-              }
-            }))} />
+            <MessageList messages={messages} />
           </div>
           
           <div className="p-4 border-t border-[#F1F0FB]/10 space-y-4">

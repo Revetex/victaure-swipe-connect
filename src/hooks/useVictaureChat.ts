@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Message } from '@/types/messages';
 
-interface Message {
+interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
 }
@@ -24,22 +24,22 @@ export function useVictaureChat({ maxQuestions = 3, context }: UseVictaureChatPr
   const sendMessage = async (userMessage: string) => {
     setIsLoading(true);
     try {
-      const messages: Message[] = [];
+      const chatMessages: ChatMessage[] = [];
       
       if (context) {
-        messages.push({
+        chatMessages.push({
           role: 'system',
           content: context
         });
       }
 
-      messages.push({
+      chatMessages.push({
         role: 'user',
         content: userMessage
       });
 
       const { data, error } = await supabase.functions.invoke('victaure-chat', {
-        body: { messages, type: 'chat' }
+        body: { messages: chatMessages, type: 'chat' }
       });
 
       if (error) throw error;
@@ -47,10 +47,44 @@ export function useVictaureChat({ maxQuestions = 3, context }: UseVictaureChatPr
       setQuestionsLeft(prev => Math.max(0, prev - 1));
       const response = data.choices[0].message.content;
       
-      setMessages(prev => [...prev, 
-        { role: 'user', content: userMessage },
-        { role: 'assistant', content: response }
-      ]);
+      const newMessages: Message[] = [
+        {
+          id: `user-${Date.now()}`,
+          content: userMessage,
+          sender_id: 'user',
+          receiver_id: 'assistant',
+          created_at: new Date().toISOString(),
+          sender: {
+            id: 'user',
+            email: '',
+            full_name: 'Vous',
+            role: 'professional',
+            certifications: [],
+            education: [],
+            experiences: [],
+            friends: []
+          }
+        },
+        {
+          id: `assistant-${Date.now() + 1}`,
+          content: response,
+          sender_id: 'assistant',
+          receiver_id: 'user',
+          created_at: new Date().toISOString(),
+          sender: {
+            id: 'assistant',
+            email: '',
+            full_name: 'Assistant',
+            role: 'professional',
+            certifications: [],
+            education: [],
+            experiences: [],
+            friends: []
+          }
+        }
+      ];
+      
+      setMessages(prev => [...prev, ...newMessages]);
 
       return response;
 
