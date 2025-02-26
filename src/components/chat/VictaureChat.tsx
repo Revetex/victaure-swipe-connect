@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatHeader } from "./ChatHeader";
@@ -11,6 +10,7 @@ import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
 import { RefreshCcw, X } from "lucide-react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { toast } from "sonner";
 
 interface VictaureChatProps {
   maxQuestions?: number;
@@ -31,16 +31,23 @@ export function VictaureChat({
   const { suggestions, isLoadingSuggestions, generateSuggestions } = useSuggestions();
 
   useEffect(() => {
-    const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
+    const API_KEY = import.meta.env.GEMINI_API_KEY || "";
     if (!API_KEY) {
       console.error("No Gemini API key found");
+      toast.error("Clé API Gemini manquante. Veuillez configurer GEMINI_API_KEY.");
       return;
     }
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    setGeminiModel(model);
+    try {
+      const genAI = new GoogleGenerativeAI(API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      setGeminiModel(model);
+      console.log("Gemini API initialized successfully");
+    } catch (error) {
+      console.error("Error initializing Gemini API:", error);
+      toast.error("Erreur d'initialisation de l'API Gemini");
+    }
   }, []);
-  
+
   const { 
     messages, 
     isLoading, 
