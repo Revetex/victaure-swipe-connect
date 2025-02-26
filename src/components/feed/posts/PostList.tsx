@@ -7,7 +7,6 @@ import { EmptyPostState } from "./EmptyPostState";
 import { DeletePostDialog } from "./DeletePostDialog";
 import { PostFilters } from "./sections/PostFilters";
 import { PostGrid } from "./sections/PostGrid";
-import { usePostsQuery } from "./hooks/usePostsQuery";
 import { motion } from "framer-motion";
 
 interface PostListProps {
@@ -25,6 +24,7 @@ export function PostList({
   const [filter, setFilter] = useState("all");
   const [sortBy, setSortBy] = useState<'date' | 'likes' | 'comments'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const { handleDelete, handleHide, handleUpdate } = usePostOperations();
 
@@ -58,6 +58,7 @@ export function PostList({
         onSortByChange={setSortBy}
         sortOrder={sortOrder} 
         onSortOrderChange={setSortOrder}
+        onCreatePost={() => setIsExpanded(true)}
       />
 
       <PostGrid 
