@@ -83,18 +83,6 @@ export function PostActions({
     };
   }, [postId, onReaction]);
 
-  const calculateReactionPercentage = () => {
-    const total = likes + dislikes;
-    if (total === 0) return { likes: 0, dislikes: 0 }; // Si pas de réactions, on affiche 0/0
-    
-    const likePercentage = Math.round((likes / total) * 100);
-    const dislikePercentage = 100 - likePercentage;
-    
-    return { likes: likePercentage, dislikes: dislikePercentage };
-  };
-
-  const percentages = calculateReactionPercentage();
-
   return (
     <div className="flex gap-2 items-center py-2">
       <div className="flex items-center gap-2">
@@ -103,14 +91,14 @@ export function PostActions({
           count={likes}
           isActive={userReaction === 'like'}
           onClick={() => handleReaction('like')}
-          activeClassName="bg-green-500 hover:bg-green-600 text-white shadow-lg"
+          activeClassName="bg-primary/10 hover:bg-primary/20 text-primary"
         />
         <ReactionButton
           icon={ThumbsDown}
           count={dislikes}
           isActive={userReaction === 'dislike'}
           onClick={() => handleReaction('dislike')}
-          activeClassName="bg-red-500 hover:bg-red-600 text-white shadow-lg"
+          activeClassName="bg-destructive/10 hover:bg-destructive/20 text-destructive"
         />
       </div>
 
@@ -120,7 +108,7 @@ export function PostActions({
           count={commentCount}
           isActive={isExpanded}
           onClick={onToggleComments}
-          activeClassName="bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
+          activeClassName="bg-blue-500/10 hover:bg-blue-500/20 text-blue-500"
         />
       </div>
     </div>

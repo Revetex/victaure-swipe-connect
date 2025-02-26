@@ -38,7 +38,6 @@ export function CommentManager({
         throw error;
       }
 
-      // Optimistically update the UI by removing the comment
       onCommentAdded?.();
 
       toast({
@@ -58,8 +57,8 @@ export function CommentManager({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+    <div className="space-y-4 bg-card/50 rounded-lg p-4">
+      <div className="max-h-[400px] overflow-y-auto">
         <PostComments
           comments={comments}
           currentUserId={currentUserId}
