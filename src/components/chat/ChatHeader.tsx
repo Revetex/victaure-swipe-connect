@@ -1,7 +1,6 @@
 
 import { Bot, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import Image from "./ui/image";
 
 export function ChatHeader() {
   return (
