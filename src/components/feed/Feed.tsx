@@ -5,6 +5,7 @@ import { CreatePostForm } from "./posts/create/CreatePostForm";
 import { PostList } from "./posts/PostList";
 import { PostFilters } from "./posts/sections/PostFilters";
 import { useState, useRef } from "react";
+import { PostAttachment, PostPrivacyLevel } from "./posts/types";
 
 export function Feed() {
   const queryClient = useQueryClient();
@@ -12,8 +13,8 @@ export function Feed() {
 
   // Form and filter states
   const [newPost, setNewPost] = useState("");
-  const [privacy, setPrivacy] = useState<"public" | "connections">("public");
-  const [attachments, setAttachments] = useState([]);
+  const [privacy, setPrivacy] = useState<PostPrivacyLevel>("public");
+  const [attachments, setAttachments] = useState<PostAttachment[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
@@ -22,9 +23,7 @@ export function Feed() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Scroll animations
-  const {
-    scrollY
-  } = useScroll({
+  const { scrollY } = useScroll({
     container: scrollRef
   });
   const headerOpacity = useTransform(scrollY, [0, 100], [1, 0]);
@@ -36,19 +35,41 @@ export function Feed() {
     });
   };
 
+  const handlePostChange = (value: string) => {
+    setNewPost(value);
+  };
+
+  const handlePrivacyChange = (value: PostPrivacyLevel) => {
+    setPrivacy(value);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Gérer le changement de fichiers
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleCreatePost = () => {
+    // Logique de création de post
+    invalidatePosts();
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="space-y-6">
         <CreatePostForm
           newPost={newPost}
-          setNewPost={setNewPost}
+          onPostChange={handlePostChange}
           privacy={privacy}
-          setPrivacy={setPrivacy}
+          onPrivacyChange={handlePrivacyChange}
           attachments={attachments}
-          setAttachments={setAttachments}
           isUploading={isUploading}
-          setIsUploading={setIsUploading}
-          onPostCreated={invalidatePosts}
+          onFileChange={handleFileChange}
+          onRemoveFile={handleRemoveFile}
+          onCreatePost={handleCreatePost}
+          onClose={() => setIsExpanded(false)}
         />
         <PostFilters
           searchTerm={searchTerm}
