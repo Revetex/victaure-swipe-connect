@@ -1,15 +1,12 @@
-
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Calculator, CreditCard, Receipt } from "lucide-react";
 import { CalculatorTab } from "./calculator/CalculatorTab";
 import { PaymentMethodsTab } from "./calculator/tabs/PaymentMethodsTab";
 import { TransactionsTab } from "./calculator/tabs/TransactionsTab";
 import { SubscriptionPlans } from "./calculator/SubscriptionPlans";
-
 export function CalculatorPage() {
-  return (
-    <div className="min-h-screen pt-8 space-y-8">
-      <div className="container max-w-6xl mx-auto p-4">
+  return <div className="min-h-screen pt-8 space-y-8">
+      <div className="container max-w-6xl mx-auto p-4 py-0 px-[8px]">
         <Tabs defaultValue="calculator" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="calculator" className="flex items-center gap-2">
@@ -41,6 +38,5 @@ export function CalculatorPage() {
       </div>
 
       <SubscriptionPlans />
-    </div>
-  );
+    </div>;
 }
