@@ -38,8 +38,12 @@ export function useNotes() {
         pinned: note.pinned,
         created_at: note.created_at,
         updated_at: note.updated_at,
-        metadata: note.metadata ? JSON.parse(note.metadata as string) : { width: 280, height: 280 },
-        position: note.position ? JSON.parse(note.position as string) : { x: 0, y: 0 }
+        metadata: typeof note.metadata === 'string' 
+          ? JSON.parse(note.metadata) 
+          : note.metadata || { width: 280, height: 280 },
+        position: typeof note.position === 'string'
+          ? JSON.parse(note.position)
+          : note.position || { x: 0, y: 0 }
       }));
 
       setNotes(formattedNotes);
@@ -61,13 +65,15 @@ export function useNotes() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Remove Partial type and explicitly provide all required fields
+      const metadata = { width: 280, height: 280 };
+      const position = { x: 0, y: 0 };
+
       const newNoteData = {
         text: newNote,
         color: selectedColor,
         user_id: user.id,
-        metadata: JSON.stringify({ width: 280, height: 280 }),
-        position: JSON.stringify({ x: 0, y: 0 })
+        metadata: JSON.stringify(metadata),
+        position: JSON.stringify(position)
       };
 
       const { data, error } = await supabase
