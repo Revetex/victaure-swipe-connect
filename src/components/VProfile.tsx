@@ -1,7 +1,6 @@
 
 import { UserProfile } from "@/types/profile";
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { Dialog, DialogContent } from "./ui/dialog";
 import { useConnectionStatus } from "./profile/preview/hooks/useConnectionStatus";
 import { useAuth } from "@/hooks/useAuth";
 import { ScrollArea } from "./ui/scroll-area";
@@ -32,15 +31,6 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl p-0 overflow-hidden bg-background/95 backdrop-blur-sm">
-        <VisuallyHidden asChild>
-          <DialogTitle>Profil de {profile.full_name || "Utilisateur"}</DialogTitle>
-        </VisuallyHidden>
-        <VisuallyHidden asChild>
-          <DialogDescription>
-            Informations détaillées du profil de {profile.full_name || "l'utilisateur"}
-          </DialogDescription>
-        </VisuallyHidden>
-        
         <ProfileHeader 
           profile={profile}
           onClose={onClose}
