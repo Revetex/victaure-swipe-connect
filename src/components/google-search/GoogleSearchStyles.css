@@ -1,4 +1,3 @@
-
 /* Cacher les éléments non désirés */
 .gsc-above-wrapper-area,
 .gcsc-find-more-on-google,
@@ -113,10 +112,10 @@
   color: white !important;
 }
 
-/* Analyse IA */
+/* Analyse IA améliorée */
 .ai-analysis {
   margin: 1rem 0 2rem 0 !important;
-  padding: 1.25rem !important;
+  padding: 1.5rem !important;
   background: rgba(155, 135, 245, 0.1) !important;
   border: 1px solid rgba(155, 135, 245, 0.2) !important;
   border-radius: 0.75rem !important;
@@ -125,20 +124,33 @@
 
 .ai-analysis h3 {
   color: #9b87f5 !important;
-  margin-bottom: 0.75rem !important;
-  font-size: 1rem !important;
+  margin-bottom: 1rem !important;
+  font-size: 1.1rem !important;
   font-weight: 600 !important;
   display: flex !important;
   align-items: center !important;
   gap: 0.5rem !important;
 }
 
-.ai-analysis p {
+.ai-analysis .ai-content {
   color: var(--text-color) !important;
-  font-size: 0.875rem !important;
+  font-size: 0.9rem !important;
   line-height: 1.6 !important;
   margin: 0 !important;
   white-space: pre-line !important;
+}
+
+.ai-analysis .ai-content p {
+  margin-bottom: 0.75rem !important;
+}
+
+.ai-analysis .ai-content ul {
+  margin: 0.5rem 0 !important;
+  padding-left: 1.5rem !important;
+}
+
+.ai-analysis .ai-content li {
+  margin-bottom: 0.25rem !important;
 }
 
 /* Variables pour le mode clair/sombre */

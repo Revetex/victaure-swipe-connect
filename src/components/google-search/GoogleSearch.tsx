@@ -66,42 +66,63 @@ export function GoogleSearch() {
     try {
       setIsEnhancing(true);
       
-      // Récupérer les résultats actuels
+      // Récupérer les résultats actuels et dédupliquer
       const results = document.querySelectorAll('.gsc-result');
-      const resultTexts = Array.from(results).map(result => {
+      const seenUrls = new Set();
+      const uniqueResults = Array.from(results).filter(result => {
+        const url = result.querySelector('.gs-visibleUrl')?.textContent;
+        if (!url || seenUrls.has(url)) return false;
+        seenUrls.add(url);
+        return true;
+      });
+
+      const resultTexts = uniqueResults.map(result => {
         const title = result.querySelector('.gs-title')?.textContent || '';
         const snippet = result.querySelector('.gs-snippet')?.textContent || '';
-        return { title, snippet };
+        const url = result.querySelector('.gs-visibleUrl')?.textContent || '';
+        return { title, snippet, url };
       });
 
       const hf = new HfInference(import.meta.env.VITE_HUGGINGFACE_API_KEY);
       
-      const prompt = `Voici des résultats de recherche d'emploi. Donne un résumé analytique concis qui inclut :
-      - Les types de postes principaux
-      - Les compétences les plus demandées
-      - Les opportunités les plus intéressantes
+      const prompt = `Analyse ces offres d'emploi et fournis une synthèse détaillée avec:
+
+      1. Classement des postes par pertinence
+      2. Compétences requises principales
+      3. Avantages notables (salaire, télétravail, etc)
+      4. Recommandations pour les candidats
+
+      Présente l'information de manière structurée et priorisée.
       
-      Résultats : ${JSON.stringify(resultTexts)}`;
+      Offres: ${JSON.stringify(resultTexts)}`;
 
       const response = await hf.textGeneration({
-        model: 'HuggingFaceH4/zephyr-7b-beta',
+        model: 'thom3909/Tomasu-Buranshee',
         inputs: prompt,
         parameters: {
-          max_new_tokens: 200,
-          temperature: 0.7
+          max_new_tokens: 500,
+          temperature: 0.7,
+          top_p: 0.95,
+          repetition_penalty: 1.2
         }
       });
 
       if (response.generated_text) {
+        const formattedText = response.generated_text
+          .split('\n')
+          .map(line => line.trim())
+          .filter(line => line)
+          .join('\n');
+
         // Créer un élément pour afficher l'analyse IA
         const aiAnalysisElement = document.createElement('div');
         aiAnalysisElement.className = 'ai-analysis';
         aiAnalysisElement.innerHTML = `
-          <h3>💡 Analyse IA des résultats</h3>
-          <p>${response.generated_text}</p>
+          <h3>🎯 Analyse détaillée des opportunités</h3>
+          <div class="ai-content">${formattedText}</div>
         `;
 
-        // Insérer l'analyse avant la liste des résultats
+        // Insérer l'analyse avant la liste des résultats filtrés
         const resultsContainer = document.querySelector('.gsc-resultsbox-visible');
         if (resultsContainer) {
           // Supprimer l'ancienne analyse si elle existe
@@ -109,6 +130,15 @@ export function GoogleSearch() {
           if (oldAnalysis) {
             oldAnalysis.remove();
           }
+
+          // Filtrer les résultats en double dans l'affichage
+          results.forEach((result) => {
+            const url = result.querySelector('.gs-visibleUrl')?.textContent;
+            if (!url || !seenUrls.has(url)) {
+              result.style.display = 'none';
+            }
+          });
+
           resultsContainer.insertBefore(aiAnalysisElement, resultsContainer.firstChild);
         }
 
