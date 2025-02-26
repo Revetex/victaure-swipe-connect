@@ -3,11 +3,11 @@ import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useViewport } from "@/hooks/useViewport";
+import { cn } from "@/lib/utils";
 import { LoadingState } from "./LoadingState";
 import { FloatingButtons } from "./FloatingButtons";
 import { ContentRouter } from "./ContentRouter";
 import { DashboardHome } from "./DashboardHome";
-import { cn } from "@/lib/utils";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -36,10 +36,6 @@ export function DashboardContent({
     return <LoadingState />;
   }
 
-  const renderDashboardHome = () => {
-    return <DashboardHome onRequestChat={onRequestChat} />;
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -47,16 +43,17 @@ export function DashboardContent({
       exit={{ opacity: 0 }}
       className={cn(
         "w-full min-h-[calc(100vh-4rem)]",
-        "bg-gradient-to-b from-background via-background/95 to-background/90",
-        "dark:from-background dark:via-background/95 dark:to-background/90",
-        "border-t border-border/10"
+        "bg-[#1A1F2C]",
+        "relative"
       )}
     >
       <ContentRouter
         currentPage={currentPage}
         onEditStateChange={onEditStateChange}
         onRequestChat={onRequestChat}
-        renderDashboardHome={renderDashboardHome}
+        renderDashboardHome={() => (
+          <DashboardHome onRequestChat={onRequestChat} />
+        )}
       />
 
       {!isMobile && <FloatingButtons />}
