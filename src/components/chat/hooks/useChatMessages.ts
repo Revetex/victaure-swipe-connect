@@ -2,7 +2,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
-import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
+import { HfInference } from "@huggingface/inference";
 
 interface Message {
   content: string;
@@ -15,7 +15,7 @@ interface ChatMessagesProps {
   maxQuestions: number;
   user: User | null;
   onMaxQuestionsReached?: () => void;
-  geminiModel?: GenerativeModel;
+  hf: HfInference;
 }
 
 const STORAGE_KEY = 'victaure_chat_messages';
@@ -25,7 +25,7 @@ export function useChatMessages({
   maxQuestions, 
   user, 
   onMaxQuestionsReached,
-  geminiModel 
+  hf
 }: ChatMessagesProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,7 +61,7 @@ export function useChatMessages({
   }, []);
 
   const sendMessage = useCallback(async (message: Message) => {
-    if (!message.content.trim() || !geminiModel) return;
+    if (!message.content.trim()) return;
 
     try {
       setIsLoading(true);
@@ -84,16 +84,24 @@ export function useChatMessages({
 
       const fullPrompt = `${context}\n\nHistorique de la conversation:\n${historyPrompt}\n\nUtilisateur: ${message.content}\n\nAssistant:`;
 
-      // Utiliser l'API Gemini
-      const result = await geminiModel.generateContent(fullPrompt);
-      const response = result.response.text();
+      // Utiliser l'API HuggingFace
+      const result = await hf.textGeneration({
+        model: "OpenAssistant/oasst-sft-6-llama-30b",
+        inputs: fullPrompt,
+        parameters: {
+          max_new_tokens: 200,
+          temperature: 0.7,
+          top_p: 0.95,
+          repetition_penalty: 1.2
+        }
+      });
 
-      if (!response) {
+      if (!result.generated_text) {
         throw new Error("Pas de réponse de l'assistant");
       }
 
       const assistantMessage: Message = {
-        content: response,
+        content: result.generated_text.trim(),
         isUser: false,
         timestamp: Date.now()
       };
@@ -110,7 +118,7 @@ export function useChatMessages({
     } finally {
       setIsLoading(false);
     }
-  }, [context, messages, user, userQuestions, maxQuestions, onMaxQuestionsReached, geminiModel]);
+  }, [context, messages, user, userQuestions, maxQuestions, onMaxQuestionsReached, hf]);
 
   return {
     messages,
