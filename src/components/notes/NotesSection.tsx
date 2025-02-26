@@ -42,29 +42,31 @@ export function NotesSection() {
   }];
 
   return (
-    <div className="relative h-full w-full flex flex-col bg-[#1B2A4A] text-[#F2EBE4]">
-      {/* Background gradient decoration */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/5 pointer-events-none" />
+    <div className="min-h-screen bg-[#1B2A4A] text-[#F2EBE4]">
+      <div className="container mx-auto p-4 pt-20">
+        {/* Background gradient decoration */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/5 pointer-events-none" />
 
-      <div className="flex-none z-10">
-        <NotesToolbar 
-          newNote={newNote} 
-          selectedColor={selectedColor} 
-          colors={colors} 
-          onNoteChange={setNewNote} 
-          onColorChange={setSelectedColor} 
-          onAdd={addNote} 
-        />
+        <div className="relative">
+          <NotesToolbar 
+            newNote={newNote} 
+            selectedColor={selectedColor} 
+            colors={colors} 
+            onNoteChange={setNewNote} 
+            onColorChange={setSelectedColor} 
+            onAdd={addNote} 
+          />
+
+          <div className="mt-6">
+            <NoteGrid 
+              notes={notes} 
+              onDeleteNote={deleteNote}
+              onUpdateNote={updateNote}
+              isDraggable={!isMobile}
+            />
+          </div>
+        </div>
       </div>
-
-      <ScrollArea className="flex-1 relative notes-container overflow-hidden">
-        <NoteGrid 
-          notes={notes} 
-          onDeleteNote={deleteNote}
-          onUpdateNote={updateNote}
-          isDraggable={!isMobile}
-        />
-      </ScrollArea>
     </div>
   );
 }
