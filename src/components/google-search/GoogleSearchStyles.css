@@ -6,29 +6,58 @@
   display: none !important;
 }
 
+/* Style du conteneur principal */
+.gsc-control-cse {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+}
+
 /* Style des résultats */
 .gsc-result {
   margin-bottom: 1.5rem !important;
-  padding: 1rem !important;
+  padding: 1.5rem !important;
+  background: rgba(27, 42, 74, 0.3) !important;
   border: 1px solid rgba(100, 181, 217, 0.1) !important;
-  border-radius: 0.5rem !important;
-  background: transparent !important;
+  border-radius: 0.75rem !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  width: 100% !important;
+}
+
+.gsc-results {
+  width: 100% !important;
+}
+
+.gsc-result-info {
+  color: rgba(255, 255, 255, 0.7) !important;
+  padding: 0 !important;
+  margin-bottom: 1rem !important;
 }
 
 /* Style des titres */
-.gs-title {
+.gs-title, .gs-title * {
   font-family: 'Inter', sans-serif !important;
-  font-size: 1.1rem !important;
+  font-size: 1.25rem !important;
   color: #9b87f5 !important;
   text-decoration: none !important;
-  margin-bottom: 0.5rem !important;
+  margin-bottom: 0.75rem !important;
+  display: block !important;
+}
+
+.gs-title:hover, .gs-title *:hover {
+  text-decoration: underline !important;
+  color: #7E69AB !important;
 }
 
 /* Style des snippets */
 .gs-snippet {
   font-family: 'Inter', sans-serif !important;
-  color: inherit !important;
-  line-height: 1.5 !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  line-height: 1.6 !important;
+  font-size: 1rem !important;
 }
 
 /* Cacher les vignettes */
@@ -40,31 +69,46 @@
 /* Style de la pagination */
 .gsc-cursor-box {
   margin-top: 2rem !important;
+  text-align: center !important;
 }
 
 .gsc-cursor-page {
-  padding: 0.5rem 1rem !important;
+  padding: 0.75rem 1.25rem !important;
   margin: 0 0.25rem !important;
-  border-radius: 0.375rem !important;
+  border-radius: 0.5rem !important;
   background: rgba(27, 42, 74, 0.3) !important;
   color: #9b87f5 !important;
   border: 1px solid rgba(100, 181, 217, 0.1) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out !important;
 }
 
 .gsc-cursor-page:hover {
-  background: rgba(155, 135, 245, 0.1) !important;
+  background: rgba(155, 135, 245, 0.2) !important;
+  border-color: rgba(155, 135, 245, 0.3) !important;
 }
 
 .gsc-cursor-current-page {
   background: #9b87f5 !important;
   color: white !important;
+  border-color: #9b87f5 !important;
 }
 
-/* Mode sombre */
-.dark .gs-title {
-  color: #9b87f5 !important;
-}
-
+/* Mode sombre et styles généraux */
 .dark .gs-snippet {
   color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Style du conteneur des résultats */
+.gsc-resultsbox-visible {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Style des liens URL */
+.gs-visibleUrl {
+  color: rgba(155, 135, 245, 0.7) !important;
+  font-size: 0.875rem !important;
+  margin-top: 0.5rem !important;
 }
