@@ -67,7 +67,7 @@ export function FriendCard({
               <ProfileNameButton profile={friend} className="text-sm font-medium text-zinc-700 group-hover:text-primary/90 transition-colors p-0 h-auto" />
               {friend.verified && <Star className="h-3.5 w-3.5 text-primary fill-primary" />}
             </div>
-            <p className="text-xs text-zinc-500 group-hover:text-zinc-600 transition-colors">
+            <p className="text-xs transition-colors text-inherit">
               {friend.role}
             </p>
           </div>
