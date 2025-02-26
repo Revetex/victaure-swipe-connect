@@ -2,7 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.2.0"
 
-const geminiApiKey = Deno.env.get('GOOGLE_GEMINI_API_KEY')
+const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
