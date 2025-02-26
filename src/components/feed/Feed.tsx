@@ -55,59 +55,57 @@ export function Feed() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="container mx-auto px-4 py-8"
+      className="container mx-auto px-4 py-8 space-y-6"
     >
-      <div className="space-y-6">
-        <motion.div variants={itemVariants}>
-          {!isExpanded ? (
-            <Button
-              onClick={() => setIsExpanded(true)}
-              variant="ghost"
-              className="w-full bg-white/5 hover:bg-white/10 text-white/80 justify-start px-4 py-6 rounded-xl border border-white/10"
-            >
-              <PenLine className="h-5 w-5 mr-2" />
-              Partagez quelque chose...
-            </Button>
-          ) : (
-            <CreatePostForm
-              newPost={newPost}
-              onPostChange={handlePostChange}
-              privacy={privacy}
-              onPrivacyChange={handlePrivacyChange}
-              attachments={attachments}
-              isUploading={isUploading}
-              onCreatePost={handleCreatePost}
-              onClose={() => setIsExpanded(false)}
-              isExpanded={isExpanded}
-            />
-          )}
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <PostFilters
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            filter={filter}
-            onFilterChange={setFilter}
-            sortBy={sortBy}
-            onSortByChange={setSortBy}
-            sortOrder={sortOrder}
-            onSortOrderChange={setSortOrder}
-            onCreatePost={() => setIsExpanded(true)}
+      <motion.div variants={itemVariants}>
+        {!isExpanded ? (
+          <Button
+            onClick={() => setIsExpanded(true)}
+            variant="ghost"
+            className="w-full bg-white/5 hover:bg-white/10 text-white/80 justify-start px-4 py-6 rounded-xl border border-white/10"
+          >
+            <PenLine className="h-5 w-5 mr-2" />
+            Partagez quelque chose...
+          </Button>
+        ) : (
+          <CreatePostForm
+            newPost={newPost}
+            onPostChange={handlePostChange}
+            privacy={privacy}
+            onPrivacyChange={handlePrivacyChange}
+            attachments={attachments}
+            isUploading={isUploading}
+            onCreatePost={handleCreatePost}
+            onClose={() => setIsExpanded(false)}
+            isExpanded={isExpanded}
           />
-        </motion.div>
+        )}
+      </motion.div>
 
-        <motion.div variants={itemVariants}>
-          <PostList
-            searchTerm={searchTerm}
-            filter={filter}
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            onPostDeleted={invalidatePosts}
-            onPostUpdated={invalidatePosts}
-          />
-        </motion.div>
-      </div>
+      <motion.div variants={itemVariants}>
+        <PostFilters
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          filter={filter}
+          onFilterChange={setFilter}
+          sortBy={sortBy}
+          onSortByChange={setSortBy}
+          sortOrder={sortOrder}
+          onSortOrderChange={setSortOrder}
+          onCreatePost={() => setIsExpanded(true)}
+        />
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <PostList
+          searchTerm={searchTerm}
+          filter={filter}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onPostDeleted={invalidatePosts}
+          onPostUpdated={invalidatePosts}
+        />
+      </motion.div>
     </motion.div>
   );
 }
