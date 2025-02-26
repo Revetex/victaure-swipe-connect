@@ -11,6 +11,10 @@ import { FileText, Shield, Mail } from "lucide-react";
 
 export function AuthFooterLinks() {
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isCookiesOpen, setIsCookiesOpen] = useState(false);
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -37,7 +41,7 @@ export function AuthFooterLinks() {
   return (
     <nav className="flex flex-wrap justify-center gap-3 text-sm text-[#F1F0FB]/80" role="navigation">
       {/* Terms Dialog */}
-      <Dialog>
+      <Dialog open={isTermsOpen} onOpenChange={setIsTermsOpen}>
         <DialogTrigger asChild>
           <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB] font-thin">
             Conditions d'utilisation
@@ -71,18 +75,13 @@ export function AuthFooterLinks() {
                 <h3 className="text-lg font-medium text-[#F1F0FB]">4. Protection des données</h3>
                 <p className="text-[#F1F0FB]/80">Nous nous engageons à protéger vos données personnelles conformément à notre politique de confidentialité.</p>
               </div>
-              
-              <div>
-                <h3 className="text-lg font-medium text-[#F1F0FB]">5. Propriété intellectuelle</h3>
-                <p className="text-[#F1F0FB]/80">Tout le contenu sur Victaure est protégé par les droits d'auteur et autres lois sur la propriété intellectuelle.</p>
-              </div>
             </section>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Privacy Dialog */}
-      <Dialog>
+      <Dialog open={isPrivacyOpen} onOpenChange={setIsPrivacyOpen}>
         <DialogTrigger asChild>
           <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB] font-thin">
             Politique de confidentialité
@@ -99,59 +98,34 @@ export function AuthFooterLinks() {
             <section>
               <h3 className="text-lg font-medium text-[#F1F0FB]">1. Collecte des données</h3>
               <p className="text-[#F1F0FB]/80">
-                Nous collectons uniquement les données nécessaires au bon fonctionnement du service et à l'amélioration de votre expérience :
+                Nous collectons uniquement les données nécessaires au bon fonctionnement du service et à l'amélioration de votre expérience.
               </p>
-              <ul className="list-disc pl-6 text-[#F1F0FB]/80">
-                <li>Informations de profil</li>
-                <li>Données de connexion</li>
-                <li>Préférences utilisateur</li>
-                <li>Interactions avec le service</li>
-              </ul>
             </section>
             
             <section>
               <h3 className="text-lg font-medium text-[#F1F0FB]">2. Utilisation des données</h3>
-              <p className="text-[#F1F0FB]/80">Vos données sont utilisées pour :</p>
-              <ul className="list-disc pl-6 text-[#F1F0FB]/80">
-                <li>Personnaliser votre expérience</li>
-                <li>Améliorer nos services</li>
-                <li>Vous contacter si nécessaire</li>
-                <li>Assurer la sécurité du service</li>
-              </ul>
+              <p className="text-[#F1F0FB]/80">Vos données sont utilisées pour personnaliser votre expérience et améliorer nos services.</p>
             </section>
             
             <section>
               <h3 className="text-lg font-medium text-[#F1F0FB]">3. Protection des données</h3>
               <p className="text-[#F1F0FB]/80">
-                Nous mettons en œuvre des mesures de sécurité strictes pour protéger vos données personnelles :
+                Nous mettons en œuvre des mesures de sécurité strictes pour protéger vos données personnelles.
               </p>
-              <ul className="list-disc pl-6 text-[#F1F0FB]/80">
-                <li>Chiffrement des données sensibles</li>
-                <li>Accès restreint aux données</li>
-                <li>Surveillance continue de la sécurité</li>
-                <li>Mises à jour régulières des protocoles</li>
-              </ul>
             </section>
             
             <section>
               <h3 className="text-lg font-medium text-[#F1F0FB]">4. Vos droits</h3>
               <p className="text-[#F1F0FB]/80">
-                Conformément aux lois sur la protection des données, vous disposez des droits suivants :
+                Vous avez le droit d'accéder, de modifier ou de supprimer vos données personnelles à tout moment.
               </p>
-              <ul className="list-disc pl-6 text-[#F1F0FB]/80">
-                <li>Accès à vos données</li>
-                <li>Rectification des informations</li>
-                <li>Suppression de vos données</li>
-                <li>Opposition au traitement</li>
-                <li>Portabilité des données</li>
-              </ul>
             </section>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Cookies Dialog */}
-      <Dialog>
+      <Dialog open={isCookiesOpen} onOpenChange={setIsCookiesOpen}>
         <DialogTrigger asChild>
           <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB] font-thin">
             Cookies
@@ -188,7 +162,6 @@ export function AuthFooterLinks() {
                   name: e.target.value
                 }))}
                 className="bg-[#1B2A4A]/50 border-[#64B5D9]/20 text-[#F1F0FB] placeholder:text-[#F1F0FB]/30"
-                autoFocus={false}
               />
             </div>
             <div className="space-y-2">
@@ -205,7 +178,6 @@ export function AuthFooterLinks() {
                   email: e.target.value
                 }))}
                 className="bg-[#1B2A4A]/50 border-[#64B5D9]/20 text-[#F1F0FB] placeholder:text-[#F1F0FB]/30"
-                autoFocus={false}
               />
             </div>
             <div className="space-y-2">
@@ -221,7 +193,6 @@ export function AuthFooterLinks() {
                   message: e.target.value
                 }))}
                 className="bg-[#1B2A4A]/50 border-[#64B5D9]/20 text-[#F1F0FB] placeholder:text-[#F1F0FB]/30 min-h-[100px]"
-                autoFocus={false}
               />
             </div>
             <Button
