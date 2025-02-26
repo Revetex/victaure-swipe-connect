@@ -7,8 +7,10 @@ import { ConversationSearch } from "./components/ConversationSearch";
 import { NewConversationPopover } from "./components/NewConversationPopover";
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import type { UserProfile } from "@/types/profile";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
