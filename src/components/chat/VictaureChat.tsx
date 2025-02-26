@@ -10,7 +10,7 @@ import { useSuggestions } from "./hooks/useSuggestions";
 import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
 import { RefreshCcw, X } from "lucide-react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { HfInference } from "@huggingface/inference";
 
 interface VictaureChatProps {
   maxQuestions?: number;
@@ -26,19 +26,7 @@ export function VictaureChat({
   const [userInput, setUserInput] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
-  const [geminiModel, setGeminiModel] = useState<any>(null);
   const { suggestions, isLoadingSuggestions, generateSuggestions } = useSuggestions();
-
-  useEffect(() => {
-    const API_KEY = import.meta.env.GEMINI_API_KEY || "";
-    if (!API_KEY) {
-      console.error("No Gemini API key found");
-      return;
-    }
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    setGeminiModel(model);
-  }, []);
 
   const {
     messages,
@@ -51,8 +39,7 @@ export function VictaureChat({
     context,
     maxQuestions,
     user,
-    onMaxQuestionsReached,
-    geminiModel
+    onMaxQuestionsReached
   });
 
   const {
@@ -85,10 +72,6 @@ export function VictaureChat({
 
   const handleSuggestionSelect = (suggestion: string) => {
     setUserInput(suggestion);
-  };
-
-  const handleRefresh = () => {
-    refreshMessages();
   };
 
   const isDisabled = userQuestions >= maxQuestions && !user;
@@ -148,7 +131,7 @@ export function VictaureChat({
           <MessageList messages={messages} isLoading={isLoading} />
         </div>
         
-        <div className="relative p-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C] to-transparent py-0 px-0">
+        <div className="relative p-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C] to-transparent">
           <QuickSuggestions 
             suggestions={suggestions} 
             isLoading={isLoadingSuggestions} 
