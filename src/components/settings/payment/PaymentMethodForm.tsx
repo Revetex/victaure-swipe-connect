@@ -3,8 +3,9 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { CreditCard, Calendar, Lock, User } from "lucide-react";
 import { toast } from "sonner";
-import { CreditCard, Calendar, Lock } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface PaymentMethodFormProps {
   onSubmit: (data: any) => Promise<void>;
@@ -17,6 +18,21 @@ export function PaymentMethodForm({ onSubmit }: PaymentMethodFormProps) {
   const [cvv, setCvv] = useState("");
   const [name, setName] = useState("");
 
+  const formatCardNumber = (value: string) => {
+    return value
+      .replace(/\s/g, "")
+      .replace(/(\d{4})/g, "$1 ")
+      .trim()
+      .slice(0, 19);
+  };
+
+  const formatExpiryDate = (value: string) => {
+    return value
+      .replace(/\D/g, "")
+      .replace(/(\d{2})(\d{2})/, "$1/$2")
+      .slice(0, 5);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -28,13 +44,12 @@ export function PaymentMethodForm({ onSubmit }: PaymentMethodFormProps) {
     setLoading(true);
     try {
       await onSubmit({
-        cardNumber,
+        cardNumber: cardNumber.replace(/\s/g, ""),
         expiryDate,
         cvv,
         name
       });
       
-      // Réinitialiser le formulaire
       setCardNumber("");
       setExpiryDate("");
       setCvv("");
@@ -49,73 +64,81 @@ export function PaymentMethodForm({ onSubmit }: PaymentMethodFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Nom sur la carte</label>
-          <div className="relative">
-            <Input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="JEAN DUPONT"
-              className="pl-10"
-            />
-            <CreditCard className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Numéro de carte</label>
-          <div className="relative">
-            <Input
-              type="text"
-              value={cardNumber}
-              onChange={(e) => setCardNumber(e.target.value)}
-              placeholder="4242 4242 4242 4242"
-              maxLength={19}
-              className="pl-10"
-            />
-            <CreditCard className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
+    <motion.form 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      onSubmit={handleSubmit} 
+      className="space-y-6"
+    >
+      <Card className="p-6 glass-container">
+        <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Date d'expiration</label>
+            <label className="text-sm font-medium text-foreground/80">Nom sur la carte</label>
             <div className="relative">
               <Input
                 type="text"
-                value={expiryDate}
-                onChange={(e) => setExpiryDate(e.target.value)}
-                placeholder="MM/AA"
-                maxLength={5}
-                className="pl-10"
+                value={name}
+                onChange={(e) => setName(e.target.value.toUpperCase())}
+                placeholder="JEAN DUPONT"
+                className="glass-input pl-10"
               />
-              <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">CVV</label>
+            <label className="text-sm font-medium text-foreground/80">Numéro de carte</label>
             <div className="relative">
               <Input
                 type="text"
-                value={cvv}
-                onChange={(e) => setCvv(e.target.value)}
-                placeholder="123"
-                maxLength={4}
-                className="pl-10"
+                value={cardNumber}
+                onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+                placeholder="4242 4242 4242 4242"
+                maxLength={19}
+                className="glass-input pl-10"
               />
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <CreditCard className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground/80">Date d'expiration</label>
+              <div className="relative">
+                <Input
+                  type="text"
+                  value={expiryDate}
+                  onChange={(e) => setExpiryDate(formatExpiryDate(e.target.value))}
+                  placeholder="MM/YY"
+                  maxLength={5}
+                  className="glass-input pl-10"
+                />
+                <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground/80">CVV</label>
+              <div className="relative">
+                <Input
+                  type="text"
+                  value={cvv}
+                  onChange={(e) => setCvv(e.target.value.slice(0, 4))}
+                  placeholder="123"
+                  maxLength={4}
+                  className="glass-input pl-10"
+                />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </Card>
 
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button type="submit" className="glass-button w-full" disabled={loading}>
         {loading ? "Ajout en cours..." : "Ajouter cette carte"}
       </Button>
-    </form>
+    </motion.form>
   );
 }
