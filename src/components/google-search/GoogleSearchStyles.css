@@ -105,7 +105,8 @@
 
 /* Ajustements pour le conteneur des résultats */
 .gsc-resultsbox-visible,
-.gsc-results gsc-webResult {
+.gsc-results,
+.gsc-webResult {
   width: 100% !important;
   max-width: none !important;
 }
@@ -115,3 +116,28 @@
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
 }
+
+/* Correction des liens dédoublés */
+.gs-title b {
+  display: none !important;
+}
+
+.gs-title:not(:first-child) {
+  display: none !important;
+}
+
+/* Assurez-vous que les liens ne sont pas coupés */
+.gsc-thumbnail-inside,
+.gsc-url-top,
+.gsc-url-bottom {
+  padding: 0 !important;
+  word-break: break-word !important;
+}
+
+.gs-result .gsc-url-top,
+.gs-result .gsc-url-bottom {
+  display: block !important;
+  margin: 0 !important;
+  width: 100% !important;
+}
+
