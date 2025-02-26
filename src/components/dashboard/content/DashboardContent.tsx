@@ -4,9 +4,9 @@ import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useViewport } from "@/hooks/useViewport";
 import { LoadingState } from "./LoadingState";
-import { FloatingButtons } from "./content/FloatingButtons";
-import { ContentRouter } from "./content/ContentRouter";
-import { DashboardHome } from "./content/DashboardHome";
+import { FloatingButtons } from "./FloatingButtons";
+import { ContentRouter } from "./ContentRouter";
+import { DashboardHome } from "./DashboardHome";
 import { cn } from "@/lib/utils";
 
 interface DashboardContentProps {
