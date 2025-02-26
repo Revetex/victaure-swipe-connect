@@ -1,3 +1,4 @@
+
 import { useRef, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatHeader } from "./ChatHeader";
@@ -30,7 +31,11 @@ export function VictaureChat({
   const { suggestions, isLoadingSuggestions, generateSuggestions } = useSuggestions();
 
   useEffect(() => {
-    const API_KEY = "AIzaSyDBwg2972gQl98lVOXj3w5fx0_vEAs3JCQ"; // Clé API publique de test
+    const API_KEY = import.meta.env.GEMINI_API_KEY || ""; // Utilisera la variable d'environnement
+    if (!API_KEY) {
+      console.error("No Gemini API key found");
+      return;
+    }
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     setGeminiModel(model);
