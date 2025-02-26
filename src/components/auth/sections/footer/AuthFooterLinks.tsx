@@ -31,19 +31,19 @@ export function AuthFooterLinks() {
   };
 
   return (
-    <nav className="flex flex-wrap justify-center gap-3 text-sm text-[#E0E0E0]/60" role="navigation">
+    <nav className="flex flex-wrap justify-center gap-3 text-sm text-[#F1F0FB]/80" role="navigation">
       {/* Terms Dialog */}
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="link" className="text-[#E0E0E0]/60 hover:text-[#E0E0E0]">
+          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB]">
             Conditions d'utilisation
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-2xl bg-[#1C1C1C] border border-[#3C3C3C]/10 backdrop-blur-xl">
+        <DialogContent className="max-w-2xl bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold mb-4 text-[#E0E0E0]">Conditions d'utilisation</DialogTitle>
+            <DialogTitle className="text-xl font-bold mb-4 text-[#F1F0FB]">Conditions d'utilisation</DialogTitle>
           </DialogHeader>
-          <div className="prose prose-sm prose-invert max-w-none text-[#E0E0E0]/80">
+          <div className="prose prose-sm prose-invert max-w-none">
             <h3>1. Acceptation des conditions</h3>
             <p>En accédant à Victaure, vous acceptez d'être lié par ces conditions d'utilisation, toutes les lois et réglementations applicables.</p>
             
@@ -65,15 +65,15 @@ export function AuthFooterLinks() {
       {/* Privacy Dialog */}
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="link" className="text-[#E0E0E0]/60 hover:text-[#E0E0E0]">
+          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB]">
             Politique de confidentialité
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-2xl bg-[#1C1C1C] border border-[#3C3C3C]/10 backdrop-blur-xl">
+        <DialogContent className="max-w-2xl bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold mb-4 text-[#E0E0E0]">Politique de confidentialité</DialogTitle>
+            <DialogTitle className="text-xl font-bold mb-4 text-[#F1F0FB]">Politique de confidentialité</DialogTitle>
           </DialogHeader>
-          <div className="prose prose-sm prose-invert max-w-none text-[#E0E0E0]/80">
+          <div className="prose prose-sm prose-invert max-w-none">
             <h3>1. Collecte des données</h3>
             <p>Nous collectons uniquement les données nécessaires au bon fonctionnement du service et à l'amélioration de votre expérience.</p>
             
@@ -92,15 +92,15 @@ export function AuthFooterLinks() {
       {/* Cookies Dialog */}
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="link" className="text-[#E0E0E0]/60 hover:text-[#E0E0E0]">
+          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB]">
             Politique des cookies
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-2xl bg-[#1C1C1C] border border-[#3C3C3C]/10 backdrop-blur-xl">
+        <DialogContent className="max-w-2xl bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold mb-4 text-[#E0E0E0]">Politique des cookies</DialogTitle>
+            <DialogTitle className="text-xl font-bold mb-4 text-[#F1F0FB]">Politique des cookies</DialogTitle>
           </DialogHeader>
-          <div className="prose prose-sm prose-invert max-w-none text-[#E0E0E0]/80">
+          <div className="prose prose-sm prose-invert max-w-none">
             <h3>1. Utilisation des cookies</h3>
             <p>Nous utilisons des cookies pour améliorer votre expérience de navigation et personnaliser nos services.</p>
             
@@ -117,62 +117,43 @@ export function AuthFooterLinks() {
       </Dialog>
 
       {/* Contact Dialog */}
-      <Dialog>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="link" className="text-[#E0E0E0]/60 hover:text-[#E0E0E0]">
+          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB]">
             Nous contacter
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px] bg-[#1C1C1C] border border-[#3C3C3C]/10 backdrop-blur-xl">
+        <DialogContent className="sm:max-w-[425px] bg-[#1B2A4A] border-2 border-[#F1F0FB]/20 backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle className="text-[#E0E0E0]">Contactez-nous</DialogTitle>
+            <DialogTitle className="text-[#F1F0FB]">Contactez-nous</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="contact-name" className="text-sm font-medium text-[#E0E0E0]">
+              <label htmlFor="contact-name" className="text-sm font-medium text-[#F1F0FB]">
                 Nom
               </label>
-              <Input 
-                id="contact-name" 
-                className="bg-[#2C2C2C]/50 border-[#3C3C3C]/10 text-[#E0E0E0]" 
-                required 
-                autoFocus={false} 
-                value={formData.name} onChange={e => setFormData(prev => ({
-                  ...prev,
-                  name: e.target.value
-                }))}
-              />
+              <Input id="contact-name" required value={formData.name} onChange={e => setFormData(prev => ({
+              ...prev,
+              name: e.target.value
+            }))} className="bg-white text-[#1B2A4A]" autoFocus={false} />
             </div>
             <div className="space-y-2">
-              <label htmlFor="contact-email" className="text-sm font-medium text-[#E0E0E0]">
+              <label htmlFor="contact-email" className="text-sm font-medium text-[#F1F0FB]">
                 Email
               </label>
-              <Input 
-                id="contact-email" 
-                type="email" 
-                className="bg-[#2C2C2C]/50 border-[#3C3C3C]/10 text-[#E0E0E0]" 
-                required 
-                autoFocus={false} 
-                value={formData.email} onChange={e => setFormData(prev => ({
-                  ...prev,
-                  email: e.target.value
-                }))}
-              />
+              <Input id="contact-email" type="email" required value={formData.email} onChange={e => setFormData(prev => ({
+              ...prev,
+              email: e.target.value
+            }))} className="bg-white text-[#1B2A4A]" autoFocus={false} />
             </div>
             <div className="space-y-2">
-              <label htmlFor="contact-message" className="text-sm font-medium text-[#E0E0E0]">
+              <label htmlFor="contact-message" className="text-sm font-medium text-[#F1F0FB]">
                 Message
               </label>
-              <Textarea 
-                id="contact-message" 
-                className="bg-[#2C2C2C]/50 border-[#3C3C3C]/10 text-[#E0E0E0] min-h-[100px]" 
-                required 
-                autoFocus={false} 
-                value={formData.message} onChange={e => setFormData(prev => ({
-                  ...prev,
-                  message: e.target.value
-                }))}
-              />
+              <Textarea id="contact-message" required value={formData.message} onChange={e => setFormData(prev => ({
+              ...prev,
+              message: e.target.value
+            }))} className="bg-white text-[#1B2A4A] min-h-[100px]" autoFocus={false} />
             </div>
             <Button type="submit" className="w-full bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white">
               Envoyer

@@ -1,6 +1,5 @@
 
 import { ChangeEvent } from "react";
-import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { Mic, Send, Square, StopCircle } from "lucide-react";
@@ -48,19 +47,16 @@ export function ChatInput({
   };
 
   return (
-    <div className="relative flex items-end gap-2 bg-[#2C2C2C] rounded-lg p-2">
+    <div className="flex items-end gap-2">
       <div className="relative flex-1">
         <Textarea
           value={userInput}
           onChange={handleInputChange}
           onKeyDown={handleKeyPress}
-          placeholder="Message..."
-          className="min-h-[45px] max-h-[160px] resize-none pr-12 bg-transparent border-none rounded-lg placeholder:text-[#808080] text-[#E0E0E0] focus:ring-0"
+          placeholder="Écrivez votre message..."
+          className="min-h-[45px] max-h-[160px] resize-none pr-12 bg-[#1A1F2C]/60 border-[#64B5D9]/30 rounded-xl placeholder:text-[#F1F0FB]/50 text-[#F1F0FB] focus:border-[#64B5D9]/60 focus:bg-[#1A1F2C]/80 transition-all"
           disabled={isDisabled || isLoading}
         />
-        <div className="absolute right-2 bottom-2 text-sm text-[#808080]">
-          Use shift + return for new line
-        </div>
       </div>
 
       <div className="flex gap-2">
@@ -70,19 +66,18 @@ export function ChatInput({
               <Button
                 size="icon"
                 variant={isRecording ? "destructive" : "ghost"}
-                className={cn(
-                  "shrink-0 h-11 w-11 rounded-lg transition-all",
+                className={`shrink-0 h-11 w-11 rounded-xl border transition-all ${
                   isRecording 
-                    ? "bg-red-500/20 border-red-500/50 hover:bg-red-500/30 hover:border-red-500" 
-                    : "bg-[#3C3C3C] hover:bg-[#4C4C4C]"
-                )}
+                    ? 'bg-red-500/20 border-red-500/50 hover:bg-red-500/30 hover:border-red-500' 
+                    : 'bg-[#1A1F2C]/60 border-[#64B5D9]/30 hover:bg-[#1A1F2C]/80 hover:border-[#64B5D9]/60'
+                }`}
                 onClick={onStartRecording}
                 disabled={isDisabled || isLoading}
               >
                 {isRecording ? (
                   <Square className="h-5 w-5 text-red-500 animate-pulse" />
                 ) : (
-                  <Mic className="h-5 w-5 text-[#E0E0E0]" />
+                  <Mic className="h-5 w-5 text-[#64B5D9]" />
                 )}
               </Button>
             </TooltipTrigger>
@@ -99,10 +94,10 @@ export function ChatInput({
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="shrink-0 h-11 w-11 rounded-lg bg-[#3C3C3C] hover:bg-[#4C4C4C]"
+                  className="shrink-0 h-11 w-11 rounded-xl bg-[#64B5D9]/20 border border-[#64B5D9]/50 hover:bg-[#64B5D9]/30 hover:border-[#64B5D9]"
                   onClick={onStopSpeaking}
                 >
-                  <StopCircle className="h-5 w-5 text-[#E0E0E0] animate-pulse" />
+                  <StopCircle className="h-5 w-5 text-[#64B5D9] animate-pulse" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -117,7 +112,7 @@ export function ChatInput({
             <TooltipTrigger asChild>
               <Button
                 size="icon"
-                className="shrink-0 h-11 w-11 rounded-lg bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white"
+                className="shrink-0 h-11 w-11 rounded-xl bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white"
                 onClick={() => {
                   if (!isDisabled) {
                     onSendMessage();

@@ -9,11 +9,12 @@ export function AuthFooterActions() {
     <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="relative group bg-[#2C2C2C]/50 text-[#E0E0E0] hover:bg-[#3C3C3C]/50 px-6 py-3 rounded-full border border-[#3C3C3C]/10 transition-all duration-300 hover:scale-105">
+          <Button className="relative group bg-gradient-to-r from-[#4A90E2] to-[#64B5D9] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
             <span className="relative z-10 flex items-center gap-2">
               Partenariat
-              <div className="w-1.5 h-1.5 rounded-full bg-[#64B5D9] group-hover:scale-150 transition-transform" />
+              <div className="w-1.5 h-1.5 rounded-full bg-white group-hover:scale-150 transition-transform" />
             </span>
+            <div className="absolute inset-0 bg-white/20 rounded-full transition-transform group-hover:scale-105 duration-300" />
           </Button>
         </DialogTrigger>
         <PartnershipDialog />
@@ -21,11 +22,12 @@ export function AuthFooterActions() {
 
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="relative group bg-[#2C2C2C]/50 text-[#E0E0E0] hover:bg-[#3C3C3C]/50 px-6 py-3 rounded-full border border-[#3C3C3C]/10 transition-all duration-300 hover:scale-105">
+          <Button className="relative group bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
             <span className="relative z-10 flex items-center gap-2">
               Guide tarifaire complet
-              <div className="w-1.5 h-1.5 rounded-full bg-[#64B5D9] group-hover:scale-150 transition-transform" />
+              <div className="w-1.5 h-1.5 rounded-full bg-white group-hover:scale-150 transition-transform" />
             </span>
+            <div className="absolute inset-0 bg-white/20 rounded-full transition-transform group-hover:scale-105 duration-300" />
           </Button>
         </DialogTrigger>
         <PricingDialog />
