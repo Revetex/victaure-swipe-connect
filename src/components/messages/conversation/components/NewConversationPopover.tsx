@@ -1,135 +1,85 @@
 
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { MessageSquarePlus } from "lucide-react";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./CustomDialog";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useFriendsList } from "../hooks/useFriendsList";
+import { Receiver } from "@/types/messages";
+import { Loader2 } from "lucide-react";
+import { useReceiver } from "@/hooks/useReceiver";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { toast } from "sonner";
-import { UserProfile } from "@/types/profile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export interface NewConversationPopoverProps {
+interface NewConversationPopoverProps {
   onSelectFriend: () => void;
 }
 
-interface Friend {
-  id: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  online_status: boolean;
-}
-
 export function NewConversationPopover({ onSelectFriend }: NewConversationPopoverProps) {
-  const [open, setOpen] = useState(false);
-  const [friends, setFriends] = useState<Friend[]>([]);
-  const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  const { friends, loading } = useFriendsList();
+  const { setReceiver } = useReceiver();
 
-  useEffect(() => {
-    const loadFriends = async () => {
-      if (!user?.id || !open) return;
-      
-      try {
-        setLoading(true);
-        const { data: connections, error } = await supabase
-          .from('profiles')
-          .select(`
-            id,
-            full_name,
-            avatar_url,
-            online_status
-          `)
-          .in('id', (
-            await supabase
-              .from('friendships')
-              .select('friend_id')
-              .eq('user_id', user.id)
-          ).data?.map(f => f.friend_id) || []);
-
-        if (error) throw error;
-        
-        if (connections) {
-          setFriends(connections);
-        }
-      } catch (error) {
-        console.error('Error loading friends:', error);
-        toast.error("Impossible de charger la liste d'amis");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadFriends();
-  }, [open, user?.id]);
+  const handleSelectFriend = (friend: Receiver) => {
+    setReceiver(friend);
+    onSelectFriend();
+  };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="shrink-0"
-          title="Nouvelle conversation"
-          aria-label="Créer une nouvelle conversation"
-        >
-          <Plus className="h-4 w-4" />
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <MessageSquarePlus className="h-5 w-5" />
         </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Nouvelle conversation</DialogTitle>
-        </DialogHeader>
-        <ScrollArea className="h-72 pr-4">
-          {loading ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-            </div>
-          ) : friends.length === 0 ? (
-            <div className="p-4 text-center text-sm text-muted-foreground">
-              Aucun ami trouvé
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {friends.map((friend) => (
-                <button
-                  key={friend.id}
-                  onClick={() => {
-                    onSelectFriend();
-                    setOpen(false);
-                  }}
-                  className="w-full flex items-center gap-3 p-3 hover:bg-muted/50 rounded-lg transition-colors"
-                >
-                  <div className="relative">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={friend.avatar_url || ""} alt={friend.full_name || ""} />
+      </PopoverTrigger>
+      <PopoverContent className="w-80" align="end">
+        <div className="space-y-4">
+          <h4 className="font-medium leading-none">Nouvelle conversation</h4>
+          <ScrollArea className="h-[300px] pr-4">
+            {loading ? (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : friends.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Aucun ami trouvé
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {friends.map((friend) => (
+                  <Button
+                    key={friend.id}
+                    variant="ghost"
+                    className="w-full justify-start gap-2 p-2"
+                    onClick={() => handleSelectFriend(friend)}
+                  >
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={friend.avatar_url || undefined} />
                       <AvatarFallback>
-                        {friend.full_name?.[0] || "?"}
+                        {friend.full_name?.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
-                    {friend.online_status && (
-                      <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
-                    )}
-                  </div>
-                  <div className="flex-1 text-left">
-                    <p className="text-sm font-medium">{friend.full_name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {friend.online_status ? 'En ligne' : 'Hors ligne'}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium">{friend.full_name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {friend.online_status === 'online' ? 'En ligne' : 'Hors ligne'}
+                      </span>
+                    </div>
+                    <div className="ml-auto">
+                      <div className={`h-2 w-2 rounded-full ${
+                        friend.online_status === 'online' 
+                          ? 'bg-green-500' 
+                          : 'bg-gray-300'
+                      }`} />
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            )}
+          </ScrollArea>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }

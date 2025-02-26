@@ -1,94 +1,113 @@
 
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import type { Receiver } from "@/types/messages";
-
-interface FriendshipData {
-  friend: {
-    id: string;
-    full_name: string | null;
-    avatar_url: string | null;
-    online_status: boolean;
-    email: string | null;
-    role: 'professional' | 'business' | 'admin';
-    bio: string | null;
-    phone: string | null;
-    city: string | null;
-    state: string | null;
-    country: string | null;
-    skills: string[];
-  }
-}
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
+import { Receiver } from '@/types/messages';
 
 export function useFriendsList() {
+  const [loading, setLoading] = useState(true);
   const [friends, setFriends] = useState<Receiver[]>([]);
-  const [loadingFriends, setLoadingFriends] = useState(false);
+  const { user } = useAuth();
 
-  const loadFriends = async () => {
-    try {
-      setLoadingFriends(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+  useEffect(() => {
+    if (!user?.id) return;
 
-      const { data: friendships, error } = await supabase
-        .from('friendships')
-        .select(`
-          friend:profiles!friendships_friend_id_fkey (
-            id,
-            full_name,
-            avatar_url,
-            online_status,
-            email,
-            role,
-            bio,
-            phone,
-            city,
-            state,
-            country,
-            skills
-          )
-        `)
-        .eq('user_id', user.id)
-        .eq('status', 'accepted');
+    const loadFriends = async () => {
+      try {
+        setLoading(true);
+        // Obtenir les amis depuis la table friendships
+        const { data: friendshipsData, error: friendshipsError } = await supabase
+          .from('friendships')
+          .select(`
+            friend_id,
+            friend:profiles!friendships_friend_id_fkey(
+              id,
+              full_name,
+              avatar_url,
+              email,
+              role,
+              bio,
+              phone,
+              city,
+              state,
+              country,
+              skills,
+              latitude,
+              longitude,
+              online_status,
+              last_seen,
+              certifications (
+                *
+              ),
+              education (
+                *
+              ),
+              experiences (
+                *
+              )
+            )
+          `)
+          .eq('user_id', user.id)
+          .eq('status', 'accepted');
 
-      if (error) throw error;
+        if (friendshipsError) throw friendshipsError;
 
-      if (friendships) {
-        const formattedFriends: Receiver[] = (friendships as unknown as FriendshipData[])
-          .map(friendship => ({
-            ...friendship.friend,
-            online_status: friendship.friend.online_status ? 'online' as const : 'offline' as const,
-            last_seen: new Date().toISOString(),
-            certifications: [],
-            education: [],
-            experiences: [],
-            friends: [],
-            latitude: null,
-            longitude: null,
-            avatar_url: friendship.friend.avatar_url || null,
-            email: friendship.friend.email || null,
-            bio: friendship.friend.bio || null,
-            phone: friendship.friend.phone || null,
-            city: friendship.friend.city || null,
-            state: friendship.friend.state || null,
-            country: friendship.friend.country || null,
-            skills: friendship.friend.skills || []
+        if (friendshipsData) {
+          const formattedFriends = friendshipsData.map(friendship => ({
+            id: friendship.friend.id,
+            full_name: friendship.friend.full_name || '',
+            avatar_url: friendship.friend.avatar_url,
+            email: friendship.friend.email,
+            role: friendship.friend.role as 'professional' | 'business' | 'admin',
+            bio: friendship.friend.bio,
+            phone: friendship.friend.phone,
+            city: friendship.friend.city,
+            state: friendship.friend.state,
+            country: friendship.friend.country,
+            skills: friendship.friend.skills || [],
+            latitude: friendship.friend.latitude,
+            longitude: friendship.friend.longitude,
+            online_status: friendship.friend.online_status ? 'online' : 'offline',
+            last_seen: friendship.friend.last_seen,
+            certifications: friendship.friend.certifications || [],
+            education: friendship.friend.education || [],
+            experiences: friendship.friend.experiences || [],
+            friends: []
           }));
 
-        setFriends(formattedFriends);
+          setFriends(formattedFriends);
+        }
+      } catch (error) {
+        console.error('Error loading friends:', error);
+        toast.error('Impossible de charger la liste d\'amis');
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error loading friends:', error);
-      toast.error("Impossible de charger vos amis");
-    } finally {
-      setLoadingFriends(false);
-    }
-  };
+    };
 
-  return {
-    friends,
-    loadingFriends,
-    loadFriends
-  };
+    loadFriends();
+
+    // Mettre en place l'écoute des changements en temps réel
+    const friendsChannel = supabase.channel('friends-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'friendships',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          loadFriends(); // Recharger la liste quand il y a des changements
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(friendsChannel);
+    };
+  }, [user?.id]);
+
+  return { friends, loading };
 }
