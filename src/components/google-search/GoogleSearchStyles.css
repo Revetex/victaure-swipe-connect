@@ -146,3 +146,38 @@
   margin: 0 !important;
   width: 100% !important;
 }
+
+/* Styles pour l'analyse IA */
+.ai-analysis {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: rgba(155, 135, 245, 0.1);
+  border: 1px solid rgba(155, 135, 245, 0.2);
+  border-radius: 0.5rem;
+}
+
+.ai-analysis h3 {
+  color: #9b87f5;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.ai-analysis p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Mode clair */
+:root {
+  --ai-analysis-text: rgba(0, 0, 0, 0.7);
+}
+
+/* Mode sombre */
+.dark {
+  --ai-analysis-text: rgba(255, 255, 255, 0.8);
+}
+
+.ai-analysis p {
+  color: var(--ai-analysis-text);
+}
