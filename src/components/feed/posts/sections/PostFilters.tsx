@@ -34,7 +34,7 @@ export function PostFilters({
   onCreatePost
 }: PostFiltersProps) {
   return (
-    <section className="bg-[#1B2A4A]/80 border border-[#64B5D9]/20 rounded-xl shadow-lg px-4 py-3">
+    <section className="bg-[#1B2A4A] border border-[#64B5D9]/20 rounded-xl shadow-lg px-4 py-3">
       <div className="flex flex-col sm:flex-row gap-3">
         {/* Search input */}
         <div className="relative flex-1">
