@@ -88,7 +88,8 @@ export function VictaureChat({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-[#1A1F2C] relative">
+    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#1A1F2C] relative">
+      {/* Background avec effet de gradient et grille */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]" />
         
@@ -100,6 +101,7 @@ export function VictaureChat({
         />
       </div>
 
+      {/* Contenu du chat */}
       <div className="relative z-10 flex flex-col h-full">
         <div className="flex-none px-4 py-3 border-b border-[#64B5D9]/10 bg-[#1B2A4A]/50 backdrop-blur-sm">
           <ChatHeader />
@@ -131,7 +133,7 @@ export function VictaureChat({
           />
         </div>
         
-        <div className="fixed bottom-0 left-0 right-0 flex-none px-4 py-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C] to-transparent">
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C] to-transparent">
           <ChatInput
             userInput={userInput}
             setUserInput={setUserInput}

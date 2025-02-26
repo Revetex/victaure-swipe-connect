@@ -46,7 +46,7 @@ export const MessageList = ({ messages, isLoading, ref }: MessageListProps) => {
   };
 
   return (
-    <div className="flex flex-col min-h-full bg-gradient-to-b from-[#F1F0FB]/80 via-[#F1F0FB]/60 to-[#F1F0FB]/40 dark:from-[#1A1F2C]/90 dark:via-[#1B2A4A]/70 dark:to-[#1B2A4A]/50">
+    <div className="flex flex-col min-h-full">
       <div ref={ref} className="flex-1 p-6 space-y-6 overflow-y-auto">
         <AnimatePresence mode="popLayout">
           {messages.map((message, index) => (
@@ -85,7 +85,7 @@ export const MessageList = ({ messages, isLoading, ref }: MessageListProps) => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="absolute -right-10 top-2 opacity-70 hover:opacity-100 transition-opacity bg-[#1B2A4A]/40 hover:bg-[#1B2A4A]/60"
+                      className={`absolute -right-10 top-2 opacity-0 group-hover:opacity-100 transition-opacity bg-[#1B2A4A]/40 hover:bg-[#1B2A4A]/60 h-8 w-8 rounded-full`}
                       onClick={() => handleSpeak(message.content, index)}
                     >
                       {speakingMessageId === index ? (
