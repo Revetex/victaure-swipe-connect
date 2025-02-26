@@ -60,10 +60,7 @@ export function AuthForm({ redirectTo }: { redirectTo?: string }) {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent 
-            value="login"
-            className="mt-0 space-y-6"
-          >
+          <TabsContent value="login" className="mt-0 space-y-6">
             <LoginForm 
               email={formData.email}
               password={formData.password}
@@ -75,10 +72,7 @@ export function AuthForm({ redirectTo }: { redirectTo?: string }) {
             />
           </TabsContent>
 
-          <TabsContent 
-            value="signup"
-            className="mt-0 space-y-6"
-          >
+          <TabsContent value="signup" className="mt-0 space-y-6">
             <SignupForm 
               email={formData.email}
               password={formData.password}
@@ -94,10 +88,7 @@ export function AuthForm({ redirectTo }: { redirectTo?: string }) {
             />
           </TabsContent>
 
-          <TabsContent 
-            value="business"
-            className="mt-0 space-y-6"
-          >
+          <TabsContent value="business" className="mt-0 space-y-6">
             <BusinessSignupForm redirectTo={redirectTo} />
           </TabsContent>
         </Tabs>
