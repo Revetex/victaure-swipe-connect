@@ -30,7 +30,7 @@ export function ProfilePreviewContact({ profile }: ProfilePreviewContactProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="glass-container mb-6"
+      className="mb-6 space-y-4"
     >
       <h3 className="text-gradient text-lg mb-4">Contact</h3>
       <div className="space-y-4">

@@ -19,7 +19,7 @@ export function ProfileEducation({ education }: ProfileEducationProps) {
 
   if (!education?.length) {
     return (
-      <div className="glass-container text-center p-8">
+      <div className="text-center p-8">
         <GraduationCap className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
         <p className="text-muted-foreground">Aucune formation ajoutée</p>
       </div>
@@ -27,8 +27,8 @@ export function ProfileEducation({ education }: ProfileEducationProps) {
   }
 
   return (
-    <div className="glass-container">
-      <div className="flex items-center gap-3 pb-4 mb-6 border-b border-border/10">
+    <div className="space-y-8">
+      <div className="flex items-center gap-3 mb-6">
         <span className="p-2.5 rounded-xl bg-accent/10 text-primary">
           <GraduationCap className="h-5 w-5" />
         </span>
