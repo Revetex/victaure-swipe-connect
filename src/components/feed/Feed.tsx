@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { CreatePostForm } from "./posts/create/CreatePostForm";
 import { PostList } from "./posts/PostList";
+import { PostFilters } from "./posts/sections/PostFilters";
 import { useState, useRef } from "react";
 
 export function Feed() {
@@ -12,6 +13,10 @@ export function Feed() {
   const [privacy, setPrivacy] = useState<"public" | "connections">("public");
   const [attachments, setAttachments] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [sortBy, setSortBy] = useState<'date' | 'likes' | 'comments'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const { scrollY } = useScroll({
     container: scrollRef
@@ -35,9 +40,25 @@ export function Feed() {
         backgroundSize: '15px 15px'
       }} />
 
+      {/* Filters section - Fixed below header */}
+      <div className="fixed top-16 left-0 right-0 z-50">
+        <div className="w-full max-w-3xl mx-auto px-4 py-2 sm:px-0">
+          <PostFilters 
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            filter={filter}
+            onFilterChange={setFilter}
+            sortBy={sortBy}
+            onSortByChange={setSortBy}
+            sortOrder={sortOrder}
+            onSortOrderChange={setSortOrder}
+          />
+        </div>
+      </div>
+
       <div 
         ref={scrollRef} 
-        className="relative z-10 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-[#64B5D9]/10 scrollbar-track-transparent hover:scrollbar-thumb-[#64B5D9]/20" 
+        className="relative z-10 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-[#64B5D9]/10 scrollbar-track-transparent hover:scrollbar-thumb-[#64B5D9]/20 pt-32" 
         style={{
           scrollbarGutter: 'stable',
           overscrollBehavior: 'contain'
@@ -49,7 +70,7 @@ export function Feed() {
               opacity: headerOpacity,
               scale: headerScale
             }}
-            className="sticky top-20 z-10 space-y-4 origin-top transform-gpu"
+            className="space-y-4 origin-top transform-gpu"
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
