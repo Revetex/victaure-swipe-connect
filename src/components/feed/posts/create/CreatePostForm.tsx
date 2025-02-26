@@ -8,6 +8,7 @@ import { FilePreview } from "../FilePreview";
 import { PrivacySelector } from "../PrivacySelector";
 import { AnimatePresence, motion } from "framer-motion";
 import { PostAttachment, PostPrivacyLevel } from "../types";
+
 interface CreatePostFormProps {
   newPost: string;
   onPostChange: (value: string) => void;
@@ -15,11 +16,13 @@ interface CreatePostFormProps {
   onPrivacyChange: (value: PostPrivacyLevel) => void;
   attachments: PostAttachment[];
   isUploading: boolean;
-  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onRemoveFile: (index: number) => void;
   onCreatePost: () => void;
   onClose: () => void;
+  onFileChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRemoveFile?: (index: number) => void;
+  isExpanded?: boolean;
 }
+
 export function CreatePostForm({
   newPost,
   onPostChange,
@@ -30,12 +33,14 @@ export function CreatePostForm({
   onFileChange,
   onRemoveFile,
   onCreatePost,
-  onClose
+  onClose,
+  isExpanded = false
 }: CreatePostFormProps) {
   const isMobile = useIsMobile();
-  const [isExpanded, setIsExpanded] = useState(false);
-  return <motion.div className={cn("rounded-xl bg-[#1A1F2C] border border-white/10 transition-all duration-300", isExpanded ? "p-3" : "p-2")} layout>
-      {!isExpanded ? <div className="flex items-center w-full gap-4 px-1">
+  const [isExpandedInternal, setIsExpandedInternal] = useState(isExpanded);
+
+  return <motion.div className={cn("rounded-xl bg-[#1A1F2C] border border-white/10 transition-all duration-300", isExpandedInternal ? "p-3" : "p-2")} layout>
+      {!isExpandedInternal ? <div className="flex items-center w-full gap-4 px-1">
           
           
         </div> : <div className="space-y-3">
@@ -44,7 +49,7 @@ export function CreatePostForm({
               <img src="/lovable-uploads/color-logo.png" alt="Victaure" className="h-8 w-8 object-contain" />
               <h3 className="text-lg font-medium text-white/90">Créer une publication</h3>
             </div>
-            <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-white/5" onClick={() => setIsExpanded(false)}>
+            <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-white/5" onClick={() => setIsExpandedInternal(false)}>
               <ChevronUp className="h-4 w-4" />
             </Button>
           </div>

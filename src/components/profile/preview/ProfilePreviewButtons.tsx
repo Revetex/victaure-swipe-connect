@@ -13,6 +13,7 @@ interface ProfilePreviewButtonsProps {
   onClose: () => void;
   canViewFullProfile: boolean;
   onRequestChat?: () => void;
+  onViewProfile?: () => void;  // Ajout de la prop manquante
 }
 
 export function ProfilePreviewButtons({
@@ -20,6 +21,7 @@ export function ProfilePreviewButtons({
   onClose,
   canViewFullProfile,
   onRequestChat,
+  onViewProfile
 }: ProfilePreviewButtonsProps) {
   const {
     isFriend,
@@ -48,8 +50,12 @@ export function ProfilePreviewButtons({
   };
 
   const handleViewProfileClick = () => {
-    onClose();
-    navigate(`/profile/${profile.id}`);
+    if (onViewProfile) {
+      onViewProfile();
+    } else {
+      onClose();
+      navigate(`/profile/${profile.id}`);
+    }
   };
 
   return (
