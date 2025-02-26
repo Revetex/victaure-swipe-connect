@@ -108,9 +108,10 @@ export function PostActions({
           filter: `id=eq.${postId}`
         },
         (payload: RealtimePostgresChangesPayload<PostPayload>) => {
-          if (payload.new) {
-            setLocalLikes(payload.new.likes);
-            setLocalDislikes(payload.new.dislikes);
+          const newPost = payload.new as PostPayload;
+          if (newPost && typeof newPost.likes === 'number' && typeof newPost.dislikes === 'number') {
+            setLocalLikes(newPost.likes);
+            setLocalDislikes(newPost.dislikes);
           }
         }
       )
