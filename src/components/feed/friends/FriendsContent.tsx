@@ -39,18 +39,18 @@ export function FriendsContent() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="min-h-[calc(100vh-4rem)] space-y-6"
+      className="min-h-[calc(100vh-4rem)] space-y-6 bg-gradient-to-br from-[#1B2A4A] to-[#1A1F2C]"
     >
       <motion.div variants={searchCardVariants} transition={{ duration: 0.3 }}>
-        <Card className="bg-card/30 dark:bg-card/20 backdrop-blur-md border-border/10 shadow-lg hover:shadow-xl transition-all duration-300 p-6">
+        <Card className="bg-white/5 backdrop-blur-md border-white/10 shadow-lg hover:shadow-xl transition-all duration-300 p-6">
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
             className="flex items-center gap-3 mb-6"
           >
-            <UserPlus2 className="w-6 h-6 text-primary" />
-            <h2 className="text-xl font-semibold text-primary">
+            <UserPlus2 className="w-6 h-6 text-[#64B5D9]" />
+            <h2 className="text-xl font-semibold text-white">
               Trouver des connexions
             </h2>
           </motion.div>
@@ -59,12 +59,13 @@ export function FriendsContent() {
             <ProfileSearch 
               onSelect={handleProfileSelect}
               placeholder="Rechercher par nom, compétences, location..."
-              className="w-full bg-background/50 dark:bg-background/20 backdrop-blur-md 
+              className="w-full bg-white/5 backdrop-blur-md 
                          transition-all duration-300
-                         focus-within:bg-background/80 dark:focus-within:bg-background/40
-                         border-border/20 focus-within:border-primary/30"
+                         focus-within:bg-white/10
+                         border-white/10 focus-within:border-[#64B5D9]/30
+                         text-white placeholder-white/50"
             />
-            <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50 pointer-events-none" />
           </div>
         </Card>
       </motion.div>
@@ -72,6 +73,7 @@ export function FriendsContent() {
       <motion.div 
         variants={connectionsVariants} 
         transition={{ duration: 0.3, delay: 0.1 }}
+        className="bg-white/5 backdrop-blur-md rounded-lg border border-white/10 p-4"
       >
         <ConnectionsSection />
       </motion.div>

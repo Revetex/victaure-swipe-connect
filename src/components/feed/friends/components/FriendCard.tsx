@@ -55,19 +55,19 @@ export function FriendCard({
       whileHover={{ scale: 1.02 }}
       className="relative overflow-hidden rounded-xl"
     >
-      <div className="relative z-10 flex items-center justify-between p-4 bg-gradient-to-br from-[#F2FCE2]/50 via-[#D3E4FD]/30 to-[#FFDEE2]/20 backdrop-blur-sm border border-zinc-200/30 hover:border-primary/20 transition-all duration-300 group py-0 px-0 rounded bg-inherit">
+      <div className="relative z-10 flex items-center justify-between p-4 bg-white/5 backdrop-blur-md border border-white/10 hover:border-[#64B5D9]/20 transition-all duration-300 group rounded-xl">
         <div className="flex items-center gap-4">
           <div className="relative">
             <img 
               src={friend.avatar_url || "/user-icon.svg"} 
               alt={friend.full_name || "User"} 
-              className="h-12 w-12 rounded-xl ring-2 ring-zinc-200/50 group-hover:ring-primary/30 transition-all object-scale-down" 
+              className="h-12 w-12 rounded-xl ring-2 ring-white/10 group-hover:ring-[#64B5D9]/30 transition-all object-scale-down" 
             />
             {friend.online_status && (
               <motion.div 
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-green-500/80 border-2 border-white shadow-lg" 
+                className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-green-500/80 border-2 border-[#1B2A4A] shadow-lg" 
               />
             )}
           </div>
@@ -75,13 +75,13 @@ export function FriendCard({
             <div className="flex items-center gap-2">
               <ProfileNameButton 
                 profile={friend} 
-                className="text-sm font-medium text-zinc-700 group-hover:text-primary/90 transition-colors p-0 h-auto" 
+                className="text-sm font-medium text-white group-hover:text-[#64B5D9] transition-colors p-0 h-auto" 
               />
               {friend.verified && (
-                <Star className="h-3.5 w-3.5 text-primary fill-primary" />
+                <Star className="h-3.5 w-3.5 text-[#64B5D9] fill-[#64B5D9]" />
               )}
             </div>
-            <p className="text-xs transition-colors text-inherit">
+            <p className="text-xs text-white/60">
               {friend.role}
             </p>
           </div>
@@ -91,7 +91,7 @@ export function FriendCard({
           variant="ghost"
           size="icon"
           onClick={handleStartChat}
-          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white hover:text-[#64B5D9]"
         >
           <MessageCircle className="h-4 w-4" />
         </Button>
