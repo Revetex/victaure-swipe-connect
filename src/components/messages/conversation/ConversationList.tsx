@@ -30,7 +30,7 @@ const defaultParticipant: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url' | 
 
 export function ConversationList({ className }: { className?: string }) {
   const { user } = useAuth();
-  const { setSelectedConversationId } = useReceiver();
+  const { setSelectedConversationId, setReceiver } = useReceiver();
   const [searchTerm, setSearchTerm] = useState("");
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +70,6 @@ export function ConversationList({ className }: { className?: string }) {
               last_message_time: conv.last_message_time
             };
           }
-          // Swap participants if needed to always have current user as participant1
           return {
             id: conv.id,
             participant1_id: conv.participant2_id,
@@ -82,14 +81,11 @@ export function ConversationList({ className }: { className?: string }) {
           };
         });
         
-        // Filter by search term if needed
-        const filteredConversations = formattedConversations.filter(conv => {
-          return conv.participant2?.full_name
-            ?.toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        });
-
-        setConversations(filteredConversations);
+        const uniqueConversations = formattedConversations.filter((conv, index, self) =>
+          index === self.findIndex((c) => c.participant2_id === conv.participant2_id)
+        );
+        
+        setConversations(uniqueConversations);
       } catch (error) {
         console.error("Error loading conversations:", error);
       } finally {
@@ -97,7 +93,6 @@ export function ConversationList({ className }: { className?: string }) {
       }
     };
 
-    // Real-time subscription setup
     const channel = supabase
       .channel('conversations')
       .on(
@@ -105,11 +100,12 @@ export function ConversationList({ className }: { className?: string }) {
         {
           event: '*',
           schema: 'public',
-          table: 'conversations',
-          filter: `participant1_id=eq.${user.id},participant2_id=eq.${user.id}`
+          table: 'conversations'
         },
-        () => {
-          fetchConversations();
+        (payload) => {
+          if (payload.new && (payload.new.participant1_id === user.id || payload.new.participant2_id === user.id)) {
+            fetchConversations();
+          }
         }
       )
       .subscribe();
@@ -119,7 +115,16 @@ export function ConversationList({ className }: { className?: string }) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, searchTerm]);
+  }, [user?.id]);
+
+  const handleConversationSelect = (conversation: Conversation) => {
+    setSelectedConversationId(conversation.id);
+    setReceiver(conversation.participant2 as any);
+  };
+
+  const filteredConversations = conversations.filter(conv => 
+    conv.participant2?.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className={cn("flex flex-col h-full", className)}>
@@ -140,18 +145,18 @@ export function ConversationList({ className }: { className?: string }) {
           <div className="flex items-center justify-center h-full">
             <Loader2 className="w-6 h-6 text-[#64B5D9] animate-spin" />
           </div>
-        ) : conversations.length === 0 ? (
+        ) : filteredConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-4 text-center text-[#F2EBE4]/60">
             <p>Aucune conversation</p>
             <p className="text-sm">Commencez une nouvelle conversation</p>
           </div>
         ) : (
-          conversations.map((conversation) => (
+          filteredConversations.map((conversation) => (
             <ConversationItem
               key={conversation.id}
               conversation={conversation}
               isSelected={selectedConversationId === conversation.id}
-              onClick={() => setSelectedConversationId(conversation.id)}
+              onClick={() => handleConversationSelect(conversation)}
             />
           ))
         )}
