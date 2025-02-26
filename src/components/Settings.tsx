@@ -92,7 +92,7 @@ const Settings = () => {
           }} transition={{
             delay: index * 0.1
           }}>
-                <Card className="bg-white/5 dark:bg-[#1B2A4A] border border-border/50 dark:border-[#64B5D9]/10 p-6 rounded-lg shadow-lg py-0 px-[5px]">
+                <Card className="bg-white/5 dark:bg-[#1B2A4A] border border-border/50 dark:border-[#64B5D9]/10 p-6 shadow-lg py-0 px-0 rounded">
                   <Component />
                 </Card>
               </motion.div>)}
