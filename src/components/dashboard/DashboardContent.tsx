@@ -37,29 +37,50 @@ export function DashboardContent({
   }
 
   const renderDashboardHome = () => {
-    return <DashboardHome onRequestChat={onRequestChat} />;
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <DashboardHome onRequestChat={onRequestChat} />
+      </motion.div>
+    );
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className={cn(
-        "w-full min-h-[calc(100vh-4rem)]",
-        "bg-gradient-to-b from-background via-background/95 to-background/90",
-        "dark:from-background dark:via-background/95 dark:to-background/90",
-        "border-t border-border/10"
-      )}
-    >
-      <ContentRouter
-        currentPage={currentPage}
-        onEditStateChange={onEditStateChange}
-        onRequestChat={onRequestChat}
-        renderDashboardHome={renderDashboardHome}
-      />
+    <div className={cn(
+      "w-full min-h-[calc(100vh-4rem)]",
+      "space-y-6 p-6",
+      "bg-gradient-to-b from-[#1A1F2C] via-[#1B2A4A]/50 to-[#1A1F2C]"
+    )}>
+      <div className="relative z-10">
+        <ContentRouter
+          currentPage={currentPage}
+          onEditStateChange={onEditStateChange}
+          onRequestChat={onRequestChat}
+          renderDashboardHome={renderDashboardHome}
+        />
 
-      {!isMobile && <FloatingButtons />}
-    </motion.div>
+        {!isMobile && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <FloatingButtons />
+          </motion.div>
+        )}
+      </div>
+
+      {/* Effet de points en arrière-plan */}
+      <div 
+        className="fixed inset-0 pointer-events-none" 
+        style={{
+          backgroundImage: 'radial-gradient(circle, rgba(100,181,217,0.03) 1px, transparent 1px)',
+          backgroundSize: '20px 20px'
+        }} 
+      />
+    </div>
   );
 }

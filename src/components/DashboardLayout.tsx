@@ -5,6 +5,7 @@ import { DashboardContent } from "./dashboard/DashboardContent";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/header/AppHeader";
+import { motion } from "framer-motion";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(4);
@@ -32,7 +33,11 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen w-full overflow-hidden bg-gradient-to-br from-background/40 via-muted/30 to-background/20 dark:from-background/40 dark:via-muted/30 dark:to-background/20">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="flex min-h-screen w-full overflow-hidden bg-gradient-to-br from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]"
+    >
       <DashboardMobileNav
         currentPage={currentPage}
         showMobileMenu={showMobileMenu}
@@ -45,12 +50,11 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "min-h-screen w-full",
         "relative",
         "ios-safe-area ios-momentum-scroll",
-        "bg-gradient-to-br from-background via-background/95 to-background/90",
-        "dark:from-background dark:via-background/95 dark:to-background/90",
+        "bg-gradient-to-br from-[#1A1F2C] via-[#1A1F2C]/95 to-[#1A1F2C]/90",
         "backdrop-blur-sm",
-        "border-l border-border/10",
-        "shadow-[inset_0_-20px_60px_-20px_rgba(0,0,0,0.05)]",
-        "dark:shadow-[inset_0_-20px_60px_-20px_rgba(0,0,0,0.25)]"
+        "border-l border-white/5",
+        "shadow-[inset_0_-20px_60px_-20px_rgba(0,0,0,0.25)]",
+        "transition-all duration-300"
       )}>
         <AppHeader 
           onRequestAssistant={handleRequestChat}
@@ -59,7 +63,12 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         />
         
         <div className="h-16" /> {/* Spacer pour le header */}
-        <div className="w-full pb-safe">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="w-full pb-safe"
+        >
           {children || (
             <DashboardContent
               currentPage={currentPage}
@@ -68,8 +77,8 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
               onRequestChat={handleRequestChat}
             />
           )}
-        </div>
+        </motion.div>
       </main>
-    </div>
+    </motion.div>
   );
 }

@@ -1,9 +1,9 @@
 
 import { motion } from "framer-motion";
+import { MrVictaureWelcome } from "../MrVictaureWelcome";
 import { DashboardStats } from "../DashboardStats";
 import { QuickActions } from "../QuickActions";
 import { RecentActivity } from "../RecentActivity";
-import { JobActions } from "../JobActions";
 import { DashboardChart } from "../DashboardChart";
 
 interface DashboardHomeProps {
@@ -11,113 +11,55 @@ interface DashboardHomeProps {
 }
 
 export function DashboardHome({ onRequestChat }: DashboardHomeProps) {
-  const containerVariants = {
-    initial: { opacity: 0 },
-    animate: { 
-      opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1
-      }
-    },
-    exit: { 
-      opacity: 0,
-      transition: {
-        when: "afterChildren",
-        staggerChildren: 0.05,
-        staggerDirection: -1
-      }
-    }
-  };
-
-  const itemVariants = {
-    initial: { y: 20, opacity: 0 },
-    animate: { 
-      y: 0, 
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }
-    },
-    exit: { 
-      y: -20, 
-      opacity: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }
-    }
-  };
-
   return (
-    <motion.div 
-      variants={containerVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      className="container mx-auto p-8 space-y-10 max-w-7xl"
-    >
-      <div className="flex flex-col lg:flex-row gap-10">
-        <motion.div 
-          variants={itemVariants}
-          className="lg:w-2/3 glass-panel rounded-3xl shadow-2xl border border-primary/10 overflow-hidden relative"
+    <div className="space-y-6 relative">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <MrVictaureWelcome onRequestChat={onRequestChat} />
+      </motion.div>
+
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.3 }}
+          className="col-span-full lg:col-span-2"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
-          <div className="relative p-8">
-            <DashboardStats />
-          </div>
+          <DashboardStats />
         </motion.div>
-        
-        <motion.div 
-          variants={itemVariants}
-          className="lg:w-1/3 glass-panel rounded-3xl shadow-2xl border border-primary/10 overflow-hidden relative"
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.3 }}
+          className="glass-card h-full"
         >
-          <div className="absolute inset-0 bg-gradient-to-tl from-primary/5 to-transparent pointer-events-none" />
-          <div className="relative p-6">
-            <DashboardChart />
-          </div>
+          <QuickActions />
         </motion.div>
       </div>
-      
-      <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
-        <motion.div 
-          variants={itemVariants}
-          className="glass-panel rounded-3xl shadow-2xl border border-primary/10 overflow-hidden relative group"
+
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.3 }}
+          className="glass-card"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="absolute -right-16 -top-16 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="relative p-6">
-            <QuickActions onRequestChat={onRequestChat} />
-          </div>
+          <DashboardChart />
         </motion.div>
-        
-        <motion.div 
-          variants={itemVariants}
-          className="glass-panel rounded-3xl shadow-2xl border border-primary/10 overflow-hidden relative group"
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.3 }}
+          className="glass-card"
         >
-          <div className="absolute inset-0 bg-gradient-to-bl from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="absolute -left-16 -bottom-16 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="relative p-6">
-            <RecentActivity />
-          </div>
-        </motion.div>
-        
-        <motion.div 
-          variants={itemVariants}
-          className="md:col-span-2 lg:col-span-1 glass-panel rounded-3xl shadow-2xl border border-primary/10 overflow-hidden relative group"
-        >
-          <div className="absolute inset-0 bg-gradient-to-tr from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="absolute -right-16 -bottom-16 w-32 h-32 bg-green-500/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="relative p-6">
-            <JobActions />
-          </div>
+          <RecentActivity />
         </motion.div>
       </div>
-    </motion.div>
+    </div>
   );
 }
