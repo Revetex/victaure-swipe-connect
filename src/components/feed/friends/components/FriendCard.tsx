@@ -52,7 +52,7 @@ export function FriendCard({
   }} whileHover={{
     scale: 1.02
   }} className="relative overflow-hidden rounded-xl">
-      <div className="relative z-10 flex items-center justify-between p-4 bg-gradient-to-br from-[#F2FCE2]/50 via-[#D3E4FD]/30 to-[#FFDEE2]/20 backdrop-blur-sm border border-zinc-200/30 hover:border-primary/20 transition-all duration-300 group py-0 px-0 rounded bg-transparent">
+      <div className="relative z-10 flex items-center justify-between p-4 bg-gradient-to-br from-[#F2FCE2]/50 via-[#D3E4FD]/30 to-[#FFDEE2]/20 backdrop-blur-sm border border-zinc-200/30 hover:border-primary/20 transition-all duration-300 group py-0 px-0 rounded bg-inherit">
         <div className="flex items-center gap-4">
           <div className="relative">
             <img src={friend.avatar_url || "/user-icon.svg"} alt={friend.full_name || "User"} className="h-12 w-12 rounded-xl ring-2 ring-zinc-200/50 group-hover:ring-primary/30 transition-all object-scale-down" />
@@ -73,9 +73,7 @@ export function FriendCard({
           </div>
         </div>
 
-        <Button variant="secondary" size="icon" className="bg-white/80 hover:bg-white shadow-lg" onClick={handleStartChat}>
-          <MessageCircle className="h-5 w-5" />
-        </Button>
+        
       </div>
     </motion.div>;
 }
