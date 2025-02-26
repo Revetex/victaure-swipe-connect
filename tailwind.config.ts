@@ -1,5 +1,5 @@
 
-import { type Config } from "tailwindcss";
+import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
@@ -50,6 +50,11 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'gradient-primary': 'linear-gradient(to right bottom, rgb(26, 31, 44), rgb(27, 42, 74))',
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -68,6 +73,10 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+      },
+      boxShadow: {
+        'glass': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        'glass-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
       },
     },
   },
