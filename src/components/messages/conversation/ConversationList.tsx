@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import type { UserProfile } from "@/types/profile";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 interface Conversation {
   id: string;
@@ -16,6 +17,14 @@ interface Conversation {
   participant2_id: string;
   participant1: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url' | 'online_status' | 'last_seen'>;
   participant2: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url' | 'online_status' | 'last_seen'>;
+  last_message?: string;
+  last_message_time?: string;
+}
+
+interface ConversationPayload {
+  id: string;
+  participant1_id: string;
+  participant2_id: string;
   last_message?: string;
   last_message_time?: string;
 }
@@ -102,8 +111,9 @@ export function ConversationList({ className }: { className?: string }) {
           schema: 'public',
           table: 'conversations'
         },
-        (payload) => {
-          if (payload.new && (payload.new.participant1_id === user.id || payload.new.participant2_id === user.id)) {
+        (payload: RealtimePostgresChangesPayload<ConversationPayload>) => {
+          const newConversation = payload.new;
+          if (newConversation && (newConversation.participant1_id === user.id || newConversation.participant2_id === user.id)) {
             fetchConversations();
           }
         }
