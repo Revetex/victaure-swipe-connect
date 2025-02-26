@@ -134,8 +134,10 @@ export function GoogleSearch() {
           // Filtrer les résultats en double dans l'affichage
           results.forEach((result) => {
             const url = result.querySelector('.gs-visibleUrl')?.textContent;
+            // Cast l'élément en HTMLElement pour accéder à style
+            const resultElement = result as HTMLElement;
             if (!url || !seenUrls.has(url)) {
-              result.style.display = 'none';
+              resultElement.style.display = 'none';
             }
           });
 
