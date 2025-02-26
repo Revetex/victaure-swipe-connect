@@ -20,8 +20,8 @@ export function ReactionButton({
   onClick,
   activeClassName
 }: ReactionButtonProps) {
-  // Transformer le count en valeur affichée immédiatement
-  const displayCount = count < 0 ? 0 : count;
+  // S'assurer que le count est bien un nombre et jamais négatif
+  const displayCount = Math.max(0, Number(count) || 0);
 
   return (
     <Button 
