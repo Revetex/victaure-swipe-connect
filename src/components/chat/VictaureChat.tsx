@@ -1,6 +1,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "next-themes";
 import { ChatHeader } from "./ChatHeader";
 import { MessageList } from "./MessageList";
 import { ChatInput } from "./ChatInput";
@@ -9,7 +10,7 @@ import { useChatMessages } from "./hooks/useChatMessages";
 import { useSuggestions } from "./hooks/useSuggestions";
 import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
-import { RefreshCcw, X } from "lucide-react";
+import { RefreshCcw, X, Sun, Moon } from "lucide-react";
 import { HfInference } from "@huggingface/inference";
 import { toast } from "sonner";
 
@@ -27,6 +28,7 @@ export function VictaureChat({
   const [userInput, setUserInput] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+  const { theme, setTheme } = useTheme();
   const { suggestions, isLoadingSuggestions, generateSuggestions } = useSuggestions();
 
   const hf = new HfInference(import.meta.env.VITE_HUGGINGFACE_API_KEY);
@@ -96,50 +98,67 @@ export function VictaureChat({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#1A1F2C] relative overflow-hidden">
+    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-background relative overflow-hidden">
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C] opacity-90" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-background via-secondary/50 to-background opacity-90" />
         
         <div 
           className="absolute inset-0" 
           style={{
-            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)',
+            backgroundImage: 'radial-gradient(circle, var(--gradient-dots) 1px, transparent 1px)',
             backgroundSize: '15px 15px'
-          }} 
+          }}
         />
       </div>
 
       <div className="relative z-10 flex flex-col h-full">
-        <div className="flex-none border-b border-[#64B5D9]/10 bg-[#1B2A4A]/50 backdrop-blur-sm">
-          <ChatHeader />
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={refreshMessages} 
-            className="absolute right-14 top-2 text-[#64B5D9]/80 hover:text-[#64B5D9] transition-colors"
-            title="Effacer l'historique"
-          >
-            <RefreshCcw className="h-4 w-4" />
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={onMaxQuestionsReached} 
-            className="absolute right-4 top-2 text-[#64B5D9]/80 hover:text-[#64B5D9] transition-colors"
-            title="Fermer"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+        <div className="flex-none border-b border-border/10 bg-secondary/5 backdrop-blur-sm">
+          <div className="relative flex items-center justify-between px-4 py-2">
+            <ChatHeader />
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="text-foreground/80 hover:text-foreground transition-colors"
+                title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+              >
+                {theme === 'dark' ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={refreshMessages} 
+                className="text-foreground/80 hover:text-foreground transition-colors"
+                title="Effacer l'historique"
+              >
+                <RefreshCcw className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={onMaxQuestionsReached} 
+                className="text-foreground/80 hover:text-foreground transition-colors"
+                title="Fermer"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </div>
 
         <div 
           ref={chatContainerRef} 
-          className="flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-[#64B5D9]/10 scrollbar-track-transparent hover:scrollbar-thumb-[#64B5D9]/20"
+          className="flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-foreground/10 scrollbar-track-transparent hover:scrollbar-thumb-foreground/20"
         >
           <MessageList messages={messages} isLoading={isLoading} />
         </div>
         
-        <div className="relative p-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C] to-transparent">
+        <div className="relative p-4 bg-gradient-to-t from-background via-background to-transparent">
           <QuickSuggestions 
             suggestions={suggestions} 
             isLoading={isLoadingSuggestions} 
