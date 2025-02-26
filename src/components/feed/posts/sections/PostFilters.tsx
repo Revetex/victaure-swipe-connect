@@ -26,8 +26,8 @@ export function PostFilters({
   onSortOrderChange,
 }: PostFiltersProps) {
   return (
-    <section className="bg-[#1B2A4A]/40 backdrop-blur-md border border-[#64B5D9]/10 rounded-xl p-4 shadow-lg">
-      <div className="flex flex-col sm:flex-row gap-4">
+    <section className="bg-[#1B2A4A]/40 backdrop-blur-md border border-[#64B5D9]/10 rounded-xl p-3 shadow-lg mt-24">
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#64B5D9]/70" />
           <Input
