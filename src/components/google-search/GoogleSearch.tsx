@@ -74,12 +74,12 @@ export function GoogleSearch() {
             placeholder="Rechercher des offres d'emploi..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 h-12 bg-background/50 dark:bg-[#1B2A4A]/30 border-border/10 dark:border-[#64B5D9]/10"
+            className="flex-1 h-14 bg-background/50 dark:bg-[#1B2A4A]/30 border-border/10 dark:border-[#64B5D9]/10"
           />
           <Button 
             type="submit" 
             disabled={isSearching}
-            className="h-12 px-6 bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB]"
+            className="h-14 px-6 text-primary-foreground bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB] dark:text-white"
           >
             <SearchIcon className="h-5 w-5" />
           </Button>
@@ -87,7 +87,7 @@ export function GoogleSearch() {
         <Button
           type="button"
           onClick={generateRandomSearch}
-          className="h-12 px-6 bg-secondary hover:bg-secondary/90 dark:bg-[#1B2A4A] dark:hover:bg-[#1B2A4A]/80"
+          className="h-14 px-6 text-primary-foreground bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB] dark:text-white"
           title="Générer une recherche basée sur votre profil"
         >
           <Wand2 className="h-5 w-5" />
