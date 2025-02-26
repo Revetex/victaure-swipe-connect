@@ -74,7 +74,7 @@ export function GoogleSearch() {
             placeholder="Rechercher des offres d'emploi..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 h-12 bg-background dark:bg-[#1B2A4A]/50 border-border/10 dark:border-[#64B5D9]/10"
+            className="flex-1 h-12 bg-background/50 dark:bg-[#1B2A4A]/30 border-border/10 dark:border-[#64B5D9]/10"
           />
           <Button 
             type="submit" 
@@ -94,7 +94,7 @@ export function GoogleSearch() {
         </Button>
       </div>
       
-      <div className="mt-4 border border-border/10 dark:border-[#64B5D9]/10 rounded-lg overflow-hidden bg-white dark:bg-[#1B2A4A] p-4">
+      <div className="mt-4 bg-background/50 dark:bg-[#1B2A4A]/30 backdrop-blur-sm border border-border/10 dark:border-[#64B5D9]/10 rounded-lg p-4">
         <div className="gcse-searchresults-only"></div>
       </div>
     </div>
