@@ -31,16 +31,49 @@ export function useMessages(receiver: Receiver | null) {
   useEffect(() => {
     if (!receiver?.id || !user?.id) return;
     
-    // Pour Mr Victaure, on charge les messages existants
-    if (receiver.id === "ai-assistant") {
-      setMessages([]); // On commence avec une conversation vide
-    } else {
-      loadMessages();
-    }
+    console.log("Loading messages for conversation between:", user.id, "and", receiver.id);
+    
+    const loadMessages = async () => {
+      try {
+        console.log("Fetching messages...");
+        
+        const { data, error } = await supabase
+          .from('messages')
+          .select(`
+            *,
+            sender:profiles!messages_sender_id_fkey(*)
+          `)
+          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
+          .order('created_at', { ascending: true });
 
-    // Configuration du canal en temps réel
+        if (error) {
+          console.error("Error fetching messages:", error);
+          toast.error("Impossible de charger les messages");
+          return;
+        }
+        
+        console.log("Messages fetched:", data);
+
+        if (data) {
+          const formattedMessages = data.map(msg => ({
+            ...msg,
+            metadata: typeof msg.metadata === 'string' ? JSON.parse(msg.metadata) : msg.metadata || {},
+            deleted_by: typeof msg.deleted_by === 'string' ? JSON.parse(msg.deleted_by) : msg.deleted_by || {},
+            sender: transformToFullProfile(msg.sender)
+          }));
+          setMessages(formattedMessages as Message[]);
+        }
+      } catch (error) {
+        console.error('Error in loadMessages:', error);
+        toast.error("Impossible de charger les messages");
+      }
+    };
+
+    loadMessages();
+
+    // Écouter les nouveaux messages en temps réel
     const channel = supabase
-      .channel('messages-channel')
+      .channel('messages')
       .on(
         'postgres_changes',
         {
@@ -50,7 +83,7 @@ export function useMessages(receiver: Receiver | null) {
           filter: `receiver_id=eq.${user.id},sender_id=eq.${receiver.id}`
         },
         async (payload) => {
-          console.log('Realtime update received:', payload);
+          console.log("Real-time message update:", payload);
           
           if (payload.eventType === 'INSERT') {
             const { data: senderProfile } = await supabase
@@ -73,48 +106,12 @@ export function useMessages(receiver: Receiver | null) {
           }
         }
       )
-      .subscribe((status) => {
-        console.log('Realtime subscription status:', status);
-        if (status === 'SUBSCRIBED') {
-          console.log('Successfully subscribed to realtime updates');
-        }
-      });
+      .subscribe();
 
     return () => {
-      console.log('Cleaning up realtime subscription');
       supabase.removeChannel(channel);
     };
   }, [receiver?.id, user?.id]);
-
-  const loadMessages = async () => {
-    try {
-      if (!user || !receiver) return;
-
-      const { data, error } = await supabase
-        .from('messages')
-        .select(`
-          *,
-          sender:profiles!messages_sender_id_fkey(*)
-        `)
-        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-      
-      if (data) {
-        const formattedMessages = data.map(msg => ({
-          ...msg,
-          metadata: typeof msg.metadata === 'string' ? JSON.parse(msg.metadata) : msg.metadata || {},
-          deleted_by: typeof msg.deleted_by === 'string' ? JSON.parse(msg.deleted_by) : msg.deleted_by || {},
-          sender: transformToFullProfile(msg.sender)
-        }));
-        setMessages(formattedMessages as Message[]);
-      }
-    } catch (error) {
-      console.error('Error loading messages:', error);
-      toast.error("Impossible de charger les messages");
-    }
-  };
 
   return { messages, handleDeleteMessage, setMessages };
 }
