@@ -89,7 +89,7 @@ export function VictaureChat({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-  return <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#1A1F2C] relative overflow-hidden p-4">
+  return <div className="flex flex-col h-[calc(100dvh-4rem)] relative overflow-hidden p-4 my-0 py-0 px-0 bg-transparent rounded-none">
       <div className="absolute inset-0 bg-gradient-to-b from-[#1B2A4A]/50 to-[#1A1F2C]/50 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col h-full backdrop-blur-sm border border-[#64B5D9]/10 bg-transparent rounded-sm">
