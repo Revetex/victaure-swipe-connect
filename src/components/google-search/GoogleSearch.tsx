@@ -12,14 +12,12 @@ export function GoogleSearch() {
   const { profile } = useProfile();
 
   useEffect(() => {
-    // Ajouter le script Google Custom Search
     const script = document.createElement("script");
     script.src = "https://cse.google.com/cse.js?cx=22e4528bd7c6f4db0";
     script.async = true;
     document.head.appendChild(script);
 
     return () => {
-      // Nettoyer le script lors du démontage du composant
       document.head.removeChild(script);
     };
   }, []);
@@ -27,7 +25,6 @@ export function GoogleSearch() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchTerm.trim()) return;
-
     setIsSearching(true);
     triggerSearch(searchTerm);
   };
@@ -45,8 +42,6 @@ export function GoogleSearch() {
 
   const generateRandomSearch = () => {
     if (!profile) return;
-
-    // Créer une recherche basée sur le profil
     const searchTerms = [
       ...profile.skills || [],
       profile.company_name,
@@ -54,7 +49,6 @@ export function GoogleSearch() {
     ].filter(Boolean);
 
     if (searchTerms.length > 0) {
-      // Sélectionner 2-3 termes aléatoires
       const selectedTerms = searchTerms
         .sort(() => Math.random() - 0.5)
         .slice(0, Math.floor(Math.random() * 2) + 2);
@@ -66,37 +60,35 @@ export function GoogleSearch() {
   };
 
   return (
-    <div className="space-y-4 w-full">
-      <div className="flex gap-2 w-full">
-        <form onSubmit={handleSearch} className="flex-1 flex gap-2">
-          <Input
-            type="text"
-            placeholder="Rechercher des offres d'emploi..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 h-14 bg-background/50 dark:bg-[#1B2A4A]/30 border-border/10 dark:border-[#64B5D9]/10"
-          />
-          <Button 
-            type="submit" 
-            disabled={isSearching}
-            className="h-14 px-6 text-primary-foreground bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB] dark:text-white"
-          >
-            <SearchIcon className="h-5 w-5" />
-          </Button>
-        </form>
+    <form onSubmit={handleSearch} className="flex flex-col gap-4 w-full max-w-5xl mx-auto">
+      <div className="flex gap-2">
+        <Input
+          type="text"
+          placeholder="Rechercher des offres d'emploi..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="h-12 bg-background/50"
+        />
+        <Button 
+          type="submit" 
+          disabled={isSearching}
+          className="h-12 px-4"
+        >
+          <SearchIcon className="h-4 w-4" />
+        </Button>
         <Button
           type="button"
           onClick={generateRandomSearch}
-          className="h-14 px-6 text-primary-foreground bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB] dark:text-white"
+          className="h-12 px-4"
           title="Générer une recherche basée sur votre profil"
         >
-          <Wand2 className="h-5 w-5" />
+          <Wand2 className="h-4 w-4" />
         </Button>
       </div>
       
-      <div className="mt-4 bg-background/50 dark:bg-[#1B2A4A]/30 backdrop-blur-sm border border-border/10 dark:border-[#64B5D9]/10 rounded-lg p-6 shadow-lg w-full">
-        <div className="gcse-searchresults-only w-full"></div>
+      <div className="bg-background/50 rounded-lg p-4">
+        <div className="gcse-searchresults-only"></div>
       </div>
-    </div>
+    </form>
   );
 }
