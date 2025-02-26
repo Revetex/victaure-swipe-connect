@@ -1,111 +1,73 @@
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { Send } from "lucide-react";
 import { MessageList } from "./MessageList";
-import { ChatInput } from "./ChatInput";
 import { ChatHeader } from "./ChatHeader";
-import { useChatMessages } from "./hooks/useChatMessages";
-import { useSuggestions } from "./hooks/useSuggestions";
-import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
+import { useVictaureChat } from "@/hooks/useVictaureChat";
 import { QuickSuggestions } from "./QuickSuggestions";
-import { HfInference } from "@huggingface/inference";
 
 interface AuthChatProps {
   maxQuestions?: number;
   context?: string;
-  onMaxQuestionsReached?: () => void;
 }
 
-export function AuthChat({
-  maxQuestions = 3,
-  context = "Je suis votre assistant d'inscription. Je peux vous aider avec le processus d'inscription et répondre à vos questions.",
-  onMaxQuestionsReached
-}: AuthChatProps) {
-  const [userInput, setUserInput] = useState("");
-  const hf = new HfInference(import.meta.env.VITE_HUGGINGFACE_API_KEY);
-  
-  const {
-    suggestions,
-    isLoadingSuggestions,
-    generateSuggestions
-  } = useSuggestions();
+export function AuthChat({ maxQuestions = 3, context }: AuthChatProps) {
+  const [inputValue, setInputValue] = useState("");
+  const { messages, sendMessage, isLoading, questionsLeft } = useVictaureChat(maxQuestions, context);
 
-  const {
-    messages,
-    isLoading,
-    sendMessage,
-    userQuestions,
-    error
-  } = useChatMessages({
-    context,
-    maxQuestions,
-    user: null,
-    onMaxQuestionsReached,
-    hf
-  });
-
-  const {
-    isRecording,
-    isSpeaking,
-    startRecording,
-    speakText,
-    setIsSpeaking
-  } = useVoiceFeatures();
-
-  const handleSendMessage = async () => {
-    if (!userInput.trim() || isLoading) return;
-
-    try {
-      const message = {
-        content: userInput,
-        isUser: true,
-        timestamp: Date.now()
-      };
-      
-      const response = await sendMessage(message);
-      setUserInput("");
-      
-      if (response && !error) {
-        speakText(response);
-        generateSuggestions(context, messages);
-      }
-    } catch (err) {
-      console.error("Error sending message:", err);
-    }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputValue.trim()) return;
+    
+    sendMessage(inputValue);
+    setInputValue("");
   };
 
-  const isDisabled = userQuestions >= maxQuestions;
-  const disabledMessage = "Veuillez vous connecter pour continuer la conversation";
-
   return (
-    <div className="flex flex-col h-[500px] overflow-hidden bg-gradient-to-b from-[#1B2A4A]/50 to-[#1A1F2C]/50 rounded-xl border border-[#64B5D9]/10">
+    <div className="flex flex-col h-[600px] bg-[#1B2A4A]/90 backdrop-blur-xl rounded-xl border-2 border-[#F1F0FB]/10 overflow-hidden">
       <ChatHeader 
-        title="Assistant d'inscription" 
-        subtitle="Je peux vous aider avec le processus d'inscription" 
+        title="Assistant d'Inscription"
+        subtitle={`${questionsLeft} question${questionsLeft > 1 ? 's' : ''} restante${questionsLeft > 1 ? 's' : ''}`}
       />
       
-      <div className="flex-1 overflow-y-auto p-4">
-        <MessageList messages={messages} isLoading={isLoading} />
-      </div>
-
-      <div className="p-4 bg-gradient-to-t from-[#1A1F2C] to-transparent">
-        <QuickSuggestions
-          suggestions={suggestions}
-          isLoading={isLoadingSuggestions}
-          onSelect={suggestion => setUserInput(suggestion)}
-        />
-        
-        <ChatInput
-          userInput={userInput}
-          setUserInput={setUserInput}
-          isRecording={isRecording}
-          isSpeaking={isSpeaking}
-          isLoading={isLoading}
-          isDisabled={isDisabled}
-          disabledMessage={disabledMessage}
-          onStartRecording={startRecording}
-          onStopSpeaking={() => setIsSpeaking(false)}
-          onSendMessage={handleSendMessage}
-        />
+      <div className="flex-1 overflow-y-auto scrollbar-none">
+        <div className="flex flex-col justify-between h-full">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <MessageList messages={messages} />
+          </div>
+          
+          <div className="p-4 border-t border-[#F1F0FB]/10 space-y-4">
+            <QuickSuggestions 
+              onSelect={(suggestion) => {
+                sendMessage(suggestion);
+              }}
+              suggestions={[
+                "Comment fonctionne l'inscription ?",
+                "Quels sont les avantages ?",
+                "Comment puis-je vous contacter ?"
+              ]}
+            />
+            
+            <form onSubmit={handleSubmit} className="flex items-center gap-2">
+              <Input
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Posez votre question..."
+                disabled={isLoading || questionsLeft === 0}
+                className="flex-1 bg-[#1A1F2C]/50 border-[#64B5D9]/20 text-[#F1F0FB] placeholder:text-[#F1F0FB]/30"
+              />
+              <Button
+                type="submit"
+                disabled={isLoading || questionsLeft === 0 || !inputValue.trim()}
+                className="bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] hover:opacity-90 text-white"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );
