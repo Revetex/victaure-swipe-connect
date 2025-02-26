@@ -24,7 +24,7 @@ export function FriendsTabContent({
 
   if (!displayedFriends.length) {
     return showOnlineOnly ? (
-      <div className="flex h-[500px] items-center justify-center text-muted-foreground">
+      <div className="text-center text-muted-foreground py-8">
         Aucune connexion en ligne
       </div>
     ) : (
@@ -33,16 +33,10 @@ export function FriendsTabContent({
   }
 
   return (
-    <ScrollArea className="h-[500px] rounded-xl bg-card/5 p-4">
-      <div className="space-y-2">
+    <ScrollArea className="h-[600px]">
+      <div className="space-y-3 p-1">
         {displayedFriends.map(friend => (
-          <div
-            key={friend.id}
-            className="group relative overflow-hidden rounded-lg border border-white/5 bg-white/5 p-3 transition-all hover:bg-white/10"
-          >
-            <FriendCard friend={friend} />
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
-          </div>
+          <FriendCard key={friend.id} friend={friend} />
         ))}
       </div>
     </ScrollArea>
