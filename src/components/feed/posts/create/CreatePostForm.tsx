@@ -47,10 +47,15 @@ export function CreatePostForm({
       layout
     >
       {!isExpanded ? (
-        <div className="flex items-center w-full gap-2 px-1">
+        <div className="flex items-center w-full gap-4 px-1">
+          <img 
+            src="/lovable-uploads/color-logo.png" 
+            alt="Victaure" 
+            className="h-8 w-8 object-contain"
+          />
           <Button
             variant="ghost"
-            className="w-full text-left text-[#F2EBE4] hover:text-[#F2EBE4]/80 hover:bg-white/5"
+            className="w-full text-left text-[#F2EBE4] hover:text-[#F2EBE4]/80 hover:bg-white/5 text-lg"
             onClick={() => setIsExpanded(true)}
           >
             Créer une publication...
@@ -59,7 +64,14 @@ export function CreatePostForm({
       ) : (
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <h3 className="text-sm font-medium text-white/90">Créer une publication</h3>
+            <div className="flex items-center gap-3">
+              <img 
+                src="/lovable-uploads/color-logo.png" 
+                alt="Victaure" 
+                className="h-8 w-8 object-contain"
+              />
+              <h3 className="text-lg font-medium text-white/90">Créer une publication</h3>
+            </div>
             <Button 
               variant="ghost" 
               size="sm" 
