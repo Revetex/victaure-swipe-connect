@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";

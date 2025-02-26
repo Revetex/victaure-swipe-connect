@@ -32,7 +32,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen w-full bg-[#F1F0FB] dark:bg-[#1A1F2C] overflow-hidden">
+    <div className="flex min-h-screen w-full bg-gradient-to-br from-[#F1F0FB] to-[#E5DEFF] dark:from-[#1A1F2C] dark:to-[#1B2A4A] overflow-hidden">
       {/* Menu plein écran pour toutes les tailles */}
       <DashboardMobileNav
         currentPage={currentPage}
@@ -48,8 +48,8 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "relative",
         "ios-safe-area",
         "ios-momentum-scroll",
-        "bg-gradient-to-b from-[#F1F0FB] via-[#F1F0FB]/95 to-[#F1F0FB]/90",
-        "dark:bg-gradient-to-b dark:from-[#1A1F2C] dark:via-[#1B2A4A]/95 dark:to-[#1B2A4A]/90",
+        "bg-gradient-to-br from-white/40 via-[#F1F0FB]/30 to-[#E5DEFF]/20",
+        "dark:from-[#1A1F2C]/40 dark:via-[#1B2A4A]/30 dark:to-[#222B3D]/20",
         "backdrop-blur-sm",
         "shadow-[inset_0_-20px_60px_-20px_rgba(0,0,0,0.05)]",
         "dark:shadow-[inset_0_-20px_60px_-20px_rgba(0,0,0,0.25)]"
