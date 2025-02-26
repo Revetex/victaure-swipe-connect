@@ -1,8 +1,13 @@
 
-import { Bot, Loader2 } from "lucide-react";
+import { Bot } from "lucide-react";
 import { motion } from "framer-motion";
 
-export function ChatHeader() {
+interface ChatHeaderProps {
+  title?: string;
+  subtitle?: string;
+}
+
+export function ChatHeader({ title = "Mr. Victaure", subtitle = "Assistant IA" }: ChatHeaderProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: -20 }}
@@ -43,8 +48,8 @@ export function ChatHeader() {
           </motion.div>
         </div>
         <div>
-          <h3 className="font-medium text-[#F2EBE4] text-sm">Mr. Victaure</h3>
-          <p className="text-[10px] text-[#F2EBE4]/50 font-light">Assistant IA</p>
+          <h3 className="font-medium text-[#F2EBE4] text-sm">{title}</h3>
+          <p className="text-[10px] text-[#F2EBE4]/50 font-light">{subtitle}</p>
         </div>
       </div>
     </motion.div>
