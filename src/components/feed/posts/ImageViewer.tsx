@@ -52,7 +52,7 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
           <X className="h-4 w-4 text-white" />
         </Button>
         
-        <div className="relative w-full h-full flex items-center justify-center">
+        <div className="relative flex items-center justify-center w-full h-full">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
@@ -60,12 +60,12 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.1 }}
               transition={{ type: "spring", duration: 0.3 }}
-              className="relative w-full h-full flex items-center justify-center"
+              className="relative w-full h-full flex items-center justify-center p-4"
             >
               <img
                 src={images[currentIndex]}
                 alt={`Image ${currentIndex + 1}`}
-                className="w-full h-full object-contain"
+                className="max-w-full max-h-full w-auto h-auto object-contain"
                 draggable={false}
                 loading="eager"
               />
@@ -106,3 +106,4 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
     </Dialog>
   );
 }
+
