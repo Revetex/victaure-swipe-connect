@@ -31,7 +31,7 @@ export function VictaureChat({
   const { suggestions, isLoadingSuggestions, generateSuggestions } = useSuggestions();
 
   useEffect(() => {
-    const API_KEY = import.meta.env.GEMINI_API_KEY || ""; // Utilisera la variable d'environnement
+    const API_KEY = import.meta.env.GEMINI_API_KEY || "";
     if (!API_KEY) {
       console.error("No Gemini API key found");
       return;
@@ -111,20 +111,20 @@ export function VictaureChat({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#1A1F2C] relative">
+    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#1A1F2C] relative overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]" />
         
         <div className="absolute inset-0" 
              style={{
-               backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
+               backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)',
                backgroundSize: '15px 15px'
              }} 
         />
       </div>
 
       <div className="relative z-10 flex flex-col h-full">
-        <div className="flex-none px-4 py-3 border-b border-[#64B5D9]/10 bg-[#1B2A4A]/50 backdrop-blur-sm">
+        <div className="flex-none border-b border-[#64B5D9]/10 bg-[#1B2A4A]/50 backdrop-blur-sm">
           <ChatHeader />
           <Button
             variant="ghost"
@@ -146,15 +146,17 @@ export function VictaureChat({
           </Button>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto pb-24">
+        <div 
+          ref={chatContainerRef}
+          className="flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-[#64B5D9]/10 scrollbar-track-transparent hover:scrollbar-thumb-[#64B5D9]/20"
+        >
           <MessageList 
             messages={messages}
             isLoading={isLoading}
-            ref={chatContainerRef}
           />
         </div>
         
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C] to-transparent">
+        <div className="relative p-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C] to-transparent">
           <QuickSuggestions
             suggestions={suggestions}
             isLoading={isLoadingSuggestions}
