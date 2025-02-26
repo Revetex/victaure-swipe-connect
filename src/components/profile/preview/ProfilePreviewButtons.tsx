@@ -64,8 +64,12 @@ export function ProfilePreviewButtons({
       toast.error("Ce profil est privé");
       return;
     }
-    onClose();
-    navigate(`/profile/${profile.id}`);
+    if (onViewProfile) {
+      onViewProfile();
+    } else {
+      onClose();
+      navigate(`/profile/${profile.id}`);
+    }
   };
 
   return (

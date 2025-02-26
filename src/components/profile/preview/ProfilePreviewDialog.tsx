@@ -1,8 +1,8 @@
 
 import { UserProfile } from "@/types/profile";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ProfilePreviewCard } from "./ProfilePreviewCard";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 export interface ProfilePreviewDialogProps {
   profile: UserProfile;
@@ -24,11 +24,7 @@ export function ProfilePreviewDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="max-w-md p-0 overflow-hidden bg-transparent border-none relative z-[100]"
-        style={{ 
-          position: 'fixed',
-          zIndex: 100 
-        }}
+        className="max-w-md p-6 overflow-hidden bg-background relative z-[100] rounded-lg"
       >
         <VisuallyHidden asChild>
           <DialogTitle>Profil de {profile.full_name || "Utilisateur"}</DialogTitle>
