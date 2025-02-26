@@ -3,7 +3,6 @@ import { UserProfile } from "@/types/profile";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Card } from "@/components/ui/card";
 import { GraduationCap } from "lucide-react";
 
 interface ProfileEducationProps {
@@ -20,22 +19,20 @@ export function ProfileEducation({ education }: ProfileEducationProps) {
 
   if (!education?.length) {
     return (
-      <Card className="p-8 bg-card/50 backdrop-blur-sm">
-        <div className="text-center text-muted-foreground">
-          <GraduationCap className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-          <p>Aucune formation ajoutée</p>
-        </div>
-      </Card>
+      <div className="glass-container text-center p-8">
+        <GraduationCap className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+        <p className="text-muted-foreground">Aucune formation ajoutée</p>
+      </div>
     );
   }
 
   return (
-    <Card className="p-6 bg-card/50 backdrop-blur-sm">
-      <div className="flex items-center gap-2 pb-4 mb-6 border-b border-border/50">
-        <span className="p-2 rounded-full bg-primary/10">
-          <GraduationCap className="h-5 w-5 text-primary" />
+    <div className="glass-container">
+      <div className="flex items-center gap-3 pb-4 mb-6 border-b border-border/10">
+        <span className="p-2.5 rounded-xl bg-accent/10 text-primary">
+          <GraduationCap className="h-5 w-5" />
         </span>
-        <h3 className="text-lg font-semibold text-foreground/90">Formation</h3>
+        <h3 className="text-gradient text-lg">Formation</h3>
       </div>
 
       <div className="space-y-8">
@@ -45,14 +42,16 @@ export function ProfileEducation({ education }: ProfileEducationProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="relative pl-6 before:absolute before:left-0 before:top-2 before:w-1.5 before:h-1.5 before:rounded-full before:bg-primary/60 hover:before:scale-150 before:transition-transform"
+            className="relative pl-6 hover-float group"
           >
+            <div className="absolute left-0 top-2 w-1.5 h-1.5 rounded-full bg-accent/60 
+                          group-hover:scale-150 group-hover:bg-accent transition-all duration-300" />
             <div className="space-y-2">
-              <h4 className="font-semibold text-lg text-foreground/90">
+              <h4 className="font-semibold text-lg text-foreground/90 group-hover:text-gradient">
                 {edu.degree}
               </h4>
               
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground group-hover:text-foreground/90 transition-colors">
                 {edu.school_name}
               </p>
               
@@ -67,7 +66,8 @@ export function ProfileEducation({ education }: ProfileEducationProps) {
               </p>
               
               {edu.description && (
-                <p className="text-sm text-muted-foreground/70 leading-relaxed mt-2">
+                <p className="text-sm text-muted-foreground/70 leading-relaxed mt-2
+                            group-hover:text-muted-foreground/90 transition-colors">
                   {edu.description}
                 </p>
               )}
@@ -75,6 +75,6 @@ export function ProfileEducation({ education }: ProfileEducationProps) {
           </motion.div>
         ))}
       </div>
-    </Card>
+    </div>
   );
 }
