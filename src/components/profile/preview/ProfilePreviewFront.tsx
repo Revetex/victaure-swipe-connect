@@ -59,15 +59,14 @@ export function ProfilePreviewFront({
 
   return (
     <div className="space-y-4">
-      <div className="p-6 backdrop-blur-sm">
+      <div className="p-6 bg-background/80 backdrop-blur-sm border-b border-border/10">
         <ProfilePreviewHeader profile={profile} />
         
         <div className="mt-6 grid gap-2">
           {isOwnProfile ? (
             <Button 
               onClick={onViewProfile}
-              variant="default" 
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              className="w-full bg-gradient-to-r from-primary/80 to-primary hover:from-primary hover:to-primary/90"
             >
               <User className="mr-2 h-4 w-4" />
               Voir mon profil
@@ -80,8 +79,8 @@ export function ProfilePreviewFront({
                 className={cn(
                   "w-full",
                   canViewFullProfile 
-                    ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                    : "bg-gray-700/50 hover:bg-gray-700/70"
+                    ? "bg-gradient-to-r from-primary/80 to-primary hover:from-primary hover:to-primary/90"
+                    : "bg-muted/50 hover:bg-muted/70"
                 )}
               >
                 {canViewFullProfile ? (
@@ -100,7 +99,7 @@ export function ProfilePreviewFront({
               {!isBlocked && (
                 <Button
                   variant="outline"
-                  className="w-full border-white/10 hover:bg-white/5"
+                  className="w-full border-border/10 hover:bg-muted/5"
                   onClick={handleMessageClick}
                   disabled={!isFriend}
                 >
@@ -112,7 +111,7 @@ export function ProfilePreviewFront({
               {!isFriend && !isFriendRequestSent && !isFriendRequestReceived && !isBlocked && (
                 <Button 
                   onClick={handleAddFriend}
-                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                  className="w-full bg-gradient-to-r from-emerald-500/80 to-emerald-600 hover:from-emerald-500 hover:to-emerald-600/90"
                 >
                   <UserPlus className="mr-2 h-4 w-4" />
                   Ajouter
@@ -122,7 +121,7 @@ export function ProfilePreviewFront({
               {isFriendRequestReceived && (
                 <Button
                   onClick={handleAcceptFriend}
-                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                  className="w-full bg-gradient-to-r from-emerald-500/80 to-emerald-600 hover:from-emerald-500 hover:to-emerald-600/90"
                 >
                   <UserPlus className="mr-2 h-4 w-4" />
                   Accepter la demande
@@ -133,7 +132,7 @@ export function ProfilePreviewFront({
                 <Button
                   onClick={handleRemoveFriend}
                   variant="outline"
-                  className="w-full border-red-500/30 hover:bg-red-500/10 text-red-400"
+                  className="w-full border-destructive/30 hover:bg-destructive/10 text-destructive"
                 >
                   <UserMinus className="mr-2 h-4 w-4" />
                   {isFriend ? "Retirer des amis" : "Annuler la demande"}
@@ -143,7 +142,7 @@ export function ProfilePreviewFront({
               <Button
                 onClick={handleToggleBlock}
                 variant="outline"
-                className="w-full border-white/10 hover:bg-white/5"
+                className="w-full border-border/10 hover:bg-muted/5"
               >
                 <Ban className="mr-2 h-4 w-4" />
                 {isBlocked ? "Débloquer" : "Bloquer"}
@@ -157,7 +156,7 @@ export function ProfilePreviewFront({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             transition={{ duration: 0.3 }}
-            className="mt-6 pt-6 border-t border-white/10"
+            className="mt-6 pt-6 border-t border-border/10"
           >
             <ProfilePreviewContact profile={profile} />
           </motion.div>
@@ -166,7 +165,7 @@ export function ProfilePreviewFront({
 
       <Button
         variant="ghost"
-        className="w-full text-white/70 hover:text-white hover:bg-white/5"
+        className="w-full text-muted-foreground hover:text-foreground hover:bg-muted/5"
         onClick={onFlip}
       >
         Voir le dos de la carte
