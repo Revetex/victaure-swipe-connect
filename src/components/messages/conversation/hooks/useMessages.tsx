@@ -38,29 +38,50 @@ export function useMessages(receiver: Receiver | null) {
       loadMessages();
     }
 
+    // Configuration du canal en temps réel
     const channel = supabase
-      .channel('messages')
+      .channel('messages-channel')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'messages',
-          filter: `receiver_id=eq.${user.id}`
+          filter: `receiver_id=eq.${user.id},sender_id=eq.${receiver.id}`
         },
-        (payload) => {
+        async (payload) => {
+          console.log('Realtime update received:', payload);
+          
           if (payload.eventType === 'INSERT') {
-            const newMessage = payload.new as Message;
+            const { data: senderProfile } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', payload.new.sender_id)
+              .single();
+
+            const newMessage = {
+              ...payload.new,
+              sender: transformToFullProfile(senderProfile),
+              metadata: typeof payload.new.metadata === 'string' 
+                ? JSON.parse(payload.new.metadata) 
+                : payload.new.metadata || {}
+            } as Message;
+
             setMessages(prev => [...prev, newMessage]);
           } else if (payload.eventType === 'DELETE') {
-            const deletedMessage = payload.old as Message;
-            setMessages(prev => prev.filter(msg => msg.id !== deletedMessage.id));
+            setMessages(prev => prev.filter(msg => msg.id !== payload.old.id));
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Realtime subscription status:', status);
+        if (status === 'SUBSCRIBED') {
+          console.log('Successfully subscribed to realtime updates');
+        }
+      });
 
     return () => {
+      console.log('Cleaning up realtime subscription');
       supabase.removeChannel(channel);
     };
   }, [receiver?.id, user?.id]);
