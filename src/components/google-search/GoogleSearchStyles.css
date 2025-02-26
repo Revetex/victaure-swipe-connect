@@ -19,12 +19,13 @@
 .gsc-result {
   margin-bottom: 1.5rem !important;
   padding: 1.5rem !important;
-  background: rgba(27, 42, 74, 0.3) !important;
-  border: 1px solid rgba(100, 181, 217, 0.1) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(155, 135, 245, 0.15) !important;
   border-radius: 0.75rem !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
   width: 100% !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
 }
 
 .gsc-results {
@@ -32,7 +33,7 @@
 }
 
 .gsc-result-info {
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
   padding: 0 !important;
   margin-bottom: 1rem !important;
 }
@@ -45,6 +46,7 @@
   text-decoration: none !important;
   margin-bottom: 0.75rem !important;
   display: block !important;
+  font-weight: 500 !important;
 }
 
 .gs-title:hover, .gs-title *:hover {
@@ -55,7 +57,7 @@
 /* Style des snippets */
 .gs-snippet {
   font-family: 'Inter', sans-serif !important;
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
   line-height: 1.6 !important;
   font-size: 1rem !important;
 }
@@ -76,15 +78,15 @@
   padding: 0.75rem 1.25rem !important;
   margin: 0 0.25rem !important;
   border-radius: 0.5rem !important;
-  background: rgba(27, 42, 74, 0.3) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
   color: #9b87f5 !important;
-  border: 1px solid rgba(100, 181, 217, 0.1) !important;
+  border: 1px solid rgba(155, 135, 245, 0.15) !important;
   cursor: pointer !important;
   transition: all 0.2s ease-in-out !important;
 }
 
 .gsc-cursor-page:hover {
-  background: rgba(155, 135, 245, 0.2) !important;
+  background: rgba(155, 135, 245, 0.15) !important;
   border-color: rgba(155, 135, 245, 0.3) !important;
 }
 
@@ -94,9 +96,13 @@
   border-color: #9b87f5 !important;
 }
 
-/* Mode sombre et styles généraux */
+/* Mode clair et sombre */
+.gs-snippet {
+  color: rgba(0, 0, 0, 0.8) !important;
+}
+
 .dark .gs-snippet {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 /* Style du conteneur des résultats */
@@ -108,7 +114,7 @@
 
 /* Style des liens URL */
 .gs-visibleUrl {
-  color: rgba(155, 135, 245, 0.7) !important;
+  color: rgba(155, 135, 245, 0.8) !important;
   font-size: 0.875rem !important;
   margin-top: 0.5rem !important;
 }
