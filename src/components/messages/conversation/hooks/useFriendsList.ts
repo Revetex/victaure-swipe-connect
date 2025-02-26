@@ -54,27 +54,31 @@ export function useFriendsList() {
         if (friendshipsError) throw friendshipsError;
 
         if (friendshipsData) {
-          const formattedFriends = friendshipsData.map(friendship => ({
-            id: friendship.friend.id,
-            full_name: friendship.friend.full_name || '',
-            avatar_url: friendship.friend.avatar_url,
-            email: friendship.friend.email,
-            role: friendship.friend.role as 'professional' | 'business' | 'admin',
-            bio: friendship.friend.bio,
-            phone: friendship.friend.phone,
-            city: friendship.friend.city,
-            state: friendship.friend.state,
-            country: friendship.friend.country,
-            skills: friendship.friend.skills || [],
-            latitude: friendship.friend.latitude,
-            longitude: friendship.friend.longitude,
-            online_status: friendship.friend.online_status ? 'online' : 'offline',
-            last_seen: friendship.friend.last_seen,
-            certifications: friendship.friend.certifications || [],
-            education: friendship.friend.education || [],
-            experiences: friendship.friend.experiences || [],
-            friends: []
-          }));
+          const formattedFriends: Receiver[] = friendshipsData.map(friendship => {
+            const onlineStatus: "online" | "offline" = friendship.friend.online_status ? "online" : "offline";
+            
+            return {
+              id: friendship.friend.id,
+              full_name: friendship.friend.full_name || '',
+              avatar_url: friendship.friend.avatar_url,
+              email: friendship.friend.email,
+              role: friendship.friend.role as 'professional' | 'business' | 'admin',
+              bio: friendship.friend.bio,
+              phone: friendship.friend.phone,
+              city: friendship.friend.city,
+              state: friendship.friend.state,
+              country: friendship.friend.country,
+              skills: friendship.friend.skills || [],
+              latitude: friendship.friend.latitude,
+              longitude: friendship.friend.longitude,
+              online_status: onlineStatus,
+              last_seen: friendship.friend.last_seen,
+              certifications: friendship.friend.certifications || [],
+              education: friendship.friend.education || [],
+              experiences: friendship.friend.experiences || [],
+              friends: []
+            };
+          });
 
           setFriends(formattedFriends);
         }
