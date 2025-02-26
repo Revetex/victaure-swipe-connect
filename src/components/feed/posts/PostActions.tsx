@@ -5,6 +5,7 @@ import { ReactionButton } from "./actions/ReactionButton";
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import { toast } from "sonner";
 
 interface PostActionsProps {
   likes: number;
@@ -62,18 +63,17 @@ export function PostActions({
   });
 
   const handleLocalReaction = useCallback(async (type: 'like' | 'dislike') => {
-    if (isProcessing) return;
+    if (isProcessing || !currentUserId) {
+      toast.error("Vous devez être connecté pour réagir");
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
-      // Sauvegarde des anciennes valeurs pour rollback en cas d'erreur
-      const previousLikes = localLikes;
-      const previousDislikes = localDislikes;
-      const previousUserReaction = localUserReaction;
-
       // Mise à jour optimiste de l'UI
       if (localUserReaction === type) {
-        // Si on retire la réaction
+        // Retirer la réaction
         setLocalUserReaction(undefined);
         if (type === 'like') {
           setLocalLikes(prev => Math.max(0, prev - 1));
@@ -83,7 +83,7 @@ export function PostActions({
       } else {
         // Si on change de réaction ou on ajoute une nouvelle
         if (localUserReaction) {
-          // Si on change de type de réaction
+          // Changer de type de réaction
           if (localUserReaction === 'like') {
             setLocalLikes(prev => Math.max(0, prev - 1));
             setLocalDislikes(prev => prev + 1);
@@ -92,7 +92,7 @@ export function PostActions({
             setLocalLikes(prev => prev + 1);
           }
         } else {
-          // Si on ajoute une nouvelle réaction
+          // Ajouter une nouvelle réaction
           if (type === 'like') {
             setLocalLikes(prev => prev + 1);
           } else {
@@ -104,16 +104,23 @@ export function PostActions({
 
       // Appel à l'API pour mettre à jour en base
       await handleReaction(type);
+      
+      // Notifier le parent du changement
+      if (onReaction) {
+        onReaction(postId, type);
+      }
+
     } catch (error) {
       console.error('Error handling reaction:', error);
-      // En cas d'erreur, on revient à l'état précédent
+      // Rollback en cas d'erreur
       setLocalLikes(likes);
       setLocalDislikes(dislikes);
       setLocalUserReaction(userReaction);
+      toast.error("Erreur lors de la réaction");
     } finally {
       setIsProcessing(false);
     }
-  }, [isProcessing, localLikes, localDislikes, localUserReaction, handleReaction, likes, dislikes, userReaction]);
+  }, [isProcessing, currentUserId, localUserReaction, handleReaction, likes, dislikes, userReaction, postId, onReaction]);
 
   useEffect(() => {
     const channel = supabase
@@ -128,8 +135,7 @@ export function PostActions({
         },
         (payload: RealtimePostgresChangesPayload<PostPayload>) => {
           if (!isProcessing && payload.new) {
-            const newPost = payload.new as PostPayload; // Type assertion explicite
-            // Vérification stricte des types et valeurs
+            const newPost = payload.new as PostPayload;
             if (newPost && 
                 'likes' in newPost && 
                 'dislikes' in newPost && 
