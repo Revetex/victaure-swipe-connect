@@ -30,13 +30,23 @@ export function VictaureChat({
 
   const { suggestions, isLoadingSuggestions, generateSuggestions } = useSuggestions();
 
+  // Initialiser le modèle Gemini dès le chargement du composant
   useEffect(() => {
-    const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
-    if (!API_KEY) return;
-    
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    setGeminiModel(model);
+    try {
+      const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+      if (!API_KEY) {
+        console.error("Clé API Gemini manquante");
+        return;
+      }
+      
+      console.log("Initialisation du modèle Gemini...");
+      const genAI = new GoogleGenerativeAI(API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      setGeminiModel(model);
+      console.log("Modèle Gemini initialisé avec succès");
+    } catch (error) {
+      console.error("Erreur d'initialisation du modèle Gemini:", error);
+    }
   }, []);
 
   const { 
@@ -64,6 +74,11 @@ export function VictaureChat({
 
   const handleSendMessage = async () => {
     if (!userInput.trim() || isLoading) return;
+
+    if (!geminiModel) {
+      console.error("Le modèle Gemini n'est pas initialisé");
+      return;
+    }
     
     try {
       const message = {
@@ -72,10 +87,12 @@ export function VictaureChat({
         timestamp: Date.now()
       };
       
+      console.log("Envoi du message:", message);
       const response = await sendMessage(message);
       setUserInput("");
       
       if (response && !error) {
+        console.log("Réponse reçue:", response);
         speakText(response);
         generateSuggestions(context, messages);
       }
@@ -140,7 +157,7 @@ export function VictaureChat({
         <QuickSuggestions
           suggestions={suggestions}
           isLoading={isLoadingSuggestions}
-          onSelect={handleSuggestionSelect}
+          onSelect={(suggestion: string) => setUserInput(suggestion)}
           className="mb-4"
         />
         
@@ -150,8 +167,8 @@ export function VictaureChat({
           isRecording={isRecording}
           isSpeaking={isSpeaking}
           isLoading={isLoading}
-          isDisabled={isDisabled}
-          disabledMessage={disabledMessage}
+          isDisabled={userQuestions >= maxQuestions && !user}
+          disabledMessage="Connectez-vous pour continuer à discuter avec Mr Victaure"
           onStartRecording={startRecording}
           onStopSpeaking={() => setIsSpeaking(false)}
           onSendMessage={handleSendMessage}
