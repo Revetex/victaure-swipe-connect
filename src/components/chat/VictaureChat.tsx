@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatHeader } from "./ChatHeader";
@@ -12,7 +11,7 @@ import { Button } from "../ui/button";
 import { RefreshCcw, X } from "lucide-react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { toast } from "sonner";
-import { Toaster } from "../ui/Toaster";
+import { Toaster } from "../ui/toaster";
 
 interface VictaureChatProps {
   maxQuestions?: number;
