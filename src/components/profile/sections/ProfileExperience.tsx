@@ -18,15 +18,26 @@ export function ProfileExperience({ experiences }: ProfileExperienceProps) {
     return `${start} - ${end}`;
   };
 
+  if (!experiences?.length) {
+    return (
+      <Card className="p-8 bg-card/50 backdrop-blur-sm">
+        <div className="text-center text-muted-foreground">
+          <Briefcase className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+          <p>Aucune expérience ajoutée</p>
+        </div>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="p-6 space-y-6 bg-card/50 backdrop-blur-sm border-border/50">
+    <Card className="p-6 space-y-6 bg-card/50 backdrop-blur-sm">
       <div className="flex items-center gap-2 pb-4 border-b border-border/50">
         <Briefcase className="h-5 w-5 text-primary/80" />
-        <h3 className="text-lg font-semibold">Expérience professionnelle</h3>
+        <h3 className="text-lg font-semibold text-foreground/90">Expérience professionnelle</h3>
       </div>
 
       <div className="space-y-6">
-        {experiences && experiences.map((exp, index) => (
+        {experiences.map((exp, index) => (
           <motion.div
             key={exp.id}
             initial={{ opacity: 0, y: 20 }}
@@ -57,12 +68,6 @@ export function ProfileExperience({ experiences }: ProfileExperienceProps) {
             </div>
           </motion.div>
         ))}
-
-        {(!experiences || experiences.length === 0) && (
-          <div className="text-center py-8 text-muted-foreground/60">
-            Aucune expérience ajoutée
-          </div>
-        )}
       </div>
     </Card>
   );
