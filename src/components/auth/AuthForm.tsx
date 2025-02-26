@@ -34,7 +34,6 @@ export function AuthForm({
       className="w-full space-y-6"
     >
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* Section Formulaire */}
         <div className="flex-1 p-6 bg-[#1A1F2C]/90 backdrop-blur-sm rounded-2xl border border-[#64B5D9]/10">
           <Tabs defaultValue="login" className="w-full" value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-3 bg-[#1B2A4A]/20">
@@ -49,43 +48,40 @@ export function AuthForm({
               </TabsTrigger>
             </TabsList>
 
-            <div className="mt-6">
-              <TabsContent value="login">
-                <LoginForm 
-                  email={formData.email}
-                  password={formData.password}
-                  loading={loading}
-                  onEmailChange={(value) => setFormData({ ...formData, email: value })}
-                  onPasswordChange={(value) => setFormData({ ...formData, password: value })}
-                  onSubmit={() => signIn(formData.email, formData.password)}
-                  redirectTo={redirectTo}
-                />
-              </TabsContent>
+            <TabsContent value="login">
+              <LoginForm 
+                email={formData.email}
+                password={formData.password}
+                loading={loading}
+                onEmailChange={(value) => setFormData({ ...formData, email: value })}
+                onPasswordChange={(value) => setFormData({ ...formData, password: value })}
+                onSubmit={() => signIn(formData.email, formData.password)}
+                redirectTo={redirectTo}
+              />
+            </TabsContent>
 
-              <TabsContent value="signup">
-                <SignupForm 
-                  email={formData.email}
-                  password={formData.password}
-                  fullName={formData.fullName}
-                  phone={formData.phone}
-                  loading={loading}
-                  redirectTo={redirectTo}
-                  onEmailChange={(value) => setFormData({ ...formData, email: value })}
-                  onPasswordChange={(value) => setFormData({ ...formData, password: value })}
-                  onFullNameChange={(value) => setFormData({ ...formData, fullName: value })}
-                  onPhoneChange={(value) => setFormData({ ...formData, phone: value })}
-                  onSubmit={() => signUp(formData.email, formData.password, formData.fullName, formData.phone)}
-                />
-              </TabsContent>
+            <TabsContent value="signup">
+              <SignupForm 
+                email={formData.email}
+                password={formData.password}
+                fullName={formData.fullName}
+                phone={formData.phone}
+                loading={loading}
+                redirectTo={redirectTo}
+                onEmailChange={(value) => setFormData({ ...formData, email: value })}
+                onPasswordChange={(value) => setFormData({ ...formData, password: value })}
+                onFullNameChange={(value) => setFormData({ ...formData, fullName: value })}
+                onPhoneChange={(value) => setFormData({ ...formData, phone: value })}
+                onSubmit={() => signUp(formData.email, formData.password, formData.fullName, formData.phone)}
+              />
+            </TabsContent>
 
-              <TabsContent value="business">
-                <BusinessSignupForm redirectTo={redirectTo} />
-              </TabsContent>
-            </div>
+            <TabsContent value="business">
+              <BusinessSignupForm redirectTo={redirectTo} />
+            </TabsContent>
           </Tabs>
         </div>
 
-        {/* Section Chat */}
         <div className="flex-1">
           <AuthChat 
             maxQuestions={3} 
