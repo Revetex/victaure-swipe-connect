@@ -1,17 +1,26 @@
 
 import { useQueryClient } from "@tanstack/react-query";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { CreatePostForm } from "./posts/create/CreatePostForm";
 import { PostList } from "./posts/PostList";
 import { PostFilters } from "./posts/sections/PostFilters";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { PostAttachment, PostPrivacyLevel } from "./posts/types";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
+};
 
 export function Feed() {
   const queryClient = useQueryClient();
-  const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Form and filter states
+  // États du formulaire et des filtres
   const [newPost, setNewPost] = useState("");
   const [privacy, setPrivacy] = useState<PostPrivacyLevel>("public");
   const [attachments, setAttachments] = useState<PostAttachment[]>([]);
@@ -22,17 +31,8 @@ export function Feed() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Scroll animations
-  const { scrollY } = useScroll({
-    container: scrollRef
-  });
-  const headerOpacity = useTransform(scrollY, [0, 100], [1, 0]);
-  const headerScale = useTransform(scrollY, [0, 100], [1, 0.95]);
-
   const invalidatePosts = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["posts"]
-    });
+    queryClient.invalidateQueries({ queryKey: ["posts"] });
   };
 
   const handlePostChange = (value: string) => {
@@ -43,50 +43,58 @@ export function Feed() {
     setPrivacy(value);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Gérer le changement de fichiers
-  };
-
-  const handleRemoveFile = (index: number) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index));
-  };
-
   const handleCreatePost = () => {
-    // Logique de création de post
     invalidatePosts();
+    setIsExpanded(false);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="container mx-auto px-4 py-8"
+    >
       <div className="space-y-6">
-        <CreatePostForm
-          newPost={newPost}
-          onPostChange={handlePostChange}
-          privacy={privacy}
-          onPrivacyChange={handlePrivacyChange}
-          attachments={attachments}
-          isUploading={isUploading}
-          onFileChange={handleFileChange}
-          onRemoveFile={handleRemoveFile}
-          onCreatePost={handleCreatePost}
-          onClose={() => setIsExpanded(false)}
-        />
-        <PostFilters
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          filter={filter}
-          onFilterChange={setFilter}
-          sortBy={sortBy}
-          onSortByChange={setSortBy}
-          sortOrder={sortOrder}
-          onSortOrderChange={setSortOrder}
-          onCreatePost={() => setIsExpanded(true)}
-        />
-        <PostList
-          onPostDeleted={invalidatePosts}
-          onPostUpdated={invalidatePosts}
-        />
+        <motion.div variants={itemVariants}>
+          <CreatePostForm
+            newPost={newPost}
+            onPostChange={handlePostChange}
+            privacy={privacy}
+            onPrivacyChange={handlePrivacyChange}
+            attachments={attachments}
+            isUploading={isUploading}
+            onCreatePost={handleCreatePost}
+            onClose={() => setIsExpanded(false)}
+            isExpanded={isExpanded}
+          />
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <PostFilters
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            filter={filter}
+            onFilterChange={setFilter}
+            sortBy={sortBy}
+            onSortByChange={setSortBy}
+            sortOrder={sortOrder}
+            onSortOrderChange={setSortOrder}
+            onCreatePost={() => setIsExpanded(true)}
+          />
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <PostList
+            searchTerm={searchTerm}
+            filter={filter}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onPostDeleted={invalidatePosts}
+            onPostUpdated={invalidatePosts}
+          />
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
