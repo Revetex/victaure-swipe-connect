@@ -46,11 +46,10 @@ export function DashboardContent({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className={cn(
-        "w-full",
-        "bg-gradient-to-b from-[#F1F0FB]/80 via-[#F1F0FB]/60 to-[#F1F0FB]/40",
-        "dark:bg-gradient-to-b dark:from-[#1A1F2C]/80 dark:via-[#1B2A4A]/60 dark:to-[#1B2A4A]/40",
-        "backdrop-blur-sm",
-        "border-t border-white/5"
+        "w-full min-h-[calc(100vh-4rem)]",
+        "bg-gradient-to-b from-background via-background/95 to-background/90",
+        "dark:from-background dark:via-background/95 dark:to-background/90",
+        "border-t border-border/10"
       )}
     >
       <ContentRouter
