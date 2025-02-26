@@ -1,3 +1,4 @@
+
 /* Cacher les éléments non désirés */
 .gsc-above-wrapper-area,
 .gcsc-find-more-on-google,
@@ -22,6 +23,10 @@
   border: 1px solid rgba(155, 135, 245, 0.1) !important;
   border-radius: 0.5rem !important;
   width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .gsc-result-info {
@@ -31,7 +36,7 @@
 }
 
 /* Titres */
-.gs-title, .gs-title * {
+.gs-title {
   font-family: 'Inter', sans-serif !important;
   font-size: 1rem !important;
   color: #9b87f5 !important;
@@ -39,14 +44,14 @@
   margin-bottom: 0.25rem !important;
   display: block !important;
   font-weight: 500 !important;
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
+  line-height: 1.4 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
   width: 100% !important;
-  max-width: none !important;
+  white-space: normal !important;
 }
 
-.gs-title:hover, .gs-title *:hover {
+.gs-title:hover {
   text-decoration: underline !important;
 }
 
@@ -54,45 +59,12 @@
 .gs-snippet {
   font-size: 0.875rem !important;
   line-height: 1.4 !important;
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-
-/* Cacher les vignettes et images */
-.gs-image-box,
-.gsc-thumbnail,
-.gs-promotion-image-box,
-.gs-image {
-  display: none !important;
-}
-
-/* Mode clair */
-.gs-snippet {
-  color: rgba(0, 0, 0, 0.7) !important;
-}
-
-/* Mode sombre */
-.dark .gs-snippet {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-
-/* Pagination */
-.gsc-cursor-box {
-  margin-top: 1rem !important;
-}
-
-.gsc-cursor-page {
-  padding: 0.5rem 0.75rem !important;
-  margin: 0 0.25rem !important;
-  border-radius: 0.25rem !important;
-  background: rgba(255, 255, 255, 0.05) !important;
-  color: #9b87f5 !important;
-  border: 1px solid rgba(155, 135, 245, 0.1) !important;
-  font-size: 0.875rem !important;
-}
-
-.gsc-cursor-current-page {
-  background: #9b87f5 !important;
-  color: white !important;
+  color: var(--snippet-color) !important;
+  margin: 0.5rem 0 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 3 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
 }
 
 /* URLs */
@@ -100,20 +72,101 @@
   color: rgba(155, 135, 245, 0.7) !important;
   font-size: 0.75rem !important;
   margin-top: 0.25rem !important;
+  display: block !important;
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
 }
 
-/* Ajustements pour le conteneur des résultats */
+/* Cacher les éléments dupliqués et inutiles */
+.gs-image-box,
+.gsc-thumbnail,
+.gs-promotion-image-box,
+.gs-image,
+.gsc-url-bottom,
+.gs-bidi-start-align,
+.gsc-url-bottom {
+  display: none !important;
+}
+
+/* Pagination */
+.gsc-cursor-box {
+  margin-top: 1rem !important;
+  display: flex !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+}
+
+.gsc-cursor-page {
+  padding: 0.5rem 0.75rem !important;
+  border-radius: 0.25rem !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #9b87f5 !important;
+  border: 1px solid rgba(155, 135, 245, 0.1) !important;
+  font-size: 0.875rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.gsc-cursor-current-page {
+  background: #9b87f5 !important;
+  color: white !important;
+}
+
+/* Analyse IA */
+.ai-analysis {
+  margin: 1rem 0 2rem 0 !important;
+  padding: 1.25rem !important;
+  background: rgba(155, 135, 245, 0.1) !important;
+  border: 1px solid rgba(155, 135, 245, 0.2) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+.ai-analysis h3 {
+  color: #9b87f5 !important;
+  margin-bottom: 0.75rem !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.ai-analysis p {
+  color: var(--text-color) !important;
+  font-size: 0.875rem !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+  white-space: pre-line !important;
+}
+
+/* Variables pour le mode clair/sombre */
+:root {
+  --text-color: rgba(0, 0, 0, 0.8);
+  --snippet-color: rgba(0, 0, 0, 0.7);
+}
+
+.dark {
+  --text-color: rgba(255, 255, 255, 0.9);
+  --snippet-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Conteneurs principaux */
 .gsc-resultsbox-visible,
 .gsc-results,
 .gsc-webResult {
   width: 100% !important;
-  max-width: none !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
 }
 
-/* Empêcher le débordement du texte */
-.gs-result * {
-  word-wrap: break-word !important;
-  overflow-wrap: break-word !important;
+/* Ajustements pour la largeur des conteneurs */
+.gsc-thumbnail-inside,
+.gsc-url-top {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
 }
 
 /* Correction des liens dédoublés */
@@ -123,61 +176,4 @@
 
 .gsc-thumbnail-inside a.gs-title:not(:first-of-type) {
   display: none !important;
-}
-
-/* Masquer les éléments dupliqués */
-.gsc-url-bottom {
-  display: none !important;
-}
-
-.gs-bidi-start-align {
-  display: none !important;
-}
-
-/* Assurez-vous que les liens ne sont pas coupés */
-.gsc-thumbnail-inside,
-.gsc-url-top {
-  padding: 0 !important;
-  word-break: break-word !important;
-}
-
-.gs-result .gsc-url-top {
-  display: block !important;
-  margin: 0 !important;
-  width: 100% !important;
-}
-
-/* Styles pour l'analyse IA */
-.ai-analysis {
-  margin: 1rem 0;
-  padding: 1rem;
-  background: rgba(155, 135, 245, 0.1);
-  border: 1px solid rgba(155, 135, 245, 0.2);
-  border-radius: 0.5rem;
-}
-
-.ai-analysis h3 {
-  color: #9b87f5;
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
-}
-
-.ai-analysis p {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.875rem;
-  line-height: 1.5;
-}
-
-/* Mode clair */
-:root {
-  --ai-analysis-text: rgba(0, 0, 0, 0.7);
-}
-
-/* Mode sombre */
-.dark {
-  --ai-analysis-text: rgba(255, 255, 255, 0.8);
-}
-
-.ai-analysis p {
-  color: var(--ai-analysis-text);
 }

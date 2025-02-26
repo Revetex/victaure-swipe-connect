@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
+import { HfInference } from '@huggingface/inference';
 import "./GoogleSearchStyles.css";
 
 export function GoogleSearch() {
@@ -73,31 +74,31 @@ export function GoogleSearch() {
         return { title, snippet };
       });
 
-      // Appeler l'API Gemini pour analyser et améliorer les résultats
-      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_GEMINI_API_KEY}`
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `Voici des résultats de recherche d'emploi. Analysez-les et donnez un bref résumé des points clés et des opportunités principales : ${JSON.stringify(resultTexts)}`
-            }]
-          }]
-        })
+      const hf = new HfInference(import.meta.env.VITE_HUGGINGFACE_API_KEY);
+      
+      const prompt = `Voici des résultats de recherche d'emploi. Donne un résumé analytique concis qui inclut :
+      - Les types de postes principaux
+      - Les compétences les plus demandées
+      - Les opportunités les plus intéressantes
+      
+      Résultats : ${JSON.stringify(resultTexts)}`;
+
+      const response = await hf.textGeneration({
+        model: 'HuggingFaceH4/zephyr-7b-beta',
+        inputs: prompt,
+        parameters: {
+          max_new_tokens: 200,
+          temperature: 0.7
+        }
       });
 
-      const data = await response.json();
-      
-      if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+      if (response.generated_text) {
         // Créer un élément pour afficher l'analyse IA
         const aiAnalysisElement = document.createElement('div');
-        aiAnalysisElement.className = 'ai-analysis bg-primary/10 p-4 rounded-lg mt-4 text-sm';
+        aiAnalysisElement.className = 'ai-analysis';
         aiAnalysisElement.innerHTML = `
-          <h3 class="font-semibold mb-2">Analyse IA des résultats</h3>
-          <p class="text-muted-foreground">${data.candidates[0].content.parts[0].text}</p>
+          <h3>💡 Analyse IA des résultats</h3>
+          <p>${response.generated_text}</p>
         `;
 
         // Insérer l'analyse avant la liste des résultats
