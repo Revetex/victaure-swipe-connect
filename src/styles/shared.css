@@ -4,22 +4,19 @@
 @tailwind utilities;
 
 @layer components {
-  /* Layout de base */
   .page-container {
     @apply relative min-h-screen w-full 
            bg-[#1A1F2C]
            text-[#F2EBE4] pb-6;
   }
 
-  /* Sections de contenu */
   .content-section {
     @apply bg-white/5
            border border-[#64B5D9]/10
            rounded-lg
-           p-4 sm:p-6;
+           p-4;
   }
 
-  /* En-têtes de section */
   .section-header {
     @apply flex items-center justify-between
            border-b border-[#64B5D9]/10
@@ -28,11 +25,9 @@
 
   .section-title {
     @apply text-xl font-semibold 
-           text-[#F2EBE4]
-           flex items-center gap-2;
+           text-[#F2EBE4];
   }
 
-  /* Cartes */
   .glass-card {
     @apply bg-white/5
            border border-[#64B5D9]/10
@@ -40,7 +35,6 @@
            p-4;
   }
 
-  /* Navigation */
   .nav-item {
     @apply flex items-center gap-2 
            px-3 py-2
@@ -50,11 +44,9 @@
 
   .nav-item-active {
     @apply bg-[#64B5D9]/20 
-           text-[#F2EBE4]
-           border border-[#64B5D9]/20;
+           text-[#F2EBE4];
   }
 
-  /* Scrollbars */
   .custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: rgba(100, 181, 217, 0.2) transparent;
@@ -73,20 +65,18 @@
            rounded-full;
   }
 
-  /* Inputs et boutons */
   .input-base {
-    @apply bg-white/5 border-[#64B5D9]/20 
-           text-[#F2EBE4] placeholder-[#F2EBE4]/50
+    @apply bg-white/5
+           text-[#F2EBE4]
            rounded-lg;
   }
 
   .button-base {
     @apply bg-[#64B5D9]
-           text-white font-medium
+           text-white
            rounded-lg;
   }
 
-  /* Layout des pages */
   .page-header {
     @apply fixed top-0 left-0 right-0 z-50
            bg-[#1A1F2C]
@@ -94,6 +84,6 @@
   }
 
   .page-content {
-    @apply pt-16 px-4 min-h-screen;
+    @apply pt-16 px-4;
   }
 }

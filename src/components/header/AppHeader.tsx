@@ -3,7 +3,7 @@ import { Menu, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { VictaureChat } from "@/components/chat/VictaureChat";
 import { Badge } from "@/components/ui/badge";
 
@@ -42,29 +42,33 @@ export function AppHeader({
               BETA
             </Badge>
           </div>
-          <span className="relative font-tiempos font-black tracking-[0.15em] text-[#F2EBE4] text-2xl shrink-0 pl-1">
+          <span className="text-[#F2EBE4] text-2xl shrink-0 pl-1 font-bold">
             VICTAURE
           </span>
         </div>
       </div>
 
       <div className="flex items-center gap-3">
-        {totalJobs !== undefined && 
+        {totalJobs !== undefined && (
           <div className="hidden sm:flex items-center px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
             <span className="text-xs text-white/80 whitespace-nowrap">
               {totalJobs} offres disponibles
             </span>
           </div>
-        }
+        )}
 
-        <Button onClick={() => setShowChat(true)} className="flex items-center gap-2 px-4 py-2 bg-[#64B5D9] text-white rounded-full" title="Assistant IA">
+        <Button 
+          onClick={() => setShowChat(true)} 
+          variant="default"
+          className="flex items-center gap-2 bg-[#64B5D9] text-white rounded-full"
+        >
           <Bot className="h-4 w-4" />
           <span className="text-sm font-medium hidden sm:block">M. Victaure</span>
         </Button>
 
         {showChat && (
           <Dialog open={showChat} onOpenChange={setShowChat}>
-            <DialogContent className="bg-[#1A1F2C] border-white/10 text-white max-w-2xl">
+            <DialogContent className="bg-[#1A1F2C] border-white/10 text-white">
               <DialogTitle>Chat avec M. Victaure</DialogTitle>
               <VictaureChat />
             </DialogContent>
