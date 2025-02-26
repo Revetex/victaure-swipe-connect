@@ -13,19 +13,75 @@ export const usePostOperations = () => {
     }
 
     try {
-      const { error } = await supabase
+      // Vérifier si l'utilisateur a déjà réagi
+      const { data: existingReaction } = await supabase
         .from('post_reactions')
-        .upsert({
-          post_id: postId,
-          user_id: userId,
-          reaction_type: type
-        }, {
-          onConflict: 'post_id,user_id'
-        });
+        .select('*')
+        .eq('post_id', postId)
+        .eq('user_id', userId)
+        .single();
 
-      if (error) throw error;
+      if (existingReaction) {
+        if (existingReaction.reaction_type === type) {
+          // Supprimer la réaction si c'est la même
+          const { error } = await supabase
+            .from('post_reactions')
+            .delete()
+            .eq('post_id', postId)
+            .eq('user_id', userId);
+
+          if (error) throw error;
+
+          // Mettre à jour le compteur dans la table posts
+          await supabase
+            .from('posts')
+            .update({
+              [type === 'like' ? 'likes' : 'dislikes']: supabase.raw(`${type === 'like' ? 'likes' : 'dislikes'} - 1`)
+            })
+            .eq('id', postId);
+
+        } else {
+          // Changer le type de réaction
+          const { error } = await supabase
+            .from('post_reactions')
+            .update({ reaction_type: type })
+            .eq('post_id', postId)
+            .eq('user_id', userId);
+
+          if (error) throw error;
+
+          // Mettre à jour les compteurs dans la table posts
+          await supabase
+            .from('posts')
+            .update({
+              [type === 'like' ? 'likes' : 'dislikes']: supabase.raw(`${type === 'like' ? 'likes' : 'dislikes'} + 1`),
+              [type === 'like' ? 'dislikes' : 'likes']: supabase.raw(`${type === 'like' ? 'dislikes' : 'likes'} - 1`)
+            })
+            .eq('id', postId);
+        }
+      } else {
+        // Créer une nouvelle réaction
+        const { error } = await supabase
+          .from('post_reactions')
+          .insert({
+            post_id: postId,
+            user_id: userId,
+            reaction_type: type
+          });
+
+        if (error) throw error;
+
+        // Incrémenter le compteur dans la table posts
+        await supabase
+          .from('posts')
+          .update({
+            [type === 'like' ? 'likes' : 'dislikes']: supabase.raw(`${type === 'like' ? 'likes' : 'dislikes'} + 1`)
+          })
+          .eq('id', postId);
+      }
 
       await queryClient.invalidateQueries({ queryKey: ["posts"] });
+      
     } catch (error) {
       console.error('Error handling reaction:', error);
       toast("Une erreur est survenue lors de la réaction");
