@@ -43,7 +43,6 @@ export function ConversationView() {
       if (error) throw error;
       
       if (profile) {
-        // Vérifions que le rôle est valide
         const validRoles: UserRole[] = ['professional', 'business', 'admin'];
         const userRole: UserRole = validRoles.includes(profile.role as UserRole) 
           ? (profile.role as UserRole)
@@ -97,7 +96,7 @@ export function ConversationView() {
           content: messageInput,
           sender_id: user.id,
           receiver_id: receiver.id,
-          metadata: JSON.stringify({}),
+          metadata: {},
         });
 
       if (error) throw error;
@@ -117,7 +116,7 @@ export function ConversationView() {
         onBack={handleBack}
       />
       
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto p-4">
         <MessageList
           messages={messages}
           currentUserId={user?.id}
@@ -126,7 +125,7 @@ export function ConversationView() {
         />
       </div>
 
-      <div className="w-full">
+      <div className="p-4 bg-[#1B2A4A]/50 border-t border-[#64B5D9]/10">
         <MessageInput
           value={messageInput}
           onChange={setMessageInput}

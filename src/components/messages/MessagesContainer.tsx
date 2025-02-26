@@ -15,8 +15,8 @@ export function MessagesContainer() {
     )}>
       <ConversationList 
         className={cn(
-          "border-r border-[#64B5D9]/10 bg-[#1B2A4A]/50",
-          showConversation ? "hidden md:flex md:w-80" : "w-full md:w-80"
+          "border-r border-[#64B5D9]/10 bg-[#1B2A4A]/50 w-80",
+          showConversation ? "hidden md:flex" : "w-full md:w-80"
         )}
       />
       
