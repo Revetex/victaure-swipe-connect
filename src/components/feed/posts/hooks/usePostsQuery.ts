@@ -47,27 +47,15 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQue
           query = query.eq("user_id", userId);
           break;
         case "liked": {
-          const likedPostsQuery = await supabase
+          const { data: likedPosts } = await supabase
             .from("post_reactions")
             .select("post_id")
             .eq("user_id", userId)
             .eq("reaction_type", "like");
           
-          if (likedPostsQuery.data) {
-            const likedPostIds = likedPostsQuery.data.map(reaction => reaction.post_id);
+          if (likedPosts?.length) {
+            const likedPostIds = likedPosts.map(reaction => reaction.post_id);
             query = query.in("id", likedPostIds);
-          }
-          break;
-        }
-        case "saved": {
-          const savedPostsQuery = await supabase
-            .from("saved_posts")
-            .select("post_id")
-            .eq("user_id", userId);
-          
-          if (savedPostsQuery.data) {
-            const savedPostIds = savedPostsQuery.data.map(saved => saved.post_id);
-            query = query.in("id", savedPostIds);
           }
           break;
         }
