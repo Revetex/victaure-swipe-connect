@@ -2,7 +2,7 @@
 import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import { useReactions } from "./actions/useReactions";
 import { ReactionButton } from "./actions/ReactionButton";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
@@ -45,6 +45,7 @@ export function PostActions({
   const [localLikes, setLocalLikes] = useState(likes);
   const [localDislikes, setLocalDislikes] = useState(dislikes);
   const [localUserReaction, setLocalUserReaction] = useState(userReaction);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     setLocalLikes(likes);
@@ -60,41 +61,59 @@ export function PostActions({
     userReaction: localUserReaction
   });
 
-  const handleLocalReaction = async (type: 'like' | 'dislike') => {
-    // Mise à jour optimiste de l'UI
-    if (localUserReaction === type) {
-      // Si on retire la réaction
-      setLocalUserReaction(undefined);
-      if (type === 'like') {
-        setLocalLikes(prev => Math.max(0, prev - 1));
-      } else {
-        setLocalDislikes(prev => Math.max(0, prev - 1));
-      }
-    } else {
-      // Si on change de réaction ou on ajoute une nouvelle
-      if (localUserReaction) {
-        // Si on change de type de réaction
-        if (localUserReaction === 'like') {
+  const handleLocalReaction = useCallback(async (type: 'like' | 'dislike') => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+
+    try {
+      // Sauvegarde des anciennes valeurs pour rollback en cas d'erreur
+      const previousLikes = localLikes;
+      const previousDislikes = localDislikes;
+      const previousUserReaction = localUserReaction;
+
+      // Mise à jour optimiste de l'UI
+      if (localUserReaction === type) {
+        // Si on retire la réaction
+        setLocalUserReaction(undefined);
+        if (type === 'like') {
           setLocalLikes(prev => Math.max(0, prev - 1));
-          setLocalDislikes(prev => prev + 1);
         } else {
           setLocalDislikes(prev => Math.max(0, prev - 1));
-          setLocalLikes(prev => prev + 1);
         }
       } else {
-        // Si on ajoute une nouvelle réaction
-        if (type === 'like') {
-          setLocalLikes(prev => prev + 1);
+        // Si on change de réaction ou on ajoute une nouvelle
+        if (localUserReaction) {
+          // Si on change de type de réaction
+          if (localUserReaction === 'like') {
+            setLocalLikes(prev => Math.max(0, prev - 1));
+            setLocalDislikes(prev => prev + 1);
+          } else {
+            setLocalDislikes(prev => Math.max(0, prev - 1));
+            setLocalLikes(prev => prev + 1);
+          }
         } else {
-          setLocalDislikes(prev => prev + 1);
+          // Si on ajoute une nouvelle réaction
+          if (type === 'like') {
+            setLocalLikes(prev => prev + 1);
+          } else {
+            setLocalDislikes(prev => prev + 1);
+          }
         }
+        setLocalUserReaction(type);
       }
-      setLocalUserReaction(type);
-    }
 
-    // Appel à l'API pour mettre à jour en base
-    await handleReaction(type);
-  };
+      // Appel à l'API pour mettre à jour en base
+      await handleReaction(type);
+    } catch (error) {
+      console.error('Error handling reaction:', error);
+      // En cas d'erreur, on revient à l'état précédent
+      setLocalLikes(likes);
+      setLocalDislikes(dislikes);
+      setLocalUserReaction(userReaction);
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [isProcessing, localLikes, localDislikes, localUserReaction, handleReaction, likes, dislikes, userReaction]);
 
   useEffect(() => {
     const channel = supabase
@@ -108,10 +127,12 @@ export function PostActions({
           filter: `id=eq.${postId}`
         },
         (payload: RealtimePostgresChangesPayload<PostPayload>) => {
-          const newPost = payload.new as PostPayload;
-          if (newPost && typeof newPost.likes === 'number' && typeof newPost.dislikes === 'number') {
-            setLocalLikes(newPost.likes);
-            setLocalDislikes(newPost.dislikes);
+          if (!isProcessing && payload.new) {
+            const newPost = payload.new;
+            if (typeof newPost.likes === 'number' && typeof newPost.dislikes === 'number') {
+              setLocalLikes(newPost.likes);
+              setLocalDislikes(newPost.dislikes);
+            }
           }
         }
       )
@@ -120,7 +141,7 @@ export function PostActions({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [postId]);
+  }, [postId, isProcessing]);
 
   return (
     <div className="flex gap-2 items-center py-2">
