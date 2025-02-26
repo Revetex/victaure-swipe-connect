@@ -31,7 +31,9 @@ export function ReactionButton({
       )}
     >
       <Icon className={cn("w-4 h-4", isActive && "animate-bounce")} />
-      <span className="min-w-[20px] text-center">{count}{suffix}</span>
+      <span className="min-w-[20px] text-center text-muted-foreground font-semibold">
+        {count}{suffix}
+      </span>
     </Button>
   );
 }

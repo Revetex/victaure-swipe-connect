@@ -59,11 +59,13 @@ export function CommentManager({
 
   return (
     <div className="space-y-4">
-      <PostComments
-        comments={comments}
-        currentUserId={currentUserId}
-        onDeleteComment={handleDeleteComment}
-      />
+      <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+        <PostComments
+          comments={comments}
+          currentUserId={currentUserId}
+          onDeleteComment={handleDeleteComment}
+        />
+      </div>
       {currentUserId && userEmail && (
         <CommentInput
           postId={postId}
