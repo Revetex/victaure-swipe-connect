@@ -1,9 +1,7 @@
 
-import { Star, Menu, Bot } from "lucide-react";
+import { Menu, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
-import { Logo } from "@/components/Logo";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { VictaureChat } from "@/components/chat/VictaureChat";
@@ -24,33 +22,16 @@ export function AppHeader({
   const [showChat, setShowChat] = useState(false);
   const { user } = useAuth();
 
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setShowChat(false);
-      }
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, []);
-
   const handleMenuClick = () => {
     if (setShowMobileMenu) {
       setShowMobileMenu(!showMobileMenu);
     }
   };
 
-  return <motion.header initial={{
-    opacity: 0,
-    y: -20
-  }} animate={{
-    opacity: 1,
-    y: 0
-  }} className="fixed top-0 left-0 right-0 z-[100] flex h-16 items-center justify-between px-4 bg-[#1A1F2C] border-b border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.2)]" style={{
-    paddingTop: 'env(safe-area-inset-top)'
-  }}>
+  return (
+    <header className="fixed top-0 left-0 right-0 z-[100] flex h-16 items-center justify-between px-4 bg-[#1A1F2C] border-b border-white/5">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={handleMenuClick} className="text-white hover:bg-white/10 border border-white/10 active:scale-95 transition-transform touch-manipulation">
+        <Button variant="ghost" size="sm" onClick={handleMenuClick} className="text-white border border-white/10">
           <Menu className="h-4 w-4" />
         </Button>
         
@@ -68,27 +49,28 @@ export function AppHeader({
       </div>
 
       <div className="flex items-center gap-3">
-        {totalJobs !== undefined && <div className="hidden sm:flex items-center px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
+        {totalJobs !== undefined && 
+          <div className="hidden sm:flex items-center px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
             <span className="text-xs text-white/80 whitespace-nowrap">
               {totalJobs} offres disponibles
             </span>
-          </div>}
+          </div>
+        }
 
-        <Button onClick={() => setShowChat(true)} className="group relative flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#64B5D9]/20 to-[#64B5D9]/10 hover:from-[#64B5D9]/30 hover:to-[#64B5D9]/20 border border-[#64B5D9]/20 rounded-full transition-all duration-300 shadow-lg shadow-black/20" title="Assistant IA">
-          <Bot className="h-4 w-4 text-[#64B5D9] group-hover:scale-110 transition-transform" />
-          <span className="text-sm font-medium text-white/90 hidden sm:block">M. Victaure</span>
+        <Button onClick={() => setShowChat(true)} className="flex items-center gap-2 px-4 py-2 bg-[#64B5D9] text-white rounded-full" title="Assistant IA">
+          <Bot className="h-4 w-4" />
+          <span className="text-sm font-medium hidden sm:block">M. Victaure</span>
         </Button>
 
-        <AnimatePresence>
-          {showChat && (
-            <Dialog open={showChat} onOpenChange={setShowChat}>
-              <DialogContent className="bg-[#1A1F2C] border-white/10 text-white max-w-2xl">
-                <DialogTitle>Chat avec M. Victaure</DialogTitle>
-                <VictaureChat />
-              </DialogContent>
-            </Dialog>
-          )}
-        </AnimatePresence>
+        {showChat && (
+          <Dialog open={showChat} onOpenChange={setShowChat}>
+            <DialogContent className="bg-[#1A1F2C] border-white/10 text-white max-w-2xl">
+              <DialogTitle>Chat avec M. Victaure</DialogTitle>
+              <VictaureChat />
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
-    </motion.header>;
+    </header>
+  );
 }

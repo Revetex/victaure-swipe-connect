@@ -7,19 +7,16 @@
   /* Layout de base */
   .page-container {
     @apply relative min-h-screen w-full 
-           bg-gradient-to-br from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]
+           bg-[#1A1F2C]
            text-[#F2EBE4] pb-6;
   }
 
   /* Sections de contenu */
   .content-section {
-    @apply bg-white/5 dark:bg-black/20
-           backdrop-blur-md
+    @apply bg-white/5
            border border-[#64B5D9]/10
-           rounded-lg shadow-sm
-           p-4 sm:p-6
-           transition-all duration-300
-           hover:shadow-md;
+           rounded-lg
+           p-4 sm:p-6;
   }
 
   /* En-têtes de section */
@@ -31,28 +28,16 @@
 
   .section-title {
     @apply text-xl font-semibold 
-           bg-gradient-to-r from-[#64B5D9] to-[#F2EBE4]
-           bg-clip-text text-transparent
+           text-[#F2EBE4]
            flex items-center gap-2;
   }
 
   /* Cartes */
   .glass-card {
-    @apply bg-white/5 dark:bg-black/20 
-           backdrop-blur-md
+    @apply bg-white/5
            border border-[#64B5D9]/10
-           rounded-lg shadow-sm
-           p-4
-           transition-all duration-300
-           hover:bg-white/10 dark:hover:bg-black/30
-           hover:shadow-md;
-  }
-
-  .hover-card {
-    @apply transition-all duration-300
-           hover:scale-[1.02] 
-           hover:shadow-lg
-           active:scale-[0.98];
+           rounded-lg
+           p-4;
   }
 
   /* Navigation */
@@ -60,9 +45,7 @@
     @apply flex items-center gap-2 
            px-3 py-2
            rounded-lg 
-           text-sm text-[#F2EBE4]/70
-           transition-colors duration-200
-           hover:bg-[#64B5D9]/10 hover:text-[#F2EBE4];
+           text-sm text-[#F2EBE4]/70;
   }
 
   .nav-item-active {
@@ -86,9 +69,8 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-[#64B5D9]/10 hover:bg-[#64B5D9]/20
-           rounded-full
-           transition-colors duration-200;
+    @apply bg-[#64B5D9]/10
+           rounded-full;
   }
 
   /* Inputs et boutons */
@@ -99,17 +81,15 @@
   }
 
   .button-base {
-    @apply bg-gradient-to-r from-[#64B5D9]/80 to-[#64B5D9]/60
-           hover:from-[#64B5D9] hover:to-[#64B5D9]/80
+    @apply bg-[#64B5D9]
            text-white font-medium
-           rounded-lg shadow-lg
-           transition-all duration-300;
+           rounded-lg;
   }
 
   /* Layout des pages */
   .page-header {
     @apply fixed top-0 left-0 right-0 z-50
-           bg-[#1A1F2C]/80 backdrop-blur-md
+           bg-[#1A1F2C]
            border-b border-white/5;
   }
 
