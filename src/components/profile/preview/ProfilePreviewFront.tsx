@@ -58,16 +58,16 @@ export function ProfilePreviewFront({
   };
 
   return (
-    <div className="space-y-6 w-full">
+    <div className="space-y-4 w-full">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="relative bg-card rounded-xl shadow-lg overflow-hidden"
       >        
-        <div className="p-6">
+        <div className="p-4">
           <ProfilePreviewHeader profile={profile} />
           
-          <div className="mt-6 space-y-2">
+          <div className="mt-4 space-y-2">
             {isOwnProfile ? (
               <Button 
                 onClick={onViewProfile}
@@ -159,7 +159,7 @@ export function ProfilePreviewFront({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               transition={{ duration: 0.3 }}
-              className="mt-6 pt-6 border-t border-border/10"
+              className="mt-4 pt-4 border-t border-border/10"
             >
               <ProfilePreviewContact profile={profile} />
             </motion.div>
