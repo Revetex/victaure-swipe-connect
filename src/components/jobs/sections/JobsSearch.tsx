@@ -1,4 +1,3 @@
-
 import { Search, Filter, Plus, Image, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -6,20 +5,11 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger, 
-  DialogClose,
-  DialogFooter 
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { JobsFilters } from "./JobsFilters";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-
 interface JobsSearchProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
@@ -38,7 +28,6 @@ interface JobsSearchProps {
   onSalaryRangeChange: (value: [number, number]) => void;
   onRemoteOnlyChange: (value: boolean) => void;
 }
-
 export function JobsSearch({
   searchQuery,
   onSearchChange,
@@ -58,29 +47,13 @@ export function JobsSearch({
   onRemoteOnlyChange
 }: JobsSearchProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-
-  const locations = [
-    "Montréal",
-    "Québec",
-    "Laval",
-    "Gatineau",
-    "Sherbrooke",
-    "Trois-Rivières",
-    "Longueuil",
-    "Saint-Jean-sur-Richelieu",
-    "Lévis",
-    "Saguenay"
-  ];
-
-  return (
-    <Card className="bg-background dark:bg-[#1B2A4A]/50 backdrop-blur-sm border-border/10 dark:border-[#64B5D9]/10 shadow-lg p-6">
+  const locations = ["Montréal", "Québec", "Laval", "Gatineau", "Sherbrooke", "Trois-Rivières", "Longueuil", "Saint-Jean-sur-Richelieu", "Lévis", "Saguenay"];
+  return <Card className="bg-background dark:bg-[#1B2A4A]/50 backdrop-blur-sm border-border/10 dark:border-[#64B5D9]/10 shadow-lg p-6 px-[8px] py-[8px]">
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <Dialog>
             <DialogTrigger asChild>
-              <Button 
-                className="flex-1 justify-start h-14 text-primary-foreground bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB] dark:text-white"
-              >
+              <Button className="flex-1 justify-start h-14 text-primary-foreground bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB] dark:text-white">
                 <Plus className="w-5 h-5 mr-2" />
                 Publier une annonce
               </Button>
@@ -106,35 +79,22 @@ export function JobsSearch({
 
                   <div className="grid gap-2">
                     <Label className="text-sm font-medium">Titre</Label>
-                    <Input 
-                      placeholder="Titre de votre annonce" 
-                      className="h-12 bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10"
-                    />
+                    <Input placeholder="Titre de votre annonce" className="h-12 bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10" />
                   </div>
 
                   <div className="grid gap-2">
                     <Label className="text-sm font-medium">Description</Label>
-                    <Textarea 
-                      placeholder="Décrivez votre offre en détail..." 
-                      className="min-h-[200px] bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10 resize-none"
-                    />
+                    <Textarea placeholder="Décrivez votre offre en détail..." className="min-h-[200px] bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10 resize-none" />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
                       <Label className="text-sm font-medium">Localisation</Label>
-                      <Input 
-                        placeholder="Ville, région..." 
-                        className="h-12 bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10"
-                      />
+                      <Input placeholder="Ville, région..." className="h-12 bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10" />
                     </div>
                     <div className="grid gap-2">
                       <Label className="text-sm font-medium">Salaire / Budget</Label>
-                      <Input 
-                        type="number" 
-                        placeholder="Montant" 
-                        className="h-12 bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10"
-                      />
+                      <Input type="number" placeholder="Montant" className="h-12 bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10" />
                     </div>
                   </div>
 
@@ -156,36 +116,15 @@ export function JobsSearch({
           
           <Dialog>
             <DialogTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="icon"
-                className="h-14 w-14 shrink-0 bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10 hover:bg-gray-50 dark:hover:bg-[#2A3B61]"
-              >
+              <Button variant="outline" size="icon" className="h-14 w-14 shrink-0 bg-white dark:bg-[#1B2A4A] border-input/20 dark:border-[#64B5D9]/10 hover:bg-gray-50 dark:hover:bg-[#2A3B61]">
                 <Filter className="h-5 w-5" />
               </Button>
             </DialogTrigger>
             <DialogContent>
-              <JobsFilters 
-                selectedLocation={selectedLocation}
-                selectedCompanyType={selectedCompanyType}
-                sortOrder={sortOrder}
-                experienceLevel={experienceLevel}
-                contractType={contractType}
-                salaryRange={salaryRange}
-                remoteOnly={remoteOnly}
-                onLocationChange={onLocationChange}
-                onCompanyTypeChange={onCompanyTypeChange}
-                onSortOrderChange={onSortOrderChange}
-                onExperienceLevelChange={onExperienceLevelChange}
-                onContractTypeChange={onContractTypeChange}
-                onSalaryRangeChange={onSalaryRangeChange}
-                onRemoteOnlyChange={onRemoteOnlyChange}
-                locations={locations}
-              />
+              <JobsFilters selectedLocation={selectedLocation} selectedCompanyType={selectedCompanyType} sortOrder={sortOrder} experienceLevel={experienceLevel} contractType={contractType} salaryRange={salaryRange} remoteOnly={remoteOnly} onLocationChange={onLocationChange} onCompanyTypeChange={onCompanyTypeChange} onSortOrderChange={onSortOrderChange} onExperienceLevelChange={onExperienceLevelChange} onContractTypeChange={onContractTypeChange} onSalaryRangeChange={onSalaryRangeChange} onRemoteOnlyChange={onRemoteOnlyChange} locations={locations} />
             </DialogContent>
           </Dialog>
         </div>
       </div>
-    </Card>
-  );
+    </Card>;
 }
