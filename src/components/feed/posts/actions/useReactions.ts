@@ -39,6 +39,16 @@ export const useReactions = ({
     setIsProcessing(true);
 
     try {
+      // Récupérer d'abord l'état actuel du post
+      const { data: post, error: fetchError } = await supabase
+        .from('posts')
+        .select('likes, dislikes')
+        .eq('id', postId)
+        .single();
+
+      if (fetchError) throw fetchError;
+      if (!post) throw new Error('Post not found');
+
       // Si la même réaction existe, on la supprime
       if (userReaction === type) {
         // Supprimer la réaction
@@ -54,7 +64,7 @@ export const useReactions = ({
         const { error: updateError } = await supabase
           .from('posts')
           .update({
-            [type === 'like' ? 'likes' : 'dislikes']: supabase.sql`${type === 'like' ? 'likes' : 'dislikes'} - 1`
+            [type === 'like' ? 'likes' : 'dislikes']: Math.max(0, (type === 'like' ? post.likes : post.dislikes) - 1)
           })
           .eq('id', postId);
 
@@ -75,8 +85,8 @@ export const useReactions = ({
           const { error: updateCountsError } = await supabase
             .from('posts')
             .update({
-              [type === 'like' ? 'likes' : 'dislikes']: supabase.sql`${type === 'like' ? 'likes' : 'dislikes'} + 1`,
-              [type === 'like' ? 'dislikes' : 'likes']: supabase.sql`${type === 'like' ? 'dislikes' : 'likes'} - 1`
+              [type === 'like' ? 'likes' : 'dislikes']: (type === 'like' ? post.likes : post.dislikes) + 1,
+              [type === 'like' ? 'dislikes' : 'likes']: Math.max(0, (type === 'like' ? post.dislikes : post.likes) - 1)
             })
             .eq('id', postId);
 
@@ -97,7 +107,7 @@ export const useReactions = ({
           const { error: updateError } = await supabase
             .from('posts')
             .update({
-              [type === 'like' ? 'likes' : 'dislikes']: supabase.sql`${type === 'like' ? 'likes' : 'dislikes'} + 1`
+              [type === 'like' ? 'likes' : 'dislikes']: (type === 'like' ? post.likes : post.dislikes) + 1
             })
             .eq('id', postId);
 
