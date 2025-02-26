@@ -1,7 +1,7 @@
 
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Star, UserPlus } from "lucide-react";
+import { MessageCircle, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { ProfileNameButton } from "@/components/profile/ProfileNameButton";
 import { useNavigate } from "react-router-dom";
@@ -50,26 +50,6 @@ export function FriendCard({ friend }: FriendCardProps) {
       whileHover={{ scale: 1.02 }}
       className="relative overflow-hidden rounded-xl"
     >
-      {/* Background buttons that appear on hover */}
-      <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0">
-        <Button 
-          variant="secondary"
-          size="icon"
-          className="bg-white/80 hover:bg-white shadow-lg"
-          onClick={handleStartChat}
-        >
-          <MessageCircle className="h-5 w-5" />
-        </Button>
-        <Button
-          variant="secondary"
-          size="icon"
-          className="bg-white/80 hover:bg-white shadow-lg"
-        >
-          <UserPlus className="h-5 w-5" />
-        </Button>
-      </div>
-
-      {/* Main content with glass effect */}
       <div className="relative z-10 flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-[#F2FCE2]/50 via-[#D3E4FD]/30 to-[#FFDEE2]/20 backdrop-blur-sm border border-zinc-200/30 hover:border-primary/20 transition-all duration-300 group hover:bg-white/80">
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -101,6 +81,15 @@ export function FriendCard({ friend }: FriendCardProps) {
             </p>
           </div>
         </div>
+
+        <Button 
+          variant="secondary"
+          size="icon"
+          className="bg-white/80 hover:bg-white shadow-lg"
+          onClick={handleStartChat}
+        >
+          <MessageCircle className="h-5 w-5" />
+        </Button>
       </div>
     </motion.div>
   );
