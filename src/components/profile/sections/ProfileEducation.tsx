@@ -32,7 +32,9 @@ export function ProfileEducation({ education }: ProfileEducationProps) {
   return (
     <Card className="p-6 bg-card/50 backdrop-blur-sm">
       <div className="flex items-center gap-2 pb-4 mb-6 border-b border-border/50">
-        <GraduationCap className="h-5 w-5 text-primary/80" />
+        <span className="p-2 rounded-full bg-primary/10">
+          <GraduationCap className="h-5 w-5 text-primary" />
+        </span>
         <h3 className="text-lg font-semibold text-foreground/90">Formation</h3>
       </div>
 
