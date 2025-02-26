@@ -11,6 +11,7 @@ import { useVoiceFeatures } from "./hooks/useVoiceFeatures";
 import { Button } from "../ui/button";
 import { RefreshCcw, X } from "lucide-react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { toast } from "sonner";
 
 interface VictaureChatProps {
   maxQuestions?: number;
@@ -27,26 +28,43 @@ export function VictaureChat({
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const [geminiModel, setGeminiModel] = useState<any>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   const { suggestions, isLoadingSuggestions, generateSuggestions } = useSuggestions();
 
   // Initialiser le modèle Gemini dès le chargement du composant
   useEffect(() => {
-    try {
-      const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!API_KEY) {
-        console.error("Clé API Gemini manquante");
-        return;
+    const initializeGemini = async () => {
+      try {
+        setIsInitializing(true);
+        const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+        
+        if (!API_KEY) {
+          console.error("Clé API Gemini manquante");
+          toast.error("Configuration Gemini manquante. Veuillez contacter le support.");
+          return;
+        }
+        
+        console.log("Initialisation du modèle Gemini...");
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        
+        // Test simple pour vérifier que le modèle fonctionne
+        const result = await model.generateContent("Test de connexion");
+        if (!result) throw new Error("Échec du test de connexion");
+        
+        setGeminiModel(model);
+        console.log("Modèle Gemini initialisé avec succès");
+        toast.success("Assistant prêt à discuter");
+      } catch (error) {
+        console.error("Erreur d'initialisation du modèle Gemini:", error);
+        toast.error("Erreur de connexion avec l'assistant. Veuillez réessayer.");
+      } finally {
+        setIsInitializing(false);
       }
-      
-      console.log("Initialisation du modèle Gemini...");
-      const genAI = new GoogleGenerativeAI(API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      setGeminiModel(model);
-      console.log("Modèle Gemini initialisé avec succès");
-    } catch (error) {
-      console.error("Erreur d'initialisation du modèle Gemini:", error);
-    }
+    };
+
+    initializeGemini();
   }, []);
 
   const { 
@@ -76,7 +94,12 @@ export function VictaureChat({
     if (!userInput.trim() || isLoading) return;
 
     if (!geminiModel) {
-      console.error("Le modèle Gemini n'est pas initialisé");
+      toast.error("L'assistant n'est pas encore prêt. Veuillez patienter.");
+      return;
+    }
+
+    if (isInitializing) {
+      toast.error("L'assistant est en cours d'initialisation. Veuillez patienter.");
       return;
     }
     
@@ -98,15 +121,13 @@ export function VictaureChat({
       }
     } catch (err) {
       console.error("Error in handleSendMessage:", err);
+      toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
     }
   };
 
   const handleSuggestionSelect = (suggestion: string) => {
     setUserInput(suggestion);
   };
-
-  const isDisabled = userQuestions >= maxQuestions && !user;
-  const disabledMessage = "Connectez-vous pour continuer à discuter avec Mr Victaure";
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -148,7 +169,7 @@ export function VictaureChat({
       <div className="flex-1 min-h-0 overflow-y-auto pb-[140px]">
         <MessageList 
           messages={messages}
-          isLoading={isLoading}
+          isLoading={isLoading || isInitializing}
           ref={chatContainerRef}
         />
       </div>
@@ -166,7 +187,7 @@ export function VictaureChat({
           setUserInput={setUserInput}
           isRecording={isRecording}
           isSpeaking={isSpeaking}
-          isLoading={isLoading}
+          isLoading={isLoading || isInitializing}
           isDisabled={userQuestions >= maxQuestions && !user}
           disabledMessage="Connectez-vous pour continuer à discuter avec Mr Victaure"
           onStartRecording={startRecording}
