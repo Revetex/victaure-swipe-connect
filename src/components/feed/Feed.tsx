@@ -9,10 +9,14 @@ import { useState, useRef } from "react";
 export function Feed() {
   const queryClient = useQueryClient();
   const scrollRef = useRef<HTMLDivElement>(null);
+  
+  // Form states
   const [newPost, setNewPost] = useState("");
   const [privacy, setPrivacy] = useState<"public" | "connections">("public");
   const [attachments, setAttachments] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
   const [sortBy, setSortBy] = useState<'date' | 'likes' | 'comments'>('date');
@@ -40,7 +44,6 @@ export function Feed() {
         backgroundSize: '15px 15px'
       }} />
 
-      {/* Filters section - Fixed below header */}
       <div className="fixed top-16 left-0 right-0 z-50">
         <div className="w-full max-w-3xl mx-auto px-4 py-2 sm:px-0">
           <PostFilters 
@@ -58,19 +61,13 @@ export function Feed() {
 
       <div 
         ref={scrollRef} 
-        className="relative z-10 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-[#64B5D9]/10 scrollbar-track-transparent hover:scrollbar-thumb-[#64B5D9]/20 pt-32" 
-        style={{
-          scrollbarGutter: 'stable',
-          overscrollBehavior: 'contain'
-        }}
+        className="relative z-10 h-full overflow-y-auto pt-32 scrollbar-thin scrollbar-thumb-[#64B5D9]/10 scrollbar-track-transparent hover:scrollbar-thumb-[#64B5D9]/20"
+        style={{ scrollbarGutter: 'stable', overscrollBehavior: 'contain' }}
       >
-        <div className="w-full max-w-3xl mx-auto px-4 space-y-6 py-0 sm:px-0">
+        <div className="w-full max-w-3xl mx-auto px-4 space-y-6 sm:px-0">
           <motion.div
-            style={{
-              opacity: headerOpacity,
-              scale: headerScale
-            }}
-            className="space-y-4 origin-top transform-gpu"
+            style={{ opacity: headerOpacity, scale: headerScale }}
+            className="origin-top transform-gpu"
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -97,7 +94,6 @@ export function Feed() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.2 }}
-            className="relative space-y-4"
           >
             <div className="bg-[#1B2A4A]/30 backdrop-blur-sm border border-[#64B5D9]/10 rounded-xl overflow-hidden shadow-lg">
               <PostList
