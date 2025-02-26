@@ -1,0 +1,148 @@
+
+/* Grid Layouts */
+.grid-main {
+  @apply grid grid-cols-1 
+         sm:grid-cols-2 
+         lg:grid-cols-3 
+         gap-6;
+}
+
+.grid-sidebar {
+  @apply grid grid-cols-1 
+         lg:grid-cols-[300px_1fr] 
+         gap-6;
+}
+
+/* Flex Layouts */
+.flex-between {
+  @apply flex items-center 
+         justify-between;
+}
+
+.flex-center {
+  @apply flex items-center 
+         justify-center;
+}
+
+/* Container Layouts */
+.container-main {
+  @apply max-w-7xl 
+         mx-auto 
+         px-4 sm:px-6 lg:px-8 
+         py-6;
+}
+
+.container-narrow {
+  @apply max-w-3xl 
+         mx-auto 
+         px-4 sm:px-6 
+         py-6;
+}
+
+/* Section Layouts */
+.section-main {
+  @apply py-12;
+}
+
+.section-hero {
+  @apply relative py-20 
+         overflow-hidden;
+}
+
+/* Card Layouts */
+.card-grid {
+  @apply grid grid-cols-1 
+         sm:grid-cols-2 
+         lg:grid-cols-3 
+         gap-6;
+}
+
+.card-list {
+  @apply space-y-6;
+}
+
+/* Form Layouts */
+.form-grid {
+  @apply grid grid-cols-1 
+         sm:grid-cols-2 
+         gap-6;
+}
+
+.form-stack {
+  @apply space-y-6;
+}
+
+/* Sidebar Layouts */
+.sidebar-layout {
+  @apply hidden lg:block 
+         w-64 
+         space-y-6;
+}
+
+/* Modal Layouts */
+.modal-layout {
+  @apply fixed inset-0 
+         z-50 
+         overflow-y-auto;
+}
+
+.modal-container {
+  @apply flex min-h-full 
+         items-end sm:items-center 
+         justify-center 
+         p-4 text-center sm:p-0;
+}
+
+/* Header Layouts */
+.header-layout {
+  @apply sticky top-0 
+         z-40 
+         backdrop-blur-lg;
+}
+
+/* Footer Layouts */
+.footer-layout {
+  @apply mt-auto 
+         border-t border-white/10;
+}
+
+/* Mobile Navigation */
+.mobile-nav {
+  @apply fixed bottom-0 
+         left-0 right-0 
+         z-40 
+         bg-background/80 
+         backdrop-blur-lg 
+         border-t border-white/10;
+}
+
+/* Responsive Helpers */
+.hide-on-mobile {
+  @apply hidden sm:block;
+}
+
+.show-on-mobile {
+  @apply block sm:hidden;
+}
+
+/* Animation Layouts */
+.animate-fade {
+  @apply transition-opacity 
+         duration-200;
+}
+
+.animate-slide {
+  @apply transition-transform 
+         duration-200;
+}
+
+/* Utility Layouts */
+.absolute-center {
+  @apply absolute 
+         top-1/2 left-1/2 
+         -translate-x-1/2 -translate-y-1/2;
+}
+
+.full-bleed {
+  @apply -mx-4 sm:-mx-6 lg:-mx-8;
+}

@@ -1,45 +1,68 @@
 
+/* Theme Modern */
 .theme-modern {
   --primary: #64B5D9;
   --secondary: #1B2A4A;
   --accent: #F2EBE4;
-  --text: #1B2A4A;
+  --text: #FFFFFF;
+  --background: #1A1F2C;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --border-color: rgba(255, 255, 255, 0.1);
   --gradient: linear-gradient(135deg, #64B5D9, #1B2A4A);
-  font-family: 'Inter', sans-serif;
+  
+  /* Fonts */
+  --font-primary: 'Inter', sans-serif;
+  --font-secondary: 'Roboto', sans-serif;
+  --font-accent: 'Poppins', sans-serif;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Border Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-full: 9999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  
+  /* Transitions */
+  --transition-fast: 150ms;
+  --transition-normal: 300ms;
+  --transition-slow: 500ms;
+  
+  /* Z-index layers */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal: 1040;
+  --z-popover: 1050;
+  --z-tooltip: 1060;
 }
 
+/* Theme Elegant */
 .theme-elegant {
-  --primary: #64B5D9;
-  --secondary: #1B2A4A;
+  --primary: #9b87f5;
+  --secondary: #7E69AB;
   --accent: #F2EBE4;
-  --text: #1B2A4A;
-  --gradient: linear-gradient(135deg, #64B5D9, #1B2A4A);
-  font-family: 'Playfair Display', serif;
+  --text: #FFFFFF;
+  --background: #1A1F2C;
+  /* ... keep existing code */
 }
 
-.theme-bold {
+/* Theme Dark */
+.theme-dark {
   --primary: #64B5D9;
   --secondary: #1B2A4A;
   --accent: #F2EBE4;
-  --text: #1B2A4A;
-  --gradient: linear-gradient(135deg, #64B5D9, #1B2A4A);
-  font-family: 'Oswald', sans-serif;
-}
-
-.theme-minimal {
-  --primary: #64B5D9;
-  --secondary: #1B2A4A;
-  --accent: #F2EBE4;
-  --text: #1B2A4A;
-  --gradient: linear-gradient(135deg, #64B5D9, #1B2A4A);
-  font-family: 'Montserrat', sans-serif;
-}
-
-.theme-warm {
-  --primary: #64B5D9;
-  --secondary: #1B2A4A;
-  --accent: #F2EBE4;
-  --text: #1B2A4A;
-  --gradient: linear-gradient(135deg, #64B5D9, #1B2A4A);
-  font-family: 'Cormorant Garamond', serif;
+  --text: #FFFFFF;
+  --background: #1A1F2C;
+  /* ... keep existing code */
 }

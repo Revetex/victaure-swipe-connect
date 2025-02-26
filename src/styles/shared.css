@@ -102,6 +102,48 @@
            hover:bg-white/10
            hover:shadow-xl;
   }
+
+  /* Animation de flottement */
+  .float-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Effet de surbrillance au survol */
+  .hover-glow {
+    @apply transition-all duration-300;
+  }
+
+  .hover-glow:hover {
+    @apply shadow-[0_0_15px_rgba(100,181,217,0.3)];
+  }
+
+  /* Bordures brillantes */
+  .shine-border {
+    @apply relative;
+    &::after {
+      content: '';
+      @apply absolute inset-0 
+             rounded-xl
+             bg-gradient-to-r from-transparent via-white/20 to-transparent
+             opacity-0 transition-opacity duration-300;
+    }
+    &:hover::after {
+      @apply opacity-100;
+    }
+  }
+
+  /* Effet de verre dépoli */
+  .frosted-glass {
+    @apply backdrop-blur-md bg-white/5
+           border border-white/10
+           shadow-lg;
+  }
+
+  /* Points de repère de grille */
+  .grid-dots {
+    background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
 }
 
 /* Thème global */
@@ -139,4 +181,3 @@ a {
   @apply text-[#64B5D9] hover:text-[#64B5D9]/80 
          transition-colors duration-200;
 }
-
