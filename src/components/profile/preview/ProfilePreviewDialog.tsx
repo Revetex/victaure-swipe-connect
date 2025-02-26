@@ -21,7 +21,7 @@ export function ProfilePreviewDialog({
   isOpen,
   onClose,
   onRequestChat,
-  canViewFullProfile = false,
+  canViewFullProfile = true,
   onImageClick,
 }: ProfilePreviewDialogProps) {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -49,7 +49,10 @@ export function ProfilePreviewDialog({
                 onFlip={() => setIsFlipped(true)}
                 canViewFullProfile={canViewFullProfile}
                 onClose={onClose}
-                onViewProfile={() => {}}
+                onViewProfile={() => {
+                  onClose();
+                  // La navigation sera gérée dans ProfilePreviewButtons
+                }}
               />
             ) : (
               <ProfilePreviewBack

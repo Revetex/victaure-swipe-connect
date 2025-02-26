@@ -7,13 +7,14 @@ import { useConnectionActions } from "./hooks/useConnectionActions";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 interface ProfilePreviewButtonsProps {
   profile: UserProfile;
   onClose: () => void;
   canViewFullProfile: boolean;
   onRequestChat?: () => void;
-  onViewProfile?: () => void;  // Ajout de la prop manquante
+  onViewProfile?: () => void;
 }
 
 export function ProfilePreviewButtons({
@@ -41,19 +42,29 @@ export function ProfilePreviewButtons({
   } = useConnectionActions(profile.id);
 
   const handleMessageClick = () => {
+    if (!user) {
+      toast.error("Vous devez être connecté pour envoyer un message");
+      return;
+    }
+
+    onClose();
     if (onRequestChat) {
       onRequestChat();
     } else {
-      onClose();
       navigate(`/messages?receiver=${profile.id}`);
     }
   };
 
   const handleViewProfileClick = () => {
+    if (!canViewFullProfile) {
+      toast.error("Ce profil est privé");
+      return;
+    }
+
+    onClose();
     if (onViewProfile) {
       onViewProfile();
     } else {
-      onClose();
       navigate(`/profile/${profile.id}`);
     }
   };
@@ -115,15 +126,6 @@ export function ProfilePreviewButtons({
         </Button>
       )}
 
-      <Button
-        onClick={handleToggleBlock}
-        variant="outline"
-        className="w-full border-muted hover:bg-muted/10 text-muted-foreground"
-      >
-        <Ban className="mr-2 h-4 w-4" />
-        {isBlocked ? "Débloquer" : "Bloquer"}
-      </Button>
-
       {isFriend && (
         <Button
           onClick={handleMessageClick}
@@ -134,6 +136,15 @@ export function ProfilePreviewButtons({
           Envoyer un message
         </Button>
       )}
+
+      <Button
+        onClick={handleToggleBlock}
+        variant="outline"
+        className="w-full border-muted hover:bg-muted/10 text-muted-foreground"
+      >
+        <Ban className="mr-2 h-4 w-4" />
+        {isBlocked ? "Débloquer" : "Bloquer"}
+      </Button>
     </motion.div>
   );
 }
