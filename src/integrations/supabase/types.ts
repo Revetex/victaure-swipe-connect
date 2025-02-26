@@ -156,30 +156,6 @@ export type Database = {
         }
         Relationships: []
       }
-      auth_sessions: {
-        Row: {
-          created_at: string | null
-          id: string
-          last_seen_at: string | null
-          metadata: Json | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          last_seen_at?: string | null
-          metadata?: Json | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          last_seen_at?: string | null
-          metadata?: Json | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       blocked_users: {
         Row: {
           blocked_id: string
@@ -729,45 +705,6 @@ export type Database = {
           id?: string
         }
         Relationships: []
-      }
-      deleted_conversations: {
-        Row: {
-          conversation_partner_id: string
-          created_at: string
-          id: string
-          keep_pinned: boolean | null
-          user_id: string
-        }
-        Insert: {
-          conversation_partner_id: string
-          created_at?: string
-          id?: string
-          keep_pinned?: boolean | null
-          user_id: string
-        }
-        Update: {
-          conversation_partner_id?: string
-          created_at?: string
-          id?: string
-          keep_pinned?: boolean | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "deleted_conversations_conversation_partner_id_fkey"
-            columns: ["conversation_partner_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "deleted_conversations_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       education: {
         Row: {
