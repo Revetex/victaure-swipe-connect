@@ -518,6 +518,7 @@ export type Database = {
       }
       conversations: {
         Row: {
+          archived: boolean | null
           created_at: string
           group_avatar: string | null
           group_name: string | null
@@ -533,6 +534,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          archived?: boolean | null
           created_at?: string
           group_avatar?: string | null
           group_name?: string | null
@@ -548,6 +550,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          archived?: boolean | null
           created_at?: string
           group_avatar?: string | null
           group_name?: string | null
@@ -4424,6 +4427,10 @@ export type Database = {
       }
     }
     Functions: {
+      auto_cleanup_old_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       change_user_password: {
         Args: {
           current_password: string
