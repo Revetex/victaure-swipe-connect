@@ -1,29 +1,29 @@
+
 import { Star, Menu, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/Logo";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { VictaureChat } from "@/components/chat/VictaureChat";
 import { Badge } from "@/components/ui/badge";
+
 interface AppHeaderProps {
   totalJobs?: number;
   onRequestAssistant?: () => void;
   showMobileMenu?: boolean;
   setShowMobileMenu?: (show: boolean) => void;
 }
+
 export function AppHeader({
   totalJobs,
   showMobileMenu,
   setShowMobileMenu
 }: AppHeaderProps) {
   const [showChat, setShowChat] = useState(false);
-  const {
-    user
-  } = useAuth();
+  const { user } = useAuth();
 
-  // Gérer l'échap pour fermer proprement
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -33,11 +33,13 @@ export function AppHeader({
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
   }, []);
+
   const handleMenuClick = () => {
     if (setShowMobileMenu) {
       setShowMobileMenu(!showMobileMenu);
     }
   };
+
   return <motion.header initial={{
     opacity: 0,
     y: -20
@@ -74,17 +76,18 @@ export function AppHeader({
 
         <Button onClick={() => setShowChat(true)} className="group relative flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#64B5D9]/20 to-[#64B5D9]/10 hover:from-[#64B5D9]/30 hover:to-[#64B5D9]/20 border border-[#64B5D9]/20 rounded-full transition-all duration-300 shadow-lg shadow-black/20" title="Assistant IA">
           <Bot className="h-4 w-4 text-[#64B5D9] group-hover:scale-110 transition-transform" />
-          <span className="text-sm font-medium text-white/90 hidden sm:block">Assistant IA</span>
+          <span className="text-sm font-medium text-white/90 hidden sm:block">M. Victaure</span>
         </Button>
 
         <AnimatePresence>
-          {showChat && <Dialog open={showChat} onOpenChange={open => {
-          if (!open) {
-            setShowChat(false);
-          }
-        }}>
-              
-            </Dialog>}
+          {showChat && (
+            <Dialog open={showChat} onOpenChange={setShowChat}>
+              <DialogContent className="bg-[#1A1F2C] border-white/10 text-white max-w-2xl">
+                <DialogTitle>Chat avec M. Victaure</DialogTitle>
+                <VictaureChat onClose={() => setShowChat(false)} />
+              </DialogContent>
+            </Dialog>
+          )}
         </AnimatePresence>
       </div>
     </motion.header>;
