@@ -4,45 +4,55 @@
 @tailwind utilities;
 
 @layer components {
-  /* Layout Base */
+  /* Layout de base */
   .page-container {
-    @apply relative min-h-screen w-full bg-background dark:bg-background pb-6;
+    @apply relative min-h-screen w-full 
+           bg-gradient-to-br from-[#F1F0FB] via-[#F7F7FC] to-[#FFFFFF]
+           dark:from-[#1A1F2C] dark:via-[#1A1F2C]/95 dark:to-[#1A1F2C]/90
+           pb-6;
   }
 
-  /* Content Sections */
+  /* Sections de contenu */
   .content-section {
-    @apply bg-card/30 dark:bg-card/20
-           border border-border/10
+    @apply bg-white/30 dark:bg-black/20
+           backdrop-blur-md
+           border border-[#64B5D9]/10
            rounded-lg shadow-sm
-           p-4 sm:p-6;
+           p-4 sm:p-6
+           transition-all duration-300
+           hover:shadow-md;
   }
 
-  /* Section Headers */
+  /* En-têtes de section */
   .section-header {
     @apply flex items-center justify-between
-           border-b border-border/10
+           border-b border-[#64B5D9]/10
            pb-4 mb-4;
   }
 
   .section-title {
     @apply text-xl font-semibold 
-           text-foreground
+           bg-gradient-to-r from-[#64B5D9] to-[#1B2A4A]
+           bg-clip-text text-transparent
            flex items-center gap-2;
   }
 
-  /* Cards */
+  /* Cartes */
   .glass-card {
-    @apply bg-background/30 dark:bg-card/20 
-           border border-border/10
+    @apply bg-white/30 dark:bg-black/20 
+           backdrop-blur-md
+           border border-[#64B5D9]/10
            rounded-lg shadow-sm
            p-4
            transition-all duration-300
-           hover:bg-background/40 dark:hover:bg-card/30;
+           hover:bg-white/40 dark:hover:bg-black/30
+           hover:shadow-md;
   }
 
   .hover-card {
     @apply transition-all duration-300
            hover:scale-[1.02] 
+           hover:shadow-lg
            active:scale-[0.98];
   }
 
@@ -53,19 +63,19 @@
            rounded-lg 
            text-sm text-foreground/70
            transition-colors duration-200
-           hover:bg-primary/10 hover:text-foreground;
+           hover:bg-[#64B5D9]/10 hover:text-foreground;
   }
 
   .nav-item-active {
-    @apply bg-primary/20 
+    @apply bg-[#64B5D9]/20 
            text-foreground
-           border border-border/20;
+           border border-[#64B5D9]/20;
   }
 
   /* Scrollbars */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgba(100, 181, 217, 0.1) transparent;
+    scrollbar-color: rgba(100, 181, 217, 0.2) transparent;
   }
 
   .custom-scrollbar::-webkit-scrollbar {

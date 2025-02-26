@@ -5,107 +5,131 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+    --background: 220 13% 91%;
+    --foreground: 213 48% 20%;
+    --primary: 201 61% 62%;
+    --primary-foreground: 213 48% 20%;
+    --card: 213 48% 20%;
+    --card-foreground: 242 47% 95%;
+    --popover: 213 48% 20%;
+    --popover-foreground: 242 47% 95%;
+    --secondary: 213 48% 20%;
+    --secondary-foreground: 242 47% 95%;
+    --muted: 213 48% 20%;
+    --muted-foreground: 242 47% 95%;
+    --accent: 201 61% 62%;
+    --accent-foreground: 213 48% 20%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 242 47% 95%;
+    --border: 201 61% 62%;
+    --input: 32 31% 92%;
+    --ring: 201 61% 62%;
     --radius: 0.75rem;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 213 48% 20%;
+    --foreground: 242 47% 95%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    --primary: 201 61% 62%;
+    --primary-foreground: 213 48% 20%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 201 61% 62%;
   }
 }
 
 @layer components {
-  .page-container {
-    @apply min-h-screen w-full pb-6 px-4 sm:px-6 lg:px-8
-           bg-gradient-to-b from-background via-background/95 to-background/90
-           backdrop-blur-sm;
+  /* Styles de fond avec dégradés */
+  .bg-gradient-primary {
+    @apply bg-gradient-to-br from-[#64B5D9] to-[#1B2A4A];
   }
 
-  .section-card {
-    @apply bg-card/50 backdrop-blur-sm
-           border border-border/50
-           rounded-lg shadow-sm
-           p-4 sm:p-6
+  .bg-gradient-secondary {
+    @apply bg-gradient-to-br from-[#9b87f5] to-[#7E69AB];
+  }
+
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg
+           hover:shadow-xl transition-all duration-300;
+  }
+
+  .glass-panel {
+    @apply bg-gradient-to-br from-white/5 to-white/10
+           dark:from-black/5 dark:to-black/10
+           backdrop-blur-md
+           border border-white/10 dark:border-white/5
+           rounded-xl shadow-lg;
+  }
+
+  /* Boutons et interactions */
+  .btn-gradient {
+    @apply bg-gradient-to-r from-[#64B5D9] to-[#1B2A4A]
+           hover:from-[#1B2A4A] hover:to-[#64B5D9]
+           text-white font-medium
+           px-6 py-2 rounded-lg
            transition-all duration-300
-           hover:bg-card/60;
+           shadow-md hover:shadow-lg;
   }
 
-  .section-header {
-    @apply flex items-center justify-between
-           pb-4 mb-4
-           border-b border-border/50;
-  }
-
-  .section-title {
-    @apply flex items-center gap-2
-           text-lg font-semibold
-           text-foreground/90;
-  }
-
-  .content-grid {
-    @apply grid gap-6
-           grid-cols-1
-           sm:grid-cols-2
-           lg:grid-cols-3;
-  }
-
-  .hover-effect {
+  .hover-card {
     @apply transition-all duration-300
            hover:scale-[1.02]
+           hover:shadow-lg
            active:scale-[0.98];
+  }
+
+  /* Textes avec dégradés */
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-[#64B5D9] to-[#1B2A4A]
+           bg-clip-text text-transparent;
+  }
+
+  .text-gradient-purple {
+    @apply bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]
+           bg-clip-text text-transparent;
+  }
+
+  /* Navigation et en-têtes */
+  .nav-item {
+    @apply flex items-center gap-2 px-4 py-2
+           rounded-lg text-sm text-foreground/70
+           transition-colors duration-200
+           hover:bg-primary/10 hover:text-foreground;
+  }
+
+  .nav-item-active {
+    @apply bg-primary/20 text-foreground
+           border border-primary/20;
   }
 }
 
 /* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out forwards;
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }
 
-/* Scrollbar styling */
+/* Scrollbars personnalisées */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--primary)/0.1) transparent;
+  scrollbar-color: rgba(100, 181, 217, 0.2) transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -117,6 +141,42 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--primary)/0.1);
+  background-color: rgba(100, 181, 217, 0.2);
   border-radius: 3px;
+  transition: background-color 0.3s;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 181, 217, 0.4);
+}
+
+/* Support iOS */
+.ios-safe-area {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Fond avec motif */
+.bg-pattern {
+  background-image: url('/lovable-uploads/bcfe3f97-9c11-4615-821e-d9666f3a9c14.png');
+  background-repeat: repeat;
+  background-size: 200px;
+  opacity: 0.03;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .bg-pattern {
+    background-size: 100px;
+  }
+
+  .glass-card {
+    @apply rounded-xl;
+  }
+
+  .btn-gradient {
+    @apply px-4 py-2 text-sm;
+  }
 }
