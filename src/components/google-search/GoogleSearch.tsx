@@ -60,7 +60,7 @@ export function GoogleSearch() {
   };
 
   return (
-    <form onSubmit={handleSearch} className="flex flex-col gap-4 w-full max-w-5xl mx-auto">
+    <form onSubmit={handleSearch} className="flex flex-col gap-4 w-full max-w-7xl mx-auto">
       <div className="flex gap-2">
         <Input
           type="text"
@@ -86,7 +86,7 @@ export function GoogleSearch() {
         </Button>
       </div>
       
-      <div className="bg-background/50 rounded-lg p-4">
+      <div className="bg-background/50 rounded-lg px-8 py-6">
         <div className="gcse-searchresults-only"></div>
       </div>
     </form>
