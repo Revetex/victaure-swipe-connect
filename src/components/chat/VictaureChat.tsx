@@ -1,3 +1,4 @@
+
 import { useRef, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { ChatHeader } from "./ChatHeader";
@@ -30,7 +31,7 @@ export function VictaureChat({
   const { suggestions, isLoadingSuggestions, generateSuggestions } = useSuggestions();
 
   useEffect(() => {
-    const API_KEY = import.meta.env.GEMINI_API_KEY || ""; // Utilisera la variable d'environnement
+    const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
     if (!API_KEY) {
       console.error("No Gemini API key found");
       return;
@@ -89,10 +90,6 @@ export function VictaureChat({
     setUserInput(suggestion);
   };
 
-  const handleRefresh = () => {
-    refreshMessages();
-  };
-
   const isDisabled = userQuestions >= maxQuestions && !user;
   const disabledMessage = "Connectez-vous pour continuer à discuter avec Mr Victaure";
 
@@ -133,7 +130,7 @@ export function VictaureChat({
         </Button>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-y-auto pb-[140px]">
         <MessageList 
           messages={messages}
           isLoading={isLoading}
@@ -141,7 +138,14 @@ export function VictaureChat({
         />
       </div>
       
-      <div className="flex-none p-4 border-t border-[#3C3C3C] bg-[#2C2C2C]">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#2C2C2C] border-t border-[#3C3C3C]">
+        <QuickSuggestions
+          suggestions={suggestions}
+          isLoading={isLoadingSuggestions}
+          onSelect={handleSuggestionSelect}
+          className="mb-4"
+        />
+        
         <ChatInput
           userInput={userInput}
           setUserInput={setUserInput}
