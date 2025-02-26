@@ -1,4 +1,3 @@
-
 import { Suspense } from "react";
 import { useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -14,6 +13,9 @@ import { InnovationsSection } from "@/components/auth/sections/InnovationsSectio
 import { FeaturesSection } from "@/components/auth/sections/FeaturesSection";
 import { PricingDialog } from "@/components/auth/sections/PricingDialog";
 import { toast } from "sonner";
+import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
+import { Button } from "@/components/ui/button";
+import { PartnershipDialog } from "@/components/auth/sections/PartnershipDialog";
 
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -86,6 +88,26 @@ export default function Auth() {
       <ThemeSelector />
 
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center w-full px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
+        <div className="w-full max-w-7xl mx-auto px-4 mb-8 flex justify-end gap-4">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="relative bg-gradient-to-r from-[#4A90E2] to-[#64B5D9] text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+                Partenariat
+              </Button>
+            </DialogTrigger>
+            <PartnershipDialog />
+          </Dialog>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="relative bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+                Guide tarifaire complet
+              </Button>
+            </DialogTrigger>
+            <PricingDialog />
+          </Dialog>
+        </div>
+
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
