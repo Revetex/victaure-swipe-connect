@@ -90,9 +90,10 @@ export function ChatInput({
       <Button 
         onClick={() => !isDisabled && onSendMessage()} 
         disabled={isDisabled || isLoading || !userInput.trim()}
-        className="bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white h-[52px] w-[52px] rounded-xl flex items-center justify-center"
+        className="bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] hover:opacity-90 text-white h-[52px] px-6 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none"
       >
         <Send className="h-5 w-5" />
+        <span className="hidden sm:inline">Envoyer</span>
       </Button>
     </div>
   );
