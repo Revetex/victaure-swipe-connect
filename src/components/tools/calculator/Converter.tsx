@@ -97,15 +97,12 @@ export function Converter({
   };
 
   return (
-    <div className="space-y-4 p-4 rounded-lg bg-muted/30">
+    <div className="glass-container space-y-4">
       <Select value={conversionType} onValueChange={onConversionTypeChange}>
-        <SelectTrigger className={cn(
-          "w-full",
-          "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-        )}>
+        <SelectTrigger className="glass-input">
           <SelectValue placeholder="Type de conversion" />
         </SelectTrigger>
-        <SelectContent className="max-h-[300px]">
+        <SelectContent className="max-h-[300px] bg-background/95 backdrop-blur-sm border-border/10">
           <SelectItem value="currency">Devises</SelectItem>
           <SelectItem value="crypto">Cryptomonnaies</SelectItem>
           <SelectItem value="length">Longueur</SelectItem>
@@ -118,23 +115,23 @@ export function Converter({
 
       <div className="grid grid-cols-[1fr,auto,1fr] gap-2 items-center">
         <Select value={fromUnit} onValueChange={onFromUnitChange}>
-          <SelectTrigger className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <SelectTrigger className="glass-input">
             <SelectValue placeholder="De" />
           </SelectTrigger>
-          <SelectContent className="max-h-[300px]">
+          <SelectContent className="max-h-[300px] bg-background/95 backdrop-blur-sm border-border/10">
             {getUnitOptions(conversionType).map(([value, label]) => (
               <SelectItem key={value} value={value}>{label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        <ArrowRightLeft className="h-4 w-4 opacity-50" />
+        <ArrowRightLeft className="h-4 w-4 text-muted-foreground" />
 
         <Select value={toUnit} onValueChange={onToUnitChange}>
-          <SelectTrigger className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <SelectTrigger className="glass-input">
             <SelectValue placeholder="Vers" />
           </SelectTrigger>
-          <SelectContent className="max-h-[300px]">
+          <SelectContent className="max-h-[300px] bg-background/95 backdrop-blur-sm border-border/10">
             {getUnitOptions(conversionType).map(([value, label]) => (
               <SelectItem key={value} value={value}>{label}</SelectItem>
             ))}
@@ -147,19 +144,16 @@ export function Converter({
         value={conversionValue}
         onChange={(e) => onValueChange(e.target.value)}
         placeholder="Entrez une valeur..."
-        className={cn(
-          "text-right bg-background/95 backdrop-blur",
-          "supports-[backdrop-filter]:bg-background/60"
-        )}
+        className="glass-input text-right"
       />
 
-      <Button onClick={onConvert} className="w-full">
+      <Button onClick={onConvert} className="glass-button w-full">
         Convertir
       </Button>
 
       {conversionResult && (
-        <div className="p-4 text-center bg-background/80 rounded-lg">
-          <p className="text-lg font-semibold">{conversionResult}</p>
+        <div className="p-4 text-center glass-card">
+          <p className="text-lg font-semibold text-foreground">{conversionResult}</p>
         </div>
       )}
     </div>
