@@ -63,7 +63,7 @@ export function ChessPage() {
             onReset={resetGame}
           />
           
-          <div className="relative bg-gradient-to-br from-background to-background/95 rounded-lg p-2 md:p-4">
+          <div className="relative bg-gradient-to-br from-[#1B2A4A]/80 to-[#2C3E50]/90 rounded-lg p-2 md:p-4 shadow-xl border border-primary/20">
             {gameOver && (
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
