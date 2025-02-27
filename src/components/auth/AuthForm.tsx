@@ -14,6 +14,7 @@ export function AuthForm({
   redirectTo?: string;
 }) {
   const [activeTab, setActiveTab] = useState("login");
+  const [showChat, setShowChat] = useState(false);
   const {
     signIn,
     signUp,
@@ -33,8 +34,8 @@ export function AuthForm({
       transition={{ duration: 0.5 }}
       className="w-full"
     >
-      <div className="flex flex-col lg:flex-row gap-6">
-        <div className="flex-1 p-6 bg-[#1A1F2C]/90 backdrop-blur-sm border border-[#64B5D9]/10 rounded-xl shadow-lg">
+      <div className="flex flex-col gap-6">
+        <div className="p-6 bg-[#1A1F2C]/90 backdrop-blur-sm border border-[#64B5D9]/10 rounded-xl shadow-lg">
           <Tabs 
             defaultValue="login" 
             value={activeTab} 
@@ -116,12 +117,30 @@ export function AuthForm({
           </Tabs>
         </div>
 
-        <div className="flex-1">
-          <AuthChat 
-            maxQuestions={3} 
-            context="Je suis l'assistant d'inscription. Je peux vous aider à comprendre les différentes options et répondre à vos questions. Comment puis-je vous aider aujourd'hui ?" 
-          />
+        {/* Bouton pour afficher/masquer l'assistant */}
+        <div className="flex justify-center">
+          <button 
+            onClick={() => setShowChat(!showChat)}
+            className="px-4 py-2 bg-[#64B5D9]/20 hover:bg-[#64B5D9]/30 text-[#F2EBE4] rounded-full border border-[#64B5D9]/30 transition-colors"
+          >
+            {showChat ? "Masquer l'assistant" : "Besoin d'aide ? Afficher l'assistant"}
+          </button>
         </div>
+
+        {/* Assistant réduit et déployable */}
+        {showChat && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <AuthChat 
+              maxQuestions={3} 
+              context="Je suis l'assistant d'inscription. Je peux vous aider à comprendre les différentes options et répondre à vos questions. Comment puis-je vous aider aujourd'hui ?" 
+            />
+          </motion.div>
+        )}
       </div>
     </motion.div>
   );

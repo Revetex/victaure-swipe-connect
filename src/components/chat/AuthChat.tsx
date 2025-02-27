@@ -28,7 +28,7 @@ export function AuthChat({ maxQuestions = 3, context }: AuthChatProps) {
   };
 
   return (
-    <Card className="flex flex-col h-[600px] bg-gradient-to-br from-[#1B2A4A]/90 to-[#1A1F2C]/90 backdrop-blur-xl rounded-xl border-2 border-[#64B5D9]/20 overflow-hidden shadow-xl">
+    <Card className="flex flex-col h-[400px] bg-gradient-to-br from-[#1B2A4A]/90 to-[#1A1F2C]/90 backdrop-blur-xl rounded-xl border-2 border-[#64B5D9]/20 overflow-hidden shadow-xl">
       <ChatHeader 
         title={
           <div className="flex items-center gap-2">

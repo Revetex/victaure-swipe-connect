@@ -1,7 +1,7 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-import { Play, Pause, Volume2, VolumeX, Info } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Info, RefreshCw } from "lucide-react";
 import React from "react";
 
 export function AuthVideo() {
@@ -9,9 +9,19 @@ export function AuthVideo() {
   const [isMuted, setIsMuted] = useState(true);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   
   // Référence à la vidéo pour pouvoir la contrôler
   const videoRef = useRef<HTMLVideoElement>(null);
+  
+  // Liste de vidéos de secours au cas où l'une ne fonctionne pas
+  const videoUrls = [
+    "https://assets.mixkit.co/videos/preview/mixkit-business-team-working-in-a-modern-office-21806-large.mp4",
+    "https://assets.mixkit.co/videos/preview/mixkit-young-woman-working-on-laptop-in-the-office-43923-large.mp4",
+    "https://assets.mixkit.co/videos/preview/mixkit-office-setup-at-a-startup-company-4719-large.mp4"
+  ];
+  
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   
   // Gestion de la lecture/pause et du son
   const handleVideoControls = {
@@ -20,7 +30,10 @@ export function AuthVideo() {
         if (isPlaying) {
           videoRef.current.pause();
         } else {
-          videoRef.current.play();
+          videoRef.current.play().catch(err => {
+            console.error("Erreur lors de la lecture:", err);
+            setIsPlaying(false);
+          });
         }
         setIsPlaying(!isPlaying);
       }
@@ -35,25 +48,53 @@ export function AuthVideo() {
     
     handleVideoLoaded: () => {
       setVideoLoaded(true);
+      setLoadError(false);
+      console.log("Vidéo chargée avec succès");
+    },
+    
+    handleVideoError: () => {
+      console.error("Erreur lors du chargement de la vidéo");
+      setLoadError(true);
+      setVideoLoaded(false);
+      
+      // Essayer la vidéo suivante après une erreur
+      if (currentVideoIndex < videoUrls.length - 1) {
+        setCurrentVideoIndex(prevIndex => prevIndex + 1);
+      }
+    },
+    
+    retryLoading: () => {
+      if (videoRef.current) {
+        videoRef.current.load();
+      }
     }
   };
   
   // Démarrer automatiquement la vidéo (muette) lorsqu'elle est chargée
   useEffect(() => {
     if (videoRef.current && videoLoaded) {
-      videoRef.current.play().catch(() => {
-        // La lecture automatique a été bloquée par le navigateur
+      videoRef.current.play().catch(err => {
+        console.error("Erreur lors de la lecture automatique:", err);
         setIsPlaying(false);
       });
     }
   }, [videoLoaded]);
 
+  // Réinitialiser l'état de chargement quand l'URL de la vidéo change
+  useEffect(() => {
+    setVideoLoaded(false);
+    setLoadError(false);
+    setIsPlaying(false);
+  }, [currentVideoIndex]);
+
   return (
     <div className="relative w-full aspect-video overflow-hidden rounded-t-xl">
-      <VideoLoader isLoaded={videoLoaded} />
+      <VideoLoader isLoaded={videoLoaded} loadError={loadError} onRetry={handleVideoControls.retryLoading} />
       <VideoElement 
         videoRef={videoRef} 
+        videoUrl={videoUrls[currentVideoIndex]}
         onLoadedData={handleVideoControls.handleVideoLoaded} 
+        onError={handleVideoControls.handleVideoError}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
       />
@@ -97,24 +138,41 @@ export function AuthVideo() {
 }
 
 // Composants extraits
-function VideoLoader({ isLoaded }: { isLoaded: boolean }) {
+function VideoLoader({ isLoaded, loadError, onRetry }: { isLoaded: boolean, loadError: boolean, onRetry: () => void }) {
   if (isLoaded) return null;
   
   return (
     <div className="absolute inset-0 bg-[#1A1F2C] flex items-center justify-center">
-      <div className="w-12 h-12 border-4 border-[#64B5D9]/20 border-t-[#64B5D9] rounded-full animate-spin"></div>
+      {loadError ? (
+        <div className="flex flex-col items-center">
+          <p className="text-[#F2EBE4]/80 mb-4">Erreur de chargement de la vidéo</p>
+          <button 
+            onClick={onRetry}
+            className="flex items-center gap-2 px-4 py-2 bg-[#64B5D9]/20 hover:bg-[#64B5D9]/30 text-[#F2EBE4] rounded-full border border-[#64B5D9]/30 transition-colors"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Réessayer
+          </button>
+        </div>
+      ) : (
+        <div className="w-12 h-12 border-4 border-[#64B5D9]/20 border-t-[#64B5D9] rounded-full animate-spin"></div>
+      )}
     </div>
   );
 }
 
 function VideoElement({ 
   videoRef, 
+  videoUrl,
   onLoadedData, 
+  onError,
   onPlay, 
   onPause 
 }: { 
   videoRef: React.RefObject<HTMLVideoElement>,
+  videoUrl: string,
   onLoadedData: () => void,
+  onError: () => void,
   onPlay: () => void,
   onPause: () => void
 }) {
@@ -122,11 +180,13 @@ function VideoElement({
     <video
       ref={videoRef}
       className="w-full h-full object-cover"
-      src="https://assets.mixkit.co/videos/preview/mixkit-business-team-working-in-a-modern-office-21806-large.mp4"
+      src={videoUrl}
       loop
       muted
       playsInline
+      preload="auto"
       onLoadedData={onLoadedData}
+      onError={onError}
       onPlay={onPlay}
       onPause={onPause}
     />
