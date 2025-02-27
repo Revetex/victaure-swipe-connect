@@ -1,3 +1,4 @@
+
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import { usePostOperations } from "./usePostOperations";
@@ -7,6 +8,7 @@ import { EmptyPostState } from "./EmptyPostState";
 import { DeletePostDialog } from "./DeletePostDialog";
 import { PostGrid } from "./sections/PostGrid";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 interface PostListProps {
   searchTerm?: string;
@@ -30,12 +32,18 @@ export function PostList({
 
   const { handleDelete, handleHide, handleUpdate } = usePostOperations();
 
-  const { data: posts, isLoading } = usePostsQuery({
+  const { data: posts, isLoading, error } = usePostsQuery({
     filter,
     sortBy,
     sortOrder,
     userId: user?.id
   });
+
+  if (error) {
+    console.error("Erreur lors du chargement des posts:", error);
+    toast.error("Impossible de charger les posts");
+    return null;
+  }
 
   const filteredPosts = posts?.filter(post => 
     post.content.toLowerCase().includes(searchTerm.toLowerCase())
@@ -43,6 +51,8 @@ export function PostList({
 
   if (isLoading) return <PostSkeleton />;
   if (!posts?.length) return <EmptyPostState />;
+
+  console.log("Posts chargés:", filteredPosts); // Pour le débogage
 
   return (
     <motion.div 
@@ -57,7 +67,10 @@ export function PostList({
         userEmail={user?.email}
         onDelete={postId => setPostToDelete(postId)}
         onHide={handleHide}
-        onUpdate={handleUpdate}
+        onUpdate={(postId, content) => {
+          handleUpdate(postId, content);
+          onPostUpdated();
+        }}
       />
 
       <DeletePostDialog 
@@ -67,6 +80,7 @@ export function PostList({
           if (postToDelete && user?.id) {
             handleDelete(postToDelete, user.id);
             setPostToDelete(null);
+            onPostDeleted();
           }
         }}
       />

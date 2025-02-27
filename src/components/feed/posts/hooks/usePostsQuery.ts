@@ -41,6 +41,8 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQue
           )
         `);
 
+      console.log("Filter appliqué:", filter); // Debug
+
       // Appliquer les filtres
       switch (filter) {
         case "my":
@@ -76,8 +78,10 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQue
 
       const { data, error } = await query;
 
+      console.log("Données reçues:", data); // Debug
+
       if (error) {
-        console.error("Error fetching posts:", error);
+        console.error("Erreur lors de la récupération des posts:", error);
         throw error;
       }
 
