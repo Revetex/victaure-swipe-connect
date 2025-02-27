@@ -44,8 +44,8 @@ export function FriendsTabContent({
             last_seen
           )
         `)
-        .eq('user_id', user.id)
-        .eq('status', 'accepted');
+        .eq('status', 'accepted')
+        .eq('user_id', user.id);
 
       if (error) {
         console.error("Error fetching friends:", error);
@@ -102,12 +102,10 @@ export function FriendsTabContent({
   }
 
   return (
-    <ScrollArea className="h-[600px]">
-      <div className="space-y-3 p-1 rounded">
-        {displayedFriends.map(friend => (
-          <FriendCard key={friend.id} friend={friend} />
-        ))}
-      </div>
-    </ScrollArea>
+    <div className="space-y-3">
+      {displayedFriends.map(friend => (
+        <FriendCard key={friend.id} friend={friend} />
+      ))}
+    </div>
   );
 }

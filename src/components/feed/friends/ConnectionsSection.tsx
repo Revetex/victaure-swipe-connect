@@ -1,6 +1,4 @@
 
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
@@ -8,46 +6,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConnectionsHeader } from "./components/ConnectionsHeader";
 import { ConnectionsSearch } from "./components/ConnectionsSearch";
 import { FriendsTabContent } from "./components/FriendsTabContent";
-import { ConnectionsPagination } from "./ConnectionsPagination";
 import { PendingRequestsSection } from "./PendingRequestsSection";
-import { useAuth } from "@/hooks/useAuth";
 
 export function ConnectionsSection() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showPendingRequests, setShowPendingRequests] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 5;
-  const { user } = useAuth();
-
-  const { isLoading } = useQuery({
-    queryKey: ["friends", user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-      const { data } = await supabase
-        .from('friendships')
-        .select('*')
-        .eq('user_id', user.id);
-      return data || [];
-    }
-  });
-
-  if (isLoading) {
-    return (
-      <Card className="p-8 bg-black/40">
-        <div className="flex items-center justify-center">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-        </div>
-      </Card>
-    );
-  }
 
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-4 w-full px-4 sm:px-0"
+      className="space-y-4"
     >
-      <Card className="bg-black/40 border-zinc-800 shadow-2xl backdrop-blur-sm w-full">
+      <Card className="bg-black/40 border-zinc-800 shadow-2xl backdrop-blur-sm">
         <ConnectionsHeader 
           showPendingRequests={showPendingRequests} 
           onTogglePendingRequests={() => setShowPendingRequests(!showPendingRequests)} 
