@@ -1,7 +1,7 @@
 
 // Type for the roles users can have
 export type UserRole = 'user' | 'admin' | 'business' | 'freelancer' | 'student' | 'professional';
-export type OnlineStatus = 'online' | 'offline' | 'away' | 'busy';
+export type OnlineStatus = boolean;
 export type ConnectionStatus = 'pending' | 'accepted' | 'rejected' | 'blocked';
 
 // Links to social media profiles
@@ -99,8 +99,7 @@ export interface Profile {
   state: string | null;
   country: string | null;
   skills: string[];
-  social_links?: SocialLinks;
-  online_status: OnlineStatus | string | boolean;
+  online_status: boolean;  // Assurons-nous que c'est toujours un boolean
   last_seen: string | null;
   cover_image?: string;
   job_title?: string;
@@ -131,24 +130,10 @@ export interface User extends Omit<Profile, 'updated_at'> {
 }
 
 // Simplified friend interface
-export interface Friend {
-  id: string;
-  full_name: string | null;
-  avatar_url?: string | null;
-  online_status?: OnlineStatus | string | boolean;
-  last_seen?: string | null;
-  role?: UserRole;
-  bio?: string | null;
-  phone?: string | null;
-  city?: string | null;
-  state?: string | null;
-  country?: string | null;
-  job_title?: string;
+export interface Friend extends Omit<UserProfile, 'avatar_url'> {
+  avatar_url: string | null;
   friendship_id?: string;
   status?: string;
-  skills?: string[]; // Added for compatibility
-  created_at?: string; // Added for compatibility with UserProfile
-  email?: string; // Added for compatibility with UserProfile
 }
 
 // Interface for pending connection requests
@@ -206,7 +191,7 @@ export const transformDatabaseProfile = (data: any): UserProfile => ({
   state: data.state,
   country: data.country,
   skills: data.skills || [],
-  online_status: data.online_status || false,
+  online_status: !!data.online_status,  // Conversion en boolean
   last_seen: data.last_seen,
   company_name: data.company_name,
   created_at: data.created_at || new Date().toISOString(),
@@ -246,3 +231,12 @@ export const transformExperience = (data: any): Experience => ({
   description: data.description,
   profile_id: data.profile_id
 });
+
+// Fonction utilitaire pour convertir les strings 'online'/'offline' en boolean
+export const convertOnlineStatusToBoolean = (status: string | boolean | undefined): boolean => {
+  if (typeof status === 'boolean') return status;
+  if (typeof status === 'string') {
+    return status === 'online' || status === 'true';
+  }
+  return false;
+};

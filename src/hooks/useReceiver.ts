@@ -7,7 +7,7 @@ export interface Receiver {
   full_name: string;
   avatar_url: string | null;
   email?: string | null;
-  online_status?: boolean;
+  online_status?: boolean;  // Strictement boolean
   last_seen?: string | null;
   latitude?: number;
   longitude?: number;
@@ -52,7 +52,15 @@ export function useReceiver() {
 
   // Fonction pour initialiser une nouvelle conversation
   const startNewConversation = (newReceiver: Receiver) => {
-    setReceiver(newReceiver);
+    // Assurer que online_status est un boolean
+    const receiverWithBooleanStatus: Receiver = {
+      ...newReceiver,
+      online_status: typeof newReceiver.online_status === 'string' 
+        ? newReceiver.online_status === 'online' || newReceiver.online_status === 'true'
+        : !!newReceiver.online_status
+    };
+    
+    setReceiver(receiverWithBooleanStatus);
     setShowConversation(true);
     setSelectedConversationId(null); // Réinitialise l'ID car c'est une nouvelle conversation
   };

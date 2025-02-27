@@ -1,46 +1,46 @@
 
 import { Button } from "@/components/ui/button";
-import { PenTool, Calculator, Globe, ChessKnight, StickyNote } from "lucide-react";
+import { PenTool, Calculator, Globe, ChessRook, StickyNote } from "lucide-react";
 import { motion } from "framer-motion";
 
 export interface ToolsListProps {
   onToolClick: (toolId: string) => void;
 }
 
-export function ToolsList({ onToolClick }: ToolsListProps) {
-  const tools = [
-    {
-      id: "notes",
-      name: "Notes",
-      icon: <StickyNote className="h-4 w-4" />,
-      color: "text-amber-500"
-    },
-    {
-      id: "translator",
-      name: "Traducteur",
-      icon: <Globe className="h-4 w-4" />,
-      color: "text-blue-500"
-    },
-    {
-      id: "calculator",
-      name: "Calculatrice",
-      icon: <Calculator className="h-4 w-4" />,
-      color: "text-purple-500"
-    },
-    {
-      id: "chess",
-      name: "Échecs",
-      icon: <ChessKnight className="h-4 w-4" />,
-      color: "text-green-500"
-    },
-    {
-      id: "draw",
-      name: "Dessiner",
-      icon: <PenTool className="h-4 w-4" />,
-      color: "text-red-500"
-    }
-  ];
+export const tools = [
+  {
+    id: "notes",
+    name: "Notes",
+    icon: <StickyNote className="h-4 w-4" />,
+    color: "text-amber-500"
+  },
+  {
+    id: "translator",
+    name: "Traducteur",
+    icon: <Globe className="h-4 w-4" />,
+    color: "text-blue-500"
+  },
+  {
+    id: "calculator",
+    name: "Calculatrice",
+    icon: <Calculator className="h-4 w-4" />,
+    color: "text-purple-500"
+  },
+  {
+    id: "chess",
+    name: "Échecs",
+    icon: <ChessRook className="h-4 w-4" />,
+    color: "text-green-500"
+  },
+  {
+    id: "draw",
+    name: "Dessiner",
+    icon: <PenTool className="h-4 w-4" />,
+    color: "text-red-500"
+  }
+];
 
+export function ToolsList({ onToolClick }: ToolsListProps) {
   return (
     <div className="space-y-1">
       <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2 pl-2">

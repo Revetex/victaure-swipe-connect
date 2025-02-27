@@ -105,13 +105,12 @@ export function CustomListings({ items, isLoading = false }: CustomListingsProps
     if (!user) return;
 
     try {
-      // Simplification - nous n'utilisons pas de RPC ici pour éviter les erreurs
+      // Simplification - utiliser un insert direct au lieu de RPC
       await supabase
-        .from('marketplace_listing_views')
+        .from('marketplace_views')
         .upsert({ 
-          listing_id: itemId,
-          user_id: user.id,
-          viewed_at: new Date().toISOString()
+          item_id: itemId,
+          user_id: user.id
         });
     } catch (error) {
       console.error("Error incrementing views:", error);
