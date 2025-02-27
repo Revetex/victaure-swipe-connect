@@ -4,14 +4,10 @@ project_id = "mfjllillnpleasclqabb"
 enabled = true
 # Port for the API
 port = 54321
-# Additional arguments to pass to the API
-extra_args = []
 
 [db]
 # Port for the Database
 port = 54322
-# Additional arguments to pass to the Database
-extra_args = []
 
 [realtime]
 enabled = true
@@ -20,8 +16,6 @@ enabled = true
 enabled = true
 # Port for the Studio application
 port = 54323
-# Additional arguments to pass to Studio
-extra_args = []
 
 [functions.transfer-funds]
 verify_jwt = true
