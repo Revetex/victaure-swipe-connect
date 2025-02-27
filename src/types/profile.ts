@@ -14,15 +14,16 @@ interface BaseProfile {
   city?: string | null;
   state?: string | null;
   country?: string | null;
+  website?: string | null;
   skills?: string[];
   online_status: boolean;
   last_seen?: string | null;
   created_at: string;
-  website?: string | null;
-  job_title?: string | null;
-  latitude?: number;
-  longitude?: number;
-  cover_image?: string | null;
+  updated_at?: string;
+  certifications?: Certification[];
+  education?: Education[];
+  experiences?: Experience[];
+  friends?: Friend[];
 }
 
 // Interface pour l'éducation
@@ -35,7 +36,7 @@ export interface Education {
   end_date?: string | null;
   description?: string;
   logo_url?: string;
-  profile_id?: string; // Ajout pour compatibilité
+  profile_id?: string;
 }
 
 // Interface pour l'expérience
@@ -48,7 +49,7 @@ export interface Experience {
   description?: string;
   skills?: string[];
   logo_url?: string;
-  profile_id?: string; // Ajout pour compatibilité
+  profile_id?: string;
 }
 
 // Interface pour la certification
@@ -61,45 +62,45 @@ export interface Certification {
   credential_url?: string;
   credential_id?: string;
   logo_url?: string;
-  description?: string; // Ajout pour compatibilité
-  year?: string; // Ajout pour compatibilité
-  profile_id?: string; // Ajout pour compatibilité
+  description?: string;
+  year?: string;
+  profile_id?: string;
 }
 
-// Interface pour les liens sociaux
-export interface SocialLinks {
-  linkedin?: string;
-  twitter?: string;
-  github?: string;
-  [key: string]: string | undefined;
-}
-
-// Interface principale UserProfile
+// Interface UserProfile
 export interface UserProfile extends BaseProfile {
-  friends?: Friend[];
-  certifications?: Certification[];
-  education?: Education[];
-  experiences?: Experience[];
   company_name?: string | null;
   privacy_enabled?: boolean;
   verified?: boolean;
   sections_order?: string[];
-  social_links?: SocialLinks;
+  latitude?: number;
+  longitude?: number;
+  cover_image?: string;
 }
 
-// Interface User avec friends requis
-export interface User extends BaseProfile {
-  friends: Friend[];
-  certifications?: Certification[];
-  education?: Education[];
-  experiences?: Experience[];
+// Interface User - Doit inclure tous les champs de UserProfile
+export interface User extends UserProfile {
+  friends: Friend[]; // La seule différence est que friends est requis ici
 }
 
 // Interface Friend
 export interface Friend extends BaseProfile {
   friendship_id?: string;
   status?: string;
-  job_title?: string; // Ajout pour compatibilité
+}
+
+// Interface pour une connexion utilisateur
+export interface UserConnection {
+  id: string;
+  user_id: string;
+  connected_user_id: string;
+  status: string;
+  connection_type: string;
+  visibility: string;
+  created_at: string;
+  updated_at: string;
+  user?: UserProfile;
+  connected_user?: UserProfile;
 }
 
 // Interface pour une demande d'ami en attente
@@ -134,30 +135,6 @@ export interface BlockedUser {
     full_name: string | null;
     avatar_url: string | null;
   };
-}
-
-// Interface pour une connexion utilisateur
-export interface UserConnection {
-  id: string;
-  user_id: string;
-  connected_user_id: string;
-  status: string;
-  connection_type: string;
-  visibility: string;
-  created_at: string;
-  updated_at: string;
-  user?: any; // Ajout pour compatibilité
-  connected_user?: any;
-}
-
-// Type pour le profil complet
-export interface Profile extends UserProfile {
-  connections?: UserConnection[];
-  blocked_users?: BlockedUser[];
-  pending_requests?: PendingRequest[];
-  latitude?: number;
-  longitude?: number;
-  cover_image?: string;
 }
 
 // Helper function pour convertir le statut en ligne en booléen
@@ -208,7 +185,7 @@ export function transformConnection(connection: any, currentUserId: string): Fri
 export function friendToUserProfile(friend: Friend): UserProfile {
   return {
     ...friend,
-    friends: [],
+    friends: [], // Optionnel pour UserProfile
     certifications: [],
     education: [],
     experiences: []

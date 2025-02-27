@@ -30,7 +30,6 @@ export interface MarketplaceFavorite {
   item_id: string;
   user_id: string;
   created_at?: string;
-  listing_id?: string; // Pour compatibilité
 }
 
 export interface MarketplaceFilters {
@@ -39,6 +38,26 @@ export interface MarketplaceFilters {
   location?: string;
   sortBy?: 'date' | 'price' | 'rating' | 'views';
   sortOrder?: 'asc' | 'desc';
+}
+
+export interface MarketplaceStats {
+  total_listings: number;
+  active_listings: number;
+  total_sales: number;
+  average_price: number;
+  popular_categories: string[];
+  recent_activity: {
+    id: string;
+    type: string;
+    timestamp: string;
+    details: any;
+  }[];
+  totalViews?: number;
+  listingsByType?: Record<string, number>;
+  totalListings: number;
+  activeListings: number;
+  averagePrice: number;
+  popularCategories: string[];
 }
 
 export interface MarketplaceContract {
@@ -60,62 +79,7 @@ export interface MarketplaceContract {
   documents?: string[];
   created_at: string;
   updated_at?: string;
-  currency?: string; // Ajout pour compatibilité
-}
-
-export interface MarketplaceService {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  currency: string;
-  provider_id: string;
-  provider?: {
-    full_name: string | null;
-    avatar_url: string | null;
-    rating?: number;
-  };
-  category?: string;
-  delivery_time?: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface MarketplaceStats {
-  total_listings: number;
-  active_listings: number;
-  total_sales: number;
-  average_price: number;
-  popular_categories: string[];
-  recent_activity: {
-    id: string;
-    type: string;
-    timestamp: string;
-    details: any;
-  }[];
-  totalViews?: number; // Pour compatibilité
-  listingsByType?: Record<string, number>; // Pour compatibilité
-  
-  // Alias pour compatibilité
-  get totalListings() { return this.total_listings; }
-  get activeListings() { return this.active_listings; }
-  get averagePrice() { return this.average_price; }
-  get popularCategories() { return this.popular_categories; }
-}
-
-export type ListingType = 'vente' | 'location' | 'service';
-
-export interface ContractFormValues {
-  title: string;
-  description: string;
-  budget_min?: number;
-  budget_max?: number;
-  deadline?: string;
-  category?: string;
-  location?: string;
-  requirements?: string[];
-  currency?: string; // Ajout pour compatibilité
+  currency?: string;
 }
 
 export interface Gig {
@@ -127,9 +91,11 @@ export interface Gig {
   provider_id: string;
   status: string;
   created_at: string;
-  budget?: number; // Ajout pour compatibilité
-  creator?: any; // Ajout pour compatibilité
-  required_skills?: string[]; // Ajout pour compatibilité
+  budget?: number;
+  creator?: any;
+  required_skills?: string[];
+  location?: string;
+  duration?: string;
 }
 
 export interface GigBid {
@@ -142,17 +108,18 @@ export interface GigBid {
   created_at: string;
 }
 
-// Re-export pour la compatibilité
 export type MarketplaceOffer = MarketplaceListing;
 
-// Schéma de validation pour le formulaire de contrat
-export const contractFormSchema = {
-  title: {
-    required: "Le titre est requis",
-    minLength: { value: 10, message: "Le titre doit faire au moins 10 caractères" }
-  },
-  description: {
-    required: "La description est requise",
-    minLength: { value: 50, message: "La description doit faire au moins 50 caractères" }
-  }
-};
+export type ListingType = 'vente' | 'location' | 'service';
+
+export interface ContractFormValues {
+  title: string;
+  description: string;
+  budget_min?: number;
+  budget_max?: number;
+  deadline?: string;
+  category?: string;
+  location?: string;
+  requirements?: string[];
+  currency?: string;
+}

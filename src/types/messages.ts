@@ -17,6 +17,7 @@ export interface Message {
     avatar_url: string | null;
     email?: string | null;
     role?: string;
+    certifications?: any[];
   };
 }
 
@@ -35,6 +36,7 @@ export interface ConversationParticipant {
   avatar_url?: string | null;
   online_status: boolean;
   last_seen?: string | null;
+  toString(): string; // Pour résoudre l'erreur toLowerCase
 }
 
 export interface Conversation {
@@ -61,12 +63,12 @@ export interface Receiver {
   id: string;
   full_name: string | null;
   avatar_url: string | null;
+  email?: string | null;
   online_status: boolean;
   last_seen?: string | null;
-  email?: string | null;
   latitude?: number;
   longitude?: number;
+  role?: string;
 }
 
-// Re-export UserRole from profile
 export type { UserRole } from '@/types/profile';
