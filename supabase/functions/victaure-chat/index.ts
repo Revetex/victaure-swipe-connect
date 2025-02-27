@@ -24,7 +24,59 @@ serve(async (req) => {
       )
       .join('\n');
 
-    const fullPrompt = `Tu es un assistant professionnel qui aide les utilisateurs avec leur inscription sur Victaure. Réponds de manière concise et claire en français.
+    const prompt = `Tu es un assistant professionnel qui aide les utilisateurs avec leur inscription sur Victaure. Réponds de manière concise et claire en français.
 
 Historique de la conversation:
 ${conversationHistory}
+
+Utilisateur: ${messages[messages.length - 1].content}
+Assistant:`;
+
+    console.log("Sending prompt to Hugging Face:", prompt);
+
+    // Utiliser le modèle de dialogue pour générer la réponse
+    const response = await hf.textGeneration({
+      model: "mistralai/Mistral-7B-Instruct-v0.2",
+      inputs: prompt,
+      parameters: {
+        max_new_tokens: 500,
+        temperature: 0.7,
+        top_p: 0.9,
+        repetition_penalty: 1.2
+      }
+    });
+
+    console.log("Received response from Hugging Face:", response);
+
+    const aiResponse = response.generated_text.trim();
+
+    return new Response(
+      JSON.stringify({ 
+        response: aiResponse,
+        model: "mistralai/Mistral-7B-Instruct-v0.2"
+      }),
+      { 
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        } 
+      }
+    );
+
+  } catch (error) {
+    console.error("Error:", error);
+    return new Response(
+      JSON.stringify({ 
+        error: "Une erreur s'est produite", 
+        details: error.message 
+      }),
+      { 
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        },
+        status: 500 
+      }
+    );
+  }
+});
