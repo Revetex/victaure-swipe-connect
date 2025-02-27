@@ -423,6 +423,24 @@ export type Database = {
           },
         ]
       }
+      cleanup_logs: {
+        Row: {
+          executed_at: string | null
+          id: number
+          rows_affected: Json | null
+        }
+        Insert: {
+          executed_at?: string | null
+          id?: number
+          rows_affected?: Json | null
+        }
+        Update: {
+          executed_at?: string | null
+          id?: number
+          rows_affected?: Json | null
+        }
+        Relationships: []
+      }
       contract_bids: {
         Row: {
           amount: number
@@ -3979,6 +3997,44 @@ export type Database = {
         }
         Relationships: []
       }
+      transaction_audit_log: {
+        Row: {
+          action_type: string
+          amount: number
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          transaction_id: string | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          amount: number
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          transaction_id?: string | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          amount?: number
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          transaction_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_audit_log_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "wallet_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       translations: {
         Row: {
           created_at: string
@@ -4509,6 +4565,14 @@ export type Database = {
       process_loto_draw: {
         Args: {
           draw_id: string
+        }
+        Returns: undefined
+      }
+      process_loto_ticket_purchase: {
+        Args: {
+          p_user_id: string
+          p_amount: number
+          p_draw_id: string
         }
         Returns: undefined
       }
