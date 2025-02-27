@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "./form/ImageUpload";
+import { LocationAutocomplete } from "@/components/map/LocationAutocomplete";
+import { LocationMap } from "@/components/map/LocationMap";
 import { useListingImages } from "./hooks/useListingImages";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,12 +28,23 @@ export function MarketplaceForm() {
     type: "vente" as ListingType,
     currency: "CAD",
     condition: "new",
-    location: "",
     category: "",
     saleType: "immediate",
     auctionEndDate: null as Date | null,
     minimumBid: "",
+    latitude: null as number | null,
+    longitude: null as number | null,
+    location: "",
   });
+
+  const handleLocationSelect = (location: { latitude: number; longitude: number; name: string }) => {
+    setFormData(prev => ({
+      ...prev,
+      latitude: location.latitude,
+      longitude: location.longitude,
+      location: location.name
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,6 +77,14 @@ export function MarketplaceForm() {
             type: formData.type,
             currency: formData.currency,
             images: uploadedImageUrls,
+            condition: formData.condition,
+            category: formData.category,
+            latitude: formData.latitude,
+            longitude: formData.longitude,
+            location: formData.location,
+            sale_type: formData.saleType,
+            auction_end_date: formData.saleType === 'auction' ? formData.auctionEndDate : null,
+            minimum_bid: formData.saleType === 'auction' ? parseFloat(formData.minimumBid) : null,
             seller_id: user.id,
             status: 'active',
           }
@@ -80,11 +101,13 @@ export function MarketplaceForm() {
         type: "vente",
         currency: "CAD",
         condition: "new",
-        location: "",
         category: "",
         saleType: "immediate",
         auctionEndDate: null,
         minimumBid: "",
+        latitude: null,
+        longitude: null,
+        location: "",
       });
       setOpen(false);
       
@@ -118,6 +141,42 @@ export function MarketplaceForm() {
             </div>
 
             <div className="grid gap-2">
+              <Label className="text-white">Type d'annonce</Label>
+              <Select 
+                value={formData.type} 
+                onValueChange={(value: ListingType) => setFormData(prev => ({ ...prev, type: value }))}
+              >
+                <SelectTrigger className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white">
+                  <SelectValue placeholder="Choisissez le type d'annonce" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="vente">Vente</SelectItem>
+                  <SelectItem value="location">Location</SelectItem>
+                  <SelectItem value="service">Service</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label className="text-white">Catégorie</Label>
+              <Select 
+                value={formData.category} 
+                onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+              >
+                <SelectTrigger className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white">
+                  <SelectValue placeholder="Choisissez une catégorie" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="electronics">Électronique</SelectItem>
+                  <SelectItem value="furniture">Mobilier</SelectItem>
+                  <SelectItem value="clothing">Vêtements</SelectItem>
+                  <SelectItem value="vehicles">Véhicules</SelectItem>
+                  <SelectItem value="services">Services</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
               <Label className="text-white">Titre de l'annonce</Label>
               <Input 
                 placeholder="Titre de votre annonce" 
@@ -137,6 +196,24 @@ export function MarketplaceForm() {
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 required
               />
+            </div>
+
+            <div className="grid gap-2">
+              <Label className="text-white">Localisation</Label>
+              <LocationAutocomplete
+                onLocationSelect={handleLocationSelect}
+                placeholder="Entrez l'adresse..."
+                defaultValue={formData.location}
+              />
+              {formData.latitude && formData.longitude && (
+                <div className="mt-2 h-[200px]">
+                  <LocationMap
+                    latitude={formData.latitude}
+                    longitude={formData.longitude}
+                    height="200px"
+                  />
+                </div>
+              )}
             </div>
 
             {formData.saleType === 'immediate' ? (
