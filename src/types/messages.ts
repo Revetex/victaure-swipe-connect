@@ -1,56 +1,25 @@
 
-import { UserProfile } from "./profile";
-
-// Types pour la messagerie
-export type UserRole = "professional" | "business" | "admin" | "user" | "freelancer" | "student" | string;
-export type OnlineStatus = boolean;
-
 export interface Message {
   id: string;
   content: string;
   sender_id: string;
   receiver_id: string;
-  conversation_id?: string;
   created_at: string;
-  updated_at?: string;
-  read?: boolean;
-  status: "sent" | "delivered" | "read";
-  message_type?: string;
-  metadata?: any;
-  encrypted?: boolean;
-  encryption_key?: string;
-  has_attachment?: boolean;
-  message_hash?: string;
-  message_state?: string;
-  deleted_at?: string;
-  edited_at?: string;
-  is_deleted?: boolean;
-  deleted_by?: any;
+  read: boolean;
+  status?: string;
   reaction?: string;
-  sender?: any;
-  receiver?: any;
+  deleted?: boolean;
+  message_type?: 'user' | 'assistant' | 'system';
+  metadata?: any;
 }
 
-export interface Receiver {
+export interface MessageDelivery {
   id: string;
-  full_name: string;
-  avatar_url: string | null;
-  email?: string | null;
-  role?: UserRole;
-  bio?: string | null;
-  phone?: string | null;
-  city?: string | null;
-  state?: string | null;
-  country?: string | null;
-  skills?: string[];
-  online_status?: boolean;
-  last_seen?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
-  certifications?: any[];
-  education?: any[];
-  experiences?: any[];
-  friends?: string[] | any[];
+  message_id: string;
+  recipient_id: string;
+  status: 'sent' | 'delivered' | 'read';
+  delivered_at: string;
+  read_at?: string;
 }
 
 export interface Conversation {
@@ -59,13 +28,9 @@ export interface Conversation {
   participant2_id: string;
   last_message?: string;
   last_message_time?: string;
-  created_at?: string;
-  updated_at?: string;
   participant1_last_read?: string;
   participant2_last_read?: string;
-  participants?: {
-    id: string;
-    full_name: string;
-    avatar_url: string | null;
-  }[];
+  created_at: string;
+  updated_at: string;
+  status?: string;
 }
