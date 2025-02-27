@@ -1,12 +1,36 @@
 
-/**
- * Ce fichier est déprécié et n'est plus utilisé.
- * Le routage principal est maintenant géré par AppWrapper.tsx et/ou AppRoutes.tsx.
- */
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AppLayout } from "./components/layout/AppLayout";
+import { Toaster } from "sonner";
+import { Dashboard } from "./components/Dashboard";
+import { Marketplace } from "./components/Marketplace";
+import { Messages } from "./components/Messages";
+import { ThemeProvider } from "./components/ThemeProvider";
 
-// Fichier maintenu pour compatibilité, mais le contenu a été supprimé
-// car il faisait référence à des modules qui n'existent plus.
-
-export default function App() {
-  return null;
+function App() {
+  return (
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<AppLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/messages" element={<Messages />} />
+            {/* Plus de routes à ajouter ici */}
+          </Route>
+        </Routes>
+        <Toaster
+          position="top-center"
+          richColors
+          closeButton
+          toastOptions={{
+            duration: 5000,
+            className: "backdrop-blur-sm border border-slate-200 dark:border-slate-700",
+          }}
+        />
+      </Router>
+    </ThemeProvider>
+  );
 }
+
+export default App;
