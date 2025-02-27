@@ -97,12 +97,12 @@ export function useListingSearch(
               avatar_url: item.seller.avatar_url || null,
               rating: item.seller.rating
             } : undefined,
-            location: item.location,
-            category: item.category,
-            views_count: item.views_count,
-            favorites_count: item.favorites_count,
-            featured: item.featured,
-            sale_type: item.sale_type
+            location: item.location || '',
+            category: item.category || '',
+            views_count: item.views_count || 0,
+            favorites_count: item.favorites_count || 0,
+            featured: Boolean(item.featured),
+            sale_type: item.sale_type || ''
           }));
           
           setListings(formattedListings);
