@@ -1,186 +1,101 @@
 
-import { useState, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Send, X, User, Bot } from "lucide-react";
-import { toast } from "sonner";
-import { Card } from "@/components/ui/card";
-import { useJobsAI } from "@/hooks/useJobsAI";
-import { useAuth } from "@/hooks/useAuth";
-
-interface Message {
-  id: string;
-  content: string;
-  type: 'user' | 'assistant';
-  timestamp: Date;
-}
+import { useState } from 'react';
+import { Job } from '@/types/job';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Sparkles, MessageCircle } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useProfile } from '@/hooks/useProfile';
+import { toast } from 'sonner';
 
 interface JobsAIAssistantProps {
-  isOpen: boolean;
-  onClose: () => void;
+  jobs: Job[];
 }
 
-export function JobsAIAssistant({ isOpen, onClose }: JobsAIAssistantProps) {
-  const [query, setQuery] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const { user } = useAuth();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+export function JobsAIAssistant({ jobs }: JobsAIAssistantProps) {
+  const [analysis, setAnalysis] = useState<string>('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const { profile } = useProfile();
 
-  const { isLoading, askAssistant } = useJobsAI({
-    userProfile: user,
-    jobContext: { /* Contexte des jobs à ajouter */ }
-  });
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      scrollToBottom();
+  const analyzeJobs = async () => {
+    if (!profile) {
+      toast.error("Veuillez vous connecter pour utiliser l'assistant IA");
+      return;
     }
-  }, [messages]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim() || isLoading) return;
-
-    const userMessage: Message = {
-      id: crypto.randomUUID(),
-      content: query,
-      type: 'user',
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setQuery("");
-
+    setIsAnalyzing(true);
     try {
-      const response = await askAssistant(query);
-      if (response) {
-        const assistantMessage: Message = {
-          id: crypto.randomUUID(),
-          content: response,
-          type: 'assistant',
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, assistantMessage]);
+      const jobsContext = jobs.map(job => ({
+        title: job.title,
+        company: job.company,
+        description: job.description,
+        skills: job.required_skills,
+        salary: job.salary_max || job.salary_min,
+      }));
+
+      const userContext = {
+        skills: profile.skills || [],
+        experience: profile.experiences || [],
+        education: profile.education || [],
+      };
+
+      const response = await fetch('https://mfjllillnpleasclqabb.supabase.co/functions/v1/analyze-jobs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jobs: jobsContext,
+          userProfile: userContext,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de l'analyse");
       }
+
+      const data = await response.json();
+      setAnalysis(data.analysis);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Erreur:', error);
+      toast.error("Une erreur est survenue lors de l'analyse");
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          className="fixed inset-x-0 bottom-0 p-4 z-50"
+    <Card className="bg-card dark:bg-[#1B2A4A]/50 backdrop-blur-sm border-border/10 dark:border-[#64B5D9]/10 rounded-lg p-6 shadow-lg">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold text-foreground dark:text-white flex items-center gap-2">
+          <MessageCircle className="h-5 w-5" />
+          Assistant IA
+        </h2>
+        <Button
+          onClick={analyzeJobs}
+          disabled={isAnalyzing || jobs.length === 0}
+          className="bg-primary hover:bg-primary/90"
         >
-          <Card className="max-w-2xl mx-auto border border-primary/20 bg-black/90 backdrop-blur-xl shadow-xl">
-            <div className="p-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-                  <h3 className="text-lg font-semibold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
-                    Assistant Victaure IA
-                  </h3>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={onClose}
-                  className="text-zinc-400 hover:text-white"
-                >
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
+          <Sparkles className="h-4 w-4 mr-2" />
+          Analyser les offres
+        </Button>
+      </div>
 
-              <div className="h-[400px] overflow-y-auto p-4 space-y-4 rounded-lg bg-zinc-900/50">
-                {messages.length === 0 ? (
-                  <div className="text-center text-zinc-500 space-y-2">
-                    <Sparkles className="h-8 w-8 mx-auto mb-2" />
-                    <p>Je peux vous aider à :</p>
-                    <ul className="space-y-1 text-sm">
-                      <li>• Trouver des offres adaptées à votre profil</li>
-                      <li>• Analyser les tendances du marché</li>
-                      <li>• Optimiser votre CV et lettre de motivation</li>
-                      <li>• Préparer vos entretiens</li>
-                    </ul>
-                  </div>
-                ) : (
-                  messages.map((message) => (
-                    <motion.div
-                      key={message.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`flex gap-3 ${
-                        message.type === 'user' ? 'flex-row-reverse' : ''
-                      }`}
-                    >
-                      <div className="flex-shrink-0">
-                        {message.type === 'user' ? (
-                          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                            <User className="h-4 w-4 text-primary" />
-                          </div>
-                        ) : (
-                          <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center">
-                            <Bot className="h-4 w-4 text-zinc-400" />
-                          </div>
-                        )}
-                      </div>
-                      <div
-                        className={`flex flex-col space-y-1 max-w-[80%] ${
-                          message.type === 'user' ? 'items-end' : 'items-start'
-                        }`}
-                      >
-                        <div
-                          className={`rounded-lg px-4 py-2 ${
-                            message.type === 'user'
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-zinc-800 text-zinc-100'
-                          }`}
-                        >
-                          <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                        </div>
-                        <span className="text-xs text-zinc-500">
-                          {new Date(message.timestamp).toLocaleTimeString()}
-                        </span>
-                      </div>
-                    </motion.div>
-                  ))
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-
-              <form onSubmit={handleSubmit} className="flex gap-2">
-                <Input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Posez votre question..."
-                  className="flex-1 bg-zinc-900/50 border-zinc-800 focus:border-primary/30"
-                  disabled={isLoading}
-                />
-                <Button 
-                  type="submit"
-                  disabled={isLoading}
-                  className="bg-primary/80 hover:bg-primary text-white"
-                >
-                  {isLoading ? (
-                    <div className="animate-spin h-5 w-5 border-2 border-white/20 border-t-white rounded-full" />
-                  ) : (
-                    <Send className="h-5 w-5" />
-                  )}
-                </Button>
-              </form>
-            </div>
-          </Card>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+        {isAnalyzing ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : analysis ? (
+          <div className="prose dark:prose-invert max-w-none">
+            <div dangerouslySetInnerHTML={{ __html: analysis.replace(/\n/g, '<br>') }} />
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-center">
+            Cliquez sur "Analyser les offres" pour obtenir des recommandations personnalisées
+          </p>
+        )}
+      </ScrollArea>
+    </Card>
   );
 }
