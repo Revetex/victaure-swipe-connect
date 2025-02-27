@@ -1,254 +1,51 @@
 
-import { Suspense } from "react";
-import { useLocation, Navigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import { Loader } from "@/components/ui/loader";
+import { useEffect, useState } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { AuthHeader } from "@/components/auth/sections/AuthHeader";
 import { AuthFooter } from "@/components/auth/sections/AuthFooter";
-import { ThemeSelector } from "@/components/auth/ThemeSelector";
-import { motion } from "framer-motion";
-import { Dialog } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
-import { CountdownSection } from "@/components/auth/sections/CountdownSection";
-import { InnovationsSection } from "@/components/auth/sections/InnovationsSection";
+import { cn } from "@/lib/utils";
+import { AuthVideo } from "@/components/auth/AuthVideo";
 import { FeaturesSection } from "@/components/auth/sections/FeaturesSection";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { HandshakeIcon, Building2, Users } from "lucide-react";
-import { PartnershipContactDialog } from "@/components/auth/sections/PartnershipContactDialog";
+import { InnovationsSection } from "@/components/auth/sections/InnovationsSection";
+import { CountdownSection } from "@/components/auth/sections/CountdownSection";
 
-// Types
-interface CountdownState {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-}
-
-// Composant principal
 export default function Auth() {
-  // États et hooks
-  const { isAuthenticated, isLoading } = useAuth();
-  const location = useLocation();
-  const [isPartnershipContactOpen, setIsPartnershipContactOpen] = useState(false);
-  const [countdown, setCountdown] = useState<CountdownState>({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0
-  });
+  const [viewportHeight, setViewportHeight] = useState<number>(0);
 
-  // Effets
   useEffect(() => {
-    const calculateCountdown = () => {
-      const launchDate = new Date('2025-03-30T08:00:00').getTime();
-      const now = new Date().getTime();
-      const distance = launchDate - now;
-
-      return {
-        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((distance % (1000 * 60)) / 1000)
-      };
+    if (typeof window === "undefined") return;
+    
+    const handleResize = () => {
+      setViewportHeight(window.innerHeight);
     };
 
-    const timer = setInterval(() => {
-      setCountdown(calculateCountdown());
-    }, 1000);
-
-    return () => clearInterval(timer);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // États de rendu conditionnels
-  if (isLoading) {
-    return <LoadingState />;
-  }
-
-  if (isAuthenticated) {
-    return <AuthenticatedRedirect />;
-  }
-
   return (
-    <div className="relative min-h-screen bg-[#0B1026] overflow-hidden">
-      <BackgroundEffects />
-      <ThemeSelector />
-
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center w-full px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
-        <AuthenticationSection location={location} />
-        <ContentSections 
-          countdown={countdown}
-          onPartnershipContact={() => setIsPartnershipContactOpen(true)}
-        />
-      </main>
-
-      <PartnershipDialog 
-        isOpen={isPartnershipContactOpen}
-        onOpenChange={setIsPartnershipContactOpen}
-      />
-
+    <div
+      className={cn(
+        "flex flex-col items-center justify-between min-h-screen w-full",
+        "bg-gradient-to-b from-[#131B25] via-[#1B2A4A] to-[#1A1F2C]",
+        "text-white"
+      )}
+      style={{ minHeight: viewportHeight ? `${viewportHeight}px` : "100vh" }}
+    >
+      <div className="w-full">
+        <AuthHeader />
+        <main className="container px-4 pt-6 pb-12 md:pt-12 md:pb-24 mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16">
+            <AuthForm />
+            <AuthVideo />
+          </div>
+          <FeaturesSection />
+          <InnovationsSection />
+          <CountdownSection />
+        </main>
+      </div>
       <AuthFooter />
     </div>
-  );
-}
-
-// Composants internes
-function LoadingState() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-[#1A1F2C]">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Loader className="w-8 h-8 text-[#64B5D9]" />
-      </motion.div>
-    </div>
-  );
-}
-
-function AuthenticatedRedirect() {
-  const redirectTo = sessionStorage.getItem('redirectTo') || '/dashboard';
-  sessionStorage.removeItem('redirectTo');
-  return <Navigate to={redirectTo} replace />;
-}
-
-function BackgroundEffects() {
-  return (
-    <div className="fixed inset-0">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#1A1F2C] via-[#0B1026] to-[#1A1F2C] opacity-90" />
-      <div 
-        className="absolute inset-0 z-0" 
-        style={{
-          backgroundImage: 'radial-gradient(circle at center, #64B5D9 1px, transparent 1px)',
-          backgroundSize: '50px 50px',
-          opacity: 0.05
-        }} 
-      />
-      <motion.div 
-        className="absolute inset-0 bg-gradient-radial from-[#64B5D9]/10 via-transparent to-transparent" 
-        animate={{
-          scale: [1, 1.1, 1],
-          opacity: [0.1, 0.15, 0.1]
-        }} 
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "linear"
-        }}
-      />
-    </div>
-  );
-}
-
-function AuthenticationSection({ location }: { location: any }) {
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="w-full max-w-lg lg:max-w-2xl mx-auto space-y-6"
-    >
-      <AuthHeader />
-      <AuthForm redirectTo={location.state?.redirectTo} />
-    </motion.div>
-  );
-}
-
-function ContentSections({ 
-  countdown, 
-  onPartnershipContact 
-}: { 
-  countdown: CountdownState;
-  onPartnershipContact: () => void;
-}) {
-  return (
-    <div className="mt-12 w-full max-w-7xl mx-auto px-4 space-y-16">
-      <InnovationsSection />
-      <PartnershipSection onContact={onPartnershipContact} />
-      <CountdownSection countdown={countdown} />
-      <FeaturesSection />
-    </div>
-  );
-}
-
-function PartnershipSection({ onContact }: { onContact: () => void }) {
-  return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
-      className="relative"
-    >
-      <Card className="relative overflow-hidden bg-gradient-to-br from-[#1B2A4A]/80 to-[#1A1F2C]/80 border border-[#64B5D9]/20 backdrop-blur-sm">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#64B5D9]/5 to-transparent" />
-        <div className="relative p-6 sm:p-8 space-y-8">
-          <div className="flex items-center gap-3 mb-8">
-            <HandshakeIcon className="h-6 w-6 text-[#64B5D9]" />
-            <h2 className="text-2xl font-semibold text-[#F1F0FB]">Programme Partenaire</h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <PartnershipCard
-              icon={<Building2 className="h-6 w-6 text-[#64B5D9]" />}
-              title="Entreprises"
-              description="Accédez à notre réseau de talents qualifiés et à nos outils innovants."
-            />
-            <PartnershipCard
-              icon={<Users className="h-6 w-6 text-[#64B5D9]" />}
-              title="Recruteurs"
-              description="Optimisez vos processus avec notre IA et notre base de talents."
-            />
-            <PartnershipCard
-              icon={<HandshakeIcon className="h-6 w-6 text-[#64B5D9]" />}
-              title="Startups"
-              description="Profitez de conditions adaptées à votre croissance."
-            />
-          </div>
-
-          <div className="flex flex-col items-center gap-4 pt-4">
-            <Button 
-              onClick={onContact}
-              className="bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white px-8 py-6 text-lg rounded-xl transition-all duration-300 hover:-translate-y-0.5"
-            >
-              Devenir Partenaire
-            </Button>
-          </div>
-        </div>
-      </Card>
-    </motion.section>
-  );
-}
-
-function PartnershipCard({ 
-  icon, 
-  title, 
-  description 
-}: { 
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="space-y-3">
-      {icon}
-      <h3 className="text-lg font-medium text-[#F1F0FB]">{title}</h3>
-      <p className="text-[#F1F0FB]/70 text-sm">{description}</p>
-    </div>
-  );
-}
-
-function PartnershipDialog({ 
-  isOpen, 
-  onOpenChange 
-}: { 
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <PartnershipContactDialog onClose={() => onOpenChange(false)} />
-    </Dialog>
   );
 }

@@ -34,8 +34,8 @@ export function Feed() {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
-      if (currentScrollY > 100) {
-        setHeaderVisible(lastScrollY.current > currentScrollY || currentScrollY < 100);
+      if (currentScrollY > 50) {
+        setHeaderVisible(lastScrollY.current > currentScrollY || currentScrollY < 50);
       } else {
         setHeaderVisible(true);
       }
@@ -63,18 +63,18 @@ export function Feed() {
       {/* Header avec effet de transition d'opacité lors du défilement */}
       <div 
         className={cn(
-          "fixed top-16 left-0 right-0 z-50",
+          "fixed top-0 left-0 right-0 z-50",
           "transition-all duration-300",
           headerVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
         )}
       >
         <div className="bg-background/95 backdrop-blur-md border-b border-border/40 shadow-sm">
-          <div className="container mx-auto max-w-4xl px-4 py-3 space-y-3">
+          <div className="container mx-auto max-w-4xl px-2 sm:px-4 py-2 space-y-2">
             {!isExpanded ? (
               <Button
                 onClick={() => setIsExpanded(true)}
                 variant="ghost"
-                className="w-full bg-primary/5 hover:bg-primary/10 text-foreground h-12 justify-start px-4 rounded-xl transition-all duration-200 border border-primary/10"
+                className="w-full bg-primary/5 hover:bg-primary/10 text-foreground h-10 justify-start px-4 rounded-xl transition-all duration-200 border border-primary/10"
               >
                 <PenLine className="h-4 w-4 mr-2 text-primary" />
                 Partagez quelque chose...
@@ -108,16 +108,16 @@ export function Feed() {
         </div>
       </div>
 
-      {/* Espace pour compenser la hauteur du header fixe */}
-      <div className="h-[140px]" />
+      {/* Espace réduit pour compenser la hauteur du header fixe */}
+      <div className="h-[80px]" />
 
       {/* Container principal avec le feed et scrolling amélioré */}
-      <main className="flex-1 w-full max-w-4xl mx-auto px-4 scroll-smooth">
+      <main className="flex-1 w-full max-w-4xl mx-auto px-2 sm:px-4 scroll-smooth">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="space-y-4 pb-24"
+          className="space-y-3 pb-16"
         >
           <PostList
             searchTerm={searchTerm}
