@@ -45,10 +45,12 @@ export function CustomConversationList() {
     };
   }, []);
   
-  // Vérifiez que les conversations ont la propriété participant
+  // Vérifiez que les conversations ont la propriété participant comme chaîne
   const filteredConversations = conversations.filter(conv => {
     if (conv && typeof conv.participant === 'string') {
       return conv.participant.toLowerCase().includes(searchQuery.toLowerCase());
+    } else if (conv && conv.participant && typeof conv.participant === 'object' && conv.participant.full_name) {
+      return conv.participant.full_name.toLowerCase().includes(searchQuery.toLowerCase());
     }
     return false;
   });
@@ -154,11 +156,15 @@ export function CustomConversationList() {
           >
             {displayedConversations.map((conversation) => {
               const safeConv = ensureConversationProps(conversation);
+              const participantName = typeof safeConv.participant === 'string' 
+                ? safeConv.participant 
+                : safeConv.participant?.full_name || 'Contact';
+              
               return (
                 <CustomConversationItem
                   key={safeConv.id}
                   avatar={safeConv.avatar_url ?? undefined}
-                  name={String(safeConv.participant)}
+                  name={participantName}
                   message={safeConv.last_message}
                   time={safeConv.last_message_time}
                   unread={safeConv.unread}
@@ -167,7 +173,7 @@ export function CustomConversationList() {
                   onClick={() => {
                     setReceiver({
                       id: safeConv.participant1_id === user?.id ? safeConv.participant2_id : safeConv.participant1_id,
-                      full_name: String(safeConv.participant),
+                      full_name: participantName,
                       avatar_url: safeConv.avatar_url,
                       online_status: safeConv.online
                     });
