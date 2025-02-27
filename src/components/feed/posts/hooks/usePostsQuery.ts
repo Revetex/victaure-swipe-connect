@@ -1,5 +1,5 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Post } from "@/types/posts";
 
@@ -8,12 +8,17 @@ interface UsePostsQueryProps {
   sortBy: 'date' | 'likes' | 'comments';
   sortOrder: 'asc' | 'desc';
   userId?: string;
+  page: number;
+  limit: number;
 }
 
-export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQueryProps) {
-  return useQuery({
+export function usePostsQuery({ filter, sortBy, sortOrder, userId, limit = 10 }: UsePostsQueryProps) {
+  return useInfiniteQuery({
     queryKey: ["posts", filter, sortBy, sortOrder, userId],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 0 }) => {
+      const from = pageParam * limit;
+      const to = from + limit - 1;
+
       let query = supabase
         .from("posts")
         .select(`
@@ -39,11 +44,9 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQue
               avatar_url
             )
           )
-        `);
+        `)
+        .range(from, to);
 
-      console.log("Filter appliqué:", filter); // Debug
-
-      // Appliquer les filtres
       switch (filter) {
         case "my":
           query = query.eq("user_id", userId);
@@ -63,7 +66,6 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQue
         }
       }
 
-      // Appliquer le tri
       switch (sortBy) {
         case "date":
           query = query.order("created_at", { ascending: sortOrder === "asc" });
@@ -71,21 +73,14 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQue
         case "likes":
           query = query.order("likes", { ascending: sortOrder === "asc" });
           break;
-        case "comments":
-          // Pour le tri par commentaires, nous devons trier après avoir récupéré les données
-          break;
       }
 
       const { data, error } = await query;
 
-      console.log("Données reçues:", data); // Debug
-
       if (error) {
-        console.error("Erreur lors de la récupération des posts:", error);
         throw error;
       }
 
-      // Transformer les données pour correspondre au type Post
       const transformedData = data?.map(post => ({
         ...post,
         privacy_level: post.privacy_level as "public" | "connections",
@@ -95,18 +90,22 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQue
         }))
       })) as Post[];
 
-      // Si le tri est par commentaires, nous devons trier manuellement
-      if (sortBy === "comments") {
-        return transformedData.sort((a, b) => {
-          const aCount = a.comments?.length || 0;
-          const bCount = b.comments?.length || 0;
-          return sortOrder === "asc" ? aCount - bCount : bCount - aCount;
-        });
-      }
+      // Tri manuel pour les commentaires si nécessaire
+      const sortedData = sortBy === "comments" 
+        ? transformedData.sort((a, b) => {
+            const aCount = a.comments?.length || 0;
+            const bCount = b.comments?.length || 0;
+            return sortOrder === "asc" ? aCount - bCount : bCount - aCount;
+          })
+        : transformedData;
 
-      return transformedData;
+      return {
+        posts: sortedData,
+        nextPage: data?.length === limit ? pageParam + 1 : undefined
+      };
     },
-    staleTime: 1000 * 60, // 1 minute
-    gcTime: 1000 * 60 * 5, // 5 minutes
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 5,
   });
 }

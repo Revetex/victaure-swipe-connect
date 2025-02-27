@@ -1,6 +1,6 @@
 
 import { useAuth } from "@/hooks/useAuth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePostOperations } from "./usePostOperations";
 import { usePostsQuery } from "./hooks/usePostsQuery";
 import { PostSkeleton } from "./PostSkeleton";
@@ -9,6 +9,8 @@ import { DeletePostDialog } from "./DeletePostDialog";
 import { PostGrid } from "./sections/PostGrid";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useInView } from "framer-motion";
+import { Loader2 } from "lucide-react";
 
 interface PostListProps {
   searchTerm?: string;
@@ -29,15 +31,33 @@ export function PostList({
 }: PostListProps) {
   const { user } = useAuth();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
-
+  const [page, setPage] = useState(1);
   const { handleDelete, handleHide, handleUpdate } = usePostOperations();
 
-  const { data: posts, isLoading, error } = usePostsQuery({
+  const { 
+    data: posts,
+    isLoading,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage
+  } = usePostsQuery({
     filter,
     sortBy,
     sortOrder,
-    userId: user?.id
+    userId: user?.id,
+    page,
+    limit: 10
   });
+
+  // Infinite scroll detection
+  const [ref, inView] = useInView();
+
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage]);
 
   if (error) {
     console.error("Erreur lors du chargement des posts:", error);
@@ -45,14 +65,13 @@ export function PostList({
     return null;
   }
 
-  const filteredPosts = posts?.filter(post => 
+  const allPosts = posts?.pages.flatMap(page => page.posts) ?? [];
+  const filteredPosts = allPosts.filter(post => 
     post.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (isLoading) return <PostSkeleton />;
-  if (!posts?.length) return <EmptyPostState />;
-
-  console.log("Posts chargés:", filteredPosts); // Pour le débogage
+  if (!filteredPosts.length) return <EmptyPostState />;
 
   return (
     <motion.div 
@@ -62,7 +81,7 @@ export function PostList({
       className="space-y-6"
     >
       <PostGrid 
-        posts={filteredPosts || []} 
+        posts={filteredPosts} 
         currentUserId={user?.id}
         userEmail={user?.email}
         onDelete={postId => setPostToDelete(postId)}
@@ -72,6 +91,13 @@ export function PostList({
           onPostUpdated();
         }}
       />
+
+      {/* Loader pour l'infinite scroll */}
+      <div ref={ref} className="flex justify-center py-4">
+        {isFetchingNextPage && (
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        )}
+      </div>
 
       <DeletePostDialog 
         isOpen={!!postToDelete}
