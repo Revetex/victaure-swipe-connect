@@ -3,7 +3,7 @@ import { UserProfile } from "@/types/profile";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ConnectionCard } from "./ConnectionCard";
 import { EmptyConnectionsState } from "./EmptyConnectionsState";
-import { useConnections } from "./hooks/useConnections";
+import useConnections from "./hooks/useConnections"; // Correction: import par défaut au lieu d'un import nommé
 import { PendingRequestsSection } from "./PendingRequestsSection";
 import { ProfilePreview } from "@/components/ProfilePreview";
 
