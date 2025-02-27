@@ -93,13 +93,23 @@ export function useMessages(receiver: Receiver | null) {
             
             if (data) {
               // Marquer les messages comme lus
-              const { error: markReadError } = await supabase
-                .from('user_conversations')
-                .update({
-                  participant1_last_read: user.id === conversationData?.participant1_id ? new Date().toISOString() : undefined,
-                  participant2_last_read: user.id === conversationData?.participant2_id ? new Date().toISOString() : undefined
-                })
-                .eq('id', conversationId);
+              if (conversationData) {
+                const { data: conversationDetails } = await supabase
+                  .from('user_conversations')
+                  .select('participant1_id, participant2_id')
+                  .eq('id', conversationId)
+                  .single();
+                
+                if (conversationDetails) {
+                  const { error: markReadError } = await supabase
+                    .from('user_conversations')
+                    .update({
+                      participant1_last_read: user.id === conversationDetails.participant1_id ? new Date().toISOString() : undefined,
+                      participant2_last_read: user.id === conversationDetails.participant2_id ? new Date().toISOString() : undefined
+                    })
+                    .eq('id', conversationId);
+                }
+              }
               
               // Marquer aussi les messages individuels
               const unreadMessages = data

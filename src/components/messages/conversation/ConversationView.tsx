@@ -13,10 +13,11 @@ import type { Receiver, UserRole } from "@/types/messages";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, Paperclip, Image, Mic, Plus, X } from "lucide-react";
+import { Send, Paperclip, Image, Mic, Plus, X, Smile } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EmojiPicker } from "../emoji/EmojiPicker";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useThemeContext } from "@/components/ThemeProvider";
 
 export function ConversationView() {
   const { receiver, setReceiver, setShowConversation } = useReceiver();
@@ -31,6 +32,7 @@ export function ConversationView() {
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const isMobile = useIsMobile();
+  const { isDark } = useThemeContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   useEffect(() => {
@@ -39,6 +41,15 @@ export function ConversationView() {
       loadUserProfile(receiverId);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    // Scroll to bottom when messages change
+    if (messagesEndRef.current) {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [messages]);
 
   const loadUserProfile = async (userId: string) => {
     try {
@@ -194,7 +205,12 @@ export function ConversationView() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="flex flex-col h-full bg-gradient-to-b from-[#1B2A4A]/50 to-[#1A1F2C]/50 relative"
+        className={cn(
+          "flex flex-col h-full relative",
+          isDark 
+            ? "bg-gradient-to-b from-[#1B2A4A]/50 to-[#1A1F2C]/50" 
+            : "bg-gradient-to-b from-white to-[#F1F0FB]/50"
+        )}
       >
         <motion.div
           initial={{ y: -20, opacity: 0 }}
@@ -208,7 +224,7 @@ export function ConversationView() {
         </motion.div>
         
         <motion.div 
-          className="flex-1 overflow-y-auto p-4"
+          className="flex-1 overflow-y-auto p-2 sm:p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -228,7 +244,10 @@ export function ConversationView() {
           className="relative"
         >
           {showEmojiPicker && (
-            <div className="absolute bottom-full left-0 mb-2 z-50">
+            <div className={cn(
+              "absolute bottom-full mb-2 z-50",
+              isMobile ? "left-0 right-0 mx-auto w-[90%]" : "left-0"
+            )}>
               <EmojiPicker onEmojiSelect={handleAddEmoji} onClose={() => setShowEmojiPicker(false)} />
             </div>
           )}
@@ -238,13 +257,25 @@ export function ConversationView() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="absolute bottom-full left-4 mb-2 z-40 bg-[#242F44] rounded-lg shadow-xl border border-[#64B5D9]/20 p-3"
+              className={cn(
+                "absolute bottom-full mb-2 z-40 rounded-lg shadow-xl p-3",
+                "border",
+                isDark 
+                  ? "bg-[#242F44] border-[#64B5D9]/20" 
+                  : "bg-white border-slate-200",
+                isMobile ? "left-2 right-2" : "left-4"
+              )}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-around gap-3">
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="bg-[#1A2335]/80 hover:bg-[#1A2335] text-white"
+                  className={cn(
+                    "rounded-full",
+                    isDark
+                      ? "bg-[#1A2335]/80 hover:bg-[#1A2335] text-white"
+                      : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                  )}
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Paperclip className="h-5 w-5" />
@@ -252,7 +283,12 @@ export function ConversationView() {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="bg-[#1A2335]/80 hover:bg-[#1A2335] text-white"
+                  className={cn(
+                    "rounded-full",
+                    isDark
+                      ? "bg-[#1A2335]/80 hover:bg-[#1A2335] text-white"
+                      : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                  )}
                   onClick={() => {
                     fileInputRef.current?.click();
                     setShowAttachMenu(false);
@@ -263,7 +299,12 @@ export function ConversationView() {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="bg-[#1A2335]/80 hover:bg-[#1A2335] text-white"
+                  className={cn(
+                    "rounded-full",
+                    isDark
+                      ? "bg-[#1A2335]/80 hover:bg-[#1A2335] text-white"
+                      : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                  )}
                   onClick={() => {
                     setShowAttachMenu(false);
                     handleStartRecording();
@@ -274,7 +315,12 @@ export function ConversationView() {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="bg-[#1A2335]/80 hover:bg-[#1A2335] text-white"
+                  className={cn(
+                    "rounded-full",
+                    isDark
+                      ? "bg-[#1A2335]/80 hover:bg-[#1A2335] text-white"
+                      : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                  )}
                   onClick={() => setShowAttachMenu(false)}
                 >
                   <X className="h-5 w-5" />
@@ -292,19 +338,29 @@ export function ConversationView() {
           />
           
           <div className={cn(
-            "p-4 bg-[#1B2A4A]/50 border-t border-[#64B5D9]/10",
-            isRecording && "bg-[#1B2A4A]/80"
+            "p-2 sm:p-4 border-t",
+            isDark 
+              ? "bg-[#1B2A4A]/50 border-[#64B5D9]/10" 
+              : "bg-white/60 border-slate-200",
+            isRecording && isDark && "bg-[#1B2A4A]/80",
+            isRecording && !isDark && "bg-slate-100/80"
           )}>
             <div className={cn(
-              "flex items-end gap-2 p-2 rounded-lg",
-              "bg-[#1A1F2C]/50 backdrop-blur-sm",
-              "border border-[#64B5D9]/10",
-              "transition-all duration-300"
+              "flex items-end gap-2 p-2 rounded-lg border",
+              "transition-all duration-300",
+              isDark 
+                ? "bg-[#1A1F2C]/50 backdrop-blur-sm border-[#64B5D9]/10" 
+                : "bg-white backdrop-blur-sm border-slate-200"
             )}>
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-[#F2EBE4]/80 hover:text-[#F2EBE4] transition-colors h-9 w-9"
+                className={cn(
+                  "transition-colors h-9 w-9 rounded-full",
+                  isDark 
+                    ? "text-[#F2EBE4]/80 hover:text-[#F2EBE4] hover:bg-[#1A2335]/80" 
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                )}
                 onClick={() => setShowAttachMenu(!showAttachMenu)}
               >
                 <Plus className="h-5 w-5" />
@@ -313,11 +369,18 @@ export function ConversationView() {
               {isRecording ? (
                 <div className="flex-1 flex items-center gap-3 px-3">
                   <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-                  <span className="text-white/80">Enregistrement en cours...</span>
+                  <span className={isDark ? "text-white/80" : "text-slate-700"}>
+                    Enregistrement en cours...
+                  </span>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="ml-auto text-white/80 hover:text-white"
+                    className={cn(
+                      "ml-auto",
+                      isDark 
+                        ? "text-white/80 hover:text-white" 
+                        : "text-slate-600 hover:text-slate-900"
+                    )}
                     onClick={handleStopRecording}
                   >
                     Arrêter
@@ -335,16 +398,26 @@ export function ConversationView() {
                       }
                     }}
                     placeholder="Écrivez votre message..."
-                    className="flex-1 bg-transparent border-none text-[#F2EBE4] placeholder-[#F2EBE4]/30 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className={cn(
+                      "flex-1 border-none focus-visible:ring-0 focus-visible:ring-offset-0",
+                      isDark 
+                        ? "bg-transparent text-[#F2EBE4] placeholder-[#F2EBE4]/30" 
+                        : "bg-transparent text-slate-900 placeholder-slate-400"
+                    )}
                   />
                 
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-[#F2EBE4]/80 hover:text-[#F2EBE4] transition-colors h-9 w-9"
+                    className={cn(
+                      "transition-colors h-9 w-9 rounded-full",
+                      isDark 
+                        ? "text-[#F2EBE4]/80 hover:text-[#F2EBE4] hover:bg-[#1A2335]/80" 
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                    )}
                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                   >
-                    <span className="text-xl">😊</span>
+                    <Smile className="h-5 w-5" />
                   </Button>
                 </>
               )}
@@ -353,9 +426,12 @@ export function ConversationView() {
                 onClick={isRecording ? handleStopRecording : handleSendMessage}
                 disabled={isRecording ? false : !messageInput.trim()}
                 className={cn(
-                  "bg-[#64B5D9] hover:bg-[#64B5D9]/80 text-white h-9 w-9 rounded-full",
+                  "h-9 w-9 rounded-full",
                   "transition-all duration-300",
-                  "disabled:opacity-50 disabled:cursor-not-allowed"
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                  isDark 
+                    ? "bg-[#64B5D9] hover:bg-[#64B5D9]/80 text-white" 
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
                 )}
               >
                 {isRecording ? (
