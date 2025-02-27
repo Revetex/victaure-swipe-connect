@@ -1,4 +1,3 @@
-
 export interface MarketplaceListing {
   id: string;
   title: string;
@@ -159,3 +158,22 @@ export const contractFormSchema = {
     minLength: { value: 50, message: "La description doit faire au moins 50 caractères" }
   }
 };
+
+export interface ExtendedMarketplaceListing extends MarketplaceListing {
+  location?: string;
+  category?: string;
+  views_count?: number;
+  favorites_count?: number;
+  featured?: boolean;
+  sale_type?: string;
+}
+
+export interface MarketplaceFavoriteInput {
+  item_id: string;
+  user_id: string;
+}
+
+export interface MarketplaceFavoriteExtended extends MarketplaceFavorite {
+  listing_id?: string;
+  viewer_id?: string;
+}
