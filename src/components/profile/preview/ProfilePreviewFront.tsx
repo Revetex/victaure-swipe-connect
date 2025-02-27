@@ -140,7 +140,7 @@ export function ProfilePreviewFront({
               )}
 
               <Button
-                onClick={handleToggleBlock}
+                onClick={() => handleToggleBlock(profile.id)}
                 variant="outline"
                 className="w-full border-border/10 hover:bg-muted/5"
               >
