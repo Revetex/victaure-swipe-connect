@@ -20,7 +20,7 @@ export function SearchResults({ isEnhancing, onEnhance }: SearchResultsProps) {
         {isEnhancing ? 'Analyse en cours...' : 'Analyser avec IA'}
       </Button>
       
-      <ScrollArea className="h-[600px]">
+      <ScrollArea className="h-[400px]">
         <div className="p-4">
           <div className="gcse-searchresults-only"></div>
         </div>
