@@ -1,4 +1,3 @@
-
 import { Suspense } from "react";
 import { useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,6 +14,8 @@ import { FeaturesSection } from "@/components/auth/sections/FeaturesSection";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HandshakeIcon, Building2, Users, Rocket } from "lucide-react";
+import { Dialog } from "@radix-ui/react-dialog";
+import { PartnershipContactDialog } from "@/components/auth/sections/PartnershipContactDialog";
 
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -25,6 +26,7 @@ export default function Auth() {
     minutes: 0,
     seconds: 0
   });
+  const [isPartnershipContactOpen, setIsPartnershipContactOpen] = useState(false);
 
   useEffect(() => {
     const launchDate = new Date('2025-03-30T08:00:00').getTime();
@@ -63,7 +65,6 @@ export default function Auth() {
 
   return (
     <div className="relative min-h-screen bg-[#0B1026] overflow-hidden">
-      {/* Background amélioré */}
       <div className="fixed inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-[#1A1F2C] via-[#0B1026] to-[#1A1F2C] opacity-90" />
         <div 
@@ -104,7 +105,6 @@ export default function Auth() {
         <div className="mt-12 w-full max-w-7xl mx-auto px-4 space-y-16">
           <InnovationsSection />
           
-          {/* Section Partenariat intégrée */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -113,38 +113,62 @@ export default function Auth() {
           >
             <Card className="relative overflow-hidden bg-gradient-to-br from-[#1B2A4A]/80 to-[#1A1F2C]/80 border border-[#64B5D9]/20 backdrop-blur-sm">
               <div className="absolute inset-0 bg-gradient-to-br from-[#64B5D9]/5 to-transparent" />
-              <div className="relative p-6 space-y-6">
+              <div className="relative p-6 space-y-8">
                 <div className="flex items-center gap-3">
                   <HandshakeIcon className="h-6 w-6 text-[#64B5D9]" />
-                  <h2 className="text-2xl font-semibold text-[#F1F0FB]">Programme de Partenariat</h2>
+                  <div className="space-y-1">
+                    <h2 className="text-2xl font-semibold text-[#F1F0FB]">Programme de Partenariat</h2>
+                    <p className="text-[#F1F0FB]/70 text-sm">
+                      Rejoignez notre écosystème d'innovation et propulsez votre entreprise vers l'avenir
+                    </p>
+                  </div>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="space-y-4">
                     <Building2 className="h-8 w-8 text-[#64B5D9]" />
                     <h3 className="text-lg font-medium text-[#F1F0FB]">Entreprises</h3>
-                    <p className="text-[#F1F0FB]/70">Accédez à un réseau exclusif de professionnels qualifiés et développez votre présence sur le marché.</p>
+                    <p className="text-[#F1F0FB]/70">Accédez à notre réseau exclusif de professionnels qualifiés. Bénéficiez d'outils innovants pour le recrutement et la gestion des talents.</p>
+                    <ul className="text-[#F1F0FB]/60 text-sm space-y-2">
+                      <li>• Accès prioritaire aux profils premium</li>
+                      <li>• Outils de matching avancés</li>
+                      <li>• Support dédié 24/7</li>
+                    </ul>
                   </div>
 
                   <div className="space-y-4">
                     <Users className="h-8 w-8 text-[#64B5D9]" />
                     <h3 className="text-lg font-medium text-[#F1F0FB]">Recruteurs</h3>
-                    <p className="text-[#F1F0FB]/70">Optimisez vos processus de recrutement avec nos outils d'IA et notre base de talents diversifiée.</p>
+                    <p className="text-[#F1F0FB]/70">Optimisez vos processus avec notre IA et accédez à une base de talents diversifiée et qualifiée.</p>
+                    <ul className="text-[#F1F0FB]/60 text-sm space-y-2">
+                      <li>• Analyse prédictive des candidats</li>
+                      <li>• Automatisation des processus</li>
+                      <li>• Rapports détaillés</li>
+                    </ul>
                   </div>
 
                   <div className="space-y-4">
                     <Rocket className="h-8 w-8 text-[#64B5D9]" />
                     <h3 className="text-lg font-medium text-[#F1F0FB]">Startups</h3>
-                    <p className="text-[#F1F0FB]/70">Bénéficiez de conditions spéciales et grandissez avec une plateforme qui évolue avec vous.</p>
+                    <p className="text-[#F1F0FB]/70">Programme spécial pour les startups en croissance avec des conditions préférentielles.</p>
+                    <ul className="text-[#F1F0FB]/60 text-sm space-y-2">
+                      <li>• Tarifs adaptés à votre croissance</li>
+                      <li>• Formation et accompagnement</li>
+                      <li>• Visibilité accrue</li>
+                    </ul>
                   </div>
                 </div>
 
-                <div className="mt-8 flex justify-center">
+                <div className="pt-4 flex flex-col items-center gap-4">
                   <Button 
-                    className="bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white px-8"
+                    onClick={() => setIsPartnershipContactOpen(true)}
+                    className="bg-[#64B5D9] hover:bg-[#64B5D9]/90 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
                   >
                     Devenir Partenaire
                   </Button>
+                  <p className="text-[#F1F0FB]/50 text-sm">
+                    Réponse garantie sous 24h ouvrées
+                  </p>
                 </div>
               </div>
             </Card>
@@ -154,6 +178,10 @@ export default function Auth() {
           <FeaturesSection />
         </div>
       </main>
+
+      <Dialog open={isPartnershipContactOpen} onOpenChange={setIsPartnershipContactOpen}>
+        <PartnershipContactDialog onClose={() => setIsPartnershipContactOpen(false)} />
+      </Dialog>
 
       <AuthFooter />
     </div>
