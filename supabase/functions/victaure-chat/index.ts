@@ -1,141 +1,60 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "@supabase/supabase-js";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { corsHeaders } from "../_shared/cors.ts";
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { ChatMessage } from "./types.ts";
 
-const GEMINI_API_KEY = Deno.env.get('GOOGLE_GEMINI_API_KEY');
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY!);
-
-console.log("Starting victaure-chat function with Google Gemini API");
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { messages, userId } = await req.json();
+    const { messages, type } = await req.json();
 
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
-    // Récupérer le contexte utilisateur depuis Supabase
-    const { data: userProfile } = await supabaseAdmin
-      .from('profiles')
-      .select(`
-        role,
-        full_name,
-        skills,
-        location,
-        experiences (
-          position,
-          company,
-          start_date,
-          end_date
-        )
-      `)
-      .eq('id', userId)
-      .single();
-
-    // Formater le contexte
-    const userContext = {
-      role: userProfile?.role || 'visitor',
-      full_name: userProfile?.full_name,
-      skills: userProfile?.skills,
-      location: userProfile?.location,
-      experience: userProfile?.experiences?.map(exp => ({
-        position: exp.position,
-        company: exp.company,
-        duration: `${new Date(exp.start_date).getFullYear()} - ${
-          exp.end_date ? new Date(exp.end_date).getFullYear() : 'présent'
-        }`
-      })) || []
-    };
-
-    // Initialiser le modèle
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-pro",
-      generationConfig: {
+    // Utilisez le model gpt-4o-mini qui est disponible
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { 
+            role: 'system', 
+            content: 'Vous êtes un assistant professionnel qui aide les utilisateurs avec leur inscription. Répondez de manière concise et claire.' 
+          },
+          ...messages
+        ],
         temperature: 0.7,
-        topP: 0.8,
-        topK: 40,
-        maxOutputTokens: 1000,
-      }
-    });
-
-    const context = `Tu es Mr Victaure, un assistant professionnel et bienveillant spécialisé dans l'emploi et le développement de carrière.
-    Tu parles en français de manière naturelle et engageante.
-
-    Contexte de l'utilisateur :
-    - Rôle : ${userContext.role}
-    - Nom : ${userContext.full_name || 'Non spécifié'}
-    - Compétences : ${userContext.skills?.join(', ') || 'Non spécifiées'}
-    - Localisation : ${userContext.location || 'Non spécifiée'}
-    - Expérience : ${userContext.experience?.map(exp => 
-      `${exp.position} chez ${exp.company} (${exp.duration})`
-    ).join(', ') || 'Non spécifiée'}`;
-
-    // Créer le chat
-    const chat = model.startChat({
-      history: [
-        {
-          role: "user",
-          parts: [{ text: "Initialise le contexte" }]
-        },
-        {
-          role: "model",
-          parts: [{ text: context }]
-        },
-        ...messages.map((msg: any) => ({
-          role: msg.isUser ? "user" : "model",
-          parts: [{ text: msg.content }]
-        }))
-      ],
-    });
-
-    // Générer la réponse
-    const result = await chat.sendMessage(messages[messages.length - 1].content);
-    const response = result.response;
-
-    // Sauvegarder l'interaction pour l'apprentissage
-    await supabaseAdmin
-      .from('ai_learning_data')
-      .insert({
-        question: messages[messages.length - 1].content,
-        response: response.text(),
-        user_id: userId,
-        context: userContext
-      });
-
-    return new Response(
-      JSON.stringify({
-        choices: [{
-          message: {
-            content: response.text()
-          }
-        }]
+        max_tokens: 500,
       }),
-      { 
-        headers: { 
-          ...corsHeaders,
-          'Content-Type': 'application/json' 
-        } 
-      }
-    );
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      console.error('OpenAI API error:', data.error);
+      throw new Error(data.error.message);
+    }
+
+    return new Response(JSON.stringify(data), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
 
   } catch (error) {
     console.error('Error in victaure-chat function:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
-        status: 500,
-        headers: { 
-          ...corsHeaders,
-          'Content-Type': 'application/json'
-        }
+        status: 500, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
   }
