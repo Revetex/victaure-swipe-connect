@@ -43,34 +43,32 @@ export function Feed() {
   };
 
   return (
-    <div className="relative min-h-screen">
-      {/* Barre fixe plus compacte */}
-      <div className="fixed top-16 left-0 right-0 z-10 bg-gradient-to-b from-background to-background/80 border-b border-border/5 backdrop-blur-sm">
-        <div className="container mx-auto flex flex-col gap-2 px-4 py-2">
-          <div className="flex gap-2 items-center">
-            {!isExpanded ? (
-              <Button
-                onClick={() => setIsExpanded(true)}
-                variant="ghost"
-                className="flex-1 bg-white/5 hover:bg-white/10 text-white/80 h-10 justify-start px-4"
-              >
-                <PenLine className="h-4 w-4 mr-2" />
-                Partagez quelque chose...
-              </Button>
-            ) : (
-              <CreatePostForm
-                newPost={newPost}
-                onPostChange={handlePostChange}
-                privacy={privacy}
-                onPrivacyChange={handlePrivacyChange}
-                attachments={attachments}
-                isUploading={isUploading}
-                onCreatePost={handleCreatePost}
-                onClose={() => setIsExpanded(false)}
-                isExpanded={isExpanded}
-              />
-            )}
-          </div>
+    <div className="relative">
+      {/* Barre fixe en haut */}
+      <div className="fixed top-16 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/40">
+        <div className="container mx-auto max-w-5xl px-4 py-2 space-y-2">
+          {!isExpanded ? (
+            <Button
+              onClick={() => setIsExpanded(true)}
+              variant="ghost"
+              className="w-full bg-white/5 hover:bg-white/10 text-white/80 h-10 justify-start px-4"
+            >
+              <PenLine className="h-4 w-4 mr-2" />
+              Partagez quelque chose...
+            </Button>
+          ) : (
+            <CreatePostForm
+              newPost={newPost}
+              onPostChange={handlePostChange}
+              privacy={privacy}
+              onPrivacyChange={handlePrivacyChange}
+              attachments={attachments}
+              isUploading={isUploading}
+              onCreatePost={handleCreatePost}
+              onClose={() => setIsExpanded(false)}
+              isExpanded={isExpanded}
+            />
+          )}
           
           <PostFilters
             searchTerm={searchTerm}
@@ -90,21 +88,22 @@ export function Feed() {
       <div className="h-[120px]" />
 
       {/* Liste des posts avec infinite scroll */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="container mx-auto px-4 pb-8"
-      >
-        <PostList
-          searchTerm={searchTerm}
-          filter={filter}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-          onPostDeleted={invalidatePosts}
-          onPostUpdated={invalidatePosts}
-        />
-      </motion.div>
+      <div className="container mx-auto max-w-5xl px-4 pb-8">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <PostList
+            searchTerm={searchTerm}
+            filter={filter}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onPostDeleted={invalidatePosts}
+            onPostUpdated={invalidatePosts}
+          />
+        </motion.div>
+      </div>
     </div>
   );
 }
