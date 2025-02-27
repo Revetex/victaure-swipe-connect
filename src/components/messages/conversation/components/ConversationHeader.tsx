@@ -1,134 +1,126 @@
 
-import { Receiver } from "@/types/messages";
+import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, MoreHorizontal, Phone, VideoIcon } from "lucide-react";
-import { UserAvatar } from "@/components/UserAvatar";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
-import { useThemeContext } from "@/components/ThemeProvider";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Phone, Video, MoreVertical, Info } from "lucide-react";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { format, formatDistanceToNow, isToday } from "date-fns";
+import { fr } from "date-fns/locale";
+import { ProfileDialog } from "../../contact/ProfileDialog";
+import { toast } from "sonner";
+import { convertOnlineStatusToBoolean } from "@/types/profile";
 
 interface ConversationHeaderProps {
-  receiver: Receiver | null;
-  onBack: () => void;
+  name: string | null;
+  avatar: string | null;
+  isOnline: boolean;
+  lastSeen?: string | null;
 }
 
-export function ConversationHeader({ receiver, onBack }: ConversationHeaderProps) {
-  const { isDark } = useThemeContext();
-  const isMobile = useIsMobile();
+export function ConversationHeader({ name, avatar, isOnline, lastSeen }: ConversationHeaderProps) {
+  const [showProfile, setShowProfile] = useState(false);
+  
+  // Assurons-nous que isOnline est un booléen
+  const online = typeof isOnline === 'boolean' ? isOnline : convertOnlineStatusToBoolean(isOnline);
 
-  if (!receiver) return null;
-
-  const formatLastSeen = (date: string | null) => {
-    if (!date) return "Hors ligne";
-    return `Vu ${format(new Date(date), "HH:mm")}`;
+  const handleCall = () => {
+    toast.info("Fonctionnalité d'appel en développement");
   };
   
-  return (
-    <div className={cn(
-      "flex items-center gap-2 p-3 border-b",
-      "transition-colors duration-300 ease-in-out",
-      isDark 
-        ? "bg-[#1A1F2C]/90 backdrop-blur-sm border-[#64B5D9]/10" 
-        : "bg-white/90 backdrop-blur-sm border-slate-200"
-    )}>
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        onClick={onBack}
-        className={cn(
-          "mr-1 rounded-full",
-          isDark 
-            ? "text-white/80 hover:text-white hover:bg-white/10" 
-            : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-        )}
-      >
-        <ChevronLeft className="h-5 w-5" />
-      </Button>
-      
-      <UserAvatar 
-        user={{ 
-          id: receiver.id, 
-          name: receiver.full_name,
-          image: receiver.avatar_url
-        }} 
-        className="h-9 w-9" 
-      />
-      
-      <div className="flex-1 min-w-0">
-        <h2 className={cn(
-          "font-medium truncate",
-          isDark ? "text-white" : "text-slate-900"
-        )}>
-          {receiver.full_name}
-        </h2>
-        <p className={cn(
-          "text-xs", 
-          isDark 
-            ? receiver.online_status === "online" ? "text-green-400" : "text-gray-400" 
-            : receiver.online_status === "online" ? "text-green-600" : "text-slate-500"
-        )}>
-          {receiver.online_status === "online" 
-            ? "En ligne" 
-            : formatLastSeen(receiver.last_seen)}
-        </p>
-      </div>
+  const handleVideoCall = () => {
+    toast.info("Fonctionnalité d'appel vidéo en développement");
+  };
+  
+  const getLastSeenText = () => {
+    if (online) return "En ligne";
+    if (!lastSeen) return "Hors ligne";
+    
+    try {
+      const lastSeenDate = new Date(lastSeen);
+      if (isToday(lastSeenDate)) {
+        return "Vu " + formatDistanceToNow(lastSeenDate, { addSuffix: true, locale: fr });
+      }
+      return "Vu " + format(lastSeenDate, 'dd MMM à HH:mm', { locale: fr });
+    } catch {
+      return "Hors ligne";
+    }
+  };
 
-      {!isMobile && (
+  return (
+    <>
+      <div className="border-b px-4 py-3 bg-card flex items-center justify-between">
+        <div className="flex items-center gap-3" onClick={() => setShowProfile(true)} style={{ cursor: 'pointer' }}>
+          <Avatar className="h-9 w-9">
+            <AvatarImage src={avatar || undefined} alt={name || "Contact"} />
+            <AvatarFallback>{name?.[0] || "?"}</AvatarFallback>
+          </Avatar>
+          <div>
+            <div className="font-medium">{name || "Contact"}</div>
+            <div className="text-xs text-muted-foreground">
+              {getLastSeenText()}
+            </div>
+          </div>
+        </div>
+        
         <div className="flex items-center gap-1">
           <Button 
             variant="ghost" 
             size="icon" 
-            className={cn(
-              "rounded-full",
-              isDark 
-                ? "text-white/80 hover:text-white hover:bg-white/10" 
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-            )}
+            className="h-9 w-9 text-muted-foreground hover:text-foreground"
+            onClick={handleCall}
           >
             <Phone className="h-5 w-5" />
+            <span className="sr-only">Appeler</span>
           </Button>
+          
           <Button 
             variant="ghost" 
             size="icon" 
-            className={cn(
-              "rounded-full",
-              isDark 
-                ? "text-white/80 hover:text-white hover:bg-white/10" 
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-            )}
+            className="h-9 w-9 text-muted-foreground hover:text-foreground"
+            onClick={handleVideoCall}
           >
-            <VideoIcon className="h-5 w-5" />
+            <Video className="h-5 w-5" />
+            <span className="sr-only">Appel vidéo</span>
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className={cn(
-              "rounded-full",
-              isDark 
-                ? "text-white/80 hover:text-white hover:bg-white/10" 
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-            )}
-          >
-            <MoreHorizontal className="h-5 w-5" />
-          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-9 w-9 text-muted-foreground hover:text-foreground"
+              >
+                <MoreVertical className="h-5 w-5" />
+                <span className="sr-only">Plus d'options</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setShowProfile(true)}>
+                <Info className="h-4 w-4 mr-2" />
+                <span>Voir le profil</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>Bloquer</DropdownMenuItem>
+              <DropdownMenuItem className="text-destructive focus:bg-destructive/10">
+                Signaler
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      )}
+      </div>
       
-      {isMobile && (
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className={cn(
-            "rounded-full ml-1",
-            isDark 
-              ? "text-white/80 hover:text-white hover:bg-white/10" 
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-          )}
-        >
-          <MoreHorizontal className="h-5 w-5" />
-        </Button>
-      )}
-    </div>
+      <ProfileDialog 
+        open={showProfile} 
+        onOpenChange={setShowProfile} 
+        name={name || "Contact"} 
+        avatar={avatar} 
+        isOnline={online}
+        profileId={null}
+      />
+    </>
   );
 }

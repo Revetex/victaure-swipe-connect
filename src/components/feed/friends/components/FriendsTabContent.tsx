@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile, Friend } from "@/types/profile";
+import { UserProfile, Friend, UserRole } from "@/types/profile";
 import { FriendCard, FriendCardSkeleton } from "./FriendCard";
 import { EmptyConnectionsState } from "../EmptyConnectionsState";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
@@ -70,13 +70,24 @@ export function FriendsTabContent({
           
           if (!profileData) continue;
 
+          // Déterminer le rôle valide à partir des données du profil
+          let role: UserRole = 'professional';
+          
+          if (profileData.role === 'professional' || 
+              profileData.role === 'business' || 
+              profileData.role === 'admin' || 
+              profileData.role === 'freelancer' || 
+              profileData.role === 'student') {
+            role = profileData.role as UserRole;
+          }
+
           // Créer un profil d'ami en combinant les données
           const friend: Friend = {
             id: profileData.id,
             full_name: profileData.full_name || '',
             avatar_url: profileData.avatar_url || null,
             email: profileData.email || null,
-            role: profileData.role || 'professional',
+            role: role,
             bio: profileData.bio || '',
             phone: profileData.phone || '',
             city: profileData.city || '',

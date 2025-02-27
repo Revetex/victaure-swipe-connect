@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, UserRole } from "@/types/profile";
 import { FriendItem } from "./FriendItem";
 import { EmptyConnectionsState } from "./EmptyConnectionsState";
 
@@ -66,13 +66,24 @@ export function FriendList({
           
           if (!profileData) continue;
 
+          // Déterminer le rôle valide à partir des données du profil
+          let role: UserRole = 'professional';
+          
+          if (profileData.role === 'professional' || 
+              profileData.role === 'business' || 
+              profileData.role === 'admin' || 
+              profileData.role === 'freelancer' || 
+              profileData.role === 'student') {
+            role = profileData.role as UserRole;
+          }
+
           // Créer un profil complet en combinant les données
           const profile: UserProfile = {
             id: profileData.id,
             full_name: profileData.full_name || '',
             avatar_url: profileData.avatar_url || null,
             email: profileData.email || '',
-            role: profileData.role || 'professional',
+            role: role,
             bio: profileData.bio || '',
             phone: profileData.phone || '',
             city: profileData.city || '',

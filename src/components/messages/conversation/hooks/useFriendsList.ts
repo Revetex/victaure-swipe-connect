@@ -2,7 +2,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { Friend } from "@/types/profile";
+import { Friend, UserRole } from "@/types/profile";
 
 export function useFriendsList() {
   const { user } = useAuth();
@@ -48,13 +48,24 @@ export function useFriendsList() {
           
           if (!profileData) continue;
 
+          // Déterminer le rôle valide à partir des données du profil
+          let role: UserRole = 'professional';
+          
+          if (profileData.role === 'professional' || 
+              profileData.role === 'business' || 
+              profileData.role === 'admin' || 
+              profileData.role === 'freelancer' || 
+              profileData.role === 'student') {
+            role = profileData.role as UserRole;
+          }
+
           // Créer un objet Friend
           const friend: Friend = {
             id: profileData.id,
             full_name: profileData.full_name || '',
             avatar_url: profileData.avatar_url || null,
             email: profileData.email || null,
-            role: profileData.role || 'professional',
+            role: role,
             bio: profileData.bio || null,
             phone: profileData.phone || null,
             city: profileData.city || null,
