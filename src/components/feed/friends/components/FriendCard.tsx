@@ -1,185 +1,234 @@
 
 import { UserProfile } from "@/types/profile";
+import { UserAvatar } from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Star, UserMinus } from "lucide-react";
-import { motion } from "framer-motion";
-import { ProfileNameButton } from "@/components/profile/ProfileNameButton";
 import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
-import type { Receiver } from "@/types/messages";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
+import { 
+  MoreHorizontal, 
+  MessageSquare, 
+  UserX, 
+  User, 
+  Clock, 
+  Loader2 
+} from "lucide-react";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Card } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface FriendCardProps {
   friend: UserProfile;
-  onRemove?: () => void;
+  onRemove: () => void;
 }
 
-export function FriendCard({
-  friend,
-  onRemove
-}: FriendCardProps) {
+export function FriendCard({ friend, onRemove }: FriendCardProps) {
   const navigate = useNavigate();
+  const { setReceiver, setShowConversation } = useReceiver();
+  const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
-  const [isRemoving, setIsRemoving] = useState(false);
-  const {
-    setReceiver,
-    setShowConversation
-  } = useReceiver();
 
-  const handleStartChat = () => {
-    if (!user) {
-      toast.error("Vous devez être connecté pour envoyer un message");
-      return;
-    }
-
-    const receiver: Receiver = {
+  const handleMessage = () => {
+    setReceiver({
       id: friend.id,
-      full_name: friend.full_name,
-      avatar_url: friend.avatar_url || "/user-icon.svg",
-      email: friend.email,
-      role: friend.role as 'professional' | 'business' | 'admin',
+      full_name: friend.full_name || '',
+      avatar_url: friend.avatar_url,
+      email: friend.email || '',
+      role: friend.role || 'professional',
       bio: friend.bio || null,
       phone: friend.phone || null,
       city: friend.city || null,
       state: friend.state || null,
-      country: friend.country || null,
+      country: friend.country || '',
       skills: friend.skills || [],
-      latitude: friend.latitude || null,
-      longitude: friend.longitude || null,
       online_status: friend.online_status ? 'online' : 'offline',
-      last_seen: friend.last_seen || null,
-      certifications: friend.certifications || [],
-      education: friend.education || [],
-      experiences: friend.experiences || [],
-      friends: friend.friends?.map(f => f.id) || []
-    };
-    setReceiver(receiver);
+      last_seen: friend.last_seen,
+      certifications: [],
+      education: [],
+      experiences: [],
+      friends: []
+    });
     setShowConversation(true);
     navigate('/messages');
   };
 
-  const handleRemoveFriend = async () => {
-    if (!user?.id) {
-      toast.error("Vous devez être connecté pour supprimer cet ami");
-      return;
-    }
+  const handleProfile = () => {
+    navigate(`/profile/${friend.id}`);
+  };
 
+  const handleRemoveFriend = async () => {
+    if (!user) return;
+    
     try {
-      setIsRemoving(true);
+      setIsLoading(true);
       
-      // Récupérer l'ID de la connexion
-      const { data: connectionData, error: connectionError } = await supabase
+      // Récupérer l'ID de la connexion d'amitié
+      const { data: connection, error: fetchError } = await supabase
         .from('user_connections')
         .select('id')
         .or(`and(sender_id.eq.${user.id},receiver_id.eq.${friend.id}),and(sender_id.eq.${friend.id},receiver_id.eq.${user.id})`)
         .eq('status', 'accepted')
+        .eq('connection_type', 'friend')
         .single();
-
-      if (connectionError) throw connectionError;
-
-      // Supprimer la connexion
-      const { error } = await supabase.rpc('remove_friend', {
-        p_connection_id: connectionData.id,
-        p_user_id: user.id
-      });
-
-      if (error) throw error;
-
-      toast.success(`${friend.full_name} retiré de vos contacts`);
-      if (onRemove) onRemove();
+      
+      if (fetchError) throw fetchError;
+      
+      if (connection) {
+        // Supprimer la connexion
+        const { error: removeError } = await supabase.rpc('remove_friend', {
+          p_connection_id: connection.id,
+          p_user_id: user.id
+        });
+        
+        if (removeError) throw removeError;
+        
+        toast.success(`${friend.full_name} retiré de vos connexions`);
+        onRemove();
+      }
     } catch (error) {
       console.error('Error removing friend:', error);
-      toast.error("Erreur lors de la suppression de l'ami");
+      toast.error("Erreur lors de la suppression de la connexion");
     } finally {
-      setIsRemoving(false);
+      setIsLoading(false);
     }
   };
 
+  const formattedLastSeen = friend.last_seen 
+    ? formatDistanceToNow(new Date(friend.last_seen), { addSuffix: true, locale: fr })
+    : "Récemment";
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
+    <motion.div
+      initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ scale: 1.02 }}
-      className="relative overflow-hidden rounded-xl"
+      exit={{ opacity: 0, y: -5 }}
+      transition={{ duration: 0.2 }}
     >
-      <div className="relative z-10 flex items-center justify-between p-4 bg-white/5 backdrop-blur-md border border-white/10 hover:border-[#64B5D9]/20 transition-all duration-300 group rounded-xl">
-        <div className="flex items-center gap-4">
+      <Card className="flex items-center justify-between p-3 bg-zinc-900/30 border-zinc-800 hover:bg-zinc-900/40 transition-colors duration-200">
+        <div className="flex items-center gap-3">
           <div className="relative">
-            <img 
-              src={friend.avatar_url || "/user-icon.svg"} 
-              alt={friend.full_name || "User"} 
-              className="h-12 w-12 rounded-xl ring-2 ring-white/10 group-hover:ring-[#64B5D9]/30 transition-all object-scale-down" 
+            <UserAvatar
+              user={{
+                id: friend.id,
+                name: friend.full_name || '',
+                image: friend.avatar_url
+              }}
+              className="h-10 w-10 border border-zinc-700"
             />
             {friend.online_status && (
-              <motion.div 
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-green-500/80 border-2 border-[#1B2A4A] shadow-lg" 
-              />
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-zinc-900 rounded-full"></span>
             )}
           </div>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <ProfileNameButton 
-                profile={friend} 
-                className="text-sm font-medium text-white group-hover:text-[#64B5D9] transition-colors p-0 h-auto" 
-              />
-              {friend.verified && (
-                <Star className="h-3.5 w-3.5 text-[#64B5D9] fill-[#64B5D9]" />
+          
+          <div>
+            <h4 className="text-sm font-medium text-white">{friend.full_name}</h4>
+            <div className="flex items-center gap-1 text-xs text-white/50">
+              {friend.online_status ? (
+                <span className="text-green-400">En ligne</span>
+              ) : (
+                <>
+                  <Clock className="h-3 w-3" />
+                  <span>{formattedLastSeen}</span>
+                </>
               )}
             </div>
-            <p className="text-xs text-white/60">
-              {friend.role}
-            </p>
           </div>
         </div>
-
-        <div className="flex gap-2">
+        
+        <div className="flex items-center">
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleStartChat}
-            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white hover:text-[#64B5D9]"
+            onClick={handleMessage}
+            className="h-8 w-8 text-white/70 hover:text-white hover:bg-zinc-800"
           >
-            <MessageCircle className="h-4 w-4" />
+            <MessageSquare className="h-4 w-4" />
           </Button>
           
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleRemoveFriend}
-            disabled={isRemoving}
-            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white hover:text-red-500"
+            onClick={handleProfile}
+            className="h-8 w-8 text-white/70 hover:text-white hover:bg-zinc-800"
           >
-            {isRemoving ? (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            ) : (
-              <UserMinus className="h-4 w-4" />
-            )}
+            <User className="h-4 w-4" />
           </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-white/70 hover:text-white hover:bg-zinc-800"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <MoreHorizontal className="h-4 w-4" />
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 bg-zinc-900 border-zinc-800">
+              <DropdownMenuItem
+                className="text-sm cursor-pointer hover:bg-zinc-800"
+                onClick={handleProfile}
+              >
+                <User className="h-4 w-4 mr-2" />
+                Voir le profil
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-sm cursor-pointer hover:bg-zinc-800"
+                onClick={handleMessage}
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Envoyer un message
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-zinc-800" />
+              <DropdownMenuItem
+                className="text-sm text-red-400 cursor-pointer hover:bg-red-900/20 hover:text-red-400"
+                onClick={handleRemoveFriend}
+                disabled={isLoading}
+              >
+                <UserX className="h-4 w-4 mr-2" />
+                Retirer la connexion
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      </div>
+      </Card>
     </motion.div>
   );
 }
 
-// Création d'un composant skeleton pour le chargement
 export function FriendCardSkeleton() {
   return (
-    <div className="rounded-xl overflow-hidden">
-      <div className="p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl">
-        <div className="flex items-center gap-4">
-          <Skeleton className="h-12 w-12 rounded-xl" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-3 w-20" />
-          </div>
+    <Card className="flex items-center justify-between p-3 bg-zinc-900/30 border-zinc-800">
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-10 w-10 rounded-full bg-zinc-800" />
+        <div>
+          <Skeleton className="h-4 w-28 mb-1 bg-zinc-800" />
+          <Skeleton className="h-3 w-16 bg-zinc-800" />
         </div>
       </div>
-    </div>
+      
+      <div className="flex items-center gap-1">
+        <Skeleton className="h-8 w-8 rounded-full bg-zinc-800" />
+        <Skeleton className="h-8 w-8 rounded-full bg-zinc-800" />
+        <Skeleton className="h-8 w-8 rounded-full bg-zinc-800" />
+      </div>
+    </Card>
   );
 }
