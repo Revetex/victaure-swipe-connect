@@ -28,23 +28,8 @@ export function useListingSearch(
         let query = supabase
           .from('marketplace_listings')
           .select(`
-            id, 
-            title, 
-            description, 
-            price, 
-            currency, 
-            type, 
-            status, 
-            seller_id, 
-            created_at, 
-            updated_at, 
-            images, 
-            category,
-            seller:profiles (
-              full_name,
-              avatar_url,
-              rating
-            )
+            *,
+            seller:profiles(full_name, avatar_url, rating)
           `, { count: 'exact' })
           .eq('status', 'active');
 
@@ -56,7 +41,7 @@ export function useListingSearch(
         // Appliquer la recherche textuelle
         if (searchQuery) {
           query = query.textSearch('searchable_text', searchQuery, {
-            type: 'websearch',
+            type: 'websearch', 
             config: 'french'
           });
         }
@@ -100,19 +85,24 @@ export function useListingSearch(
         if (error) throw error;
         
         if (data) {
-          // Conversion du type pour assurer la compatibilité
-          const formattedData: MarketplaceListing[] = data.map(item => ({
+          // Convertir les données au format MarketplaceListing
+          const listings: MarketplaceListing[] = data.map(item => ({
             id: item.id,
             title: item.title,
             description: item.description || "",
             price: item.price,
             currency: item.currency,
-            type: item.type as any,
-            status: item.status as any,
+            type: item.type,
+            status: item.status,
             seller_id: item.seller_id,
             created_at: item.created_at,
             updated_at: item.updated_at,
             images: item.images || [],
+            location: item.location,
+            views_count: item.views_count,
+            favorites_count: item.favorites_count,
+            featured: item.featured,
+            sale_type: item.sale_type,
             category: item.category,
             seller: item.seller ? {
               full_name: item.seller.full_name || "",
@@ -121,7 +111,7 @@ export function useListingSearch(
             } : undefined
           }));
           
-          setListings(formattedData);
+          setListings(listings);
           
           if (count !== null) {
             setTotalCount(count);

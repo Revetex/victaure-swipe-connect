@@ -1,7 +1,7 @@
 
+import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "../ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -25,26 +25,30 @@ export function MarketplaceSearch({ value, onChange, isSearching = false }: Mark
   };
 
   // Effectuer la recherche sur le debounce
-  const triggerSearchWithSuggestions = async (query: string) => {
+  const triggerSearch = async (query: string) => {
     if (!query.trim()) return;
     
     try {
-      // Appeler la fonction de recherche Supabase
-      const { data, error } = await supabase.rpc('search_marketplace_listings', { 
-        query,
-        p_limit: 20
-      });
+      // Implémentation simplifiée sans appel RPC
+      const { data, error } = await supabase
+        .from('marketplace_listings')
+        .select('count')
+        .textSearch('searchable_text', query)
+        .limit(20);
 
       if (error) throw error;
 
       // Mettre à jour l'état de recherche
       onChange(query);
       
-      // Afficher le nombre de résultats trouvés
-      if (data && data.length > 0) {
-        toast.success(`${data.length} résultat(s) trouvé(s)`);
-      } else {
-        toast.info("Aucun résultat trouvé. Essayez d'autres mots-clés.");
+      // Afficher le nombre de résultats trouvés si disponible
+      if (data) {
+        const resultsCount = Array.isArray(data) ? data.length : 0;
+        if (resultsCount > 0) {
+          toast.success(`${resultsCount} résultat(s) trouvé(s)`);
+        } else {
+          toast.info("Aucun résultat trouvé. Essayez d'autres mots-clés.");
+        }
       }
       
     } catch (error) {
@@ -54,11 +58,11 @@ export function MarketplaceSearch({ value, onChange, isSearching = false }: Mark
   };
 
   // Effet pour déclencher la recherche lorsque la valeur debounced change
-  React.useEffect(() => {
+  useEffect(() => {
     if (debouncedValue !== value) {
-      triggerSearchWithSuggestions(debouncedValue);
+      triggerSearch(debouncedValue);
     }
-  }, [debouncedValue]);
+  }, [debouncedValue, value]);
 
   return (
     <div className="relative flex-1">

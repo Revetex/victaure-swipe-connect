@@ -11,58 +11,68 @@ export const useFriendRequests = () => {
   const { data: pendingRequests = [], refetch: refetchPendingRequests, isLoading: isQueryLoading } = useQuery({
     queryKey: ["pending-requests"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Not authenticated");
 
-      const { data: connections, error } = await supabase
-        .from('user_connections')
-        .select(`
-          id,
-          sender_id,
-          receiver_id,
-          status,
-          created_at,
-          updated_at,
-          sender:profiles!sender_id(
+        const { data: connections, error } = await supabase
+          .from('user_connections')
+          .select(`
             id,
-            full_name,
-            avatar_url
-          ),
-          receiver:profiles!receiver_id(
-            id,
-            full_name,
-            avatar_url
-          )
-        `)
-        .eq('status', 'pending')
-        .eq('connection_type', 'friend')
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
+            sender_id,
+            receiver_id,
+            status,
+            created_at,
+            updated_at,
+            sender:profiles!sender_id(
+              id,
+              full_name,
+              avatar_url
+            ),
+            receiver:profiles!receiver_id(
+              id,
+              full_name,
+              avatar_url
+            )
+          `)
+          .eq('status', 'pending')
+          .eq('connection_type', 'friend')
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
-      if (error) {
-        console.error("Error fetching friend requests:", error);
+        if (error) {
+          console.error("Error fetching friend requests:", error);
+          return [];
+        }
+
+        // Formatage sécurisé pour éviter les erreurs d'accès aux propriétés
+        return (connections || []).map(conn => {
+          const senderData = conn.sender || {};
+          const receiverData = conn.receiver || {};
+          
+          return {
+            id: conn.id,
+            sender_id: conn.sender_id,
+            receiver_id: conn.receiver_id,
+            status: conn.status,
+            created_at: conn.created_at,
+            updated_at: conn.updated_at,
+            sender: {
+              id: senderData.id || "",
+              full_name: senderData.full_name || "Utilisateur",
+              avatar_url: senderData.avatar_url || null
+            },
+            receiver: {
+              id: receiverData.id || "",
+              full_name: receiverData.full_name || "Utilisateur",
+              avatar_url: receiverData.avatar_url || null
+            },
+            type: conn.receiver_id === user.id ? 'incoming' : 'outgoing'
+          } as PendingRequest;
+        });
+      } catch (error) {
+        console.error("Error in fetchPendingRequests:", error);
         return [];
       }
-
-      // Map the data to match our PendingRequest type
-      return (connections || []).map(conn => ({
-        id: conn.id,
-        sender_id: conn.sender_id,
-        receiver_id: conn.receiver_id,
-        status: conn.status,
-        created_at: conn.created_at,
-        updated_at: conn.updated_at,
-        sender: {
-          id: conn.sender.id,
-          full_name: conn.sender.full_name,
-          avatar_url: conn.sender.avatar_url
-        },
-        receiver: {
-          id: conn.receiver.id,
-          full_name: conn.receiver.full_name,
-          avatar_url: conn.receiver.avatar_url
-        },
-        type: conn.receiver_id === user.id ? 'incoming' : 'outgoing'
-      })) as PendingRequest[];
     }
   });
 

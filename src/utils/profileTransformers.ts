@@ -1,11 +1,11 @@
 
 import type { 
-  User,
-  Profile,
   Experience,
   Education,
   UserRole,
   Certification,
+  Profile,
+  User,
   UserConnection
 } from '@/types/profile';
 
@@ -34,7 +34,9 @@ export const transformToProfile = (data: any): Profile => {
     cover_image: data.cover_image || '',
     job_title: data.job_title || '',
     created_at: data.created_at || '',
-    updated_at: data.updated_at || ''
+    updated_at: data.updated_at || '',
+    latitude: data.latitude || 0,
+    longitude: data.longitude || 0
   };
 };
 
@@ -48,7 +50,6 @@ export const transformToExperience = (data: any): Experience => {
     position: data.position || '',
     start_date: data.start_date || '',
     end_date: data.end_date || null,
-    current: data.current || false,
     description: data.description || '',
     location: data.location || '',
     skills: data.skills || [],
@@ -62,12 +63,11 @@ export const transformToEducation = (data: any): Education => {
   
   return {
     id: data.id || '',
-    institution: data.institution || '',
+    school_name: data.school_name || data.institution || '',
     degree: data.degree || '',
     field_of_study: data.field_of_study || '',
     start_date: data.start_date || '',
     end_date: data.end_date || null,
-    current: data.current || false,
     description: data.description || '',
     logo_url: data.logo_url || ''
   };
@@ -128,7 +128,7 @@ export const transformToCertification = (data: any): Certification => {
   
   return {
     id: data.id || '',
-    name: data.name || '',
+    title: data.title || data.name || '',
     issuer: data.issuer || '',
     issue_date: data.issue_date || '',
     expiry_date: data.expiry_date || null,

@@ -34,63 +34,75 @@ export function FriendsTabContent({
     queryFn: async () => {
       if (!user?.id) return [];
 
-      const { data: connections, error } = await supabase.rpc('get_user_connections', {
-        user_id: user.id
-      });
+      try {
+        const { data: connections, error } = await supabase.rpc('get_user_connections', {
+          user_id: user.id
+        });
 
-      if (error) {
-        console.error("Error fetching friends:", error);
+        if (error) {
+          console.error("Error fetching friends:", error);
+          return [];
+        }
+
+        // Filter only accepted friend connections
+        let acceptedFriends = connections.filter(conn => 
+          conn.status === 'accepted' && conn.connection_type === 'friend'
+        );
+
+        // Filter by online status if needed
+        if (showOnlineOnly) {
+          acceptedFriends = acceptedFriends.filter(friend => 
+            // Adapter aux différentes structures possibles
+            (typeof friend.other_user_online_status !== 'undefined' 
+              ? friend.other_user_online_status 
+              : false)
+          );
+        }
+
+        // Filter by search query if provided
+        if (searchQuery) {
+          const query = searchQuery.toLowerCase();
+          acceptedFriends = acceptedFriends.filter(friend => 
+            (friend.other_user_name || '').toLowerCase().includes(query)
+          );
+        }
+
+        // Calculate total pages
+        setTotalPages(Math.ceil(acceptedFriends.length / itemsPerPage));
+
+        // Apply pagination
+        const startIndex = (displayPage - 1) * itemsPerPage;
+        const paginatedFriends = acceptedFriends.slice(startIndex, startIndex + itemsPerPage);
+
+        // Map to UserProfile format
+        return paginatedFriends.map(friend => {
+          return {
+            id: friend.other_user_id,
+            full_name: friend.other_user_name,
+            avatar_url: friend.other_user_avatar,
+            email: null,
+            role: 'professional',
+            bio: null,
+            phone: null,
+            city: null,
+            state: null,
+            country: 'Canada',
+            skills: [],
+            online_status: (typeof friend.other_user_online_status !== 'undefined') 
+              ? friend.other_user_online_status 
+              : false,
+            last_seen: friend.other_user_last_seen || new Date().toISOString(),
+            certifications: [],
+            education: [],
+            experiences: [],
+            friends: [],
+            verified: Math.random() > 0.7 // Simulation pour l'exemple
+          } as UserProfile;
+        });
+      } catch (error) {
+        console.error("Error in fetchFriends:", error);
         return [];
       }
-
-      // Filter only accepted friend connections
-      let acceptedFriends = connections.filter(conn => 
-        conn.status === 'accepted' && conn.connection_type === 'friend'
-      );
-
-      // Filter by online status if needed
-      if (showOnlineOnly) {
-        acceptedFriends = acceptedFriends.filter(friend => friend.other_user_online_status);
-      }
-
-      // Filter by search query if provided
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        acceptedFriends = acceptedFriends.filter(friend => 
-          friend.other_user_name.toLowerCase().includes(query)
-        );
-      }
-
-      // Calculate total pages
-      setTotalPages(Math.ceil(acceptedFriends.length / itemsPerPage));
-
-      // Apply pagination
-      const startIndex = (displayPage - 1) * itemsPerPage;
-      const paginatedFriends = acceptedFriends.slice(startIndex, startIndex + itemsPerPage);
-
-      // Map to UserProfile format
-      return paginatedFriends.map(friend => {
-        return {
-          id: friend.other_user_id,
-          full_name: friend.other_user_name,
-          avatar_url: friend.other_user_avatar,
-          email: null,
-          role: 'professional',
-          bio: null,
-          phone: null,
-          city: null,
-          state: null,
-          country: 'Canada',
-          skills: [],
-          online_status: friend.other_user_online_status || false,
-          last_seen: friend.other_user_last_seen || new Date().toISOString(),
-          certifications: [],
-          education: [],
-          experiences: [],
-          friends: [],
-          verified: Math.random() > 0.7 // Simulation pour l'exemple
-        } as UserProfile;
-      });
     }
   });
 

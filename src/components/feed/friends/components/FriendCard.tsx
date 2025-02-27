@@ -2,12 +2,20 @@
 import { UserProfile } from "@/types/profile";
 import { UserAvatar } from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
 import { useState } from "react";
 import { 
   MoreHorizontal, 
-  MessageSquare, 
+  MessageCircle, 
   UserX, 
   User, 
   Clock, 
@@ -20,14 +28,6 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { Card } from "@/components/ui/card";
-import { motion } from "framer-motion";
-import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { Skeleton } from "@/components/ui/skeleton";
 
 interface FriendCardProps {
   friend: UserProfile;
@@ -41,24 +41,18 @@ export function FriendCard({ friend, onRemove }: FriendCardProps) {
   const { user } = useAuth();
 
   const handleMessage = () => {
+    // Créer une version simplifiée du profil qui respecte l'interface Receiver
     setReceiver({
       id: friend.id,
       full_name: friend.full_name || '',
       avatar_url: friend.avatar_url,
       email: friend.email || '',
-      role: friend.role || 'professional',
-      bio: friend.bio || null,
-      phone: friend.phone || null,
-      city: friend.city || null,
-      state: friend.state || null,
-      country: friend.country || '',
-      skills: friend.skills || [],
-      online_status: friend.online_status ? 'online' : 'offline',
+      online_status: typeof friend.online_status === 'boolean' 
+        ? (friend.online_status ? 'online' : 'offline') 
+        : (friend.online_status || 'offline'),
       last_seen: friend.last_seen,
-      certifications: [],
-      education: [],
-      experiences: [],
-      friends: []
+      latitude: friend.latitude || 0,
+      longitude: friend.longitude || 0
     });
     setShowConversation(true);
     navigate('/messages');
@@ -154,7 +148,7 @@ export function FriendCard({ friend, onRemove }: FriendCardProps) {
             onClick={handleMessage}
             className="h-8 w-8 text-white/70 hover:text-white hover:bg-zinc-800"
           >
-            <MessageSquare className="h-4 w-4" />
+            <MessageCircle className="h-4 w-4" />
           </Button>
           
           <Button
@@ -193,7 +187,7 @@ export function FriendCard({ friend, onRemove }: FriendCardProps) {
                 className="text-sm cursor-pointer hover:bg-zinc-800"
                 onClick={handleMessage}
               >
-                <MessageSquare className="h-4 w-4 mr-2" />
+                <MessageCircle className="h-4 w-4 mr-2" />
                 Envoyer un message
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-zinc-800" />
