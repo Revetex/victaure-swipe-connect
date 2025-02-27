@@ -11,7 +11,7 @@ export const useFriendRequests = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
 
-  // Adapter pour utiliser la table user_connections au lieu de friend_requests
+  // Fonction pour charger les demandes d'amis
   const loadFriendRequests = useCallback(async () => {
     if (!user?.id) return;
     setIsLoading(true);
@@ -54,7 +54,7 @@ export const useFriendRequests = () => {
       if (outgoingError) throw outgoingError;
 
       // Formater les données pour les adapter au type PendingRequest
-      const formattedIncoming = incomingData.map((request) => ({
+      const formattedIncoming = (incomingData || []).map((request) => ({
         id: request.id,
         sender_id: request.sender_id,
         receiver_id: request.receiver_id,
@@ -74,7 +74,7 @@ export const useFriendRequests = () => {
         type: 'incoming' as const
       }));
 
-      const formattedOutgoing = outgoingData.map((request) => ({
+      const formattedOutgoing = (outgoingData || []).map((request) => ({
         id: request.id,
         sender_id: request.sender_id,
         receiver_id: request.receiver_id,
@@ -104,6 +104,7 @@ export const useFriendRequests = () => {
     }
   }, [user?.id]);
 
+  // Accepter une demande d'ami
   const acceptFriendRequest = useCallback(async (requestId: string) => {
     if (!user?.id) return;
 
@@ -130,6 +131,7 @@ export const useFriendRequests = () => {
     }
   }, [user?.id, loadFriendRequests]);
 
+  // Rejeter une demande d'ami
   const rejectFriendRequest = useCallback(async (requestId: string) => {
     if (!user?.id) return;
 
@@ -153,6 +155,7 @@ export const useFriendRequests = () => {
     }
   }, [user?.id]);
 
+  // Annuler une demande d'ami
   const cancelFriendRequest = useCallback(async (requestId: string) => {
     if (!user?.id) return;
 
@@ -176,6 +179,7 @@ export const useFriendRequests = () => {
     }
   }, [user?.id]);
 
+  // Envoyer une demande d'ami
   const sendFriendRequest = useCallback(async (receiverId: string) => {
     if (!user?.id || !receiverId) return;
 
@@ -185,7 +189,7 @@ export const useFriendRequests = () => {
         .from('user_connections')
         .select('*')
         .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${user.id})`)
-        .single();
+        .maybeSingle();
 
       if (checkError && checkError.code !== 'PGRST116') {
         throw checkError;
@@ -221,6 +225,7 @@ export const useFriendRequests = () => {
   const handleAcceptRequest = acceptFriendRequest;
   const handleRejectRequest = rejectFriendRequest;
   const handleCancelRequest = cancelFriendRequest;
+  const refetchPendingRequests = loadFriendRequests;
 
   // Ajout d'une propriété combinée pour la compatibilité
   const pendingRequests = [...incomingRequests, ...outgoingRequests];
@@ -260,6 +265,7 @@ export const useFriendRequests = () => {
     cancelFriendRequest,
     sendFriendRequest,
     loadFriendRequests,
+    refetchPendingRequests,
     // Ajouts pour la compatibilité
     pendingRequests,
     handleAcceptRequest,

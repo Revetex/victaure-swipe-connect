@@ -1,50 +1,137 @@
 
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { motion, AnimatePresence } from "framer-motion";
-import { UserProfile } from "@/types/profile";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { UserProfile, Friend } from "@/types/profile";
 import { FriendItem } from "./FriendItem";
+import { EmptyConnectionsState } from "./EmptyConnectionsState";
 
 interface FriendListProps {
-  friends: UserProfile[];
+  showOnlineOnly?: boolean;
+  searchQuery?: string;
   currentPage: number;
   itemsPerPage: number;
 }
 
-export function FriendList({ friends, currentPage, itemsPerPage }: FriendListProps) {
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentFriends = friends.slice(startIndex, endIndex);
+export function FriendList({
+  showOnlineOnly = false,
+  searchQuery = "",
+  currentPage = 1,
+  itemsPerPage = 5
+}: FriendListProps) {
+  const { user } = useAuth();
+  
+  const {
+    data: friends = [],
+    isLoading,
+    refetch
+  } = useQuery({
+    queryKey: ["friends", user?.id, showOnlineOnly, searchQuery, currentPage, itemsPerPage],
+    queryFn: async () => {
+      if (!user?.id) return [];
+
+      // Get connections from user_connections table
+      const { data: connections, error } = await supabase
+        .from('user_connections')
+        .select(`
+          id,
+          sender_id,
+          receiver_id,
+          status,
+          sender:profiles!user_connections_sender_id_fkey(id, full_name, avatar_url, online_status, last_seen),
+          receiver:profiles!user_connections_receiver_id_fkey(id, full_name, avatar_url, online_status, last_seen)
+        `)
+        .eq('status', 'accepted')
+        .eq('connection_type', 'friend')
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
+
+      if (error) {
+        console.error("Error loading friends:", error);
+        return [];
+      }
+
+      // Format connections as UserProfiles
+      const friendsList = connections?.map(conn => {
+        const isSender = conn.sender_id === user.id;
+        const friendData = isSender ? conn.receiver : conn.sender;
+        
+        if (!friendData) return null;
+
+        // Create a minimal profile with required fields
+        const profile: UserProfile = {
+          id: friendData.id,
+          full_name: friendData.full_name || '',
+          avatar_url: friendData.avatar_url || null,
+          email: '',
+          role: 'professional',
+          bio: '',
+          phone: '',
+          city: '',
+          state: '',
+          country: '',
+          skills: [],
+          online_status: friendData.online_status,
+          last_seen: friendData.last_seen,
+          created_at: new Date().toISOString(),
+        };
+        
+        return profile;
+      }).filter(Boolean) as UserProfile[];
+
+      // Apply filters
+      let filteredFriends = friendsList || [];
+      
+      if (showOnlineOnly) {
+        filteredFriends = filteredFriends.filter(friend => friend.online_status);
+      }
+      
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        filteredFriends = filteredFriends.filter(friend => 
+          (friend.full_name || '').toLowerCase().includes(query)
+        );
+      }
+      
+      // Apply pagination
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const paginatedFriends = filteredFriends.slice(start, end);
+      
+      return paginatedFriends;
+    }
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-10">
+        <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  if (!friends.length) {
+    return (
+      <div className="h-full">
+        {searchQuery ? (
+          <div className="text-center py-12 text-muted-foreground">
+            Aucun résultat pour "{searchQuery}"
+          </div>
+        ) : showOnlineOnly ? (
+          <div className="text-center py-12 text-muted-foreground">
+            Aucune connexion en ligne actuellement
+          </div>
+        ) : (
+          <EmptyConnectionsState />
+        )}
+      </div>
+    );
+  }
 
   return (
-    <ScrollArea className="h-[300px] pr-2">
-      <AnimatePresence mode="wait">
-        <div className="space-y-1">
-          {currentFriends.map((friend, index) => (
-            <motion.div
-              key={friend.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ 
-                delay: index * 0.05,
-                type: "spring",
-                stiffness: 260,
-                damping: 20 
-              }}
-            >
-              <FriendItem 
-                friend={{
-                  id: friend.id,
-                  full_name: friend.full_name,
-                  avatar_url: friend.avatar_url,
-                  online_status: friend.online_status || false,
-                  last_seen: friend.last_seen || new Date().toISOString()
-                }}
-              />
-            </motion.div>
-          ))}
-        </div>
-      </AnimatePresence>
-    </ScrollArea>
+    <div className="space-y-3">
+      {friends.map(friend => (
+        <FriendItem key={friend.id} friend={friend} onRemove={() => refetch()} />
+      ))}
+    </div>
   );
 }

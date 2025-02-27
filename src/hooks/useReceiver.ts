@@ -11,9 +11,11 @@ export interface Receiver {
   last_seen?: string | null;
   latitude?: number;
   longitude?: number;
-  // Champs additionnels pour améliorer la fonctionnalité
   bio?: string | null;
   phone?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
   role?: string;  // Ajout du champ role qui est utilisé dans plusieurs composants
   preferences?: {
     notifications?: boolean;

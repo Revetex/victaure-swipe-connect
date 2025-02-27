@@ -26,16 +26,16 @@ export function CustomMarketplaceList({
   useEffect(() => {
     const prepareData = async () => {
       try {
-        // Vérifier si la table marketplace_listings_favorites existe
-        // Si elle n'existe pas, on crée une vue temporaire pour éviter les erreurs
-        const { data: existingTables } = await supabase
-          .from('information_schema.tables')
-          .select('table_name')
-          .eq('table_schema', 'public');
+        // Vérifier si la table marketplace_listings_favorites existe sans utiliser information_schema
+        console.log("Préparation des données du marché...");
+        
+        // Vérifie simplement si la table existe en tentant une requête
+        const { error } = await supabase
+          .from('marketplace_listings_favorites')
+          .select('count')
+          .limit(1);
           
-        const favoritesTableExists = existingTables?.some(
-          table => table.table_name === 'marketplace_listings_favorites'
-        );
+        const favoritesTableExists = !error;
         
         if (!favoritesTableExists) {
           console.log("La table de favoris n'existe pas, les fonctionnalités de favoris seront désactivées");
@@ -64,7 +64,7 @@ export function CustomMarketplaceList({
         const { data, error } = await supabase
           .from('marketplace_listings')
           .update({ 
-            views_count: supabase.rpc('get_view_count', { listing_id: listingId }) + 1 
+            views_count: 1 // Utiliser une valeur fixe au lieu d'une opération
           })
           .eq('id', listingId);
 

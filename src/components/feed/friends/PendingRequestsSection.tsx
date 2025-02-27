@@ -20,7 +20,6 @@ export function PendingRequestsSection({
     incomingRequests,
     outgoingRequests,
     isLoading,
-    // Utilisation des noms de fonction corrects qui sont maintenant exposés par le hook
     acceptFriendRequest,
     rejectFriendRequest,
     cancelFriendRequest,
