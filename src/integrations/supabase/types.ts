@@ -818,7 +818,7 @@ export type Database = {
           },
         ]
       }
-      friend_requests: {
+      friend_requests_old: {
         Row: {
           created_at: string
           id: string
@@ -4071,6 +4071,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_connections: {
+        Row: {
+          connection_type: string
+          created_at: string | null
+          id: string | null
+          metadata: Json | null
+          receiver_id: string | null
+          sender_id: string | null
+          status: string | null
+          updated_at: string | null
+          visibility: string
+        }
+        Insert: {
+          connection_type?: string
+          created_at?: string | null
+          id?: string | null
+          metadata?: Json | null
+          receiver_id?: string | null
+          sender_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+          visibility?: string
+        }
+        Update: {
+          connection_type?: string
+          created_at?: string | null
+          id?: string | null
+          metadata?: Json | null
+          receiver_id?: string | null
+          sender_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+          visibility?: string
+        }
+        Relationships: []
+      }
       user_conversations: {
         Row: {
           created_at: string | null
@@ -4496,8 +4532,33 @@ export type Database = {
           },
         ]
       }
+      user_connections_view: {
+        Row: {
+          connection_type: string | null
+          created_at: string | null
+          id: string | null
+          metadata: Json | null
+          receiver_avatar: string | null
+          receiver_id: string | null
+          receiver_name: string | null
+          sender_avatar: string | null
+          sender_id: string | null
+          sender_name: string | null
+          status: string | null
+          updated_at: string | null
+          visibility: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      are_friends: {
+        Args: {
+          user1_id: string
+          user2_id: string
+        }
+        Returns: boolean
+      }
       auto_cleanup_old_data: {
         Args: Record<PropertyKey, never>
         Returns: undefined
