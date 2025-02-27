@@ -58,7 +58,7 @@ export function Feed() {
   };
   return <div className="relative min-h-screen">
       {/* Section fixe en haut */}
-      <div className="fixed top-16 left-0 right-0 z-10 bg-gradient-to-b from-background via-background to-background/95 px-4 py-4 border-b border-border/5 backdrop-blur-sm space-y-4">
+      <div className="fixed top-16 left-0 right-0 z-10 bg-gradient-to-b from-background via-background to-background/95 border-b border-border/5 backdrop-blur-sm space-y-4 px-[16px] py-[12px]">
         <motion.div variants={itemVariants}>
           {!isExpanded ? <Button onClick={() => setIsExpanded(true)} variant="ghost" className="w-full bg-white/5 hover:bg-white/10 text-white/80 justify-start px-4 py-6 rounded-xl border border-white/10">
               <PenLine className="h-5 w-5 mr-2" />
