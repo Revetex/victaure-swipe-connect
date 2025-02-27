@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
@@ -15,9 +15,10 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { ListingType } from "@/types/marketplace";
 
-export function MarketplaceForm() {
+export function MarketplaceForm({ open = true, onOpenChange }: { open?: boolean, onOpenChange?: (open: boolean) => void }) {
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(true);
+  const [categories, setCategories] = useState<{id: string, name: string, type: string}[]>([]);
+  const [internalOpen, setInternalOpen] = useState(open);
   const navigate = useNavigate();
   const { imageUrls, handleImagePreview, removeImage, uploadImages, resetImages } = useListingImages();
   
@@ -27,7 +28,7 @@ export function MarketplaceForm() {
     price: "",
     type: "vente" as ListingType,
     currency: "CAD",
-    condition: "new",
+    condition: "good",
     category: "",
     saleType: "immediate",
     auctionEndDate: null as Date | null,
@@ -35,7 +36,37 @@ export function MarketplaceForm() {
     latitude: null as number | null,
     longitude: null as number | null,
     location: "",
+    featured: false
   });
+
+  useEffect(() => {
+    // Récupération des catégories depuis la base de données
+    const fetchCategories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('marketplace_categories')
+          .select('id, name, type');
+
+        if (error) throw error;
+        if (data) setCategories(data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des catégories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Synchroniser l'état interne avec la prop si elle change
+  useEffect(() => {
+    setInternalOpen(open);
+  }, [open]);
+
+  // Fonction de gestion du changement d'état d'ouverture
+  const handleOpenChange = (newOpen: boolean) => {
+    setInternalOpen(newOpen);
+    if (onOpenChange) onOpenChange(newOpen);
+  };
 
   const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -91,6 +122,7 @@ export function MarketplaceForm() {
             minimum_bid: formData.saleType === 'auction' ? parseFloat(formData.minimumBid) : null,
             seller_id: user.id,
             status: 'active',
+            featured: formData.featured
           }
         ]);
 
@@ -104,7 +136,7 @@ export function MarketplaceForm() {
         price: "",
         type: "vente",
         currency: "CAD",
-        condition: "new",
+        condition: "good",
         category: "",
         saleType: "immediate",
         auctionEndDate: null,
@@ -112,8 +144,9 @@ export function MarketplaceForm() {
         latitude: null,
         longitude: null,
         location: "",
+        featured: false
       });
-      setOpen(false);
+      handleOpenChange(false);
       
     } catch (error) {
       console.error('Erreur lors de la publication:', error);
@@ -124,7 +157,7 @@ export function MarketplaceForm() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={internalOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="w-full max-w-3xl mx-auto px-2 sm:px-4 bg-[#1A1F2C] text-white border-[#64B5D9]/10">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid gap-4">
@@ -140,7 +173,9 @@ export function MarketplaceForm() {
 
             <CategoryField 
               value={formData.category} 
-              onChange={(value) => handleFieldChange('category', value)} 
+              onChange={(value) => handleFieldChange('category', value)}
+              categories={categories}
+              listingType={formData.type}
             />
 
             <ListingDetails
@@ -171,7 +206,7 @@ export function MarketplaceForm() {
             />
 
             <DialogFooter>
-              <Button variant="outline" type="button" onClick={() => setOpen(false)}>
+              <Button variant="outline" type="button" onClick={() => handleOpenChange(false)}>
                 Annuler
               </Button>
               <Button 
