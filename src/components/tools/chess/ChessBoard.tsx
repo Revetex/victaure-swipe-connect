@@ -37,7 +37,7 @@ export function ChessBoard({
   return (
     <div className="relative w-full max-w-2xl mx-auto">
       <div className="aspect-square w-full">
-        <div className="grid grid-cols-8 h-full w-full rounded-lg overflow-hidden border shadow-xl bg-neutral-100 dark:bg-neutral-900">
+        <div className="grid grid-cols-8 h-full w-full rounded-lg overflow-hidden border border-border/50 shadow-xl bg-background">
           {board.map((row, rowIndex) =>
             row.map((piece, colIndex) => {
               const isSelected = selectedPiece?.row === rowIndex && selectedPiece?.col === colIndex;
@@ -53,11 +53,11 @@ export function ChessBoard({
                     "relative w-full aspect-square",
                     "flex items-center justify-center",
                     isLight 
-                      ? "bg-white dark:bg-neutral-800" 
-                      : "bg-neutral-300 dark:bg-neutral-700",
+                      ? "bg-primary/5" 
+                      : "bg-primary/20",
                     isSelected && "ring-2 ring-yellow-400 ring-inset z-10",
                     !gameOver && !isThinking && "cursor-pointer hover:brightness-90 active:brightness-95",
-                    gameOver && "cursor-not-allowed opacity-50"
+                    gameOver && "cursor-not-allowed opacity-75"
                   )}
                   onClick={() => !gameOver && !isThinking && onSquareClick(rowIndex, colIndex)}
                 >
@@ -71,14 +71,18 @@ export function ChessBoard({
                   )}
                   
                   {piece && (
-                    <span
+                    <motion.span
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.2 }}
                       className={cn(
-                        "text-2xl sm:text-3xl md:text-4xl lg:text-5xl select-none",
-                        piece.isWhite ? "text-black dark:text-white" : "text-neutral-800 dark:text-neutral-300"
+                        "text-2xl sm:text-3xl md:text-4xl lg:text-5xl select-none transition-transform",
+                        piece.isWhite ? "text-white" : "text-black",
+                        "hover:scale-110"
                       )}
                     >
                       {pieceToSymbol(piece)}
-                    </span>
+                    </motion.span>
                   )}
                 </div>
               );

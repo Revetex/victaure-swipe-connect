@@ -1,4 +1,3 @@
-
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
 import { X, Download, Mail, Phone, MapPin, Link } from "lucide-react";
@@ -21,17 +20,20 @@ interface ProfileHeaderProps {
 export function ProfileHeader({ profile, onClose, canViewFullProfile = true }: ProfileHeaderProps) {
   const { profile: currentUserProfile } = useProfile();
   const isOwnProfile = currentUserProfile?.id === profile.id;
-  const { isFriend, isPending, isRequested } = useConnectionStatus(profile.id);
-  const { sendFriendRequest, acceptFriendRequest, cancelFriendRequest } = useConnectionActions();
+  const { isFriend, isFriendRequestReceived, isFriendRequestSent } = useConnectionStatus(profile.id);
+  const { handleAddFriend, handleAcceptFriend, handleRemoveFriend } = useConnectionActions();
 
   const handleDownloadCV = async () => {
     try {
       toast.loading("Génération de votre CV en cours...");
       
       const pdfBlob = await generateCV(profile);
+      if (!pdfBlob) {
+        throw new Error("Erreur lors de la génération du PDF");
+      }
       
       // Créer URL pour le téléchargement
-      const pdfUrl = URL.createObjectURL(pdfBlob);
+      const pdfUrl = URL.createObjectURL(new Blob([pdfBlob]));
       
       // Créer un lien pour télécharger et le cliquer
       const downloadLink = document.createElement('a');
@@ -168,32 +170,32 @@ export function ProfileHeader({ profile, onClose, canViewFullProfile = true }: P
 
         {!isOwnProfile && (
           <>
-            {isPending && (
+            {isFriendRequestReceived && (
               <Button
                 variant="outline"
                 size="sm"
                 className="bg-primary/10 hover:bg-primary/20"
-                onClick={() => acceptFriendRequest(profile.id)}
+                onClick={handleAcceptFriend}
               >
                 Accepter la demande
               </Button>
             )}
-            {isRequested && (
+            {isFriendRequestSent && (
               <Button
                 variant="outline"
                 size="sm"
                 className="bg-muted hover:bg-muted/80"
-                onClick={() => cancelFriendRequest(profile.id)}
+                onClick={handleRemoveFriend}
               >
                 Annuler la demande
               </Button>
             )}
-            {!isFriend && !isPending && !isRequested && (
+            {!isFriend && !isFriendRequestReceived && !isFriendRequestSent && (
               <Button
                 variant="outline"
                 size="sm"
                 className="bg-primary/10 hover:bg-primary/20"
-                onClick={() => sendFriendRequest(profile.id)}
+                onClick={handleAddFriend}
               >
                 Ajouter
               </Button>
