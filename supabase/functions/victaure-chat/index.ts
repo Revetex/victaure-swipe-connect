@@ -24,7 +24,7 @@ serve(async (req) => {
       )
       .join('\n');
 
-    const systemPrompt = `Tu es un assistant professionnel qui aide les utilisateurs avec leur inscription sur Victaure. Réponds de manière concise et claire en français.
+    const fullPrompt = `Tu es un assistant professionnel qui aide les utilisateurs avec leur inscription sur Victaure. Réponds de manière concise et claire en français.
 
 Historique de la conversation:
 ${conversationHistory}
