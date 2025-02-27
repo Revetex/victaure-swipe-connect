@@ -22,13 +22,11 @@ interface ContentRouterProps {
 }
 
 export function ContentRouter({ 
-  currentPage, 
-  onEditStateChange, 
-  onRequestChat,
-  renderDashboardHome 
+  currentPage = 0, 
+  onEditStateChange = () => {}, 
+  onRequestChat = () => {},
+  renderDashboardHome = () => null
 }: ContentRouterProps) {
-
-  // Animation variants for page transitions
   const pageVariants = {
     initial: { opacity: 0, x: -20 },
     animate: { opacity: 1, x: 0 },

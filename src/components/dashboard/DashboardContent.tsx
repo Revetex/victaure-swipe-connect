@@ -7,13 +7,31 @@ import { FloatingButtons } from "./content/FloatingButtons";
 import { LoadingState } from "./content/LoadingState";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
+import { useState } from "react";
 
-export function DashboardContent() {
+interface DashboardContentProps {
+  currentPage?: number;
+  isEditing?: boolean;
+  onEditStateChange?: (state: boolean) => void;
+  onRequestChat?: () => void;
+}
+
+export function DashboardContent({ 
+  currentPage = 0,
+  isEditing = false,
+  onEditStateChange = () => {},
+  onRequestChat = () => {}
+}: DashboardContentProps) {
   const { isLoading, user } = useAuth();
+  const [showFriendsList, setShowFriendsList] = useState(true);
   
   if (isLoading || !user) {
     return <LoadingState />;
   }
+
+  const renderDashboardHome = () => (
+    <DashboardHome onRequestChat={onRequestChat} />
+  );
 
   return (
     <AnimatePresence mode="wait">
@@ -32,11 +50,18 @@ export function DashboardContent() {
             transition={{ delay: 0.2 }}
           >
             <Card className="p-6 bg-black/40 border-zinc-800/50 backdrop-blur-sm">
-              <DashboardHome />
+              {currentPage === 0 ? (
+                <DashboardHome onRequestChat={onRequestChat} />
+              ) : null}
             </Card>
 
             <Card className="overflow-hidden bg-black/40 border-zinc-800/50 backdrop-blur-sm">
-              <ContentRouter />
+              <ContentRouter 
+                currentPage={currentPage}
+                onEditStateChange={onEditStateChange}
+                onRequestChat={onRequestChat}
+                renderDashboardHome={renderDashboardHome}
+              />
             </Card>
           </motion.div>
 
@@ -48,7 +73,10 @@ export function DashboardContent() {
             transition={{ delay: 0.3 }}
           >
             <Card className="p-6 bg-black/40 border-zinc-800/50 backdrop-blur-sm">
-              <DashboardFriendsList />
+              <DashboardFriendsList 
+                show={showFriendsList}
+                onClose={() => setShowFriendsList(false)}
+              />
             </Card>
 
             <FloatingButtons />

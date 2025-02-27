@@ -32,6 +32,13 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
     setShowMobileMenu(show);
   }, []);
 
+  const contentProps = {
+    currentPage,
+    isEditing,
+    onEditStateChange: handleEditStateChange,
+    onRequestChat: handleRequestChat
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -62,21 +69,14 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
           setShowMobileMenu={handleMobileMenuToggle}
         />
         
-        <div className="h-16" /> {/* Spacer pour le header */}
+        <div className="h-16" />
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="w-full pb-safe"
         >
-          {children || (
-            <DashboardContent
-              currentPage={currentPage}
-              isEditing={isEditing}
-              onEditStateChange={handleEditStateChange}
-              onRequestChat={handleRequestChat}
-            />
-          )}
+          {children || <DashboardContent {...contentProps} />}
         </motion.div>
       </main>
     </motion.div>
