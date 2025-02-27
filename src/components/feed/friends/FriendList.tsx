@@ -60,6 +60,9 @@ export function FriendList({
           
           if (!friendData) return null;
 
+          // Vérifier que les données ne sont pas une erreur de type SelectQueryError
+          if (!('id' in friendData)) return null;
+
           // Create a UserProfile with required fields
           const profile: UserProfile = {
             id: friendData.id,
@@ -73,7 +76,7 @@ export function FriendList({
             state: '',
             country: '',
             skills: [],
-            online_status: friendData.online_status,
+            online_status: !!friendData.online_status,
             last_seen: friendData.last_seen,
             created_at: new Date().toISOString(),
           };

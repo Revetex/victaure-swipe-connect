@@ -4,10 +4,10 @@ import { useState } from 'react';
 // Définition complète de l'interface Receiver pour éviter les dépendances externes
 export interface Receiver {
   id: string;
-  full_name: string;
+  full_name: string | null;
   avatar_url: string | null;
   email?: string | null;
-  online_status?: boolean;  // Strictement boolean
+  online_status: boolean;  // Strictement boolean
   last_seen?: string | null;
   latitude?: number;
   longitude?: number;

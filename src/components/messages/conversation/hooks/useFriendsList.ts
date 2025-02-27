@@ -47,10 +47,8 @@ export function useFriendsList() {
             created_at: conn.created_at,
             friendship_id: conn.id,
             status: conn.status,
-            online_status: isSender 
-              ? convertOnlineStatusToBoolean(conn.receiver_online_status) 
-              : convertOnlineStatusToBoolean(conn.sender_online_status),
-            last_seen: isSender ? conn.receiver_last_seen : conn.sender_last_seen,
+            online_status: true, // Valeur par défaut
+            last_seen: null, // Valeur par défaut
           };
         });
 

@@ -20,6 +20,9 @@ interface BaseProfile {
   created_at: string;
   website?: string | null;
   job_title?: string | null;
+  latitude?: number;
+  longitude?: number;
+  cover_image?: string | null;
 }
 
 // Interface pour l'éducation
@@ -32,6 +35,7 @@ export interface Education {
   end_date?: string | null;
   description?: string;
   logo_url?: string;
+  profile_id?: string; // Ajout pour compatibilité
 }
 
 // Interface pour l'expérience
@@ -44,6 +48,7 @@ export interface Experience {
   description?: string;
   skills?: string[];
   logo_url?: string;
+  profile_id?: string; // Ajout pour compatibilité
 }
 
 // Interface pour la certification
@@ -56,6 +61,9 @@ export interface Certification {
   credential_url?: string;
   credential_id?: string;
   logo_url?: string;
+  description?: string; // Ajout pour compatibilité
+  year?: string; // Ajout pour compatibilité
+  profile_id?: string; // Ajout pour compatibilité
 }
 
 // Interface pour les liens sociaux
@@ -82,12 +90,16 @@ export interface UserProfile extends BaseProfile {
 // Interface User avec friends requis
 export interface User extends BaseProfile {
   friends: Friend[];
+  certifications?: Certification[];
+  education?: Education[];
+  experiences?: Experience[];
 }
 
 // Interface Friend
 export interface Friend extends BaseProfile {
   friendship_id?: string;
   status?: string;
+  job_title?: string; // Ajout pour compatibilité
 }
 
 // Interface pour une demande d'ami en attente
@@ -134,6 +146,8 @@ export interface UserConnection {
   visibility: string;
   created_at: string;
   updated_at: string;
+  user?: any; // Ajout pour compatibilité
+  connected_user?: any;
 }
 
 // Type pour le profil complet
@@ -141,6 +155,9 @@ export interface Profile extends UserProfile {
   connections?: UserConnection[];
   blocked_users?: BlockedUser[];
   pending_requests?: PendingRequest[];
+  latitude?: number;
+  longitude?: number;
+  cover_image?: string;
 }
 
 // Helper function pour convertir le statut en ligne en booléen

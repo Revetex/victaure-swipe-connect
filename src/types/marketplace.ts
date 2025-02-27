@@ -30,6 +30,7 @@ export interface MarketplaceFavorite {
   item_id: string;
   user_id: string;
   created_at?: string;
+  listing_id?: string; // Pour compatibilité
 }
 
 export interface MarketplaceFilters {
@@ -59,6 +60,7 @@ export interface MarketplaceContract {
   documents?: string[];
   created_at: string;
   updated_at?: string;
+  currency?: string; // Ajout pour compatibilité
 }
 
 export interface MarketplaceService {
@@ -92,6 +94,14 @@ export interface MarketplaceStats {
     timestamp: string;
     details: any;
   }[];
+  totalViews?: number; // Pour compatibilité
+  listingsByType?: Record<string, number>; // Pour compatibilité
+  
+  // Alias pour compatibilité
+  get totalListings() { return this.total_listings; }
+  get activeListings() { return this.active_listings; }
+  get averagePrice() { return this.average_price; }
+  get popularCategories() { return this.popular_categories; }
 }
 
 export type ListingType = 'vente' | 'location' | 'service';
@@ -105,6 +115,7 @@ export interface ContractFormValues {
   category?: string;
   location?: string;
   requirements?: string[];
+  currency?: string; // Ajout pour compatibilité
 }
 
 export interface Gig {
@@ -116,6 +127,9 @@ export interface Gig {
   provider_id: string;
   status: string;
   created_at: string;
+  budget?: number; // Ajout pour compatibilité
+  creator?: any; // Ajout pour compatibilité
+  required_skills?: string[]; // Ajout pour compatibilité
 }
 
 export interface GigBid {

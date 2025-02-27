@@ -16,6 +16,7 @@ export interface Message {
     full_name: string | null;
     avatar_url: string | null;
     email?: string | null;
+    role?: string;
   };
 }
 
@@ -40,7 +41,7 @@ export interface Conversation {
   id: string;
   participant1_id: string;
   participant2_id: string;
-  participant: ConversationParticipant;
+  participant: string;
   last_message?: string;
   last_message_time?: string;
   participant1_last_read?: string;
@@ -53,6 +54,7 @@ export interface Conversation {
   isMuted?: boolean;
   online?: boolean;
   avatar_url?: string | null;
+  participant_id?: string;
 }
 
 export interface Receiver {
@@ -61,7 +63,10 @@ export interface Receiver {
   avatar_url: string | null;
   online_status: boolean;
   last_seen?: string | null;
+  email?: string | null;
+  latitude?: number;
+  longitude?: number;
 }
 
 // Re-export UserRole from profile
-export { UserRole } from '@/types/profile';
+export type { UserRole } from '@/types/profile';
