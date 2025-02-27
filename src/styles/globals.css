@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -34,6 +35,7 @@
     --radius: 0.75rem;
 
     --gradient-dots: rgba(27, 42, 74, 0.1);
+    --primary-color: #64B5D9;
   }
 
   .dark {
@@ -82,7 +84,7 @@
 @layer components {
   /* Styles de fond avec dégradés */
   .bg-gradient-primary {
-    @apply bg-gradient-to-br from-[#64B5D9] to-[#1B2A4A];
+    @apply bg-gradient-to-br from-[var(--primary-color)] to-[#1B2A4A];
   }
 
   .bg-gradient-secondary {
@@ -104,8 +106,8 @@
 
   /* Boutons et interactions */
   .btn-gradient {
-    @apply bg-gradient-to-r from-[#64B5D9] to-[#1B2A4A]
-           hover:from-[#1B2A4A] hover:to-[#64B5D9]
+    @apply bg-gradient-to-r from-[var(--primary-color)] to-[#1B2A4A]
+           hover:from-[#1B2A4A] hover:to-[var(--primary-color)]
            text-white font-medium
            px-6 py-2 rounded-lg
            transition-all duration-300
@@ -121,7 +123,7 @@
 
   /* Textes avec dégradés */
   .text-gradient-primary {
-    @apply bg-gradient-to-r from-[#64B5D9] to-[#1B2A4A]
+    @apply bg-gradient-to-r from-[var(--primary-color)] to-[#1B2A4A]
            bg-clip-text text-transparent;
   }
 
@@ -153,6 +155,94 @@
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+/* Page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Fade in animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.fade-in-delay-1 {
+  animation: fadeIn 0.5s ease-out 0.1s forwards;
+  opacity: 0;
+}
+
+.fade-in-delay-2 {
+  animation: fadeIn 0.5s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.fade-in-delay-3 {
+  animation: fadeIn 0.5s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-subtle {
+  animation: pulse 3s infinite;
+}
+
+/* Hover animations */
+.hover-scale {
+  transition: transform 0.2s ease-out;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-lift {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading animations */
+@keyframes loading-shimmer {
+  0% { background-position: -468px 0; }
+  100% { background-position: 468px 0; }
+}
+
+.loading-shimmer {
+  background: linear-gradient(to right, #f6f7f8 8%, #edeef1 18%, #f6f7f8 33%);
+  background-size: 800px 104px;
+  animation: loading-shimmer 1.5s infinite linear;
 }
 
 /* Scrollbars personnalisées */
@@ -207,5 +297,40 @@
 
   .btn-gradient {
     @apply px-4 py-2 text-sm;
+  }
+}
+
+/* Image optimization */
+.optimized-image {
+  @apply object-cover w-full h-full;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+/* Focus state improvements for accessibility */
+.focus-visible:focus-visible {
+  @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+}
+
+/* Progress indicators */
+.progress-indicator {
+  @apply relative overflow-hidden bg-muted;
+}
+
+.progress-indicator::after {
+  @apply absolute inset-0 w-full translate-x-[-100%];
+  content: "";
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.5) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
   }
 }
