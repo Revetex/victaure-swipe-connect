@@ -134,7 +134,20 @@ export function ChessBoard({
               animate={{ rotate: 360 }}
               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
             >
-              <Brain className="h-4 w-4 text-violet-400" />
+              <svg 
+                className="h-4 w-4 text-violet-400"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+                <path d="M17.5 8a4.5 4.5 0 0 0 -4.5 4.5"></path>
+                <path d="M19 11v-3h-3"></path>
+              </svg>
             </motion.div>
             <span className="text-sm text-violet-300">L'IA réfléchit...</span>
           </motion.div>
