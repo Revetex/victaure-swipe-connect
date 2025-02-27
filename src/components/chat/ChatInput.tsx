@@ -48,7 +48,7 @@ export function ChatInput({
   };
 
   return (
-    <div className="flex gap-3 items-end">
+    <div className="flex gap-3 items-end pb-2">
       <div className="relative flex-1">
         <Textarea 
           value={userInput} 

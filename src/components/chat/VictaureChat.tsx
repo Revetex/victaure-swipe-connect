@@ -249,7 +249,7 @@ export function VictaureChat({
         <MessageList messages={messages} isLoading={isLoading} />
       </div>
       
-      <div className="relative bg-gradient-to-t from-[#1B2A4A]/20 via-[#1B2A4A]/10 to-transparent space-y-3 p-4">
+      <div className="relative bg-gradient-to-t from-[#1B2A4A]/20 via-[#1B2A4A]/10 to-transparent space-y-3 p-4 pt-2 pb-6">
         <QuickSuggestions 
           suggestions={suggestions} 
           isLoading={isLoadingSuggestions} 
