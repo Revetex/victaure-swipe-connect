@@ -1,6 +1,4 @@
 
-// Types pour le marketplace
-
 export type ListingType = 'vente' | 'location' | 'service';
 export type ListingStatus = 'active' | 'pending' | 'sold' | 'expired' | 'deleted';
 export type ListingCondition = 'new' | 'like_new' | 'good' | 'used' | 'refurbished';
@@ -9,33 +7,32 @@ export type SaleType = 'immediate' | 'auction' | 'negotiable';
 export interface MarketplaceListing {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   price: number;
   currency: string;
   type: ListingType;
-  status: ListingStatus;
+  status: ListingStatus | string;
   seller_id: string;
   created_at: string;
   updated_at: string;
   images?: string[];
+  location?: string;
   condition?: ListingCondition;
   category?: string;
-  location?: string;
-  latitude?: number;
-  longitude?: number;
-  sale_type?: SaleType;
-  auction_end_date?: string;
-  minimum_bid?: number;
   views_count?: number;
   favorites_count?: number;
   featured?: boolean;
-  seller?: {
-    full_name: string;
-    avatar_url: string;
-    rating: number;
-  };
-  // Ajouter d'autres champs utilisés dans l'application
+  sale_type?: SaleType;
+  auction_end_date?: string;
+  minimum_bid?: number;
+  latitude?: number;
+  longitude?: number;
   searchable_text?: any;
+  seller?: {
+    full_name: string | null;
+    avatar_url: string | null;
+    rating?: number;
+  };
 }
 
 export interface MarketplaceFilters {

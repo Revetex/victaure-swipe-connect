@@ -44,10 +44,13 @@ export const useFriendRequests = () => {
           return [];
         }
 
-        // Formatage sécurisé pour éviter les erreurs d'accès aux propriétés
-        return (connections || []).map(conn => {
-          const senderData = conn.sender || {};
-          const receiverData = conn.receiver || {};
+        if (!connections) return [];
+
+        // Format the connections data safely
+        return connections.map(conn => {
+          // Use optional chaining and nullish coalescing for safety
+          const sender = conn.sender || {};
+          const receiver = conn.receiver || {};
           
           return {
             id: conn.id,
@@ -57,14 +60,14 @@ export const useFriendRequests = () => {
             created_at: conn.created_at,
             updated_at: conn.updated_at,
             sender: {
-              id: senderData.id || "",
-              full_name: senderData.full_name || "Utilisateur",
-              avatar_url: senderData.avatar_url || null
+              id: sender.id || "",
+              full_name: sender.full_name || "Utilisateur",
+              avatar_url: sender.avatar_url || null
             },
             receiver: {
-              id: receiverData.id || "",
-              full_name: receiverData.full_name || "Utilisateur",
-              avatar_url: receiverData.avatar_url || null
+              id: receiver.id || "",
+              full_name: receiver.full_name || "Utilisateur",
+              avatar_url: receiver.avatar_url || null
             },
             type: conn.receiver_id === user.id ? 'incoming' : 'outgoing'
           } as PendingRequest;

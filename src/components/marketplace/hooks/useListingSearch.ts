@@ -33,37 +33,44 @@ export function useListingSearch(
           `, { count: 'exact' })
           .eq('status', 'active');
 
-        // Appliquer le filtre de type d'annonce
+        // Apply type filter
         if (type !== 'all') {
           query = query.eq('type', type);
         }
 
-        // Appliquer la recherche textuelle
+        // Apply text search filter
         if (searchQuery) {
-          query = query.textSearch('searchable_text', searchQuery, {
-            type: 'websearch', 
-            config: 'french'
-          });
+          // Check if searchable_text column exists
+          try {
+            query = query.textSearch('searchable_text', searchQuery, {
+              type: 'websearch', 
+              config: 'french'
+            });
+          } catch (error) {
+            console.error("Error with text search, falling back to ILIKE:", error);
+            // Fallback to ILIKE if full-text search isn't available
+            query = query.or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`);
+          }
         }
 
-        // Appliquer les filtres de prix
+        // Apply price range filter
         if (filters.priceRange) {
           query = query
             .gte('price', filters.priceRange[0])
             .lte('price', filters.priceRange[1]);
         }
 
-        // Appliquer les filtres de catégorie
+        // Apply category filter
         if (filters.categories && filters.categories.length > 0) {
           query = query.in('category', filters.categories);
         }
 
-        // Appliquer les filtres de localisation
+        // Apply location filter
         if (filters.location) {
           query = query.ilike('location', `%${filters.location}%`);
         }
 
-        // Appliquer le tri
+        // Apply sorting
         const { sortBy, sortOrder } = filters;
         switch (sortBy) {
           case 'date':
@@ -77,7 +84,7 @@ export function useListingSearch(
             break;
         }
 
-        // Ajouter la pagination
+        // Apply pagination
         query = query.range(from, to);
 
         const { data, error, count } = await query;
@@ -85,11 +92,11 @@ export function useListingSearch(
         if (error) throw error;
         
         if (data) {
-          // Convertir les données au format MarketplaceListing
-          const listings: MarketplaceListing[] = data.map(item => ({
+          // Convert the data to MarketplaceListing objects
+          const formattedListings: MarketplaceListing[] = data.map(item => ({
             id: item.id,
             title: item.title,
-            description: item.description || "",
+            description: item.description,
             price: item.price,
             currency: item.currency,
             type: item.type,
@@ -105,13 +112,13 @@ export function useListingSearch(
             sale_type: item.sale_type,
             category: item.category,
             seller: item.seller ? {
-              full_name: item.seller.full_name || "",
-              avatar_url: item.seller.avatar_url || "",
-              rating: item.seller.rating || 0
+              full_name: item.seller.full_name,
+              avatar_url: item.seller.avatar_url,
+              rating: item.seller.rating
             } : undefined
           }));
           
-          setListings(listings);
+          setListings(formattedListings);
           
           if (count !== null) {
             setTotalCount(count);

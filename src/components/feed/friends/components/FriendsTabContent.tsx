@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, Friend } from "@/types/profile";
 import { FriendCard, FriendCardSkeleton } from "./FriendCard";
 import { EmptyConnectionsState } from "../EmptyConnectionsState";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
@@ -35,70 +35,73 @@ export function FriendsTabContent({
       if (!user?.id) return [];
 
       try {
-        const { data: connections, error } = await supabase.rpc('get_user_connections', {
-          user_id: user.id
-        });
+        // Get connections directly from user_connections table
+        const { data: connections, error } = await supabase
+          .from('user_connections')
+          .select(`
+            id,
+            sender_id,
+            receiver_id,
+            status,
+            connection_type,
+            visibility,
+            created_at,
+            updated_at,
+            sender:profiles!sender_id(id, full_name, avatar_url, online_status, last_seen),
+            receiver:profiles!receiver_id(id, full_name, avatar_url, online_status, last_seen)
+          `)
+          .eq('status', 'accepted')
+          .eq('connection_type', 'friend')
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
         if (error) {
           console.error("Error fetching friends:", error);
           return [];
         }
 
-        // Filter only accepted friend connections
-        let acceptedFriends = connections.filter(conn => 
-          conn.status === 'accepted' && conn.connection_type === 'friend'
-        );
+        if (!connections) return [];
 
-        // Filter by online status if needed
+        // Format for UI consumption
+        let friendsList = connections.map(conn => {
+          const isSender = conn.sender_id === user.id;
+          const friendData = isSender ? conn.receiver : conn.sender;
+          
+          if (!friendData) return null;
+
+          return {
+            id: friendData.id,
+            full_name: friendData.full_name,
+            avatar_url: friendData.avatar_url,
+            online_status: friendData.online_status || false,
+            last_seen: friendData.last_seen,
+            role: 'professional',
+            bio: '',
+            phone: '',
+            city: '',
+            state: '',
+            country: 'Canada',
+          } as Friend;
+        }).filter(Boolean) as Friend[];
+
+        // Filter by online status if requested
         if (showOnlineOnly) {
-          acceptedFriends = acceptedFriends.filter(friend => 
-            // Adapter aux différentes structures possibles
-            (typeof friend.other_user_online_status !== 'undefined' 
-              ? friend.other_user_online_status 
-              : false)
-          );
+          friendsList = friendsList.filter(friend => friend.online_status);
         }
 
         // Filter by search query if provided
         if (searchQuery) {
           const query = searchQuery.toLowerCase();
-          acceptedFriends = acceptedFriends.filter(friend => 
-            (friend.other_user_name || '').toLowerCase().includes(query)
+          friendsList = friendsList.filter(friend => 
+            (friend.full_name || '').toLowerCase().includes(query)
           );
         }
 
         // Calculate total pages
-        setTotalPages(Math.ceil(acceptedFriends.length / itemsPerPage));
+        setTotalPages(Math.ceil(friendsList.length / itemsPerPage));
 
         // Apply pagination
         const startIndex = (displayPage - 1) * itemsPerPage;
-        const paginatedFriends = acceptedFriends.slice(startIndex, startIndex + itemsPerPage);
-
-        // Map to UserProfile format
-        return paginatedFriends.map(friend => {
-          return {
-            id: friend.other_user_id,
-            full_name: friend.other_user_name,
-            avatar_url: friend.other_user_avatar,
-            email: null,
-            role: 'professional',
-            bio: null,
-            phone: null,
-            city: null,
-            state: null,
-            country: 'Canada',
-            skills: [],
-            online_status: (typeof friend.other_user_online_status !== 'undefined') 
-              ? friend.other_user_online_status 
-              : false,
-            last_seen: friend.other_user_last_seen || new Date().toISOString(),
-            certifications: [],
-            education: [],
-            experiences: [],
-            friends: [],
-            verified: Math.random() > 0.7 // Simulation pour l'exemple
-          } as UserProfile;
-        });
+        return friendsList.slice(startIndex, startIndex + itemsPerPage);
       } catch (error) {
         console.error("Error in fetchFriends:", error);
         return [];
@@ -145,7 +148,7 @@ export function FriendsTabContent({
         {friends.map(friend => (
           <FriendCard 
             key={friend.id} 
-            friend={friend} 
+            friend={friend as UserProfile} 
             onRemove={() => refetch()}
           />
         ))}

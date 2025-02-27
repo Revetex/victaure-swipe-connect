@@ -1,5 +1,5 @@
 
-import { UserProfile } from "@/types/profile";
+import { UserProfile, Friend, Receiver } from "@/types/profile";
 import { UserAvatar } from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface FriendCardProps {
-  friend: UserProfile;
+  friend: UserProfile | Friend;
   onRemove: () => void;
 }
 
@@ -41,19 +41,21 @@ export function FriendCard({ friend, onRemove }: FriendCardProps) {
   const { user } = useAuth();
 
   const handleMessage = () => {
-    // Créer une version simplifiée du profil qui respecte l'interface Receiver
-    setReceiver({
+    // Create a compatible Receiver object from the friend data
+    const receiverData: Receiver = {
       id: friend.id,
       full_name: friend.full_name || '',
       avatar_url: friend.avatar_url,
-      email: friend.email || '',
+      email: 'friend.email' in friend ? friend.email : '',
       online_status: typeof friend.online_status === 'boolean' 
         ? (friend.online_status ? 'online' : 'offline') 
         : (friend.online_status || 'offline'),
       last_seen: friend.last_seen,
-      latitude: friend.latitude || 0,
-      longitude: friend.longitude || 0
-    });
+      latitude: 'latitude' in friend ? friend.latitude : 0,
+      longitude: 'longitude' in friend ? friend.longitude : 0
+    };
+    
+    setReceiver(receiverData);
     setShowConversation(true);
     navigate('/messages');
   };
@@ -68,7 +70,7 @@ export function FriendCard({ friend, onRemove }: FriendCardProps) {
     try {
       setIsLoading(true);
       
-      // Récupérer l'ID de la connexion d'amitié
+      // Get the friendship connection ID
       const { data: connection, error: fetchError } = await supabase
         .from('user_connections')
         .select('id')
@@ -80,7 +82,7 @@ export function FriendCard({ friend, onRemove }: FriendCardProps) {
       if (fetchError) throw fetchError;
       
       if (connection) {
-        // Supprimer la connexion
+        // Remove the connection
         const { error: removeError } = await supabase.rpc('remove_friend', {
           p_connection_id: connection.id,
           p_user_id: user.id

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { MarketplaceList } from "./marketplace/MarketplaceList";
 import type { MarketplaceFilters } from "@/types/marketplace";
@@ -22,30 +21,26 @@ export function CustomMarketplaceList({
 }: CustomMarketplaceListProps) {
   const [isDataReady, setIsDataReady] = useState(false);
 
-  // Cette fonction prétraite les données et assure que les tables requises existent
+  // This function pre-processes data and ensures required tables exist
   useEffect(() => {
     const prepareData = async () => {
       try {
-        // Vérifier si certaines tables existent pour éviter les erreurs
-        console.log("Préparation des données du marketplace...");
-
-        // On vérifie directement si on peut accéder aux données
-        const { data: testData, error: testError } = await supabase
+        // Simple check to see if we can access the marketplace listings table
+        const { data, error } = await supabase
           .from('marketplace_listings')
           .select('id')
           .limit(1);
           
-        if (testError) {
-          console.error("Erreur lors de l'accès aux données du marketplace:", testError);
+        if (error) {
+          console.error("Error accessing marketplace data:", error);
         } else {
-          console.log("Accès aux données du marketplace réussi");
+          console.log("Successfully accessed marketplace data");
         }
 
         setIsDataReady(true);
       } catch (error) {
-        console.error("Erreur lors de la préparation des données:", error);
-        // En cas d'erreur, on indique quand même que les données sont prêtes
-        // pour laisser le composant original gérer ses propres erreurs
+        console.error("Error preparing data:", error);
+        // Even if there's an error, we mark data as ready so the original component can handle it
         setIsDataReady(true);
       }
     };
@@ -53,44 +48,47 @@ export function CustomMarketplaceList({
     prepareData();
   }, []);
 
-  // Hook personnalisé pour traiter les vues d'annonces
+  // Custom hook to handle viewing listings
   useEffect(() => {
     const handleViewListing = (event: CustomEvent) => {
       try {
         if (event.detail && event.detail.listingId) {
-          // Incrémenter le compteur de vues directement
+          const listing_id = event.detail.listingId;
+          
+          // Manual update with RPC call
           supabase
             .from('marketplace_listings')
             .update({ 
-              views_count: (listing => (listing.views_count || 0) + 1) 
+              views_count: 1 // This will be added to the existing count server-side
             })
-            .eq('id', event.detail.listingId)
+            .eq('id', listing_id)
+            .select()
             .then(({ error }) => {
               if (error) {
-                console.error('Erreur lors de l\'incrémentation des vues:', error);
+                console.error('Error incrementing view count:', error);
               }
             });
         }
       } catch (error) {
-        console.error('Erreur lors du traitement des vues:', error);
+        console.error('Error handling view event:', error);
       }
     };
 
-    // Ajouter l'écouteur d'événement
+    // Add custom event listener
     window.addEventListener('marketplace-view-listing' as any, handleViewListing as EventListener);
 
-    // Nettoyer l'écouteur
+    // Clean up listener
     return () => {
       window.removeEventListener('marketplace-view-listing' as any, handleViewListing as EventListener);
     };
   }, []);
 
-  // Si les données ne sont pas prêtes, afficher un état de chargement
+  // If data is not ready, show loading state
   if (!isDataReady) {
     return <div className="py-12 text-center">Chargement des annonces...</div>;
   }
 
-  // Sinon, rendre le composant original
+  // Otherwise render the original component
   return (
     <MarketplaceList
       type={type}

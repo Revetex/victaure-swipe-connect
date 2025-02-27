@@ -51,7 +51,6 @@ export const transformToExperience = (data: any): Experience => {
     start_date: data.start_date || '',
     end_date: data.end_date || null,
     description: data.description || '',
-    location: data.location || '',
     skills: data.skills || [],
     logo_url: data.logo_url || ''
   };
@@ -132,8 +131,8 @@ export const transformToCertification = (data: any): Certification => {
     issuer: data.issuer || '',
     issue_date: data.issue_date || '',
     expiry_date: data.expiry_date || null,
-    credential_id: data.credential_id || '',
     credential_url: data.credential_url || '',
+    credential_id: data.credential_id || '',
     logo_url: data.logo_url || ''
   };
 };

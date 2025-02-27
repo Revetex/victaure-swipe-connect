@@ -1,10 +1,10 @@
 
-// Type pour les rôles utilisateur
+// Type for the roles users can have
 export type UserRole = 'user' | 'admin' | 'business' | 'freelancer' | 'student' | 'professional';
 export type OnlineStatus = 'online' | 'offline' | 'away' | 'busy';
 export type ConnectionStatus = 'pending' | 'accepted' | 'rejected' | 'blocked';
 
-// Liens sociaux
+// Links to social media profiles
 export interface SocialLinks {
   linkedin?: string;
   twitter?: string;
@@ -15,48 +15,48 @@ export interface SocialLinks {
   [key: string]: string | undefined;
 }
 
-// Type pour les expériences professionnelles
+// Professional experience
 export interface Experience {
   id: string;
   company: string;
   position: string;
   start_date: string;
   end_date: string | null;
-  current?: boolean;
   description: string;
-  location: string;
-  skills: string[];
+  location?: string;
+  skills?: string[];
   logo_url?: string;
+  current?: boolean;
 }
 
-// Type pour les formations
+// Educational background
 export interface Education {
   id: string;
   school_name: string;
-  institution?: string; // Pour compatibilité
   degree: string;
-  field_of_study: string;
-  start_date: string;
-  end_date: string | null;
-  current?: boolean;
-  description: string;
+  field_of_study?: string;
+  start_date?: string;
+  end_date?: string | null;
+  description?: string;
   logo_url?: string;
+  current?: boolean;
+  institution?: string; // For backward compatibility
 }
 
-// Type pour les certifications
+// Professional certifications
 export interface Certification {
   id: string;
   title?: string;
-  name?: string; // Pour compatibilité
+  name?: string; // Alternative field name
   issuer: string;
-  issue_date: string;
-  expiry_date: string | null;
-  credential_id?: string;
+  issue_date?: string;
+  expiry_date?: string | null;
   credential_url?: string;
+  credential_id?: string;
   logo_url?: string;
 }
 
-// Type pour une connexion/relation entre utilisateurs
+// Connection between users
 export interface UserConnection {
   id: string;
   user_id: string;
@@ -68,25 +68,25 @@ export interface UserConnection {
   connected_user?: Profile;
 }
 
-// Type pour un profil utilisateur complet
+// User profile information
 export interface Profile {
   id: string;
   full_name: string;
-  avatar_url: string;
+  avatar_url: string | null;
   email: string;
   role: UserRole;
-  bio: string;
-  phone: string;
-  city: string;
-  state: string;
-  country: string;
+  bio: string | null;
+  phone: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
   skills: string[];
   experiences?: Experience[];
   education?: Education[];
   certifications?: Certification[];
   social_links?: SocialLinks;
   online_status: OnlineStatus | string | boolean;
-  last_seen: string;
+  last_seen: string | null;
   cover_image?: string;
   job_title?: string;
   created_at: string;
@@ -95,41 +95,41 @@ export interface Profile {
   longitude?: number;
 }
 
-// Type pour un utilisateur (peut inclure des informations supplémentaires par rapport au profil)
+// Full user data including connections
 export interface User extends Omit<Profile, 'experiences' | 'education' | 'certifications' | 'social_links' | 'updated_at'> {
   connections?: UserConnection[];
   friends: User[];
 }
 
-// Type pour un destinataire de message (interface simplifiée)
+// Simplified receiver interface for messaging
 export interface Receiver {
   id: string;
   full_name: string;
-  avatar_url: string;
-  email: string;
-  online_status: OnlineStatus | string;
-  last_seen: string;
+  avatar_url: string | null;
+  email?: string;
+  online_status?: OnlineStatus | string | boolean;
+  last_seen?: string | null;
   latitude?: number;
   longitude?: number;
 }
 
-// Type pour un ami (interface simplifiée)
+// Simplified friend interface
 export interface Friend {
   id: string;
-  full_name: string;
-  avatar_url: string;
-  online_status: OnlineStatus | string | boolean;
-  last_seen: string;
+  full_name: string | null;
+  avatar_url?: string | null;
+  online_status?: OnlineStatus | string | boolean;
+  last_seen?: string | null;
   role?: UserRole;
-  bio?: string;
-  phone?: string;
-  city?: string;
-  state?: string;
-  country?: string;
+  bio?: string | null;
+  phone?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
   job_title?: string;
 }
 
-// Type pour une demande d'ami
+// Interface for pending connection requests
 export interface PendingRequest {
   id: string;
   sender_id: string;
