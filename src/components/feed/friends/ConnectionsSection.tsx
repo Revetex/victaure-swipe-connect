@@ -10,12 +10,26 @@ import { ConnectionsSearch } from "./components/ConnectionsSearch";
 import { FriendsTabContent } from "./components/FriendsTabContent";
 import { ConnectionsPagination } from "./ConnectionsPagination";
 import { PendingRequestsSection } from "./PendingRequestsSection";
+import { useAuth } from "@/hooks/useAuth";
 
 export function ConnectionsSection() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showPendingRequests, setShowPendingRequests] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 5;
+  const { user } = useAuth();
+
+  const { isLoading } = useQuery({
+    queryKey: ["friends", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const { data } = await supabase
+        .from('friendships')
+        .select('*')
+        .eq('user_id', user.id);
+      return data || [];
+    }
+  });
 
   if (isLoading) {
     return (
