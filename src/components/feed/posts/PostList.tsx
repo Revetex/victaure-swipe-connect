@@ -7,10 +7,10 @@ import { PostSkeleton } from "./PostSkeleton";
 import { EmptyPostState } from "./EmptyPostState";
 import { DeletePostDialog } from "./DeletePostDialog";
 import { PostGrid } from "./sections/PostGrid";
-import { motion } from "framer-motion";
+import { motion, useScroll, useInView } from "framer-motion";
 import { toast } from "sonner";
-import { useInView } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import { useRef } from "react";
 
 interface PostListProps {
   searchTerm?: string;
@@ -33,6 +33,9 @@ export function PostList({
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const { handleDelete, handleHide, handleUpdate } = usePostOperations();
+  
+  const loaderRef = useRef(null);
+  const inView = useInView(loaderRef);
 
   const { 
     data,
@@ -48,11 +51,6 @@ export function PostList({
     userId: user?.id,
     page,
     limit: 10
-  });
-
-  // Infinite scroll detection with ref
-  const [ref, inView] = useInView({
-    threshold: 0
   });
 
   useEffect(() => {
@@ -95,7 +93,7 @@ export function PostList({
       />
 
       {/* Loader pour l'infinite scroll */}
-      <div ref={ref} className="flex justify-center py-4">
+      <div ref={loaderRef} className="flex justify-center py-4">
         {isFetchingNextPage && (
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
         )}
