@@ -23,12 +23,49 @@ export function DashboardFriendsList() {
 
     const loadFriends = async () => {
       try {
-        // Correction: ajouter un type explicite à friends
-        const { data: friends = [], error } = await supabase.rpc('get_friends');
+        // Au lieu d'utiliser rpc, utilisons une requête directe sur la table friend_requests
+        const { data: acceptedFriends, error } = await supabase
+          .from('friend_requests')
+          .select(`
+            id,
+            sender:profiles!friend_requests_sender_id_fkey(
+              id, 
+              full_name, 
+              avatar_url, 
+              online_status,
+              last_seen
+            ),
+            receiver:profiles!friend_requests_receiver_id_fkey(
+              id,
+              full_name,
+              avatar_url,
+              online_status,
+              last_seen
+            )
+          `)
+          .eq('status', 'accepted')
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+          .limit(5);
         
         if (error) throw error;
 
-        setFriends(friends.slice(0, 5)); // Afficher seulement les 5 premiers amis
+        // Transformer les données pour correspondre au format Friend[]
+        const transformedFriends: Friend[] = [];
+        
+        acceptedFriends?.forEach(friend => {
+          const isSender = friend.sender.id === user.id;
+          const friendProfile = isSender ? friend.receiver : friend.sender;
+          
+          transformedFriends.push({
+            id: friendProfile.id,
+            full_name: friendProfile.full_name,
+            avatar_url: friendProfile.avatar_url,
+            online_status: friendProfile.online_status,
+            last_seen: friendProfile.last_seen
+          });
+        });
+
+        setFriends(transformedFriends);
       } catch (error) {
         console.error("Error loading friends:", error);
       } finally {
@@ -44,7 +81,6 @@ export function DashboardFriendsList() {
       id: friend.id,
       full_name: friend.full_name || '',
       avatar_url: friend.avatar_url,
-      // Nous définissons des valeurs par défaut pour tout ce qui est requis par Receiver
       online_status: friend.online_status ? 'online' : 'offline',
       last_seen: friend.last_seen,
       role: 'professional',

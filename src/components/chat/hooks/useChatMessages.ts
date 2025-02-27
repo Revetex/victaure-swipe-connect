@@ -45,6 +45,7 @@ export function useChatMessages({
           sender_id: m.isUser ? 'user' : 'assistant',
           receiver_id: m.isUser ? 'assistant' : 'user',
           created_at: new Date(m.timestamp).toISOString(),
+          status: 'sent', // Ajout du statut requis
           sender: {
             id: m.isUser ? 'user' : 'assistant',
             email: '',
@@ -97,6 +98,7 @@ export function useChatMessages({
         sender_id: 'user',
         receiver_id: 'assistant',
         created_at: new Date().toISOString(),
+        status: 'sent', // Ajout du statut requis
         sender: {
           id: 'user',
           email: '',
@@ -144,6 +146,7 @@ export function useChatMessages({
         sender_id: 'assistant',
         receiver_id: 'user',
         created_at: new Date().toISOString(),
+        status: 'sent', // Ajout du statut requis
         sender: {
           id: 'assistant',
           email: '',

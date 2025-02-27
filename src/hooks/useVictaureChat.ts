@@ -54,6 +54,7 @@ export function useVictaureChat({ maxQuestions = 3, context }: UseVictaureChatPr
           sender_id: 'user',
           receiver_id: 'assistant',
           created_at: new Date().toISOString(),
+          status: 'sent', // Ajout du statut requis
           sender: {
             id: 'user',
             email: '',
@@ -71,6 +72,7 @@ export function useVictaureChat({ maxQuestions = 3, context }: UseVictaureChatPr
           sender_id: 'assistant',
           receiver_id: 'user',
           created_at: new Date().toISOString(),
+          status: 'sent', // Ajout du statut requis
           sender: {
             id: 'assistant',
             email: '',

@@ -173,9 +173,10 @@ export function ConversationList() {
           last_seen: profile.last_seen,
           latitude: profile.latitude,
           longitude: profile.longitude,
-          certifications: profile.certifications || [],
-          education: profile.education || [],
-          experiences: profile.experiences || [],
+          // Adapter les champs pour correspondre aux propriétés réelles de la DB
+          certifications: [], // Initialiser avec des tableaux vides
+          education: [],     // car ces propriétés ne sont pas directement 
+          experiences: [],   // disponibles dans la table profiles
           friends: []
         });
         setShowConversation(true);
