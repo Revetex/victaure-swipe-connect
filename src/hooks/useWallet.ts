@@ -45,48 +45,20 @@ export function useWallet() {
     mutationFn: async ({ receiverWalletId, amount }: { receiverWalletId: string; amount: number }) => {
       if (!wallet?.id) throw new Error("Wallet not found");
 
-      // Get receiver's wallet with all necessary fields
-      const { data: receiverWallet, error: receiverError } = await supabase
-        .from("user_wallets")
-        .select("id, balance, currency")
-        .eq("wallet_id", receiverWalletId)
-        .single();
-
-      if (receiverError) throw new Error("Recipient wallet not found");
-
-      // Use a direct update since the transfer_funds RPC is not yet registered
-      const { error: senderError } = await supabase
-        .from("user_wallets")
-        .update({ balance: wallet.balance - amount })
-        .eq("id", wallet.id);
-
-      if (senderError) throw senderError;
-
-      const { error: receiverUpdateError } = await supabase
-        .from("user_wallets")
-        .update({ balance: (receiverWallet.balance || 0) + amount })
-        .eq("id", receiverWallet.id);
-
-      if (receiverUpdateError) throw receiverUpdateError;
-
-      // Create transaction record
-      const { error: transactionError } = await supabase
-        .from("wallet_transactions")
-        .insert({
-          sender_wallet_id: wallet.id,
-          receiver_wallet_id: receiverWallet.id,
-          amount,
-          currency: wallet.currency,
-          status: 'completed',
-          description: 'Wallet transfer'
+      const { data, error } = await supabase
+        .rpc('transfer_funds', {
+          p_sender_wallet_id: wallet.id,
+          p_receiver_wallet_id: receiverWalletId,
+          p_amount: amount
         });
 
-      if (transactionError) throw transactionError;
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userWallet"] });
       queryClient.invalidateQueries({ queryKey: ["walletTransactions"] });
-      toast.success("Funds sent successfully");
+      toast.success("Fonds envoyés avec succès");
     },
     onError: (error: Error) => {
       toast.error(error.message);

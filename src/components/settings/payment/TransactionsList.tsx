@@ -3,7 +3,14 @@ import { PaymentTransaction } from "@/types/payment";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { CheckCircle2, Clock, XCircle, AlertCircle, CreditCard, Wallet } from "lucide-react";
+import { 
+  CheckCircle2, 
+  Clock, 
+  XCircle, 
+  AlertCircle, 
+  CreditCard, 
+  Wallet 
+} from "lucide-react";
 
 interface TransactionsListProps {
   transactions: PaymentTransaction[];
@@ -12,11 +19,11 @@ interface TransactionsListProps {
 export function TransactionsList({ transactions }: TransactionsListProps) {
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'confirmed':
+      case 'completed':
         return <CheckCircle2 className="h-5 w-5 text-green-500" />;
       case 'pending':
         return <Clock className="h-5 w-5 text-yellow-500" />;
-      case 'cancelled':
+      case 'failed':
         return <XCircle className="h-5 w-5 text-red-500" />;
       case 'frozen':
         return <AlertCircle className="h-5 w-5 text-blue-500" />;
@@ -27,11 +34,11 @@ export function TransactionsList({ transactions }: TransactionsListProps) {
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case 'confirmed':
+      case 'completed':
         return 'bg-green-500/10 text-green-500';
       case 'pending':
         return 'bg-yellow-500/10 text-yellow-500';
-      case 'cancelled':
+      case 'failed':
         return 'bg-red-500/10 text-red-500';
       case 'frozen':
         return 'bg-blue-500/10 text-blue-500';
@@ -84,9 +91,9 @@ export function TransactionsList({ transactions }: TransactionsListProps) {
             </div>
             <div className="flex items-center space-x-3">
               <span className={`px-3 py-1 rounded-full text-sm ${getStatusStyle(transaction.status)}`}>
-                {transaction.status === 'confirmed' && 'Confirmé'}
+                {transaction.status === 'completed' && 'Confirmé'}
                 {transaction.status === 'pending' && 'En attente'}
-                {transaction.status === 'cancelled' && 'Annulé'}
+                {transaction.status === 'failed' && 'Échoué'}
                 {transaction.status === 'frozen' && 'Gelé'}
               </span>
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">

@@ -2,9 +2,9 @@
 export interface UserWallet {
   id: string;
   user_id: string;
-  wallet_id: string;
   balance: number;
   currency: string;
+  wallet_id: string;
   is_frozen: boolean;
   created_at: string;
   updated_at: string;
@@ -16,8 +16,10 @@ export interface WalletTransaction {
   receiver_wallet_id: string;
   amount: number;
   currency: string;
-  status: 'pending' | 'completed' | 'failed' | 'cancelled';
   description?: string;
+  type: string;
+  status: 'pending' | 'completed' | 'failed';
+  metadata: Record<string, any>;
   created_at: string;
   updated_at: string;
 }
