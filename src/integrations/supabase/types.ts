@@ -1906,6 +1906,49 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_favorites: {
+        Row: {
+          created_at: string | null
+          id: string
+          item_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          item_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          item_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_favorites_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_favorites_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "mv_active_marketplace_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_favorites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketplace_items: {
         Row: {
           availability: Json | null
@@ -2275,6 +2318,49 @@ export type Database = {
           {
             foreignKeyName: "marketplace_services_provider_id_fkey"
             columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_views: {
+        Row: {
+          created_at: string | null
+          id: string
+          item_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          item_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          item_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_views_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_views_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "mv_active_marketplace_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_views_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -4633,6 +4719,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_table_exists: {
+        Args: {
+          table_name: string
+        }
+        Returns: boolean
+      }
       cleanup_old_data: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -4721,9 +4813,22 @@ export type Database = {
           other_user_avatar: string
         }[]
       }
+      get_view_count: {
+        Args: {
+          listing_id: string
+        }
+        Returns: number
+      }
       increment_app_download_count: {
         Args: {
           version_id: string
+        }
+        Returns: undefined
+      }
+      increment_listing_views: {
+        Args: {
+          listing_id: string
+          viewer_id: string
         }
         Returns: undefined
       }
