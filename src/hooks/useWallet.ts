@@ -45,15 +45,15 @@ export function useWallet() {
     mutationFn: async ({ receiverWalletId, amount }: { receiverWalletId: string; amount: number }) => {
       if (!wallet?.id) throw new Error("Wallet not found");
 
-      const { data, error } = await supabase
-        .rpc('transfer_funds', {
-          p_sender_wallet_id: wallet.id,
-          p_receiver_wallet_id: receiverWalletId,
-          p_amount: amount
-        });
+      const { error } = await supabase.functions.invoke('transfer-funds', {
+        body: {
+          sender_wallet_id: wallet.id,
+          receiver_wallet_id: receiverWalletId,
+          amount
+        }
+      });
 
       if (error) throw error;
-      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userWallet"] });
