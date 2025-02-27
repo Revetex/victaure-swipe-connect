@@ -16,18 +16,20 @@ export function GoogleSearch() {
   } = useGoogleSearch();
 
   return (
-    <Card className="p-6 space-y-6">
-      <SearchBar
-        searchTerm={searchTerm}
-        isSearching={isSearching}
-        onSearchChange={setSearchTerm}
-        onSearch={handleSearch}
-      />
-      
-      <SearchResults
-        isEnhancing={isEnhancing}
-        onEnhance={enhanceResults}
-      />
+    <Card>
+      <div className="space-y-4 p-4">
+        <SearchBar
+          searchTerm={searchTerm}
+          isSearching={isSearching}
+          onSearchChange={setSearchTerm}
+          onSearch={handleSearch}
+        />
+        
+        <SearchResults
+          isEnhancing={isEnhancing}
+          onEnhance={enhanceResults}
+        />
+      </div>
     </Card>
   );
 }

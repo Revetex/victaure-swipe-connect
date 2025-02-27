@@ -46,32 +46,30 @@ export function SearchBar({
   };
 
   return (
-    <form onSubmit={onSearch} className="flex flex-col gap-4 w-full">
-      <div className="flex gap-2">
-        <Input
-          type="text"
-          placeholder="Rechercher des offres d'emploi..."
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="h-12 bg-background/50"
-        />
-        <Button 
-          type="submit" 
-          disabled={isSearching}
-          className="h-12 px-4"
-        >
-          <SearchIcon className="h-4 w-4" />
-        </Button>
-        <Button
-          type="button"
-          onClick={generateRandomSearch}
-          className="h-12 px-4"
-          variant="outline"
-          title="Générer une recherche basée sur votre profil"
-        >
-          <Wand2 className="h-4 w-4" />
-        </Button>
-      </div>
+    <form onSubmit={onSearch} className="flex gap-2">
+      <Input
+        type="text"
+        placeholder="Rechercher des offres d'emploi..."
+        value={searchTerm}
+        onChange={(e) => onSearchChange(e.target.value)}
+        className="h-12 bg-background/50"
+      />
+      <Button 
+        type="submit" 
+        disabled={isSearching}
+        className="h-12 px-4"
+      >
+        <SearchIcon className="h-4 w-4" />
+      </Button>
+      <Button
+        type="button"
+        onClick={generateRandomSearch}
+        className="h-12 px-4"
+        variant="outline"
+        title="Générer une recherche basée sur votre profil"
+      >
+        <Wand2 className="h-4 w-4" />
+      </Button>
     </form>
   );
 }

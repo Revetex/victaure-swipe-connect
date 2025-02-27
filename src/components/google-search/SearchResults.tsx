@@ -10,19 +10,20 @@ interface SearchResultsProps {
 
 export function SearchResults({ isEnhancing, onEnhance }: SearchResultsProps) {
   return (
-    <Card className="bg-background/50 rounded-lg p-6">
-      <div className="flex justify-end mb-4">
-        <Button
-          onClick={onEnhance}
-          disabled={isEnhancing}
-          variant="outline"
-          className="text-xs"
-        >
-          {isEnhancing ? 'Analyse en cours...' : 'Analyser avec IA'}
-        </Button>
-      </div>
+    <Card className="bg-background/50 relative">
+      <Button
+        onClick={onEnhance}
+        disabled={isEnhancing}
+        variant="outline"
+        className="text-xs absolute top-4 right-4 z-10"
+      >
+        {isEnhancing ? 'Analyse en cours...' : 'Analyser avec IA'}
+      </Button>
+      
       <ScrollArea className="h-[600px]">
-        <div className="gcse-searchresults-only"></div>
+        <div className="p-4">
+          <div className="gcse-searchresults-only"></div>
+        </div>
       </ScrollArea>
     </Card>
   );
