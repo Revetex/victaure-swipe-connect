@@ -1,4 +1,3 @@
-
 export interface MarketplaceListing {
   id: string;
   title: string;
@@ -23,13 +22,16 @@ export interface MarketplaceListing {
   favorites_count?: number;
   featured?: boolean;
   sale_type?: string;
+  listing_id?: string; // Pour la rétrocompatibilité
 }
 
 export interface MarketplaceFavorite {
   id?: string;
-  item_id: string;
+  item_id?: string;
+  listing_id?: string; // Pour la rétrocompatibilité
   user_id: string;
   created_at?: string;
+  viewer_id?: string; // Pour la rétrocompatibilité
 }
 
 export interface MarketplaceFilters {
@@ -155,7 +157,6 @@ export interface ContractFormValues {
   currency?: string;
 }
 
-// Corrigeons le contractFormSchema pour être compatible avec zod
 export const contractFormSchema = {
   title: {
     required: "Le titre est requis",
