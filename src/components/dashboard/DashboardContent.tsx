@@ -1,86 +1,60 @@
 
-import { motion } from "framer-motion";
-import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useViewport } from "@/hooks/useViewport";
-import { LoadingState } from "./content/LoadingState";
-import { FloatingButtons } from "./content/FloatingButtons";
 import { ContentRouter } from "./content/ContentRouter";
 import { DashboardHome } from "./content/DashboardHome";
-import { cn } from "@/lib/utils";
+import { DashboardFriendsList } from "./content/DashboardFriendsList";
+import { FloatingButtons } from "./content/FloatingButtons";
+import { LoadingState } from "./content/LoadingState";
+import { motion, AnimatePresence } from "framer-motion";
+import { Card } from "@/components/ui/card";
 
-interface DashboardContentProps {
-  currentPage: number;
-  isEditing?: boolean;
-  onEditStateChange: (isEditing: boolean) => void;
-  onRequestChat: () => void;
-}
-
-export function DashboardContent({
-  currentPage,
-  isEditing,
-  onEditStateChange,
-  onRequestChat
-}: DashboardContentProps) {
-  const { user } = useAuth();
-  const { width } = useViewport();
-  const isMobile = width < 768;
-
-  useEffect(() => {
-    if (currentPage === 5) {
-      onEditStateChange(true);
-    }
-  }, [currentPage, onEditStateChange]);
-
-  if (!user) {
+export function DashboardContent() {
+  const { isLoading, user } = useAuth();
+  
+  if (isLoading || !user) {
     return <LoadingState />;
   }
 
-  const renderDashboardHome = () => {
-    return (
+  return (
+    <AnimatePresence mode="wait">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        exit={{ opacity: 0, y: -20 }}
+        className="container mx-auto px-4 py-6 min-h-screen"
       >
-        <DashboardHome onRequestChat={onRequestChat} />
-      </motion.div>
-    );
-  };
-
-  return (
-    <div className={cn(
-      "w-full min-h-[calc(100vh-4rem)]",
-      "space-y-6 p-6",
-      "bg-gradient-to-b from-[#1A1F2C] via-[#1B2A4A]/50 to-[#1A1F2C]"
-    )}>
-      <div className="relative z-10">
-        <ContentRouter
-          currentPage={currentPage}
-          onEditStateChange={onEditStateChange}
-          onRequestChat={onRequestChat}
-          renderDashboardHome={renderDashboardHome}
-        />
-
-        {!isMobile && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4 }}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Section principale */}
+          <motion.div 
+            className="lg:col-span-8 space-y-6"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
           >
+            <Card className="p-6 bg-black/40 border-zinc-800/50 backdrop-blur-sm">
+              <DashboardHome />
+            </Card>
+
+            <Card className="overflow-hidden bg-black/40 border-zinc-800/50 backdrop-blur-sm">
+              <ContentRouter />
+            </Card>
+          </motion.div>
+
+          {/* Barre latérale */}
+          <motion.div 
+            className="lg:col-span-4 space-y-6"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Card className="p-6 bg-black/40 border-zinc-800/50 backdrop-blur-sm">
+              <DashboardFriendsList />
+            </Card>
+
             <FloatingButtons />
           </motion.div>
-        )}
-      </div>
-
-      {/* Effet de points en arrière-plan */}
-      <div 
-        className="fixed inset-0 pointer-events-none" 
-        style={{
-          backgroundImage: 'radial-gradient(circle, rgba(100,181,217,0.03) 1px, transparent 1px)',
-          backgroundSize: '20px 20px'
-        }} 
-      />
-    </div>
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
 }

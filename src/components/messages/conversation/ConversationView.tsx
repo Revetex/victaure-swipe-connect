@@ -10,6 +10,7 @@ import { MessageList } from "./components/MessageList";
 import { MessageInput } from "./components/MessageInput";
 import { useMessages } from "./hooks/useMessages";
 import type { Receiver, UserRole } from "@/types/messages";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function ConversationView() {
   const { receiver, setReceiver, setShowConversation } = useReceiver();
@@ -77,10 +78,6 @@ export function ConversationView() {
     }
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   const handleBack = () => {
     setShowConversation(false);
     navigate('/messages');
@@ -102,7 +99,10 @@ export function ConversationView() {
       if (error) throw error;
       
       setMessageInput("");
-      scrollToBottom();
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      
+      // Animation de succès
+      toast.success("Message envoyé");
     } catch (error) {
       console.error('Error sending message:', error);
       toast.error("Impossible d'envoyer le message");
@@ -110,28 +110,51 @@ export function ConversationView() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#1A1F2C]">
-      <ConversationHeader 
-        receiver={receiver}
-        onBack={handleBack}
-      />
-      
-      <div className="flex-1 overflow-y-auto p-4">
-        <MessageList
-          messages={messages}
-          currentUserId={user?.id}
-          onDeleteMessage={handleDeleteMessage}
-          messagesEndRef={messagesEndRef}
-        />
-      </div>
+    <AnimatePresence mode="wait">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="flex flex-col h-full bg-gradient-to-b from-[#1B2A4A]/50 to-[#1A1F2C]/50"
+      >
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+        >
+          <ConversationHeader 
+            receiver={receiver}
+            onBack={handleBack}
+          />
+        </motion.div>
+        
+        <motion.div 
+          className="flex-1 overflow-y-auto p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <MessageList
+            messages={messages}
+            currentUserId={user?.id}
+            onDeleteMessage={handleDeleteMessage}
+            messagesEndRef={messagesEndRef}
+          />
+        </motion.div>
 
-      <div className="p-4 bg-[#1B2A4A]/50 border-t border-[#64B5D9]/10">
-        <MessageInput
-          value={messageInput}
-          onChange={setMessageInput}
-          onSubmit={handleSendMessage}
-        />
-      </div>
-    </div>
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="p-4 bg-[#1B2A4A]/50 border-t border-[#64B5D9]/10"
+        >
+          <MessageInput
+            value={messageInput}
+            onChange={setMessageInput}
+            onSubmit={handleSendMessage}
+          />
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
