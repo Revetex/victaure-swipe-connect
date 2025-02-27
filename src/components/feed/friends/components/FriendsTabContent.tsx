@@ -3,8 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { FriendCard } from "./FriendCard";
+import { FriendCard, FriendCardSkeleton } from "./FriendCard";
 import { EmptyConnectionsState } from "../EmptyConnectionsState";
 
 interface FriendsTabContentProps {
@@ -20,8 +19,8 @@ export function FriendsTabContent({
 }: FriendsTabContentProps) {
   const { user } = useAuth();
   
-  const { data: friends = [], isLoading } = useQuery({
-    queryKey: ["friends", user?.id],
+  const { data: friends = [], isLoading, refetch } = useQuery({
+    queryKey: ["friends", user?.id, showOnlineOnly],
     queryFn: async () => {
       if (!user?.id) return [];
 
@@ -53,30 +52,32 @@ export function FriendsTabContent({
           state: null,
           country: 'Canada',
           skills: [],
-          online_status: false, // We'll need to update this in a future enhancement
+          online_status: Math.random() > 0.5, // Simulation pour l'exemple - à remplacer par une vraie valeur
           last_seen: new Date().toISOString(),
           certifications: [],
           education: [],
           experiences: [],
           friends: [],
-          verified: false
+          verified: Math.random() > 0.7 // Simulation pour l'exemple
         } as UserProfile;
       });
     }
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#64B5D9]" />
-      </div>
-    );
-  }
-
   const filteredFriends = showOnlineOnly ? friends.filter(f => f.online_status) : friends;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const displayedFriends = filteredFriends.slice(startIndex, endIndex);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <FriendCardSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
 
   if (!displayedFriends.length) {
     return showOnlineOnly ? (
@@ -91,7 +92,11 @@ export function FriendsTabContent({
   return (
     <div className="space-y-3">
       {displayedFriends.map(friend => (
-        <FriendCard key={friend.id} friend={friend} />
+        <FriendCard 
+          key={friend.id} 
+          friend={friend} 
+          onRemove={() => refetch()}
+        />
       ))}
     </div>
   );

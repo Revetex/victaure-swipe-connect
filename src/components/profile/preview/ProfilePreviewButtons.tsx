@@ -28,7 +28,8 @@ export function ProfilePreviewButtons({
     isFriend,
     isBlocked,
     isFriendRequestSent,
-    isFriendRequestReceived
+    isFriendRequestReceived,
+    isLoading
   } = useConnectionStatus(profile.id);
 
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ export function ProfilePreviewButtons({
     handleAcceptFriend,
     handleRemoveFriend,
     handleToggleBlock,
+    isProcessing
   } = useConnectionActions(profile.id);
 
   const handleMessageClick = () => {
@@ -93,37 +95,61 @@ export function ProfilePreviewButtons({
         )}
       </Button>
 
-      {!isFriend && !isFriendRequestSent && !isFriendRequestReceived && !isBlocked && (
-        <Button 
-          onClick={handleAddFriend}
-          variant="default"
-          className="w-full bg-[#1A1F2C] hover:bg-[#1A1F2C]/90 text-white"
-        >
-          <UserPlus className="mr-2 h-4 w-4" />
-          Ajouter
+      {isLoading ? (
+        <Button disabled className="w-full bg-[#1A1F2C] hover:bg-[#1A1F2C]/90 text-white">
+          <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          Chargement...
         </Button>
-      )}
+      ) : (
+        <>
+          {!isFriend && !isFriendRequestSent && !isFriendRequestReceived && !isBlocked && (
+            <Button 
+              onClick={handleAddFriend}
+              variant="default"
+              disabled={isProcessing}
+              className="w-full bg-[#1A1F2C] hover:bg-[#1A1F2C]/90 text-white"
+            >
+              {isProcessing ? (
+                <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              ) : (
+                <UserPlus className="mr-2 h-4 w-4" />
+              )}
+              Ajouter
+            </Button>
+          )}
 
-      {isFriendRequestReceived && (
-        <Button
-          onClick={handleAcceptFriend}
-          variant="default"
-          className="w-full bg-[#1A1F2C] hover:bg-[#1A1F2C]/90 text-white"
-        >
-          <UserPlus className="mr-2 h-4 w-4" />
-          Accepter
-        </Button>
-      )}
+          {isFriendRequestReceived && (
+            <Button
+              onClick={handleAcceptFriend}
+              variant="default"
+              disabled={isProcessing}
+              className="w-full bg-[#1A1F2C] hover:bg-[#1A1F2C]/90 text-white"
+            >
+              {isProcessing ? (
+                <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              ) : (
+                <UserPlus className="mr-2 h-4 w-4" />
+              )}
+              Accepter
+            </Button>
+          )}
 
-      {(isFriend || isFriendRequestSent) && (
-        <Button
-          onClick={handleRemoveFriend}
-          variant="outline"
-          className="w-full border-red-500/20 hover:bg-red-500/10 text-red-500"
-        >
-          <UserMinus className="mr-2 h-4 w-4" />
-          {isFriend ? "Retirer" : "Annuler"}
-        </Button>
+          {(isFriend || isFriendRequestSent) && (
+            <Button
+              onClick={handleRemoveFriend}
+              variant="outline"
+              disabled={isProcessing}
+              className="w-full border-red-500/20 hover:bg-red-500/10 text-red-500"
+            >
+              {isProcessing ? (
+                <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-red-500 border-t-transparent" />
+              ) : (
+                <UserMinus className="mr-2 h-4 w-4" />
+              )}
+              {isFriend ? "Retirer" : "Annuler"}
+            </Button>
+          )}
+        </>
       )}
 
       {isFriend && (
@@ -140,9 +166,14 @@ export function ProfilePreviewButtons({
       <Button
         onClick={() => handleToggleBlock(profile.id)}
         variant="outline"
+        disabled={isProcessing || isLoading}
         className="w-full border-muted hover:bg-muted/10 text-muted-foreground"
       >
-        <Ban className="mr-2 h-4 w-4" />
+        {isProcessing ? (
+          <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+        ) : (
+          <Ban className="mr-2 h-4 w-4" />
+        )}
         {isBlocked ? "Débloquer" : "Bloquer"}
       </Button>
     </motion.div>

@@ -7,12 +7,22 @@ export function useConnectionStatus(profileId: string) {
   const [isBlocked, setIsBlocked] = useState(false);
   const [isFriendRequestSent, setIsFriendRequestSent] = useState(false);
   const [isFriendRequestReceived, setIsFriendRequestReceived] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkFriendshipStatus = async () => {
+      if (!profileId) {
+        setIsLoading(false);
+        return;
+      }
+      
       try {
+        setIsLoading(true);
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user) {
+          setIsLoading(false);
+          return;
+        }
 
         // Check if they are already friends
         const { data: areFriendsData, error: areFriendsError } = await supabase
@@ -68,12 +78,28 @@ export function useConnectionStatus(profileId: string) {
         setIsBlocked(blockStatus && blockStatus.length > 0);
       } catch (error) {
         console.error('Error checking connection status:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    if (profileId) {
-      checkFriendshipStatus();
-    }
+    checkFriendshipStatus();
+
+    // Setup realtime subscription for connection changes
+    const channel = supabase
+      .channel('connections-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'user_connections'
+      }, () => {
+        checkFriendshipStatus();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [profileId]);
 
   return {
@@ -81,5 +107,6 @@ export function useConnectionStatus(profileId: string) {
     isBlocked,
     isFriendRequestSent,
     isFriendRequestReceived,
+    isLoading
   };
 }

@@ -1,27 +1,41 @@
 
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Star } from "lucide-react";
+import { MessageCircle, Star, UserMinus } from "lucide-react";
 import { motion } from "framer-motion";
 import { ProfileNameButton } from "@/components/profile/ProfileNameButton";
 import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
 import type { Receiver } from "@/types/messages";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from "react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface FriendCardProps {
   friend: UserProfile;
+  onRemove?: () => void;
 }
 
 export function FriendCard({
-  friend
+  friend,
+  onRemove
 }: FriendCardProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isRemoving, setIsRemoving] = useState(false);
   const {
     setReceiver,
     setShowConversation
   } = useReceiver();
 
   const handleStartChat = () => {
+    if (!user) {
+      toast.error("Vous devez être connecté pour envoyer un message");
+      return;
+    }
+
     const receiver: Receiver = {
       id: friend.id,
       full_name: friend.full_name,
@@ -46,6 +60,43 @@ export function FriendCard({
     setReceiver(receiver);
     setShowConversation(true);
     navigate('/messages');
+  };
+
+  const handleRemoveFriend = async () => {
+    if (!user?.id) {
+      toast.error("Vous devez être connecté pour supprimer cet ami");
+      return;
+    }
+
+    try {
+      setIsRemoving(true);
+      
+      // Récupérer l'ID de la connexion
+      const { data: connectionData, error: connectionError } = await supabase
+        .from('user_connections')
+        .select('id')
+        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${friend.id}),and(sender_id.eq.${friend.id},receiver_id.eq.${user.id})`)
+        .eq('status', 'accepted')
+        .single();
+
+      if (connectionError) throw connectionError;
+
+      // Supprimer la connexion
+      const { error } = await supabase.rpc('remove_friend', {
+        p_connection_id: connectionData.id,
+        p_user_id: user.id
+      });
+
+      if (error) throw error;
+
+      toast.success(`${friend.full_name} retiré de vos contacts`);
+      if (onRemove) onRemove();
+    } catch (error) {
+      console.error('Error removing friend:', error);
+      toast.error("Erreur lors de la suppression de l'ami");
+    } finally {
+      setIsRemoving(false);
+    }
   };
 
   return (
@@ -87,15 +138,48 @@ export function FriendCard({
           </div>
         </div>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleStartChat}
-          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white hover:text-[#64B5D9]"
-        >
-          <MessageCircle className="h-4 w-4" />
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleStartChat}
+            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white hover:text-[#64B5D9]"
+          >
+            <MessageCircle className="h-4 w-4" />
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleRemoveFriend}
+            disabled={isRemoving}
+            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white hover:text-red-500"
+          >
+            {isRemoving ? (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            ) : (
+              <UserMinus className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       </div>
     </motion.div>
+  );
+}
+
+// Création d'un composant skeleton pour le chargement
+export function FriendCardSkeleton() {
+  return (
+    <div className="rounded-xl overflow-hidden">
+      <div className="p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl">
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-12 w-12 rounded-xl" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
