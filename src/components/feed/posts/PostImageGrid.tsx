@@ -1,50 +1,78 @@
-import { Button } from "@/components/ui/button";
-import { ImageViewer } from "./ImageViewer";
+
 import { useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import { Image } from "lucide-react";
 
 interface PostImageGridProps {
   images: string[];
 }
 
-export const PostImageGrid = ({ images }: PostImageGridProps) => {
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+export function PostImageGrid({ images }: PostImageGridProps) {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  if (!images || images.length === 0) return null;
+  const getGridClassName = (length: number) => {
+    switch (length) {
+      case 1:
+        return "grid-cols-1";
+      case 2:
+        return "grid-cols-2";
+      case 3:
+        return "grid-cols-2";
+      default:
+        return "grid-cols-2";
+    }
+  };
+
+  const getImageClassName = (index: number, length: number) => {
+    if (length === 1) return "col-span-1 row-span-1 aspect-video";
+    if (length === 3 && index === 0) return "col-span-2 row-span-2 aspect-video";
+    return "col-span-1 row-span-1 aspect-square";
+  };
+
+  if (!images.length) return null;
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-2 mb-4">
-        {images.map((image, index) => (
-          <div key={index} className="relative">
-            {image.toLowerCase().endsWith('.pdf') ? (
-              <a 
-                href={image} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="block p-4 bg-muted rounded hover:bg-muted/80 transition-colors"
-              >
-                <div className="flex items-center justify-center">
-                  <span className="text-sm">Voir le PDF</span>
-                </div>
-              </a>
-            ) : (
+      <div className={cn(
+        "grid gap-1 rounded-xl overflow-hidden",
+        getGridClassName(images.length)
+      )}>
+        {images.slice(0, 4).map((image, index) => (
+          <div
+            key={index}
+            className={cn(
+              "relative group cursor-pointer overflow-hidden",
+              getImageClassName(index, images.length)
+            )}
+            onClick={() => setSelectedImage(image)}
+          >
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-200" />
+            {image ? (
               <img
                 src={image}
-                alt={`Attachment ${index + 1}`}
-                className="w-full h-48 object-cover rounded cursor-pointer hover:opacity-90 transition-opacity border border-border"
-                onClick={() => setSelectedImageIndex(index)}
+                alt=""
+                className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                loading="lazy"
               />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-white/5">
+                <Image className="w-6 h-6 text-white/40" />
+              </div>
             )}
           </div>
         ))}
       </div>
 
-      <ImageViewer
-        images={images.filter(img => !img.toLowerCase().endsWith('.pdf'))}
-        initialIndex={selectedImageIndex || 0}
-        isOpen={selectedImageIndex !== null}
-        onClose={() => setSelectedImageIndex(null)}
-      />
+      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+        <DialogContent className="max-w-4xl w-full p-0 bg-transparent border-none">
+          <img
+            src={selectedImage || ''}
+            alt=""
+            className="w-full h-full object-contain rounded-lg"
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
-};
+}
