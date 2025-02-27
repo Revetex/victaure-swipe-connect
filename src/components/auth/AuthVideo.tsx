@@ -1,13 +1,14 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-import { Play, Pause, Volume2, VolumeX } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Info } from "lucide-react";
 import React from "react";
 
 export function AuthVideo() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
   
   // Référence à la vidéo pour pouvoir la contrôler
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -58,11 +59,38 @@ export function AuthVideo() {
       />
       <VideoOverlay />
       <VideoBadge />
+      
+      {/* Info en surimpression */}
+      {showInfo && (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          className="absolute inset-0 bg-black/70 flex items-center justify-center p-8 text-center"
+        >
+          <div className="max-w-md">
+            <h3 className="text-[#64B5D9] text-xl mb-4 font-semibold">Victaure Pro</h3>
+            <p className="text-[#F2EBE4] text-sm">
+              Cette démonstration montre comment Victaure transforme l'expérience de recrutement avec des 
+              outils d'IA avancés et une interface intuitive pour les candidats et les recruteurs.
+            </p>
+            <button 
+              onClick={() => setShowInfo(false)}
+              className="mt-6 px-4 py-2 bg-[#64B5D9]/20 hover:bg-[#64B5D9]/30 text-[#F2EBE4] rounded-full border border-[#64B5D9]/30 transition-colors"
+            >
+              Fermer
+            </button>
+          </div>
+        </motion.div>
+      )}
+      
       <VideoControls 
         isPlaying={isPlaying} 
         isMuted={isMuted} 
         onTogglePlay={handleVideoControls.togglePlay}
         onToggleMute={handleVideoControls.toggleMute}
+        onInfoClick={() => setShowInfo(!showInfo)}
+        showInfo={showInfo}
       />
     </div>
   );
@@ -120,7 +148,7 @@ function VideoBadge() {
       className="absolute top-4 left-4 bg-[#1A1F2C]/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-[#64B5D9]/30"
     >
       <span className="text-sm font-medium text-[#F2EBE4]">Victaure</span>
-      <span className="ml-1 text-xs text-[#64B5D9]">Pro</span>
+      <span className="ml-1 text-xs text-[#64B5D9] font-semibold">Pro</span>
     </motion.div>
   );
 }
@@ -128,18 +156,26 @@ function VideoBadge() {
 function VideoControls({ 
   isPlaying, 
   isMuted, 
+  showInfo,
   onTogglePlay,
-  onToggleMute 
+  onToggleMute,
+  onInfoClick
 }: { 
   isPlaying: boolean, 
   isMuted: boolean,
+  showInfo: boolean,
   onTogglePlay: () => void,
-  onToggleMute: () => void
+  onToggleMute: () => void,
+  onInfoClick: () => void
 }) {
   return (
     <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-      <PlayButton isPlaying={isPlaying} onClick={onTogglePlay} />
-      <ControlsGroup isMuted={isMuted} onToggleMute={onToggleMute} />
+      <div className="flex items-center gap-2">
+        <PlayButton isPlaying={isPlaying} onClick={onTogglePlay} />
+        <MuteButton isMuted={isMuted} onClick={onToggleMute} />
+      </div>
+      
+      <ControlsGroup onInfoClick={onInfoClick} showInfo={showInfo} />
     </div>
   );
 }
@@ -152,6 +188,8 @@ function PlayButton({ isPlaying, onClick }: { isPlaying: boolean, onClick: () =>
       transition={{ delay: 0.6, duration: 0.4 }}
       onClick={onClick}
       className="flex items-center justify-center w-10 h-10 rounded-full bg-[#64B5D9]/20 backdrop-blur-md border border-[#64B5D9]/30 hover:bg-[#64B5D9]/30 transition-colors"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
     >
       {isPlaying ? (
         <Pause className="w-5 h-5 text-[#F2EBE4]" />
@@ -162,28 +200,49 @@ function PlayButton({ isPlaying, onClick }: { isPlaying: boolean, onClick: () =>
   );
 }
 
-function ControlsGroup({ isMuted, onToggleMute }: { isMuted: boolean, onToggleMute: () => void }) {
+function MuteButton({ isMuted, onClick }: { isMuted: boolean, onClick: () => void }) {
   return (
-    <motion.div
+    <motion.button
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.7, duration: 0.4 }}
-      className="flex items-center gap-3"
+      onClick={onClick}
+      className="flex items-center justify-center w-10 h-10 rounded-full bg-[#64B5D9]/20 backdrop-blur-md border border-[#64B5D9]/30 hover:bg-[#64B5D9]/30 transition-colors"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
     >
-      <button
-        onClick={onToggleMute}
-        className="flex items-center justify-center w-10 h-10 rounded-full bg-[#64B5D9]/20 backdrop-blur-md border border-[#64B5D9]/30 hover:bg-[#64B5D9]/30 transition-colors"
+      {isMuted ? (
+        <VolumeX className="w-5 h-5 text-[#F2EBE4]" />
+      ) : (
+        <Volume2 className="w-5 h-5 text-[#F2EBE4]" />
+      )}
+    </motion.button>
+  );
+}
+
+function ControlsGroup({ showInfo, onInfoClick }: { showInfo: boolean, onInfoClick: () => void }) {
+  return (
+    <div className="flex items-center gap-3">
+      <motion.button
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.4 }}
+        onClick={onInfoClick}
+        className={`flex items-center justify-center w-10 h-10 rounded-full backdrop-blur-md border transition-colors ${showInfo ? 'bg-[#64B5D9]/30 border-[#64B5D9]/50' : 'bg-[#64B5D9]/20 border-[#64B5D9]/30 hover:bg-[#64B5D9]/30'}`}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
-        {isMuted ? (
-          <VolumeX className="w-5 h-5 text-[#F2EBE4]" />
-        ) : (
-          <Volume2 className="w-5 h-5 text-[#F2EBE4]" />
-        )}
-      </button>
+        <Info className="w-5 h-5 text-[#F2EBE4]" />
+      </motion.button>
       
-      <div className="text-xs text-[#F2EBE4]/80 bg-[#1A1F2C]/60 backdrop-blur-md px-3 py-1 rounded-full">
+      <motion.div
+        initial={{ opacity: 0, x: 10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.9, duration: 0.4 }}
+        className="text-xs text-[#F2EBE4]/80 bg-[#1A1F2C]/70 backdrop-blur-md px-4 py-2 rounded-full shadow-md"
+      >
         Découvrez Victaure en action
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }
