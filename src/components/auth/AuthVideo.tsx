@@ -1,103 +1,126 @@
 
-import { useRef, useState } from "react";
-import { Play } from "lucide-react";
-import { Logo } from "@/components/Logo";
-import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { Play, Pause, Volume2, VolumeX } from "lucide-react";
+import React from "react";
 
-export const AuthVideo = () => {
-  const [videoError, setVideoError] = useState(false);
-  const [isVideoLoading, setIsVideoLoading] = useState(true);
+export function AuthVideo() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
+  const [isMuted, setIsMuted] = useState(true);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  
+  // Référence à la vidéo pour pouvoir la contrôler
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-    console.error("Erreur de chargement vidéo:", e);
-    if (retryCount < 3) {
-      setTimeout(() => {
-        setRetryCount(prev => prev + 1);
-        if (videoRef.current) {
-          videoRef.current.load();
-        }
-      }, 1000 * (retryCount + 1)); // Exponential backoff
-    } else {
-      setVideoError(true);
-    }
-    setIsVideoLoading(false);
-  };
-
-  const handleVideoLoad = () => {
-    setIsVideoLoading(false);
-    setVideoError(false);
-  };
-
-  const togglePlay = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  
+  // Toggle lecture/pause
+  const togglePlay = () => {
     if (videoRef.current) {
-      if (videoRef.current.paused) {
-        videoRef.current.muted = false; // Unmute when playing
-        videoRef.current.play()
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch(error => {
-            console.error("Error playing video:", error);
-            setVideoError(true);
-          });
-      } else {
+      if (isPlaying) {
         videoRef.current.pause();
-        setIsPlaying(false);
+      } else {
+        videoRef.current.play();
       }
+      setIsPlaying(!isPlaying);
     }
   };
+  
+  // Toggle muet/son
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  // Vérifier si la vidéo est chargée
+  const handleVideoLoaded = () => {
+    setVideoLoaded(true);
+  };
+  
+  // Démarrer automatiquement la vidéo (muette) lorsqu'elle est chargée
+  useEffect(() => {
+    if (videoRef.current && videoLoaded) {
+      videoRef.current.play().catch(() => {
+        // La lecture automatique a été bloquée par le navigateur
+        setIsPlaying(false);
+      });
+    }
+  }, [videoLoaded]);
 
   return (
-    <div className="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-lg">
-      {isVideoLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-muted">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    <div className="relative w-full aspect-video overflow-hidden rounded-t-xl">
+      {/* Overlay de chargement */}
+      {!videoLoaded && (
+        <div className="absolute inset-0 bg-[#1A1F2C] flex items-center justify-center">
+          <div className="w-12 h-12 border-4 border-[#64B5D9]/20 border-t-[#64B5D9] rounded-full animate-spin"></div>
         </div>
       )}
-      {videoError ? (
-        <div className="aspect-video bg-muted flex items-center justify-center text-muted-foreground rounded-2xl">
-          <p>La vidéo n'a pas pu être chargée</p>
-        </div>
-      ) : (
-        <div className="relative group rounded-2xl overflow-hidden">
-          <video
-            ref={videoRef}
-            className={cn(
-              "w-full aspect-video object-cover transition-opacity duration-300",
-              isVideoLoading && "opacity-0"
-            )}
-            playsInline
-            preload="metadata"
-            onError={handleVideoError}
-            onLoadedData={handleVideoLoad}
-            controls={isPlaying}
-            muted
-            loop
+      
+      {/* Vidéo */}
+      <video
+        ref={videoRef}
+        className="w-full h-full object-cover"
+        src="https://assets.mixkit.co/videos/preview/mixkit-business-team-working-in-a-modern-office-21806-large.mp4"
+        loop
+        muted
+        playsInline
+        onLoadedData={handleVideoLoaded}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+      />
+      
+      {/* Overlay avec dégradé pour améliorer la lisibilité du texte et des contrôles */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#1A1F2C] via-transparent to-transparent opacity-70"></div>
+
+      {/* Badge Victaure */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.5, duration: 0.5 }}
+        className="absolute top-4 left-4 bg-[#1A1F2C]/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-[#64B5D9]/30"
+      >
+        <span className="text-sm font-medium text-[#F2EBE4]">Victaure</span>
+        <span className="ml-1 text-xs text-[#64B5D9]">Pro</span>
+      </motion.div>
+
+      {/* Contrôles vidéo */}
+      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.4 }}
+          onClick={togglePlay}
+          className="flex items-center justify-center w-10 h-10 rounded-full bg-[#64B5D9]/20 backdrop-blur-md border border-[#64B5D9]/30 hover:bg-[#64B5D9]/30 transition-colors"
+        >
+          {isPlaying ? (
+            <Pause className="w-5 h-5 text-[#F2EBE4]" />
+          ) : (
+            <Play className="w-5 h-5 text-[#F2EBE4]" />
+          )}
+        </motion.button>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.4 }}
+          className="flex items-center gap-3"
+        >
+          <button
+            onClick={toggleMute}
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-[#64B5D9]/20 backdrop-blur-md border border-[#64B5D9]/30 hover:bg-[#64B5D9]/30 transition-colors"
           >
-            <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
-            Votre navigateur ne supporte pas la lecture de vidéos.
-          </video>
+            {isMuted ? (
+              <VolumeX className="w-5 h-5 text-[#F2EBE4]" />
+            ) : (
+              <Volume2 className="w-5 h-5 text-[#F2EBE4]" />
+            )}
+          </button>
           
-          <div 
-            className={cn(
-              "absolute inset-0 bg-black/60 flex flex-col items-center justify-center transition-opacity duration-300",
-              isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'
-            )}
-          >
-            <Logo size="lg" className="mb-4 animate-fade-in" />
-            <button
-              className="p-4 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110"
-              onClick={togglePlay}
-            >
-              <Play className="w-8 h-8 text-white" />
-            </button>
+          <div className="text-xs text-[#F2EBE4]/80 bg-[#1A1F2C]/60 backdrop-blur-md px-3 py-1 rounded-full">
+            Découvrez Victaure en action
           </div>
-        </div>
-      )}
+        </motion.div>
+      </div>
     </div>
   );
-};
+}
