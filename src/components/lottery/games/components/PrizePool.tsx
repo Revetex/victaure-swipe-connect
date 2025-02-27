@@ -17,7 +17,7 @@ export function PrizePool({ draw }: PrizePoolProps) {
       <div className="relative z-10">
         <h3 className="text-lg font-semibold mb-2">Cagnotte actuelle</h3>
         <p className="text-3xl font-bold text-[#64B5D9]">
-          {draw.prize_pool.toFixed(2)}€
+          {draw.prize_pool.toFixed(2)} CAD$
         </p>
         <p className="text-sm text-white/70 mt-1">
           La cagnotte augmente à chaque ticket acheté !
