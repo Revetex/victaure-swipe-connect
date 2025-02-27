@@ -1,3 +1,4 @@
+
 import { useAuth } from "@/hooks/useAuth";
 import { ContentRouter } from "./content/ContentRouter";
 import { DashboardHome } from "./content/DashboardHome";
@@ -7,27 +8,28 @@ import { LoadingState } from "./content/LoadingState";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
+
 interface DashboardContentProps {
   currentPage?: number;
   isEditing?: boolean;
   onEditStateChange?: (state: boolean) => void;
   onRequestChat?: () => void;
 }
+
 export function DashboardContent({
   currentPage = 0,
   isEditing = false,
   onEditStateChange = () => {},
   onRequestChat = () => {}
 }: DashboardContentProps) {
-  const {
-    isLoading,
-    user
-  } = useAuth();
-  const [showFriendsList, setShowFriendsList] = useState(true);
+  const { isLoading, user } = useAuth();
+  
   if (isLoading || !user) {
     return <LoadingState />;
   }
+  
   const renderDashboardHome = () => <DashboardHome onRequestChat={onRequestChat} />;
+  
   return <AnimatePresence mode="wait">
       <motion.div initial={{
       opacity: 0,
@@ -50,12 +52,10 @@ export function DashboardContent({
         }} transition={{
           delay: 0.2
         }}>
-            
-
             <Card className="overflow-hidden bg-black/40 border-zinc-800/50 backdrop-blur-sm hover:bg-black/50 transition-colors duration-300">
               <div className="relative">
                 {/* Effet de gradient subtil sur le bord supérieur */}
-                
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
                 
                 <ContentRouter currentPage={currentPage} onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} renderDashboardHome={renderDashboardHome} />
                 
@@ -76,7 +76,7 @@ export function DashboardContent({
           delay: 0.3
         }}>
             <Card className="p-6 bg-black/40 border-zinc-800/50 backdrop-blur-sm hover:bg-black/50 transition-colors duration-300 py-[15px] px-[15px]">
-              <DashboardFriendsList show={showFriendsList} onClose={() => setShowFriendsList(false)} />
+              <DashboardFriendsList />
             </Card>
 
             <FloatingButtons />
