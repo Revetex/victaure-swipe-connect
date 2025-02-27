@@ -14,21 +14,21 @@ export const adaptFavoriteData = (data: any): MarketplaceFavorite => {
 export const adaptListingData = (data: any): MarketplaceListing => {
   return {
     id: data.id,
-    title: data.title,
+    title: data.title || '',
     description: data.description || '',
-    price: data.price,
-    currency: data.currency,
-    type: data.type,
-    status: data.status,
-    seller_id: data.seller_id,
-    created_at: data.created_at,
-    updated_at: data.updated_at,
+    price: data.price || 0,
+    currency: data.currency || 'CAD',
+    type: data.type || 'vente',
+    status: data.status || 'active',
+    seller_id: data.seller_id || '',
+    created_at: data.created_at || new Date().toISOString(),
+    updated_at: data.updated_at || new Date().toISOString(),
     images: data.images || [],
     seller: data.seller ? {
-      id: data.seller.id,
+      id: data.seller.id || '',
       full_name: data.seller.full_name || '',
       avatar_url: data.seller.avatar_url || null,
-      rating: data.seller.rating
+      rating: data.seller.rating || 0
     } : undefined,
     location: data.location,
     category: data.category,
@@ -38,3 +38,13 @@ export const adaptListingData = (data: any): MarketplaceListing => {
     sale_type: data.sale_type
   };
 };
+
+// Fonction d'adaptation pour les valeurs booléennes
+export function ensureBoolean(value: any): boolean {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') {
+    return value.toLowerCase() === 'true' || value === '1' || value === 'yes' || value === 'on';
+  }
+  if (typeof value === 'number') return value !== 0;
+  return !!value;
+}

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useListingSearch } from "./hooks/useListingSearch";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { CustomListings } from "./CustomListings"; 
+import { adaptListingData } from "@/utils/marketplace";
 
 interface CustomMarketplaceListProps {
   type: "all" | "vente" | "location" | "service";
@@ -62,33 +63,6 @@ export function CustomMarketplaceList({
     page,
     12
   );
-
-  // Hook personnalisé pour traiter les vues de marketplaceList
-  useEffect(() => {
-    const incrementViews = async (listingId: string) => {
-      try {
-        // Simule l'incrémentation des vues sans accéder à la base de données
-        console.log('Increment view for listing', listingId);
-      } catch (error) {
-        console.error('Erreur lors du traitement des vues:', error);
-      }
-    };
-
-    // Écouter un événement personnalisé pour incrémenter les vues
-    const handleCustomViewEvent = (event: CustomEvent) => {
-      if (event.detail && event.detail.listingId) {
-        incrementViews(event.detail.listingId);
-      }
-    };
-
-    // Ajouter l'écouteur d'événement
-    window.addEventListener('marketplace-view-listing' as any, handleCustomViewEvent as EventListener);
-
-    // Nettoyer l'écouteur
-    return () => {
-      window.removeEventListener('marketplace-view-listing' as any, handleCustomViewEvent as EventListener);
-    };
-  }, []);
 
   // Afficher les erreurs si nécessaire
   useEffect(() => {

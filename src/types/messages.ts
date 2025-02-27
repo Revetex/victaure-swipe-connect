@@ -69,4 +69,12 @@ export interface Receiver {
   [key: string]: any;
 }
 
+export interface ConversationHeaderProps {
+  name: string;
+  avatar: string | null;
+  isOnline: boolean;
+  receiver?: Receiver;
+  onBack?: () => void;
+}
+
 export type { UserRole } from '@/types/profile';
