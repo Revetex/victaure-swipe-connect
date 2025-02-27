@@ -1,18 +1,19 @@
 
+import { Button } from "@/components/ui/button";
+import { UserAvatar } from "@/components/UserAvatar";
 import { UserProfile } from "@/types/profile";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { motion, AnimatePresence } from "framer-motion";
+import { X, ChevronRight, Mail, RotateCw } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
 import { ProfilePreviewFront } from "./ProfilePreviewFront";
 import { ProfilePreviewBack } from "./ProfilePreviewBack";
-import { useState } from "react";
 
-export interface ProfilePreviewDialogProps {
+interface ProfilePreviewDialogProps {
   profile: UserProfile;
   isOpen: boolean;
   onClose: () => void;
   onRequestChat?: () => void;
-  canViewFullProfile?: boolean;
+  canViewFullProfile: boolean;
   onImageClick?: () => void;
 }
 
@@ -21,48 +22,95 @@ export function ProfilePreviewDialog({
   isOpen,
   onClose,
   onRequestChat,
-  canViewFullProfile = true,
+  canViewFullProfile,
   onImageClick,
 }: ProfilePreviewDialogProps) {
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [flipped, setFlipped] = useState(false);
+
+  const handleFlip = () => {
+    setFlipped(!flipped);
+  };
+
+  if (!isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md p-0 overflow-hidden bg-gradient-to-br from-[#1A1F2C] to-[#1B2A4A] border border-white/10">
-        <VisuallyHidden asChild>
-          <DialogTitle>Profil de {profile.full_name || "Utilisateur"}</DialogTitle>
-        </VisuallyHidden>
-        
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={isFlipped ? "back" : "front"}
-            initial={{ opacity: 0, rotateY: isFlipped ? -180 : 0 }}
-            animate={{ opacity: 1, rotateY: isFlipped ? 0 : 0 }}
-            exit={{ opacity: 0, rotateY: isFlipped ? 0 : 180 }}
-            transition={{ duration: 0.4, type: "spring" }}
-            className="relative"
+    <div className="overflow-hidden h-full flex flex-col">
+      <div className="p-4 flex justify-between items-center border-b">
+        <div className="flex items-center space-x-3">
+          <UserAvatar
+            user={{
+              id: profile.id,
+              name: profile.full_name || "",
+              image: profile.avatar_url,
+            }}
+            className="h-9 w-9"
+            fallbackClassName="bg-primary/10 text-primary"
+          />
+
+          <div>
+            <h2 className="text-base font-medium leading-none">
+              {profile.full_name}
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              {canViewFullProfile
+                ? "Voir le profil complet"
+                : "Profil limité"}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex space-x-1">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={handleFlip}
           >
-            {!isFlipped ? (
-              <ProfilePreviewFront
-                profile={profile}
-                onRequestChat={onRequestChat}
-                onFlip={() => setIsFlipped(true)}
-                canViewFullProfile={canViewFullProfile}
-                onClose={onClose}
-                onViewProfile={() => {
-                  onClose();
-                  // La navigation sera gérée dans ProfilePreviewButtons
-                }}
-              />
-            ) : (
-              <ProfilePreviewBack
-                profile={profile}
-                onFlip={() => setIsFlipped(false)}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </DialogContent>
-    </Dialog>
+            <RotateCw className="h-4 w-4" />
+            <span className="sr-only">Retourner</span>
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={onClose}
+          >
+            <X className="h-4 w-4" />
+            <span className="sr-only">Fermer</span>
+          </Button>
+        </div>
+      </div>
+
+      <div className="relative flex-1 overflow-hidden">
+        <div
+          className={cn(
+            "absolute inset-0 h-full w-full transition-all duration-500 ease-in-out",
+            flipped ? "opacity-0 pointer-events-none" : "opacity-100"
+          )}
+        >
+          <ProfilePreviewFront
+            profile={profile}
+            onRequestChat={onRequestChat}
+            onFlip={handleFlip}
+            canViewFullProfile={canViewFullProfile}
+            hideCloseButton
+            isDialog
+          />
+        </div>
+
+        <div
+          className={cn(
+            "absolute inset-0 h-full w-full transition-all duration-500 ease-in-out",
+            flipped ? "opacity-100" : "opacity-0 pointer-events-none"
+          )}
+        >
+          <ProfilePreviewBack
+            profile={profile}
+            onFlip={handleFlip}
+            canViewFullProfile={canViewFullProfile}
+          />
+        </div>
+      </div>
+    </div>
   );
 }

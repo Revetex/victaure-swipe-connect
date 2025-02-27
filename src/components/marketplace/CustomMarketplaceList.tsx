@@ -1,7 +1,9 @@
 
 import { useEffect, useState } from "react";
-import { MarketplaceList } from "./MarketplaceList";
-import type { MarketplaceFilters } from "@/types/marketplace";
+import { useListingSearch } from "./hooks/useListingSearch";
+import { CustomListings } from "./CustomListings"; 
+import { MarketplaceFilters } from "@/types/marketplace";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { toast } from "sonner";
 
 interface CustomMarketplaceListProps {
@@ -50,6 +52,15 @@ export function CustomMarketplaceList({
     prepareData();
   }, []);
 
+  // Utiliser notre hook personnalisé pour récupérer les annonces
+  const { listings, loading, error, totalPages } = useListingSearch(
+    searchQuery,
+    filters,
+    type,
+    page,
+    12
+  );
+
   // Hook personnalisé pour traiter les vues de marketplaceList
   useEffect(() => {
     const incrementViews = async (listingId: string) => {
@@ -77,19 +88,72 @@ export function CustomMarketplaceList({
     };
   }, []);
 
+  // Afficher les erreurs si nécessaire
+  useEffect(() => {
+    if (error) {
+      toast.error("Une erreur est survenue lors du chargement des annonces");
+      console.error("Erreur de chargement:", error);
+    }
+  }, [error]);
+
   // Si les données ne sont pas prêtes, afficher un état de chargement
   if (!isDataReady) {
     return <div className="py-12 text-center">Chargement des annonces...</div>;
   }
 
-  // Sinon, rendre le composant original
   return (
-    <MarketplaceList
-      type={type}
-      searchQuery={searchQuery}
-      filters={filters}
-      page={page}
-      onPageChange={onPageChange}
-    />
+    <div className="space-y-6">
+      <CustomListings 
+        items={listings}
+        isLoading={loading}
+      />
+      
+      {totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious 
+                onClick={() => onPageChange(Math.max(1, page - 1))}
+                className={page <= 1 ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+            
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              // Afficher au maximum 5 pages
+              let pageToRender = page;
+              if (page <= 3) {
+                pageToRender = i + 1;
+              } else if (page >= totalPages - 2) {
+                pageToRender = totalPages - 4 + i;
+              } else {
+                pageToRender = page - 2 + i;
+              }
+              
+              // S'assurer que la page est dans les limites
+              if (pageToRender > 0 && pageToRender <= totalPages) {
+                return (
+                  <PaginationItem key={pageToRender}>
+                    <PaginationLink
+                      isActive={pageToRender === page}
+                      onClick={() => onPageChange(pageToRender)}
+                    >
+                      {pageToRender}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              }
+              return null;
+            })}
+            
+            <PaginationItem>
+              <PaginationNext 
+                onClick={() => onPageChange(Math.min(totalPages, page + 1))}
+                className={page >= totalPages ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
+    </div>
   );
 }

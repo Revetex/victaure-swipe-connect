@@ -7,7 +7,7 @@ export interface Receiver {
   full_name: string;
   avatar_url: string | null;
   email?: string | null;
-  online_status?: 'online' | 'offline' | string | boolean;
+  online_status?: boolean;
   last_seen?: string | null;
   latitude?: number;
   longitude?: number;
@@ -18,10 +18,10 @@ export interface Receiver {
   country?: string | null;
   role?: string;
   skills?: string[];
-  certifications?: any[];  // Ajout du champ certifications qui est utilisé
-  education?: any[];       // Ajout du champ education qui est utilisé
-  experiences?: any[];     // Ajout du champ experiences qui est utilisé
-  friends?: any[];         // Ajout du champ friends qui est utilisé
+  certifications?: any[];
+  education?: any[];
+  experiences?: any[];
+  friends?: any[];
   preferences?: {
     notifications?: boolean;
     theme?: 'light' | 'dark' | 'system';

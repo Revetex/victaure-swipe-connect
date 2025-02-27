@@ -1,7 +1,6 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { MarketplaceList } from "./MarketplaceList";
-import { CustomMarketplaceList } from "./CustomMarketplaceList"; // Import du nouveau wrapper
+import { CustomMarketplaceList } from "./CustomMarketplaceList";
 import { MarketplaceContracts } from "./MarketplaceContracts";
 import type { MarketplaceFilters } from "@/types/marketplace";
 

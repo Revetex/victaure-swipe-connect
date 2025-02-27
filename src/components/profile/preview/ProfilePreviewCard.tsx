@@ -1,95 +1,74 @@
 
-import { UserProfile } from "@/types/profile";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { UserProfile } from "@/types/profile";
 import { ProfilePreviewFront } from "./ProfilePreviewFront";
 import { ProfilePreviewBack } from "./ProfilePreviewBack";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import { toast } from "sonner";
+import { motion } from "framer-motion";
+import { ProfilePreviewButtons } from "./ProfilePreviewButtons";
 
 interface ProfilePreviewCardProps {
   profile: UserProfile;
   onRequestChat?: () => void;
-  onClose?: () => void;
+  onViewProfile?: () => void;
   canViewFullProfile?: boolean;
-  onImageClick?: () => void;
+  className?: string;
 }
 
 export function ProfilePreviewCard({
   profile,
   onRequestChat,
-  onClose,
-  canViewFullProfile = false,
-  onImageClick
+  onViewProfile,
+  canViewFullProfile = true,
+  className,
 }: ProfilePreviewCardProps) {
-  const [isFlipped, setIsFlipped] = useState(false);
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const isOwnProfile = user?.id === profile.id;
+  const [flipped, setFlipped] = useState(false);
 
-  const handleViewProfile = () => {
-    if (!canViewFullProfile && !isOwnProfile && profile.privacy_enabled) {
-      toast.error("Ce profil est privé. Connectez-vous avec l'utilisateur pour voir son profil complet.");
-      return;
-    }
-    if (onClose) onClose();
-    navigate(`/profile/${profile.id}`);
-  };
-
-  const handleMessageClick = () => {
-    if (!user) {
-      toast.error("Vous devez être connecté pour envoyer un message");
-      return;
-    }
-    if (onRequestChat) {
-      onRequestChat();
-    } else {
-      if (onClose) onClose();
-      navigate(`/messages?receiver=${profile.id}`);
-    }
+  const handleFlip = () => {
+    setFlipped(!flipped);
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      className={cn(
-        "fixed inset-0 flex items-center justify-center z-50",
-        "bg-black/50 backdrop-blur-sm"
-      )}
-      onClick={(e) => {
-        if (e.target === e.currentTarget && onClose) {
-          onClose();
-        }
-      }}
-    >
-      <div className={cn(
-        "relative w-full max-w-md mx-4",
-        "bg-zinc-900/95 backdrop-blur-sm",
-        "rounded-xl shadow-2xl overflow-hidden",
-        "border border-zinc-800"
-      )}>
-        <div className="p-6">
-          {!isFlipped ? (
-            <ProfilePreviewFront
-              profile={profile}
-              onRequestChat={handleMessageClick}
-              onFlip={() => setIsFlipped(true)}
-              canViewFullProfile={canViewFullProfile || isOwnProfile}
-              onClose={onClose}
-              onViewProfile={handleViewProfile}
-            />
-          ) : (
-            <ProfilePreviewBack
-              profile={profile}
-              onFlip={() => setIsFlipped(false)}
-            />
-          )}
-        </div>
+    <div className={cn("perspective-1000", className)}>
+      <motion.div
+        className={cn(
+          "relative w-full",
+          "transition-all duration-500",
+          "preserve-3d",
+          "hover:shadow-lg",
+          "border rounded-xl",
+          "h-[420px] md:h-[400px]"
+        )}
+        style={{
+          transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
+        }}
+        animate={{ rotateY: flipped ? 180 : 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Front face */}
+        <ProfilePreviewFront
+          profile={profile}
+          onRequestChat={onRequestChat}
+          onFlip={handleFlip}
+          canViewFullProfile={canViewFullProfile}
+          onViewProfile={onViewProfile}
+        />
+
+        {/* Back face */}
+        <ProfilePreviewBack 
+          profile={profile} 
+          onFlip={handleFlip} 
+          canViewFullProfile={canViewFullProfile}
+        />
+      </motion.div>
+
+      {/* Action buttons */}
+      <div className="mt-4">
+        <ProfilePreviewButtons
+          profileId={profile.id}
+          onMessage={onRequestChat}
+        />
       </div>
-    </motion.div>
+    </div>
   );
 }
