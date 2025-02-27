@@ -34,6 +34,7 @@ export function useAuth() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.info("Auth state changed:", event);
         setIsAuthenticated(!!session);
         setUser(session?.user || null);
         setIsLoading(false);
@@ -94,7 +95,8 @@ export function useAuth() {
           data: {
             full_name: fullName,
             phone: phone
-          }
+          },
+          emailRedirectTo: window.location.origin + '/auth/callback'
         }
       });
 
