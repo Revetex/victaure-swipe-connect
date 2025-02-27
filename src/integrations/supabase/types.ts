@@ -1903,7 +1903,10 @@ export type Database = {
           favorites_count: number | null
           id: string
           images: string[] | null
+          latitude: number | null
           location: Json | null
+          location_name: string | null
+          longitude: number | null
           metadata: Json | null
           price: number
           searchable_text: unknown | null
@@ -1930,7 +1933,10 @@ export type Database = {
           favorites_count?: number | null
           id?: string
           images?: string[] | null
+          latitude?: number | null
           location?: Json | null
+          location_name?: string | null
+          longitude?: number | null
           metadata?: Json | null
           price: number
           searchable_text?: unknown | null
@@ -1957,7 +1963,10 @@ export type Database = {
           favorites_count?: number | null
           id?: string
           images?: string[] | null
+          latitude?: number | null
           location?: Json | null
+          location_name?: string | null
+          longitude?: number | null
           metadata?: Json | null
           price?: number
           searchable_text?: unknown | null
@@ -3256,6 +3265,7 @@ export type Database = {
           last_used_tool: string | null
           latitude: number | null
           location_enabled: boolean | null
+          location_name: string | null
           longitude: number | null
           max_file_size: number | null
           notifications_enabled: boolean | null
@@ -3312,6 +3322,7 @@ export type Database = {
           last_used_tool?: string | null
           latitude?: number | null
           location_enabled?: boolean | null
+          location_name?: string | null
           longitude?: number | null
           max_file_size?: number | null
           notifications_enabled?: boolean | null
@@ -3368,6 +3379,7 @@ export type Database = {
           last_used_tool?: string | null
           latitude?: number | null
           location_enabled?: boolean | null
+          location_name?: string | null
           longitude?: number | null
           max_file_size?: number | null
           notifications_enabled?: boolean | null
