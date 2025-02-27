@@ -5,7 +5,7 @@ import { Gig } from '@/types/marketplace';
 
 export function useGigs() {
   const [gigs, setGigs] = useState<Gig[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Note: using loading instead of isLoading
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -55,5 +55,6 @@ export function useGigs() {
     fetchGigs();
   }, []);
 
+  // Retourne loading au lieu de isLoading pour correspondre à l'interface utilisée
   return { gigs, loading, error };
 }
