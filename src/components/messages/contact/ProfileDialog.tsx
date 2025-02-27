@@ -85,7 +85,7 @@ export function ProfileDialog({
           </div>
           
           <h2 className="text-xl font-semibold mb-1">{name}</h2>
-          <Badge variant={online ? "success" : "secondary"} className="font-normal">
+          <Badge variant={online ? "default" : "secondary"} className="font-normal">
             {online ? "En ligne" : "Hors ligne"}
           </Badge>
         </div>
