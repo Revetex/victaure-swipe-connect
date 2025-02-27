@@ -66,10 +66,13 @@ export function FriendsTabContent({
           const isSender = conn.sender_id === user.id;
           const friendData = isSender ? conn.receiver : conn.sender;
           
-          if (!friendData) return null;
+          if (!friendData || typeof friendData !== 'object' || !friendData.id) {
+            console.error("Invalid friend data:", friendData);
+            return null;
+          }
 
           return {
-            id: friendData.id,
+            id: String(friendData.id),
             full_name: friendData.full_name,
             avatar_url: friendData.avatar_url,
             online_status: friendData.online_status || false,
@@ -80,6 +83,9 @@ export function FriendsTabContent({
             city: '',
             state: '',
             country: 'Canada',
+            email: null,
+            created_at: new Date().toISOString(),
+            friends: []
           } as Friend;
         }).filter(Boolean) as Friend[];
 

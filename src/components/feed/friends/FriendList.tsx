@@ -60,12 +60,15 @@ export function FriendList({
           
           if (!friendData) return null;
 
-          // Vérifier que les données ne sont pas une erreur de type SelectQueryError
-          if (!('id' in friendData)) return null;
+          // Vérifier que les données ne sont pas une erreur ou que l'objet existe 
+          if (typeof friendData !== 'object' || !friendData.id) {
+            console.error("Invalid friend data:", friendData);
+            return null;
+          }
 
           // Create a UserProfile with required fields
           const profile: UserProfile = {
-            id: friendData.id,
+            id: String(friendData.id),
             full_name: friendData.full_name || '',
             avatar_url: friendData.avatar_url || null,
             email: '',
@@ -79,6 +82,7 @@ export function FriendList({
             online_status: !!friendData.online_status,
             last_seen: friendData.last_seen,
             created_at: new Date().toISOString(),
+            friends: []
           };
           
           return profile;

@@ -15,15 +15,12 @@ interface BaseProfile {
   state?: string | null;
   country?: string | null;
   website?: string | null;
+  job_title?: string | null;
   skills?: string[];
   online_status: boolean;
   last_seen?: string | null;
   created_at: string;
   updated_at?: string;
-  certifications?: Certification[];
-  education?: Education[];
-  experiences?: Experience[];
-  friends?: Friend[];
 }
 
 // Interface pour l'éducation
@@ -67,8 +64,20 @@ export interface Certification {
   profile_id?: string;
 }
 
-// Interface UserProfile
+// Interface pour les liens sociaux
+export interface SocialLinks {
+  linkedin?: string;
+  twitter?: string;
+  github?: string;
+  [key: string]: string | undefined;
+}
+
+// Interface principale UserProfile
 export interface UserProfile extends BaseProfile {
+  friends: Friend[]; // Fait friends obligatoire pour résoudre l'erreur
+  certifications?: Certification[];
+  education?: Education[];
+  experiences?: Experience[];
   company_name?: string | null;
   privacy_enabled?: boolean;
   verified?: boolean;
@@ -76,17 +85,20 @@ export interface UserProfile extends BaseProfile {
   latitude?: number;
   longitude?: number;
   cover_image?: string;
+  social_links?: SocialLinks;
 }
 
-// Interface User - Doit inclure tous les champs de UserProfile
+// Interface User
 export interface User extends UserProfile {
-  friends: Friend[]; // La seule différence est que friends est requis ici
+  // User hérite tout de UserProfile, donc friends est également obligatoire
+  connections?: UserConnection[];
 }
 
 // Interface Friend
 export interface Friend extends BaseProfile {
   friendship_id?: string;
   status?: string;
+  job_title?: string;
 }
 
 // Interface pour une connexion utilisateur
@@ -137,6 +149,14 @@ export interface BlockedUser {
   };
 }
 
+// Type pour le profil complet
+export interface Profile extends UserProfile {
+  connections?: UserConnection[];
+  blocked_users?: BlockedUser[];
+  pending_requests?: PendingRequest[];
+  updated_at?: string;
+}
+
 // Helper function pour convertir le statut en ligne en booléen
 export function convertOnlineStatusToBoolean(status: any): boolean {
   if (typeof status === 'boolean') return status;
@@ -185,7 +205,7 @@ export function transformConnection(connection: any, currentUserId: string): Fri
 export function friendToUserProfile(friend: Friend): UserProfile {
   return {
     ...friend,
-    friends: [], // Optionnel pour UserProfile
+    friends: [], 
     certifications: [],
     education: [],
     experiences: []

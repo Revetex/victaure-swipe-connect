@@ -30,6 +30,7 @@ export interface MarketplaceFavorite {
   item_id: string;
   user_id: string;
   created_at?: string;
+  listing_id?: string; // Pour compatibilité
 }
 
 export interface MarketplaceFilters {
@@ -82,6 +83,25 @@ export interface MarketplaceContract {
   currency?: string;
 }
 
+export interface MarketplaceService {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  currency: string;
+  provider_id: string;
+  provider?: {
+    full_name: string | null;
+    avatar_url: string | null;
+    rating?: number;
+  };
+  category?: string;
+  delivery_time?: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Gig {
   id: string;
   title: string;
@@ -96,6 +116,7 @@ export interface Gig {
   required_skills?: string[];
   location?: string;
   duration?: string;
+  creator_id?: string;
 }
 
 export interface GigBid {
@@ -123,3 +144,15 @@ export interface ContractFormValues {
   requirements?: string[];
   currency?: string;
 }
+
+// Schéma de validation pour le formulaire de contrat
+export const contractFormSchema = {
+  title: {
+    required: "Le titre est requis",
+    minLength: { value: 10, message: "Le titre doit faire au moins 10 caractères" }
+  },
+  description: {
+    required: "La description est requise",
+    minLength: { value: 50, message: "La description doit faire au moins 50 caractères" }
+  }
+};

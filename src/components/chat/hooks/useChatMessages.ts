@@ -45,11 +45,13 @@ export function useChatMessages({
           sender_id: m.isUser ? 'user' : 'assistant',
           receiver_id: m.isUser ? 'assistant' : 'user',
           created_at: new Date(m.timestamp).toISOString(),
-          status: 'sent', // Ajout du statut requis
+          read: true,
+          status: 'sent',
           sender: {
             id: m.isUser ? 'user' : 'assistant',
-            email: '',
             full_name: m.isUser ? 'Vous' : 'Assistant',
+            avatar_url: null,
+            email: '',
             role: 'professional',
             certifications: [],
             education: [],
@@ -98,11 +100,13 @@ export function useChatMessages({
         sender_id: 'user',
         receiver_id: 'assistant',
         created_at: new Date().toISOString(),
-        status: 'sent', // Ajout du statut requis
+        read: true,
+        status: 'sent',
         sender: {
           id: 'user',
-          email: '',
           full_name: 'Vous',
+          avatar_url: null,
+          email: '',
           role: 'professional',
           certifications: [],
           education: [],
@@ -146,11 +150,13 @@ export function useChatMessages({
         sender_id: 'assistant',
         receiver_id: 'user',
         created_at: new Date().toISOString(),
-        status: 'sent', // Ajout du statut requis
+        read: true,
+        status: 'sent',
         sender: {
           id: 'assistant',
-          email: '',
           full_name: 'Assistant',
+          avatar_url: null,
+          email: '',
           role: 'professional',
           certifications: [],
           education: [],

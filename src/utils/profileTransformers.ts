@@ -4,15 +4,15 @@ import type {
   Education,
   UserRole,
   Certification,
-  Profile,
+  UserProfile,
   User,
   UserConnection,
   SocialLinks
 } from '@/types/profile';
 
 // Transforme les données brutes d'un profil en objet Profile
-export const transformToProfile = (data: any): Profile => {
-  if (!data) return {} as Profile;
+export const transformToProfile = (data: any): UserProfile => {
+  if (!data) return {} as UserProfile;
   
   return {
     id: data.id || '',
@@ -36,7 +36,8 @@ export const transformToProfile = (data: any): Profile => {
     updated_at: data.updated_at || '',
     latitude: data.latitude || 0,
     longitude: data.longitude || 0,
-    social_links: data.social_links || {}
+    social_links: data.social_links || {},
+    friends: []
   };
 };
 
@@ -94,14 +95,14 @@ export const transformToFullProfile = (data: any): User => {
       : !!data.online_status,
     last_seen: data.last_seen || '',
     job_title: data.job_title || '',
-    // Autres propriétés de l'utilisateur
     created_at: data.created_at || '',
     cover_image: data.cover_image || '',
     latitude: data.latitude || 0,
     longitude: data.longitude || 0,
-    connections: data.connections || [],
-    friends: [],
-    social_links: data.social_links || {}
+    friends: data.friends || [],
+    certifications: data.certifications || [],
+    education: data.education || [],
+    experiences: data.experiences || []
   };
   
   return user;
@@ -116,9 +117,10 @@ export const transformConnection = (data: any): UserConnection => {
     user_id: data.user_id || '',
     connected_user_id: data.connected_user_id || '',
     status: data.status || 'pending',
+    connection_type: data.connection_type || '',
+    visibility: data.visibility || '',
     created_at: data.created_at || '',
     updated_at: data.updated_at || '',
-    // Informations complémentaires
     user: data.user ? transformToProfile(data.user) : undefined,
     connected_user: data.connected_user ? transformToProfile(data.connected_user) : undefined
   };

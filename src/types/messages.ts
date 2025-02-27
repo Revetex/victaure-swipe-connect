@@ -18,6 +18,9 @@ export interface Message {
     email?: string | null;
     role?: string;
     certifications?: any[];
+    education?: any[];
+    experiences?: any[];
+    friends?: any[];
   };
 }
 
@@ -36,7 +39,7 @@ export interface ConversationParticipant {
   avatar_url?: string | null;
   online_status: boolean;
   last_seen?: string | null;
-  toString(): string; // Pour résoudre l'erreur toLowerCase
+  toString(): string;
 }
 
 export interface Conversation {
@@ -69,6 +72,7 @@ export interface Receiver {
   latitude?: number;
   longitude?: number;
   role?: string;
+  bio?: string | null;
 }
 
 export type { UserRole } from '@/types/profile';

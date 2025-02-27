@@ -54,11 +54,13 @@ export function useVictaureChat({ maxQuestions = 3, context }: UseVictaureChatPr
           sender_id: 'user',
           receiver_id: 'assistant',
           created_at: new Date().toISOString(),
-          status: 'sent', // Ajout du statut requis
+          read: true,
+          status: 'sent',
           sender: {
             id: 'user',
-            email: '',
             full_name: 'Vous',
+            avatar_url: null,
+            email: '',
             role: 'professional',
             certifications: [],
             education: [],
@@ -72,11 +74,13 @@ export function useVictaureChat({ maxQuestions = 3, context }: UseVictaureChatPr
           sender_id: 'assistant',
           receiver_id: 'user',
           created_at: new Date().toISOString(),
-          status: 'sent', // Ajout du statut requis
+          read: true,
+          status: 'sent',
           sender: {
             id: 'assistant',
-            email: '',
             full_name: 'Assistant',
+            avatar_url: null,
+            email: '',
             role: 'professional',
             certifications: [],
             education: [],
