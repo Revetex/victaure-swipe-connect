@@ -12,6 +12,14 @@ import { CountdownSection } from "@/components/auth/sections/CountdownSection";
 export default function Auth() {
   const [viewportHeight, setViewportHeight] = useState<number>(0);
 
+  // Valeur par défaut pour le compte à rebours
+  const defaultCountdown = {
+    days: 30,
+    hours: 12,
+    minutes: 30,
+    seconds: 0
+  };
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     
@@ -42,7 +50,7 @@ export default function Auth() {
           </div>
           <FeaturesSection />
           <InnovationsSection />
-          <CountdownSection />
+          <CountdownSection countdown={defaultCountdown} />
         </main>
       </div>
       <AuthFooter />
