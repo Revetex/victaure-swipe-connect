@@ -4073,35 +4073,59 @@ export type Database = {
       }
       user_connections: {
         Row: {
+          accepted_at: string | null
+          connection_strength: number | null
           connection_type: string
           created_at: string | null
           id: string | null
+          initiator_id: string | null
+          last_interaction_at: string | null
           metadata: Json | null
+          notes: string | null
           receiver_id: string | null
+          rejected_at: string | null
           sender_id: string | null
+          shared_connections: number | null
           status: string | null
+          tags: string[] | null
           updated_at: string | null
           visibility: string
         }
         Insert: {
+          accepted_at?: string | null
+          connection_strength?: number | null
           connection_type?: string
           created_at?: string | null
           id?: string | null
+          initiator_id?: string | null
+          last_interaction_at?: string | null
           metadata?: Json | null
+          notes?: string | null
           receiver_id?: string | null
+          rejected_at?: string | null
           sender_id?: string | null
+          shared_connections?: number | null
           status?: string | null
+          tags?: string[] | null
           updated_at?: string | null
           visibility?: string
         }
         Update: {
+          accepted_at?: string | null
+          connection_strength?: number | null
           connection_type?: string
           created_at?: string | null
           id?: string | null
+          initiator_id?: string | null
+          last_interaction_at?: string | null
           metadata?: Json | null
+          notes?: string | null
           receiver_id?: string | null
+          rejected_at?: string | null
           sender_id?: string | null
+          shared_connections?: number | null
           status?: string | null
+          tags?: string[] | null
           updated_at?: string | null
           visibility?: string
         }
@@ -4433,6 +4457,31 @@ export type Database = {
       }
     }
     Views: {
+      mv_active_connections: {
+        Row: {
+          connection_strength: number | null
+          connection_type: string | null
+          created_at: string | null
+          id: string | null
+          last_interaction_at: string | null
+          metadata: Json | null
+          receiver_avatar: string | null
+          receiver_id: string | null
+          receiver_last_seen: string | null
+          receiver_name: string | null
+          receiver_online_status: boolean | null
+          sender_avatar: string | null
+          sender_id: string | null
+          sender_last_seen: string | null
+          sender_name: string | null
+          sender_online_status: boolean | null
+          shared_connections: number | null
+          status: string | null
+          updated_at: string | null
+          visibility: string | null
+        }
+        Relationships: []
+      }
       mv_active_marketplace_items: {
         Row: {
           availability: Json | null
@@ -4598,6 +4647,19 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_connection_stats: {
+        Args: {
+          p_user_id: string
+        }
+        Returns: {
+          total_connections: number
+          pending_received: number
+          pending_sent: number
+          online_connections: number
+          new_connections_last_week: number
+          most_active_connections: string[]
+        }[]
+      }
       get_friend_requests: {
         Args: {
           user_id: string
@@ -4622,6 +4684,23 @@ export type Database = {
         }
         Returns: {
           secret: string
+        }[]
+      }
+      get_suggested_connections: {
+        Args: {
+          p_user_id: string
+          p_limit?: number
+        }
+        Returns: {
+          id: string
+          full_name: string
+          avatar_url: string
+          online_status: boolean
+          last_seen: string
+          shared_connections: number
+          skills: string[]
+          city: string
+          role: string
         }[]
       }
       get_user_connections: {
@@ -4711,6 +4790,9 @@ export type Database = {
     }
     Enums: {
       chess_game_status: "in_progress" | "completed" | "abandoned"
+      connection_status: "pending" | "accepted" | "rejected" | "blocked"
+      connection_type: "friend" | "professional" | "business"
+      connection_visibility: "public" | "private" | "connections"
       conversation_status: "active" | "archived" | "blocked"
       job_category:
         | "technology"
