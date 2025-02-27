@@ -49,8 +49,8 @@ export function ConversationHeader({ receiver, onBack }: ConversationHeaderProps
       <UserAvatar 
         user={{ 
           id: receiver.id, 
-          image: receiver.avatar_url, 
-          name: receiver.full_name
+          name: receiver.full_name,
+          image: receiver.avatar_url
         }} 
         className="h-9 w-9" 
       />

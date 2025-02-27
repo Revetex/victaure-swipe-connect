@@ -1,44 +1,50 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserProfile } from "@/types/profile";
-import { User } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface UserAvatarProps {
-  user: UserProfile | null;
+  user: {
+    id?: string;
+    name?: string;
+    image?: string | null;
+  };
   className?: string;
 }
 
 export function UserAvatar({ user, className }: UserAvatarProps) {
-  if (!user) {
-    return (
-      <Avatar className={cn("border-2 border-border shadow-md", className)}>
-        <AvatarFallback className="bg-card">
-          <User className="h-4 w-4 text-muted-foreground" />
-        </AvatarFallback>
-      </Avatar>
-    );
-  }
+  // Obtenir les initiales à partir du nom
+  const getInitials = (name?: string) => {
+    if (!name) return "?";
+    return name
+      .split(" ")
+      .map(part => part.charAt(0).toUpperCase())
+      .slice(0, 2)
+      .join("");
+  };
+
+  // Générer une couleur d'arrière-plan basée sur l'ID
+  const getColor = (id?: string) => {
+    if (!id) return "hsl(210, 20%, 80%)";
+    
+    // Générer une teinte basée sur l'ID pour avoir une couleur constante
+    const hashCode = id.split("").reduce((hash, char) => {
+      return char.charCodeAt(0) + ((hash << 5) - hash);
+    }, 0);
+    
+    const h = Math.abs(hashCode % 360);
+    
+    // Utiliser HSL pour contrôler la saturation et la luminosité
+    return `hsl(${h}, 70%, 40%)`;
+  };
 
   return (
-    <Avatar className={cn("border-2 border-border shadow-md", className)}>
-      {user.avatar_url ? (
-        <AvatarImage 
-          src={user.avatar_url} 
-          alt={user.full_name || "Avatar"}
-          className="object-cover"
-        />
-      ) : (
-        <AvatarFallback className="bg-card">
-          {user.full_name ? (
-            <span className="font-medium text-muted-foreground">
-              {user.full_name.charAt(0).toUpperCase()}
-            </span>
-          ) : (
-            <User className="h-4 w-4 text-muted-foreground" />
-          )}
-        </AvatarFallback>
-      )}
+    <Avatar className={className}>
+      <AvatarImage src={user.image || undefined} alt={user.name || "Avatar"} />
+      <AvatarFallback 
+        style={{ backgroundColor: getColor(user.id) }}
+        className="text-white"
+      >
+        {getInitials(user.name)}
+      </AvatarFallback>
     </Avatar>
   );
 }

@@ -12,6 +12,7 @@ import { formatDistance } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useThemeContext } from "@/components/ThemeProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { UserRole } from "@/types/messages";
 
 type Conversation = {
   id: string;
@@ -41,15 +42,52 @@ export function ConversationList() {
       try {
         setIsLoading(true);
         
-        // On utilise la vue optimisée pour récupérer les conversations
+        // Récupération des conversations via les tables standards
         const { data, error } = await supabase
-          .from('user_conversations_view')
-          .select('*')
+          .from('user_conversations')
+          .select(`
+            id,
+            participant1_id,
+            participant2_id,
+            participant1_last_read,
+            participant2_last_read,
+            last_message,
+            last_message_time,
+            profiles!user_conversations_participant1_id_fkey(id, full_name, avatar_url, online_status),
+            profiles!user_conversations_participant2_id_fkey(id, full_name, avatar_url, online_status)
+          `)
+          .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
           .order('last_message_time', { ascending: false });
 
         if (error) throw error;
         
-        setConversations(data || []);
+        // Transforme les données pour notre format de conversation
+        const transformedData: Conversation[] = (data || []).map(conversation => {
+          // Détermine l'autre participant (pas l'utilisateur courant)
+          const isParticipant1 = conversation.participant1_id === user.id;
+          const otherParticipantData = isParticipant1 
+            ? conversation.profiles.find(p => p.id === conversation.participant2_id)
+            : conversation.profiles.find(p => p.id === conversation.participant1_id);
+          
+          if (!otherParticipantData) return null;
+          
+          // Calcule le nombre de messages non lus
+          // Logique simplifiée - à compléter avec une requête plus précise pour les non-lus
+          const unreadCount = 0; // À remplacer par la logique réelle
+          
+          return {
+            id: conversation.id,
+            participant_id: otherParticipantData.id,
+            full_name: otherParticipantData.full_name || 'Utilisateur',
+            avatar_url: otherParticipantData.avatar_url,
+            last_message: conversation.last_message || '',
+            last_message_time: conversation.last_message_time,
+            online_status: otherParticipantData.online_status,
+            unread_count: unreadCount
+          };
+        }).filter(Boolean) as Conversation[];
+        
+        setConversations(transformedData);
       } catch (error) {
         console.error('Error loading conversations:', error);
       } finally {
@@ -61,7 +99,7 @@ export function ConversationList() {
 
     // On écoute les changements sur les conversations
     const channel = supabase
-      .channel('conversations')
+      .channel('messages-changes')
       .on(
         'postgres_changes',
         {
@@ -99,12 +137,17 @@ export function ConversationList() {
       if (error) throw error;
 
       if (profile) {
+        const validRoles: UserRole[] = ['professional', 'business', 'admin'];
+        const userRole: UserRole = validRoles.includes(profile.role as UserRole) 
+          ? (profile.role as UserRole) 
+          : 'professional';
+            
         setReceiver({
           id: profile.id,
           full_name: profile.full_name || '',
           avatar_url: profile.avatar_url,
           email: profile.email,
-          role: profile.role || 'professional',
+          role: userRole,
           bio: profile.bio,
           phone: profile.phone,
           city: profile.city,
@@ -230,8 +273,8 @@ export function ConversationList() {
                   <UserAvatar
                     user={{
                       id: conversation.participant_id,
-                      image: conversation.avatar_url,
                       name: conversation.full_name,
+                      image: conversation.avatar_url
                     }}
                     className="h-12 w-12"
                   />

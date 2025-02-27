@@ -44,8 +44,8 @@ export function MessageBubble({
         <UserAvatar 
           user={{ 
             id: sender?.id, 
-            image: sender?.avatar_url, 
-            name: sender?.full_name 
+            name: sender?.full_name,
+            image: sender?.avatar_url
           }} 
           className="h-8 w-8 mt-1" 
         />

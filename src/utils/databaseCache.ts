@@ -1,83 +1,63 @@
 
 /**
- * Service de mise en cache pour les requêtes à la base de données
- * Permet d'éviter les requêtes redondantes et les doublons dans les données
+ * Système de cache simple pour éviter de refaire les mêmes requêtes à la base de données
+ * Ce cache est utilisé en mémoire temporairement
  */
 
 type CacheEntry<T> = {
   data: T;
   timestamp: number;
-  expiry: number; // durée de validité en ms
 };
 
 class DatabaseCache {
-  private cache: Map<string, CacheEntry<any>> = new Map();
-  
-  // Durée de validité par défaut: 30 secondes
-  private defaultExpiry = 30000;
+  private cache: Record<string, CacheEntry<any>> = {};
 
   /**
-   * Récupère des données du cache ou effectue la requête si nécessaire
-   * @param key Clé unique pour identifier la requête
-   * @param fetchFn Fonction de récupération des données
-   * @param expiryTime Durée de validité du cache en ms
+   * Récupérer une valeur du cache ou l'ajouter si elle n'existe pas
+   * @param key Clé de cache unique
+   * @param fetcher Fonction qui récupère les données si elles ne sont pas dans le cache
+   * @param ttl Durée de vie du cache en millisecondes
    */
-  async get<T>(key: string, fetchFn: () => Promise<T>, expiryTime = this.defaultExpiry): Promise<T> {
+  async get<T>(key: string, fetcher: () => Promise<T>, ttl: number = 60000): Promise<T> {
+    // Vérifier si la donnée est dans le cache et n'est pas expirée
+    const entry = this.cache[key];
     const now = Date.now();
-    const cached = this.cache.get(key);
 
-    // Si en cache et valide
-    if (cached && (now - cached.timestamp) < cached.expiry) {
-      console.log(`[Cache] Using cached data for: ${key}`);
-      return cached.data;
+    if (entry && now - entry.timestamp < ttl) {
+      return entry.data;
     }
 
-    // Sinon, effectuer la requête
-    console.log(`[Cache] Fetching fresh data for: ${key}`);
-    const data = await fetchFn();
+    // Si pas dans le cache ou expirée, on exécute le fetcher
+    const data = await fetcher();
     
-    // Mettre en cache
-    this.cache.set(key, {
+    // On met à jour le cache
+    this.cache[key] = {
       data,
-      timestamp: now,
-      expiry: expiryTime
-    });
+      timestamp: now
+    };
 
     return data;
   }
 
   /**
-   * Invalidate une entrée spécifique du cache
+   * Invalider toutes les entrées de cache qui correspondent à un pattern
+   * @param pattern Pattern à rechercher dans les clés
    */
-  invalidate(key: string): void {
-    if (this.cache.has(key)) {
-      console.log(`[Cache] Invalidating: ${key}`);
-      this.cache.delete(key);
+  invalidatePattern(pattern: string): void {
+    for (const key in this.cache) {
+      if (key.includes(pattern)) {
+        delete this.cache[key];
+      }
     }
   }
 
   /**
-   * Invalide toutes les entrées du cache contenant une clé spécifique
-   */
-  invalidatePattern(pattern: string): void {
-    const keys = Array.from(this.cache.keys());
-    const matchingKeys = keys.filter(key => key.includes(pattern));
-    
-    console.log(`[Cache] Invalidating ${matchingKeys.length} entries matching: ${pattern}`);
-    
-    matchingKeys.forEach(key => {
-      this.cache.delete(key);
-    });
-  }
-
-  /**
-   * Vide entièrement le cache
+   * Vider complètement le cache
    */
   clear(): void {
-    console.log(`[Cache] Clearing entire cache (${this.cache.size} entries)`);
-    this.cache.clear();
+    this.cache = {};
   }
 }
 
-// Singleton
+// Exporter une instance unique
 export const dbCache = new DatabaseCache();
