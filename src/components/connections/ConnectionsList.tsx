@@ -6,18 +6,13 @@ import { EmptyConnectionsState } from "./EmptyConnectionsState";
 import useConnections from "./hooks/useConnections";
 import { PendingRequestsSection } from "./PendingRequestsSection";
 import { ProfilePreview } from "@/components/ProfilePreview";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface ConnectionsListProps {
   searchQuery: string;
   showPendingRequests: boolean;
   selectedProfile: UserProfile | null;
   onClose: () => void;
-}
-
-// Définir l'interface pour ConnectionCardProps
-interface ConnectionCardProps {
-  profile: UserProfile;
 }
 
 export function ConnectionsList({
@@ -98,7 +93,7 @@ export function ConnectionsList({
             {connectionsAsProfiles.map(profile => (
               <ConnectionCard 
                 key={profile.id}
-                profile={profile}
+                profile={profile} 
               />
             ))}
           </div>

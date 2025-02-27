@@ -43,9 +43,25 @@ export function FriendsContent() {
           
         if (error) throw error;
         
-        // Filtrer les profils qui sont déjà des amis ou en attente
-        // Cette logique pourrait être déplacée côté serveur dans une fonction rpc
-        return (profiles || []) as UserProfile[];
+        // Convertir les profils bruts en UserProfile avec la propriété friends requise
+        return (profiles || []).map((profile: any) => ({
+          ...profile,
+          friends: [],  // Ajouter cette propriété manquante
+          // Assurer d'autres propriétés requises
+          email: profile.email || null,
+          full_name: profile.full_name || '',
+          avatar_url: profile.avatar_url || null,
+          role: profile.role || 'professional',
+          bio: profile.bio || '',
+          phone: profile.phone || '',
+          city: profile.city || '',
+          state: profile.state || '',
+          country: profile.country || '',
+          skills: profile.skills || [],
+          online_status: profile.online_status || false,
+          last_seen: profile.last_seen || null,
+          created_at: profile.created_at || new Date().toISOString()
+        })) as UserProfile[];
       } catch (error) {
         console.error('Error fetching suggested profiles:', error);
         return [];

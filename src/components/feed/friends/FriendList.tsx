@@ -56,12 +56,19 @@ export function FriendList({
         // Format connections as UserProfiles
         const friendsList = connections.map(conn => {
           const isSender = conn.sender_id === user.id;
-          const friendData = isSender ? conn.receiver : conn.sender;
+          let friendData = isSender ? conn.receiver : conn.sender;
           
           // Vérification null pour friendData
           if (!friendData) {
             console.error("Friend data is null", conn);
-            return null;
+            // Créer un objet minimal pour éviter les erreurs
+            friendData = {
+              id: isSender ? conn.receiver_id : conn.sender_id,
+              full_name: "",
+              avatar_url: null,
+              online_status: false,
+              last_seen: null
+            };
           }
 
           // Vérifier que les données ne sont pas une erreur ou que l'objet existe 
@@ -70,18 +77,11 @@ export function FriendList({
             return null;
           }
 
-          // S'assurer que friendData n'est pas null pour les opérations suivantes
-          const safeId = String(friendData.id || '');
-          const safeName = friendData.full_name || '';
-          const safeAvatar = friendData.avatar_url || null; 
-          const safeOnlineStatus = !!friendData.online_status;
-          const safeLastSeen = friendData.last_seen || null;
-
-          // Create a UserProfile with required fields
+          // Create a UserProfile with required fields and guaranteed values
           const profile: UserProfile = {
-            id: safeId,
-            full_name: safeName,
-            avatar_url: safeAvatar,
+            id: String(friendData.id || ''),
+            full_name: friendData.full_name || '',
+            avatar_url: friendData.avatar_url || null,
             email: '',
             role: 'professional',
             bio: '',
@@ -90,8 +90,8 @@ export function FriendList({
             state: '',
             country: '',
             skills: [],
-            online_status: safeOnlineStatus,
-            last_seen: safeLastSeen,
+            online_status: !!friendData.online_status,
+            last_seen: friendData.last_seen || null,
             created_at: new Date().toISOString(),
             friends: [] // Maintenant obligatoire
           };

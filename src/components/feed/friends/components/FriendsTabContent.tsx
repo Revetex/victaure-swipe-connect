@@ -64,12 +64,18 @@ export function FriendsTabContent({
         // Format for UI consumption
         let friendsList = connections.map(conn => {
           const isSender = conn.sender_id === user.id;
-          const friendData = isSender ? conn.receiver : conn.sender;
+          let friendData = isSender ? conn.receiver : conn.sender;
           
-          // Vérification null pour friendData
+          // Vérification null pour friendData et créer un objet par défaut si nécessaire
           if (!friendData) {
             console.error("Friend data is null", conn);
-            return null;
+            friendData = {
+              id: isSender ? conn.receiver_id : conn.sender_id,
+              full_name: "",
+              avatar_url: null,
+              online_status: false,
+              last_seen: null
+            };
           }
           
           // Vérification plus stricte du type
@@ -78,19 +84,12 @@ export function FriendsTabContent({
             return null;
           }
 
-          // S'assurer que friendData n'est pas null pour les opérations suivantes
-          const safeId = String(friendData.id || '');
-          const safeName = friendData.full_name || '';
-          const safeAvatar = friendData.avatar_url || null; 
-          const safeOnlineStatus = !!friendData.online_status;
-          const safeLastSeen = friendData.last_seen || null;
-
           return {
-            id: safeId,
-            full_name: safeName,
-            avatar_url: safeAvatar,
-            online_status: safeOnlineStatus,
-            last_seen: safeLastSeen,
+            id: String(friendData.id || ''),
+            full_name: friendData.full_name || '',
+            avatar_url: friendData.avatar_url || null,
+            online_status: !!friendData.online_status,
+            last_seen: friendData.last_seen || null,
             role: 'professional',
             bio: '',
             phone: '',

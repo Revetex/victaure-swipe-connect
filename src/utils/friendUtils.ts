@@ -37,7 +37,7 @@ export function profileToFriend(profile: UserProfile): Friend {
     last_seen: profile.last_seen,
     created_at: profile.created_at,
     job_title: profile.job_title,
-    friends: [] // Ajouter la propriété friends obligatoire
+    friends: [] // Ajouter cette propriété obligatoire
   };
 }
 
@@ -73,6 +73,6 @@ export function receiverToFriend(receiver: Receiver): Friend {
     last_seen: receiver.last_seen,
     bio: receiver.bio || null,
     created_at: new Date().toISOString(),
-    friends: [] // Ajouter la propriété friends obligatoire
+    friends: [] // Propriété obligatoire
   };
 }
