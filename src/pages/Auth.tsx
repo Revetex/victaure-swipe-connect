@@ -38,129 +38,155 @@ export default function Auth() {
     <div
       className={cn(
         "relative flex flex-col items-center justify-between min-h-screen w-full",
-        "bg-gradient-to-br from-[#131B25] via-[#1B2A4A] to-[#1A1F2C]",
+        "bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#1A1F2C]",
         "text-white overflow-x-hidden"
       )}
       style={{ minHeight: viewportHeight ? `${viewportHeight}px` : "100vh" }}
     >
-      {/* Background amélioré avec circuit et effets visuels */}
+      {/* Background amélioré avec animations et effets */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <CircuitBackground />
         
-        {/* Particules et halos lumineux */}
-        {Array.from({ length: 8 }).map((_, i) => (
+        {/* Étoiles scintillantes */}
+        {Array.from({ length: 50 }).map((_, i) => (
           <motion.div
-            key={`particle-${i}`}
-            initial={{ 
-              opacity: 0.1, 
-              x: Math.random() * window.innerWidth, 
-              y: Math.random() * window.innerHeight,
-              scale: Math.random() * 0.5 + 0.5
-            }}
+            key={`star-${i}`}
+            initial={{ opacity: 0.1 }}
             animate={{ 
-              opacity: [0.1, 0.3, 0.1],
-              x: Math.random() * window.innerWidth, 
-              y: Math.random() * window.innerHeight,
-              scale: [Math.random() * 0.5 + 0.5, Math.random() * 1 + 1, Math.random() * 0.5 + 0.5]
+              opacity: [0.1, 0.5, 0.1],
+              scale: [1, 1.2, 1]
             }}
             transition={{ 
-              duration: Math.random() * 10 + 10,
+              duration: Math.random() * 3 + 2,
               repeat: Infinity,
-              ease: "easeInOut" 
+              delay: Math.random() * 3
             }}
-            className="absolute w-2 h-2 rounded-full bg-[#64B5D9] blur-[2px]"
+            className="absolute w-1 h-1 bg-white rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
           />
         ))}
         
-        {/* Gros halos colorés */}
+        {/* Halos lumineux animés */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ 
-            opacity: [0.2, 0.4, 0.2],
-            scale: [1, 1.1, 1] 
-          }}
-          transition={{ 
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut" 
-          }}
-          className="absolute top-1/4 -left-20 w-96 h-96 bg-[#64B5D9]/10 rounded-full blur-[100px]"
-        />
-        
-        <motion.div
-          initial={{ opacity: 0 }}
           animate={{ 
             opacity: [0.1, 0.3, 0.1],
-            scale: [1, 1.2, 1] 
+            scale: [1, 1.2, 1],
+            rotate: 360
           }}
           transition={{ 
-            duration: 12,
+            duration: 20,
             repeat: Infinity,
-            ease: "easeInOut",
-            delay: 3
+            ease: "linear"
           }}
-          className="absolute bottom-1/4 -right-20 w-96 h-96 bg-[#D3E4FD]/10 rounded-full blur-[100px]"
+          className="absolute top-1/4 -left-1/4 w-[600px] h-[600px] bg-[#64B5D9]/10 rounded-full blur-[100px]"
+        />
+        
+        <motion.div
+          animate={{ 
+            opacity: [0.1, 0.3, 0.1],
+            scale: [1, 1.2, 1],
+            rotate: -360
+          }}
+          transition={{ 
+            duration: 25,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="absolute bottom-1/4 -right-1/4 w-[800px] h-[800px] bg-[#D3E4FD]/10 rounded-full blur-[120px]"
         />
 
-        {/* Grille de fond subtile */}
-        <div className="absolute inset-0 bg-grid-white/[0.03] bg-[length:50px_50px] opacity-30" />
-        
-        {/* Overlay gradient pour améliorer la lisibilité */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#131B25]/50 via-transparent to-[#1A1F2C]/50" />
+        {/* Grille avec effet de profondeur */}
+        <div 
+          className="absolute inset-0 bg-grid-white/[0.02]" 
+          style={{ 
+            backgroundSize: '50px 50px',
+            backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)'
+          }}
+        />
+
+        {/* Overlay pour améliorer la lisibilité */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/20" />
       </div>
 
       <div className="w-full z-10">
         <AuthHeader />
         <main className="container px-4 pt-6 pb-12 md:pt-12 md:pb-24 mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 xl:gap-16">
-            {/* Zone du formulaire: occupe 2 colonnes sur 5 */}
+            {/* Zone du formulaire */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
               className="lg:col-span-2"
             >
-              <div className="backdrop-blur-lg bg-[#1A1F2C]/40 border border-[#64B5D9]/10 rounded-2xl p-6 shadow-xl">
+              <div className="backdrop-blur-xl bg-white/[0.02] border border-white/10 rounded-2xl p-6 shadow-2xl">
                 <AuthForm />
               </div>
             </motion.div>
 
-            {/* Zone de vidéo et contenu annexe: occupe 3 colonnes sur 5 */}
+            {/* Zone de vidéo et contenu */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.5 }}
               className="lg:col-span-3"
             >
-              <div className="backdrop-blur-lg bg-[#1A1F2C]/40 border border-[#64B5D9]/10 rounded-2xl overflow-hidden shadow-xl h-full">
+              <div className="backdrop-blur-xl bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
                 <AuthVideo />
                 
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold bg-gradient-to-r from-[#64B5D9] to-[#D3E4FD] bg-clip-text text-transparent mb-3">
-                    Propulsez votre carrière avec Victaure
-                  </h3>
-                  <p className="text-[#F2EBE4]/80 text-sm leading-relaxed">
-                    Victaure combine l'intelligence artificielle avancée et une expertise du marché 
-                    de l'emploi pour vous offrir une plateforme complète qui transforme votre 
-                    recherche d'emploi. Découvrez des opportunités correspondant parfaitement à 
-                    vos compétences et aspirations.
-                  </p>
+                  <motion.h3 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6, duration: 0.4 }}
+                    className="text-xl font-semibold bg-gradient-to-r from-[#64B5D9] to-[#D3E4FD] bg-clip-text text-transparent mb-3"
+                  >
+                    Découvrez la puissance de Victaure
+                  </motion.h3>
                   
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {["IA", "Emploi", "CV", "Carrière", "Recrutement"].map((tag) => (
+                  <motion.p 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7, duration: 0.4 }}
+                    className="text-[#F2EBE4]/80 text-sm leading-relaxed"
+                  >
+                    Transformez votre recherche d'emploi avec notre plateforme alimentée par l'IA.
+                    Accédez à des opportunités sur mesure, des outils de carrière avancés et
+                    une communauté de professionnels partageant les mêmes valeurs.
+                  </motion.p>
+                  
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8, duration: 0.4 }}
+                    className="mt-4 flex flex-wrap gap-2"
+                  >
+                    {[
+                      "Intelligence Artificielle",
+                      "Matching Avancé",
+                      "CV Dynamique",
+                      "Analyse de Carrière",
+                      "Réseau Pro"
+                    ].map((tag) => (
                       <span 
                         key={tag}
-                        className="px-3 py-1 bg-[#64B5D9]/10 text-[#64B5D9] text-xs rounded-full"
+                        className="px-3 py-1 bg-[#64B5D9]/10 text-[#64B5D9] text-xs rounded-full
+                                 border border-[#64B5D9]/20 hover:bg-[#64B5D9]/20 transition-colors
+                                 cursor-pointer"
                       >
                         {tag}
                       </span>
                     ))}
-                  </div>
+                  </motion.div>
                 </div>
               </div>
             </motion.div>
           </div>
           
+          {/* Sections d'information */}
           <div className="my-16 space-y-16">
             <FeaturesSection />
             <InnovationsSection />
