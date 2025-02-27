@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRightLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ConversionType } from "./types";
+import { motion } from "framer-motion";
 
 interface ConverterProps {
   conversionType: ConversionType;
@@ -97,25 +98,44 @@ export function Converter({
   };
 
   return (
-    <div className="glass-container space-y-4">
-      <Select value={conversionType} onValueChange={onConversionTypeChange}>
-        <SelectTrigger className="glass-input">
-          <SelectValue placeholder="Type de conversion" />
-        </SelectTrigger>
-        <SelectContent className="max-h-[300px] bg-background/95 backdrop-blur-sm border-border/10">
-          <SelectItem value="currency">Devises</SelectItem>
-          <SelectItem value="crypto">Cryptomonnaies</SelectItem>
-          <SelectItem value="length">Longueur</SelectItem>
-          <SelectItem value="weight">Poids</SelectItem>
-          <SelectItem value="temperature">Température</SelectItem>
-          <SelectItem value="time">Temps</SelectItem>
-          <SelectItem value="unit">Unités</SelectItem>
-        </SelectContent>
-      </Select>
+    <div className="space-y-5">
+      <motion.h2 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-xl font-semibold mb-4 text-center text-primary"
+      >
+        Convertisseur
+      </motion.h2>
+      
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <Select value={conversionType} onValueChange={onConversionTypeChange}>
+          <SelectTrigger className="w-full backdrop-blur-sm border-primary/20 bg-card/30">
+            <SelectValue placeholder="Type de conversion" />
+          </SelectTrigger>
+          <SelectContent className="max-h-[300px] bg-background/95 backdrop-blur-sm border-border/10">
+            <SelectItem value="currency">Devises</SelectItem>
+            <SelectItem value="crypto">Cryptomonnaies</SelectItem>
+            <SelectItem value="length">Longueur</SelectItem>
+            <SelectItem value="weight">Poids</SelectItem>
+            <SelectItem value="temperature">Température</SelectItem>
+            <SelectItem value="time">Temps</SelectItem>
+            <SelectItem value="unit">Unités</SelectItem>
+          </SelectContent>
+        </Select>
+      </motion.div>
 
-      <div className="grid grid-cols-[1fr,auto,1fr] gap-2 items-center">
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="grid grid-cols-[1fr,auto,1fr] gap-2 items-center"
+      >
         <Select value={fromUnit} onValueChange={onFromUnitChange}>
-          <SelectTrigger className="glass-input">
+          <SelectTrigger className="backdrop-blur-sm border-primary/20 bg-card/30">
             <SelectValue placeholder="De" />
           </SelectTrigger>
           <SelectContent className="max-h-[300px] bg-background/95 backdrop-blur-sm border-border/10">
@@ -125,10 +145,10 @@ export function Converter({
           </SelectContent>
         </Select>
 
-        <ArrowRightLeft className="h-4 w-4 text-muted-foreground" />
+        <ArrowRightLeft className="h-5 w-5 text-primary/70" />
 
         <Select value={toUnit} onValueChange={onToUnitChange}>
-          <SelectTrigger className="glass-input">
+          <SelectTrigger className="backdrop-blur-sm border-primary/20 bg-card/30">
             <SelectValue placeholder="Vers" />
           </SelectTrigger>
           <SelectContent className="max-h-[300px] bg-background/95 backdrop-blur-sm border-border/10">
@@ -137,24 +157,46 @@ export function Converter({
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </motion.div>
 
-      <Input
-        type="number"
-        value={conversionValue}
-        onChange={(e) => onValueChange(e.target.value)}
-        placeholder="Entrez une valeur..."
-        className="glass-input text-right"
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <Input
+          type="number"
+          value={conversionValue}
+          onChange={(e) => onValueChange(e.target.value)}
+          placeholder="Entrez une valeur..."
+          className="text-right backdrop-blur-sm border-primary/20 bg-card/30"
+        />
+      </motion.div>
 
-      <Button onClick={onConvert} className="glass-button w-full">
-        Convertir
-      </Button>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.97 }}
+      >
+        <Button 
+          onClick={onConvert} 
+          className="w-full bg-primary/80 hover:bg-primary text-white"
+        >
+          Convertir
+        </Button>
+      </motion.div>
 
       {conversionResult && (
-        <div className="p-4 text-center glass-card">
-          <p className="text-lg font-semibold text-foreground">{conversionResult}</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          className="p-4 text-center bg-primary/10 backdrop-blur-md border border-primary/20 rounded-lg mt-4"
+        >
+          <p className="text-lg font-semibold text-primary">{conversionResult}</p>
+        </motion.div>
       )}
     </div>
   );
