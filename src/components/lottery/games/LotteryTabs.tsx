@@ -59,28 +59,49 @@ export function LotteryTabs({
         className="mt-4"
       >
         <TabsContent value="lotosphere">
-          <Card className="border-[#64B5D9]/10 bg-[#1B2A4A]/50 backdrop-blur-md p-6">
-            <LotteryHeader />
+          <Card className="relative border border-[#64B5D9]/20 bg-gradient-to-b from-[#1B2A4A]/80 to-[#1B2A4A]/60 backdrop-blur-md p-6 overflow-hidden">
+            {/* Éléments décoratifs style CAD */}
+            <div className="absolute inset-0">
+              {/* Grille de fond */}
+              <div className="absolute inset-0 grid-dots opacity-5" />
+              
+              {/* Bordures techniques */}
+              <div className="absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 border-[#64B5D9]/30" />
+              <div className="absolute top-0 right-0 w-8 h-8 border-r-2 border-t-2 border-[#64B5D9]/30" />
+              <div className="absolute bottom-0 left-0 w-8 h-8 border-l-2 border-b-2 border-[#64B5D9]/30" />
+              <div className="absolute bottom-0 right-0 w-8 h-8 border-r-2 border-b-2 border-[#64B5D9]/30" />
+              
+              {/* Lignes techniques */}
+              <div className="absolute top-0 left-12 right-12 h-px bg-gradient-to-r from-transparent via-[#64B5D9]/20 to-transparent" />
+              <div className="absolute bottom-0 left-12 right-12 h-px bg-gradient-to-r from-transparent via-[#64B5D9]/20 to-transparent" />
+              <div className="absolute left-0 top-12 bottom-12 w-px bg-gradient-to-b from-transparent via-[#64B5D9]/20 to-transparent" />
+              <div className="absolute right-0 top-12 bottom-12 w-px bg-gradient-to-b from-transparent via-[#64B5D9]/20 to-transparent" />
+            </div>
 
-            <div className="grid gap-4">
-              {loading ? (
-                <div className="flex justify-center items-center h-[200px]">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#64B5D9]"></div>
-                </div>
-              ) : (
-                <>
-                  {nextDraw && (
-                    <NextDraw 
-                      draw={nextDraw}
-                      onPaymentRequested={onPaymentRequested}
-                    />
-                  )}
+            {/* Contenu avec z-index pour le placer au-dessus des décorations */}
+            <div className="relative z-10">
+              <LotteryHeader />
 
-                  {lastDraw && <LastDraw draw={lastDraw} />}
+              <div className="grid gap-4">
+                {loading ? (
+                  <div className="flex justify-center items-center h-[200px]">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#64B5D9]"></div>
+                  </div>
+                ) : (
+                  <>
+                    {nextDraw && (
+                      <NextDraw 
+                        draw={nextDraw}
+                        onPaymentRequested={onPaymentRequested}
+                      />
+                    )}
 
-                  {nextDraw && <PrizePool draw={nextDraw} />}
-                </>
-              )}
+                    {lastDraw && <LastDraw draw={lastDraw} />}
+
+                    {nextDraw && <PrizePool draw={nextDraw} />}
+                  </>
+                )}
+              </div>
             </div>
           </Card>
         </TabsContent>
