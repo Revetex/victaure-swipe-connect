@@ -1,107 +1,128 @@
 
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { 
-  Clock, 
-  DollarSign, 
-  MapPin, 
-  Users, 
-  FileText, 
-  Gavel 
-} from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import type { MarketplaceContract } from "@/types/marketplace";
+import { Button } from "@/components/ui/button";
+import { MarketplaceContract } from "@/types/marketplace";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface ContractCardProps {
   contract: MarketplaceContract;
 }
 
 export function ContractCard({ contract }: ContractCardProps) {
-  const formatBudget = (min: number | null, max: number | null, currency: string) => {
-    if (min === null && max === null) return "Budget à discuter";
-    if (min === null) return `Jusqu'à ${max} ${currency}`;
-    if (max === null) return `À partir de ${min} ${currency}`;
-    return `${min} - ${max} ${currency}`;
-  };
+  // État pour contrôler l'expansion de la description
+  const [expanded, setExpanded] = useState(false);
+  
+  // Vérifier si la description est assez longue pour être tronquée
+  const isLongDescription = contract.description.length > 150;
+  
+  // Tronquer la description si elle est longue et non développée
+  const displayDescription = isLongDescription && !expanded 
+    ? `${contract.description.substring(0, 150)}...` 
+    : contract.description;
 
+  // Format de la date au format local
+  const formattedDate = new Date(contract.created_at).toLocaleDateString();
+  
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-all">
-      <div className="p-6 space-y-4">
-        <div className="flex justify-between items-start gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={contract.creator?.avatar_url || ''} />
-                <AvatarFallback>
-                  {contract.creator?.full_name?.[0] || '?'}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="font-semibold">{contract.title}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {contract.creator?.full_name || 'Utilisateur anonyme'}
-                </p>
-              </div>
+    <div className="border rounded-lg p-4 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md transition-shadow duration-200">
+      <div className="flex flex-col space-y-3">
+        {/* En-tête avec titre et date */}
+        <div className="flex justify-between items-start">
+          <h3 className="text-lg font-semibold line-clamp-1">{contract.title}</h3>
+          <span className="text-sm text-gray-500 dark:text-gray-400">{formattedDate}</span>
+        </div>
+        
+        {/* Détails du budget et statut */}
+        <div className="flex flex-wrap items-center gap-2">
+          {contract.budget_min && contract.budget_max ? (
+            <Badge variant="outline" className="font-normal">
+              Budget: {contract.budget_min} - {contract.budget_max} {contract.currency || 'CAD'}
+            </Badge>
+          ) : contract.budget_min ? (
+            <Badge variant="outline" className="font-normal">
+              Budget min: {contract.budget_min} {contract.currency || 'CAD'}
+            </Badge>
+          ) : contract.budget_max ? (
+            <Badge variant="outline" className="font-normal">
+              Budget max: {contract.budget_max} {contract.currency || 'CAD'}
+            </Badge>
+          ) : null}
+          
+          {contract.deadline && (
+            <Badge variant="outline" className="font-normal">
+              Échéance: {new Date(contract.deadline).toLocaleDateString()}
+            </Badge>
+          )}
+          
+          {contract.status === 'active' || contract.status === 'open' ? (
+            <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-100">
+              {contract.status === 'active' ? 'Actif' : 'Ouvert'}
+            </Badge>
+          ) : (
+            <Badge variant="secondary">
+              {contract.status}
+            </Badge>
+          )}
+        </div>
+        
+        {/* Description */}
+        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap text-sm">
+          {displayDescription}
+        </p>
+        
+        {/* Bouton "Voir plus" si la description est longue */}
+        {isLongDescription && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="text-sm text-primary hover:underline"
+          >
+            {expanded ? "Voir moins" : "Voir plus"}
+          </button>
+        )}
+        
+        {/* Compétences requises */}
+        {contract.requirements && contract.requirements.length > 0 && (
+          <div className="mt-2">
+            <h4 className="text-sm font-medium mb-1">Compétences requises:</h4>
+            <div className="flex flex-wrap gap-1">
+              {contract.requirements.map((skill, index) => (
+                <Badge key={index} variant="secondary" className="text-xs">
+                  {skill}
+                </Badge>
+              ))}
             </div>
           </div>
-          <Badge variant="secondary" className="font-medium">
-            {contract.category || 'Non catégorisé'}
-          </Badge>
-        </div>
-
-        <p className="text-muted-foreground">
-          {contract.description || 'Aucune description fournie'}
-        </p>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <DollarSign className="h-4 w-4" />
-            <span>{formatBudget(contract.budget_min, contract.budget_max, contract.currency)}</span>
+        )}
+        
+        {/* Pied avec créateur et bouton de détails */}
+        <div className="flex justify-between items-center pt-3">
+          <div className="flex items-center gap-2">
+            {contract.creator?.avatar_url ? (
+              <img 
+                src={contract.creator.avatar_url}
+                alt="Avatar" 
+                className="w-6 h-6 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-6 h-6 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                <span className="text-xs text-gray-600 dark:text-gray-300">
+                  {contract.creator?.full_name?.charAt(0) || '?'}
+                </span>
+              </div>
+            )}
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              {contract.creator?.full_name || 'Utilisateur'}
+            </span>
           </div>
           
-          {contract.location && (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <MapPin className="h-4 w-4" />
-              <span>{contract.location}</span>
-            </div>
-          )}
-
-          {contract.deadline && (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Clock className="h-4 w-4" />
-              <span>
-                {format(new Date(contract.deadline), 'PPP', { locale: fr })}
-              </span>
-            </div>
-          )}
-
-          {contract.requirements && contract.requirements.length > 0 && (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <FileText className="h-4 w-4" />
-              <span>{contract.requirements.length} prérequis</span>
-            </div>
-          )}
-        </div>
-
-        <div className="flex justify-between items-center pt-4">
-          <div className="text-sm text-muted-foreground">
-            Publié le {format(new Date(contract.created_at), 'PPP', { locale: fr })}
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Users className="h-4 w-4" />
-              Voir les offres
+          <Link to={`/dashboard/marketplace/contracts/${contract.id}`}>
+            <Button variant="outline" size="sm">
+              Voir les détails
             </Button>
-            <Button size="sm" className="gap-2">
-              <Gavel className="h-4 w-4" />
-              Faire une offre
-            </Button>
-          </div>
+          </Link>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

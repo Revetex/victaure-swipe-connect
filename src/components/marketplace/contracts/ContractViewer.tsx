@@ -1,255 +1,146 @@
 
-import { useState, useEffect } from "react";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
-import { FileText, Download } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useUser } from "@/hooks/useUser";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { MarketplaceContract } from '@/types/marketplace';
 
 interface ContractViewerProps {
-  contractId: string;
+  contract: MarketplaceContract;
 }
 
-interface Contract {
-  id: string;
-  title: string;
-  description: string;
-  budget_min: number;
-  budget_max: number;
-  deadline: string;
-  status: string;
-  documents: string[];
-  creator_id: string;
-}
+export function ContractViewer({ contract }: ContractViewerProps) {
+  const navigate = useNavigate();
 
-interface Bid {
-  id: string;
-  amount: number;
-  proposal: string;
-  created_at: string;
-  bidder_id: string;
-}
+  // Formatage de la date
+  const createdAt = new Date(contract.created_at);
+  const formattedDate = formatDistanceToNow(createdAt, { 
+    addSuffix: true,
+    locale: fr 
+  });
 
-export function ContractViewer({ contractId }: ContractViewerProps) {
-  const { user } = useUser();
-  const [contract, setContract] = useState<Contract | null>(null);
-  const [bids, setBids] = useState<Bid[]>([]);
-  const [bidAmount, setBidAmount] = useState("");
-  const [bidProposal, setBidProposal] = useState("");
-  const [showBidDialog, setShowBidDialog] = useState(false);
-  const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchContract();
-    fetchBids();
-  }, [contractId]);
-
-  const fetchContract = async () => {
-    const { data, error } = await supabase
-      .from("marketplace_contracts")
-      .select("*")
-      .eq("id", contractId)
-      .single();
-
-    if (error) {
-      console.error("Error fetching contract:", error);
-      return;
-    }
-
-    setContract(data);
+  // Pour retourner à la liste des contrats
+  const handleBack = () => {
+    navigate('/dashboard/marketplace?tab=contracts');
   };
-
-  const fetchBids = async () => {
-    const { data, error } = await supabase
-      .from("contract_bids")
-      .select("*")
-      .eq("contract_id", contractId)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching bids:", error);
-      return;
-    }
-
-    setBids(data);
-  };
-
-  const handleBid = async () => {
-    if (!user || !contract) return;
-
-    try {
-      const amount = parseFloat(bidAmount);
-      if (isNaN(amount) || amount <= 0) {
-        toast.error("Montant invalide");
-        return;
-      }
-
-      const { error } = await supabase
-        .from("contract_bids")
-        .insert({
-          contract_id: contractId,
-          bidder_id: user.id,
-          amount,
-          proposal: bidProposal,
-          status: "pending"
-        });
-
-      if (error) throw error;
-
-      toast.success("Offre soumise avec succès");
-      setShowBidDialog(false);
-      setBidAmount("");
-      setBidProposal("");
-      fetchBids();
-    } catch (error) {
-      console.error("Error submitting bid:", error);
-      toast.error("Erreur lors de la soumission de l'offre");
-    }
-  };
-
-  if (!contract) {
-    return <div>Chargement...</div>;
-  }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{contract.title}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <p className="text-muted-foreground">{contract.description}</p>
-            
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="font-medium">Budget:</span>
-                <span className="ml-2">{contract.budget_min} - {contract.budget_max} CAD</span>
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-zinc-800">
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">{contract.title}</h1>
+        <Button variant="outline" onClick={handleBack}>
+          Retour à la liste
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2 space-y-6">
+          <div>
+            <h2 className="text-xl font-semibold mb-2">Description</h2>
+            <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+              {contract.description}
+            </p>
+          </div>
+
+          {contract.requirements && contract.requirements.length > 0 && (
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Compétences requises</h2>
+              <div className="flex flex-wrap gap-2">
+                {contract.requirements.map((skill, index) => (
+                  <span 
+                    key={index} 
+                    className="bg-primary/10 text-primary rounded-full px-3 py-1 text-sm"
+                  >
+                    {skill}
+                  </span>
+                ))}
               </div>
-              {contract.deadline && (
-                <div>
-                  <span className="font-medium">Date limite:</span>
-                  <span className="ml-2">
-                    {format(new Date(contract.deadline), "PP", { locale: fr })}
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-6 bg-gray-50 dark:bg-zinc-700 p-4 rounded-lg">
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Détails du contrat</h2>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-300">Statut:</span>
+                <span className="font-medium">{contract.status === 'active' ? 'Actif' : contract.status}</span>
+              </div>
+              
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-300">Créé:</span>
+                <span className="font-medium">{formattedDate}</span>
+              </div>
+              
+              {contract.location && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-300">Lieu:</span>
+                  <span className="font-medium">{contract.location}</span>
+                </div>
+              )}
+              
+              {contract.category && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-300">Catégorie:</span>
+                  <span className="font-medium">{contract.category}</span>
+                </div>
+              )}
+              
+              {(contract.budget_min || contract.budget_max) && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-300">Budget:</span>
+                  <span className="font-medium">
+                    {contract.budget_min && contract.budget_max 
+                      ? `${contract.budget_min} - ${contract.budget_max} ${contract.currency || 'CAD'}`
+                      : contract.budget_min 
+                        ? `Min: ${contract.budget_min} ${contract.currency || 'CAD'}`
+                        : `Max: ${contract.budget_max} ${contract.currency || 'CAD'}`
+                    }
                   </span>
                 </div>
               )}
-            </div>
-
-            {contract.documents && contract.documents.length > 0 && (
-              <div>
-                <h3 className="font-medium mb-2">Documents</h3>
-                <div className="grid gap-2">
-                  {contract.documents.map((doc, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      className="flex items-center justify-between w-full"
-                      onClick={() => setSelectedPdf(doc)}
-                    >
-                      <div className="flex items-center">
-                        <FileText className="h-4 w-4 mr-2" />
-                        <span>Document {index + 1}</span>
-                      </div>
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  ))}
+              
+              {contract.deadline && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-300">Date limite:</span>
+                  <span className="font-medium">{new Date(contract.deadline).toLocaleDateString()}</span>
                 </div>
-              </div>
-            )}
-
-            {user && user.id !== contract.creator_id && (
-              <Button
-                className="w-full mt-4"
-                onClick={() => setShowBidDialog(true)}
-              >
-                Faire une offre
-              </Button>
-            )}
+              )}
+            </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {bids.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Offres ({bids.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {bids.map((bid) => (
-                <div
-                  key={bid.id}
-                  className="flex items-start justify-between p-4 border rounded-lg"
-                >
-                  <div>
-                    <div className="font-medium">{bid.amount} CAD</div>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      {bid.proposal}
-                    </div>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {format(new Date(bid.created_at), "PP", { locale: fr })}
-                  </div>
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Client</h2>
+            <div className="flex items-center space-x-3">
+              {contract.creator?.avatar_url ? (
+                <img 
+                  src={contract.creator.avatar_url} 
+                  alt="Avatar" 
+                  className="w-10 h-10 rounded-full"
+                />
+              ) : (
+                <div className="w-10 h-10 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {contract.creator?.full_name?.charAt(0) || '?'}
+                  </span>
                 </div>
-              ))}
+              )}
+              <div>
+                <p className="font-medium">{contract.creator?.full_name || 'Anonyme'}</p>
+              </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
 
-      <Dialog open={showBidDialog} onOpenChange={setShowBidDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Faire une offre</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pt-4">
-            <div>
-              <label className="text-sm font-medium">Montant (CAD)</label>
-              <Input
-                type="number"
-                value={bidAmount}
-                onChange={(e) => setBidAmount(e.target.value)}
-                min={0}
-                step="0.01"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Proposition</label>
-              <Textarea
-                value={bidProposal}
-                onChange={(e) => setBidProposal(e.target.value)}
-                placeholder="Décrivez votre proposition..."
-                className="min-h-[100px]"
-              />
-            </div>
-            <Button className="w-full" onClick={handleBid}>
-              Soumettre l'offre
+          <div className="pt-4">
+            <Button className="w-full">
+              Contacter le client
             </Button>
           </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={!!selectedPdf} onOpenChange={() => setSelectedPdf(null)}>
-        <DialogContent className="max-w-4xl h-[80vh]">
-          <DialogHeader>
-            <DialogTitle>Visualisation du document</DialogTitle>
-          </DialogHeader>
-          {selectedPdf && (
-            <iframe
-              src={selectedPdf}
-              className="w-full h-full"
-              title="PDF Viewer"
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+        </div>
+      </div>
     </div>
   );
 }
