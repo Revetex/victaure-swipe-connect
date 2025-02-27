@@ -7,6 +7,7 @@ import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
 import { PrivateRoute } from "@/components/PrivateRoute";
 import { AuthCallback } from "@/components/AuthCallback";
+import { WalletPage } from "@/components/wallet/WalletPage";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,16 @@ export default function AppWrapper() {
               element={
                 <PrivateRoute>
                   <Dashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/wallet"
+              element={
+                <PrivateRoute>
+                  <Dashboard>
+                    <WalletPage />
+                  </Dashboard>
                 </PrivateRoute>
               }
             />
