@@ -1,52 +1,93 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
-import { User } from '@supabase/supabase-js';
-import { useSession } from './useSession';
-import { clearStorages } from '@/utils/authUtils';
-import { toast } from 'sonner';
 
-interface AuthState {
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  error: Error | null;
-  user: User | null;
-  loading: boolean;
-}
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { handleAuthError, clearStorages } from "@/utils/authUtils";
 
 export function useAuth() {
+  const [user, setUser] = useState<any>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   const navigate = useNavigate();
-  const [state, setState] = useState<AuthState>({
-    isLoading: true,
-    isAuthenticated: false,
-    error: null,
-    user: null,
-    loading: false
-  });
 
-  const signIn = async (email: string, password: string, redirectTo?: string) => {
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        setIsAuthenticated(!!session);
+        setUser(session?.user || null);
+      } catch (error) {
+        console.error("Session check error:", error);
+        setIsAuthenticated(false);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setIsAuthenticated(!!session);
+        setUser(session?.user || null);
+        setIsLoading(false);
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const signIn = useCallback(async (email: string, password: string, redirectTo?: string) => {
     try {
-      setState(prev => ({ ...prev, loading: true }));
-      const { error } = await supabase.auth.signInWithPassword({
+      setLoading(true);
+      setError(null);
+
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
 
-      navigate(redirectTo || '/dashboard');
-    } catch (error) {
-      console.error('Sign in error:', error);
-      toast.error(error instanceof Error ? error.message : 'Erreur de connexion');
+      if (data?.user) {
+        toast.success("Connexion réussie !");
+        
+        // Redirect to the saved URL if available, otherwise to dashboard
+        const savedRedirectTo = redirectTo || sessionStorage.getItem('redirectTo') || '/dashboard';
+        sessionStorage.removeItem('redirectTo');
+        navigate(savedRedirectTo);
+      }
+    } catch (error: any) {
+      console.error("Sign in error:", error.message);
+      setError(error);
+      toast.error(error.message === "Invalid login credentials" 
+        ? "Identifiants invalides" 
+        : "Erreur de connexion");
     } finally {
-      setState(prev => ({ ...prev, loading: false }));
+      setLoading(false);
     }
-  };
+  }, [navigate]);
 
-  const signUp = async (email: string, password: string, fullName: string, phone: string, redirectTo?: string) => {
+  const signUp = useCallback(async (
+    email: string, 
+    password: string, 
+    fullName: string, 
+    phone: string,
+    redirectTo?: string
+  ) => {
     try {
-      setState(prev => ({ ...prev, loading: true }));
-      const { error: signUpError } = await supabase.auth.signUp({
+      setLoading(true);
+      setError(null);
+
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -57,144 +98,92 @@ export function useAuth() {
         }
       });
 
-      if (signUpError) throw signUpError;
+      if (error) throw error;
 
-      toast.success("Compte créé avec succès ! Veuillez vérifier votre email.");
-      navigate(redirectTo || '/auth');
-    } catch (error) {
-      console.error('Sign up error:', error);
-      toast.error(error instanceof Error ? error.message : 'Erreur lors de la création du compte');
-    } finally {
-      setState(prev => ({ ...prev, loading: false }));
-    }
-  };
-
-  const signOut = async () => {
-    try {
-      setState(prev => ({ ...prev, isLoading: true }));
-      
-      clearStorages();
-      
-      const { error: signOutError } = await supabase.auth.signOut({
-        scope: 'global'
-      });
-      
-      if (signOutError) throw signOutError;
-      
-      setState({
-        isLoading: false,
-        isAuthenticated: false,
-        error: null,
-        user: null,
-        loading: false
-      });
-
-      navigate('/auth');
-      
-    } catch (error) {
-      console.error('Sign out error:', error);
-      setState(prev => ({ 
-        ...prev, 
-        isAuthenticated: false,
-        isLoading: false,
-        error: error instanceof Error ? error : new Error('Unknown error'),
-        loading: false
-      }));
-      navigate('/auth');
-    }
-  };
-
-  useEffect(() => {
-    let mounted = true;
-    
-    const initializeAuth = async () => {
-      try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (data) {
+        toast.success("Compte créé avec succès ! Un email de confirmation vous a été envoyé.");
         
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          throw sessionError;
-        }
-
-        if (!session) {
-          if (mounted) {
-            setState({
-              isLoading: false,
-              isAuthenticated: false,
-              error: null,
-              user: null,
-              loading: false
+        // Create profile for the user
+        if (data.user) {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              id: data.user.id,
+              full_name: fullName,
+              email: email,
+              phone: phone
             });
+
+          if (profileError) {
+            console.error("Error creating profile:", profileError);
           }
-          return;
         }
 
-        const verifyUser = async (attempt = 0): Promise<void> => {
-          try {
-            const { data: { user }, error: userError } = await supabase.auth.getUser();
-            
-            if (userError || !user) {
-              if (attempt < 3) {
-                console.log(`Retrying user verification (${attempt + 1}/3)...`);
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                return verifyUser(attempt + 1);
-              }
-              throw userError || new Error("User not found");
-            }
-
-            if (mounted) {
-              setState({
-                isLoading: false,
-                isAuthenticated: true,
-                error: null,
-                user,
-                loading: false
-              });
-            }
-          } catch (error) {
-            console.error("User verification error:", error);
-            await supabase.auth.signOut();
-            setState({
-              isLoading: false,
-              isAuthenticated: false,
-              error: error instanceof Error ? error : new Error('Authentication failed'),
-              user: null,
-              loading: false
-            });
-          }
-        };
-
-        await verifyUser();
-
-      } catch (error) {
-        console.error("Auth initialization error:", error);
-        if (mounted) {
-          setState({
-            isLoading: false,
-            isAuthenticated: false,
-            error: error instanceof Error ? error : new Error('Authentication failed'),
-            user: null,
-            loading: false
-          });
-        }
-        navigate('/auth');
+        // Redirect to login page or dashboard
+        const savedRedirectTo = redirectTo || '/auth';
+        navigate(savedRedirectTo);
       }
-    };
-
-    initializeAuth();
-    
-    const authCheckInterval = setInterval(initializeAuth, 300000);
-
-    return () => {
-      mounted = false;
-      clearInterval(authCheckInterval);
-    };
+    } catch (error: any) {
+      console.error("Sign up error:", error.message);
+      setError(error);
+      toast.error(error.message === "User already registered" 
+        ? "Cet email est déjà utilisé" 
+        : "Erreur d'inscription");
+    } finally {
+      setLoading(false);
+    }
   }, [navigate]);
 
-  return { 
-    ...state,
+  const signOut = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      clearStorages();
+      setUser(null);
+      setIsAuthenticated(false);
+      navigate("/auth");
+      toast.success("Vous avez été déconnecté");
+    } catch (error: any) {
+      console.error("Sign out error:", error.message);
+      toast.error("Erreur lors de la déconnexion");
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate]);
+
+  // Pour assurer la compatibilité avec l'ancien code qui utilise "logout"
+  const logout = useCallback(async () => {
+    return signOut();
+  }, [signOut]);
+
+  // Reload user data
+  const refreshUser = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) throw error;
+      
+      setUser(data.user);
+      return data.user;
+    } catch (error) {
+      if (error instanceof Error) {
+        handleAuthError(error as any, signOut);
+      }
+      return null;
+    }
+  }, [signOut]);
+
+  return {
+    user,
+    isAuthenticated,
+    isLoading,
+    loading,
+    error,
     signIn,
     signUp,
-    signOut
+    signOut,
+    logout, // Ajouté pour la compatibilité
+    refreshUser
   };
 }
