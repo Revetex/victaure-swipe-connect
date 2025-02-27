@@ -14,11 +14,18 @@ import { useThemeContext } from "@/components/ThemeProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { UserRole } from "@/types/messages";
 
+interface ConversationParticipant {
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
+  online_status: boolean;
+}
+
 type Conversation = {
   id: string;
   participant_id: string;
   full_name: string;
-  avatar_url?: string;
+  avatar_url?: string | null;
   last_message?: string;
   last_message_time?: string;
   online_status?: boolean;
@@ -65,9 +72,17 @@ export function ConversationList() {
         const transformedData: Conversation[] = (data || []).map(conversation => {
           // Détermine l'autre participant (pas l'utilisateur courant)
           const isParticipant1 = conversation.participant1_id === user.id;
-          const otherParticipantData = isParticipant1 
-            ? conversation.profiles.find(p => p.id === conversation.participant2_id)
-            : conversation.profiles.find(p => p.id === conversation.participant1_id);
+          
+          // Accéder aux profils via l'array
+          const profiles1 = Array.isArray(conversation.profiles) 
+            ? conversation.profiles.filter(p => p.id === conversation.participant1_id)[0] 
+            : null;
+            
+          const profiles2 = Array.isArray(conversation.profiles) 
+            ? conversation.profiles.filter(p => p.id === conversation.participant2_id)[0] 
+            : null;
+            
+          const otherParticipantData = isParticipant1 ? profiles2 : profiles1;
           
           if (!otherParticipantData) return null;
           
@@ -156,6 +171,12 @@ export function ConversationList() {
           skills: profile.skills || [],
           online_status: profile.online_status ? 'online' : 'offline',
           last_seen: profile.last_seen,
+          latitude: profile.latitude,
+          longitude: profile.longitude,
+          certifications: profile.certifications || [],
+          education: profile.education || [],
+          experiences: profile.experiences || [],
+          friends: []
         });
         setShowConversation(true);
       }

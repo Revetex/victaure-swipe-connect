@@ -1,41 +1,41 @@
 
-import type { UserProfile } from './profile';
+import { Certification, Education, Experience } from "./profile";
+
+// Types pour la messagerie
+export type UserRole = "professional" | "business" | "admin";
+export type OnlineStatus = "online" | "offline" | "away";
 
 export interface Message {
   id: string;
   content: string;
   sender_id: string;
   receiver_id: string;
-  created_at: string;
-  metadata?: Record<string, any>;
-  sender: UserProfile;
   conversation_id?: string;
-  deleted_at?: string;
-  deleted_by?: Record<string, any>;
-  edited_at?: string;
+  created_at: string;
+  updated_at?: string;
+  read?: boolean;
+  status: "sent" | "delivered" | "read";
+  message_type?: string;
+  metadata?: any;
   encrypted?: boolean;
   encryption_key?: string;
   has_attachment?: boolean;
-  is_assistant?: boolean;
-  is_deleted?: boolean;
-  is_system_sender?: boolean;
   message_hash?: string;
   message_state?: string;
-  message_type?: string;
-  page_cursor?: string;
+  deleted_at?: string;
+  edited_at?: string;
+  is_deleted?: boolean;
+  deleted_by?: any;
   reaction?: string;
-  status?: string;
-  system_message?: boolean;
-  timestamp?: string;
+  sender?: any;
+  receiver?: any;
 }
-
-export type UserRole = 'professional' | 'business' | 'admin';
 
 export interface Receiver {
   id: string;
   full_name: string;
   avatar_url: string | null;
-  email: string | null;
+  email?: string | null;
   role: UserRole;
   bio: string | null;
   phone: string | null;
@@ -43,12 +43,29 @@ export interface Receiver {
   state: string | null;
   country: string | null;
   skills: string[];
+  online_status: OnlineStatus;
+  last_seen: string | null;
   latitude: number | null;
   longitude: number | null;
-  online_status: 'online' | 'offline';
-  last_seen: string | null;
-  certifications: any[];
-  education: any[];
-  experiences: any[];
+  certifications: Certification[];
+  education: Education[];
+  experiences: Experience[];
   friends: string[];
+}
+
+export interface Conversation {
+  id: string;
+  participant1_id: string;
+  participant2_id: string;
+  last_message?: string;
+  last_message_time?: string;
+  created_at?: string;
+  updated_at?: string;
+  participant1_last_read?: string;
+  participant2_last_read?: string;
+  participants?: {
+    id: string;
+    full_name: string;
+    avatar_url: string | null;
+  }[];
 }

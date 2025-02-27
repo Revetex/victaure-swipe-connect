@@ -1,58 +1,155 @@
 
-import { Card } from "@/components/ui/card";
-import { useFriendsList } from "@/components/messages/conversation/hooks/useFriendsList";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { Friend } from "@/types/profile";
 import { UserAvatar } from "@/components/UserAvatar";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { useReceiver } from "@/hooks/useReceiver";
+import { cn } from "@/lib/utils";
+import { MessageCircle, User } from "lucide-react";
 
 export function DashboardFriendsList() {
-  const { friends, loading } = useFriendsList();
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { setReceiver, setShowConversation } = useReceiver();
+
+  useEffect(() => {
+    if (!user) return;
+
+    const loadFriends = async () => {
+      try {
+        // Correction: ajouter un type explicite à friends
+        const { data: friends = [], error } = await supabase.rpc('get_friends');
+        
+        if (error) throw error;
+
+        setFriends(friends.slice(0, 5)); // Afficher seulement les 5 premiers amis
+      } catch (error) {
+        console.error("Error loading friends:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadFriends();
+  }, [user]);
+
+  const handleChat = (friend: Friend) => {
+    setReceiver({
+      id: friend.id,
+      full_name: friend.full_name || '',
+      avatar_url: friend.avatar_url,
+      // Nous définissons des valeurs par défaut pour tout ce qui est requis par Receiver
+      online_status: friend.online_status ? 'online' : 'offline',
+      last_seen: friend.last_seen,
+      role: 'professional',
+      bio: null,
+      phone: null,
+      city: null,
+      state: null,
+      country: '',
+      skills: [],
+      latitude: null,
+      longitude: null,
+      certifications: [],
+      education: [],
+      experiences: [],
+      friends: []
+    });
+    setShowConversation(true);
+    navigate('/messages');
+  };
+
+  const handleViewProfile = (friendId: string) => {
+    navigate(`/profile/${friendId}`);
+  };
+
+  if (isLoading) {
+    return (
+      <Card className="p-4 h-full animate-pulse">
+        <div className="flex flex-col h-full justify-center items-center gap-4">
+          <div className="w-24 h-6 bg-gray-200 dark:bg-slate-700 rounded"></div>
+          <div className="w-full h-20 bg-gray-200 dark:bg-slate-700 rounded"></div>
+        </div>
+      </Card>
+    );
+  }
 
   return (
-    <Card className="w-full max-w-md p-4 relative bg-white/5 backdrop-blur-md border-white/10">
-      <h2 className="text-2xl font-semibold mb-4 text-white">Mes amis</h2>
+    <Card className="overflow-hidden h-full flex flex-col">
+      <div className="p-4 border-b bg-card/50 text-card-foreground font-medium">
+        Amis
+      </div>
       
-      <ScrollArea className="h-[300px] pr-4">
-        {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
-          </div>
-        ) : friends.length > 0 ? (
-          <div className="space-y-4">
-            {friends.map((friend) => (
-              <div 
-                key={friend.id}
-                className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
-              >
-                <UserAvatar
-                  user={{
-                    id: friend.id,
-                    email: friend.email || '',
-                    full_name: friend.full_name || 'Utilisateur',
-                    avatar_url: friend.avatar_url,
-                    certifications: [],
-                    education: [],
-                    experiences: [],
-                    friends: []
-                  }}
-                  className="h-10 w-10"
-                />
-                <div>
-                  <p className="text-sm font-medium text-white">
-                    {friend.full_name || 'Utilisateur'}
-                  </p>
-                  <p className="text-xs text-white/60">
-                    {friend.online_status ? 'En ligne' : 'Hors ligne'}
-                  </p>
-                </div>
-              </div>
-            ))}
+      <div className="flex-1 overflow-auto p-2">
+        {friends.length === 0 ? (
+          <div className="h-full flex items-center justify-center text-sm text-muted-foreground">
+            Vous n'avez pas encore d'amis
           </div>
         ) : (
-          <p className="text-white/60 text-center py-8">
-            Aucun ami pour le moment
-          </p>
+          <ul className="space-y-2">
+            {friends.map((friend) => (
+              <li key={friend.id} className="flex items-center justify-between">
+                <div className="flex items-center space-x-3 p-2">
+                  <div className="relative">
+                    <UserAvatar 
+                      user={{ 
+                        id: friend.id, 
+                        name: friend.full_name || '', 
+                        image: friend.avatar_url 
+                      }} 
+                    />
+                    {friend.online_status && (
+                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full" />
+                    )}
+                  </div>
+                  <span className="text-sm truncate max-w-[120px]">
+                    {friend.full_name || 'Utilisateur'}
+                  </span>
+                </div>
+                
+                <div className="flex gap-1">
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="w-8 h-8 p-0"
+                    onClick={() => handleViewProfile(friend.id)}
+                  >
+                    <User className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="w-8 h-8 p-0"
+                    onClick={() => handleChat(friend)}
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                  </Button>
+                </div>
+              </li>
+            ))}
+          </ul>
         )}
-      </ScrollArea>
+      </div>
+      
+      <div className={cn(
+        "p-3 border-t text-center",
+        friends.length === 0 ? "bg-slate-50 dark:bg-slate-900" : ""
+      )}>
+        <Button 
+          variant="ghost"
+          size="sm"
+          className="w-full text-xs"
+          onClick={() => navigate('/connections')}
+        >
+          {friends.length > 0 ? "Voir tous les amis" : "Trouver des amis"}
+        </Button>
+      </div>
     </Card>
   );
 }
