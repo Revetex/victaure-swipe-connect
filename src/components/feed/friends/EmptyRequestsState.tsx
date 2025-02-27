@@ -1,19 +1,18 @@
 
-import { UserCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { LucideUserSearch } from "lucide-react";
 
 export function EmptyRequestsState() {
   return (
-    <motion.div 
-      className="text-center py-6 space-y-2"
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <UserCircle className="h-12 w-12 mx-auto text-muted-foreground/50" />
-      <p className="text-sm text-muted-foreground">
+    <div className="flex flex-col items-center justify-center p-8 text-center">
+      <div className="bg-muted/20 p-3 rounded-full mb-3">
+        <LucideUserSearch className="h-8 w-8 text-muted-foreground/70" />
+      </div>
+      <h3 className="font-medium text-muted-foreground mb-1">
         Aucune demande en attente
+      </h3>
+      <p className="text-sm text-muted-foreground/70 max-w-xs">
+        Vous n'avez pas de demandes d'amis en attente pour le moment.
       </p>
-    </motion.div>
+    </div>
   );
 }

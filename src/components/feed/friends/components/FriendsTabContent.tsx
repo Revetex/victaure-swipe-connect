@@ -25,49 +25,36 @@ export function FriendsTabContent({
     queryFn: async () => {
       if (!user?.id) return [];
 
-      const { data: friendships, error } = await supabase
-        .from('friendships')
-        .select(`
-          friend:profiles!friendships_friend_id_fkey(
-            id, 
-            full_name,
-            avatar_url,
-            email,
-            role,
-            bio,
-            phone,
-            city,
-            state, 
-            country,
-            skills,
-            online_status,
-            last_seen
-          )
-        `)
-        .eq('status', 'accepted')
-        .eq('user_id', user.id);
+      const { data, error } = await supabase.rpc('get_user_connections', {
+        user_id: user.id
+      });
 
       if (error) {
         console.error("Error fetching friends:", error);
         return [];
       }
 
-      return (friendships || []).map(friendship => {
-        const friend = friendship.friend as any;
+      // Filter only accepted friend connections
+      const acceptedFriends = data.filter(conn => 
+        conn.status === 'accepted' && conn.connection_type === 'friend'
+      );
+
+      // Map to UserProfile format
+      return acceptedFriends.map(friend => {
         return {
-          id: friend.id,
-          full_name: friend.full_name,
-          avatar_url: friend.avatar_url,
-          email: friend.email,
-          role: friend.role || 'professional',
-          bio: friend.bio,
-          phone: friend.phone,
-          city: friend.city,
-          state: friend.state,
-          country: friend.country || 'Canada',
-          skills: friend.skills || [],
-          online_status: friend.online_status || false,
-          last_seen: friend.last_seen || new Date().toISOString(),
+          id: friend.other_user_id,
+          full_name: friend.other_user_name,
+          avatar_url: friend.other_user_avatar,
+          email: null,
+          role: 'professional',
+          bio: null,
+          phone: null,
+          city: null,
+          state: null,
+          country: 'Canada',
+          skills: [],
+          online_status: false, // We'll need to update this in a future enhancement
+          last_seen: new Date().toISOString(),
           certifications: [],
           education: [],
           experiences: [],

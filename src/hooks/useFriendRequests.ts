@@ -11,109 +11,89 @@ export const useFriendRequests = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: incomingRequests } = await supabase
-        .from("friend_requests")
-        .select(`
-          id,
-          sender_id,
-          receiver_id,
-          status,
-          created_at,
-          sender:profiles!friend_requests_sender_id_fkey(
-            id,
-            full_name,
-            avatar_url
-          ),
-          receiver:profiles!friend_requests_receiver_id_fkey(
-            id,
-            full_name,
-            avatar_url
-          )
-        `)
-        .eq("receiver_id", user.id)
-        .eq("status", "pending");
+      const { data, error } = await supabase.rpc('get_friend_requests', {
+        user_id: user.id
+      });
 
-      const { data: outgoingRequests } = await supabase
-        .from("friend_requests")
-        .select(`
-          id,
-          sender_id,
-          receiver_id,
-          status,
-          created_at,
-          sender:profiles!friend_requests_sender_id_fkey(
-            id,
-            full_name,
-            avatar_url
-          ),
-          receiver:profiles!friend_requests_receiver_id_fkey(
-            id,
-            full_name,
-            avatar_url
-          )
-        `)
-        .eq("sender_id", user.id)
-        .eq("status", "pending");
+      if (error) {
+        console.error("Error fetching friend requests:", error);
+        return [];
+      }
 
-      const formattedIncoming = (incomingRequests || []).map(request => ({
-        ...request,
-        type: 'incoming' as const,
-        status: request.status as "pending" | "accepted" | "rejected"
-      }));
-
-      const formattedOutgoing = (outgoingRequests || []).map(request => ({
-        ...request,
-        type: 'outgoing' as const,
-        status: request.status as "pending" | "accepted" | "rejected"
-      }));
-
-      return [...formattedIncoming, ...formattedOutgoing] as PendingRequest[];
+      return data as PendingRequest[];
     }
   });
 
   const handleAcceptRequest = async (requestId: string, senderId: string, senderName: string) => {
-    const { error } = await supabase
-      .from("friend_requests")
-      .update({ status: "accepted" as const })
-      .eq("id", requestId);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Vous devez être connecté pour accepter des demandes d'ami");
+      return;
+    }
+
+    const { data, error } = await supabase.rpc('accept_friend_request', {
+      p_request_id: requestId,
+      p_user_id: user.id
+    });
 
     if (error) {
+      console.error("Error accepting friend request:", error);
       toast.error("Erreur lors de l'acceptation de la demande");
       return;
     }
 
-    toast.success(`Vous êtes maintenant ami avec ${senderName}`);
-    refetchPendingRequests();
+    if (data) {
+      toast.success(`Vous êtes maintenant ami avec ${senderName}`);
+      refetchPendingRequests();
+    }
   };
 
   const handleRejectRequest = async (requestId: string, senderName: string) => {
-    const { error } = await supabase
-      .from("friend_requests")
-      .delete()
-      .eq("id", requestId);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Vous devez être connecté pour rejeter des demandes d'ami");
+      return;
+    }
+
+    const { data, error } = await supabase.rpc('reject_friend_request', {
+      p_request_id: requestId,
+      p_user_id: user.id
+    });
 
     if (error) {
+      console.error("Error rejecting friend request:", error);
       toast.error("Erreur lors du rejet de la demande");
       return;
     }
 
-    toast.success(`Vous avez rejeté la demande de ${senderName}`);
-    refetchPendingRequests();
+    if (data) {
+      toast.success(`Vous avez rejeté la demande de ${senderName}`);
+      refetchPendingRequests();
+    }
   };
 
   const handleCancelRequest = async (requestId: string, receiverName: string) => {
-    const { error } = await supabase
-      .from("friend_requests")
-      .delete()
-      .eq("id", requestId);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Vous devez être connecté pour annuler des demandes d'ami");
+      return;
+    }
+
+    const { data, error } = await supabase.rpc('cancel_friend_request', {
+      p_request_id: requestId,
+      p_user_id: user.id
+    });
 
     if (error) {
+      console.error("Error canceling friend request:", error);
       toast.error("Erreur lors de l'annulation de la demande");
       return;
     }
 
-    toast.success(`Demande d'ami à ${receiverName} annulée`);
-    refetchPendingRequests();
+    if (data) {
+      toast.success(`Demande d'ami à ${receiverName} annulée`);
+      refetchPendingRequests();
+    }
   };
 
   return {

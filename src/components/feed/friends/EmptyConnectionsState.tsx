@@ -1,28 +1,29 @@
 
-import { Users2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export function EmptyConnectionsState() {
+  const navigate = useNavigate();
+  
   return (
-    <motion.div 
-      className="text-center py-8 space-y-4 bg-muted/20 rounded-xl shadow-sm backdrop-blur-sm border border-border/50"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        type: "spring",
-        stiffness: 260,
-        damping: 20 
-      }}
-    >
-      <Users2 className="h-12 w-12 mx-auto text-muted-foreground/40" />
-      <div className="space-y-2">
-        <p className="text-sm font-medium bg-gradient-to-br from-foreground/90 via-foreground/80 to-foreground/70 bg-clip-text text-transparent">
-          Aucune connection
-        </p>
-        <p className="text-xs text-muted-foreground leading-relaxed max-w-[250px] mx-auto">
-          Commencez à ajouter des contacts pour développer votre réseau
-        </p>
+    <div className="flex flex-col items-center justify-center py-12 text-center">
+      <div className="bg-gradient-to-br from-primary/20 to-primary/5 p-6 rounded-full mb-4">
+        <UserPlus className="h-10 w-10 text-primary/70" />
       </div>
-    </motion.div>
+      <h3 className="text-xl font-medium mb-2">
+        Pas encore de connexions
+      </h3>
+      <p className="text-muted-foreground max-w-md mb-6">
+        Commencez à créer votre réseau professionnel en ajoutant des connexions.
+        Vous pourrez ensuite communiquer et collaborer facilement.
+      </p>
+      <Button
+        onClick={() => navigate("/explore")}
+        className="bg-gradient-to-r from-primary to-primary/80 text-white hover:opacity-90"
+      >
+        Explorer des profils
+      </Button>
+    </div>
   );
 }
