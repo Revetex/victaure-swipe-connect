@@ -116,6 +116,7 @@ export interface Profile {
   education?: Education[];
   experiences?: Experience[];
   friends?: UserProfile[];
+  social_links?: SocialLinks; // Ajouté pour résoudre l'erreur TS2353
 }
 
 // Simplified user profile for UI components
@@ -130,8 +131,21 @@ export interface User extends Omit<Profile, 'updated_at'> {
 }
 
 // Simplified friend interface
-export interface Friend extends Omit<UserProfile, 'avatar_url'> {
+export interface Friend {
+  id: string;
+  full_name: string | null;
   avatar_url: string | null;
+  email: string | null;
+  role: UserRole;
+  bio: string | null;
+  phone: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  skills: string[];
+  created_at: string;
+  online_status: boolean;
+  last_seen: string | null;
   friendship_id?: string;
   status?: string;
 }
@@ -239,4 +253,39 @@ export const convertOnlineStatusToBoolean = (status: string | boolean | undefine
     return status === 'online' || status === 'true';
   }
   return false;
+};
+
+// Conversion Friend <-> UserProfile 
+export const friendToUserProfile = (friend: Friend): UserProfile => {
+  return {
+    ...friend,
+    online_status: typeof friend.online_status === 'string' 
+      ? convertOnlineStatusToBoolean(friend.online_status)
+      : !!friend.online_status
+  };
+};
+
+export const transformConnection = (conn: any, userId: string): Friend => {
+  const isSender = conn.sender_id === userId;
+  
+  return {
+    id: isSender ? conn.receiver_id : conn.sender_id,
+    full_name: isSender ? conn.receiver_name : conn.sender_name,
+    avatar_url: isSender ? conn.receiver_avatar : conn.sender_avatar,
+    email: null, // Ajout pour respecter l'interface Friend
+    role: 'professional',
+    bio: null,
+    phone: null,
+    city: null,
+    state: null,
+    country: null,
+    skills: [],
+    created_at: conn.created_at,
+    friendship_id: conn.id,
+    status: conn.status,
+    online_status: isSender 
+      ? !!conn.receiver_online_status 
+      : !!conn.sender_online_status,
+    last_seen: isSender ? conn.receiver_last_seen : conn.sender_last_seen
+  };
 };

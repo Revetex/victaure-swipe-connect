@@ -1,97 +1,159 @@
 
-import { UserProfile } from "@/types/profile";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, UserPlus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useReceiver } from "@/hooks/useReceiver";
-import useConnections from "./hooks/useConnections";
 import { toast } from "sonner";
+import { useConnectionStatus } from "@/components/profile/preview/hooks/useConnectionStatus";
+import { UserAvatar } from "@/components/UserAvatar";
+import { UserProfile, convertOnlineStatusToBoolean } from "@/types/profile";
+import { User, UserRoundPlus, UserCheck, MessageCircle, Loader2 } from "lucide-react";
+import { useFriendRequests } from "@/hooks/useFriendRequests";
+import { format, formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
+import { useState } from "react";
+import { useReceiver } from "@/hooks/useReceiver";
+import { useNavigate } from "react-router-dom";
 
 interface ConnectionCardProps {
-  connection: UserProfile;
+  profile: UserProfile;
+  onProfileClick?: (profile: UserProfile) => void;
+  className?: string;
 }
 
-export function ConnectionCard({ connection }: ConnectionCardProps) {
-  const navigate = useNavigate();
+export function ConnectionCard({ profile, onProfileClick, className }: ConnectionCardProps) {
+  const { isFriend, isFriendRequestSent, isFriendRequestReceived } = useConnectionStatus(profile.id);
+  const [isLoading, setIsLoading] = useState(false);
+  const { sendFriendRequest, acceptFriendRequest, cancelFriendRequest } = useFriendRequests();
   const { setReceiver, setShowConversation } = useReceiver();
-  const { handleSendFriendRequest } = useConnections();
+  const navigate = useNavigate();
 
   const handleConnect = async () => {
+    setIsLoading(true);
     try {
-      await handleSendFriendRequest(connection.id);
-      toast.success(`Demande d'ami envoyée à ${connection.full_name}`);
+      await sendFriendRequest(profile.id);
     } catch (error) {
       console.error("Error sending friend request:", error);
-      toast.error("Erreur lors de l'envoi de la demande d'ami");
+      toast.error("Erreur lors de l'envoi de la demande");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleChat = () => {
-    setReceiver({
-      id: connection.id,
-      full_name: connection.full_name,
-      avatar_url: connection.avatar_url,
-      email: connection.email,
-      role: connection.role,
-      bio: connection.bio,
-      phone: connection.phone,
-      city: connection.city,
-      state: connection.state,
-      country: connection.country || '',
-      skills: connection.skills || [],
-      online_status: connection.online_status ? 'online' : 'offline',
-      last_seen: connection.last_seen,
-      latitude: null,
-      longitude: null,
-      certifications: connection.certifications || [],
-      education: connection.education || [],
-      experiences: connection.experiences || [],
-      friends: []
-    });
+  const startConversation = () => {
+    if (!profile) return;
+
+    // Assurez-vous que online_status est un boolean
+    const userWithBooleanStatus = {
+      ...profile,
+      online_status: convertOnlineStatusToBoolean(profile.online_status)
+    };
+    
+    setReceiver(userWithBooleanStatus);
     setShowConversation(true);
-    navigate('/messages');
+    navigate("/messages");
   };
 
+  const viewProfile = () => {
+    if (onProfileClick) {
+      onProfileClick(profile);
+    } else {
+      navigate(`/profile/${profile.id}`);
+    }
+  };
+
+  // Format last seen
+  let lastSeenText = "Dernière connexion inconnue";
+  if (profile.online_status) {
+    lastSeenText = "En ligne";
+  } else if (profile.last_seen) {
+    try {
+      const lastSeenDate = new Date(profile.last_seen);
+      const now = new Date();
+      const diffInDays = Math.floor((now.getTime() - lastSeenDate.getTime()) / (1000 * 60 * 60 * 24));
+      
+      if (diffInDays < 1) {
+        lastSeenText = `Dernière connexion ${formatDistanceToNow(lastSeenDate, { addSuffix: true, locale: fr })}`;
+      } else if (diffInDays < 7) {
+        lastSeenText = `Dernière connexion ${format(lastSeenDate, 'eeee', { locale: fr })}`;
+      } else {
+        lastSeenText = `Dernière connexion le ${format(lastSeenDate, 'dd MMM yyyy', { locale: fr })}`;
+      }
+    } catch (error) {
+      console.error("Error formatting date:", error);
+    }
+  }
+
   return (
-    <div className="flex items-center justify-between p-3 rounded-lg bg-card hover:bg-muted/50 transition-colors">
-      <div className="flex items-center gap-3">
-        <Avatar>
-          <AvatarImage src={connection.avatar_url || undefined} />
-          <AvatarFallback>{connection.full_name?.[0]}</AvatarFallback>
-        </Avatar>
-        
-        <div>
-          <h4 className="text-sm font-medium">{connection.full_name}</h4>
-          {connection.bio && (
-            <p className="text-xs text-muted-foreground line-clamp-1">
-              {connection.bio}
-            </p>
+    <Card className={className}>
+      <CardHeader className="flex flex-row items-center space-x-4 p-4">
+        <div className="relative">
+          <UserAvatar 
+            user={{ 
+              id: profile.id, 
+              name: profile.full_name || "", 
+              image: profile.avatar_url 
+            }} 
+            className="h-12 w-12" 
+          />
+          <span
+            className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-card ${
+              profile.online_status ? "bg-green-500" : "bg-gray-300"
+            }`}
+          />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold truncate">{profile.full_name}</h3>
+              <p className="text-sm text-muted-foreground truncate">
+                {lastSeenText}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button variant="ghost" size="icon" onClick={viewProfile}>
+            <User className="h-4 w-4" />
+            <span className="sr-only">Voir le profil</span>
+          </Button>
+          {isFriend ? (
+            <Button variant="ghost" size="icon" onClick={startConversation}>
+              <MessageCircle className="h-4 w-4" />
+              <span className="sr-only">Message</span>
+            </Button>
+          ) : isFriendRequestSent ? (
+            <Button variant="ghost" size="icon" disabled={isLoading} title="Demande envoyée">
+              <UserCheck className="h-4 w-4 text-primary" />
+              <span className="sr-only">Demande envoyée</span>
+            </Button>
+          ) : isFriendRequestReceived ? (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              disabled={isLoading}
+              onClick={() => {
+                // TODO: Implement accept friend request
+                toast.success("Demande acceptée");
+              }}
+            >
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Accepter"}
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleConnect}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <UserRoundPlus className="h-4 w-4" />
+              )}
+              <span className="sr-only">Connecter</span>
+            </Button>
           )}
         </div>
-      </div>
-      
-      <div className="flex items-center gap-1">
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={handleConnect}
-          className="text-xs"
-        >
-          <UserPlus className="h-3.5 w-3.5 mr-1" />
-          Connecter
-        </Button>
-        
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={handleChat}
-          className="text-xs"
-        >
-          <MessageCircle className="h-3.5 w-3.5 mr-1" />
-          Message
-        </Button>
-      </div>
-    </div>
+      </CardHeader>
+    </Card>
   );
 }

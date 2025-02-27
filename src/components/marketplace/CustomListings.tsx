@@ -105,10 +105,10 @@ export function CustomListings({ items, isLoading = false }: CustomListingsProps
     if (!user) return;
 
     try {
-      // Simplification - utiliser un insert direct au lieu de RPC
+      // Insertion dans la table marketplace_views
       await supabase
         .from('marketplace_views')
-        .upsert({ 
+        .insert({ 
           item_id: itemId,
           user_id: user.id
         });

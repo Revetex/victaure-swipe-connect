@@ -6,7 +6,8 @@ import type {
   Certification,
   Profile,
   User,
-  UserConnection
+  UserConnection,
+  SocialLinks
 } from '@/types/profile';
 
 // Transforme les données brutes d'un profil en objet Profile
@@ -25,18 +26,17 @@ export const transformToProfile = (data: any): Profile => {
     state: data.state || '',
     country: data.country || '',
     skills: data.skills || [],
-    experiences: data.experiences || [],
-    education: data.education || [],
-    certifications: data.certifications || [],
-    social_links: data.social_links || {},
-    online_status: data.online_status || 'offline',
+    online_status: typeof data.online_status === 'string' 
+      ? data.online_status === 'online' || data.online_status === 'true'
+      : !!data.online_status,
     last_seen: data.last_seen || '',
     cover_image: data.cover_image || '',
     job_title: data.job_title || '',
     created_at: data.created_at || '',
     updated_at: data.updated_at || '',
     latitude: data.latitude || 0,
-    longitude: data.longitude || 0
+    longitude: data.longitude || 0,
+    social_links: data.social_links || {}
   };
 };
 
@@ -89,7 +89,9 @@ export const transformToFullProfile = (data: any): User => {
     state: data.state || '',
     country: data.country || '',
     skills: data.skills || [],
-    online_status: data.online_status || 'offline',
+    online_status: typeof data.online_status === 'string' 
+      ? data.online_status === 'online' || data.online_status === 'true'
+      : !!data.online_status,
     last_seen: data.last_seen || '',
     job_title: data.job_title || '',
     // Autres propriétés de l'utilisateur
@@ -98,7 +100,8 @@ export const transformToFullProfile = (data: any): User => {
     latitude: data.latitude || 0,
     longitude: data.longitude || 0,
     connections: data.connections || [],
-    friends: []
+    friends: [],
+    social_links: data.social_links || {}
   };
   
   return user;

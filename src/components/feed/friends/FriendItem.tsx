@@ -1,5 +1,5 @@
 
-import { UserProfile } from "@/types/profile";
+import { UserProfile, convertOnlineStatusToBoolean } from "@/types/profile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -57,23 +57,14 @@ export function FriendItem({ friend, onRemove }: FriendItemProps) {
     // Navigation vers la page de messages
     navigate("/messages");
 
+    // Assurez-vous que online_status est un boolean
+    const receiverWithBooleanStatus = {
+      ...friend,
+      online_status: convertOnlineStatusToBoolean(friend.online_status)
+    };
+
     // Configuration des paramètres pour afficher la conversation
-    setReceiver({
-      id: friend.id,
-      full_name: friend.full_name || "",
-      avatar_url: friend.avatar_url,
-      online_status: (typeof friend.online_status === 'string') ? 
-        (friend.online_status as 'online' | 'offline') :
-        (friend.online_status ? 'online' : 'offline'),
-      last_seen: friend.last_seen,
-      role: friend.role,
-      skills: friend.skills || [],
-      city: friend.city,
-      state: friend.state,
-      country: friend.country,
-      bio: friend.bio || "",
-      phone: friend.phone || "",
-    });
+    setReceiver(receiverWithBooleanStatus);
     
     // Afficher la conversation
     setShowConversation(true);

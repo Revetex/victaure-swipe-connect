@@ -1,5 +1,5 @@
 
-import { UserProfile, Friend } from "@/types/profile";
+import { UserProfile, Friend, convertOnlineStatusToBoolean } from "@/types/profile";
 import { UserAvatar } from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -41,13 +41,13 @@ export function FriendCard({ friend, onRemove }: FriendCardProps) {
   const { user } = useAuth();
 
   const handleMessage = () => {
-    // Create a compatible Receiver object from the friend data
+    // Convertir en Receiver avec online_status comme boolean
     setReceiver({
       id: friend.id,
       full_name: friend.full_name || '',
       avatar_url: friend.avatar_url,
       email: 'email' in friend ? friend.email : null,
-      online_status: friend.online_status ? 'online' : 'offline',
+      online_status: convertOnlineStatusToBoolean(friend.online_status),
       last_seen: friend.last_seen,
       latitude: 'latitude' in friend ? friend.latitude : 0,
       longitude: 'longitude' in friend ? friend.longitude : 0
@@ -80,10 +80,10 @@ export function FriendCard({ friend, onRemove }: FriendCardProps) {
       
       if (connection) {
         // Remove the connection
-        const { error: removeError } = await supabase.rpc('remove_friend', {
-          p_connection_id: connection.id,
-          p_user_id: user.id
-        });
+        const { error: removeError } = await supabase
+          .from('user_connections')
+          .delete()
+          .eq('id', connection.id);
         
         if (removeError) throw removeError;
         

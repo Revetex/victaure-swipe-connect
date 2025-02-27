@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile, convertOnlineStatusToBoolean } from "@/types/profile";
+import { Friend, UserProfile, transformConnection } from "@/types/profile";
 import { FriendItem } from "../feed/friends/FriendItem";
 import { EmptyConnectionsState } from "../feed/friends/EmptyConnectionsState";
 import { UserPlus } from "lucide-react";
@@ -50,36 +50,10 @@ export function FriendsList({
 
         if (!connections) return [];
 
-        // Format connections as UserProfiles
-        const friendsList = connections.map(conn => {
-          const isSender = conn.sender_id === user.id;
-          // Récupérer les données du profil de l'ami
-          const friendId = isSender ? conn.receiver_id : conn.sender_id;
-          const friendName = isSender ? conn.receiver_name : conn.sender_name;
-          const friendAvatar = isSender ? conn.receiver_avatar : conn.sender_avatar;
-          const friendOnlineStatus = isSender ? conn.receiver_online_status : conn.sender_online_status;
-          const friendLastSeen = isSender ? conn.receiver_last_seen : conn.sender_last_seen;
-          
-          // Create a UserProfile with required fields
-          const profile: UserProfile = {
-            id: friendId,
-            full_name: friendName || '',
-            avatar_url: friendAvatar || null,
-            email: '',
-            role: 'professional',
-            bio: '',
-            phone: '',
-            city: '',
-            state: '',
-            country: '',
-            skills: [],
-            online_status: !!friendOnlineStatus, // Conversion explicite en boolean
-            last_seen: friendLastSeen,
-            created_at: new Date().toISOString(),
-          };
-          
-          return profile;
-        }).filter(Boolean) as UserProfile[];
+        // Format connections as Friend objects using the transform utility
+        const friendsList = connections.map(conn => 
+          transformConnection(conn, user.id)
+        );
 
         // Apply filters
         let filteredFriends = friendsList || [];
@@ -106,6 +80,26 @@ export function FriendsList({
         return [];
       }
     }
+  });
+
+  const friendProfiles = friends.map(friend => {
+    const profile: UserProfile = {
+      id: friend.id,
+      full_name: friend.full_name,
+      avatar_url: friend.avatar_url,
+      email: friend.email,
+      role: friend.role,
+      bio: friend.bio,
+      phone: friend.phone,
+      city: friend.city,
+      state: friend.state,
+      country: friend.country,
+      skills: friend.skills,
+      online_status: friend.online_status,
+      last_seen: friend.last_seen,
+      created_at: friend.created_at,
+    };
+    return profile;
   });
 
   if (isLoading) {
@@ -147,7 +141,7 @@ export function FriendsList({
 
   return (
     <div className="space-y-3">
-      {friends.map(friend => (
+      {friendProfiles.map(friend => (
         <FriendItem key={friend.id} friend={friend} onRemove={() => refetch()} />
       ))}
     </div>

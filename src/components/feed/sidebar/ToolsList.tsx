@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { PenTool, Calculator, Globe, ChessRook, StickyNote } from "lucide-react";
+import { PenTool, Calculator, Globe, Check, StickyNote } from "lucide-react";
 import { motion } from "framer-motion";
 
 export interface ToolsListProps {
@@ -29,7 +29,7 @@ export const tools = [
   {
     id: "chess",
     name: "Échecs",
-    icon: <ChessRook className="h-4 w-4" />,
+    icon: <Check className="h-4 w-4" />, // Remplacement de ChessRook par Check
     color: "text-green-500"
   },
   {
