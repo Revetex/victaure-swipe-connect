@@ -14,9 +14,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function WalletPage() {
   const { transactions, isLoading, wallet } = useWallet();
+  const isMobile = useIsMobile();
 
   return (
     <motion.div 
@@ -28,18 +30,21 @@ export function WalletPage() {
       
       <div className="mt-8">
         <Tabs defaultValue="transactions">
-          <TabsList className="grid grid-cols-3 mb-6">
-            <TabsTrigger value="transactions" className="flex items-center">
-              <ArrowRightLeft className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Transactions</span>
+          <TabsList className={cn(
+            "grid mb-6 w-full",
+            isMobile ? "grid-cols-3" : "grid-cols-3 max-w-2xl mx-auto"
+          )}>
+            <TabsTrigger value="transactions" className="flex items-center justify-center">
+              <ArrowRightLeft className={cn("h-4 w-4", !isMobile && "mr-2")} />
+              {!isMobile && <span>Transactions</span>}
             </TabsTrigger>
-            <TabsTrigger value="transfer" className="flex items-center">
-              <BanknoteIcon className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Transférer</span>
+            <TabsTrigger value="transfer" className="flex items-center justify-center">
+              <BanknoteIcon className={cn("h-4 w-4", !isMobile && "mr-2")} />
+              {!isMobile && <span>Transférer</span>}
             </TabsTrigger>
-            <TabsTrigger value="payment-methods" className="flex items-center">
-              <CreditCard className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Méthodes de paiement</span>
+            <TabsTrigger value="payment-methods" className="flex items-center justify-center">
+              <CreditCard className={cn("h-4 w-4", !isMobile && "mr-2")} />
+              {!isMobile && <span>Méthodes de paiement</span>}
             </TabsTrigger>
           </TabsList>
           
