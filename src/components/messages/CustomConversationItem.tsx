@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { format, isToday, isYesterday } from "date-fns";
 import { fr } from "date-fns/locale";
-import { CheckCheck, ChevronRight, Pin, Volume2Off } from "lucide-react";
+import { CheckCheck, ChevronRight, Pin, VolumeOff } from "lucide-react";
 
 interface CustomConversationItemProps {
   avatar?: string;
@@ -81,7 +81,7 @@ export function CustomConversationItem({
               {isPinned && <Pin className="h-3 w-3 text-muted-foreground" />}
             </div>
             <div className="text-xs text-muted-foreground whitespace-nowrap flex items-center gap-1">
-              {isMuted && <Volume2Off className="h-3 w-3" />}
+              {isMuted && <VolumeOff className="h-3 w-3" />}
               {displayTime}
             </div>
           </div>

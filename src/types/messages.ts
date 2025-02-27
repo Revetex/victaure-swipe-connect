@@ -6,11 +6,16 @@ export interface Message {
   receiver_id: string;
   created_at: string;
   read: boolean;
-  status?: string;
+  status?: 'sent' | 'delivered' | 'read';
   reaction?: string;
   deleted?: boolean;
   message_type?: 'user' | 'assistant' | 'system';
   metadata?: any;
+  sender?: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+  };
 }
 
 export interface MessageDelivery {
@@ -22,10 +27,19 @@ export interface MessageDelivery {
   read_at?: string;
 }
 
+export interface ConversationParticipant {
+  id: string;
+  full_name: string | null;
+  avatar_url?: string | null;
+  online_status: boolean;
+  last_seen?: string | null;
+}
+
 export interface Conversation {
   id: string;
   participant1_id: string;
   participant2_id: string;
+  participant: ConversationParticipant;
   last_message?: string;
   last_message_time?: string;
   participant1_last_read?: string;
@@ -33,4 +47,9 @@ export interface Conversation {
   created_at: string;
   updated_at: string;
   status?: string;
+  unread?: number;
+  isPinned?: boolean;
+  isMuted?: boolean;
+  online?: boolean;
+  avatar_url?: string | null;
 }
