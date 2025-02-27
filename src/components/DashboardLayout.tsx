@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/header/AppHeader";
 import { motion, AnimatePresence } from "framer-motion";
 import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
-import { ThemeSelector } from "./auth/ThemeSelector";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(4);
@@ -66,8 +65,6 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
       animate={{ opacity: 1 }}
       className="flex min-h-screen w-full overflow-hidden bg-gradient-to-br from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]"
     >
-      <ThemeSelector />
-
       <DashboardMobileNav
         currentPage={currentPage}
         showMobileMenu={showMobileMenu}
