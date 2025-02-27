@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { useFriendsList } from "@/components/messages/conversation/hooks/useFriendsList";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserAvatar } from "@/components/UserAvatar";
+import { UserProfile } from "@/types/profile";
 
 interface DashboardFriendsListProps {
   show: boolean;
@@ -47,8 +48,14 @@ export function DashboardFriendsList({
                 >
                   <UserAvatar
                     user={{
+                      id: friend.id,
+                      email: friend.email || '',
+                      full_name: friend.full_name || 'Utilisateur',
                       avatar_url: friend.avatar_url,
-                      full_name: friend.full_name || 'Utilisateur'
+                      certifications: [],
+                      education: [],
+                      experiences: [],
+                      friends: []
                     }}
                     className="h-10 w-10"
                   />
