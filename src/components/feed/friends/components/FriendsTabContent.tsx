@@ -66,17 +66,21 @@ export function FriendsTabContent({
           const isSender = conn.sender_id === user.id;
           const friendData = isSender ? conn.receiver : conn.sender;
           
-          if (!friendData || typeof friendData !== 'object' || !friendData.id) {
+          // Vérification null pour friendData
+          if (!friendData) return null;
+          
+          // Vérification plus stricte du type
+          if (typeof friendData !== 'object' || !('id' in friendData)) {
             console.error("Invalid friend data:", friendData);
             return null;
           }
 
           return {
-            id: String(friendData.id),
-            full_name: friendData.full_name,
-            avatar_url: friendData.avatar_url,
-            online_status: friendData.online_status || false,
-            last_seen: friendData.last_seen,
+            id: String(friendData.id || ''),
+            full_name: friendData.full_name || '',
+            avatar_url: friendData.avatar_url || null,
+            online_status: !!friendData.online_status,
+            last_seen: friendData.last_seen || null,
             role: 'professional',
             bio: '',
             phone: '',
@@ -85,7 +89,7 @@ export function FriendsTabContent({
             country: 'Canada',
             email: null,
             created_at: new Date().toISOString(),
-            friends: []
+            friends: [] // Maintenant obligatoire
           } as Friend;
         }).filter(Boolean) as Friend[];
 

@@ -21,6 +21,8 @@ interface BaseProfile {
   last_seen?: string | null;
   created_at: string;
   updated_at?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 // Interface pour l'éducation
@@ -72,9 +74,9 @@ export interface SocialLinks {
   [key: string]: string | undefined;
 }
 
-// Interface principale UserProfile
+// Interface pour un profil utilisateur
 export interface UserProfile extends BaseProfile {
-  friends: Friend[]; // Fait friends obligatoire pour résoudre l'erreur
+  friends: Friend[]; // Rendre friends obligatoire pour résoudre les erreurs
   certifications?: Certification[];
   education?: Education[];
   experiences?: Experience[];
@@ -82,16 +84,15 @@ export interface UserProfile extends BaseProfile {
   privacy_enabled?: boolean;
   verified?: boolean;
   sections_order?: string[];
-  latitude?: number;
-  longitude?: number;
   cover_image?: string;
   social_links?: SocialLinks;
 }
 
 // Interface User
 export interface User extends UserProfile {
-  // User hérite tout de UserProfile, donc friends est également obligatoire
+  // Hérité de UserProfile, friends est déjà obligatoire
   connections?: UserConnection[];
+  job_title?: string;
 }
 
 // Interface Friend
@@ -99,6 +100,7 @@ export interface Friend extends BaseProfile {
   friendship_id?: string;
   status?: string;
   job_title?: string;
+  friends: Friend[];
 }
 
 // Interface pour une connexion utilisateur
@@ -177,7 +179,7 @@ export function createEmptyProfile(id: string, email: string): UserProfile {
     certifications: [],
     education: [],
     experiences: [],
-    friends: []
+    friends: []  // Maintenant obligatoire
   };
 }
 
@@ -197,7 +199,8 @@ export function transformConnection(connection: any, currentUserId: string): Fri
     last_seen: isSender ? connection.receiver_last_seen : connection.sender_last_seen,
     created_at: connection.created_at,
     friendship_id: connection.id,
-    status: connection.status
+    status: connection.status,
+    friends: [] // Obligatoire maintenant
   };
 }
 
@@ -205,7 +208,7 @@ export function transformConnection(connection: any, currentUserId: string): Fri
 export function friendToUserProfile(friend: Friend): UserProfile {
   return {
     ...friend,
-    friends: [], 
+    friends: friend.friends || [], // Utiliser la même valeur ou un tableau vide
     certifications: [],
     education: [],
     experiences: []

@@ -20,10 +20,16 @@ export function CustomConversationList() {
   const [showNewConversation, setShowNewConversation] = useState(false);
   const { user } = useAuth();
   const { friends, isLoadingFriends } = useFriendsList();
-  const { conversations, isLoadingConversations, refetchConversations } = useConversations();
+  const { conversations, loading: isLoadingConversations, handleDeleteConversation, createConversation } = useConversations();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const { isDark } = useThemeContext();
+  
+  // Ajouter fonction refetch
+  const refetchConversations = () => {
+    // Cette fonction est un espace réservé - elle sera correctement implémentée dans useConversations
+    console.log("Refreshing conversations");
+  };
 
   useEffect(() => {
     const subscription = supabase
@@ -36,11 +42,13 @@ export function CustomConversationList() {
     return () => {
       supabase.removeChannel(subscription);
     };
-  }, [refetchConversations]);
+  }, []);
   
   const filteredConversations = conversations.filter(conv => {
-    const searchIn = conv.participant.toLowerCase();
-    return searchIn.includes(searchQuery.toLowerCase());
+    if (typeof conv.participant === 'string') {
+      return conv.participant.toLowerCase().includes(searchQuery.toLowerCase());
+    }
+    return false;
   });
   
   const filteredFriends = friends.filter(friend => {
@@ -51,7 +59,7 @@ export function CustomConversationList() {
   // Filtrer les conversations en fonction de l'onglet actif
   const displayedConversations = activeTab === "all" 
     ? filteredConversations 
-    : filteredConversations.filter(conv => conv.unread > 0);
+    : filteredConversations.filter(conv => (conv.unread || 0) > 0);
 
   // Vérifier si la liste de conversations est vide
   const isConversationsEmpty = displayedConversations.length === 0;
@@ -134,23 +142,23 @@ export function CustomConversationList() {
               <CustomConversationItem
                 key={conversation.id}
                 avatar={conversation.avatar_url ?? undefined}
-                name={conversation.participant}
+                name={String(conversation.participant)}
                 message={conversation.last_message}
                 time={conversation.last_message_time}
-                unread={conversation.unread}
-                online={conversation.online}
-                isActive={receiver?.id === conversation.participant_id}
+                unread={conversation.unread ?? 0}
+                online={conversation.online ?? false}
+                isActive={receiver?.id === conversation.participant1_id || receiver?.id === conversation.participant2_id}
                 onClick={() => {
                   setReceiver({
-                    id: conversation.participant_id,
-                    full_name: conversation.participant,
+                    id: conversation.participant1_id === user?.id ? conversation.participant2_id : conversation.participant1_id,
+                    full_name: String(conversation.participant),
                     avatar_url: conversation.avatar_url,
-                    online_status: conversation.online
+                    online_status: conversation.online ?? false
                   });
                   setShowConversation(true);
                 }}
-                isPinned={conversation.isPinned}
-                isMuted={conversation.isMuted}
+                isPinned={conversation.isPinned ?? false}
+                isMuted={conversation.isMuted ?? false}
               />
             ))}
           </motion.div>

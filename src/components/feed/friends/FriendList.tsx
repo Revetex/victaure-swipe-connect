@@ -58,17 +58,18 @@ export function FriendList({
           const isSender = conn.sender_id === user.id;
           const friendData = isSender ? conn.receiver : conn.sender;
           
+          // Vérification null pour friendData
           if (!friendData) return null;
 
           // Vérifier que les données ne sont pas une erreur ou que l'objet existe 
-          if (typeof friendData !== 'object' || !friendData.id) {
+          if (typeof friendData !== 'object' || !('id' in friendData)) {
             console.error("Invalid friend data:", friendData);
             return null;
           }
 
           // Create a UserProfile with required fields
           const profile: UserProfile = {
-            id: String(friendData.id),
+            id: String(friendData.id || ''),
             full_name: friendData.full_name || '',
             avatar_url: friendData.avatar_url || null,
             email: '',
@@ -80,9 +81,9 @@ export function FriendList({
             country: '',
             skills: [],
             online_status: !!friendData.online_status,
-            last_seen: friendData.last_seen,
+            last_seen: friendData.last_seen || null,
             created_at: new Date().toISOString(),
-            friends: []
+            friends: [] // Maintenant obligatoire
           };
           
           return profile;

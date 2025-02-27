@@ -39,7 +39,13 @@ export interface ConversationParticipant {
   avatar_url?: string | null;
   online_status: boolean;
   last_seen?: string | null;
-  toString(): string;
+}
+
+// Étendre l'interface String pour inclure toLowerCase()
+declare global {
+  interface ConversationParticipant {
+    toString(): string;
+  }
 }
 
 export interface Conversation {
@@ -67,7 +73,7 @@ export interface Receiver {
   full_name: string | null;
   avatar_url: string | null;
   email?: string | null;
-  online_status: boolean;
+  online_status: boolean; 
   last_seen?: string | null;
   latitude?: number;
   longitude?: number;
