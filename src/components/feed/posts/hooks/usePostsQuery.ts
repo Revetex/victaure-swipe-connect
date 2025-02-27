@@ -12,11 +12,17 @@ interface UsePostsQueryProps {
   limit: number;
 }
 
+interface PostsResponse {
+  posts: Post[];
+  nextPage: number | undefined;
+}
+
 export function usePostsQuery({ filter, sortBy, sortOrder, userId, limit = 10 }: UsePostsQueryProps) {
-  return useInfiniteQuery({
+  return useInfiniteQuery<PostsResponse, Error>({
     queryKey: ["posts", filter, sortBy, sortOrder, userId],
-    queryFn: async ({ pageParam = 0 }) => {
-      const from = pageParam * limit;
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }) => {
+      const from = (pageParam as number) * limit;
       const to = from + limit - 1;
 
       let query = supabase
@@ -101,11 +107,9 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId, limit = 10 }:
 
       return {
         posts: sortedData,
-        nextPage: data?.length === limit ? pageParam + 1 : undefined
+        nextPage: data?.length === limit ? (pageParam as number) + 1 : undefined
       };
     },
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    staleTime: 1000 * 60,
-    gcTime: 1000 * 60 * 5,
   });
 }

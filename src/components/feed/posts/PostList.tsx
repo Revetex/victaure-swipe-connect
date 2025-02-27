@@ -35,7 +35,7 @@ export function PostList({
   const { handleDelete, handleHide, handleUpdate } = usePostOperations();
 
   const { 
-    data: posts,
+    data,
     isLoading,
     error,
     isFetchingNextPage,
@@ -50,14 +50,16 @@ export function PostList({
     limit: 10
   });
 
-  // Infinite scroll detection
-  const [ref, inView] = useInView();
+  // Infinite scroll detection with ref
+  const [ref, inView] = useInView({
+    threshold: 0
+  });
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [inView, hasNextPage, isFetchingNextPage]);
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (error) {
     console.error("Erreur lors du chargement des posts:", error);
@@ -65,7 +67,7 @@ export function PostList({
     return null;
   }
 
-  const allPosts = posts?.pages.flatMap(page => page.posts) ?? [];
+  const allPosts = data?.pages.flatMap(page => page.posts) ?? [];
   const filteredPosts = allPosts.filter(post => 
     post.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
