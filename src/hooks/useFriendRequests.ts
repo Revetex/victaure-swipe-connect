@@ -1,186 +1,256 @@
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { PendingRequest } from "@/types/profile";
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
+import { PendingRequest } from '@/types/profile';
 
 export const useFriendRequests = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [incomingRequests, setIncomingRequests] = useState<PendingRequest[]>([]);
+  const [outgoingRequests, setOutgoingRequests] = useState<PendingRequest[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
-  const { data: pendingRequests = [], refetch: refetchPendingRequests, isLoading: isQueryLoading } = useQuery({
-    queryKey: ["pending-requests"],
-    queryFn: async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("Not authenticated");
+  // Adapter pour utiliser la table user_connections au lieu de friend_requests
+  const loadFriendRequests = useCallback(async () => {
+    if (!user?.id) return;
+    setIsLoading(true);
 
-        const { data: connections, error } = await supabase
-          .from('user_connections')
-          .select(`
-            id,
-            sender_id,
-            receiver_id,
-            status,
-            created_at,
-            updated_at,
-            sender:profiles!sender_id(
-              id,
-              full_name,
-              avatar_url
-            ),
-            receiver:profiles!receiver_id(
-              id,
-              full_name,
-              avatar_url
-            )
-          `)
-          .eq('status', 'pending')
-          .eq('connection_type', 'friend')
-          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
+    try {
+      // Chargement des demandes reçues (où l'utilisateur est le destinataire)
+      const { data: incomingData, error: incomingError } = await supabase
+        .from('user_connections')
+        .select(`
+          id,
+          status,
+          created_at,
+          updated_at,
+          sender_id,
+          receiver_id,
+          sender:profiles!user_connections_sender_id_fkey(id, full_name, avatar_url),
+          receiver:profiles!user_connections_receiver_id_fkey(id, full_name, avatar_url)
+        `)
+        .eq('receiver_id', user.id)
+        .eq('status', 'pending');
 
-        if (error) {
-          console.error("Error fetching friend requests:", error);
-          return [];
-        }
+      if (incomingError) throw incomingError;
 
-        if (!connections) return [];
+      // Chargement des demandes envoyées (où l'utilisateur est l'expéditeur)
+      const { data: outgoingData, error: outgoingError } = await supabase
+        .from('user_connections')
+        .select(`
+          id,
+          status,
+          created_at,
+          updated_at,
+          sender_id,
+          receiver_id,
+          sender:profiles!user_connections_sender_id_fkey(id, full_name, avatar_url),
+          receiver:profiles!user_connections_receiver_id_fkey(id, full_name, avatar_url)
+        `)
+        .eq('sender_id', user.id)
+        .eq('status', 'pending');
 
-        // Format the connections data safely
-        return connections.map(conn => {
-          // Safely get sender and receiver data with nullish coalescing
-          const sender = conn.sender || {};
-          const receiver = conn.receiver || {};
-          
-          return {
-            id: conn.id,
-            sender_id: conn.sender_id,
-            receiver_id: conn.receiver_id,
-            status: conn.status,
-            created_at: conn.created_at,
-            updated_at: conn.updated_at,
-            sender: {
-              id: sender.id || "",
-              full_name: sender.full_name || "Utilisateur",
-              avatar_url: sender.avatar_url || null
-            },
-            receiver: {
-              id: receiver.id || "",
-              full_name: receiver.full_name || "Utilisateur",
-              avatar_url: receiver.avatar_url || null
-            },
-            type: conn.receiver_id === user.id ? 'incoming' : 'outgoing'
-          } as PendingRequest;
+      if (outgoingError) throw outgoingError;
+
+      // Formater les données pour les adapter au type PendingRequest
+      const formattedIncoming = incomingData.map((request) => ({
+        id: request.id,
+        sender_id: request.sender_id,
+        receiver_id: request.receiver_id,
+        status: request.status,
+        created_at: request.created_at,
+        updated_at: request.updated_at,
+        sender: {
+          id: request.sender?.id || '',
+          full_name: request.sender?.full_name || '',
+          avatar_url: request.sender?.avatar_url || null
+        },
+        receiver: {
+          id: request.receiver?.id || '',
+          full_name: request.receiver?.full_name || '',
+          avatar_url: request.receiver?.avatar_url || null
+        },
+        type: 'incoming' as const
+      }));
+
+      const formattedOutgoing = outgoingData.map((request) => ({
+        id: request.id,
+        sender_id: request.sender_id,
+        receiver_id: request.receiver_id,
+        status: request.status,
+        created_at: request.created_at,
+        updated_at: request.updated_at,
+        sender: {
+          id: request.sender?.id || '',
+          full_name: request.sender?.full_name || '',
+          avatar_url: request.sender?.avatar_url || null
+        },
+        receiver: {
+          id: request.receiver?.id || '',
+          full_name: request.receiver?.full_name || '',
+          avatar_url: request.receiver?.avatar_url || null
+        },
+        type: 'outgoing' as const
+      }));
+
+      setIncomingRequests(formattedIncoming);
+      setOutgoingRequests(formattedOutgoing);
+    } catch (error) {
+      console.error('Error loading friend requests:', error);
+      toast.error('Impossible de charger les demandes d\'amis');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user?.id]);
+
+  const acceptFriendRequest = useCallback(async (requestId: string) => {
+    if (!user?.id) return;
+
+    try {
+      // Mise à jour du statut de la demande
+      const { error } = await supabase
+        .from('user_connections')
+        .update({ status: 'accepted' })
+        .eq('id', requestId)
+        .eq('receiver_id', user.id);
+
+      if (error) throw error;
+
+      // Mise à jour de l'état local
+      setIncomingRequests(prev => prev.filter(req => req.id !== requestId));
+      
+      toast.success('Demande d\'ami acceptée');
+      
+      // Rechargement des demandes
+      loadFriendRequests();
+    } catch (error) {
+      console.error('Error accepting friend request:', error);
+      toast.error('Impossible d\'accepter la demande d\'ami');
+    }
+  }, [user?.id, loadFriendRequests]);
+
+  const rejectFriendRequest = useCallback(async (requestId: string) => {
+    if (!user?.id) return;
+
+    try {
+      // Mise à jour du statut de la demande
+      const { error } = await supabase
+        .from('user_connections')
+        .update({ status: 'rejected' })
+        .eq('id', requestId)
+        .eq('receiver_id', user.id);
+
+      if (error) throw error;
+
+      // Mise à jour de l'état local
+      setIncomingRequests(prev => prev.filter(req => req.id !== requestId));
+      
+      toast.success('Demande d\'ami rejetée');
+    } catch (error) {
+      console.error('Error rejecting friend request:', error);
+      toast.error('Impossible de rejeter la demande d\'ami');
+    }
+  }, [user?.id]);
+
+  const cancelFriendRequest = useCallback(async (requestId: string) => {
+    if (!user?.id) return;
+
+    try {
+      // Suppression de la demande
+      const { error } = await supabase
+        .from('user_connections')
+        .delete()
+        .eq('id', requestId)
+        .eq('sender_id', user.id);
+
+      if (error) throw error;
+
+      // Mise à jour de l'état local
+      setOutgoingRequests(prev => prev.filter(req => req.id !== requestId));
+      
+      toast.success('Demande d\'ami annulée');
+    } catch (error) {
+      console.error('Error canceling friend request:', error);
+      toast.error('Impossible d\'annuler la demande d\'ami');
+    }
+  }, [user?.id]);
+
+  const sendFriendRequest = useCallback(async (receiverId: string) => {
+    if (!user?.id || !receiverId) return;
+
+    try {
+      // Vérification si une demande n'existe pas déjà
+      const { data: existingRequest, error: checkError } = await supabase
+        .from('user_connections')
+        .select('*')
+        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${user.id})`)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        throw checkError;
+      }
+
+      if (existingRequest) {
+        toast.info('Une demande d\'ami existe déjà avec cet utilisateur');
+        return;
+      }
+
+      // Création de la demande
+      const { error } = await supabase
+        .from('user_connections')
+        .insert({
+          sender_id: user.id,
+          receiver_id: receiverId,
+          status: 'pending'
         });
-      } catch (error) {
-        console.error("Error in fetchPendingRequests:", error);
-        return [];
-      }
-    }
-  });
 
-  const handleAcceptRequest = async (requestId: string, senderId: string, senderName: string) => {
-    try {
-      setIsLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("Vous devez être connecté pour accepter des demandes d'ami");
-        return;
-      }
+      if (error) throw error;
 
-      const { data, error } = await supabase.rpc('accept_friend_request', {
-        p_request_id: requestId,
-        p_user_id: user.id
-      });
-
-      if (error) {
-        console.error("Error accepting friend request:", error);
-        toast.error("Erreur lors de l'acceptation de la demande");
-        return;
-      }
-
-      if (data) {
-        toast.success(`Vous êtes maintenant ami avec ${senderName}`);
-        refetchPendingRequests();
-      }
+      toast.success('Demande d\'ami envoyée');
+      
+      // Rechargement des demandes
+      loadFriendRequests();
     } catch (error) {
-      console.error("Error in handleAcceptRequest:", error);
-      toast.error("Une erreur s'est produite");
-    } finally {
-      setIsLoading(false);
+      console.error('Error sending friend request:', error);
+      toast.error('Impossible d\'envoyer la demande d\'ami');
     }
-  };
+  }, [user?.id, loadFriendRequests]);
 
-  const handleRejectRequest = async (requestId: string, senderName: string) => {
-    try {
-      setIsLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("Vous devez être connecté pour rejeter des demandes d'ami");
-        return;
-      }
-
-      const { data, error } = await supabase.rpc('reject_friend_request', {
-        p_request_id: requestId,
-        p_user_id: user.id
-      });
-
-      if (error) {
-        console.error("Error rejecting friend request:", error);
-        toast.error("Erreur lors du rejet de la demande");
-        return;
-      }
-
-      if (data) {
-        toast.success(`Vous avez rejeté la demande de ${senderName}`);
-        refetchPendingRequests();
-      }
-    } catch (error) {
-      console.error("Error in handleRejectRequest:", error);
-      toast.error("Une erreur s'est produite");
-    } finally {
-      setIsLoading(false);
+  // Chargement initial des demandes
+  useEffect(() => {
+    if (user?.id) {
+      loadFriendRequests();
     }
-  };
+  }, [user?.id, loadFriendRequests]);
 
-  const handleCancelRequest = async (requestId: string, receiverName: string) => {
-    try {
-      setIsLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("Vous devez être connecté pour annuler des demandes d'ami");
-        return;
-      }
+  // Rechargement des demandes sur changement d'utilisateur
+  useEffect(() => {
+    const channel = supabase
+      .channel('user_connections_changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'user_connections',
+        filter: `or(sender_id.eq.${user?.id},receiver_id.eq.${user?.id})`,
+      }, () => {
+        loadFriendRequests();
+      })
+      .subscribe();
 
-      const { data, error } = await supabase.rpc('cancel_friend_request', {
-        p_request_id: requestId,
-        p_user_id: user.id
-      });
-
-      if (error) {
-        console.error("Error canceling friend request:", error);
-        toast.error("Erreur lors de l'annulation de la demande");
-        return;
-      }
-
-      if (data) {
-        toast.success(`Demande d'ami à ${receiverName} annulée`);
-        refetchPendingRequests();
-      }
-    } catch (error) {
-      console.error("Error in handleCancelRequest:", error);
-      toast.error("Une erreur s'est produite");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, loadFriendRequests]);
 
   return {
-    pendingRequests,
-    isLoading: isLoading || isQueryLoading,
-    handleAcceptRequest,
-    handleRejectRequest,
-    handleCancelRequest,
-    refetchPendingRequests
+    incomingRequests,
+    outgoingRequests,
+    isLoading,
+    acceptFriendRequest,
+    rejectFriendRequest,
+    cancelFriendRequest,
+    sendFriendRequest,
+    loadFriendRequests
   };
 };
