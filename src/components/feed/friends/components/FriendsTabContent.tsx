@@ -25,7 +25,6 @@ export function FriendsTabContent({
     queryFn: async () => {
       if (!user?.id) return [];
 
-      // Récupérer les amis depuis la table friendships où le statut est 'accepted'
       const { data: friendships, error } = await supabase
         .from('friendships')
         .select(`
@@ -42,8 +41,7 @@ export function FriendsTabContent({
             country,
             skills,
             online_status,
-            last_seen,
-            verified
+            last_seen
           )
         `)
         .eq('user_id', user.id)
@@ -54,19 +52,29 @@ export function FriendsTabContent({
         return [];
       }
 
-      // Transformer les données pour correspondre au type UserProfile
-      return friendships.map(friendship => ({
-        ...friendship.friend,
-        role: friendship.friend.role || 'professional',
-        country: friendship.friend.country || 'Canada',
-        skills: friendship.friend.skills || [],
-        online_status: friendship.friend.online_status || false,
-        last_seen: friendship.friend.last_seen || new Date().toISOString(),
-        certifications: [],
-        education: [],
-        experiences: [],
-        friends: []
-      })) as UserProfile[];
+      return (friendships || []).map(friendship => {
+        const friend = friendship.friend as any;
+        return {
+          id: friend.id,
+          full_name: friend.full_name,
+          avatar_url: friend.avatar_url,
+          email: friend.email,
+          role: friend.role || 'professional',
+          bio: friend.bio,
+          phone: friend.phone,
+          city: friend.city,
+          state: friend.state,
+          country: friend.country || 'Canada',
+          skills: friend.skills || [],
+          online_status: friend.online_status || false,
+          last_seen: friend.last_seen || new Date().toISOString(),
+          certifications: [],
+          education: [],
+          experiences: [],
+          friends: [],
+          verified: false
+        } as UserProfile;
+      });
     }
   });
 

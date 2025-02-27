@@ -17,51 +17,6 @@ export function ConnectionsSection() {
   const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 5;
 
-  const {
-    data: friends = [],
-    isLoading
-  } = useQuery({
-    queryKey: ["friends"],
-    queryFn: async () => {
-      const {
-        data: {
-          user
-        }
-      } = await supabase.auth.getUser();
-      if (!user) return [];
-
-      const {
-        data: acceptedRequests
-      } = await supabase.from("friend_requests").select(`
-          sender:profiles!friend_requests_sender_id_fkey(*),
-          receiver:profiles!friend_requests_receiver_id_fkey(*)
-        `).eq("status", "accepted").or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
-
-      if (!acceptedRequests) return [];
-
-      return acceptedRequests.map(request => {
-        const friend = request.sender.id === user.id ? request.receiver : request.sender;
-        return {
-          ...friend,
-          country: friend.country || "Canada",
-          role: friend.role || "professional",
-          email: friend.email || "",
-          skills: friend.skills || [],
-          online_status: friend.online_status || false,
-          last_seen: friend.last_seen || new Date().toISOString(),
-          certifications: [],
-          education: [],
-          experiences: [],
-          friends: []
-        };
-      });
-    }
-  });
-
-  const filteredFriends = friends.filter(friend => 
-    friend.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   if (isLoading) {
     return (
       <Card className="p-8 bg-black/40">
@@ -93,16 +48,15 @@ export function ConnectionsSection() {
           <Tabs defaultValue="all" className="w-full">
             <TabsList className="w-full grid grid-cols-2 mb-4 bg-zinc-900/50">
               <TabsTrigger value="all" className="data-[state=active]:bg-zinc-800">
-                Toutes ({filteredFriends.length})
+                Toutes
               </TabsTrigger>
               <TabsTrigger value="online" className="data-[state=active]:bg-zinc-800">
-                En ligne ({filteredFriends.filter(f => f.online_status).length})
+                En ligne
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="all" className="mt-0">
               <FriendsTabContent 
-                friends={filteredFriends}
                 currentPage={currentPage}
                 itemsPerPage={itemsPerPage}
               />
@@ -110,23 +64,12 @@ export function ConnectionsSection() {
 
             <TabsContent value="online" className="mt-0">
               <FriendsTabContent 
-                friends={filteredFriends}
                 currentPage={currentPage}
                 itemsPerPage={itemsPerPage}
                 showOnlineOnly
               />
             </TabsContent>
           </Tabs>
-
-          {filteredFriends.length > itemsPerPage && (
-            <div className="mt-6">
-              <ConnectionsPagination
-                currentPage={currentPage}
-                totalPages={Math.ceil(filteredFriends.length / itemsPerPage)}
-                onPageChange={setCurrentPage}
-              />
-            </div>
-          )}
         </div>
       </Card>
 
