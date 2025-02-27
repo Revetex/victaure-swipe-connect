@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { MarketplaceFilters, MarketplaceListing } from '@/types/marketplace';
 import { toast } from 'sonner';
+import { adaptListingData } from '@/utils/marketplace';
 
 export function useListingSearch(
   searchQuery: string,
