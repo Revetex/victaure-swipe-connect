@@ -1,3 +1,4 @@
+
 import { useRef, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "next-themes";
@@ -26,9 +27,7 @@ export function VictaureChat({
 }: VictaureChatProps) {
   const [userInput, setUserInput] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const {
-    user
-  } = useAuth();
+  const { user } = useAuth();
   const {
     suggestions,
     isLoadingSuggestions,
@@ -98,60 +97,56 @@ export function VictaureChat({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-4rem)] relative overflow-hidden p-4 my-0 py-0 px-0 bg-transparent rounded-none">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#1B2A4A]/50 to-[#1A1F2C]/50 pointer-events-none" />
-
-      <div className="relative z-10 flex flex-col h-full backdrop-blur-sm border border-[#64B5D9]/10 bg-transparent rounded-sm">
-        <div className="flex-none backdrop-blur-md border-b border-[#64B5D9]/10">
-          <div className="relative flex items-center justify-between">
-            <ChatHeader title="Chat Victaure" />
-            <div className="flex items-center gap-2 px-4">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={refreshMessages} 
-                className="text-[#F2EBE4]/80 hover:text-[#F2EBE4] transition-colors h-8 w-8" 
-                title="Effacer l'historique"
-              >
-                <RefreshCcw className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={onMaxQuestionsReached} 
-                className="text-[#F2EBE4]/80 hover:text-[#F2EBE4] transition-colors h-8 w-8" 
-                title="Fermer"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+    <div className="flex flex-col h-[calc(100dvh-4rem)] relative overflow-hidden bg-gradient-to-b from-[#1B2A4A]/50 to-[#1A1F2C]/50 backdrop-blur-md rounded-xl border border-[#64B5D9]/20">
+      <div className="flex-none border-b border-[#64B5D9]/10">
+        <div className="relative flex items-center justify-between">
+          <ChatHeader title="Assistant Victaure" />
+          <div className="flex items-center gap-2 px-4">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={refreshMessages} 
+              className="text-[#F2EBE4]/80 hover:text-[#F2EBE4] transition-colors h-8 w-8" 
+              title="Effacer l'historique"
+            >
+              <RefreshCcw className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={onMaxQuestionsReached} 
+              className="text-[#F2EBE4]/80 hover:text-[#F2EBE4] transition-colors h-8 w-8" 
+              title="Fermer"
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
         </div>
+      </div>
 
-        <div ref={chatContainerRef} className="flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-[#64B5D9]/10 scrollbar-track-transparent hover:scrollbar-thumb-[#64B5D9]/20">
-          <MessageList messages={messages} isLoading={isLoading} />
-        </div>
+      <div ref={chatContainerRef} className="flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-[#64B5D9]/10 scrollbar-track-transparent hover:scrollbar-thumb-[#64B5D9]/20 p-4">
+        <MessageList messages={messages} isLoading={isLoading} />
+      </div>
+      
+      <div className="relative bg-gradient-to-t from-[#1B2A4A]/20 via-[#1B2A4A]/10 to-transparent space-y-3 p-4">
+        <QuickSuggestions 
+          suggestions={suggestions} 
+          isLoading={isLoadingSuggestions} 
+          onSelect={handleSuggestionSelect} 
+        />
         
-        <div className="relative bg-gradient-to-t from-[#1B2A4A]/20 via-[#1B2A4A]/10 to-transparent space-y-3">
-          <QuickSuggestions 
-            suggestions={suggestions} 
-            isLoading={isLoadingSuggestions} 
-            onSelect={handleSuggestionSelect} 
-          />
-          
-          <ChatInput 
-            userInput={userInput} 
-            setUserInput={setUserInput} 
-            isRecording={isRecording} 
-            isSpeaking={isSpeaking} 
-            isLoading={isLoading} 
-            isDisabled={isDisabled} 
-            disabledMessage={disabledMessage} 
-            onStartRecording={startRecording} 
-            onStopSpeaking={() => setIsSpeaking(false)} 
-            onSendMessage={handleSendMessage} 
-          />
-        </div>
+        <ChatInput 
+          userInput={userInput} 
+          setUserInput={setUserInput} 
+          isRecording={isRecording} 
+          isSpeaking={isSpeaking} 
+          isLoading={isLoading} 
+          isDisabled={isDisabled} 
+          disabledMessage={disabledMessage} 
+          onStartRecording={startRecording} 
+          onStopSpeaking={() => setIsSpeaking(false)} 
+          onSendMessage={handleSendMessage} 
+        />
       </div>
     </div>
   );
