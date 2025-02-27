@@ -43,38 +43,40 @@ export default function Auth() {
       )}
       style={{ minHeight: viewportHeight ? `${viewportHeight}px` : "100vh" }}
     >
-      {/* Background amélioré avec animations et effets */}
       <AnimatedBackground />
 
       <div className="w-full z-10">
         <AuthHeader />
-        <main className="container px-4 pt-6 pb-12 md:pt-12 md:pb-24 mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 xl:gap-16">
-            {/* Zone du formulaire */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="lg:col-span-2"
-            >
-              <div className="backdrop-blur-xl bg-white/[0.02] border border-white/10 rounded-2xl p-6 shadow-2xl">
-                <AuthForm />
-              </div>
-            </motion.div>
+        <main className="container mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 lg:pt-12 lg:pb-24">
+          {/* Section principale avec grille */}
+          <div className="max-w-8xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 xl:gap-12">
+              {/* Zone du formulaire */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="lg:col-span-2 flex flex-col"
+              >
+                <div className="backdrop-blur-xl bg-white/[0.02] border border-white/10 rounded-2xl p-6 lg:p-8 shadow-2xl h-full">
+                  <AuthForm />
+                </div>
+              </motion.div>
 
-            {/* Zone de vidéo et contenu */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
-              className="lg:col-span-3"
-            >
-              <VideoContent />
-            </motion.div>
+              {/* Zone de vidéo et contenu */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+                className="lg:col-span-3 flex flex-col"
+              >
+                <VideoContent />
+              </motion.div>
+            </div>
           </div>
           
-          {/* Sections d'information */}
-          <div className="my-16 space-y-16">
+          {/* Sections d'information avec meilleur espacement */}
+          <div className="max-w-8xl mx-auto mt-24 space-y-24">
             <FeaturesSection />
             <InnovationsSection />
             <CountdownSection countdown={defaultCountdown} />
