@@ -5,15 +5,13 @@ import {
   Check, 
   X, 
   MessageSquare, 
-  Phone,
-  Mail,
   UserX,
   Shield,
   Loader2
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useConnectionStatus } from "../hooks/useConnectionStatus";
-import { useConnectionActions } from "../hooks/useConnectionActions";
+import { useConnectionStatus } from "./hooks/useConnectionStatus";
+import { useConnectionActions } from "./hooks/useConnectionActions";
 
 interface ProfilePreviewButtonsProps {
   profileId: string;
