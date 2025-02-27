@@ -66,7 +66,13 @@ export function FriendItem({ friend, onRemove }: FriendItemProps) {
         (friend.online_status as 'online' | 'offline') :
         (friend.online_status ? 'online' : 'offline'),
       last_seen: friend.last_seen,
-      role: friend.role
+      role: friend.role,
+      skills: friend.skills || [],
+      city: friend.city,
+      state: friend.state,
+      country: friend.country,
+      bio: friend.bio || "",
+      phone: friend.phone || "",
     });
     
     // Afficher la conversation

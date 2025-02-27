@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile, Friend } from "@/types/profile";
+import { UserProfile } from "@/types/profile";
 import { FriendItem } from "./FriendItem";
 import { EmptyConnectionsState } from "./EmptyConnectionsState";
 
@@ -30,74 +30,81 @@ export function FriendList({
     queryFn: async () => {
       if (!user?.id) return [];
 
-      // Get connections from user_connections table
-      const { data: connections, error } = await supabase
-        .from('user_connections')
-        .select(`
-          id,
-          sender_id,
-          receiver_id,
-          status,
-          sender:profiles!user_connections_sender_id_fkey(id, full_name, avatar_url, online_status, last_seen),
-          receiver:profiles!user_connections_receiver_id_fkey(id, full_name, avatar_url, online_status, last_seen)
-        `)
-        .eq('status', 'accepted')
-        .eq('connection_type', 'friend')
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
+      try {
+        // Get connections from user_connections table
+        const { data: connections, error } = await supabase
+          .from('user_connections')
+          .select(`
+            id,
+            sender_id,
+            receiver_id,
+            status,
+            sender:profiles!sender_id(id, full_name, avatar_url, online_status, last_seen),
+            receiver:profiles!receiver_id(id, full_name, avatar_url, online_status, last_seen)
+          `)
+          .eq('status', 'accepted')
+          .eq('connection_type', 'friend')
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
-      if (error) {
-        console.error("Error loading friends:", error);
+        if (error) {
+          console.error("Error loading friends:", error);
+          return [];
+        }
+
+        if (!connections) return [];
+
+        // Format connections as UserProfiles
+        const friendsList = connections.map(conn => {
+          const isSender = conn.sender_id === user.id;
+          const friendData = isSender ? conn.receiver : conn.sender;
+          
+          if (!friendData) return null;
+
+          // Create a UserProfile with required fields
+          const profile: UserProfile = {
+            id: friendData.id,
+            full_name: friendData.full_name || '',
+            avatar_url: friendData.avatar_url || null,
+            email: '',
+            role: 'professional',
+            bio: '',
+            phone: '',
+            city: '',
+            state: '',
+            country: '',
+            skills: [],
+            online_status: friendData.online_status,
+            last_seen: friendData.last_seen,
+            created_at: new Date().toISOString(),
+          };
+          
+          return profile;
+        }).filter(Boolean) as UserProfile[];
+
+        // Apply filters
+        let filteredFriends = friendsList || [];
+        
+        if (showOnlineOnly) {
+          filteredFriends = filteredFriends.filter(friend => friend.online_status);
+        }
+        
+        if (searchQuery) {
+          const query = searchQuery.toLowerCase();
+          filteredFriends = filteredFriends.filter(friend => 
+            (friend.full_name || '').toLowerCase().includes(query)
+          );
+        }
+        
+        // Apply pagination
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const paginatedFriends = filteredFriends.slice(start, end);
+        
+        return paginatedFriends;
+      } catch (error) {
+        console.error("Error in fetchFriends:", error);
         return [];
       }
-
-      // Format connections as UserProfiles
-      const friendsList = connections?.map(conn => {
-        const isSender = conn.sender_id === user.id;
-        const friendData = isSender ? conn.receiver : conn.sender;
-        
-        if (!friendData) return null;
-
-        // Create a minimal profile with required fields
-        const profile: UserProfile = {
-          id: friendData.id,
-          full_name: friendData.full_name || '',
-          avatar_url: friendData.avatar_url || null,
-          email: '',
-          role: 'professional',
-          bio: '',
-          phone: '',
-          city: '',
-          state: '',
-          country: '',
-          skills: [],
-          online_status: friendData.online_status,
-          last_seen: friendData.last_seen,
-          created_at: new Date().toISOString(),
-        };
-        
-        return profile;
-      }).filter(Boolean) as UserProfile[];
-
-      // Apply filters
-      let filteredFriends = friendsList || [];
-      
-      if (showOnlineOnly) {
-        filteredFriends = filteredFriends.filter(friend => friend.online_status);
-      }
-      
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        filteredFriends = filteredFriends.filter(friend => 
-          (friend.full_name || '').toLowerCase().includes(query)
-        );
-      }
-      
-      // Apply pagination
-      const start = (currentPage - 1) * itemsPerPage;
-      const end = start + itemsPerPage;
-      const paginatedFriends = filteredFriends.slice(start, end);
-      
-      return paginatedFriends;
     }
   });
 

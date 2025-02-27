@@ -27,8 +27,8 @@ export const useFriendRequests = () => {
           updated_at,
           sender_id,
           receiver_id,
-          sender:profiles!user_connections_sender_id_fkey(id, full_name, avatar_url),
-          receiver:profiles!user_connections_receiver_id_fkey(id, full_name, avatar_url)
+          sender:profiles!sender_id(id, full_name, avatar_url),
+          receiver:profiles!receiver_id(id, full_name, avatar_url)
         `)
         .eq('receiver_id', user.id)
         .eq('status', 'pending');
@@ -45,8 +45,8 @@ export const useFriendRequests = () => {
           updated_at,
           sender_id,
           receiver_id,
-          sender:profiles!user_connections_sender_id_fkey(id, full_name, avatar_url),
-          receiver:profiles!user_connections_receiver_id_fkey(id, full_name, avatar_url)
+          sender:profiles!sender_id(id, full_name, avatar_url),
+          receiver:profiles!receiver_id(id, full_name, avatar_url)
         `)
         .eq('sender_id', user.id)
         .eq('status', 'pending');
@@ -206,7 +206,8 @@ export const useFriendRequests = () => {
         .insert({
           sender_id: user.id,
           receiver_id: receiverId,
-          status: 'pending'
+          status: 'pending',
+          connection_type: 'friend'
         });
 
       if (error) throw error;

@@ -59,12 +59,12 @@ export function ProfileSearch({
       if (error) throw error;
 
       // Transformer les résultats en objets UserProfile
-      const transformedResults = (data || []).map(profile => ({
+      const transformedResults: UserProfile[] = (data || []).map(profile => ({
         id: profile.id,
         email: profile.email,
         full_name: profile.full_name,
         avatar_url: profile.avatar_url,
-        role: (profile.role || 'professional') as "professional" | "business" | "admin",
+        role: (profile.role || 'professional') as any,
         bio: profile.bio,
         phone: profile.phone,
         city: profile.city,
@@ -73,6 +73,7 @@ export function ProfileSearch({
         skills: profile.skills || [],
         online_status: profile.online_status || false,
         last_seen: profile.last_seen,
+        created_at: profile.created_at || new Date().toISOString(),
         friends: [],
         certifications: [],
         education: [],

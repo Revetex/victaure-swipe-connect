@@ -16,7 +16,8 @@ export interface Receiver {
   city?: string | null;
   state?: string | null;
   country?: string | null;
-  role?: string;  // Ajout du champ role qui est utilisé dans plusieurs composants
+  role?: string;
+  skills?: string[];  // Ajout du champ skills qui est utilisé dans plusieurs composants
   preferences?: {
     notifications?: boolean;
     theme?: 'light' | 'dark' | 'system';
