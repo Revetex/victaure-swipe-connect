@@ -21,6 +21,7 @@ export interface Receiver {
   certifications?: any[];  // Ajout du champ certifications qui est utilisé
   education?: any[];       // Ajout du champ education qui est utilisé
   experiences?: any[];     // Ajout du champ experiences qui est utilisé
+  friends?: any[];         // Ajout du champ friends qui est utilisé
   preferences?: {
     notifications?: boolean;
     theme?: 'light' | 'dark' | 'system';

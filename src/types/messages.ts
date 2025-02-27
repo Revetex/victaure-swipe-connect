@@ -50,7 +50,7 @@ export interface Receiver {
   certifications?: Certification[];
   education?: Education[];
   experiences?: Experience[];
-  friends?: string[];
+  friends?: string[] | any[];
 }
 
 export interface Conversation {

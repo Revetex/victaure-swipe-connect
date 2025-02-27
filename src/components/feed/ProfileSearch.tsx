@@ -111,6 +111,15 @@ export function ProfileSearch({
     };
   }, []);
 
+  const handleSelectProfile = async (profile: UserProfile) => {
+    if (onSelect) {
+      await onSelect(profile);
+      // Ne pas retourner de valeur pour éviter l'erreur de type
+    }
+    setSearchQuery("");
+    setSearchResults([]);
+  };
+
   return (
     <div className={className}>
       <div className="relative">
@@ -132,13 +141,7 @@ export function ProfileSearch({
           <div ref={resultsRef} className="absolute w-full z-[100] mt-1">
             <SearchResults 
               results={searchResults}
-              onSelect={(profile) => {
-                if (onSelect) {
-                  onSelect(profile);
-                  setSearchQuery("");
-                  setSearchResults([]);
-                }
-              }}
+              onSelect={handleSelectProfile}
             />
           </div>
         )}

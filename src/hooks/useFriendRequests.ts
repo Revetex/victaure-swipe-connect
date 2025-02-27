@@ -54,45 +54,67 @@ export const useFriendRequests = () => {
       if (outgoingError) throw outgoingError;
 
       // Formater les données pour les adapter au type PendingRequest
-      const formattedIncoming = (incomingData || []).map((request) => ({
-        id: request.id,
-        sender_id: request.sender_id,
-        receiver_id: request.receiver_id,
-        status: request.status,
-        created_at: request.created_at,
-        updated_at: request.updated_at,
-        sender: {
-          id: request.sender?.id || '',
-          full_name: request.sender?.full_name || '',
-          avatar_url: request.sender?.avatar_url || null
-        },
-        receiver: {
-          id: request.receiver?.id || '',
-          full_name: request.receiver?.full_name || '',
-          avatar_url: request.receiver?.avatar_url || null
-        },
-        type: 'incoming' as const
-      }));
+      const formattedIncoming = (incomingData || []).map((request) => {
+        if (!request.sender) {
+          console.error('Sender data missing for request', request);
+          return null;
+        }
+        if (!request.receiver) {
+          console.error('Receiver data missing for request', request);
+          return null;
+        }
+        
+        return {
+          id: request.id,
+          sender_id: request.sender_id,
+          receiver_id: request.receiver_id,
+          status: request.status,
+          created_at: request.created_at,
+          updated_at: request.updated_at,
+          sender: {
+            id: request.sender.id || '',
+            full_name: request.sender.full_name || '',
+            avatar_url: request.sender.avatar_url || null
+          },
+          receiver: {
+            id: request.receiver.id || '',
+            full_name: request.receiver.full_name || '',
+            avatar_url: request.receiver.avatar_url || null
+          },
+          type: 'incoming' as const
+        };
+      }).filter(Boolean) as PendingRequest[];
 
-      const formattedOutgoing = (outgoingData || []).map((request) => ({
-        id: request.id,
-        sender_id: request.sender_id,
-        receiver_id: request.receiver_id,
-        status: request.status,
-        created_at: request.created_at,
-        updated_at: request.updated_at,
-        sender: {
-          id: request.sender?.id || '',
-          full_name: request.sender?.full_name || '',
-          avatar_url: request.sender?.avatar_url || null
-        },
-        receiver: {
-          id: request.receiver?.id || '',
-          full_name: request.receiver?.full_name || '',
-          avatar_url: request.receiver?.avatar_url || null
-        },
-        type: 'outgoing' as const
-      }));
+      const formattedOutgoing = (outgoingData || []).map((request) => {
+        if (!request.sender) {
+          console.error('Sender data missing for request', request);
+          return null;
+        }
+        if (!request.receiver) {
+          console.error('Receiver data missing for request', request);
+          return null;
+        }
+        
+        return {
+          id: request.id,
+          sender_id: request.sender_id,
+          receiver_id: request.receiver_id,
+          status: request.status,
+          created_at: request.created_at,
+          updated_at: request.updated_at,
+          sender: {
+            id: request.sender.id || '',
+            full_name: request.sender.full_name || '',
+            avatar_url: request.sender.avatar_url || null
+          },
+          receiver: {
+            id: request.receiver.id || '',
+            full_name: request.receiver.full_name || '',
+            avatar_url: request.receiver.avatar_url || null
+          },
+          type: 'outgoing' as const
+        };
+      }).filter(Boolean) as PendingRequest[];
 
       setIncomingRequests(formattedIncoming);
       setOutgoingRequests(formattedOutgoing);
