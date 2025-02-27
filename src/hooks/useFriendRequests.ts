@@ -23,18 +23,19 @@ export const useFriendRequests = () => {
           status,
           created_at,
           updated_at,
-          sender:profiles!user_connections_sender_id_fkey(
+          sender:profiles!sender_id(
             id,
             full_name,
             avatar_url
           ),
-          receiver:profiles!user_connections_receiver_id_fkey(
+          receiver:profiles!receiver_id(
             id,
             full_name,
             avatar_url
           )
         `)
         .eq('status', 'pending')
+        .eq('connection_type', 'friend')
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
       if (error) {
@@ -44,7 +45,22 @@ export const useFriendRequests = () => {
 
       // Map the data to match our PendingRequest type
       return (connections || []).map(conn => ({
-        ...conn,
+        id: conn.id,
+        sender_id: conn.sender_id,
+        receiver_id: conn.receiver_id,
+        status: conn.status,
+        created_at: conn.created_at,
+        updated_at: conn.updated_at,
+        sender: {
+          id: conn.sender.id,
+          full_name: conn.sender.full_name,
+          avatar_url: conn.sender.avatar_url
+        },
+        receiver: {
+          id: conn.receiver.id,
+          full_name: conn.receiver.full_name,
+          avatar_url: conn.receiver.avatar_url
+        },
         type: conn.receiver_id === user.id ? 'incoming' : 'outgoing'
       })) as PendingRequest[];
     }

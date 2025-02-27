@@ -3,20 +3,9 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Friend, Certification } from '@/types/profile';
-import { UserRole } from '@/types/messages';
+import { UserProfile } from '@/types/profile';
 
-interface Connection {
-  id: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  skills: string[] | null;
-  city: string | null;
-  country: string | null;
-  online_status: boolean;
-  certifications: Certification[];
-  bio: string | null;
-  role: UserRole;
+interface Connection extends UserProfile {
   score?: number;
 }
 
@@ -61,8 +50,8 @@ export default function useConnections() {
       }
 
       // Obtenir les IDs des amis actuels pour les filtrer
-      const { data: friendRequests } = await supabase
-        .from('friend_requests')
+      const { data: connections } = await supabase
+        .from('user_connections')
         .select('sender_id, receiver_id, status')
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
       
@@ -76,31 +65,35 @@ export default function useConnections() {
       const friendIds = new Set();
       const blockedIds = new Set();
       
-      (friendRequests || []).forEach((request) => {
-        if (request.status === 'accepted') {
-          if (request.sender_id === user.id) {
-            friendIds.add(request.receiver_id);
-          } else {
-            friendIds.add(request.sender_id);
+      if (connections) {
+        connections.forEach((request) => {
+          if (request.status === 'accepted') {
+            if (request.sender_id === user.id) {
+              friendIds.add(request.receiver_id);
+            } else {
+              friendIds.add(request.sender_id);
+            }
+          } else if (request.status === 'pending') {
+            // Ajouter également les demandes en attente pour ne pas les suggérer
+            if (request.sender_id === user.id) {
+              friendIds.add(request.receiver_id);
+            } else {
+              friendIds.add(request.sender_id);
+            }
           }
-        } else if (request.status === 'pending') {
-          // Ajouter également les demandes en attente pour ne pas les suggérer
-          if (request.sender_id === user.id) {
-            friendIds.add(request.receiver_id);
-          } else {
-            friendIds.add(request.sender_id);
-          }
-        }
-      });
+        });
+      }
       
       // Ajouter les IDs bloqués au set
-      (blockedUsers || []).forEach((blocked) => {
-        if (blocked.blocker_id === user.id) {
-          blockedIds.add(blocked.blocked_id);
-        } else {
-          blockedIds.add(blocked.blocker_id);
-        }
-      });
+      if (blockedUsers) {
+        blockedUsers.forEach((blocked) => {
+          if (blocked.blocker_id === user.id) {
+            blockedIds.add(blocked.blocked_id);
+          } else {
+            blockedIds.add(blocked.blocker_id);
+          }
+        });
+      }
 
       // Maintenant, filtrer les suggestions pour exclure les amis et les utilisateurs bloqués
       const filtered = (data || []).filter(connection => 
@@ -108,20 +101,19 @@ export default function useConnections() {
       );
 
       // Convertir et faire une copie pour que ça marche avec TypeScript
-      return filtered.map(conn => {
-        // Vérifier et corriger le rôle si nécessaire
-        const validRoles: UserRole[] = ['professional', 'business', 'admin'];
-        const role: UserRole = validRoles.includes(conn.role as UserRole) 
-          ? (conn.role as UserRole) 
-          : 'professional';
-          
-        return {
-          ...conn,
-          role, // Assurer le typage correct
-          certifications: [], // Ajouter les propriétés manquantes avec des valeurs par défaut
-          website: null,
-        };
-      }) as Connection[];
+      return filtered.map(conn => ({
+        ...conn,
+        role: (conn.role || 'professional') as "professional" | "business" | "admin",
+        skills: conn.skills || [],
+        online_status: conn.online_status || false,
+        phone: null,
+        state: null,
+        last_seen: null,
+        certifications: [],
+        education: [],
+        experiences: [],
+        friends: []
+      })) as Connection[];
     }
   });
 
@@ -154,11 +146,13 @@ export default function useConnections() {
       if (!user) throw new Error("User not authenticated");
 
       const { data, error } = await supabase
-        .from('friend_requests')
+        .from('user_connections')
         .insert({
           sender_id: user.id,
           receiver_id: connectionId,
-          status: 'pending'
+          status: 'pending',
+          connection_type: 'friend',
+          visibility: 'public'
         })
         .select();
 

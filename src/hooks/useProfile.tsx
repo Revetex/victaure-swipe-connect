@@ -2,8 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { UserProfile, Friend, createEmptyProfile } from "@/types/profile";
-import { transformDatabaseProfile, transformEducation, transformCertification, transformExperience } from "@/types/profile";
+import { UserProfile, Friend, createEmptyProfile, transformDatabaseProfile, transformEducation, transformCertification, transformExperience } from "@/types/profile";
 
 export function useProfile() {
   const { toast } = useToast();
@@ -29,36 +28,36 @@ export function useProfile() {
 
         if (profileError) throw profileError;
 
-        // Get friend requests from both perspectives where status is accepted
-        const [sentRequests, receivedRequests] = await Promise.all([
-          supabase
-            .from('friend_requests')
-            .select('receiver_id')
-            .eq('sender_id', user.id)
-            .eq('status', 'accepted'),
-          supabase
-            .from('friend_requests')
-            .select('sender_id')
-            .eq('receiver_id', user.id)
-            .eq('status', 'accepted')
-        ]);
+        // Get friend connections where status is accepted
+        const { data: connections } = await supabase
+          .from('user_connections')
+          .select(`
+            id,
+            sender_id,
+            receiver_id,
+            status,
+            sender:profiles!sender_id(
+              id,
+              full_name,
+              avatar_url,
+              online_status,
+              last_seen
+            ),
+            receiver:profiles!receiver_id(
+              id,
+              full_name,
+              avatar_url,
+              online_status,
+              last_seen
+            )
+          `)
+          .eq('status', 'accepted')
+          .eq('connection_type', 'friend')
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
-        // Combine friend IDs from both queries
-        const friendIds = [
-          ...(sentRequests.data?.map(r => r.receiver_id) || []),
-          ...(receivedRequests.data?.map(r => r.sender_id) || [])
-        ];
-
-        // Remove duplicates
-        const uniqueFriendIds = [...new Set(friendIds)];
-        
-        // Parallel queries for better performance
-        const [friendsResponse, certificationsResponse, educationResponse, experiencesResponse] = 
+        // Parallel queries for other data
+        const [certificationsResponse, educationResponse, experiencesResponse] = 
           await Promise.all([
-            supabase
-              .from('profiles')
-              .select('id, full_name, avatar_url, online_status, last_seen')
-              .in('id', uniqueFriendIds),
             supabase
               .from('certifications')
               .select('*')
@@ -75,13 +74,28 @@ export function useProfile() {
 
         if (!isMounted) return;
 
-        const friends: Friend[] = (friendsResponse.data || []).map(friend => ({
-          id: friend.id,
-          full_name: friend.full_name,
-          avatar_url: friend.avatar_url,
-          online_status: friend.online_status,
-          last_seen: friend.last_seen
-        }));
+        // Transform connections into Friend objects
+        const friends: Friend[] = (connections || []).map(conn => {
+          const isSender = conn.sender_id === user.id;
+          const friendData = isSender ? conn.receiver : conn.sender;
+          
+          return {
+            id: friendData.id,
+            full_name: friendData.full_name,
+            avatar_url: friendData.avatar_url,
+            online_status: friendData.online_status || false,
+            last_seen: friendData.last_seen,
+            role: 'professional',
+            bio: null,
+            phone: null,
+            city: null,
+            state: null,
+            country: null,
+            skills: [],
+            friendship_id: conn.id,
+            status: 'accepted'
+          };
+        });
 
         const baseProfile = createEmptyProfile(user.id, profileData.email);
         const fullProfile: UserProfile = {

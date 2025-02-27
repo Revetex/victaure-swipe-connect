@@ -23,19 +23,22 @@ export function DashboardFriendsList() {
 
     const loadFriends = async () => {
       try {
-        // Au lieu d'utiliser rpc, utilisons une requête directe sur la table friend_requests
-        const { data: acceptedFriends, error } = await supabase
-          .from('friend_requests')
+        // Utiliser user_connections au lieu de friend_requests
+        const { data: connections, error } = await supabase
+          .from('user_connections')
           .select(`
             id,
-            sender:profiles!friend_requests_sender_id_fkey(
+            sender_id,
+            receiver_id,
+            status,
+            sender:profiles!sender_id(
               id, 
               full_name, 
               avatar_url, 
               online_status,
               last_seen
             ),
-            receiver:profiles!friend_requests_receiver_id_fkey(
+            receiver:profiles!receiver_id(
               id,
               full_name,
               avatar_url,
@@ -44,6 +47,7 @@ export function DashboardFriendsList() {
             )
           `)
           .eq('status', 'accepted')
+          .eq('connection_type', 'friend')
           .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
           .limit(5);
         
@@ -52,16 +56,25 @@ export function DashboardFriendsList() {
         // Transformer les données pour correspondre au format Friend[]
         const transformedFriends: Friend[] = [];
         
-        acceptedFriends?.forEach(friend => {
-          const isSender = friend.sender.id === user.id;
-          const friendProfile = isSender ? friend.receiver : friend.sender;
+        connections?.forEach(conn => {
+          const isSender = conn.sender_id === user.id;
+          const friendProfile = isSender ? conn.receiver : conn.sender;
           
           transformedFriends.push({
             id: friendProfile.id,
             full_name: friendProfile.full_name,
             avatar_url: friendProfile.avatar_url,
-            online_status: friendProfile.online_status,
-            last_seen: friendProfile.last_seen
+            online_status: friendProfile.online_status || false,
+            last_seen: friendProfile.last_seen,
+            role: 'professional',
+            bio: null,
+            phone: null,
+            city: null,
+            state: null,
+            country: null,
+            skills: [],
+            status: 'accepted',
+            friendship_id: conn.id
           });
         });
 

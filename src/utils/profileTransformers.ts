@@ -1,60 +1,42 @@
 
-/**
- * Utilitaires pour transformer les données de profil
- */
-import { UserProfile, Experience } from "@/types/profile";
+import { Certification, Education, Experience } from "@/types/profile";
 
-/**
- * Transforme un profil brut de la base de données en profil complet
- */
-export function transformToFullProfile(profileData: any): UserProfile {
-  if (!profileData) return {} as UserProfile;
-  
+export function mapCertificationToData(cert: Certification) {
   return {
-    id: profileData.id,
-    full_name: profileData.full_name || '',
-    avatar_url: profileData.avatar_url,
-    email: profileData.email,
-    role: profileData.role || 'professional',
-    bio: profileData.bio,
-    phone: profileData.phone,
-    city: profileData.city,
-    state: profileData.state,
-    country: profileData.country || '',
-    skills: profileData.skills || [],
-    online_status: profileData.online_status || false,
-    last_seen: profileData.last_seen,
-    created_at: profileData.created_at,
-    updated_at: profileData.updated_at,
-    
-    // Propriétés additionnelles
-    website: profileData.website,
-    company_name: profileData.company_name,
-    privacy_enabled: profileData.privacy_enabled,
-    verified: profileData.verified,
-    latitude: profileData.latitude,
-    longitude: profileData.longitude,
-    experiences: profileData.experiences || [],
-    education: profileData.education || [],
-    certifications: profileData.certifications || [],
-    friends: profileData.friends || [],
-    sections_order: profileData.sections_order
-  } as UserProfile;
+    id: cert.id,
+    title: cert.title,
+    issuer: cert.issuer,
+    issue_date: cert.issue_date,
+    expiry_date: cert.expiry_date,
+    credential_url: cert.credential_url,
+    description: cert.description,
+    skills: cert.skills || [],
+    year: cert.year,
+    profile_id: cert.profile_id
+  };
 }
 
-/**
- * Transforme des données brutes d'expérience en objet Experience structuré
- */
-export function transformToExperience(experienceData: any): Experience {
+export function mapEducationToData(edu: Education) {
   return {
-    id: experienceData.id || '',
-    profile_id: experienceData.profile_id || '',
-    company: experienceData.company || '',
-    position: experienceData.position || '',
-    description: experienceData.description || null,
-    start_date: experienceData.start_date || null,
-    end_date: experienceData.end_date || null,
-    created_at: experienceData.created_at || new Date().toISOString(),
-    updated_at: experienceData.updated_at || new Date().toISOString()
+    id: edu.id,
+    school_name: edu.school_name,
+    degree: edu.degree,
+    field_of_study: edu.field_of_study,
+    start_date: edu.start_date,
+    end_date: edu.end_date,
+    description: edu.description,
+    profile_id: edu.profile_id
+  };
+}
+
+export function mapExperienceToData(exp: Experience) {
+  return {
+    id: exp.id,
+    position: exp.position,
+    company: exp.company,
+    start_date: exp.start_date,
+    end_date: exp.end_date,
+    description: exp.description,
+    profile_id: exp.profile_id
   };
 }
