@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format, formatDistanceToNow, isToday } from "date-fns";
 import { fr } from "date-fns/locale";
-import { ProfileDialog } from "../../contact/ProfileDialog";
+import { ProfileDialog } from "../../../messages/contact/ProfileDialog";
 import { toast } from "sonner";
 import { convertOnlineStatusToBoolean } from "@/types/profile";
 
