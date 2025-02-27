@@ -7,7 +7,7 @@ import { PostSkeleton } from "./PostSkeleton";
 import { EmptyPostState } from "./EmptyPostState";
 import { DeletePostDialog } from "./DeletePostDialog";
 import { PostGrid } from "./sections/PostGrid";
-import { motion, useScroll, useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useRef } from "react";
@@ -50,7 +50,8 @@ export function PostList({
     sortOrder,
     userId: user?.id,
     page,
-    limit: 10
+    limit: 10,
+    searchTerm  // Pass searchTerm to the hook directly
   });
 
   useEffect(() => {
@@ -66,12 +67,9 @@ export function PostList({
   }
 
   const allPosts = data?.pages.flatMap(page => page.posts) ?? [];
-  const filteredPosts = allPosts.filter(post => 
-    post.content.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   if (isLoading) return <PostSkeleton />;
-  if (!filteredPosts.length) return <EmptyPostState />;
+  if (!allPosts.length) return <EmptyPostState />;
 
   return (
     <motion.div 
@@ -81,7 +79,7 @@ export function PostList({
       className="space-y-6"
     >
       <PostGrid 
-        posts={filteredPosts} 
+        posts={allPosts} 
         currentUserId={user?.id}
         userEmail={user?.email}
         onDelete={postId => setPostToDelete(postId)}

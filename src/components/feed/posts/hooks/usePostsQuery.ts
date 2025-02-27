@@ -10,6 +10,7 @@ interface UsePostsQueryProps {
   userId?: string;
   page: number;
   limit: number;
+  searchTerm?: string;
 }
 
 interface PostsResponse {
@@ -17,9 +18,16 @@ interface PostsResponse {
   nextPage: number | undefined;
 }
 
-export function usePostsQuery({ filter, sortBy, sortOrder, userId, limit = 10 }: UsePostsQueryProps) {
+export function usePostsQuery({ 
+  filter, 
+  sortBy, 
+  sortOrder, 
+  userId, 
+  limit = 10, 
+  searchTerm = '' 
+}: UsePostsQueryProps) {
   return useInfiniteQuery<PostsResponse, Error>({
-    queryKey: ["posts", filter, sortBy, sortOrder, userId],
+    queryKey: ["posts", filter, sortBy, sortOrder, userId, searchTerm],
     initialPageParam: 0,
     queryFn: async ({ pageParam }) => {
       const from = (pageParam as number) * limit;
@@ -53,6 +61,15 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId, limit = 10 }:
         `)
         .range(from, to);
 
+      // Si une recherche est spécifiée, utiliser la recherche full-text
+      if (searchTerm && searchTerm.trim() !== '') {
+        query = query.textSearch('searchable_content', searchTerm.trim(), {
+          type: 'websearch',
+          config: 'french'
+        });
+      }
+
+      // Appliquer les filtres
       switch (filter) {
         case "my":
           query = query.eq("user_id", userId);
@@ -67,11 +84,42 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId, limit = 10 }:
           if (likedPosts?.length) {
             const likedPostIds = likedPosts.map(reaction => reaction.post_id);
             query = query.in("id", likedPostIds);
+          } else {
+            // Si aucun post n'est liké, retourner un tableau vide
+            return { posts: [], nextPage: undefined };
+          }
+          break;
+        }
+        case "connections": {
+          if (!userId) break;
+          
+          const { data: friends } = await supabase
+            .from("friendships")
+            .select("friend_id")
+            .eq("user_id", userId)
+            .eq("status", "confirmed");
+            
+          const { data: friendsReverse } = await supabase
+            .from("friendships")
+            .select("user_id")
+            .eq("friend_id", userId)
+            .eq("status", "confirmed");
+            
+          const friendIds = [
+            ...(friends?.map(f => f.friend_id) || []),
+            ...(friendsReverse?.map(f => f.user_id) || [])
+          ];
+          
+          if (friendIds.length) {
+            query = query.in("user_id", friendIds);
+          } else {
+            return { posts: [], nextPage: undefined };
           }
           break;
         }
       }
 
+      // Appliquer les tris
       switch (sortBy) {
         case "date":
           query = query.order("created_at", { ascending: sortOrder === "asc" });
@@ -84,6 +132,7 @@ export function usePostsQuery({ filter, sortBy, sortOrder, userId, limit = 10 }:
       const { data, error } = await query;
 
       if (error) {
+        console.error("Erreur lors de la récupération des posts:", error);
         throw error;
       }
 

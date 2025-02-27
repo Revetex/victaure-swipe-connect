@@ -3184,6 +3184,7 @@ export type Database = {
           images: string[] | null
           likes: number | null
           privacy_level: string
+          searchable_content: unknown | null
           updated_at: string | null
           user_id: string
         }
@@ -3195,6 +3196,7 @@ export type Database = {
           images?: string[] | null
           likes?: number | null
           privacy_level?: string
+          searchable_content?: unknown | null
           updated_at?: string | null
           user_id: string
         }
@@ -3206,6 +3208,7 @@ export type Database = {
           images?: string[] | null
           likes?: number | null
           privacy_level?: string
+          searchable_content?: unknown | null
           updated_at?: string | null
           user_id?: string
         }

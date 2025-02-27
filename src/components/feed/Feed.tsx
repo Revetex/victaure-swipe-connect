@@ -47,6 +47,11 @@ export function Feed() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Réinitialiser les résultats de la requête lorsque les filtres changent
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["posts"] });
+  }, [filter, sortBy, sortOrder, searchTerm, queryClient]);
+
   const invalidatePosts = () => {
     queryClient.invalidateQueries({ queryKey: ["posts"] });
   };
