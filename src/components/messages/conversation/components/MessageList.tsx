@@ -32,7 +32,7 @@ export function MessageList({
   }, [messages, messagesEndRef]);
 
   return (
-    <ScrollArea className="flex-1 p-4">
+    <ScrollArea className="flex-1 p-4 custom-scrollbar">
       <div className="space-y-4">
         <AnimatePresence initial={false}>
           {messages.map((message) => (
