@@ -12,9 +12,14 @@ export function useConnectionActions() {
     console.log("Removing friend");
   };
 
+  const handleToggleBlock = () => {
+    console.log("Toggling block status");
+  };
+
   return {
     handleAddFriend,
     handleAcceptFriend,
-    handleRemoveFriend
+    handleRemoveFriend,
+    handleToggleBlock
   };
 }

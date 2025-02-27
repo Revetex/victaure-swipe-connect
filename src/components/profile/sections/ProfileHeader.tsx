@@ -30,13 +30,24 @@ export function ProfileHeader({ profile, onClose, canViewFullProfile = true }: P
       
       // Ajoutons un style par défaut pour éviter l'erreur
       const defaultStyle = {
+        id: "default",
+        name: "Default",
+        color: "#64B5D9",
+        secondaryColor: "#1B2A4A",
         font: "Helvetica",
+        bgGradient: "bg-gradient-to-r from-blue-50 to-blue-100",
         colors: {
           primary: "#64B5D9",
           secondary: "#1B2A4A",
           text: {
             primary: "#333333",
-            secondary: "#666666"
+            secondary: "#666666",
+            muted: "#999999"
+          },
+          background: {
+            card: "#FFFFFF",
+            section: "#F9FAFB",
+            button: "#64B5D9"
           }
         }
       };
