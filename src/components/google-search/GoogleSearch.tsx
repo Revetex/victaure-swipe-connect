@@ -7,11 +7,14 @@ import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { HfInference } from '@huggingface/inference';
 import "./GoogleSearchStyles.css";
+import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function GoogleSearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
+  const [results, setResults] = useState<any[]>([]);
   const { profile } = useProfile();
 
   useEffect(() => {
@@ -44,7 +47,11 @@ export function GoogleSearch() {
   };
 
   const generateRandomSearch = () => {
-    if (!profile) return;
+    if (!profile) {
+      toast.error("Veuillez vous connecter pour utiliser cette fonctionnalité");
+      return;
+    }
+    
     const searchTerms = [
       ...profile.skills || [],
       profile.company_name,
@@ -59,12 +66,15 @@ export function GoogleSearch() {
       const query = selectedTerms.join(' ') + ' emploi';
       setSearchTerm(query);
       triggerSearch(query);
+    } else {
+      toast.error("Complétez votre profil pour des recherches personnalisées");
     }
   };
 
   const enhanceResults = async () => {
     try {
       setIsEnhancing(true);
+      toast.info("Analyse des résultats en cours...");
       
       // Récupérer les résultats actuels et dédupliquer
       const results = document.querySelectorAll('.gsc-result');
@@ -86,21 +96,21 @@ export function GoogleSearch() {
       const hf = new HfInference(import.meta.env.VITE_HUGGINGFACE_API_KEY);
       
       const prompt = `Analyse ces offres d'emploi et fournis une synthèse détaillée avec:
-
-      1. Classement des postes par pertinence
+      1. Top 3 des postes les plus pertinents
       2. Compétences requises principales
       3. Avantages notables (salaire, télétravail, etc)
-      4. Recommandations pour les candidats
+      4. Recommandations pour postuler
+      5. Tendances du marché identifiées
 
-      Présente l'information de manière structurée et priorisée.
+      Format la réponse avec des puces et des sections clairement identifiées.
       
       Offres: ${JSON.stringify(resultTexts)}`;
 
       const response = await hf.textGeneration({
-        model: 'thom3909/Tomasu-Buranshee',
+        model: 'HuggingFaceH4/zephyr-7b-beta',
         inputs: prompt,
         parameters: {
-          max_new_tokens: 500,
+          max_new_tokens: 1000,
           temperature: 0.7,
           top_p: 0.95,
           repetition_penalty: 1.2
@@ -118,11 +128,14 @@ export function GoogleSearch() {
         const aiAnalysisElement = document.createElement('div');
         aiAnalysisElement.className = 'ai-analysis';
         aiAnalysisElement.innerHTML = `
-          <h3>🎯 Analyse détaillée des opportunités</h3>
-          <div class="ai-content">${formattedText}</div>
+          <h3 class="flex items-center gap-2 mb-4">
+            <span class="h-6 w-6 text-primary">✨</span>
+            Analyse IA des opportunités
+          </h3>
+          <div class="ai-content prose dark:prose-invert">${formattedText}</div>
         `;
 
-        // Insérer l'analyse avant la liste des résultats filtrés
+        // Insérer l'analyse avant la liste des résultats
         const resultsContainer = document.querySelector('.gsc-resultsbox-visible');
         if (resultsContainer) {
           // Supprimer l'ancienne analyse si elle existe
@@ -131,62 +144,54 @@ export function GoogleSearch() {
             oldAnalysis.remove();
           }
 
-          // Filtrer les résultats en double dans l'affichage
-          results.forEach((result) => {
-            const url = result.querySelector('.gs-visibleUrl')?.textContent;
-            // Cast l'élément en HTMLElement pour accéder à style
-            const resultElement = result as HTMLElement;
-            if (!url || !seenUrls.has(url)) {
-              resultElement.style.display = 'none';
-            }
-          });
-
           resultsContainer.insertBefore(aiAnalysisElement, resultsContainer.firstChild);
         }
 
-        toast.success("Analyse IA des résultats terminée");
+        toast.success("Analyse des résultats terminée");
       } else {
         throw new Error("Impossible de générer l'analyse");
       }
     } catch (error) {
       console.error('Erreur lors de l\'amélioration des résultats:', error);
-      toast.error("Impossible d'améliorer les résultats pour le moment");
+      toast.error("Une erreur est survenue lors de l'analyse");
     } finally {
       setIsEnhancing(false);
     }
   };
 
   return (
-    <form onSubmit={handleSearch} className="flex flex-col gap-4 w-full max-w-7xl mx-auto">
-      <div className="flex gap-2">
-        <Input
-          type="text"
-          placeholder="Rechercher des offres d'emploi..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="h-12 bg-background/50"
-        />
-        <Button 
-          type="submit" 
-          disabled={isSearching}
-          className="h-12 px-4"
-        >
-          <SearchIcon className="h-4 w-4" />
-        </Button>
-        <Button
-          type="button"
-          onClick={generateRandomSearch}
-          className="h-12 px-4"
-          title="Générer une recherche basée sur votre profil"
-        >
-          <Wand2 className="h-4 w-4" />
-        </Button>
-      </div>
-      
-      <div className="bg-background/50 rounded-lg px-8 py-6">
-        <div className="flex justify-end mb-4">
+    <Card className="p-6 space-y-6">
+      <form onSubmit={handleSearch} className="flex flex-col gap-4 w-full">
+        <div className="flex gap-2">
+          <Input
+            type="text"
+            placeholder="Rechercher des offres d'emploi..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="h-12 bg-background/50"
+          />
+          <Button 
+            type="submit" 
+            disabled={isSearching}
+            className="h-12 px-4"
+          >
+            <SearchIcon className="h-4 w-4" />
+          </Button>
           <Button
             type="button"
+            onClick={generateRandomSearch}
+            className="h-12 px-4"
+            variant="outline"
+            title="Générer une recherche basée sur votre profil"
+          >
+            <Wand2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </form>
+      
+      <Card className="bg-background/50 rounded-lg p-6">
+        <div className="flex justify-end mb-4">
+          <Button
             onClick={enhanceResults}
             disabled={isEnhancing}
             variant="outline"
@@ -195,8 +200,10 @@ export function GoogleSearch() {
             {isEnhancing ? 'Analyse en cours...' : 'Analyser avec IA'}
           </Button>
         </div>
-        <div className="gcse-searchresults-only"></div>
-      </div>
-    </form>
+        <ScrollArea className="h-[600px]">
+          <div className="gcse-searchresults-only"></div>
+        </ScrollArea>
+      </Card>
+    </Card>
   );
 }
