@@ -24,10 +24,7 @@ export function useMessages(receiver: Receiver | null) {
       if (error) throw error;
 
       setMessages(prev => prev.filter(msg => msg.id !== messageId));
-      
-      // Invalider le cache pour ce message
       dbCache.invalidatePattern(`messages:${user?.id}`);
-      
       toast.success("Message supprimé");
     } catch (error) {
       console.error('Error deleting message:', error);
@@ -45,6 +42,17 @@ export function useMessages(receiver: Receiver | null) {
       try {
         const cacheKey = `messages:${user.id}:${receiver.id}`;
         
+        // D'abord, obtenir ou créer la conversation
+        const { data: conversationData, error: conversationError } = await supabase
+          .rpc('get_or_create_conversation', {
+            user1_id: user.id,
+            user2_id: receiver.id
+          });
+
+        if (conversationError) throw conversationError;
+
+        const conversationId = conversationData;
+        
         const data = await dbCache.get(
           cacheKey,
           async () => {
@@ -56,7 +64,7 @@ export function useMessages(receiver: Receiver | null) {
                 *,
                 sender:profiles!messages_sender_id_fkey(*)
               `)
-              .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
+              .eq('conversation_id', conversationId)
               .order('created_at', { ascending: true });
 
             if (error) {
@@ -65,20 +73,9 @@ export function useMessages(receiver: Receiver | null) {
             
             if (data) {
               // Marquer les messages reçus comme lus
-              const unreadMessages = data
-                .filter(msg => msg.sender_id === receiver.id && msg.status !== 'read')
-                .map(msg => msg.id);
-                
-              if (unreadMessages.length > 0) {
-                // Mise à jour des messages comme lus
-                await supabase
-                  .from('messages')
-                  .update({ status: 'read' })
-                  .in('id', unreadMessages);
-                  
-                // Invalider le cache car nous avons modifié des données
-                dbCache.invalidate(cacheKey);
-              }
+              await supabase.rpc('mark_user_messages_as_read', {
+                conversation_id: conversationId
+              });
               
               return data.map(msg => ({
                 ...msg,
@@ -119,7 +116,6 @@ export function useMessages(receiver: Receiver | null) {
         async (payload) => {
           console.log("Real-time message update:", payload);
           
-          // Invalidation du cache pour forcer le rechargement
           dbCache.invalidatePattern(`messages:${user.id}`);
           
           if (payload.eventType === 'INSERT') {
@@ -139,10 +135,9 @@ export function useMessages(receiver: Receiver | null) {
 
             // Marquer automatiquement comme lu si c'est un message entrant
             if (payload.new.sender_id === receiver.id) {
-              await supabase
-                .from('messages')
-                .update({ status: 'read' })
-                .eq('id', payload.new.id);
+              await supabase.rpc('mark_user_messages_as_read', {
+                conversation_id: payload.new.conversation_id
+              });
             }
 
             setMessages(prev => [...prev, newMessage]);

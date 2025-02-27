@@ -136,12 +136,22 @@ export function ConversationView() {
     if (!messageInput.trim() || !user || !receiver) return;
 
     try {
+      // D'abord, obtenir ou créer la conversation
+      const { data: conversationId, error: conversationError } = await supabase
+        .rpc('get_or_create_conversation', {
+          user1_id: user.id,
+          user2_id: receiver.id
+        });
+
+      if (conversationError) throw conversationError;
+
       const { error } = await supabase
         .from('messages')
         .insert({
           content: messageInput,
           sender_id: user.id,
           receiver_id: receiver.id,
+          conversation_id: conversationId,
           metadata: {},
         });
 
@@ -149,8 +159,6 @@ export function ConversationView() {
       
       setMessageInput("");
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      
-      // Animation de succès
       toast.success("Message envoyé");
     } catch (error) {
       console.error('Error sending message:', error);
