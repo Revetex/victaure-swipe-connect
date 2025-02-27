@@ -52,7 +52,7 @@ export function PostImageGrid({ images }: PostImageGridProps) {
               <img
                 src={image}
                 alt=""
-                className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105 retina-optimize"
                 loading="lazy"
               />
             ) : (
@@ -69,7 +69,7 @@ export function PostImageGrid({ images }: PostImageGridProps) {
           <img
             src={selectedImage || ''}
             alt=""
-            className="w-full h-full object-contain rounded-lg"
+            className="w-full h-full object-contain rounded-lg retina-optimize"
           />
         </DialogContent>
       </Dialog>
