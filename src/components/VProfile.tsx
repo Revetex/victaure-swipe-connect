@@ -12,6 +12,7 @@ import { ProfileExperience } from "./profile/sections/ProfileExperience";
 import { ProfileEducation } from "./profile/sections/ProfileEducation";
 import { ProfileCertifications } from "./profile/sections/ProfileCertifications";
 import { motion, AnimatePresence } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface VProfileProps {
   profile: UserProfile;
@@ -24,6 +25,7 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
   const isOwnProfile = user?.id === profile.id;
   const [showFullBio, setShowFullBio] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const isMobile = useIsMobile();
 
   const { isFriend } = useConnectionStatus(profile.id);
   const canViewFullProfile = isOwnProfile || isFriend || !profile.privacy_enabled;
@@ -36,21 +38,21 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-background/95 backdrop-blur-sm">
+      <DialogContent className={`${isMobile ? 'max-w-[95vw] h-[95vh] p-0' : 'max-w-4xl p-0'} overflow-hidden bg-background/95 backdrop-blur-sm`}>
         <ProfileHeader 
           profile={profile}
           onClose={onClose}
           canViewFullProfile={canViewFullProfile}
         />
 
-        <ScrollArea className="h-[calc(100vh-10rem)] px-6 py-4 custom-scrollbar">
+        <ScrollArea className={`h-[calc(100vh-${isMobile ? '14rem' : '10rem'})] px-4 sm:px-6 py-4 custom-scrollbar`}>
           <Tabs 
             defaultValue="overview" 
             value={activeTab}
             onValueChange={handleTabChange} 
             className="w-full"
           >
-            <TabsList className="w-full justify-start mb-6">
+            <TabsList className={`w-full justify-start mb-6 ${isMobile ? 'overflow-x-auto flex' : ''}`}>
               <TabsTrigger value="overview" onClick={() => handleTabChange("overview")}>
                 Vue d'ensemble
               </TabsTrigger>

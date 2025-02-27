@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { generateCV } from "@/utils/pdfGenerator";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ProfileHeaderProps {
   profile: UserProfile;
@@ -23,6 +24,7 @@ export function ProfileHeader({ profile, onClose, canViewFullProfile = true }: P
   const isOwnProfile = currentUserProfile?.id === profile.id;
   const { isFriend, isFriendRequestReceived, isFriendRequestSent } = useConnectionStatus(profile.id);
   const { handleAddFriend, handleAcceptFriend, handleRemoveFriend } = useConnectionActions();
+  const isMobile = useIsMobile();
 
   const handleDownloadCV = async () => {
     try {
@@ -93,28 +95,37 @@ export function ProfileHeader({ profile, onClose, canViewFullProfile = true }: P
   };
 
   return (
-    <div className="bg-gradient-to-r from-primary/10 to-accent/10 p-6 rounded-t-lg relative border-b border-border/20">
+    <div className="bg-gradient-to-r from-primary/10 to-accent/10 p-4 sm:p-6 rounded-t-lg relative border-b border-border/20">
       {onClose && (
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-4 top-4 text-muted-foreground hover:text-foreground"
+          className="absolute right-2 top-2 sm:right-4 sm:top-4 text-muted-foreground hover:text-foreground z-10"
           onClick={onClose}
         >
           <X className="h-4 w-4" />
         </Button>
       )}
 
-      <div className="flex flex-col sm:flex-row items-center gap-4">
-        <Avatar className="h-20 w-20 border-2 border-primary/20">
-          <AvatarImage src={profile.avatar_url || ""} />
-          <AvatarFallback className="bg-primary/20 text-primary text-xl">
-            {getInitials(profile.full_name)}
-          </AvatarFallback>
-        </Avatar>
+      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-center gap-4`}>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="relative"
+        >
+          <Avatar className={`${isMobile ? 'h-24 w-24' : 'h-20 w-20'} border-2 border-primary/20 shadow-md`}>
+            <AvatarImage src={profile.avatar_url || ""} className="object-cover" />
+            <AvatarFallback className="bg-primary/20 text-primary text-xl">
+              {getInitials(profile.full_name)}
+            </AvatarFallback>
+          </Avatar>
+          {profile.online_status && (
+            <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-background" />
+          )}
+        </motion.div>
 
-        <div className="flex-1 space-y-2 text-center sm:text-left">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+        <div className={`flex-1 space-y-2 ${isMobile ? 'text-center mt-2 w-full' : 'text-left'}`}>
+          <div className={`flex ${isMobile ? 'flex-col items-center' : 'flex-row items-center'} gap-2`}>
             <h2 className="text-2xl font-bold">{profile.full_name}</h2>
             {profile.verified && (
               <TooltipProvider>
@@ -141,24 +152,24 @@ export function ProfileHeader({ profile, onClose, canViewFullProfile = true }: P
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="flex flex-wrap gap-3 items-center justify-center sm:justify-start text-sm text-muted-foreground"
+              className={`flex flex-wrap gap-3 items-center ${isMobile ? 'justify-center' : 'justify-start'} text-sm text-muted-foreground mt-3`}
             >
               {profile.email && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 bg-background/50 px-2 py-1 rounded-full">
                   <Mail className="h-3.5 w-3.5" />
-                  <span>{profile.email}</span>
+                  <span className="max-w-[180px] truncate">{profile.email}</span>
                 </div>
               )}
               {profile.phone && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 bg-background/50 px-2 py-1 rounded-full">
                   <Phone className="h-3.5 w-3.5" />
                   <span>{profile.phone}</span>
                 </div>
               )}
               {(profile.city || profile.state || profile.country) && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 bg-background/50 px-2 py-1 rounded-full">
                   <MapPin className="h-3.5 w-3.5" />
-                  <span>
+                  <span className="max-w-[180px] truncate">
                     {[profile.city, profile.state, profile.country]
                       .filter(Boolean)
                       .join(", ")}
@@ -166,13 +177,13 @@ export function ProfileHeader({ profile, onClose, canViewFullProfile = true }: P
                 </div>
               )}
               {profile.website && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 bg-background/50 px-2 py-1 rounded-full">
                   <Link className="h-3.5 w-3.5" />
                   <a 
                     href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline"
+                    className="text-primary hover:underline max-w-[180px] truncate"
                   >
                     {profile.website.replace(/^https?:\/\//, '')}
                   </a>
@@ -183,7 +194,7 @@ export function ProfileHeader({ profile, onClose, canViewFullProfile = true }: P
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 justify-center sm:justify-end mt-4">
+      <div className={`flex flex-wrap gap-2 ${isMobile ? 'justify-center mt-4' : 'justify-end mt-4'}`}>
         {isOwnProfile && (
           <Button 
             variant="outline" 
@@ -192,7 +203,8 @@ export function ProfileHeader({ profile, onClose, canViewFullProfile = true }: P
             onClick={handleDownloadCV}
           >
             <Download className="h-4 w-4" />
-            Télécharger mon CV
+            <span className="hidden sm:inline">Télécharger mon CV</span>
+            <span className="sm:hidden">CV</span>
           </Button>
         )}
 
@@ -205,7 +217,8 @@ export function ProfileHeader({ profile, onClose, canViewFullProfile = true }: P
                 className="bg-primary/10 hover:bg-primary/20"
                 onClick={handleAcceptFriend}
               >
-                Accepter la demande
+                <span className="hidden sm:inline">Accepter la demande</span>
+                <span className="sm:hidden">Accepter</span>
               </Button>
             )}
             {isFriendRequestSent && (
@@ -215,7 +228,8 @@ export function ProfileHeader({ profile, onClose, canViewFullProfile = true }: P
                 className="bg-muted hover:bg-muted/80"
                 onClick={handleRemoveFriend}
               >
-                Annuler la demande
+                <span className="hidden sm:inline">Annuler la demande</span>
+                <span className="sm:hidden">Annuler</span>
               </Button>
             )}
             {!isFriend && !isFriendRequestReceived && !isFriendRequestSent && (
@@ -225,7 +239,8 @@ export function ProfileHeader({ profile, onClose, canViewFullProfile = true }: P
                 className="bg-primary/10 hover:bg-primary/20"
                 onClick={handleAddFriend}
               >
-                Ajouter
+                <span className="hidden sm:inline">Ajouter</span>
+                <span className="sm:hidden">Ajouter</span>
               </Button>
             )}
             {isFriend && (

@@ -68,7 +68,7 @@ export function ProfilePreview({
       <>
         <Dialog open={isOpen} onOpenChange={onClose}>
           <DialogContent 
-            className="max-w-md w-full p-0"
+            className="max-w-[95vw] w-full p-0 rounded-lg overflow-hidden"
             aria-describedby="mobile-profile-description"
           >
             <VisuallyHidden asChild>
