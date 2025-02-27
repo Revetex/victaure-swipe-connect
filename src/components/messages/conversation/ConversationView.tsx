@@ -136,14 +136,36 @@ export function ConversationView() {
     if (!messageInput.trim() || !user || !receiver) return;
 
     try {
-      // D'abord, obtenir ou créer la conversation
-      const { data: conversationId, error: conversationError } = await supabase
-        .rpc('get_or_create_conversation', {
-          user1_id: user.id,
-          user2_id: receiver.id
-        });
+      // Obtenir ou créer une conversation entre les deux utilisateurs
+      const { data: conversationData, error: conversationError } = await supabase
+        .from('user_conversations')
+        .select('id')
+        .or(`and(participant1_id.eq.${user.id},participant2_id.eq.${receiver.id}),and(participant1_id.eq.${receiver.id},participant2_id.eq.${user.id})`)
+        .single();
 
-      if (conversationError) throw conversationError;
+      // Si aucune conversation n'existe, la créer
+      let conversationId: string;
+      if (conversationError || !conversationData) {
+        // Déterminer l'ordre des participants pour la contrainte d'unicité
+        const [participant1_id, participant2_id] = 
+          user.id < receiver.id 
+            ? [user.id, receiver.id] 
+            : [receiver.id, user.id];
+        
+        const { data: newConversation, error: createError } = await supabase
+          .from('user_conversations')
+          .insert({
+            participant1_id,
+            participant2_id
+          })
+          .select('id')
+          .single();
+          
+        if (createError) throw createError;
+        conversationId = newConversation.id;
+      } else {
+        conversationId = conversationData.id;
+      }
 
       const { error } = await supabase
         .from('messages')
@@ -152,7 +174,7 @@ export function ConversationView() {
           sender_id: user.id,
           receiver_id: receiver.id,
           conversation_id: conversationId,
-          metadata: {},
+          metadata: {}
         });
 
       if (error) throw error;

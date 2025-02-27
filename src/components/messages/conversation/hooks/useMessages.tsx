@@ -42,16 +42,36 @@ export function useMessages(receiver: Receiver | null) {
       try {
         const cacheKey = `messages:${user.id}:${receiver.id}`;
         
-        // D'abord, obtenir ou créer la conversation
+        // Obtenir ou créer une conversation entre les deux utilisateurs
         const { data: conversationData, error: conversationError } = await supabase
-          .rpc('get_or_create_conversation', {
-            user1_id: user.id,
-            user2_id: receiver.id
-          });
+          .from('user_conversations')
+          .select('id')
+          .or(`and(participant1_id.eq.${user.id},participant2_id.eq.${receiver.id}),and(participant1_id.eq.${receiver.id},participant2_id.eq.${user.id})`)
+          .single();
 
-        if (conversationError) throw conversationError;
-
-        const conversationId = conversationData;
+        // Si aucune conversation n'existe, la créer
+        let conversationId: string;
+        if (conversationError || !conversationData) {
+          // Déterminer l'ordre des participants pour la contrainte d'unicité
+          const [participant1_id, participant2_id] = 
+            user.id < receiver.id 
+              ? [user.id, receiver.id] 
+              : [receiver.id, user.id];
+          
+          const { data: newConversation, error: createError } = await supabase
+            .from('user_conversations')
+            .insert({
+              participant1_id,
+              participant2_id
+            })
+            .select('id')
+            .single();
+            
+          if (createError) throw createError;
+          conversationId = newConversation.id;
+        } else {
+          conversationId = conversationData.id;
+        }
         
         const data = await dbCache.get(
           cacheKey,
@@ -72,10 +92,26 @@ export function useMessages(receiver: Receiver | null) {
             }
             
             if (data) {
-              // Marquer les messages reçus comme lus
-              await supabase.rpc('mark_user_messages_as_read', {
-                conversation_id: conversationId
-              });
+              // Marquer les messages comme lus
+              const { error: markReadError } = await supabase
+                .from('user_conversations')
+                .update({
+                  participant1_last_read: user.id === conversationData?.participant1_id ? new Date().toISOString() : undefined,
+                  participant2_last_read: user.id === conversationData?.participant2_id ? new Date().toISOString() : undefined
+                })
+                .eq('id', conversationId);
+              
+              // Marquer aussi les messages individuels
+              const unreadMessages = data
+                .filter(msg => msg.sender_id === receiver.id && msg.status !== 'read')
+                .map(msg => msg.id);
+                
+              if (unreadMessages.length > 0) {
+                await supabase
+                  .from('messages')
+                  .update({ status: 'read' })
+                  .in('id', unreadMessages);
+              }
               
               return data.map(msg => ({
                 ...msg,
@@ -135,9 +171,10 @@ export function useMessages(receiver: Receiver | null) {
 
             // Marquer automatiquement comme lu si c'est un message entrant
             if (payload.new.sender_id === receiver.id) {
-              await supabase.rpc('mark_user_messages_as_read', {
-                conversation_id: payload.new.conversation_id
-              });
+              await supabase
+                .from('messages')
+                .update({ status: 'read' })
+                .eq('id', payload.new.id);
             }
 
             setMessages(prev => [...prev, newMessage]);
