@@ -2,7 +2,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import { ContentRouter } from "./content/ContentRouter";
 import { DashboardHome } from "./content/DashboardHome";
-import { DashboardFriendsList } from "./content/DashboardFriendsList";
 import { FloatingButtons } from "./content/FloatingButtons";
 import { LoadingState } from "./content/LoadingState";
 import { motion, AnimatePresence } from "framer-motion";
@@ -40,10 +39,10 @@ export function DashboardContent({
     }} exit={{
       opacity: 0,
       y: -20
-    }} className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 min-h-screen bg-gradient-to-b from-background/50 via-background to-background/50">
+    }} className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 min-h-screen bg-gradient-to-b from-[#1B2A4A]/80 via-[#1A1F2C] to-[#1B2A4A]/80">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Section principale avec un fond subtil */}
-          <motion.div className="lg:col-span-8 space-y-6" initial={{
+          {/* Section principale avec un fond amélioré */}
+          <motion.div className="lg:col-span-12 space-y-6" initial={{
           opacity: 0,
           x: -20
         }} animate={{
@@ -52,33 +51,29 @@ export function DashboardContent({
         }} transition={{
           delay: 0.2
         }}>
-            <Card className="overflow-hidden bg-black/40 border-zinc-800/50 backdrop-blur-sm hover:bg-black/50 transition-colors duration-300">
+            <Card className="overflow-hidden bg-[#1E293B]/80 border-[#64B5D9]/20 backdrop-blur-sm hover:bg-[#1E293B]/90 transition-colors duration-300 shadow-lg">
               <div className="relative">
-                {/* Effet de gradient subtil sur le bord supérieur */}
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+                {/* Effet de gradient amélioré sur le bord supérieur */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#64B5D9]/40 to-transparent" />
                 
                 <ContentRouter currentPage={currentPage} onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} renderDashboardHome={renderDashboardHome} />
                 
-                {/* Effet de gradient subtil sur le bord inférieur */}
-                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+                {/* Effet de gradient amélioré sur le bord inférieur */}
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#64B5D9]/40 to-transparent" />
               </div>
             </Card>
           </motion.div>
 
-          {/* Barre latérale avec effet de verre */}
-          <motion.div className="lg:col-span-4 space-y-6" initial={{
+          {/* Boutons flottants - déplacés ici et améliorés */}
+          <motion.div className="lg:col-span-12" initial={{
           opacity: 0,
-          x: 20
+          y: 20
         }} animate={{
           opacity: 1,
-          x: 0
+          y: 0
         }} transition={{
           delay: 0.3
         }}>
-            <Card className="p-6 bg-black/40 border-zinc-800/50 backdrop-blur-sm hover:bg-black/50 transition-colors duration-300 py-[15px] px-[15px]">
-              <DashboardFriendsList />
-            </Card>
-
             <FloatingButtons />
           </motion.div>
         </div>
