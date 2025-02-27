@@ -1,36 +1,15 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
-
-export type WalletTransaction = {
-  id: string;
-  created_at: string;
-  amount: number;
-  currency: string;
-  status: 'pending' | 'completed' | 'failed' | 'cancelled' | 'frozen';
-  description: string;
-  sender_wallet_id?: string;
-  receiver_wallet_id?: string;
-};
-
-export type UserWallet = {
-  id: string;
-  user_id: string;
-  balance: number;
-  currency: string;
-  wallet_id: string;
-  created_at: string;
-  updated_at: string;
-};
-
-export type WalletStats = {
-  totalIncoming: number;
-  totalOutgoing: number;
-  pendingTransactions: number;
-  lastTransaction?: WalletTransaction;
-};
+import { UserWallet, WalletTransaction, WalletStats } from '@/types/wallet';
+import { 
+  fetchUserWallet, 
+  fetchWalletById, 
+  fetchWalletTransactions, 
+  transferFundsAPI 
+} from '@/services/walletService';
+import { calculateWalletStats } from '@/utils/walletUtils';
 
 export function useWallet() {
   const { user } = useAuth();
@@ -43,6 +22,19 @@ export function useWallet() {
     pendingTransactions: 0
   });
 
+  // Charger les transactions du portefeuille
+  const loadTransactions = async (walletId: string) => {
+    try {
+      const data = await fetchWalletTransactions(walletId);
+      setTransactions(data);
+      const calculatedStats = calculateWalletStats(data, walletId);
+      setStats(calculatedStats);
+    } catch (error: any) {
+      console.error('Erreur lors du chargement des transactions:', error.message);
+      // Ne pas afficher de toast ici car c'est une fonction interne
+    }
+  };
+
   // Charger les informations du portefeuille
   useEffect(() => {
     async function loadWallet() {
@@ -51,15 +43,7 @@ export function useWallet() {
       setIsLoading(true);
       try {
         // Récupérer le portefeuille de l'utilisateur
-        const { data: walletData, error: walletError } = await supabase
-          .from('user_wallets')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-
-        if (walletError) {
-          throw walletError;
-        }
+        const walletData = await fetchUserWallet(user.id);
 
         if (walletData) {
           setWallet(walletData);
@@ -78,66 +62,13 @@ export function useWallet() {
     loadWallet();
   }, [user?.id]);
 
-  // Charger les transactions du portefeuille
-  const loadTransactions = async (walletId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('wallet_transactions')
-        .select('*')
-        .or(`sender_wallet_id.eq.${walletId},receiver_wallet_id.eq.${walletId}`)
-        .order('created_at', { ascending: false })
-        .limit(20);
-
-      if (error) throw error;
-
-      if (data) {
-        setTransactions(data as WalletTransaction[]);
-        calculateStats(data as WalletTransaction[], walletId);
-      }
-    } catch (error: any) {
-      console.error('Erreur lors du chargement des transactions:', error.message);
-    }
-  };
-
-  // Calculer les statistiques du portefeuille
-  const calculateStats = (transactions: WalletTransaction[], walletId: string) => {
-    let incoming = 0;
-    let outgoing = 0;
-    let pending = 0;
-
-    transactions.forEach(tx => {
-      if (tx.status === 'completed') {
-        if (tx.receiver_wallet_id === walletId) {
-          incoming += tx.amount;
-        } else if (tx.sender_wallet_id === walletId) {
-          outgoing += tx.amount;
-        }
-      } else if (tx.status === 'pending') {
-        pending++;
-      }
-    });
-
-    setStats({
-      totalIncoming: incoming,
-      totalOutgoing: outgoing,
-      pendingTransactions: pending,
-      lastTransaction: transactions[0]
-    });
-  };
-
   // Actualiser les données du portefeuille
   const refreshWallet = async () => {
     if (!wallet?.id) return;
     
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('user_wallets')
-        .select('*')
-        .eq('id', wallet.id)
-        .single();
-
-      if (error) throw error;
+      const data = await fetchWalletById(wallet.id);
       
       if (data) {
         setWallet(data);
@@ -171,16 +102,7 @@ export function useWallet() {
     }
     
     try {
-      const { error } = await supabase.functions.invoke('transfer-funds', {
-        body: {
-          amount,
-          senderWalletId: wallet.id,
-          receiverWalletId,
-          description
-        }
-      });
-
-      if (error) throw error;
+      await transferFundsAPI(wallet.id, receiverWalletId, amount, description);
       
       toast.success('Transfert effectué avec succès');
       await refreshWallet();
