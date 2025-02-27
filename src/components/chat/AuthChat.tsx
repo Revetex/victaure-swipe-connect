@@ -28,7 +28,7 @@ export function AuthChat({ maxQuestions = 3, context }: AuthChatProps) {
   };
 
   return (
-    <Card className="flex flex-col h-[400px] bg-gradient-to-br from-[#1B2A4A]/90 to-[#1A1F2C]/90 backdrop-blur-xl rounded-xl border-2 border-[#64B5D9]/20 overflow-hidden shadow-xl">
+    <Card className="flex flex-col h-[350px] bg-gradient-to-br from-[#1B2A4A]/90 to-[#1A1F2C]/90 backdrop-blur-xl rounded-xl border border-[#64B5D9]/20 overflow-hidden shadow-xl mb-8">
       <ChatHeader 
         title={
           <div className="flex items-center gap-2">
@@ -70,26 +70,6 @@ export function AuthChat({ maxQuestions = 3, context }: AuthChatProps) {
           </div>
           
           <div className="p-4 border-t border-[#F1F0FB]/10 space-y-4 bg-[#1B2A4A]/50">
-            <AnimatePresence mode="wait">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-              >
-                <QuickSuggestions 
-                  onSelect={(suggestion) => {
-                    sendMessage(suggestion);
-                  }}
-                  suggestions={[
-                    "Comment fonctionne l'inscription ?",
-                    "Quels sont les avantages ?",
-                    "Comment puis-je vous contacter ?",
-                    "Quelle est la politique de confidentialité ?"
-                  ]}
-                />
-              </motion.div>
-            </AnimatePresence>
-            
             <form onSubmit={handleSubmit} className="flex items-center gap-2">
               <Input
                 value={inputValue}

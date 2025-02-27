@@ -4,7 +4,7 @@ import { AuthFooterLinks } from "./footer/AuthFooterLinks";
 
 export function AuthFooter() {
   return (
-    <footer className="w-full py-6 border-t border-[#F1F0FB]/10 mt-auto z-10">
+    <footer className="w-full py-6 border-t border-[#F1F0FB]/10 bg-[#1A1F2C]/60 backdrop-blur-sm z-10">
       <div className="container mx-auto max-w-6xl px-4">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
