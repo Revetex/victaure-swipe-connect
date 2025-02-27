@@ -3,13 +3,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "./form/ImageUpload";
-import { LocationAutocomplete } from "@/components/map/LocationAutocomplete";
-import { LocationMap } from "@/components/map/LocationMap";
+import { SaleTypeField } from "./form/SaleTypeField";
+import { ListingTypeField } from "./form/ListingTypeField";
+import { CategoryField } from "./form/CategoryField";
+import { ListingDetails } from "./form/ListingDetails";
+import { LocationField } from "./form/LocationField";
+import { PricingFields } from "./form/PricingFields";
 import { useListingImages } from "./hooks/useListingImages";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,6 +36,10 @@ export function MarketplaceForm() {
     longitude: null as number | null,
     location: "",
   });
+
+  const handleFieldChange = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleLocationSelect = (location: { latitude: number; longitude: number; name: string }) => {
     setFormData(prev => ({
@@ -124,135 +128,41 @@ export function MarketplaceForm() {
       <DialogContent className="w-full max-w-3xl mx-auto px-2 sm:px-4 bg-[#1A1F2C] text-white border-[#64B5D9]/10">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label className="text-white">Type de vente</Label>
-              <Select 
-                value={formData.saleType} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, saleType: value }))}
-              >
-                <SelectTrigger className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white">
-                  <SelectValue placeholder="Choisissez le type de vente" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="immediate">Prix immédiat</SelectItem>
-                  <SelectItem value="auction">Enchères</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <SaleTypeField 
+              value={formData.saleType} 
+              onChange={(value) => handleFieldChange('saleType', value)} 
+            />
 
-            <div className="grid gap-2">
-              <Label className="text-white">Type d'annonce</Label>
-              <Select 
-                value={formData.type} 
-                onValueChange={(value: ListingType) => setFormData(prev => ({ ...prev, type: value }))}
-              >
-                <SelectTrigger className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white">
-                  <SelectValue placeholder="Choisissez le type d'annonce" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="vente">Vente</SelectItem>
-                  <SelectItem value="location">Location</SelectItem>
-                  <SelectItem value="service">Service</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <ListingTypeField 
+              value={formData.type} 
+              onChange={(value) => handleFieldChange('type', value)} 
+            />
 
-            <div className="grid gap-2">
-              <Label className="text-white">Catégorie</Label>
-              <Select 
-                value={formData.category} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
-              >
-                <SelectTrigger className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white">
-                  <SelectValue placeholder="Choisissez une catégorie" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="electronics">Électronique</SelectItem>
-                  <SelectItem value="furniture">Mobilier</SelectItem>
-                  <SelectItem value="clothing">Vêtements</SelectItem>
-                  <SelectItem value="vehicles">Véhicules</SelectItem>
-                  <SelectItem value="services">Services</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <CategoryField 
+              value={formData.category} 
+              onChange={(value) => handleFieldChange('category', value)} 
+            />
 
-            <div className="grid gap-2">
-              <Label className="text-white">Titre de l'annonce</Label>
-              <Input 
-                placeholder="Titre de votre annonce" 
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                required
-                className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white placeholder:text-white/50"
-              />
-            </div>
+            <ListingDetails
+              title={formData.title}
+              description={formData.description}
+              onChange={handleFieldChange}
+            />
 
-            <div className="grid gap-2">
-              <Label className="text-white">Description</Label>
-              <Textarea 
-                placeholder="Décrivez votre article en détail..." 
-                className="min-h-[100px] bg-[#1B2A4A] border-[#64B5D9]/10 text-white placeholder:text-white/50"
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                required
-              />
-            </div>
+            <LocationField
+              location={formData.location}
+              latitude={formData.latitude}
+              longitude={formData.longitude}
+              onLocationSelect={handleLocationSelect}
+            />
 
-            <div className="grid gap-2">
-              <Label className="text-white">Localisation</Label>
-              <LocationAutocomplete
-                onLocationSelect={handleLocationSelect}
-                placeholder="Entrez l'adresse..."
-                defaultValue={formData.location}
-              />
-              {formData.latitude && formData.longitude && (
-                <div className="mt-2 h-[200px]">
-                  <LocationMap
-                    latitude={formData.latitude}
-                    longitude={formData.longitude}
-                    height="200px"
-                  />
-                </div>
-              )}
-            </div>
-
-            {formData.saleType === 'immediate' ? (
-              <div className="grid gap-2">
-                <Label className="text-white">Prix fixe</Label>
-                <Input 
-                  type="number" 
-                  placeholder="Prix en CAD"
-                  value={formData.price}
-                  onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-                  required
-                  className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white placeholder:text-white/50"
-                />
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="grid gap-2">
-                  <Label className="text-white">Prix de départ</Label>
-                  <Input 
-                    type="number" 
-                    placeholder="Prix minimal en CAD"
-                    value={formData.minimumBid}
-                    onChange={(e) => setFormData(prev => ({ ...prev, minimumBid: e.target.value }))}
-                    required
-                    className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white placeholder:text-white/50"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label className="text-white">Fin des enchères</Label>
-                  <Input 
-                    type="datetime-local"
-                    value={formData.auctionEndDate?.toISOString().slice(0, 16) || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, auctionEndDate: new Date(e.target.value) }))}
-                    required
-                    className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white"
-                  />
-                </div>
-              </div>
-            )}
+            <PricingFields
+              saleType={formData.saleType}
+              price={formData.price}
+              minimumBid={formData.minimumBid}
+              auctionEndDate={formData.auctionEndDate}
+              onChange={handleFieldChange}
+            />
 
             <ImageUpload
               imageUrls={imageUrls}
