@@ -1,10 +1,12 @@
 
 import { useEffect, useState } from "react";
-import { useListingSearch } from "./hooks/useListingSearch";
-import { CustomListings } from "./CustomListings"; 
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { MarketplaceFilters } from "@/types/marketplace";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { toast } from "sonner";
+import { useListingSearch } from "./hooks/useListingSearch";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { CustomListings } from "./CustomListings"; 
 
 interface CustomMarketplaceListProps {
   type: "all" | "vente" | "location" | "service";

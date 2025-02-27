@@ -20,9 +20,11 @@ interface ConversationHeaderProps {
   avatar: string | null;
   isOnline: boolean;
   lastSeen?: string | null;
+  receiver?: any;
+  onBack?: () => void;
 }
 
-export function ConversationHeader({ name, avatar, isOnline, lastSeen }: ConversationHeaderProps) {
+export function ConversationHeader({ name, avatar, isOnline, lastSeen, receiver, onBack }: ConversationHeaderProps) {
   const [showProfile, setShowProfile] = useState(false);
   
   // Assurons-nous que isOnline est un booléen

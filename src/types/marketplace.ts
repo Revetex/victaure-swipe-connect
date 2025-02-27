@@ -23,6 +23,7 @@ export interface MarketplaceListing {
   favorites_count?: number;
   featured?: boolean;
   sale_type?: string;
+  listing_id?: string; // Pour la rétrocompatibilité
 }
 
 export interface MarketplaceFavorite {
@@ -31,6 +32,7 @@ export interface MarketplaceFavorite {
   user_id: string;
   created_at?: string;
   listing_id?: string; // Pour compatibilité
+  viewer_id?: string; // Pour compatibilité
 }
 
 export interface MarketplaceFilters {
@@ -106,9 +108,9 @@ export interface Gig {
   id: string;
   title: string;
   description: string;
-  price: number;
-  delivery_time: string;
-  provider_id: string;
+  price?: number;
+  delivery_time?: string;
+  provider_id?: string;
   status: string;
   created_at: string;
   budget?: number;

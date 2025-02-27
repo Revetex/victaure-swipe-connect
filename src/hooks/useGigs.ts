@@ -1,61 +1,56 @@
 
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { Gig, GigBid } from '@/types/marketplace';
+import { Gig } from '@/types/marketplace';
 
 export function useGigs() {
-  const { data: gigs = [], isLoading } = useQuery({
-    queryKey: ['gigs'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('gigs')
-        .select(`
-          *,
-          creator:creator_id(
-            full_name,
-            avatar_url
-          )
-        `)
-        .order('created_at', { ascending: false });
+  const [gigs, setGigs] = useState<Gig[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-      if (error) throw error;
-      return data as Gig[];
-    },
-  });
+  useEffect(() => {
+    const fetchGigs = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('gigs')
+          .select(`
+            *,
+            creator:profiles(id, full_name, avatar_url)
+          `)
+          .order('created_at', { ascending: false });
 
-  const createGigMutation = useMutation({
-    mutationFn: async (gigData: Partial<Gig>) => {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) throw new Error('Not authenticated');
+        if (error) throw new Error(error.message);
 
-      const { data, error } = await supabase
-        .from('gigs')
-        .insert({
-          ...gigData,
-          creator_id: user.user.id,
-          status: 'open',
-          required_skills: gigData.required_skills || [],
-          title: gigData.title || 'New Gig',
-        })
-        .select()
-        .single();
+        // Convertir les données pour qu'elles correspondent au type Gig
+        const formattedGigs: Gig[] = data.map(item => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          price: item.price,
+          delivery_time: item.delivery_time,
+          provider_id: item.provider_id || item.creator_id,
+          status: item.status,
+          created_at: item.created_at,
+          budget: item.budget,
+          creator: item.creator,
+          required_skills: item.required_skills,
+          location: item.location,
+          duration: item.duration,
+          creator_id: item.creator_id
+        }));
 
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      toast.success('Gig created successfully');
-    },
-    onError: (error) => {
-      toast.error('Error creating gig');
-      console.error('Error:', error);
-    }
-  });
+        setGigs(formattedGigs);
+      } catch (err) {
+        console.error("Error fetching gigs:", err);
+        setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  return {
-    gigs,
-    isLoading,
-    createGig: createGigMutation.mutate
-  };
+    fetchGigs();
+  }, []);
+
+  return { gigs, loading, error };
 }

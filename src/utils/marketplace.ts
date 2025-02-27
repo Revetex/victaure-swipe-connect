@@ -6,9 +6,7 @@ export const adaptFavoriteData = (data: any): MarketplaceFavorite => {
   return {
     id: data.id,
     item_id: data.item_id || data.listing_id, // Support des deux formats
-    user_id: data.user_id || data.viewer_id, // Support des deux formats
-    created_at: data.created_at,
-    viewer_id: data.viewer_id || data.user_id // Support des deux formats
+    user_id: data.user_id || data.viewer_id // Support des deux formats
   };
 };
 
@@ -26,7 +24,6 @@ export const adaptListingData = (data: any): MarketplaceListing => {
     created_at: data.created_at,
     updated_at: data.updated_at,
     images: data.images || [],
-    listing_id: data.id, // Pour la rétrocompatibilité
     seller: data.seller ? {
       id: data.seller.id,
       full_name: data.seller.full_name || '',

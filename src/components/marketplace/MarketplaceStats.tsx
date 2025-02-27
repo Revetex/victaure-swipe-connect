@@ -33,9 +33,11 @@ export function MarketplaceStats({ stats }: StatsProps) {
           <Eye className="h-4 w-4 text-muted-foreground" />
           <h3 className="text-sm font-medium">Vues totales</h3>
         </div>
-        <p className="mt-2 text-2xl font-bold">{stats.totalViews}</p>
+        <p className="mt-2 text-2xl font-bold">{stats.totalViews || 0}</p>
         <p className="text-xs text-muted-foreground">
-          {(stats.totalViews / stats.activeListings).toFixed(1)} vues par annonce
+          {stats.activeListings > 0 
+            ? ((stats.totalViews || 0) / stats.activeListings).toFixed(1) 
+            : "0"} vues par annonce
         </p>
       </Card>
 
@@ -58,7 +60,7 @@ export function MarketplaceStats({ stats }: StatsProps) {
           <h3 className="text-sm font-medium">Répartition par type</h3>
         </div>
         <div className="grid grid-cols-3 gap-4 mt-2">
-          {Object.entries(stats.listingsByType).map(([type, count]) => (
+          {stats.listingsByType && Object.entries(stats.listingsByType).map(([type, count]) => (
             <div key={type} className="text-center">
               <div className="text-lg font-bold">{count}</div>
               <div className="text-xs text-muted-foreground capitalize">{type}</div>
@@ -73,10 +75,10 @@ export function MarketplaceStats({ stats }: StatsProps) {
           <h3 className="text-sm font-medium">Catégories populaires</h3>
         </div>
         <div className="grid gap-2">
-          {stats.popularCategories.map(({ category, count }) => (
-            <div key={category} className="flex items-center justify-between">
+          {Array.isArray(stats.popularCategories) && stats.popularCategories.map((category, index) => (
+            <div key={index} className="flex items-center justify-between">
               <span className="text-sm">{category}</span>
-              <span className="text-sm text-muted-foreground">{count} annonces</span>
+              <span className="text-sm text-muted-foreground">0 annonces</span>
             </div>
           ))}
         </div>
