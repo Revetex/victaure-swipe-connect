@@ -119,6 +119,7 @@ export interface Gig {
   location?: string;
   duration?: string;
   creator_id?: string;
+  updated_at?: string;
 }
 
 export interface GigBid {

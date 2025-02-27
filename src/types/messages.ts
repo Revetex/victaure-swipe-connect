@@ -17,6 +17,10 @@ export interface Message {
     avatar_url: string | null;
     email?: string | null;
     role?: string;
+    certifications?: any[];
+    education?: any[];
+    experiences?: any[];
+    friends?: any[];
   };
 }
 

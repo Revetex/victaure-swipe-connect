@@ -22,25 +22,28 @@ export function useGigs() {
 
         if (error) throw new Error(error.message);
 
-        // Convertir les données pour qu'elles correspondent au type Gig
-        const formattedGigs: Gig[] = data.map(item => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          price: item.price,
-          delivery_time: item.delivery_time,
-          provider_id: item.provider_id || item.creator_id,
-          status: item.status,
-          created_at: item.created_at,
-          budget: item.budget,
-          creator: item.creator,
-          required_skills: item.required_skills,
-          location: item.location,
-          duration: item.duration,
-          creator_id: item.creator_id
-        }));
-
-        setGigs(formattedGigs);
+        // Convertir les données correctement pour le type Gig
+        if (data) {
+          const formattedGigs: Gig[] = data.map(item => ({
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            status: item.status,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+            budget: item.budget,
+            creator_id: item.creator_id,
+            location: item.location,
+            duration: item.duration,
+            required_skills: item.required_skills,
+            creator: item.creator,
+            // Ces propriétés peuvent être undefined
+            price: undefined,
+            delivery_time: undefined,
+            provider_id: undefined
+          }));
+          setGigs(formattedGigs);
+        }
       } catch (err) {
         console.error("Error fetching gigs:", err);
         setError(err instanceof Error ? err : new Error('An unknown error occurred'));

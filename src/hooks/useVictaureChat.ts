@@ -61,11 +61,7 @@ export function useVictaureChat({ maxQuestions = 3, context }: UseVictaureChatPr
             full_name: 'Vous',
             avatar_url: null,
             email: '',
-            role: 'professional',
-            certifications: [],
-            education: [],
-            experiences: [],
-            friends: []
+            role: 'professional'
           }
         },
         {
@@ -81,11 +77,7 @@ export function useVictaureChat({ maxQuestions = 3, context }: UseVictaureChatPr
             full_name: 'Assistant',
             avatar_url: null,
             email: '',
-            role: 'professional',
-            certifications: [],
-            education: [],
-            experiences: [],
-            friends: []
+            role: 'professional'
           }
         }
       ];

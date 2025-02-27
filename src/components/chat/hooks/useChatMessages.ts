@@ -52,11 +52,7 @@ export function useChatMessages({
             full_name: m.isUser ? 'Vous' : 'Assistant',
             avatar_url: null,
             email: '',
-            role: 'professional',
-            certifications: [],
-            education: [],
-            experiences: [],
-            friends: []
+            role: 'professional'
           }
         }));
         setMessages(formattedMessages);
@@ -107,11 +103,7 @@ export function useChatMessages({
           full_name: 'Vous',
           avatar_url: null,
           email: '',
-          role: 'professional',
-          certifications: [],
-          education: [],
-          experiences: [],
-          friends: []
+          role: 'professional'
         }
       };
 
@@ -157,11 +149,7 @@ export function useChatMessages({
           full_name: 'Assistant',
           avatar_url: null,
           email: '',
-          role: 'professional',
-          certifications: [],
-          education: [],
-          experiences: [],
-          friends: []
+          role: 'professional'
         }
       };
       
