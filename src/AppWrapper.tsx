@@ -31,9 +31,7 @@ export default function AppWrapper() {
               path="/wallet"
               element={
                 <PrivateRoute>
-                  <Dashboard>
-                    <WalletPage />
-                  </Dashboard>
+                  <WalletPage />
                 </PrivateRoute>
               }
             />
