@@ -217,6 +217,14 @@ export const useFriendRequests = () => {
     }
   }, [user?.id, loadFriendRequests]);
 
+  // Fonctions d'aide pour les composants existants qui utilisent d'anciens noms de méthodes
+  const handleAcceptRequest = acceptFriendRequest;
+  const handleRejectRequest = rejectFriendRequest;
+  const handleCancelRequest = cancelFriendRequest;
+
+  // Ajout d'une propriété combinée pour la compatibilité
+  const pendingRequests = [...incomingRequests, ...outgoingRequests];
+
   // Chargement initial des demandes
   useEffect(() => {
     if (user?.id) {
@@ -251,6 +259,11 @@ export const useFriendRequests = () => {
     rejectFriendRequest,
     cancelFriendRequest,
     sendFriendRequest,
-    loadFriendRequests
+    loadFriendRequests,
+    // Ajouts pour la compatibilité
+    pendingRequests,
+    handleAcceptRequest,
+    handleRejectRequest,
+    handleCancelRequest,
   };
 };

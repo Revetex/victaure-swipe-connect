@@ -36,6 +36,9 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
     setActiveTab(value);
   };
 
+  // Assurez-vous que les certifications sont toujours un tableau
+  const certifications = profile.certifications || [];
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className={`${isMobile ? 'max-w-[95vw] h-[95vh] p-0' : 'max-w-4xl p-0'} overflow-hidden bg-background/95 backdrop-blur-sm`}>
@@ -95,7 +98,8 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
                 </TabsContent>
 
                 <TabsContent value="certifications" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
-                  <ProfileCertifications certifications={profile.certifications} />
+                  {/* Passez simplement les props sans accéder à certifications directement */}
+                  <ProfileCertifications {...profile} />
                 </TabsContent>
               </motion.div>
             </AnimatePresence>

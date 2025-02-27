@@ -7,13 +7,14 @@ export interface Receiver {
   full_name: string;
   avatar_url: string | null;
   email?: string | null;
-  online_status?: 'online' | 'offline';
+  online_status?: 'online' | 'offline' | string | boolean;
   last_seen?: string | null;
   latitude?: number;
   longitude?: number;
   // Champs additionnels pour améliorer la fonctionnalité
   bio?: string | null;
   phone?: string | null;
+  role?: string;  // Ajout du champ role qui est utilisé dans plusieurs composants
   preferences?: {
     notifications?: boolean;
     theme?: 'light' | 'dark' | 'system';

@@ -17,14 +17,18 @@ export function PendingRequestsSection({
   onToggle 
 }: PendingRequestsSectionProps) {
   const {
-    pendingRequests,
+    incomingRequests,
+    outgoingRequests,
     isLoading,
-    handleAcceptRequest,
-    handleRejectRequest,
-    handleCancelRequest
+    // Utilisation des noms de fonction corrects qui sont maintenant exposés par le hook
+    acceptFriendRequest,
+    rejectFriendRequest,
+    cancelFriendRequest,
+    pendingRequests
   } = useFriendRequests();
 
-  const pendingCount = pendingRequests?.length || 0;
+  // Calculer le nombre total de demandes en attente
+  const pendingCount = incomingRequests.length + outgoingRequests.length;
 
   return (
     <motion.div 
@@ -70,9 +74,9 @@ export function PendingRequestsSection({
             <div className="p-3 pt-0">
               <FriendRequestsSection
                 requests={pendingRequests}
-                onAccept={handleAcceptRequest}
-                onReject={handleRejectRequest}
-                onCancel={handleCancelRequest}
+                onAccept={acceptFriendRequest}
+                onReject={rejectFriendRequest}
+                onCancel={cancelFriendRequest}
                 isLoading={isLoading}
               />
             </div>
