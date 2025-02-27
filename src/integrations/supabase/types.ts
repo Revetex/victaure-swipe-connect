@@ -4552,6 +4552,13 @@ export type Database = {
       }
     }
     Functions: {
+      accept_friend_request: {
+        Args: {
+          p_request_id: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
       are_friends: {
         Args: {
           user1_id: string
@@ -4562,6 +4569,13 @@ export type Database = {
       auto_cleanup_old_data: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      cancel_friend_request: {
+        Args: {
+          p_request_id: string
+          p_user_id: string
+        }
+        Returns: boolean
       }
       change_user_password: {
         Args: {
@@ -4584,12 +4598,48 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_friend_requests: {
+        Args: {
+          user_id: string
+        }
+        Returns: {
+          id: string
+          sender_id: string
+          receiver_id: string
+          status: string
+          created_at: string
+          updated_at: string
+          sender_name: string
+          sender_avatar: string
+          receiver_name: string
+          receiver_avatar: string
+          type: string
+        }[]
+      }
       get_secret: {
         Args: {
           secret_name: string
         }
         Returns: {
           secret: string
+        }[]
+      }
+      get_user_connections: {
+        Args: {
+          user_id: string
+        }
+        Returns: {
+          id: string
+          user_id: string
+          other_user_id: string
+          status: string
+          connection_type: string
+          visibility: string
+          created_at: string
+          updated_at: string
+          is_sender: boolean
+          other_user_name: string
+          other_user_avatar: string
         }[]
       }
       increment_app_download_count: {
@@ -4639,6 +4689,20 @@ export type Database = {
           p_draw_id: string
         }
         Returns: undefined
+      }
+      reject_friend_request: {
+        Args: {
+          p_request_id: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
+      remove_friend: {
+        Args: {
+          p_connection_id: string
+          p_user_id: string
+        }
+        Returns: boolean
       }
       schedule_next_draw: {
         Args: Record<PropertyKey, never>
