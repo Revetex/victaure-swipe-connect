@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { MarketplaceFilters, MarketplaceListing } from '@/types/marketplace';
 import { toast } from 'sonner';
-import { adaptListingData } from '@/utils/marketplace';
 
 export function useListingSearch(
   searchQuery: string,
@@ -79,8 +78,33 @@ export function useListingSearch(
         if (queryError) throw queryError;
 
         if (data) {
-          // Utiliser l'adaptateur pour transformer les données
-          const formattedListings = data.map(adaptListingData);
+          // Transformer les données pour correspondre à MarketplaceListing
+          const formattedListings: MarketplaceListing[] = data.map(item => ({
+            id: item.id,
+            title: item.title,
+            description: item.description || '',
+            price: item.price,
+            currency: item.currency,
+            type: item.type,
+            status: item.status,
+            seller_id: item.seller_id,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+            images: item.images || [],
+            seller: item.seller ? {
+              id: item.seller.id,
+              full_name: item.seller.full_name || '',
+              avatar_url: item.seller.avatar_url || null,
+              rating: item.seller.rating
+            } : undefined,
+            location: item.location,
+            category: item.category,
+            views_count: item.views_count,
+            favorites_count: item.favorites_count,
+            featured: item.featured,
+            sale_type: item.sale_type
+          }));
+          
           setListings(formattedListings);
           
           if (count !== null) {

@@ -22,7 +22,7 @@ export function useGigs() {
 
         if (error) throw new Error(error.message);
 
-        // Convertir les données correctement pour le type Gig
+        // Convertir les données pour qu'elles correspondent à Gig
         if (data) {
           const formattedGigs: Gig[] = data.map(item => ({
             id: item.id,
@@ -30,14 +30,14 @@ export function useGigs() {
             description: item.description,
             status: item.status,
             created_at: item.created_at,
-            updated_at: item.updated_at,
             budget: item.budget,
             creator_id: item.creator_id,
+            creator: item.creator,
+            required_skills: item.required_skills,
             location: item.location,
             duration: item.duration,
-            required_skills: item.required_skills,
-            creator: item.creator,
-            // Ces propriétés peuvent être undefined
+            // Ces propriétés sont optionnelles dans notre interface Gig
+            updated_at: item.updated_at,
             price: undefined,
             delivery_time: undefined,
             provider_id: undefined

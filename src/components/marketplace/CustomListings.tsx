@@ -225,14 +225,14 @@ export function CustomListings({ items, isLoading = false }: CustomListingsProps
                   <UserAvatar
                     user={{
                       id: item.seller_id,
-                      name: item.seller.full_name,
-                      image: item.seller.avatar_url,
+                      name: item.seller.full_name || '',
+                      image: item.seller.avatar_url || undefined,
                     }}
                     className="h-6 w-6"
                     fallbackClassName="text-xs"
                   />
                   <span className="text-sm text-muted-foreground">
-                    {item.seller.full_name}
+                    {item.seller.full_name || 'Vendeur'}
                   </span>
                 </>
               )}
