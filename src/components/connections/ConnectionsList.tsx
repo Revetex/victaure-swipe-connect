@@ -15,6 +15,11 @@ interface ConnectionsListProps {
   onClose: () => void;
 }
 
+// Définir l'interface pour ConnectionCardProps
+interface ConnectionCardProps {
+  profile: UserProfile;
+}
+
 export function ConnectionsList({
   searchQuery,
   showPendingRequests,
@@ -80,7 +85,7 @@ export function ConnectionsList({
     experiences: [],
     education: [],
     certifications: conn.certifications || [],
-    friends: []
+    friends: []  // Propriété obligatoire
   } as UserProfile));
 
   return (
@@ -90,10 +95,10 @@ export function ConnectionsList({
         
         {connectionsAsProfiles?.length ? (
           <div className="space-y-2">
-            {connectionsAsProfiles.map(connection => (
+            {connectionsAsProfiles.map(profile => (
               <ConnectionCard 
-                key={connection.id}
-                connection={connection}
+                key={profile.id}
+                profile={profile}
               />
             ))}
           </div>

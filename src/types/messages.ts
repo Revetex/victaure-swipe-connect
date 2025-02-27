@@ -41,13 +41,6 @@ export interface ConversationParticipant {
   last_seen?: string | null;
 }
 
-// Étendre l'interface String pour inclure toLowerCase()
-declare global {
-  interface ConversationParticipant {
-    toString(): string;
-  }
-}
-
 export interface Conversation {
   id: string;
   participant1_id: string;

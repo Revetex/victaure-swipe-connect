@@ -74,6 +74,14 @@ export interface SocialLinks {
   [key: string]: string | undefined;
 }
 
+// Interface Friend
+export interface Friend extends BaseProfile {
+  friendship_id?: string;
+  status?: string;
+  job_title?: string;
+  friends: Friend[];
+}
+
 // Interface pour un profil utilisateur
 export interface UserProfile extends BaseProfile {
   friends: Friend[]; // Rendre friends obligatoire pour résoudre les erreurs
@@ -93,14 +101,6 @@ export interface User extends UserProfile {
   // Hérité de UserProfile, friends est déjà obligatoire
   connections?: UserConnection[];
   job_title?: string;
-}
-
-// Interface Friend
-export interface Friend extends BaseProfile {
-  friendship_id?: string;
-  status?: string;
-  job_title?: string;
-  friends: Friend[];
 }
 
 // Interface pour une connexion utilisateur

@@ -49,6 +49,7 @@ export function useFriendsList() {
             status: conn.status,
             online_status: true, // Valeur par défaut
             last_seen: null, // Valeur par défaut
+            friends: [] // Ajouter la propriété friends obligatoire
           };
         });
 

@@ -36,7 +36,8 @@ export function profileToFriend(profile: UserProfile): Friend {
     online_status: profile.online_status,
     last_seen: profile.last_seen,
     created_at: profile.created_at,
-    job_title: profile.job_title
+    job_title: profile.job_title,
+    friends: [] // Ajouter la propriété friends obligatoire
   };
 }
 
@@ -71,6 +72,7 @@ export function receiverToFriend(receiver: Receiver): Friend {
     online_status: receiver.online_status,
     last_seen: receiver.last_seen,
     bio: receiver.bio || null,
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    friends: [] // Ajouter la propriété friends obligatoire
   };
 }
