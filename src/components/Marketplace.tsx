@@ -27,15 +27,16 @@ export function Marketplace() {
     
     setIsSearching(true);
     try {
-      const { data, error } = await supabase.functions.invoke('marketplace-search', {
-        body: { query: value }
-      });
+      // Simplification de la recherche sans appeler de fonction RPC
+      const { data, error } = await supabase
+        .from('marketplace_listings')
+        .select('count')
+        .textSearch('searchable_text', value)
+        .limit(1);
 
       if (error) throw error;
 
-      if (data.suggestedKeywords) {
-        toast.info(`Suggestions de recherche: ${data.suggestedKeywords}`);
-      }
+      toast.info(`Recherche effectuée pour "${value}"`);
     } catch (error) {
       console.error('Erreur de recherche:', error);
       toast.error("Une erreur est survenue lors de la recherche");

@@ -39,12 +39,7 @@ export function useListingSearch(
             created_at, 
             updated_at, 
             images, 
-            location,
-            condition,
-            sale_type,
-            views_count,
-            favorites_count,
-            featured,
+            category,
             seller:profiles (
               full_name,
               avatar_url,
@@ -92,12 +87,8 @@ export function useListingSearch(
           case 'price':
             query = query.order('price', { ascending: sortOrder === 'asc' });
             break;
-          case 'rating':
-            // Tri indirect par la note du vendeur
-            query = query.order('seller(rating)', { ascending: sortOrder === 'asc' });
-            break;
-          case 'views':
-            query = query.order('views_count', { ascending: sortOrder === 'asc' });
+          default:
+            query = query.order('created_at', { ascending: false });
             break;
         }
 
@@ -109,7 +100,29 @@ export function useListingSearch(
         if (error) throw error;
         
         if (data) {
-          setListings(data as MarketplaceListing[]);
+          // Conversion du type pour assurer la compatibilité
+          const formattedData: MarketplaceListing[] = data.map(item => ({
+            id: item.id,
+            title: item.title,
+            description: item.description || "",
+            price: item.price,
+            currency: item.currency,
+            type: item.type as any,
+            status: item.status as any,
+            seller_id: item.seller_id,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+            images: item.images || [],
+            category: item.category,
+            seller: item.seller ? {
+              full_name: item.seller.full_name || "",
+              avatar_url: item.seller.avatar_url || "",
+              rating: item.seller.rating || 0
+            } : undefined
+          }));
+          
+          setListings(formattedData);
+          
           if (count !== null) {
             setTotalCount(count);
             setTotalPages(Math.ceil(count / itemsPerPage));
