@@ -14,72 +14,69 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface NewConversationPopoverProps {
-  onSelectFriend: () => void;
+  onSelectFriend: (friend: any) => void;
+  friends: Receiver[];
+  loading: boolean;
+  onClose: () => void;
 }
 
-export function NewConversationPopover({ onSelectFriend }: NewConversationPopoverProps) {
-  const { friends, loading } = useFriendsList();
-  const { setReceiver } = useReceiver();
-
-  const handleSelectFriend = (friend: Receiver) => {
-    setReceiver(friend);
-    onSelectFriend();
-  };
-
+export function NewConversationPopover({ onSelectFriend, friends, loading, onClose }: NewConversationPopoverProps) {
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <MessageSquarePlus className="h-5 w-5" />
+    <div className="bg-[#1A2335] border border-[#64B5D9]/20 rounded-lg shadow-lg p-3 mb-3">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-medium text-[#F2EBE4]">Nouvelle conversation</h3>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="h-7 w-7 p-0 text-[#F2EBE4]/70 hover:text-[#F2EBE4] hover:bg-[#64B5D9]/10"
+          onClick={onClose}
+        >
+          <span className="sr-only">Fermer</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
         </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80" align="end">
-        <div className="space-y-4">
-          <h4 className="font-medium leading-none">Nouvelle conversation</h4>
-          <ScrollArea className="h-[300px] pr-4">
-            {loading ? (
-              <div className="flex items-center justify-center py-4">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+      
+      <ScrollArea className="h-[220px] pr-3">
+        {loading ? (
+          <div className="flex items-center justify-center py-4">
+            <Loader2 className="h-6 w-6 animate-spin text-[#64B5D9]" />
+          </div>
+        ) : friends.length === 0 ? (
+          <div className="text-center py-4">
+            <p className="text-[#F2EBE4]/60 text-sm">
+              Aucun contact trouvé
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-1">
+            {friends.map((friend) => (
+              <div
+                key={friend.id}
+                className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1A2335]/70 cursor-pointer transition-colors"
+                onClick={() => onSelectFriend(friend)}
+              >
+                <div className="relative">
+                  <Avatar className="h-10 w-10 border border-[#64B5D9]/20">
+                    <AvatarImage src={friend.avatar_url || ""} />
+                    <AvatarFallback className="bg-[#1A2335] text-[#64B5D9]">
+                      {friend.full_name.split(" ").map((n) => n[0]).join("").toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {friend.online_status === 'online' && (
+                    <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-[#1B2A4A]" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[#F2EBE4] font-medium truncate">{friend.full_name}</p>
+                </div>
               </div>
-            ) : friends.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                Aucun ami trouvé
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {friends.map((friend) => (
-                  <Button
-                    key={friend.id}
-                    variant="ghost"
-                    className="w-full justify-start gap-2 p-2"
-                    onClick={() => handleSelectFriend(friend)}
-                  >
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={friend.avatar_url || undefined} />
-                      <AvatarFallback>
-                        {friend.full_name?.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col items-start">
-                      <span className="font-medium">{friend.full_name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {friend.online_status === 'online' ? 'En ligne' : 'Hors ligne'}
-                      </span>
-                    </div>
-                    <div className="ml-auto">
-                      <div className={`h-2 w-2 rounded-full ${
-                        friend.online_status === 'online' 
-                          ? 'bg-green-500' 
-                          : 'bg-gray-300'
-                      }`} />
-                    </div>
-                  </Button>
-                ))}
-              </div>
-            )}
-          </ScrollArea>
-        </div>
-      </PopoverContent>
-    </Popover>
+            ))}
+          </div>
+        )}
+      </ScrollArea>
+    </div>
   );
 }

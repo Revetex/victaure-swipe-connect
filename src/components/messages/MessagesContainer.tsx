@@ -13,12 +13,12 @@ export function MessagesContainer() {
       "fixed inset-0 top-16 flex h-[calc(100vh-4rem)] w-full",
       "border-0 rounded-none bg-[#1A1F2C] overflow-hidden"
     )}>
-      <ConversationList 
-        className={cn(
-          "border-r border-[#64B5D9]/10 bg-[#1B2A4A]/50 w-80",
-          showConversation ? "hidden md:flex" : "w-full md:w-80"
-        )}
-      />
+      <div className={cn(
+        "border-r border-[#64B5D9]/10 bg-[#1B2A4A]/50 w-80",
+        showConversation ? "hidden md:block" : "w-full md:w-80"
+      )}>
+        <ConversationList />
+      </div>
       
       {(showConversation || receiver) && (
         <div className="flex-1 flex flex-col h-full overflow-hidden">

@@ -36,7 +36,7 @@ export function ConversationList() {
   const [isSearching, setIsSearching] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showNewConversation, setShowNewConversation] = useState(false);
-  const { friends, isLoadingFriends } = useFriendsList();
+  const { friends, loading: isLoadingFriends } = useFriendsList();
   const { setReceiver, setShowConversation } = useReceiver();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("recent");
@@ -283,10 +283,10 @@ export function ConversationList() {
 
         {showNewConversation && (
           <NewConversationPopover
-            onSelect={handleStartNewConversation}
-            onClose={() => setShowNewConversation(false)}
+            onSelectFriend={handleStartNewConversation}
             friends={friends}
-            isLoading={isLoadingFriends}
+            loading={isLoadingFriends}
+            onClose={() => setShowNewConversation(false)}
           />
         )}
       </div>
