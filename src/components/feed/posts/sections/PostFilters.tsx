@@ -24,7 +24,7 @@ export function PostFilters({
   onSortOrderChange,
   onCreatePost
 }: PostFiltersProps) {
-  return <section className="backdrop-blur-md border border-[#64B5D9]/10 rounded-xl shadow-lg p-4 bg-transparent">
+  return <section className="backdrop-blur-md border border-[#64B5D9]/10 rounded-xl shadow-lg p-4 bg-transparent py-[5px] px-[5px]">
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60" />
