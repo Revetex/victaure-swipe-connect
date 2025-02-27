@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Post } from "@/types/posts";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
