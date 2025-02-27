@@ -16,6 +16,9 @@ export const contractFormSchema = z.object({
 export type ContractFormValues = z.infer<typeof contractFormSchema>;
 
 export type ListingType = 'vente' | 'location' | 'service';
+export type ListingStatus = 'active' | 'pending' | 'sold' | 'expired' | 'deleted';
+export type ListingCondition = 'new' | 'like_new' | 'good' | 'used' | 'refurbished';
+export type SaleType = 'immediate' | 'auction' | 'negotiable';
 
 export interface MarketplaceListing {
   id: string;
@@ -24,11 +27,21 @@ export interface MarketplaceListing {
   price: number;
   currency: string;
   type: ListingType;
-  status: string;
+  status: ListingStatus | string;
   seller_id: string;
   created_at: string;
   updated_at: string;
-  images: string[];
+  images?: string[];
+  location?: string;
+  condition?: ListingCondition;
+  category?: string;
+  views_count?: number;
+  favorites_count?: number;
+  featured?: boolean;
+  sale_type?: SaleType;
+  auction_end_date?: string;
+  minimum_bid?: number;
+  searchable_text?: any;
   seller?: {
     full_name: string | null;
     avatar_url: string | null;
@@ -168,4 +181,19 @@ export interface MarketplaceContract {
     full_name: string | null;
     avatar_url: string | null;
   } | null;
+}
+
+export interface MarketplaceCategory {
+  id: string;
+  name: string;
+  type: string;
+  parent_id?: string;
+  icon?: string;
+}
+
+export interface MarketplaceFavorite {
+  id: string;
+  listing_id: string;
+  user_id: string;
+  created_at: string;
 }

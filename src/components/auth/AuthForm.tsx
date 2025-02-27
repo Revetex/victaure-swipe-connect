@@ -5,7 +5,7 @@ import { LoginForm } from "./LoginForm";
 import { SignupForm } from "./SignupForm";
 import { BusinessSignupForm } from "./business/BusinessSignupForm";
 import { useAuth } from "@/hooks/useAuth";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { AuthChat } from "@/components/chat/AuthChat";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

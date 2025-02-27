@@ -5,12 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/button';
 import { VictaureChat } from './VictaureChat';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 export function VictaureChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [lastOpened, setLastOpened] = useState(Date.now());
+  const { user } = useAuth();
 
   // Simulation de notifications de Mr Victaure
   useEffect(() => {

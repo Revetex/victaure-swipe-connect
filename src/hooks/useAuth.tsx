@@ -105,18 +105,8 @@ export function useAuth() {
         
         // Create profile for the user
         if (data.user) {
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .insert({
-              id: data.user.id,
-              full_name: fullName,
-              email: email,
-              phone: phone
-            });
-
-          if (profileError) {
-            console.error("Error creating profile:", profileError);
-          }
+          // We'll let the DB trigger handle profile creation
+          console.log("User created, profile will be created by database trigger");
         }
 
         // Redirect to login page or dashboard

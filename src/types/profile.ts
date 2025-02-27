@@ -27,6 +27,7 @@ export interface Experience {
   skills?: string[];
   logo_url?: string;
   current?: boolean;
+  profile_id?: string; // Added for database compatibility
 }
 
 // Educational background
@@ -41,6 +42,7 @@ export interface Education {
   logo_url?: string;
   current?: boolean;
   institution?: string; // For backward compatibility
+  profile_id?: string; // Added for database compatibility
 }
 
 // Professional certifications
@@ -54,6 +56,22 @@ export interface Certification {
   credential_url?: string;
   credential_id?: string;
   logo_url?: string;
+  description?: string; // Added for compatibility
+  year?: string; // Added for compatibility
+  profile_id?: string; // Added for database compatibility
+}
+
+// Blocked user
+export interface BlockedUser {
+  id: string;
+  blocker_id: string;
+  blocked_id: string;
+  created_at: string;
+  blocked_user?: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+  };
 }
 
 // Connection between users
@@ -81,9 +99,6 @@ export interface Profile {
   state: string | null;
   country: string | null;
   skills: string[];
-  experiences?: Experience[];
-  education?: Education[];
-  certifications?: Certification[];
   social_links?: SocialLinks;
   online_status: OnlineStatus | string | boolean;
   last_seen: string | null;
@@ -96,12 +111,12 @@ export interface Profile {
   website?: string | null;
   privacy_enabled?: boolean;
   verified?: boolean;
+  company_name?: string | null;
+  sections_order?: string[];
   certifications?: Certification[];
   education?: Education[];
   experiences?: Experience[];
   friends?: UserProfile[];
-  company_name?: string | null;
-  sections_order?: string[];
 }
 
 // Simplified user profile for UI components
@@ -110,21 +125,9 @@ export interface UserProfile extends Profile {
 }
 
 // Full user data including connections
-export interface User extends Omit<Profile, 'experiences' | 'education' | 'certifications' | 'social_links' | 'updated_at'> {
+export interface User extends Omit<Profile, 'updated_at'> {
   connections?: UserConnection[];
   friends: User[];
-}
-
-// Simplified receiver interface for messaging
-export interface Receiver {
-  id: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  email?: string | null;
-  online_status?: OnlineStatus | string | boolean;
-  last_seen?: string | null;
-  latitude?: number;
-  longitude?: number;
 }
 
 // Simplified friend interface
@@ -143,6 +146,9 @@ export interface Friend {
   job_title?: string;
   friendship_id?: string;
   status?: string;
+  skills?: string[]; // Added for compatibility
+  created_at?: string; // Added for compatibility with UserProfile
+  email?: string; // Added for compatibility with UserProfile
 }
 
 // Interface for pending connection requests
@@ -181,6 +187,7 @@ export const createEmptyProfile = (id: string, email: string | null): UserProfil
   skills: [],
   online_status: false,
   last_seen: null,
+  created_at: new Date().toISOString(), // Add created_at for compatibility
   certifications: [],
   education: [],
   experiences: [],
@@ -202,7 +209,7 @@ export const transformDatabaseProfile = (data: any): UserProfile => ({
   online_status: data.online_status || false,
   last_seen: data.last_seen,
   company_name: data.company_name,
-  created_at: data.created_at,
+  created_at: data.created_at || new Date().toISOString(),
   sections_order: data.sections_order
 });
 
@@ -225,9 +232,9 @@ export const transformCertification = (data: any): Certification => ({
   expiry_date: data.expiry_date,
   credential_url: data.credential_url,
   description: data.description,
-  skills: data.skills,
   year: data.year,
-  profile_id: data.profile_id
+  profile_id: data.profile_id,
+  credential_id: data.credential_id
 });
 
 export const transformExperience = (data: any): Experience => ({

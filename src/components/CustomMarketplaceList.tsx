@@ -26,7 +26,7 @@ export function CustomMarketplaceList({
   useEffect(() => {
     const prepareData = async () => {
       try {
-        // Faire une simple vérification pour voir si nous pouvons accéder à la table
+        // Simple check if we can access the listings table
         const { data, error } = await supabase
           .from('marketplace_listings')
           .select('id')
@@ -34,11 +34,11 @@ export function CustomMarketplaceList({
           
         if (error) {
           console.error("Erreur lors de l'accès aux données du marketplace:", error);
+          toast.error("Erreur lors du chargement des données du marketplace");
         } else {
           console.log("Accès aux données du marketplace réussi");
+          setIsDataReady(true);
         }
-
-        setIsDataReady(true);
       } catch (error) {
         console.error("Erreur lors de la préparation des données:", error);
         // En cas d'erreur, on indique quand même que les données sont prêtes
@@ -57,31 +57,11 @@ export function CustomMarketplaceList({
         if (event.detail && event.detail.listingId) {
           const listingId = event.detail.listingId;
           
-          // Implémentation simplifiée pour incrémenter les vues
-          supabase
-            .from('marketplace_listings')
-            .select('views_count')
-            .eq('id', listingId)
-            .single()
-            .then(({ data, error }) => {
-              if (error) {
-                console.error('Erreur lors de la récupération du nombre de vues:', error);
-                return;
-              }
-              
-              // Utiliser la valeur actuelle pour incrémenter
-              const currentViews = data?.views_count || 0;
-              
-              supabase
-                .from('marketplace_listings')
-                .update({ views_count: currentViews + 1 })
-                .eq('id', listingId)
-                .then(({ error: updateError }) => {
-                  if (updateError) {
-                    console.error('Erreur lors de l\'incrémentation des vues:', updateError);
-                  }
-                });
-            });
+          // Notification de visualisation (implémentation simplifiée)
+          const viewEvent = new CustomEvent('marketplace-item-viewed', {
+            detail: { listingId, timestamp: new Date().toISOString() }
+          });
+          window.dispatchEvent(viewEvent);
         }
       } catch (error) {
         console.error('Erreur lors du traitement des vues:', error);

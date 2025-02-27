@@ -1,9 +1,9 @@
 
-import { Certification, Education, Experience } from "./profile";
+import { Certification, Education, Experience, UserRole as ProfileUserRole } from "./profile";
 
 // Types pour la messagerie
-export type UserRole = "professional" | "business" | "admin";
-export type OnlineStatus = "online" | "offline" | "away";
+export type UserRole = "professional" | "business" | "admin" | "user" | "freelancer" | "student";
+export type OnlineStatus = "online" | "offline" | "away" | "busy";
 
 export interface Message {
   id: string;
@@ -36,21 +36,21 @@ export interface Receiver {
   full_name: string;
   avatar_url: string | null;
   email?: string | null;
-  role: UserRole;
-  bio: string | null;
-  phone: string | null;
-  city: string | null;
-  state: string | null;
-  country: string | null;
-  skills: string[];
-  online_status: OnlineStatus;
-  last_seen: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  certifications: Certification[];
-  education: Education[];
-  experiences: Experience[];
-  friends: string[];
+  role?: UserRole;
+  bio?: string | null;
+  phone?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  skills?: string[];
+  online_status?: OnlineStatus | string | boolean;
+  last_seen?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  certifications?: Certification[];
+  education?: Education[];
+  experiences?: Experience[];
+  friends?: string[];
 }
 
 export interface Conversation {
