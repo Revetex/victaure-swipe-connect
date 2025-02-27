@@ -1,3 +1,4 @@
+
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
 import { X, Download, Mail, Phone, MapPin, Link } from "lucide-react";
@@ -27,13 +28,29 @@ export function ProfileHeader({ profile, onClose, canViewFullProfile = true }: P
     try {
       toast.loading("Génération de votre CV en cours...");
       
-      const pdfBlob = await generateCV(profile);
+      // Ajoutons un style par défaut pour éviter l'erreur
+      const defaultStyle = {
+        font: "Helvetica",
+        colors: {
+          primary: "#64B5D9",
+          secondary: "#1B2A4A",
+          text: {
+            primary: "#333333",
+            secondary: "#666666"
+          }
+        }
+      };
+      
+      const pdfBlob = await generateCV(profile, defaultStyle);
       if (!pdfBlob) {
         throw new Error("Erreur lors de la génération du PDF");
       }
       
+      // Convertir le document PDF en Blob avant utilisation
+      const pdfData = pdfBlob.output('blob');
+      
       // Créer URL pour le téléchargement
-      const pdfUrl = URL.createObjectURL(new Blob([pdfBlob]));
+      const pdfUrl = URL.createObjectURL(pdfData);
       
       // Créer un lien pour télécharger et le cliquer
       const downloadLink = document.createElement('a');
