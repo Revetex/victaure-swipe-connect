@@ -40,15 +40,10 @@ export function useListingSearch(
 
         // Apply text search filter
         if (searchQuery) {
-          // Check if searchable_text column exists
           try {
-            query = query.textSearch('searchable_text', searchQuery, {
-              type: 'websearch', 
-              config: 'french'
-            });
+            query = query.ilike('title', `%${searchQuery}%`);
           } catch (error) {
-            console.error("Error with text search, falling back to ILIKE:", error);
-            // Fallback to ILIKE if full-text search isn't available
+            console.error("Error with text search, using ILIKE as fallback:", error);
             query = query.or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`);
           }
         }
@@ -92,7 +87,6 @@ export function useListingSearch(
         if (error) throw error;
         
         if (data) {
-          // Convert the data to MarketplaceListing objects
           const formattedListings: MarketplaceListing[] = data.map(item => ({
             id: item.id,
             title: item.title,
@@ -105,12 +99,12 @@ export function useListingSearch(
             created_at: item.created_at,
             updated_at: item.updated_at,
             images: item.images || [],
-            location: item.location,
-            views_count: item.views_count,
-            favorites_count: item.favorites_count,
-            featured: item.featured,
-            sale_type: item.sale_type,
-            category: item.category,
+            location: item.location || undefined,
+            category: item.category || undefined,
+            views_count: item.views_count || 0,
+            favorites_count: item.favorites_count || 0,
+            featured: item.featured || false,
+            sale_type: item.sale_type || undefined,
             seller: item.seller ? {
               full_name: item.seller.full_name,
               avatar_url: item.seller.avatar_url,

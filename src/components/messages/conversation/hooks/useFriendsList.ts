@@ -1,77 +1,71 @@
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { Friend, convertOnlineStatusToBoolean } from "@/types/profile";
 
-export type FriendDetail = {
-  id: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  online_status: boolean;
-  last_seen: string | null;
-};
-
-export const useFriendsList = () => {
-  const [friends, setFriends] = useState<FriendDetail[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export function useFriendsList() {
   const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchFriends = async () => {
-      if (!user) {
-        setFriends([]);
-        setIsLoading(false);
-        return;
-      }
+  const { data: friends = [], isLoading: isLoadingFriends } = useQuery({
+    queryKey: ["friends-for-messages", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
 
       try {
-        // Obtenir les connexions d'amis depuis user_connections
-        const { data, error } = await supabase
-          .from('user_connections')
-          .select(`
-            id,
-            sender_id,
-            receiver_id,
-            sender:profiles!sender_id(id, full_name, avatar_url, online_status, last_seen),
-            receiver:profiles!receiver_id(id, full_name, avatar_url, online_status, last_seen)
-          `)
+        // Récupérer les connections de type ami avec statut accepté
+        const { data: connections, error } = await supabase
+          .from('user_connections_view')
+          .select('*')
           .eq('status', 'accepted')
           .eq('connection_type', 'friend')
           .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
         if (error) {
-          console.error("Error fetching friends:", error);
-          setFriends([]);
-          return;
+          console.error("Error loading friends:", error);
+          return [];
         }
 
-        // Transformer les données pour obtenir une liste d'amis
-        const friendsList = data.map(connection => {
-          // Déterminer si l'utilisateur est l'expéditeur ou le destinataire
-          const friend = connection.sender_id === user.id 
-            ? connection.receiver 
-            : connection.sender;
+        if (!connections) return [];
 
+        // Transformer les connexions en amis
+        const friendsList: Friend[] = connections.map(conn => {
+          const isSender = conn.sender_id === user.id;
+          
           return {
-            id: friend.id,
-            full_name: friend.full_name,
-            avatar_url: friend.avatar_url,
-            online_status: friend.online_status || false,
-            last_seen: friend.last_seen
+            id: isSender ? conn.receiver_id : conn.sender_id,
+            full_name: isSender ? conn.receiver_name : conn.sender_name,
+            avatar_url: isSender ? conn.receiver_avatar : conn.sender_avatar,
+            email: null, // Champ requis par l'interface Friend
+            role: 'professional',
+            bio: null,
+            phone: null,
+            city: null,
+            state: null,
+            country: null,
+            skills: [],
+            created_at: conn.created_at,
+            friendship_id: conn.id,
+            status: conn.status,
+            online_status: isSender 
+              ? convertOnlineStatusToBoolean(conn.receiver_online_status) 
+              : convertOnlineStatusToBoolean(conn.sender_online_status),
+            last_seen: isSender ? conn.receiver_last_seen : conn.sender_last_seen,
           };
         });
 
-        setFriends(friendsList);
-      } catch (err) {
-        console.error("Failed to fetch friends list:", err);
-        setFriends([]);
-      } finally {
-        setIsLoading(false);
+        // Trier les amis - d'abord ceux qui sont en ligne
+        return friendsList.sort((a, b) => {
+          if (a.online_status && !b.online_status) return -1;
+          if (!a.online_status && b.online_status) return 1;
+          return (a.full_name || "").localeCompare(b.full_name || "");
+        });
+      } catch (error) {
+        console.error("Error fetching friends:", error);
+        return [];
       }
-    };
+    },
+  });
 
-    fetchFriends();
-  }, [user]);
-
-  return { friends, isLoading };
-};
+  return { friends, isLoadingFriends };
+}
