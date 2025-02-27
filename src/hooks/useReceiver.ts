@@ -17,7 +17,10 @@ export interface Receiver {
   state?: string | null;
   country?: string | null;
   role?: string;
-  skills?: string[];  // Ajout du champ skills qui est utilisé dans plusieurs composants
+  skills?: string[];
+  certifications?: any[];  // Ajout du champ certifications qui est utilisé
+  education?: any[];       // Ajout du champ education qui est utilisé
+  experiences?: any[];     // Ajout du champ experiences qui est utilisé
   preferences?: {
     notifications?: boolean;
     theme?: 'light' | 'dark' | 'system';

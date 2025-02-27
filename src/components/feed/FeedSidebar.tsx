@@ -17,6 +17,11 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     setShowPendingRequests(!showPendingRequests);
   };
 
+  // Fonction fictive pour l'événement onToolClick
+  const handleToolClick = (toolId: string) => {
+    console.log(`Tool clicked: ${toolId}`);
+  };
+
   return (
     <aside 
       className={cn(
@@ -30,7 +35,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
       
       <div className="flex-1 overflow-y-auto custom-scrollbar p-4 pl-0 space-y-6">
         <div className="pl-4">
-          <ToolsList />
+          <ToolsList onToolClick={handleToolClick} />
         </div>
         
         <div className="pl-4">

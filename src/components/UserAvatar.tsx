@@ -6,11 +6,14 @@ interface UserAvatarProps {
     id?: string;
     name?: string;
     image?: string | null;
+    full_name?: string | null; // Pour compatibilité avec le type UserProfile
+    avatar_url?: string | null; // Pour compatibilité avec le type UserProfile
   };
   className?: string;
+  fallbackClassName?: string; // Ajout de cette propriété
 }
 
-export function UserAvatar({ user, className }: UserAvatarProps) {
+export function UserAvatar({ user, className, fallbackClassName }: UserAvatarProps) {
   // Obtenir les initiales à partir du nom
   const getInitials = (name?: string) => {
     if (!name) return "?";
@@ -20,6 +23,12 @@ export function UserAvatar({ user, className }: UserAvatarProps) {
       .slice(0, 2)
       .join("");
   };
+
+  // Utiliser le nom complet ou le nom d'affichage
+  const displayName = user.full_name || user.name;
+  
+  // Utiliser l'URL de l'avatar ou l'image
+  const avatarUrl = user.avatar_url || user.image;
 
   // Générer une couleur d'arrière-plan basée sur l'ID
   const getColor = (id?: string) => {
@@ -38,12 +47,12 @@ export function UserAvatar({ user, className }: UserAvatarProps) {
 
   return (
     <Avatar className={className}>
-      <AvatarImage src={user.image || undefined} alt={user.name || "Avatar"} />
+      <AvatarImage src={avatarUrl || undefined} alt={displayName || "Avatar"} />
       <AvatarFallback 
         style={{ backgroundColor: getColor(user.id) }}
-        className="text-white"
+        className={fallbackClassName || "text-white"}
       >
-        {getInitials(user.name)}
+        {getInitials(displayName)}
       </AvatarFallback>
     </Avatar>
   );

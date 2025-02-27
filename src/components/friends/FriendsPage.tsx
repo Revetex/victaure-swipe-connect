@@ -1,70 +1,74 @@
 
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader } from "@/components/ui/loader";
-import { FriendsList } from "@/components/feed/FriendsList";
+import { useEffect, useState } from "react";
+import { DashboardShell } from "@/components/shell/DashboardShell";
+import { DashboardHeader } from "@/components/shell/DashboardHeader";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Search, UserPlus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useFriendRequests } from "@/hooks/useFriendRequests";
+import { FriendsList } from "./FriendsList";
+import { toast } from "sonner";
 
 export function FriendsPage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const { data: friends, isLoading } = useQuery({
-    queryKey: ["friends"],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
+  const { pendingRequests } = useFriendRequests();
 
-      const { data: acceptedRequests } = await supabase
-        .from("friend_requests")
-        .select(`
-          sender:profiles!friend_requests_sender_id_fkey(
-            id, full_name, avatar_url, online_status, last_seen
-          ),
-          receiver:profiles!friend_requests_receiver_id_fkey(
-            id, full_name, avatar_url, online_status, last_seen
-          )
-        `)
-        .eq("status", "accepted")
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
-
-      if (!acceptedRequests) return [];
-
-      return acceptedRequests.map(request => {
-        const friend = request.sender.id === user.id ? request.receiver : request.sender;
-        return friend;
-      });
+  useEffect(() => {
+    if (!user) {
+      toast.error("Vous devez être connecté pour accéder à cette page");
+      navigate("/auth");
     }
-  });
+  }, [user, navigate]);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[50vh]">
-        <Loader className="w-8 h-8" />
-      </div>
-    );
-  }
+  const pendingCount = pendingRequests.length;
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)]">
-      <div className="w-full p-4">
-        <div className="max-w-2xl mx-auto space-y-6">
-          <h1 className="text-2xl font-bold">Mes connexions</h1>
-          
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Rechercher une connexion..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
-          <FriendsList />
+    <DashboardShell>
+      <DashboardHeader
+        heading="Mes amis"
+        text="Gérez vos connexions et vos contacts"
+      >
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/friends/requests")}
+          >
+            Demandes
+            {pendingCount > 0 && (
+              <span className="ml-2 bg-primary rounded-full w-5 h-5 flex items-center justify-center text-xs text-white">
+                {pendingCount}
+              </span>
+            )}
+          </Button>
+          <Button 
+            variant="default"
+            size="sm"
+            onClick={() => navigate("/friends/search")}
+          >
+            <UserPlus className="h-4 w-4 mr-2" />
+            Ajouter
+          </Button>
         </div>
+      </DashboardHeader>
+
+      <div className="flex flex-col gap-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Rechercher un ami..."
+            className="pl-10"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+
+        <FriendsList searchQuery={searchQuery} />
       </div>
-    </ScrollArea>
+    </DashboardShell>
   );
 }

@@ -65,7 +65,9 @@ export function ProfileHeader({
           )}
           
           {profile.city && (
-            <span className="text-foreground/70">{profile.city}{profile.country ? `, ${profile.country}` : ''}</span>
+            <span className="text-foreground/70">
+              {profile.city}{profile.country ? `, ${profile.country}` : ''}
+            </span>
           )}
         </div>
       </div>

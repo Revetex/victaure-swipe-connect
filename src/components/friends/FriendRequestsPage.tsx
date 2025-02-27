@@ -1,79 +1,142 @@
 
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { FriendRequestsSection } from "@/components/feed/friends/FriendRequestsSection";
-import { ProfileSearch } from "@/components/feed/ProfileSearch";
-import { useState } from "react";
-import { UserProfile } from "@/types/profile";
+import { useState, useEffect } from "react";
+import { DashboardShell } from "@/components/shell/DashboardShell";
+import { DashboardHeader } from "@/components/shell/DashboardHeader";
+import { Button } from "@/components/ui/button";
+import { Check, X, UserPlus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { useFriendRequests } from "@/hooks/useFriendRequests";
+import { TabsContent, Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function FriendRequestsPage() {
-  const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
-  const {
-    pendingRequests,
-    handleAcceptRequest,
-    handleRejectRequest,
-    handleCancelRequest
-  } = useFriendRequests();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("received");
+  const { incomingRequests, outgoingRequests, acceptFriendRequest, rejectFriendRequest, cancelFriendRequest, isLoading } = useFriendRequests();
 
-  const handleProfileSelect = async (profile: UserProfile) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    // Check if a friend request already exists
-    const { data: existingRequest } = await supabase
-      .from("friend_requests")
-      .select("*")
-      .or(`and(sender_id.eq.${user.id},receiver_id.eq.${profile.id}),and(sender_id.eq.${profile.id},receiver_id.eq.${user.id})`)
-      .maybeSingle();
-
-    if (existingRequest) {
-      toast.error("Une demande d'ami existe déjà avec ce profil");
-      return;
+  useEffect(() => {
+    if (!user) {
+      toast.error("Vous devez être connecté pour accéder à cette page");
+      navigate("/auth");
     }
-
-    // Send friend request
-    const { error } = await supabase
-      .from("friend_requests")
-      .insert({
-        sender_id: user.id,
-        receiver_id: profile.id,
-        status: "pending"
-      });
-
-    if (error) {
-      console.error("Error sending friend request:", error);
-      toast.error("Erreur lors de l'envoi de la demande d'ami");
-      return;
-    }
-
-    toast.success("Demande d'ami envoyée avec succès");
-    setSelectedProfile(null);
-  };
+  }, [user, navigate]);
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)]">
-      <div className="w-full p-4 space-y-6">
-        <div className="space-y-4">
-          <h1 className="text-2xl font-bold">Rechercher des profils</h1>
-          <ProfileSearch 
-            onSelect={handleProfileSelect}
-            placeholder="Rechercher un profil..."
-            className="w-full"
-          />
-        </div>
+    <DashboardShell>
+      <DashboardHeader
+        heading="Demandes d'ami"
+        text="Gérez les demandes d'ami reçues et envoyées"
+      >
+        <Button 
+          variant="default"
+          size="sm"
+          onClick={() => navigate("/friends/search")}
+        >
+          <UserPlus className="h-4 w-4 mr-2" />
+          Rechercher des personnes
+        </Button>
+      </DashboardHeader>
 
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold">Demandes d'amis</h2>
-          <FriendRequestsSection
-            requests={pendingRequests}
-            onAccept={handleAcceptRequest}
-            onReject={handleRejectRequest}
-            onCancel={handleCancelRequest}
-          />
-        </div>
-      </div>
-    </ScrollArea>
+      <Tabs 
+        value={activeTab} 
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="received">
+            Reçues ({incomingRequests.length})
+          </TabsTrigger>
+          <TabsTrigger value="sent">
+            Envoyées ({outgoingRequests.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="received" className="space-y-4">
+          {incomingRequests.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Aucune demande d'ami reçue.
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {incomingRequests.map((request) => (
+                <div key={request.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src={request.sender.avatar_url || "/placeholder-avatar.png"}
+                      alt={request.sender.full_name || ""}
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <div>
+                      <p className="font-medium">{request.sender.full_name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        A envoyé une demande d'ami
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => rejectFriendRequest(request.id)}
+                      disabled={isLoading}
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Refuser
+                    </Button>
+                    <Button 
+                      size="sm"
+                      onClick={() => acceptFriendRequest(request.id)}
+                      disabled={isLoading}
+                    >
+                      <Check className="h-4 w-4 mr-1" />
+                      Accepter
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="sent" className="space-y-4">
+          {outgoingRequests.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Aucune demande d'ami envoyée.
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {outgoingRequests.map((request) => (
+                <div key={request.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src={request.receiver.avatar_url || "/placeholder-avatar.png"}
+                      alt={request.receiver.full_name || ""}
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <div>
+                      <p className="font-medium">{request.receiver.full_name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        En attente d'acceptation
+                      </p>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => cancelFriendRequest(request.id)}
+                    disabled={isLoading}
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Annuler
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+    </DashboardShell>
   );
 }
