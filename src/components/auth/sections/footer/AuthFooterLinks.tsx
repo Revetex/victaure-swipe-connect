@@ -6,6 +6,7 @@ import { CookiesDialog } from "./dialogs/CookiesDialog";
 import { TermsDialog } from "./dialogs/TermsDialog";
 import { PrivacyDialog } from "./dialogs/PrivacyDialog";
 import { ContactDialog } from "./dialogs/ContactDialog";
+import { Shield, FileText, Cookie, Mail } from "lucide-react";
 
 export function AuthFooterLinks() {
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -13,47 +14,53 @@ export function AuthFooterLinks() {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isCookiesOpen, setIsCookiesOpen] = useState(false);
 
+  const links = [
+    {
+      label: "Conditions d'utilisation",
+      icon: <FileText className="h-3 w-3" />,
+      dialog: <TermsDialog />,
+      state: isTermsOpen,
+      setState: setIsTermsOpen
+    },
+    {
+      label: "Politique de confidentialité",
+      icon: <Shield className="h-3 w-3" />,
+      dialog: <PrivacyDialog />,
+      state: isPrivacyOpen,
+      setState: setIsPrivacyOpen
+    },
+    {
+      label: "Cookies",
+      icon: <Cookie className="h-3 w-3" />,
+      dialog: <CookiesDialog />,
+      state: isCookiesOpen,
+      setState: setIsCookiesOpen
+    },
+    {
+      label: "Contact",
+      icon: <Mail className="h-3 w-3" />,
+      dialog: <ContactDialog onClose={() => setIsContactOpen(false)} />,
+      state: isContactOpen,
+      setState: setIsContactOpen
+    }
+  ];
+
   return (
-    <nav className="flex flex-wrap justify-center gap-3 text-sm text-[#F1F0FB]/80" role="navigation">
-      {/* Terms Dialog */}
-      <Dialog open={isTermsOpen} onOpenChange={setIsTermsOpen}>
-        <DialogTrigger asChild>
-          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB] font-thin">
-            Conditions d'utilisation
-          </Button>
-        </DialogTrigger>
-        <TermsDialog />
-      </Dialog>
-
-      {/* Privacy Dialog */}
-      <Dialog open={isPrivacyOpen} onOpenChange={setIsPrivacyOpen}>
-        <DialogTrigger asChild>
-          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB] font-thin">
-            Politique de confidentialité
-          </Button>
-        </DialogTrigger>
-        <PrivacyDialog />
-      </Dialog>
-
-      {/* Cookies Dialog */}
-      <Dialog open={isCookiesOpen} onOpenChange={setIsCookiesOpen}>
-        <DialogTrigger asChild>
-          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB] font-thin">
-            Cookies
-          </Button>
-        </DialogTrigger>
-        <CookiesDialog />
-      </Dialog>
-
-      {/* Contact Dialog */}
-      <Dialog open={isContactOpen} onOpenChange={setIsContactOpen}>
-        <DialogTrigger asChild>
-          <Button variant="link" className="text-[#F1F0FB]/80 hover:text-[#F1F0FB] text-sm font-thin">
-            Contact
-          </Button>
-        </DialogTrigger>
-        <ContactDialog onClose={() => setIsContactOpen(false)} />
-      </Dialog>
+    <nav className="grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-2 sm:gap-3 text-sm px-4" role="navigation">
+      {links.map((link) => (
+        <Dialog key={link.label} open={link.state} onOpenChange={link.setState}>
+          <DialogTrigger asChild>
+            <Button 
+              variant="ghost" 
+              className="w-full sm:w-auto text-[#F1F0FB]/60 hover:text-[#F1F0FB] hover:bg-white/5 font-light flex items-center gap-2"
+            >
+              {link.icon}
+              <span className="text-xs">{link.label}</span>
+            </Button>
+          </DialogTrigger>
+          {link.dialog}
+        </Dialog>
+      ))}
     </nav>
   );
 }

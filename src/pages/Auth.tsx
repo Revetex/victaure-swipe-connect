@@ -13,14 +13,15 @@ import { CountdownSection } from "@/components/auth/sections/CountdownSection";
 import { InnovationsSection } from "@/components/auth/sections/InnovationsSection";
 import { FeaturesSection } from "@/components/auth/sections/FeaturesSection";
 import { PricingDialog } from "@/components/auth/sections/PricingDialog";
-import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
-import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
 import { PartnershipDialog } from "@/components/auth/sections/PartnershipDialog";
+import { Button } from "@/components/ui/button";
 
 export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
   const [isPricingOpen, setIsPricingOpen] = useState(false);
+  const [isPartnershipOpen, setIsPartnershipOpen] = useState(false);
   const [countdown, setCountdown] = useState({
     days: 0,
     hours: 0,
@@ -90,32 +91,29 @@ export default function Auth() {
       <ThemeSelector />
 
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center w-full px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
-        <div className="w-full max-w-7xl mx-auto px-4 mb-8 flex justify-end gap-4">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="relative bg-gradient-to-r from-[#4A90E2] to-[#64B5D9] text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
-                Partenariat
-              </Button>
-            </DialogTrigger>
-            <PartnershipDialog />
-          </Dialog>
-
-          <Dialog open={isPricingOpen} onOpenChange={setIsPricingOpen}>
-            <DialogTrigger asChild>
-              <Button className="relative bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
-                Guide tarifaire complet
-              </Button>
-            </DialogTrigger>
-            <PricingDialog isPricingOpen={isPricingOpen} setIsPricingOpen={setIsPricingOpen} />
-          </Dialog>
-        </div>
-
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="w-full max-w-lg lg:max-w-2xl mx-auto space-y-4 sm:space-y-6"
         >
+          <div className="flex justify-end gap-4 mb-4">
+            <Button 
+              variant="ghost" 
+              onClick={() => setIsPartnershipOpen(true)} 
+              className="text-[#F1F0FB]/60 hover:text-[#F1F0FB] hover:bg-white/5"
+            >
+              Partenariat
+            </Button>
+            <Button 
+              variant="ghost" 
+              onClick={() => setIsPricingOpen(true)}
+              className="text-[#F1F0FB]/60 hover:text-[#F1F0FB] hover:bg-white/5"
+            >
+              Guide tarifaire
+            </Button>
+          </div>
+
           <AuthHeader />
           <AuthForm redirectTo={location.state?.redirectTo} />
         </motion.div>
@@ -126,6 +124,14 @@ export default function Auth() {
           <FeaturesSection />
         </div>
       </main>
+
+      <Dialog open={isPricingOpen} onOpenChange={setIsPricingOpen}>
+        <PricingDialog isPricingOpen={isPricingOpen} setIsPricingOpen={setIsPricingOpen} />
+      </Dialog>
+
+      <Dialog open={isPartnershipOpen} onOpenChange={setIsPartnershipOpen}>
+        <PartnershipDialog />
+      </Dialog>
 
       <AuthFooter />
     </div>
