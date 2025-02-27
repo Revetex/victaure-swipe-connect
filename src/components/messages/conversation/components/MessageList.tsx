@@ -126,7 +126,7 @@ export function MessageList({
                 hour: '2-digit',
                 minute: '2-digit'
               })}
-              {message.read && message.sender_id === currentUserId && (
+              {message.status === 'read' && message.sender_id === currentUserId && (
                 <span className="ml-2">• Lu</span>
               )}
             </div>
