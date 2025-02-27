@@ -14,6 +14,7 @@ import { useThemeContext } from "@/components/ThemeProvider";
 import { motion } from "framer-motion";
 import { CustomConversationItem } from "./CustomConversationItem";
 import { CustomNewConversationDialog } from "./CustomNewConversationDialog";
+import { Conversation } from "@/types/messages";
 
 export function CustomConversationList() {
   const { setReceiver, setShowConversation, receiver } = useReceiver();
@@ -44,8 +45,9 @@ export function CustomConversationList() {
     };
   }, []);
   
+  // Vérifiez que les conversations ont la propriété participant
   const filteredConversations = conversations.filter(conv => {
-    if (typeof conv.participant === 'string') {
+    if (conv && typeof conv.participant === 'string') {
       return conv.participant.toLowerCase().includes(searchQuery.toLowerCase());
     }
     return false;
@@ -63,6 +65,18 @@ export function CustomConversationList() {
 
   // Vérifier si la liste de conversations est vide
   const isConversationsEmpty = displayedConversations.length === 0;
+
+  // Helper pour s'assurer que les propriétés existent
+  const ensureConversationProps = (conversation: Conversation) => {
+    return {
+      ...conversation,
+      avatar_url: conversation.avatar_url || null,
+      unread: conversation.unread || 0,
+      online: conversation.online || false,
+      isPinned: conversation.isPinned || false,
+      isMuted: conversation.isMuted || false
+    };
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -138,29 +152,32 @@ export function CustomConversationList() {
             animate={{ opacity: 1 }}
             className="space-y-1"
           >
-            {displayedConversations.map((conversation) => (
-              <CustomConversationItem
-                key={conversation.id}
-                avatar={conversation.avatar_url ?? undefined}
-                name={String(conversation.participant)}
-                message={conversation.last_message}
-                time={conversation.last_message_time}
-                unread={conversation.unread ?? 0}
-                online={conversation.online ?? false}
-                isActive={receiver?.id === conversation.participant1_id || receiver?.id === conversation.participant2_id}
-                onClick={() => {
-                  setReceiver({
-                    id: conversation.participant1_id === user?.id ? conversation.participant2_id : conversation.participant1_id,
-                    full_name: String(conversation.participant),
-                    avatar_url: conversation.avatar_url,
-                    online_status: conversation.online ?? false
-                  });
-                  setShowConversation(true);
-                }}
-                isPinned={conversation.isPinned ?? false}
-                isMuted={conversation.isMuted ?? false}
-              />
-            ))}
+            {displayedConversations.map((conversation) => {
+              const safeConv = ensureConversationProps(conversation);
+              return (
+                <CustomConversationItem
+                  key={safeConv.id}
+                  avatar={safeConv.avatar_url ?? undefined}
+                  name={String(safeConv.participant)}
+                  message={safeConv.last_message}
+                  time={safeConv.last_message_time}
+                  unread={safeConv.unread}
+                  online={safeConv.online}
+                  isActive={receiver?.id === safeConv.participant1_id || receiver?.id === safeConv.participant2_id}
+                  onClick={() => {
+                    setReceiver({
+                      id: safeConv.participant1_id === user?.id ? safeConv.participant2_id : safeConv.participant1_id,
+                      full_name: String(safeConv.participant),
+                      avatar_url: safeConv.avatar_url,
+                      online_status: safeConv.online
+                    });
+                    setShowConversation(true);
+                  }}
+                  isPinned={safeConv.isPinned}
+                  isMuted={safeConv.isMuted}
+                />
+              );
+            })}
           </motion.div>
         )}
       </div>

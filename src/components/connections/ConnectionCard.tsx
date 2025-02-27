@@ -10,6 +10,9 @@ import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useConnectionActions } from "./hooks/useConnectionActions";
 import { useState } from "react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 export interface ConnectionCardProps {
   profile: UserProfile;
@@ -18,8 +21,9 @@ export interface ConnectionCardProps {
 export function ConnectionCard({ profile }: ConnectionCardProps) {
   const { setReceiver, setShowConversation } = useReceiver();
   const navigate = useNavigate();
-  const { removeConnection } = useConnectionActions();
+  const { handleRemoveFriend } = useConnectionActions();
   const [isRemoving, setIsRemoving] = useState(false);
+  const { user } = useAuth();
   
   const handleMessage = () => {
     // Configure receiver for conversation
@@ -43,9 +47,22 @@ export function ConnectionCard({ profile }: ConnectionCardProps) {
     
     try {
       setIsRemoving(true);
-      await removeConnection(profile.id);
+      
+      // Utiliser handleRemoveFriend du hook useConnectionActions
+      await handleRemoveFriend();
+      
+      // Alternative directe si handleRemoveFriend ne fonctionne pas
+      if (user?.id) {
+        await supabase
+          .from('user_connections')
+          .delete()
+          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${profile.id}),and(sender_id.eq.${profile.id},receiver_id.eq.${user.id})`);
+        
+        toast.success(`${profile.full_name || 'Connexion'} supprimé(e)`);
+      }
     } catch (error) {
       console.error("Error removing connection:", error);
+      toast.error("Erreur lors de la suppression de la connexion");
     } finally {
       setIsRemoving(false);
     }

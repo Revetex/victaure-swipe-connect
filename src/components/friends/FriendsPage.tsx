@@ -1,94 +1,100 @@
 
-import { useState } from "react";
-import { DashboardShell } from "@/components/shell/DashboardShell";
-import { DashboardHeader } from "@/components/shell/DashboardHeader";
-import { FriendsList } from "./FriendsList";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserPlus, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Search, UserPlus, Users, UserCheck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { FriendsList } from './FriendsList';
+import { FriendRequestsPage } from './FriendRequestsPage';
+import { ProfileSearchPage } from './ProfileSearchPage';
 
-export function FriendsPage() {
-  const [searchQuery, setSearchQuery] = useState("");
+export default function FriendsPage() {
+  const [activeTab, setActiveTab] = useState('friends');
+  const [searchQuery, setSearchQuery] = useState('');
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
   const navigate = useNavigate();
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(1); // Reset to first page on search
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Implémenter la recherche
   };
 
-  const handleOnlineToggle = (checked: boolean) => {
-    setShowOnlineOnly(checked);
-    setCurrentPage(1); // Reset to first page on filter change
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    setSearchQuery('');
   };
 
   return (
-    <DashboardShell>
-      <DashboardHeader
-        heading="Mes connexions"
-        text="Gérez vos connexions et vos demandes d'amis"
-      >
-        <Button onClick={() => navigate("/friends/search")} size="sm">
-          <UserPlus className="h-4 w-4 mr-2" />
-          Ajouter des amis
-        </Button>
-      </DashboardHeader>
+    <div className="container mx-auto max-w-5xl p-4 py-10">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">Connexions</h1>
+        <p className="text-muted-foreground mt-1">
+          Gérez vos connexions, trouvez de nouveaux contacts et restez en contact
+        </p>
+      </div>
 
-      <div className="space-y-4">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between">
-          <div className="relative max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Rechercher..."
-              className="pl-8 w-full md:w-[250px]"
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="online-only"
-              checked={showOnlineOnly}
-              onCheckedChange={handleOnlineToggle}
-            />
-            <Label htmlFor="online-only">En ligne uniquement</Label>
-          </div>
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <TabsList className="bg-muted/50 flex-shrink-0">
+            <TabsTrigger value="friends" className="flex items-center">
+              <Users className="w-4 h-4 mr-2" />
+              <span>Mes amis</span>
+            </TabsTrigger>
+            <TabsTrigger value="requests" className="flex items-center">
+              <UserCheck className="w-4 h-4 mr-2" />
+              <span>Demandes</span>
+            </TabsTrigger>
+            <TabsTrigger value="discover" className="flex items-center">
+              <UserPlus className="w-4 h-4 mr-2" />
+              <span>Découvrir</span>
+            </TabsTrigger>
+          </TabsList>
+
+          {activeTab === 'friends' && (
+            <div className="flex items-center gap-2 ml-auto">
+              <form onSubmit={handleSearch} className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Rechercher..."
+                  className="pl-9 w-full sm:w-[250px]"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </form>
+              <Button
+                variant={showOnlineOnly ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowOnlineOnly(!showOnlineOnly)}
+                className="whitespace-nowrap"
+              >
+                {showOnlineOnly ? "En ligne" : "Tous"}
+              </Button>
+            </div>
+          )}
         </div>
 
-        <Tabs defaultValue="friends" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="friends">Amis</TabsTrigger>
-            <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="friends" className="space-y-4">
-            <FriendsList 
-              searchQuery={searchQuery} 
-              showOnlineOnly={showOnlineOnly}
-              currentPage={currentPage}
-              itemsPerPage={itemsPerPage}
-            />
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <TabsContent value="friends" className="mt-0">
+            <FriendsList />
           </TabsContent>
-          
-          <TabsContent value="suggestions">
-            <div className="text-center py-12 text-muted-foreground">
-              Fonctionnalité à venir
-            </div>
+
+          <TabsContent value="requests" className="mt-0">
+            <FriendRequestsPage />
           </TabsContent>
-        </Tabs>
-      </div>
-    </DashboardShell>
+
+          <TabsContent value="discover" className="mt-0">
+            <ProfileSearchPage />
+          </TabsContent>
+        </motion.div>
+      </Tabs>
+    </div>
   );
 }

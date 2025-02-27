@@ -31,76 +31,65 @@ export function FriendList({
       if (!user?.id) return [];
 
       try {
-        // Get connections from user_connections table
-        const { data: connections, error } = await supabase
+        // Au lieu d'utiliser la relation qui cause l'erreur, faisons deux requêtes séparées
+        // D'abord, récupérons les connexions de l'utilisateur
+        const { data: connections, error: connectionsError } = await supabase
           .from('user_connections')
-          .select(`
-            id,
-            sender_id,
-            receiver_id,
-            status,
-            sender:profiles!sender_id(id, full_name, avatar_url, online_status, last_seen),
-            receiver:profiles!receiver_id(id, full_name, avatar_url, online_status, last_seen)
-          `)
+          .select('id, sender_id, receiver_id, status, connection_type')
           .eq('status', 'accepted')
           .eq('connection_type', 'friend')
           .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
-        if (error) {
-          console.error("Error loading friends:", error);
+        if (connectionsError) {
+          console.error("Error loading connections:", connectionsError);
           return [];
         }
 
-        if (!connections) return [];
+        if (!connections || connections.length === 0) return [];
 
-        // Format connections as UserProfiles
-        const friendsList = connections.map(conn => {
-          const isSender = conn.sender_id === user.id;
-          let friendData = isSender ? conn.receiver : conn.sender;
+        // Maintenant, récupérons les profils correspondants
+        const friendsProfiles = [];
+        
+        for (const connection of connections) {
+          const friendId = connection.sender_id === user.id ? connection.receiver_id : connection.sender_id;
           
-          // Vérification null pour friendData
-          if (!friendData) {
-            console.error("Friend data is null", conn);
-            // Créer un objet minimal pour éviter les erreurs
-            friendData = {
-              id: isSender ? conn.receiver_id : conn.sender_id,
-              full_name: "",
-              avatar_url: null,
-              online_status: false,
-              last_seen: null
-            };
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', friendId)
+            .single();
+          
+          if (profileError) {
+            console.error(`Error fetching profile for ${friendId}:`, profileError);
+            continue;
           }
+          
+          if (!profileData) continue;
 
-          // Vérifier que les données ne sont pas une erreur ou que l'objet existe 
-          if (typeof friendData !== 'object' || !('id' in friendData)) {
-            console.error("Invalid friend data:", friendData);
-            return null;
-          }
-
-          // Create a UserProfile with required fields and guaranteed values
+          // Créer un profil complet en combinant les données
           const profile: UserProfile = {
-            id: String(friendData.id || ''),
-            full_name: friendData.full_name || '',
-            avatar_url: friendData.avatar_url || null,
-            email: '',
-            role: 'professional',
-            bio: '',
-            phone: '',
-            city: '',
-            state: '',
-            country: '',
-            skills: [],
-            online_status: !!friendData.online_status,
-            last_seen: friendData.last_seen || null,
-            created_at: new Date().toISOString(),
-            friends: [] // Maintenant obligatoire
+            id: profileData.id,
+            full_name: profileData.full_name || '',
+            avatar_url: profileData.avatar_url || null,
+            email: profileData.email || '',
+            role: profileData.role || 'professional',
+            bio: profileData.bio || '',
+            phone: profileData.phone || '',
+            city: profileData.city || '',
+            state: profileData.state || '',
+            country: profileData.country || '',
+            skills: profileData.skills || [],
+            online_status: !!profileData.online_status,
+            last_seen: profileData.last_seen || null,
+            created_at: profileData.created_at || new Date().toISOString(),
+            friends: [] // Propriété obligatoire
           };
           
-          return profile;
-        }).filter(Boolean) as UserProfile[];
+          friendsProfiles.push(profile);
+        }
 
-        // Apply filters
-        let filteredFriends = friendsList || [];
+        // Appliquer les filtres
+        let filteredFriends = friendsProfiles;
         
         if (showOnlineOnly) {
           filteredFriends = filteredFriends.filter(friend => friend.online_status);
@@ -113,7 +102,7 @@ export function FriendList({
           );
         }
         
-        // Apply pagination
+        // Appliquer la pagination
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
         const paginatedFriends = filteredFriends.slice(start, end);

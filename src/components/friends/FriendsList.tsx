@@ -6,7 +6,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { UserAvatar } from '@/components/UserAvatar';
 import { Button } from '@/components/ui/button';
 import { UserProfile } from '@/types/profile';
-import { Badge } from '@/components/ui/badge';
 import { MessageSquare, UserMinus, User, PhoneCall } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -34,50 +33,64 @@ export function FriendsList() {
       if (!user) return [];
 
       try {
-        const { data: connections, error } = await supabase
+        // Au lieu d'utiliser la relation qui cause l'erreur, faisons deux requêtes séparées
+        // D'abord, récupérons les connexions de l'utilisateur
+        const { data: connections, error: connectionsError } = await supabase
           .from('user_connections')
-          .select(`
-            id,
-            sender_id,
-            receiver_id,
-            status,
-            created_at,
-            sender:profiles!sender_id(id, full_name, avatar_url, online_status, last_seen, role, bio, email, phone, city, state, country, skills, created_at),
-            receiver:profiles!receiver_id(id, full_name, avatar_url, online_status, last_seen, role, bio, email, phone, city, state, country, skills, created_at)
-          `)
+          .select('id, sender_id, receiver_id, status, connection_type')
           .eq('status', 'accepted')
           .eq('connection_type', 'friend')
           .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
-        if (error) throw error;
-        if (!connections) return [];
+        if (connectionsError) {
+          console.error("Error loading connections:", connectionsError);
+          return [];
+        }
 
-        // Construire les profils d'amis
-        return connections.map(conn => {
-          const isSender = conn.sender_id === user.id;
-          const friendData = isSender ? conn.receiver : conn.sender;
+        if (!connections || connections.length === 0) return [];
+
+        // Maintenant, récupérons les profils correspondants
+        const friendsProfiles = [];
+        
+        for (const connection of connections) {
+          const friendId = connection.sender_id === user.id ? connection.receiver_id : connection.sender_id;
           
-          // Assurer que tous les champs requis sont présents
-          const friend: UserProfile = {
-            id: friendData.id,
-            full_name: friendData.full_name,
-            avatar_url: friendData.avatar_url,
-            email: friendData.email,
-            role: friendData.role || 'professional',
-            bio: friendData.bio || '',
-            phone: friendData.phone || '',
-            city: friendData.city || '',
-            state: friendData.state || '',
-            country: friendData.country || '',
-            skills: friendData.skills || [],
-            online_status: !!friendData.online_status,
-            last_seen: friendData.last_seen || '',
-            created_at: friendData.created_at,
-            friends: [] // Ajout de la propriété manquante
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', friendId)
+            .single();
+          
+          if (profileError) {
+            console.error(`Error fetching profile for ${friendId}:`, profileError);
+            continue;
+          }
+          
+          if (!profileData) continue;
+
+          // Créer un profil complet
+          const profile: UserProfile = {
+            id: profileData.id,
+            full_name: profileData.full_name || '',
+            avatar_url: profileData.avatar_url || null,
+            email: profileData.email || '',
+            role: profileData.role || 'professional',
+            bio: profileData.bio || '',
+            phone: profileData.phone || '',
+            city: profileData.city || '',
+            state: profileData.state || '',
+            country: profileData.country || '',
+            skills: profileData.skills || [],
+            online_status: !!profileData.online_status,
+            last_seen: profileData.last_seen || null,
+            created_at: profileData.created_at || new Date().toISOString(),
+            friends: [] // Propriété obligatoire
           };
           
-          return friend;
-        });
+          friendsProfiles.push(profile);
+        }
+
+        return friendsProfiles;
       } catch (error) {
         console.error('Error fetching friends:', error);
         return [];
