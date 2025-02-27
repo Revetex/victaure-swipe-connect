@@ -40,7 +40,7 @@ export function ConversationView() {
     if (receiverId && !receiver) {
       loadUserProfile(receiverId);
     }
-  }, [searchParams]);
+  }, [searchParams, receiver]);
 
   useEffect(() => {
     // Scroll to bottom when messages change
@@ -53,6 +53,7 @@ export function ConversationView() {
 
   const loadUserProfile = async (userId: string) => {
     try {
+      console.log("Loading user profile for ID:", userId);
       const { data: profile, error } = await supabase
         .from('profiles')
         .select(`
@@ -64,9 +65,13 @@ export function ConversationView() {
         .eq('id', userId)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error loading profile:", error);
+        throw error;
+      }
       
       if (profile) {
+        console.log("Profile loaded successfully:", profile);
         const validRoles: UserRole[] = ['professional', 'business', 'admin'];
         const userRole: UserRole = validRoles.includes(profile.role as UserRole) 
           ? (profile.role as UserRole)
@@ -94,6 +99,9 @@ export function ConversationView() {
           friends: []
         });
         setShowConversation(true);
+      } else {
+        console.error("No profile found for user ID:", userId);
+        toast.error("Profil introuvable");
       }
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -147,6 +155,7 @@ export function ConversationView() {
     if (!messageInput.trim() || !user || !receiver) return;
 
     try {
+      console.log("Sending message to:", receiver.id);
       // Obtenir ou créer une conversation entre les deux utilisateurs
       const { data: conversationData, error: conversationError } = await supabase
         .from('user_conversations')
@@ -157,6 +166,7 @@ export function ConversationView() {
       // Si aucune conversation n'existe, la créer
       let conversationId: string;
       if (conversationError || !conversationData) {
+        console.log("Creating new conversation");
         // Déterminer l'ordre des participants pour la contrainte d'unicité
         const [participant1_id, participant2_id] = 
           user.id < receiver.id 
@@ -172,10 +182,15 @@ export function ConversationView() {
           .select('id')
           .single();
           
-        if (createError) throw createError;
+        if (createError) {
+          console.error("Error creating conversation:", createError);
+          throw createError;
+        }
         conversationId = newConversation.id;
+        console.log("New conversation created with ID:", conversationId);
       } else {
         conversationId = conversationData.id;
+        console.log("Using existing conversation with ID:", conversationId);
       }
 
       const { error } = await supabase
@@ -185,10 +200,14 @@ export function ConversationView() {
           sender_id: user.id,
           receiver_id: receiver.id,
           conversation_id: conversationId,
-          metadata: {}
+          metadata: {},
+          status: 'sent'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error sending message:", error);
+        throw error;
+      }
       
       setMessageInput("");
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -241,7 +260,7 @@ export function ConversationView() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="relative"
+          className="relative z-10"
         >
           {showEmojiPicker && (
             <div className={cn(
