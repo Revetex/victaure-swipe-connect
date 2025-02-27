@@ -47,7 +47,7 @@ export function SkillsInput({
   return (
     <div className={className}>
       <div
-        className="flex flex-wrap gap-2 p-2 border rounded-md min-h-10 cursor-text"
+        className="flex flex-wrap gap-2 p-2 border rounded-md min-h-10 cursor-text dark:border-gray-600"
         onClick={focusInput}
       >
         {skills.map((skill) => (

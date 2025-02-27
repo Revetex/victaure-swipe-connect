@@ -1,20 +1,31 @@
 
 import React from 'react';
+import { ConversationHeaderProps, Receiver } from '@/types/messages';
 import { UserAvatar } from '@/components/UserAvatar';
-import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ensureBoolean } from '@/utils/adaptorUtils';
-import { Receiver } from '@/types/messages';
+import { ChevronLeft } from 'lucide-react';
 
-interface ConversationHeaderAdapterProps {
+/**
+ * Convertit une chaîne en booléen
+ */
+export function ensureBoolean(value: any): boolean {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') {
+    return value.toLowerCase() === 'true' || value === '1' || value === 'yes' || value === 'online';
+  }
+  return !!value;
+}
+
+/**
+ * Adaptateur pour ConversationHeader qui gère les propriétés manquantes
+ */
+export function ConversationHeaderAdapter(props: {
   receiver?: Receiver;
   name?: string;
   avatar?: string | null;
   isOnline?: boolean | string;
   onBack?: () => void;
-}
-
-export function ConversationHeaderAdapter(props: ConversationHeaderAdapterProps) {
+}) {
   // Extraire et normaliser les propriétés
   const name = props.name || (props.receiver?.full_name || 'Contact');
   const avatar = props.avatar || props.receiver?.avatar_url || null;
@@ -22,12 +33,12 @@ export function ConversationHeaderAdapter(props: ConversationHeaderAdapterProps)
   const onBack = props.onBack || (() => window.history.back());
 
   return (
-    <div className="flex items-center space-x-4 p-4 border-b">
+    <div className="flex items-center p-4 border-b">
       <Button
         variant="ghost"
         size="icon"
-        onClick={onBack}
         className="mr-2"
+        onClick={onBack}
       >
         <ChevronLeft className="h-5 w-5" />
         <span className="sr-only">Retour</span>
@@ -42,7 +53,7 @@ export function ConversationHeaderAdapter(props: ConversationHeaderAdapterProps)
         className="h-10 w-10"
       />
       
-      <div className="flex-1">
+      <div className="flex-1 ml-3">
         <h3 className="font-medium">{name}</h3>
         <div className="flex items-center">
           <div
