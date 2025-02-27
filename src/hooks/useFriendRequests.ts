@@ -14,17 +14,39 @@ export const useFriendRequests = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data, error } = await supabase.rpc('get_friend_requests', {
-        user_id: user.id
-      });
+      const { data: connections, error } = await supabase
+        .from('user_connections')
+        .select(`
+          id,
+          sender_id,
+          receiver_id,
+          status,
+          created_at,
+          updated_at,
+          sender:profiles!user_connections_sender_id_fkey(
+            id,
+            full_name,
+            avatar_url
+          ),
+          receiver:profiles!user_connections_receiver_id_fkey(
+            id,
+            full_name,
+            avatar_url
+          )
+        `)
+        .eq('status', 'pending')
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
       if (error) {
         console.error("Error fetching friend requests:", error);
-        toast.error("Impossible de charger les demandes d'amis");
         return [];
       }
 
-      return data as PendingRequest[];
+      // Map the data to match our PendingRequest type
+      return (connections || []).map(conn => ({
+        ...conn,
+        type: conn.receiver_id === user.id ? 'incoming' : 'outgoing'
+      })) as PendingRequest[];
     }
   });
 
