@@ -51,61 +51,70 @@ export function Feed() {
   };
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="container mx-auto px-4 py-8 space-y-6"
-    >
-      <motion.div variants={itemVariants}>
-        {!isExpanded ? (
-          <Button
-            onClick={() => setIsExpanded(true)}
-            variant="ghost"
-            className="w-full bg-white/5 hover:bg-white/10 text-white/80 justify-start px-4 py-6 rounded-xl border border-white/10"
-          >
-            <PenLine className="h-5 w-5 mr-2" />
-            Partagez quelque chose...
-          </Button>
-        ) : (
-          <CreatePostForm
-            newPost={newPost}
-            onPostChange={handlePostChange}
-            privacy={privacy}
-            onPrivacyChange={handlePrivacyChange}
-            attachments={attachments}
-            isUploading={isUploading}
-            onCreatePost={handleCreatePost}
-            onClose={() => setIsExpanded(false)}
-            isExpanded={isExpanded}
+    <div className="relative min-h-screen">
+      {/* Section fixe en haut */}
+      <div className="fixed top-16 left-0 right-0 z-10 bg-gradient-to-b from-background via-background to-background/95 px-4 py-4 border-b border-border/5 backdrop-blur-sm space-y-4">
+        <motion.div variants={itemVariants}>
+          {!isExpanded ? (
+            <Button
+              onClick={() => setIsExpanded(true)}
+              variant="ghost"
+              className="w-full bg-white/5 hover:bg-white/10 text-white/80 justify-start px-4 py-6 rounded-xl border border-white/10"
+            >
+              <PenLine className="h-5 w-5 mr-2" />
+              Partagez quelque chose...
+            </Button>
+          ) : (
+            <CreatePostForm
+              newPost={newPost}
+              onPostChange={handlePostChange}
+              privacy={privacy}
+              onPrivacyChange={handlePrivacyChange}
+              attachments={attachments}
+              isUploading={isUploading}
+              onCreatePost={handleCreatePost}
+              onClose={() => setIsExpanded(false)}
+              isExpanded={isExpanded}
+            />
+          )}
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <PostFilters
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            filter={filter}
+            onFilterChange={setFilter}
+            sortBy={sortBy}
+            onSortByChange={setSortBy}
+            sortOrder={sortOrder}
+            onSortOrderChange={setSortOrder}
+            onCreatePost={() => setIsExpanded(true)}
           />
-        )}
-      </motion.div>
+        </motion.div>
+      </div>
 
-      <motion.div variants={itemVariants}>
-        <PostFilters
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          filter={filter}
-          onFilterChange={setFilter}
-          sortBy={sortBy}
-          onSortByChange={setSortBy}
-          sortOrder={sortOrder}
-          onSortOrderChange={setSortOrder}
-          onCreatePost={() => setIsExpanded(true)}
-        />
-      </motion.div>
+      {/* Espace pour compenser la hauteur des éléments fixes */}
+      <div className="h-[200px]" />
 
-      <motion.div variants={itemVariants}>
-        <PostList
-          searchTerm={searchTerm}
-          filter={filter}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-          onPostDeleted={invalidatePosts}
-          onPostUpdated={invalidatePosts}
-        />
+      {/* Contenu défilant */}
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="container mx-auto px-4 pb-8"
+      >
+        <motion.div variants={itemVariants}>
+          <PostList
+            searchTerm={searchTerm}
+            filter={filter}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onPostDeleted={invalidatePosts}
+            onPostUpdated={invalidatePosts}
+          />
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }
