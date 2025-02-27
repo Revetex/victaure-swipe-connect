@@ -23,6 +23,8 @@ interface LotoDraw {
   draw_numbers: number[] | null;
   bonus_color: string | null;
   status: 'pending' | 'completed';
+  created_at: string;
+  completed_at: string | null;
 }
 
 export function LotteryTabs({
@@ -35,7 +37,6 @@ export function LotteryTabs({
   useEffect(() => {
     fetchDraws();
     
-    // Configurer une mise à jour en temps réel
     const channel = supabase
       .channel('loto_changes')
       .on('postgres_changes', {
@@ -54,7 +55,6 @@ export function LotteryTabs({
 
   const fetchDraws = async () => {
     try {
-      // Récupérer le prochain tirage
       const { data: nextDrawData, error: nextError } = await supabase
         .from('loto_draws')
         .select('*')
@@ -62,23 +62,33 @@ export function LotteryTabs({
         .gt('scheduled_for', new Date().toISOString())
         .order('scheduled_for', { ascending: true })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (nextError) throw nextError;
 
-      // Récupérer le dernier tirage complété
       const { data: lastDrawData, error: lastError } = await supabase
         .from('loto_draws')
         .select('*')
         .eq('status', 'completed')
         .order('scheduled_for', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (lastError && lastError.code !== 'PGRST116') throw lastError;
 
-      setNextDraw(nextDrawData);
-      setLastDraw(lastDrawData);
+      if (nextDrawData) {
+        setNextDraw({
+          ...nextDrawData,
+          status: nextDrawData.status as 'pending' | 'completed'
+        });
+      }
+
+      if (lastDrawData) {
+        setLastDraw({
+          ...lastDrawData,
+          status: lastDrawData.status as 'pending' | 'completed'
+        });
+      }
     } catch (error) {
       console.error('Erreur lors de la récupération des tirages:', error);
       toast.error("Erreur lors de la récupération des tirages");
@@ -192,8 +202,11 @@ export function LotteryTabs({
                         ))}
                         {lastDraw.bonus_color && (
                           <div 
-                            className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 font-bold"
-                            style={{ backgroundColor: `${lastDraw.bonus_color.toLowerCase()}1a` }}
+                            className="w-10 h-10 rounded-full flex items-center justify-center font-bold"
+                            style={{ 
+                              backgroundColor: `${lastDraw.bonus_color.toLowerCase()}1a`,
+                              color: lastDraw.bonus_color.toLowerCase()
+                            }}
                           >
                             +
                           </div>
