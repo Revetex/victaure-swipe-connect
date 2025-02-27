@@ -15,6 +15,7 @@ export interface Message {
     id: string;
     full_name: string | null;
     avatar_url: string | null;
+    email?: string | null;
   };
 }
 
@@ -53,3 +54,14 @@ export interface Conversation {
   online?: boolean;
   avatar_url?: string | null;
 }
+
+export interface Receiver {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  online_status: boolean;
+  last_seen?: string | null;
+}
+
+// Re-export UserRole from profile
+export { UserRole } from '@/types/profile';

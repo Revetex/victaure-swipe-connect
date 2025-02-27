@@ -1,8 +1,8 @@
 
-export type UserRole = 'professional' | 'business' | 'admin';
+export type UserRole = 'professional' | 'business' | 'admin' | 'freelancer' | 'student';
 export type OnlineStatus = boolean;
 
-// Base profile interface with common properties
+// Interface de base pour les profils
 interface BaseProfile {
   id: string;
   email: string | null;
@@ -18,49 +18,139 @@ interface BaseProfile {
   online_status: boolean;
   last_seen?: string | null;
   created_at: string;
+  website?: string | null;
+  job_title?: string | null;
 }
 
-// Main UserProfile interface
+// Interface pour l'éducation
+export interface Education {
+  id: string;
+  school_name: string;
+  degree: string;
+  field_of_study: string;
+  start_date: string;
+  end_date?: string | null;
+  description?: string;
+  logo_url?: string;
+}
+
+// Interface pour l'expérience
+export interface Experience {
+  id: string;
+  company: string;
+  position: string;
+  start_date: string;
+  end_date?: string | null;
+  description?: string;
+  skills?: string[];
+  logo_url?: string;
+}
+
+// Interface pour la certification
+export interface Certification {
+  id: string;
+  title: string;
+  issuer: string;
+  issue_date: string;
+  expiry_date?: string | null;
+  credential_url?: string;
+  credential_id?: string;
+  logo_url?: string;
+}
+
+// Interface pour les liens sociaux
+export interface SocialLinks {
+  linkedin?: string;
+  twitter?: string;
+  github?: string;
+  [key: string]: string | undefined;
+}
+
+// Interface principale UserProfile
 export interface UserProfile extends BaseProfile {
   friends?: Friend[];
-  certifications?: any[];
-  education?: any[];
-  experiences?: any[];
+  certifications?: Certification[];
+  education?: Education[];
+  experiences?: Experience[];
   company_name?: string | null;
   privacy_enabled?: boolean;
   verified?: boolean;
   sections_order?: string[];
-  social_links?: {
-    linkedin?: string;
-    twitter?: string;
-    github?: string;
-    [key: string]: string | undefined;
-  };
+  social_links?: SocialLinks;
 }
 
-// User interface with required friends
+// Interface User avec friends requis
 export interface User extends BaseProfile {
   friends: Friend[];
 }
 
-// Friend interface
+// Interface Friend
 export interface Friend extends BaseProfile {
   friendship_id?: string;
   status?: string;
 }
 
-// Helper function to convert online status to boolean
+// Interface pour une demande d'ami en attente
+export interface PendingRequest {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  sender: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+  };
+  receiver: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+  };
+  type: 'incoming' | 'outgoing';
+}
+
+// Interface pour un utilisateur bloqué
+export interface BlockedUser {
+  id: string;
+  blocker_id: string;
+  blocked_id: string;
+  created_at: string;
+  blocked_user: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+  };
+}
+
+// Interface pour une connexion utilisateur
+export interface UserConnection {
+  id: string;
+  user_id: string;
+  connected_user_id: string;
+  status: string;
+  connection_type: string;
+  visibility: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Type pour le profil complet
+export interface Profile extends UserProfile {
+  connections?: UserConnection[];
+  blocked_users?: BlockedUser[];
+  pending_requests?: PendingRequest[];
+}
+
+// Helper function pour convertir le statut en ligne en booléen
 export function convertOnlineStatusToBoolean(status: any): boolean {
-  if (typeof status === 'boolean') {
-    return status;
-  }
-  if (typeof status === 'string') {
-    return status === 'online' || status === 'true';
-  }
+  if (typeof status === 'boolean') return status;
+  if (typeof status === 'string') return status === 'online' || status === 'true';
   return false;
 }
 
-// Helper function to create an empty profile
+// Helper function pour créer un profil vide
 export function createEmptyProfile(id: string, email: string): UserProfile {
   return {
     id,
@@ -77,7 +167,7 @@ export function createEmptyProfile(id: string, email: string): UserProfile {
   };
 }
 
-// Helper function to transform database connection to Friend object
+// Helper function pour transformer une connexion
 export function transformConnection(connection: any, currentUserId: string): Friend {
   const isSender = connection.sender_id === currentUserId;
   
@@ -94,5 +184,16 @@ export function transformConnection(connection: any, currentUserId: string): Fri
     created_at: connection.created_at,
     friendship_id: connection.id,
     status: connection.status
+  };
+}
+
+// Helper function pour convertir un ami en profil utilisateur
+export function friendToUserProfile(friend: Friend): UserProfile {
+  return {
+    ...friend,
+    friends: [],
+    certifications: [],
+    education: [],
+    experiences: []
   };
 }
