@@ -1,108 +1,25 @@
 
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, Crown, Star } from "lucide-react";
+import { Crown, Star } from "lucide-react";
 import { ChessPage } from "../../tools/ChessPage";
 import { PaymentProps } from "@/types/payment";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { format, formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
-import { toast } from "sonner";
+import { LotteryHeader } from "./components/LotteryHeader";
+import { NextDraw } from "./components/NextDraw";
+import { LastDraw } from "./components/LastDraw";
+import { PrizePool } from "./components/PrizePool";
+import { useLotteryDraws } from "./hooks/useLotteryDraws";
 
 interface LotteryTabsProps extends PaymentProps {
   isMobile: boolean;
 }
 
-interface LotoDraw {
-  id: string;
-  prize_pool: number;
-  scheduled_for: string;
-  draw_numbers: number[] | null;
-  bonus_color: string | null;
-  status: 'pending' | 'completed';
-  created_at: string;
-  completed_at: string | null;
-}
-
 export function LotteryTabs({
   onPaymentRequested
 }: LotteryTabsProps) {
-  const [nextDraw, setNextDraw] = useState<LotoDraw | null>(null);
-  const [lastDraw, setLastDraw] = useState<LotoDraw | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchDraws();
-    
-    const channel = supabase
-      .channel('loto_changes')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'loto_draws'
-      }, () => {
-        fetchDraws();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const fetchDraws = async () => {
-    try {
-      const { data: nextDrawData, error: nextError } = await supabase
-        .from('loto_draws')
-        .select('*')
-        .eq('status', 'pending')
-        .gt('scheduled_for', new Date().toISOString())
-        .order('scheduled_for', { ascending: true })
-        .limit(1)
-        .maybeSingle();
-
-      if (nextError) throw nextError;
-
-      const { data: lastDrawData, error: lastError } = await supabase
-        .from('loto_draws')
-        .select('*')
-        .eq('status', 'completed')
-        .order('scheduled_for', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (lastError && lastError.code !== 'PGRST116') throw lastError;
-
-      if (nextDrawData) {
-        setNextDraw({
-          ...nextDrawData,
-          status: nextDrawData.status as 'pending' | 'completed'
-        });
-      }
-
-      if (lastDrawData) {
-        setLastDraw({
-          ...lastDrawData,
-          status: lastDrawData.status as 'pending' | 'completed'
-        });
-      }
-    } catch (error) {
-      console.error('Erreur lors de la récupération des tirages:', error);
-      toast.error("Erreur lors de la récupération des tirages");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const formatTimeToNext = (scheduledFor: string) => {
-    return formatDistanceToNow(new Date(scheduledFor), {
-      locale: fr,
-      addSuffix: true
-    });
-  };
+  const { nextDraw, lastDraw, loading } = useLotteryDraws();
 
   return (
     <Tabs defaultValue="lotosphere" className="w-full">
@@ -143,21 +60,7 @@ export function LotteryTabs({
       >
         <TabsContent value="lotosphere">
           <Card className="border-[#64B5D9]/10 bg-[#1B2A4A]/50 backdrop-blur-md p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-lg bg-[#64B5D9]/10">
-                  <Trophy className="h-6 w-6 text-[#64B5D9]" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#64B5D9]/90 to-[#64B5D9] bg-clip-text text-transparent">
-                    Lotosphère
-                  </h2>
-                  <p className="text-sm text-white/70">
-                    Tentez votre chance et gagnez gros !
-                  </p>
-                </div>
-              </div>
-            </div>
+            <LotteryHeader />
 
             <div className="grid gap-4">
               {loading ? (
@@ -167,65 +70,15 @@ export function LotteryTabs({
               ) : (
                 <>
                   {nextDraw && (
-                    <div className="rounded-lg border border-[#64B5D9]/10 bg-white/5 p-4">
-                      <h3 className="text-lg font-semibold mb-2">Prochain tirage</h3>
-                      <p className="text-sm text-white/70">
-                        Le prochain tirage aura lieu {formatTimeToNext(nextDraw.scheduled_for)}
-                      </p>
-                      <p className="text-sm text-[#64B5D9] mt-1">
-                        {format(new Date(nextDraw.scheduled_for), 'PPP à HH:mm', { locale: fr })}
-                      </p>
-                      <div className="mt-4">
-                        <motion.button 
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          className="w-full py-2 px-4 bg-[#64B5D9]/20 hover:bg-[#64B5D9]/30 text-[#64B5D9] rounded-lg transition-colors"
-                          onClick={() => onPaymentRequested(5, "Lotosphère")}
-                        >
-                          Acheter un ticket (5 €)
-                        </motion.button>
-                      </div>
-                    </div>
+                    <NextDraw 
+                      draw={nextDraw}
+                      onPaymentRequested={onPaymentRequested}
+                    />
                   )}
 
-                  {lastDraw && lastDraw.draw_numbers && (
-                    <div className="rounded-lg border border-[#64B5D9]/10 bg-white/5 p-4">
-                      <h3 className="text-lg font-semibold mb-2">Dernier tirage</h3>
-                      <div className="flex gap-2">
-                        {lastDraw.draw_numbers.map(number => (
-                          <div 
-                            key={number}
-                            className="w-10 h-10 rounded-full bg-[#64B5D9]/10 flex items-center justify-center text-[#64B5D9] font-bold"
-                          >
-                            {number}
-                          </div>
-                        ))}
-                        {lastDraw.bonus_color && (
-                          <div 
-                            className="w-10 h-10 rounded-full flex items-center justify-center font-bold"
-                            style={{ 
-                              backgroundColor: `${lastDraw.bonus_color.toLowerCase()}1a`,
-                              color: lastDraw.bonus_color.toLowerCase()
-                            }}
-                          >
-                            +
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  {lastDraw && <LastDraw draw={lastDraw} />}
 
-                  {nextDraw && (
-                    <div className="rounded-lg border border-[#64B5D9]/10 bg-white/5 p-4">
-                      <h3 className="text-lg font-semibold mb-2">Cagnotte actuelle</h3>
-                      <p className="text-3xl font-bold text-[#64B5D9]">
-                        {nextDraw.prize_pool.toFixed(2)}€
-                      </p>
-                      <p className="text-sm text-white/70 mt-1">
-                        La cagnotte augmente à chaque ticket acheté !
-                      </p>
-                    </div>
-                  )}
+                  {nextDraw && <PrizePool draw={nextDraw} />}
                 </>
               )}
             </div>
