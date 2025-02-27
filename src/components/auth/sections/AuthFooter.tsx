@@ -2,7 +2,7 @@
 export function AuthFooter() {
   return (
     <footer className="mt-8 w-full max-w-xl mx-auto">
-      <div className="space-y-4 border-t border-[#F1F0FB]/20 pt-4">
+      <div className="space-y-4 border-t border-[#F1F0FB]/10 pt-4 bg-transparent backdrop-blur-sm">
         <div className="flex justify-center">
           <img 
             src="/lovable-uploads/white-signature.png" 
@@ -15,7 +15,7 @@ export function AuthFooter() {
 
         <div className="relative text-center">
           <div className="absolute inset-0 bg-gradient-to-t from-[#64B5D9]/5 to-transparent opacity-50" />
-          <p className="relative font-extralight text-xs text-[#F1F0FB]/80">
+          <p className="relative font-extralight text-xs text-[#F1F0FB]/60">
             © 2025 Victaure Technologies inc.
           </p>
         </div>
