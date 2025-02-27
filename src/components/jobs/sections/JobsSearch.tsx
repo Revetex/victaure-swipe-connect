@@ -1,3 +1,4 @@
+
 import { Search, Filter, Plus, Image, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { JobsFilters } from "./JobsFilters";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+
 interface JobsSearchProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
@@ -28,6 +30,7 @@ interface JobsSearchProps {
   onSalaryRangeChange: (value: [number, number]) => void;
   onRemoteOnlyChange: (value: boolean) => void;
 }
+
 export function JobsSearch({
   searchQuery,
   onSearchChange,
@@ -48,6 +51,7 @@ export function JobsSearch({
 }: JobsSearchProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const locations = ["Montréal", "Québec", "Laval", "Gatineau", "Sherbrooke", "Trois-Rivières", "Longueuil", "Saint-Jean-sur-Richelieu", "Lévis", "Saguenay"];
+  
   return <Card className="bg-background dark:bg-[#1B2A4A]/50 backdrop-blur-sm border-border/10 dark:border-[#64B5D9]/10 shadow-lg p-6 px-[8px] py-[8px]">
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
