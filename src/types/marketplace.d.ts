@@ -25,8 +25,6 @@ export interface MarketplaceListing {
   sale_type?: SaleType;
   auction_end_date?: string;
   minimum_bid?: number;
-  latitude?: number;
-  longitude?: number;
   searchable_text?: any;
   seller?: {
     full_name: string | null;
@@ -59,26 +57,5 @@ export interface MarketplaceFavorite {
   id: string;
   listing_id: string;
   user_id: string;
-  created_at: string;
-}
-
-export interface MarketplaceQuestion {
-  id: string;
-  listing_id: string;
-  user_id: string;
-  question: string;
-  answer?: string;
-  is_public: boolean;
-  created_at: string;
-  answered_at?: string;
-}
-
-export interface MarketplaceRating {
-  id: string;
-  seller_id: string;
-  buyer_id: string;
-  listing_id: string;
-  rating: number;
-  comment?: string;
   created_at: string;
 }

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { MarketplaceList } from "./marketplace/MarketplaceList";
 import type { MarketplaceFilters } from "@/types/marketplace";
@@ -21,26 +22,27 @@ export function CustomMarketplaceList({
 }: CustomMarketplaceListProps) {
   const [isDataReady, setIsDataReady] = useState(false);
 
-  // This function pre-processes data and ensures required tables exist
+  // Cette fonction prétraite les données et assure que les tables requises existent
   useEffect(() => {
     const prepareData = async () => {
       try {
-        // Simple check to see if we can access the marketplace listings table
+        // Faire une simple vérification pour voir si nous pouvons accéder à la table
         const { data, error } = await supabase
           .from('marketplace_listings')
           .select('id')
           .limit(1);
           
         if (error) {
-          console.error("Error accessing marketplace data:", error);
+          console.error("Erreur lors de l'accès aux données du marketplace:", error);
         } else {
-          console.log("Successfully accessed marketplace data");
+          console.log("Accès aux données du marketplace réussi");
         }
 
         setIsDataReady(true);
       } catch (error) {
-        console.error("Error preparing data:", error);
-        // Even if there's an error, we mark data as ready so the original component can handle it
+        console.error("Erreur lors de la préparation des données:", error);
+        // En cas d'erreur, on indique quand même que les données sont prêtes
+        // pour laisser le composant original gérer ses propres erreurs
         setIsDataReady(true);
       }
     };
@@ -48,47 +50,59 @@ export function CustomMarketplaceList({
     prepareData();
   }, []);
 
-  // Custom hook to handle viewing listings
+  // Hook personnalisé pour traiter les vues de marketplaceList
   useEffect(() => {
     const handleViewListing = (event: CustomEvent) => {
       try {
         if (event.detail && event.detail.listingId) {
-          const listing_id = event.detail.listingId;
+          const listingId = event.detail.listingId;
           
-          // Manual update with RPC call
+          // Implémentation simplifiée pour incrémenter les vues
           supabase
             .from('marketplace_listings')
-            .update({ 
-              views_count: 1 // This will be added to the existing count server-side
-            })
-            .eq('id', listing_id)
-            .select()
-            .then(({ error }) => {
+            .select('views_count')
+            .eq('id', listingId)
+            .single()
+            .then(({ data, error }) => {
               if (error) {
-                console.error('Error incrementing view count:', error);
+                console.error('Erreur lors de la récupération du nombre de vues:', error);
+                return;
               }
+              
+              // Utiliser la valeur actuelle pour incrémenter
+              const currentViews = data?.views_count || 0;
+              
+              supabase
+                .from('marketplace_listings')
+                .update({ views_count: currentViews + 1 })
+                .eq('id', listingId)
+                .then(({ error: updateError }) => {
+                  if (updateError) {
+                    console.error('Erreur lors de l\'incrémentation des vues:', updateError);
+                  }
+                });
             });
         }
       } catch (error) {
-        console.error('Error handling view event:', error);
+        console.error('Erreur lors du traitement des vues:', error);
       }
     };
 
-    // Add custom event listener
+    // Ajouter l'écouteur d'événement
     window.addEventListener('marketplace-view-listing' as any, handleViewListing as EventListener);
 
-    // Clean up listener
+    // Nettoyer l'écouteur
     return () => {
       window.removeEventListener('marketplace-view-listing' as any, handleViewListing as EventListener);
     };
   }, []);
 
-  // If data is not ready, show loading state
+  // Si les données ne sont pas prêtes, afficher un état de chargement
   if (!isDataReady) {
     return <div className="py-12 text-center">Chargement des annonces...</div>;
   }
 
-  // Otherwise render the original component
+  // Sinon, rendre le composant original
   return (
     <MarketplaceList
       type={type}

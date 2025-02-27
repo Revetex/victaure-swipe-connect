@@ -1,14 +1,79 @@
 
-// Supprimons la ligne d'import qui crée un conflit
-// import { Certification, Education, Experience } from "./profile";
+// Type for the roles users can have
+export type UserRole = 'user' | 'admin' | 'business' | 'freelancer' | 'student' | 'professional';
+export type OnlineStatus = 'online' | 'offline' | 'away' | 'busy';
+export type ConnectionStatus = 'pending' | 'accepted' | 'rejected' | 'blocked';
 
-export type UserRole = "professional" | "business" | "admin";
+// Links to social media profiles
+export interface SocialLinks {
+  linkedin?: string;
+  twitter?: string;
+  facebook?: string;
+  instagram?: string;
+  github?: string;
+  website?: string;
+  [key: string]: string | undefined;
+}
 
-export interface UserProfile {
+// Professional experience
+export interface Experience {
+  id: string;
+  company: string;
+  position: string;
+  start_date: string;
+  end_date: string | null;
+  description: string;
+  location?: string;
+  skills?: string[];
+  logo_url?: string;
+  current?: boolean;
+}
+
+// Educational background
+export interface Education {
+  id: string;
+  school_name: string;
+  degree: string;
+  field_of_study?: string;
+  start_date?: string;
+  end_date?: string | null;
+  description?: string;
+  logo_url?: string;
+  current?: boolean;
+  institution?: string; // For backward compatibility
+}
+
+// Professional certifications
+export interface Certification {
+  id: string;
+  title?: string;
+  name?: string; // Alternative field name
+  issuer: string;
+  issue_date?: string;
+  expiry_date?: string | null;
+  credential_url?: string;
+  credential_id?: string;
+  logo_url?: string;
+}
+
+// Connection between users
+export interface UserConnection {
+  id: string;
+  user_id: string;
+  connected_user_id: string;
+  status: ConnectionStatus;
+  created_at: string;
+  updated_at: string;
+  user?: Profile;
+  connected_user?: Profile;
+}
+
+// User profile information
+export interface Profile {
   id: string;
   full_name: string | null;
   avatar_url: string | null;
-  email?: string | null;
+  email: string | null;
   role: UserRole;
   bio: string | null;
   phone: string | null;
@@ -16,10 +81,18 @@ export interface UserProfile {
   state: string | null;
   country: string | null;
   skills: string[];
-  online_status: boolean;
+  experiences?: Experience[];
+  education?: Education[];
+  certifications?: Certification[];
+  social_links?: SocialLinks;
+  online_status: OnlineStatus | string | boolean;
   last_seen: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
+  cover_image?: string;
+  job_title?: string;
+  created_at: string;
+  updated_at?: string;
+  latitude?: number;
+  longitude?: number;
   website?: string | null;
   privacy_enabled?: boolean;
   verified?: boolean;
@@ -28,58 +101,56 @@ export interface UserProfile {
   experiences?: Experience[];
   friends?: UserProfile[];
   company_name?: string | null;
-  created_at?: string;
   sections_order?: string[];
 }
 
-export interface Certification {
-  id: string;
-  title: string;
-  issuer: string;
-  issue_date?: string | null;
-  expiry_date?: string | null;
-  credential_url?: string | null;
-  description?: string | null;
-  skills?: string[];
-  year?: string | null;
-  profile_id?: string;
+// Simplified user profile for UI components
+export interface UserProfile extends Profile {
+  // Extra fields or overrides specific to UserProfile
 }
 
-export interface Education {
-  id: string;
-  school_name: string;
-  degree: string;
-  field_of_study?: string | null;
-  start_date?: string | null;
-  end_date?: string | null;
-  description?: string | null;
-  profile_id?: string;
+// Full user data including connections
+export interface User extends Omit<Profile, 'experiences' | 'education' | 'certifications' | 'social_links' | 'updated_at'> {
+  connections?: UserConnection[];
+  friends: User[];
 }
 
-export interface Experience {
+// Simplified receiver interface for messaging
+export interface Receiver {
   id: string;
-  position: string;
-  company: string;
-  start_date?: string | null;
-  end_date?: string | null;
-  description?: string | null;
-  profile_id?: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  email?: string | null;
+  online_status?: OnlineStatus | string | boolean;
+  last_seen?: string | null;
+  latitude?: number;
+  longitude?: number;
 }
 
-export interface BlockedUser {
+// Simplified friend interface
+export interface Friend {
   id: string;
-  blocked_user: {
-    id: string;
-    full_name: string | null;
-    avatar_url: string | null;
-  };
+  full_name: string | null;
+  avatar_url?: string | null;
+  online_status?: OnlineStatus | string | boolean;
+  last_seen?: string | null;
+  role?: UserRole;
+  bio?: string | null;
+  phone?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  job_title?: string;
+  friendship_id?: string;
+  status?: string;
 }
 
+// Interface for pending connection requests
 export interface PendingRequest {
   id: string;
   sender_id: string;
   receiver_id: string;
-  status: "pending" | "accepted" | "rejected";
+  status: ConnectionStatus | string;
   created_at: string;
   updated_at: string;
   sender: {
@@ -95,7 +166,7 @@ export interface PendingRequest {
   type: "incoming" | "outgoing";
 }
 
-// Ajoutons les fonctions utilitaires dans le même fichier
+// Utility functions
 export const createEmptyProfile = (id: string, email: string | null): UserProfile => ({
   id,
   full_name: null,
@@ -168,9 +239,3 @@ export const transformExperience = (data: any): Experience => ({
   description: data.description,
   profile_id: data.profile_id
 });
-
-// Type pour les amis
-export interface Friend extends UserProfile {
-  status?: string;
-  friendship_id?: string;
-}

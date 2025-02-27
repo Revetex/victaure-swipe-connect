@@ -48,7 +48,7 @@ export const useFriendRequests = () => {
 
         // Format the connections data safely
         return connections.map(conn => {
-          // Use optional chaining and nullish coalescing for safety
+          // Safely get sender and receiver data with nullish coalescing
           const sender = conn.sender || {};
           const receiver = conn.receiver || {};
           

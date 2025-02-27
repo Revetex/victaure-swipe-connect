@@ -1,5 +1,5 @@
 
-import { UserProfile, Friend, Receiver } from "@/types/profile";
+import { UserProfile, Friend } from "@/types/profile";
 import { UserAvatar } from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -42,20 +42,17 @@ export function FriendCard({ friend, onRemove }: FriendCardProps) {
 
   const handleMessage = () => {
     // Create a compatible Receiver object from the friend data
-    const receiverData: Receiver = {
+    setReceiver({
       id: friend.id,
       full_name: friend.full_name || '',
       avatar_url: friend.avatar_url,
-      email: 'friend.email' in friend ? friend.email : '',
-      online_status: typeof friend.online_status === 'boolean' 
-        ? (friend.online_status ? 'online' : 'offline') 
-        : (friend.online_status || 'offline'),
+      email: 'email' in friend ? friend.email : null,
+      online_status: friend.online_status ? 'online' : 'offline',
       last_seen: friend.last_seen,
       latitude: 'latitude' in friend ? friend.latitude : 0,
       longitude: 'longitude' in friend ? friend.longitude : 0
-    };
+    });
     
-    setReceiver(receiverData);
     setShowConversation(true);
     navigate('/messages');
   };
