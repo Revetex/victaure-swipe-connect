@@ -22,7 +22,7 @@ export function ProfileNameButton({
     setShowPreview(false);
   };
   return <>
-      <Button variant="link" onClick={() => setShowPreview(true)} className="bg-transparent text-left rounded-none px-0 mx-0 my-0 py-0 text-sm font-medium text-emerald-200">
+      <Button variant="link" onClick={() => setShowPreview(true)} className="bg-transparent text-left rounded-none px-0 mx-0 my-0 py-0 text-emerald-200 font-light text-sm">
         {profile.full_name || "Utilisateur"}
       </Button>
 
