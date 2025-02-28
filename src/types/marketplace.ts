@@ -178,3 +178,25 @@ export interface MarketplaceFavoriteExtended extends MarketplaceFavorite {
   listing_id?: string;
   viewer_id?: string;
 }
+
+// Adding new types for our contract form adapter
+export interface ContractFormData {
+  title: string;
+  description: string;
+  budget_min?: number;
+  budget_max?: number;
+  deadline?: string;
+  category?: string;
+  location?: string;
+  requirements?: string[];
+  currency?: string;
+}
+
+export interface ContractFormAdapterProps {
+  initialData?: Partial<ContractFormData>;
+  onSubmit: (data: ContractFormData) => void;
+  onCancel?: () => void;
+  isSubmitting?: boolean;
+  submitLabel?: string;
+  showCancelButton?: boolean;
+}
