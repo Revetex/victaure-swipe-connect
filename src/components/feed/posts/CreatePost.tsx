@@ -10,16 +10,29 @@ import { CreatePostForm } from "./create/CreatePostForm";
 export function CreatePost({ onPostCreated }: CreatePostProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const {
-    newPost,
-    setNewPost,
-    privacy,
-    setPrivacy,
+    content,
+    setContent,
+    privacyLevel,
+    setPrivacyLevel,
     attachments,
-    isUploading,
-    handleFileChange,
-    removeFile,
-    handleCreatePost
+    isLoading,
+    addAttachment,
+    removeAttachment,
+    createPost
   } = useCreatePost(onPostCreated);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      for (let i = 0; i < e.target.files.length; i++) {
+        addAttachment(e.target.files[i]);
+      }
+    }
+  };
+
+  const handleCreatePost = async () => {
+    await createPost();
+    setIsExpanded(false);
+  };
 
   return (
     <Card className={cn(
@@ -37,14 +50,14 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
         </Button>
       ) : (
         <CreatePostForm
-          newPost={newPost}
-          onPostChange={setNewPost}
-          privacy={privacy}
-          onPrivacyChange={setPrivacy}
+          newPost={content}
+          onPostChange={setContent}
+          privacy={privacyLevel}
+          onPrivacyChange={setPrivacyLevel}
           attachments={attachments}
-          isUploading={isUploading}
+          isUploading={isLoading}
           onFileChange={handleFileChange}
-          onRemoveFile={removeFile}
+          onRemoveFile={removeAttachment}
           onCreatePost={handleCreatePost}
           onClose={() => setIsExpanded(false)}
         />

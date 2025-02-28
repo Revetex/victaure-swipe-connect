@@ -1,126 +1,74 @@
 
-import { UserProfile } from "@/types/profile";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ConnectionCard } from "./ConnectionCard";
-import { EmptyConnectionsState } from "./EmptyConnectionsState";
-import useConnections from "./hooks/useConnections";
-import { PendingRequestsSection } from "./PendingRequestsSection";
-import { ProfilePreview } from "@/components/ProfilePreview";
 import { useState } from "react";
+import { UserProfile } from "@/types/profile";
+import { ConnectionCard } from "./ConnectionCard";
+import { Button } from "@/components/ui/button";
+import { useConnections } from "./hooks/useConnections";
 
-interface ConnectionsListProps {
-  searchQuery: string;
-  showPendingRequests: boolean;
-  selectedProfile: UserProfile | null;
-  onClose: () => void;
-}
-
-export function ConnectionsList({
-  searchQuery,
-  showPendingRequests,
-  selectedProfile,
-  onClose
-}: ConnectionsListProps) {
-  const {
-    connections,
-    isLoading,
-    totalConnections,
-    handleLoadMore,
-    hasMore
-  } = useConnections();
-
-  // Ajouter un état local pour stocker les erreurs éventuelles
-  const [error, setError] = useState<Error | null>(null);
-
-  // Créer une fonction pour charger plus de connexions si nécessaire
-  const loadMoreConnections = () => {
-    try {
-      handleLoadMore();
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Erreur lors du chargement des connexions'));
-    }
-  };
-
-  const filteredConnections = connections?.filter(connection => 
-    connection.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
+export function ConnectionsList() {
+  const { connections, isLoading } = useConnections();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  
+  // Calculate pagination
+  const totalPages = Math.ceil(connections.length / itemsPerPage);
+  const paginatedConnections = connections.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
-  if (error) {
-    return (
-      <div className="text-center py-8 text-destructive">
-        Une erreur est survenue lors du chargement des connexions
-      </div>
-    );
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  if (isLoading) {
+    return <div className="p-4">Loading connections...</div>;
   }
 
-  if (isLoading && (!connections || connections.length === 0)) {
-    return (
-      <div className="text-center py-8">
-        <span className="loading loading-spinner" />
-      </div>
-    );
+  if (!connections.length) {
+    return <div className="p-4">No connections found.</div>;
   }
-
-  // Transformer les connexions en profils utilisateur pour les passer à ConnectionCard
-  const connectionsAsProfiles = filteredConnections.map(conn => ({
-    id: conn.id,
-    full_name: conn.full_name || '',
-    avatar_url: conn.avatar_url,
-    email: null,
-    role: conn.role,
-    bio: conn.bio,
-    phone: null,
-    city: conn.city,
-    state: null,
-    country: conn.country,
-    skills: conn.skills || [],
-    online_status: conn.online_status,
-    last_seen: null,
-    // Ajouter les propriétés manquantes pour satisfaire le type UserProfile
-    experiences: [],
-    education: [],
-    certifications: conn.certifications || [],
-    friends: []  // Propriété obligatoire
-  } as UserProfile));
 
   return (
-    <>
-      <ScrollArea className="h-[500px] rounded-lg bg-zinc-900/30 p-4">
-        {showPendingRequests && <PendingRequestsSection />}
-        
-        {connectionsAsProfiles?.length ? (
-          <div className="space-y-2">
-            {connectionsAsProfiles.map(profile => (
-              <ConnectionCard 
-                key={profile.id}
-                profile={profile} 
-              />
-            ))}
-          </div>
-        ) : (
-          <EmptyConnectionsState showPendingRequests={showPendingRequests} />
-        )}
-        
-        {hasMore && (
-          <div className="text-center py-4">
-            <button 
-              onClick={loadMoreConnections}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Chargement...' : 'Voir plus'}
-            </button>
-          </div>
-        )}
-      </ScrollArea>
+    <div className="space-y-4">
+      <div className="space-y-1">
+        {paginatedConnections.map((connection) => (
+          <ConnectionCard key={connection.id} connection={connection} />
+        ))}
+      </div>
 
-      {selectedProfile && (
-        <ProfilePreview
-          profile={selectedProfile}
-          isOpen={!!selectedProfile}
-          onClose={onClose}
-        />
+      {totalPages > 1 && (
+        <div className="flex justify-center space-x-2 mt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          
+          {[...Array(totalPages)].map((_, index) => (
+            <Button
+              key={index}
+              variant={currentPage === index + 1 ? "default" : "outline"}
+              size="sm"
+              onClick={() => handlePageChange(index + 1)}
+            >
+              {index + 1}
+            </Button>
+          ))}
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
       )}
-    </>
+    </div>
   );
 }

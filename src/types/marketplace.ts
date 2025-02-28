@@ -23,7 +23,7 @@ export interface MarketplaceListing {
   favorites_count?: number;
   featured?: boolean;
   sale_type?: string;
-  listing_id?: string; // Pour la rétrocompatibilité
+  listing_id?: string; // For backwards compatibility
 }
 
 export interface MarketplaceFavorite {
@@ -31,8 +31,8 @@ export interface MarketplaceFavorite {
   item_id: string;
   user_id: string;
   created_at?: string;
-  listing_id?: string; // Pour compatibilité
-  viewer_id?: string; // Pour compatibilité
+  listing_id?: string; // For compatibility
+  viewer_id?: string; // For compatibility
 }
 
 export interface MarketplaceFilters {
@@ -148,7 +148,7 @@ export interface ContractFormValues {
   currency?: string;
 }
 
-// Schéma de validation pour le formulaire de contrat
+// Schema for contract form validation
 export const contractFormSchema = {
   title: {
     required: "Le titre est requis",

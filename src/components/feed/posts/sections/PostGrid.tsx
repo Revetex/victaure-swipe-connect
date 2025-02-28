@@ -1,7 +1,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { PostCard } from "../PostCard";
-import type { Post } from "@/types/posts";
+import type { Post } from "@/components/feed/posts/types";
 
 interface PostGridProps {
   posts: Post[];
