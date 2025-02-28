@@ -1,204 +1,169 @@
 
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
+import { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
-export function useConnectionActions(profileId?: string) {
+export const useConnectionActions = () => {
   const { user } = useAuth();
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const handleAddFriend = async () => {
-    if (!profileId || !user?.id) {
-      toast.error("Vous devez être connecté pour ajouter un ami");
-      return;
-    }
+  const checkExistingRequests = async (profileId: string) => {
+    if (!user) return null;
 
-    try {
-      setIsProcessing(true);
+    const { data } = await supabase
+      .from('user_connections')
+      .select('*')
+      .or(`and(sender_id.eq.${user.id},receiver_id.eq.${profileId}),and(sender_id.eq.${profileId},receiver_id.eq.${user.id})`)
+      .single();
 
-      // Vérifier si la demande existe déjà
-      const { data: existingRequests, error: checkError } = await supabase
-        .from('user_connections')
-        .select('*')
-        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${profileId}),and(sender_id.eq.${profileId},receiver_id.eq.${user.id})`)
-        .not('status', 'eq', 'rejected');
-
-      if (checkError) throw checkError;
-
-      if (existingRequests && existingRequests.length > 0) {
-        toast.error("Une demande d'ami existe déjà avec cet utilisateur");
-        return;
-      }
-
-      // Créer une nouvelle demande d'ami
-      const { error } = await supabase
-        .from('user_connections')
-        .insert({
-          sender_id: user.id,
-          receiver_id: profileId,
-          status: 'pending',
-          connection_type: 'friend',
-          visibility: 'public'
-        });
-
-      if (error) throw error;
-
-      toast.success("Demande d'ami envoyée avec succès");
-    } catch (error) {
-      console.error('Error adding friend:', error);
-      toast.error("Erreur lors de l'envoi de la demande d'ami");
-    } finally {
-      setIsProcessing(false);
-    }
+    return data;
   };
 
-  const handleAcceptFriend = async () => {
-    if (!profileId || !user?.id) {
-      toast.error("Vous devez être connecté pour accepter cette demande");
+  const sendRequest = async (receiverId: string) => {
+    if (!user) {
+      toast.error('Vous devez être connecté pour envoyer une demande');
       return;
     }
 
+    setIsLoading(true);
+
     try {
-      setIsProcessing(true);
+      const existingRequest = await checkExistingRequests(receiverId);
 
-      // Récupérer l'ID de la demande
-      const { data: requestData, error: requestError } = await supabase
-        .from('user_connections')
-        .select('id')
-        .eq('sender_id', profileId)
-        .eq('receiver_id', user.id)
-        .eq('status', 'pending')
-        .single();
+      if (existingRequest) {
+        if (existingRequest.status === 'accepted') {
+          toast.info('Vous êtes déjà connectés avec cet utilisateur');
+          setIsLoading(false);
+          return;
+        } else if (existingRequest.status === 'pending') {
+          toast.info('Une demande de connexion est déjà en cours');
+          setIsLoading(false);
+          return;
+        }
+      }
 
-      if (requestError) throw requestError;
-
-      // Accepter la demande
-      const { error } = await supabase.rpc('accept_friend_request', {
-        p_request_id: requestData.id,
-        p_user_id: user.id
+      await supabase.from('user_connections').insert({
+        sender_id: user.id,
+        receiver_id: receiverId,
+        status: 'pending',
+        connection_type: 'friend',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       });
 
-      if (error) throw error;
-
-      toast.success("Demande d'ami acceptée");
+      toast.success('Demande de connexion envoyée');
+      queryClient.invalidateQueries({ queryKey: ['connections'] });
     } catch (error) {
-      console.error('Error accepting friend request:', error);
-      toast.error("Erreur lors de l'acceptation de la demande");
+      console.error('Erreur lors de l\'envoi de la demande:', error);
+      toast.error('Erreur lors de l\'envoi de la demande');
     } finally {
-      setIsProcessing(false);
+      setIsLoading(false);
     }
   };
 
-  const handleRemoveFriend = async () => {
-    if (!profileId || !user?.id) {
-      toast.error("Vous devez être connecté pour supprimer cet ami");
-      return;
-    }
+  const cancelRequest = async (requestId: string) => {
+    if (!user) return;
+
+    setIsLoading(true);
 
     try {
-      setIsProcessing(true);
-
-      // Récupérer l'ID de la connexion
-      const { data: connectionData, error: connectionError } = await supabase
+      await supabase
         .from('user_connections')
-        .select('id, status')
-        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${profileId}),and(sender_id.eq.${profileId},receiver_id.eq.${user.id})`)
-        .maybeSingle();
+        .delete()
+        .eq('id', requestId)
+        .eq('sender_id', user.id);
 
-      if (connectionError) throw connectionError;
-      if (!connectionData) {
-        toast.error("Aucune connexion trouvée avec cet utilisateur");
-        return;
-      }
-
-      // Si c'est une demande en attente envoyée par l'utilisateur
-      if (connectionData.status === 'pending') {
-        const { error } = await supabase.rpc('cancel_friend_request', {
-          p_request_id: connectionData.id,
-          p_user_id: user.id
-        });
-        
-        if (error) throw error;
-        toast.success("Demande d'ami annulée");
-      } 
-      // Si c'est une connexion active
-      else if (connectionData.status === 'accepted') {
-        const { error } = await supabase.rpc('remove_friend', {
-          p_connection_id: connectionData.id,
-          p_user_id: user.id
-        });
-        
-        if (error) throw error;
-        toast.success("Ami supprimé de votre liste");
-      }
+      toast.success('Demande annulée');
+      queryClient.invalidateQueries({ queryKey: ['connections'] });
     } catch (error) {
-      console.error('Error removing friend:', error);
-      toast.error("Erreur lors de la suppression de la connexion");
+      console.error('Erreur lors de l\'annulation de la demande:', error);
+      toast.error('Erreur lors de l\'annulation de la demande');
     } finally {
-      setIsProcessing(false);
+      setIsLoading(false);
     }
   };
 
-  const handleToggleBlock = async (profileId?: string) => {
-    if (!profileId || !user?.id) {
-      toast.error("Vous devez être connecté pour bloquer cet utilisateur");
-      return;
-    }
+  const acceptRequest = async (requestId: string) => {
+    if (!user) return;
+
+    setIsLoading(true);
 
     try {
-      setIsProcessing(true);
+      await supabase
+        .from('user_connections')
+        .update({
+          status: 'accepted',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', requestId)
+        .eq('receiver_id', user.id);
 
-      // Vérifier si l'utilisateur est déjà bloqué
-      const { data: existingBlock, error: checkError } = await supabase
-        .from('blocked_users')
-        .select('id')
-        .eq('blocker_id', user.id)
-        .eq('blocked_id', profileId)
-        .maybeSingle();
-
-      if (checkError) throw checkError;
-
-      if (existingBlock) {
-        // Débloquer l'utilisateur
-        const { error } = await supabase
-          .from('blocked_users')
-          .delete()
-          .eq('id', existingBlock.id);
-
-        if (error) throw error;
-        toast.success("Utilisateur débloqué");
-      } else {
-        // Bloquer l'utilisateur
-        const { error } = await supabase
-          .from('blocked_users')
-          .insert({
-            blocker_id: user.id,
-            blocked_id: profileId
-          });
-
-        if (error) throw error;
-        toast.success("Utilisateur bloqué");
-
-        // Supprimer toute connexion existante
-        await supabase
-          .from('user_connections')
-          .delete()
-          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${profileId}),and(sender_id.eq.${profileId},receiver_id.eq.${user.id})`);
-      }
+      toast.success('Demande acceptée');
+      queryClient.invalidateQueries({ queryKey: ['connections'] });
     } catch (error) {
-      console.error('Error toggling block status:', error);
-      toast.error("Erreur lors de la modification du statut de blocage");
+      console.error('Erreur lors de l\'acceptation de la demande:', error);
+      toast.error('Erreur lors de l\'acceptation de la demande');
     } finally {
-      setIsProcessing(false);
+      setIsLoading(false);
+    }
+  };
+
+  const rejectRequest = async (requestId: string) => {
+    if (!user) return;
+
+    setIsLoading(true);
+
+    try {
+      await supabase
+        .from('user_connections')
+        .update({
+          status: 'rejected',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', requestId)
+        .eq('receiver_id', user.id);
+
+      toast.success('Demande rejetée');
+      queryClient.invalidateQueries({ queryKey: ['connections'] });
+    } catch (error) {
+      console.error('Erreur lors du rejet de la demande:', error);
+      toast.error('Erreur lors du rejet de la demande');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const removeConnection = async (connectionId: string) => {
+    if (!user) return;
+
+    setIsLoading(true);
+
+    try {
+      await supabase
+        .from('user_connections')
+        .delete()
+        .eq('id', connectionId)
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
+
+      toast.success('Connexion supprimée');
+      queryClient.invalidateQueries({ queryKey: ['connections'] });
+    } catch (error) {
+      console.error('Erreur lors de la suppression de la connexion:', error);
+      toast.error('Erreur lors de la suppression de la connexion');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return {
-    handleAddFriend,
-    handleAcceptFriend,
-    handleRemoveFriend,
-    handleToggleBlock,
-    isProcessing
+    sendRequest,
+    cancelRequest,
+    acceptRequest,
+    rejectRequest,
+    removeConnection,
+    isLoading
   };
-}
+};

@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Post } from "@/types/posts";
+import { Post } from "@/components/feed/posts/types";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";

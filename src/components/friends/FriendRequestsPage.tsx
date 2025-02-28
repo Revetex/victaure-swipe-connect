@@ -14,7 +14,15 @@ export function FriendRequestsPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("received");
-  const { incomingRequests, outgoingRequests, acceptFriendRequest, rejectFriendRequest, cancelFriendRequest, isLoading } = useFriendRequests();
+  const { 
+    incomingRequests, 
+    outgoingRequests, 
+    acceptFriendRequest, 
+    rejectFriendRequest, 
+    cancelFriendRequest, 
+    isLoading,
+    refetchPendingRequests 
+  } = useFriendRequests();
 
   useEffect(() => {
     if (!user) {
@@ -22,6 +30,12 @@ export function FriendRequestsPage() {
       navigate("/auth");
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    if (user) {
+      refetchPendingRequests();
+    }
+  }, [user]);
 
   return (
     <DashboardShell>
