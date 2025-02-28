@@ -24,7 +24,7 @@ export function ConnectionsSection({ searchQuery, onTogglePending, showPendingRe
   const { user } = useAuth();
 
   // Fetch connections from user_connections_view
-  const { data: connections = [] } = useQuery({
+  const { data: connections = [], isLoading } = useQuery({
     queryKey: ['connections', user?.id],
     queryFn: async () => {
       if (!user) return [];

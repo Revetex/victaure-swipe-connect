@@ -1,6 +1,6 @@
 
 export interface CreatePostProps {
-  onPostCreated: () => void;
+  onPostCreated?: () => void;
 }
 
 export interface PostAttachment {

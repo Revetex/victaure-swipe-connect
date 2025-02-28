@@ -38,11 +38,11 @@ export function FriendsTabContent({
         // Au lieu d'utiliser la relation qui cause l'erreur, faisons deux requêtes séparées
         // D'abord, récupérons les connexions de l'utilisateur
         const { data: connections, error: connectionsError } = await supabase
-          .from('user_connections')
-          .select('id, sender_id, receiver_id, status, connection_type, created_at, updated_at')
+          .from('user_connections_view')
+          .select('*')
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
           .eq('status', 'accepted')
-          .eq('connection_type', 'friend')
-          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
+          .eq('connection_type', 'friend');
 
         if (connectionsError) {
           console.error("Error fetching connections:", connectionsError);
@@ -51,84 +51,84 @@ export function FriendsTabContent({
 
         if (!connections || connections.length === 0) return [];
 
-        // Maintenant, récupérons les profils correspondants
-        let friendsList: Friend[] = [];
-        
-        for (const connection of connections) {
-          const friendId = connection.sender_id === user.id ? connection.receiver_id : connection.sender_id;
+        // Map connections to Friend objects
+        const friendsList: Friend[] = connections.map(conn => {
+          const isUserSender = conn.sender_id === user.id;
           
-          const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', friendId)
-            .single();
-          
-          if (profileError) {
-            console.error(`Error fetching profile for ${friendId}:`, profileError);
-            continue;
-          }
-          
-          if (!profileData) continue;
-
-          // Déterminer le rôle valide à partir des données du profil
+          // Déterminer le rôle valide à partir des données du profil (default to professional)
           let role: UserRole = 'professional';
           
-          if (profileData.role === 'professional' || 
-              profileData.role === 'business' || 
-              profileData.role === 'admin' || 
-              profileData.role === 'freelancer' || 
-              profileData.role === 'student') {
-            role = profileData.role as UserRole;
-          }
-
           // Créer un profil d'ami en combinant les données
           const friend: Friend = {
-            id: profileData.id,
-            full_name: profileData.full_name || '',
-            avatar_url: profileData.avatar_url || null,
-            email: profileData.email || null,
+            id: isUserSender ? conn.receiver_id : conn.sender_id,
+            full_name: isUserSender ? conn.receiver_name : conn.sender_name,
+            avatar_url: isUserSender ? conn.receiver_avatar : conn.sender_avatar,
+            email: null,
             role: role,
-            bio: profileData.bio || '',
-            phone: profileData.phone || '',
-            city: profileData.city || '',
-            state: profileData.state || '',
-            country: profileData.country || 'Canada',
-            skills: profileData.skills || [],
-            online_status: !!profileData.online_status,
-            last_seen: profileData.last_seen || null,
-            created_at: profileData.created_at || new Date().toISOString(),
-            friendship_id: connection.id,
-            status: connection.status,
+            bio: '',
+            phone: '',
+            city: '',
+            state: '',
+            country: 'Canada',
+            skills: [],
+            online_status: false, // Will be updated below
+            last_seen: null,
+            created_at: conn.created_at || new Date().toISOString(),
+            friendship_id: conn.id,
+            status: conn.status,
             friends: [] // Propriété obligatoire
           };
           
-          friendsList.push(friend);
+          return friend;
+        });
+
+        // Get online status for these friends if any exist
+        if (friendsList.length > 0) {
+          const friendIds = friendsList.map(f => f.id);
+          
+          const { data: onlineData } = await supabase
+            .from('profiles')
+            .select('id, online_status, last_seen')
+            .in('id', friendIds);
+            
+          if (onlineData) {
+            // Update the online status of each friend
+            friendsList.forEach(friend => {
+              const profile = onlineData.find(p => p.id === friend.id);
+              if (profile) {
+                friend.online_status = profile.online_status;
+                friend.last_seen = profile.last_seen;
+              }
+            });
+          }
         }
 
         // Filter by online status if requested
+        let filteredFriends = [...friendsList];
         if (showOnlineOnly) {
-          friendsList = friendsList.filter(friend => friend.online_status);
+          filteredFriends = filteredFriends.filter(friend => friend.online_status);
         }
 
         // Filter by search query if provided
         if (searchQuery) {
           const query = searchQuery.toLowerCase();
-          friendsList = friendsList.filter(friend => 
+          filteredFriends = filteredFriends.filter(friend => 
             (friend.full_name || '').toLowerCase().includes(query)
           );
         }
 
         // Calculate total pages
-        setTotalPages(Math.ceil(friendsList.length / itemsPerPage));
+        setTotalPages(Math.ceil(filteredFriends.length / itemsPerPage));
 
         // Apply pagination
         const startIndex = (displayPage - 1) * itemsPerPage;
-        return friendsList.slice(startIndex, startIndex + itemsPerPage);
+        return filteredFriends.slice(startIndex, startIndex + itemsPerPage);
       } catch (error) {
         console.error("Error in fetchFriends:", error);
         return [];
       }
-    }
+    },
+    enabled: !!user?.id
   });
 
   // Reset to page 1 when search query changes
