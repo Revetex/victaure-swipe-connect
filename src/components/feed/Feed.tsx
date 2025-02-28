@@ -7,7 +7,7 @@ import { PostFilters } from "./posts/sections/PostFilters";
 import { useState, useEffect, useRef } from "react";
 import { PostAttachment, PostPrivacyLevel } from "./posts/types";
 import { Button } from "../ui/button";
-import { PenLine, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/components/ThemeProvider";
 
@@ -49,23 +49,17 @@ export function Feed() {
       }
       lastScrollY.current = currentScrollY;
     };
-    window.addEventListener("scroll", handleScroll, {
-      passive: true
-    });
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Réinitialiser les résultats de la requête lorsque les filtres changent
   useEffect(() => {
-    queryClient.invalidateQueries({
-      queryKey: ["posts"]
-    });
+    queryClient.invalidateQueries({ queryKey: ["posts"] });
   }, [filter, sortBy, sortOrder, searchTerm, queryClient]);
   
   const invalidatePosts = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["posts"]
-    });
+    queryClient.invalidateQueries({ queryKey: ["posts"] });
   };
   
   const handlePostChange = (value: string) => setNewPost(value);
@@ -75,19 +69,8 @@ export function Feed() {
     setIsExpanded(false);
   };
 
-  // Système de couleurs adaptatives pour le mode clair/sombre
-  const colors = {
-    headerBg: isDark ? 'bg-[#1A1F2C]/95' : 'bg-white/95',
-    border: isDark ? 'border-[#64B5D9]/20' : 'border-slate-200',
-    text: isDark ? 'text-white' : 'text-slate-900',
-    mutedText: isDark ? 'text-white/70' : 'text-slate-600',
-    buttonBg: isDark ? 'bg-[#64B5D9]' : 'bg-blue-600',
-    buttonHover: isDark ? 'hover:bg-[#64B5D9]/90' : 'hover:bg-blue-700',
-    ghostBg: isDark ? 'bg-white/5' : 'bg-slate-100/80',
-    ghostHover: isDark ? 'hover:bg-white/10' : 'hover:bg-slate-200/80',
-  };
-
-  return <div className="relative flex flex-col min-h-screen">
+  return (
+    <div className="relative flex flex-col min-h-screen">
       {/* Header avec effet de transition d'opacité lors du défilement */}
       <div className={cn(
         "fixed top-0 left-0 right-0 z-50",
@@ -95,9 +78,9 @@ export function Feed() {
         headerVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
       )}>
         <div className={cn(
-          colors.headerBg,
+          isDark ? "bg-background/95" : "bg-background/95",
           "backdrop-blur-md border-b shadow-sm",
-          colors.border
+          isDark ? "border-border/30" : "border-border/40"
         )}>
           <div className="container mx-auto max-w-4xl px-2 sm:px-4 py-2 space-y-2">
             {!isExpanded ? (
@@ -105,15 +88,13 @@ export function Feed() {
                 onClick={() => setIsExpanded(true)} 
                 variant="ghost" 
                 className={cn(
-                  "w-full h-10 justify-start px-4 rounded-xl transition-all duration-200",
-                  colors.ghostBg,
-                  colors.ghostHover,
-                  colors.text,
+                  "w-full h-10 justify-start px-4 rounded-lg transition-all duration-200",
+                  isDark ? "bg-muted/20 hover:bg-muted/30" : "bg-muted/30 hover:bg-muted/40",
+                  isDark ? "text-foreground" : "text-foreground",
                   "border",
-                  colors.border
+                  isDark ? "border-border/30" : "border-border/40"
                 )}
               >
-                <PenLine className={cn("h-4 w-4 mr-2", isDark ? "text-[#64B5D9]" : "text-blue-600")} />
                 Partagez quelque chose...
               </Button>
             ) : (
@@ -172,14 +153,14 @@ export function Feed() {
         <Button
           size="icon"
           className={cn(
-            "rounded-full h-14 w-14 shadow-lg",
-            colors.buttonBg,
-            colors.buttonHover
+            "rounded-full h-12 w-12 shadow-md",
+            isDark ? "bg-primary hover:bg-primary/90" : "bg-primary hover:bg-primary/90"
           )}
           onClick={() => setIsExpanded(true)}
         >
-          <Plus className="h-6 w-6" />
+          <Plus className="h-5 w-5" />
         </Button>
       </div>
-    </div>;
+    </div>
+  );
 }

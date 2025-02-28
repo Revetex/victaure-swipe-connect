@@ -63,7 +63,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex min-h-screen w-full overflow-hidden bg-gradient-to-br from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]"
+      className="flex min-h-screen w-full overflow-hidden bg-background"
     >
       <DashboardMobileNav
         currentPage={currentPage}
@@ -76,12 +76,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "flex-1",
         "min-h-screen w-full",
         "relative",
-        "ios-safe-area ios-momentum-scroll",
-        "bg-gradient-to-br from-[#1A1F2C] via-[#1A1F2C]/95 to-[#1A1F2C]/90",
-        "backdrop-blur-sm",
-        "border-l border-white/5",
-        "shadow-[inset_0_-20px_60px_-20px_rgba(0,0,0,0.25)]",
-        "transition-all duration-300"
+        "ios-safe-area ios-momentum-scroll"
       )}>
         <AppHeader 
           onRequestAssistant={handleRequestChat}

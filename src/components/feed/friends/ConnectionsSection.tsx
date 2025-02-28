@@ -21,7 +21,7 @@ export function ConnectionsSection({ searchQuery, onTogglePending, showPendingRe
   return (
     <div
       className={cn(
-        "flex flex-col w-full grow space-y-6",
+        "flex flex-col w-full grow space-y-4",
         "p-0 lg:p-0"
       )}
     >

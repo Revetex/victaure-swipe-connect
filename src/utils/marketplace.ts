@@ -13,7 +13,7 @@ export const adaptFavoriteData = (data: any): MarketplaceFavorite => {
 // Fonction d'adaptation pour gérer les différentes structures de listings
 export const adaptListingData = (data: any): MarketplaceListing => {
   return {
-    id: data.id,
+    id: data.id || '',
     title: data.title || '',
     description: data.description || '',
     price: data.price || 0,
