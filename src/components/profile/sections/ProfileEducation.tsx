@@ -62,7 +62,7 @@ export function ProfileEducation({ education }: ProfileEducationProps) {
               )}
               
               <p className="text-sm text-muted-foreground/80">
-                {formatEducation(edu.start_date, edu.end_date)}
+                {formatEducation(edu.start_date as string, edu.end_date as string)}
               </p>
               
               {edu.description && (

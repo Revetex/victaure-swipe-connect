@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile } from "@/types/profile";
 import { toast } from "sonner";
+import { formatDateToString } from "./profileTransformers";
 
 export const generateVCardData = (profile: UserProfile) => {
   const vcard = `BEGIN:VCARD
@@ -62,7 +63,11 @@ export const updateProfile = async (tempProfile: UserProfile) => {
         profile_id: user.id,
         title: cert.title,
         issuer: cert.issuer,
-        year: cert.year,
+        issue_date: formatDateToString(cert.issue_date),
+        expiry_date: formatDateToString(cert.expiry_date),
+        credential_url: cert.credential_url || null,
+        credential_id: cert.credential_id || null,
+        description: cert.description || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }));
@@ -89,8 +94,9 @@ export const updateProfile = async (tempProfile: UserProfile) => {
         school_name: edu.school_name,
         degree: edu.degree,
         field_of_study: edu.field_of_study || null,
-        start_date: edu.start_date || null,
-        end_date: edu.end_date || null,
+        start_date: formatDateToString(edu.start_date),
+        end_date: formatDateToString(edu.end_date),
+        description: edu.description || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }));
@@ -116,8 +122,9 @@ export const updateProfile = async (tempProfile: UserProfile) => {
         profile_id: user.id,
         company: exp.company,
         position: exp.position,
-        start_date: exp.start_date || null,
-        end_date: exp.end_date || null,
+        start_date: formatDateToString(exp.start_date),
+        end_date: formatDateToString(exp.end_date),
+        description: exp.description || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }));

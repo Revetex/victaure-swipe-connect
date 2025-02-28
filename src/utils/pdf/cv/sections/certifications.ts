@@ -31,9 +31,9 @@ export const renderCertifications = (
     doc.text(cert.issuer, 20, currentY);
     currentY += 6;
 
-    if (cert.year) {
+    if (cert.issue_date) {
       doc.setTextColor(128, 128, 128);
-      doc.text(cert.year, 20, currentY);
+      doc.text(new Date(cert.issue_date).getFullYear().toString(), 20, currentY);
       currentY += 6;
     }
 

@@ -39,13 +39,15 @@ export interface Certification {
   profile_id: string;
   title: string;
   issuer: string;
-  issue_date?: string | Date | null;
-  expiry_date?: string | Date | null;
+  issue_date?: string | null;  // Changé de string | Date à string
+  expiry_date?: string | null; // Changé de string | Date à string
   credential_url?: string | null;
+  credential_id?: string | null; // Ajouté car utilisé dans le code
   description?: string | null;
   skills?: string[];
   created_at?: string;
   updated_at?: string;
+  year?: string; // Ajouté car utilisé dans le code
 }
 
 export interface Education {
@@ -54,8 +56,8 @@ export interface Education {
   school_name: string;
   degree: string;
   field_of_study?: string | null;
-  start_date?: string | Date | null;
-  end_date?: string | Date | null;
+  start_date?: string | null;  // Changé de string | Date à string
+  end_date?: string | null;    // Changé de string | Date à string
   description?: string | null;
   created_at?: string;
   updated_at?: string;
@@ -66,8 +68,8 @@ export interface Experience {
   profile_id: string;
   company: string;
   position: string;
-  start_date?: string | Date | null;
-  end_date?: string | Date | null;
+  start_date?: string | null;  // Changé de string | Date à string
+  end_date?: string | null;    // Changé de string | Date à string
   description?: string | null;
   created_at?: string;
   updated_at?: string;
@@ -111,8 +113,8 @@ export interface BlockedUser {
 export interface User {
   id: string;
   email?: string;
-  full_name?: string;
-  avatar_url?: string;
+  full_name: string | null; // Changé de optionnel à nullable pour correspondre à UserProfile
+  avatar_url?: string | null;
   role?: UserRole;
 }
 
