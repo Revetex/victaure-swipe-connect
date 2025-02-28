@@ -70,7 +70,7 @@ const Settings = () => {
   }
   return <Elements stripe={stripePromise} options={stripeElementsOptions}>
       <ScrollArea className="h-[calc(100vh-5rem)] w-full">
-        <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto bg-transparent py-0 px-0">
           <motion.div initial={{
           opacity: 0,
           y: 20
@@ -92,7 +92,7 @@ const Settings = () => {
           }} transition={{
             delay: index * 0.1
           }}>
-                <Card className="bg-white/5 dark:bg-[#1B2A4A] border border-border/50 dark:border-[#64B5D9]/10 p-6 shadow-lg py-0 px-0 rounded">
+                <Card className="border border-border/50 dark:border-[#64B5D9]/10 p-6 shadow-lg py-0 px-0 rounded bg-transparent">
                   <Component />
                 </Card>
               </motion.div>)}
