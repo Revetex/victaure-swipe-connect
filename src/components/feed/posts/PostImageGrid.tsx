@@ -10,13 +10,13 @@ export const PostImageGrid = ({
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   if (!images || images.length === 0) return null;
   return <>
-      <div className="grid grid-cols-2 gap-2 mb-4">
+      <div className="grid grid-cols-2 gap-2 mb-4 bg-transparent">
         {images.map((image, index) => <div key={index} className="relative">
             {image.toLowerCase().endsWith('.pdf') ? <a href={image} target="_blank" rel="noopener noreferrer" className="block p-4 bg-muted rounded hover:bg-muted/80 transition-colors">
                 <div className="flex items-center justify-center">
                   <span className="text-sm">Voir le PDF</span>
                 </div>
-              </a> : <img src={image} alt={`Attachment ${index + 1}`} onClick={() => setSelectedImageIndex(index)} className="w-full h-48 rounded cursor-pointer hover:opacity-90 transition-opacity border border-border object-scale-down" />}
+              </a> : <img src={image} alt={`Attachment ${index + 1}`} onClick={() => setSelectedImageIndex(index)} className="w-full h-48 rounded cursor-pointer hover:opacity-90 transition-opacity border border-border object-contain" />}
           </div>)}
       </div>
 
