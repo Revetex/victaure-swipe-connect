@@ -1,11 +1,23 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ButtonWithTooltip } from "@/components/ui/button-with-tooltip";
-import { UserCog, FileText, UserPlus, Briefcase, Shield, Newspaper } from "lucide-react";
+import { UserCog, FileText, UserPlus, Briefcase, Shield, Newspaper, MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export function QuickActions() {
+export interface QuickActionsProps {
+  onRequestChat?: () => void;
+}
+
+export function QuickActions({ onRequestChat }: QuickActionsProps) {
   const navigate = useNavigate();
+
+  const handleChatClick = () => {
+    if (onRequestChat) {
+      onRequestChat();
+    } else {
+      navigate("/chat");
+    }
+  };
 
   const actions = [
     {
@@ -33,10 +45,10 @@ export function QuickActions() {
       tooltip: "Parcourir les offres d'emploi"
     },
     {
-      icon: Shield,
-      label: "Sécurité",
-      onClick: () => navigate("/settings/security"),
-      tooltip: "Gérer vos paramètres de sécurité"
+      icon: MessageSquare,
+      label: "Assistant",
+      onClick: handleChatClick,
+      tooltip: "Discuter avec l'assistant"
     },
     {
       icon: Newspaper,

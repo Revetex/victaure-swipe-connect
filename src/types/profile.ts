@@ -89,16 +89,17 @@ export interface PendingRequest {
   receiver_id: string;
   status: 'pending' | 'accepted' | 'rejected';
   created_at: string;
+  updated_at?: string;
   type: 'incoming' | 'outgoing';
   sender: UserProfile;
   receiver: UserProfile;
 }
 
-function createEmptyProfile(id: string, email: string): UserProfile {
+export function createEmptyProfile(id: string, email: string): UserProfile {
   return {
     id,
     email,
-    full_name: null,
+    full_name: "",
     avatar_url: null,
     role: 'professional',
     bio: null,
@@ -120,7 +121,7 @@ function createEmptyProfile(id: string, email: string): UserProfile {
   };
 }
 
-function transformDatabaseProfile(data: any): UserProfile {
+export function transformDatabaseProfile(data: any): UserProfile {
   return {
     ...createEmptyProfile(data.id, data.email),
     ...data,
@@ -133,7 +134,7 @@ function transformDatabaseProfile(data: any): UserProfile {
   };
 }
 
-function transformEducation(data: any): Education {
+export function transformEducation(data: any): Education {
   return {
     id: data.id,
     profile_id: data.profile_id,
@@ -146,7 +147,7 @@ function transformEducation(data: any): Education {
   };
 }
 
-function transformCertification(data: any): Certification {
+export function transformCertification(data: any): Certification {
   return {
     id: data.id,
     profile_id: data.profile_id,
@@ -161,7 +162,7 @@ function transformCertification(data: any): Certification {
   };
 }
 
-function transformExperience(data: any): Experience {
+export function transformExperience(data: any): Experience {
   return {
     id: data.id,
     profile_id: data.profile_id,
@@ -177,7 +178,6 @@ function transformExperience(data: any): Experience {
 
 // Note: Regroupons toutes les exportations ensemble
 export {
-  createEmptyProfile,
   transformDatabaseProfile,
   transformEducation,
   transformCertification,

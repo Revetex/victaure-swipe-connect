@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { UserProfile, Friend, createEmptyProfile } from "@/types/profile";
 import { transformDatabaseProfile, transformEducation, transformCertification, transformExperience } from "@/types/profile";
+import { friendRequestsAdapter } from "@/utils/connectionAdapters";
 
 export function useProfile() {
   const { toast } = useToast();
@@ -30,27 +31,19 @@ export function useProfile() {
         if (profileError) throw profileError;
 
         // Get friend requests from both perspectives where status is accepted
-        const [sentRequests, receivedRequests] = await Promise.all([
-          supabase
-            .from('friend_requests')
-            .select('receiver_id')
-            .eq('sender_id', user.id)
-            .eq('status', 'accepted'),
-          supabase
-            .from('friend_requests')
-            .select('sender_id')
-            .eq('receiver_id', user.id)
-            .eq('status', 'accepted')
-        ]);
+        const { data: acceptedConnections } = await friendRequestsAdapter.findAcceptedConnections(user.id);
 
-        // Combine friend IDs from both queries
-        const friendIds = [
-          ...(sentRequests.data?.map(r => r.receiver_id) || []),
-          ...(receivedRequests.data?.map(r => r.sender_id) || [])
-        ];
-
-        // Remove duplicates
-        const uniqueFriendIds = [...new Set(friendIds)];
+        // Extract friend IDs from the connections
+        const friendIds = [];
+        if (acceptedConnections) {
+          for (const connection of acceptedConnections) {
+            if (connection.sender_id === user.id) {
+              friendIds.push(connection.receiver_id);
+            } else {
+              friendIds.push(connection.sender_id);
+            }
+          }
+        }
         
         // Parallel queries for better performance
         const [friendsResponse, certificationsResponse, educationResponse, experiencesResponse] = 
@@ -58,7 +51,7 @@ export function useProfile() {
             supabase
               .from('profiles')
               .select('id, full_name, avatar_url, online_status, last_seen')
-              .in('id', uniqueFriendIds),
+              .in('id', friendIds.length > 0 ? friendIds : ['00000000-0000-0000-0000-000000000000']),
             supabase
               .from('certifications')
               .select('*')

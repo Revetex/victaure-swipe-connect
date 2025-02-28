@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
@@ -9,6 +10,8 @@ import { ConnectionsSearch } from "./components/ConnectionsSearch";
 import { FriendsTabContent } from "./components/FriendsTabContent";
 import { ConnectionsPagination } from "./ConnectionsPagination";
 import { PendingRequestsSection } from "./PendingRequestsSection";
+import { friendRequestsAdapter } from "@/utils/connectionAdapters";
+
 export function ConnectionsSection() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showPendingRequests, setShowPendingRequests] = useState(false);
@@ -26,15 +29,13 @@ export function ConnectionsSection() {
         }
       } = await supabase.auth.getUser();
       if (!user) return [];
-      const {
-        data: acceptedRequests
-      } = await supabase.from("friend_requests").select(`
-          sender:profiles!friend_requests_sender_id_fkey(*),
-          receiver:profiles!friend_requests_receiver_id_fkey(*)
-        `).eq("status", "accepted").or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
-      if (!acceptedRequests) return [];
-      return acceptedRequests.map(request => {
-        const friend = request.sender.id === user.id ? request.receiver : request.sender;
+      
+      const { data: acceptedConnections } = await friendRequestsAdapter.findAcceptedConnections(user.id);
+      
+      if (!acceptedConnections) return [];
+      
+      return acceptedConnections.map(request => {
+        const friend = request.sender_id === user.id ? request.receiver : request.sender;
         return {
           ...friend,
           country: friend.country || "Canada",
@@ -87,7 +88,7 @@ export function ConnectionsSection() {
             </TabsContent>
 
             <TabsContent value="online" className="mt-0">
-              <FriendsTabContent friends={filteredFriends} currentPage={currentPage} itemsPerPage={itemsPerPage} showOnlineOnly />
+              <FriendsTabContent friends={filteredFriends.filter(f => f.online_status)} currentPage={currentPage} itemsPerPage={itemsPerPage} showOnlineOnly />
             </TabsContent>
           </Tabs>
 
