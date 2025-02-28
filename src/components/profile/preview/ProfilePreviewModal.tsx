@@ -1,15 +1,15 @@
 
-import { UserProfile } from "@/types/profile";
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { User } from "@/types/profile";
 import { ProfilePreviewFront } from "./ProfilePreviewFront";
 import { ProfilePreviewBack } from "./ProfilePreviewBack";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ProfilePreviewModalProps {
-  profile: UserProfile;
+  profile: User;
   isOpen: boolean;
   onClose: () => void;
   onRequestChat?: () => void;
@@ -25,77 +25,74 @@ export function ProfilePreviewModal({
   onRequestChat,
   canViewFullProfile,
   onImageClick,
-  onViewProfile
+  onViewProfile,
 }: ProfilePreviewModalProps) {
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [flipped, setFlipped] = useState(false);
 
-  const handleFlip = () => setIsFlipped(!isFlipped);
+  const handleFlip = () => {
+    setFlipped(!flipped);
+  };
 
   if (!isOpen) return null;
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
-        {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
+        onClick={onClose}
+      >
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-          onClick={onClose}
-        ></motion.div>
-
-        {/* Card Container */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ type: "spring", damping: 30, stiffness: 350 }}
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.95, opacity: 0 }}
+          transition={{ duration: 0.2 }}
           className={cn(
-            "relative perspective w-full max-w-md m-4 shadow-xl",
-            "transform-gpu transition-all duration-500"
+            "relative bg-background rounded-lg overflow-hidden w-full max-w-md h-[500px]",
+            "perspective-1000"
           )}
-          style={{ 
-            height: "550px"
-          }}
+          onClick={(e) => e.stopPropagation()}
         >
-          <div 
-            className="absolute w-full h-full transition-transform duration-700"
-            style={{ 
-              transformStyle: "preserve-3d",
-              transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)"
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-2 top-2 z-10 text-foreground/80 hover:text-foreground"
+            onClick={onClose}
+          >
+            <X className="h-4 w-4" />
+            <span className="sr-only">Fermer</span>
+          </Button>
+
+          <div
+            className={cn(
+              "h-full w-full transition-transform duration-500",
+              "preserve-3d relative",
+              flipped ? "rotate-y-180" : ""
+            )}
+            style={{
+              transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
             }}
           >
-            {/* Front side */}
-            <ProfilePreviewFront 
+            {/* Front face */}
+            <ProfilePreviewFront
               profile={profile}
-              onFlip={handleFlip}
               onRequestChat={onRequestChat}
-              onImageClick={onImageClick}
+              onFlip={handleFlip}
               canViewFullProfile={canViewFullProfile}
               onViewProfile={onViewProfile}
             />
 
-            {/* Back side */}
-            <ProfilePreviewBack 
+            {/* Back face */}
+            <ProfilePreviewBack
               profile={profile}
               onFlip={handleFlip}
               canViewFullProfile={canViewFullProfile}
             />
           </div>
-
-          {/* Floating Close Button */}
-          <Button
-            onClick={onClose}
-            size="icon"
-            variant="ghost"
-            className="absolute top-3 right-3 h-8 w-8 rounded-full bg-background/60 hover:bg-background/80 z-50 backdrop-blur-sm"
-          >
-            <X className="h-4 w-4" />
-            <span className="sr-only">Fermer</span>
-          </Button>
         </motion.div>
-      </div>
+      </motion.div>
     </AnimatePresence>
   );
 }

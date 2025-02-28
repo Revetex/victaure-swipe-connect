@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { BackIcon } from "lucide-react";
 
 export function MobileAuthHeader() {
   // Fonction pour vérifier si on est sur mobile

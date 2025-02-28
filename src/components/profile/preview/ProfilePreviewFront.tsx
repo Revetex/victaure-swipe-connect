@@ -1,163 +1,203 @@
 
 import { UserProfile } from "@/types/profile";
-import { UserAvatar } from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
-import { RotateCw, MessageSquare, ExternalLink } from "lucide-react";
-import { motion } from "framer-motion";
+import { Calendar, Mail, MapPin, RotateCcw, X } from "lucide-react";
+import { UserAvatar } from "@/components/UserAvatar";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 export interface ProfilePreviewFrontProps {
   profile: UserProfile;
-  onFlip: () => void;
   onRequestChat?: () => void;
-  onImageClick?: () => void;
+  onFlip: () => void;
   canViewFullProfile: boolean;
   onViewProfile?: () => void;
+  hideCloseButton?: boolean;
+  isDialog?: boolean;
 }
 
 export function ProfilePreviewFront({ 
   profile, 
-  onFlip, 
   onRequestChat, 
-  onImageClick, 
+  onFlip, 
   canViewFullProfile,
-  onViewProfile
+  onViewProfile,
+  hideCloseButton = false,
+  isDialog = false
 }: ProfilePreviewFrontProps) {
-  // Fonction utilitaire pour détecter les appareils mobiles
-  const isMobile = window.innerWidth < 768;
+  const onlineStatus = profile?.online_status || false;
+  const joinDate = profile?.created_at 
+    ? format(new Date(profile.created_at), 'MMMM yyyy', { locale: fr })
+    : null;
+
+  // Compte le nombre de domaines pour lesquels on a des informations
+  const getCompletionPercentage = () => {
+    const domains = [
+      Boolean(profile.bio),
+      Boolean(profile.skills && profile.skills.length > 0),
+      Boolean(profile.education && profile.education.length > 0),
+      Boolean(profile.experiences && profile.experiences.length > 0),
+      Boolean(profile.certifications && profile.certifications.length > 0),
+      Boolean(profile.city),
+      Boolean(profile.phone)
+    ];
+    
+    const completedDomains = domains.filter(Boolean).length;
+    return Math.round((completedDomains / domains.length) * 100);
+  };
 
   return (
     <div className={cn(
-      "absolute inset-0 backface-hidden",
-      "flex flex-col p-6",
-      "bg-gradient-to-br from-card/90 via-card/80 to-card/70",
-      "rounded-lg overflow-hidden backdrop-blur-sm"
+      "absolute inset-0 h-full w-full backface-hidden", 
+      "overflow-auto",
+      "flex flex-col"
     )}>
-      <div className="flex justify-between items-start mb-6">
-        <div 
-          className="relative cursor-pointer" 
-          onClick={onImageClick}
-        >
+      {/* Header */}
+      <div className="relative h-32 bg-gradient-to-r from-primary/80 to-primary">
+        {!hideCloseButton && (
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            className="absolute top-2 right-2 h-8 w-8 text-white hover:bg-white/20"
+            onClick={onFlip}
+          >
+            <RotateCcw className="h-4 w-4" />
+            <span className="sr-only">Retourner</span>
+          </Button>
+        )}
+      </div>
+      
+      {/* Avatar and name */}
+      <div className="flex flex-col items-center -mt-16 px-6 text-center">
+        <div className="relative">
           <UserAvatar 
-            user={profile} 
-            className="h-24 w-24 border-4 border-background/20 shadow-lg hover:shadow-xl transition-all duration-300" 
-            fallbackClassName="bg-primary/10 text-primary font-semibold text-2xl"
+            user={{
+              id: profile.id,
+              name: profile.full_name || "",
+              image: profile.avatar_url
+            }}
+            className="h-24 w-24 border-4 border-background shadow-md"
+            fallbackClassName="text-xl"
           />
-          {profile.online_status && (
-            <span className="absolute bottom-1 right-1 h-4 w-4 rounded-full bg-green-500 border-2 border-card animate-pulse"></span>
-          )}
+          <span 
+            className={cn(
+              "absolute bottom-1 right-1 h-4 w-4 rounded-full border-2 border-background",
+              onlineStatus ? "bg-green-500" : "bg-gray-400"
+            )}
+          />
         </div>
         
-        <Button 
-          size="icon" 
-          variant="ghost" 
-          onClick={onFlip}
-          className="h-8 w-8 rounded-full bg-background/30 hover:bg-background/50 transition-colors duration-300"
-        >
-          <RotateCw className="h-4 w-4" />
-          <span className="sr-only">Retourner</span>
-        </Button>
-      </div>
-
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-          {profile.full_name}
-        </h2>
+        <h2 className="text-xl font-semibold mt-3">{profile.full_name}</h2>
+        
+        {/* Role badge */}
         {profile.role && (
-          <p className="text-muted-foreground">{profile.role}</p>
+          <Badge variant="secondary" className="mt-1">
+            {profile.role === 'professional' ? 'Professionnel' : 
+             profile.role === 'business' ? 'Entreprise' : 
+             profile.role === 'freelancer' ? 'Freelance' : 
+             profile.role === 'student' ? 'Étudiant' : profile.role}
+          </Badge>
+        )}
+      </div>
+      
+      {/* Profile info */}
+      <div className="px-6 mt-4 space-y-4 flex-1">
+        {/* Completion rate */}
+        {canViewFullProfile && (
+          <div className="text-center text-sm text-muted-foreground">
+            <div className="w-full bg-muted rounded-full h-1.5 mt-1 mb-2">
+              <div 
+                className="bg-primary h-1.5 rounded-full" 
+                style={{ width: `${getCompletionPercentage()}%` }}
+              />
+            </div>
+            <p>Profil complété à {getCompletionPercentage()}%</p>
+          </div>
         )}
         
-        {/* Localisation */}
-        {profile.city && (
-          <p className="text-sm text-muted-foreground/80 mt-1 flex items-center gap-1">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary/60"></span>
-            {[profile.city, profile.state, profile.country].filter(Boolean).join(", ")}
-          </p>
+        {/* Bio */}
+        {profile.bio && (
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">
+              {profile.bio.length > 150
+                ? `${profile.bio.substring(0, 150)}...`
+                : profile.bio}
+            </p>
+          </div>
         )}
-      </div>
-
-      {/* Bio simplifiée */}
-      {profile.bio && (
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-6 bg-background/20 p-3 rounded-lg border border-border/20"
-        >
-          <p className="text-sm text-muted-foreground/90 line-clamp-3">
-            {profile.bio}
-          </p>
-        </motion.div>
-      )}
-
-      {/* Compétences */}
-      {profile.skills && profile.skills.length > 0 && (
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-auto"
-        >
-          <h3 className="text-sm font-medium mb-2 text-foreground/80">Compétences</h3>
-          <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto custom-scrollbar">
-            {profile.skills.slice(0, 8).map((skill, index) => (
-              <motion.div 
-                key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <Badge 
-                  variant="secondary"
-                  className="bg-primary/10 hover:bg-primary/20 text-primary border-none transition-colors duration-300"
-                >
+        
+        {/* Skills */}
+        {profile.skills && profile.skills.length > 0 && (
+          <div>
+            <h3 className="text-sm font-medium mb-2">Compétences</h3>
+            <div className="flex flex-wrap gap-1">
+              {profile.skills.slice(0, 4).map((skill, index) => (
+                <Badge key={index} variant="outline" className="bg-background">
                   {skill}
                 </Badge>
-              </motion.div>
-            ))}
-            {profile.skills.length > 8 && (
-              <Badge variant="outline" className="bg-background/40">
-                +{profile.skills.length - 8}
-              </Badge>
-            )}
-          </div>
-        </motion.div>
-      )}
-
-      {/* Actions en bas de la carte */}
-      <div className="mt-4 pt-4 border-t border-border/30">
-        {!canViewFullProfile && (
-          <div className="mb-3 p-2 text-sm text-amber-600 bg-amber-500/10 rounded-md border border-amber-500/20">
-            <p>Profil privé</p>
+              ))}
+              {profile.skills.length > 4 && (
+                <Badge variant="outline" className="bg-background">
+                  +{profile.skills.length - 4}
+                </Badge>
+              )}
+            </div>
           </div>
         )}
         
-        <div className="grid grid-cols-2 gap-2">
-          {onRequestChat && (
-            <Button 
-              onClick={onRequestChat}
-              variant="secondary"
-              className="w-full transition-all duration-300"
-              size="sm"
-            >
-              <MessageSquare className="mr-2 h-4 w-4" />
-              Message
-            </Button>
+        {/* Contact */}
+        <div className="space-y-2">
+          {profile.email && (
+            <div className="flex items-center text-sm">
+              <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
+              <span className="text-muted-foreground">{profile.email}</span>
+            </div>
           )}
           
-          {onViewProfile && (
-            <Button
-              onClick={onViewProfile}
-              variant="outline"
-              className="w-full transition-all duration-300"
-              size="sm"
-            >
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Profil
-            </Button>
+          {profile.city && (
+            <div className="flex items-center text-sm">
+              <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+              <span className="text-muted-foreground">
+                {profile.city}
+                {profile.state && `, ${profile.state}`}
+                {profile.country && `, ${profile.country}`}
+              </span>
+            </div>
+          )}
+          
+          {joinDate && (
+            <div className="flex items-center text-sm">
+              <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+              <span className="text-muted-foreground">
+                Membre depuis {joinDate}
+              </span>
+            </div>
           )}
         </div>
+        
+        {/* Message button */}
+        {!isDialog && onRequestChat && (
+          <Button 
+            className="w-full"
+            onClick={onRequestChat}
+          >
+            <Mail className="h-4 w-4 mr-2" />
+            Envoyer un message
+          </Button>
+        )}
+
+        {/* View profile button */}
+        {!isDialog && onViewProfile && (
+          <Button
+            variant="outline"
+            className="w-full mt-2"
+            onClick={onViewProfile}
+          >
+            Voir le profil complet
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -30,12 +30,12 @@ export const adaptListingData = (data: any): MarketplaceListing => {
       avatar_url: data.seller.avatar_url || null,
       rating: data.seller.rating || 0
     } : undefined,
-    location: data.location || '',
-    category: data.category || '',
-    views_count: data.views_count || 0,
-    favorites_count: data.favorites_count || 0,
-    featured: Boolean(data.featured),
-    sale_type: data.sale_type || ''
+    location: data.location,
+    category: data.category,
+    views_count: data.views_count,
+    favorites_count: data.favorites_count,
+    featured: data.featured,
+    sale_type: data.sale_type
   };
 };
 
