@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/hooks/useAuth";
 import { ContentRouter } from "./content/ContentRouter";
 import { DashboardHome } from "./content/DashboardHome";
@@ -7,28 +6,26 @@ import { LoadingState } from "./content/LoadingState";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
-
 interface DashboardContentProps {
   currentPage?: number;
   isEditing?: boolean;
   onEditStateChange?: (state: boolean) => void;
   onRequestChat?: () => void;
 }
-
 export function DashboardContent({
   currentPage = 0,
   isEditing = false,
   onEditStateChange = () => {},
   onRequestChat = () => {}
 }: DashboardContentProps) {
-  const { isLoading, user } = useAuth();
-  
+  const {
+    isLoading,
+    user
+  } = useAuth();
   if (isLoading || !user) {
     return <LoadingState />;
   }
-  
   const renderDashboardHome = () => <DashboardHome onRequestChat={onRequestChat} />;
-  
   return <AnimatePresence mode="wait">
       <motion.div initial={{
       opacity: 0,
@@ -40,7 +37,7 @@ export function DashboardContent({
       opacity: 0,
       y: -20
     }} className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 min-h-screen bg-gradient-to-b from-[#1B2A4A]/80 via-[#1A1F2C] to-[#1B2A4A]/80">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="">
           {/* Section principale avec un fond amélioré */}
           <motion.div className="lg:col-span-12 space-y-6" initial={{
           opacity: 0,
@@ -51,15 +48,15 @@ export function DashboardContent({
         }} transition={{
           delay: 0.2
         }}>
-            <Card className="overflow-hidden bg-[#1E293B]/80 border-[#64B5D9]/20 backdrop-blur-sm hover:bg-[#1E293B]/90 transition-colors duration-300 shadow-lg">
+            <Card className="bg-transparent">
               <div className="relative">
                 {/* Effet de gradient amélioré sur le bord supérieur */}
-                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#64B5D9]/40 to-transparent" />
+                
                 
                 <ContentRouter currentPage={currentPage} onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} renderDashboardHome={renderDashboardHome} />
                 
                 {/* Effet de gradient amélioré sur le bord inférieur */}
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#64B5D9]/40 to-transparent" />
+                
               </div>
             </Card>
           </motion.div>

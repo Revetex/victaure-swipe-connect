@@ -12,7 +12,7 @@ export function GoogleSearch() {
     handleSearch,
     enhanceResults
   } = useGoogleSearch();
-  return <Card className="p-4 space-y-4 py-0 px-0">
+  return <Card className="bg-transparent px-[5px] py-[5px]">
       <SearchBar searchTerm={searchTerm} isSearching={isSearching} onSearchChange={setSearchTerm} onSearch={handleSearch} />
       
       <SearchResults isEnhancing={isEnhancing} onEnhance={enhanceResults} />
