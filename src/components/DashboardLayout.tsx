@@ -52,7 +52,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "ios-safe-area ios-momentum-scroll",
         "bg-gradient-to-br from-[#1A1F2C] via-[#1A1F2C]/95 to-[#1A1F2C]/90",
         "backdrop-blur-sm",
-        "border-l border-white/5",
+        "border-l border-[#9b87f5]/10",
         "shadow-[inset_0_-20px_60px_-20px_rgba(0,0,0,0.25)]",
         "transition-all duration-300"
       )}>
@@ -62,12 +62,12 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
           setShowMobileMenu={handleMobileMenuToggle}
         />
         
-        <div className="h-16" /> {/* Spacer pour le header */}
+        <div className="h-14" /> {/* Spacer pour le header */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="w-full pb-safe"
+          className="w-full pb-safe p-4 sm:p-6"
         >
           {children || (
             <DashboardContent

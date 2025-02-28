@@ -14,19 +14,19 @@
 
   /* Sections de contenu */
   .content-section {
-    @apply bg-white/5 dark:bg-white/5
+    @apply bg-[#9b87f5]/5 dark:bg-[#9b87f5]/5
            backdrop-blur-md
-           border border-white/10
+           border border-[#9b87f5]/10
            rounded-xl shadow-lg
            p-4 sm:p-6
            transition-all duration-300
-           hover:bg-white/10;
+           hover:bg-[#9b87f5]/10;
   }
 
   /* En-têtes de section */
   .section-header {
     @apply flex items-center justify-between
-           border-b border-white/10
+           border-b border-[#9b87f5]/10
            pb-4 mb-4;
   }
 
@@ -38,13 +38,13 @@
 
   /* Cartes */
   .glass-card {
-    @apply bg-white/5 dark:bg-white/5
+    @apply bg-[#9b87f5]/5 dark:bg-[#9b87f5]/5
            backdrop-blur-md
-           border border-white/10
+           border border-[#9b87f5]/10
            rounded-xl shadow-lg
            p-4
            transition-all duration-300
-           hover:bg-white/10
+           hover:bg-[#9b87f5]/10
            hover:shadow-xl;
   }
 
@@ -62,19 +62,19 @@
            rounded-lg 
            text-sm text-white/70
            transition-colors duration-200
-           hover:bg-white/10 hover:text-white;
+           hover:bg-[#9b87f5]/10 hover:text-white;
   }
 
   .nav-item-active {
-    @apply bg-white/20 
+    @apply bg-[#9b87f5]/20 
            text-white
-           border border-white/20;
+           border border-[#9b87f5]/20;
   }
 
   /* Scrollbars */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    scrollbar-color: rgba(155, 135, 245, 0.2) transparent;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -86,20 +86,20 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-white/10 hover:bg-white/20
+    @apply bg-[#9b87f5]/10 hover:bg-[#9b87f5]/20
            rounded-full
            transition-colors duration-200;
   }
 
   /* Cards spécifiques */
   .sticky-note {
-    @apply bg-white/5 dark:bg-white/5
+    @apply bg-[#9b87f5]/5 dark:bg-[#9b87f5]/5
            backdrop-blur-md
-           border border-white/10
+           border border-[#9b87f5]/10
            rounded-xl shadow-lg
            p-4 sm:p-6
            transition-all duration-300
-           hover:bg-white/10
+           hover:bg-[#9b87f5]/10
            hover:shadow-xl;
   }
 
@@ -114,7 +114,7 @@
   }
 
   .hover-glow:hover {
-    @apply shadow-[0_0_15px_rgba(100,181,217,0.3)];
+    @apply shadow-[0_0_15px_rgba(155,135,245,0.3)];
   }
 
   /* Bordures brillantes */
@@ -124,7 +124,7 @@
       content: '';
       @apply absolute inset-0 
              rounded-xl
-             bg-gradient-to-r from-transparent via-white/20 to-transparent
+             bg-gradient-to-r from-transparent via-[#9b87f5]/20 to-transparent
              opacity-0 transition-opacity duration-300;
     }
     &:hover::after {
@@ -134,27 +134,27 @@
 
   /* Effet de verre dépoli */
   .frosted-glass {
-    @apply backdrop-blur-md bg-white/5
-           border border-white/10
+    @apply backdrop-blur-md bg-[#9b87f5]/5
+           border border-[#9b87f5]/10
            shadow-lg;
   }
 
   /* Points de repère de grille */
   .grid-dots {
-    background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(155, 135, 245, 0.1) 1px, transparent 1px);
     background-size: 20px 20px;
   }
 }
 
 /* Thème global */
 :root {
-  --primary: #64B5D9;
-  --secondary: #1B2A4A;
+  --primary: #9b87f5;
+  --secondary: #7E69AB;
   --accent: #F2EBE4;
   --background: #1A1F2C;
   --text: #FFFFFF;
   --text-muted: rgba(255, 255, 255, 0.7);
-  --border: rgba(255, 255, 255, 0.1);
+  --border: rgba(155, 135, 245, 0.1);
 }
 
 /* Style global du corps */
@@ -169,8 +169,8 @@ button {
 
 /* Style des inputs */
 input, textarea, select {
-  @apply bg-white/5 
-         border border-white/10 
+  @apply bg-[#9b87f5]/5 
+         border border-[#9b87f5]/10 
          rounded-lg
          text-white
          placeholder:text-white/40;
@@ -178,6 +178,6 @@ input, textarea, select {
 
 /* Style des liens */
 a {
-  @apply text-[#64B5D9] hover:text-[#64B5D9]/80 
+  @apply text-[#9b87f5] hover:text-[#7E69AB] 
          transition-colors duration-200;
 }

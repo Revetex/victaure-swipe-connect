@@ -1,3 +1,4 @@
+
 import { ChangeEvent } from "react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
@@ -41,24 +42,42 @@ export function ChatInput({
       }
     }
   };
-  return <div className="p-4 border-t backdrop-blur-sm bg-transparent my-0 py-0 px-[8px]">
+  return <div className="p-3 border-t border-[#9b87f5]/10 backdrop-blur-sm bg-transparent">
       <div className="flex items-end gap-2">
-        <Textarea value={userInput} onChange={handleInputChange} onKeyDown={handleKeyPress} placeholder="Écrivez votre message..." className="min-h-[44px] max-h-[200px]" disabled={isDisabled || isLoading} />
+        <Textarea 
+          value={userInput} 
+          onChange={handleInputChange} 
+          onKeyDown={handleKeyPress} 
+          placeholder="Écrivez votre message..." 
+          className="min-h-[44px] max-h-[200px] bg-[#9b87f5]/5 border-[#9b87f5]/20 focus:border-[#9b87f5]/30 resize-none" 
+          disabled={isDisabled || isLoading} 
+        />
         
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button size="icon" variant="outline" className="shrink-0" onClick={isRecording ? onStopSpeaking : onStartRecording} disabled={isDisabled || isLoading}>
-                {isRecording ? <StopCircle className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              <Button 
+                size="icon" 
+                variant="outline" 
+                className="shrink-0 bg-[#9b87f5]/5 border-[#9b87f5]/20 hover:bg-[#9b87f5]/10 hover:border-[#9b87f5]/30"
+                onClick={isRecording ? onStopSpeaking : onStartRecording} 
+                disabled={isDisabled || isLoading}
+              >
+                {isRecording ? <StopCircle className="h-4 w-4 text-red-400" /> : <Mic className="h-4 w-4 text-[#9b87f5]" />}
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
+            <TooltipContent className="bg-[#1A1F2C] border border-[#9b87f5]/20">
               {isRecording ? "Arrêter l'enregistrement" : "Démarrer l'enregistrement"}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
 
-        <Button size="icon" className="shrink-0" onClick={() => !isDisabled && onSendMessage()} disabled={isDisabled || isLoading || !userInput.trim()}>
+        <Button 
+          size="icon" 
+          className="shrink-0 bg-[#9b87f5] hover:bg-[#7E69AB] text-white" 
+          onClick={() => !isDisabled && onSendMessage()} 
+          disabled={isDisabled || isLoading || !userInput.trim()}
+        >
           <Send className="h-4 w-4" />
         </Button>
       </div>
