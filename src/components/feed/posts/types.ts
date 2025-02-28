@@ -43,3 +43,42 @@ export interface PostFiltersProps {
   onSortOrderChange: (value: "asc" | "desc") => void;
   onCreatePost: () => void;
 }
+
+export interface PostAttachment {
+  id: string;
+  file: File;
+  previewUrl: string;
+  type: 'image' | 'document' | 'video';
+}
+
+export type PostPrivacyLevel = 'public' | 'connections' | 'private';
+
+export interface CreatePostProps {
+  newPost: string;
+  onPostChange: (value: string) => void;
+  privacy: PostPrivacyLevel;
+  onPrivacyChange: (value: PostPrivacyLevel) => void;
+  attachments: PostAttachment[];
+  isUploading: boolean;
+  onCreatePost: () => void;
+  onClose: () => void;
+  isExpanded: boolean;
+}
+
+export interface PostCommentsProps {
+  postId: string;
+  comments?: Comment[];
+  currentUserId: string;
+  onDeleteComment?: (commentId: string) => Promise<void>;
+}
+
+export interface PostCardProps {
+  post: Post;
+  currentUserId: string;
+  userEmail: string;
+  onDelete: () => void;
+  onHide: (postId: string) => void;
+  onUpdate: (postId: string, content: string) => void;
+  onReaction?: (postId: string, type: "like" | "dislike") => Promise<void>;
+  onCommentAdded?: () => Promise<void>;
+}

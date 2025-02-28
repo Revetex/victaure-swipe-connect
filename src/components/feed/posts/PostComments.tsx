@@ -1,103 +1,100 @@
 
 import { ReactNode, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Send } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { Comment } from "./types";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 
 export interface PostCommentsProps {
   postId: string;
+  comments?: Comment[];
+  currentUserId: string;
+  onDeleteComment?: (commentId: string) => Promise<void>;
 }
 
-export function PostComments({ postId }: PostCommentsProps): ReactNode {
-  const [comment, setComment] = useState("");
-  const { data: user } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const { data } = await supabase.auth.getUser();
-      return data.user;
-    }
-  });
+export function PostComments({
+  postId,
+  comments = [],
+  currentUserId,
+  onDeleteComment
+}: PostCommentsProps): ReactNode {
+  const [expandedComment, setExpandedComment] = useState<string | null>(null);
 
-  const { data: comments = [], refetch } = useQuery({
-    queryKey: ["post-comments", postId],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("post_comments")
-        .select(`
-          *,
-          author:profiles(id, full_name, avatar_url)
-        `)
-        .eq("post_id", postId)
-        .order("created_at", { ascending: true });
-      
-      return data || [];
-    }
-  });
-
-  const handleSubmitComment = async () => {
-    if (!comment.trim() || !user) return;
-
-    await supabase.from("post_comments").insert({
-      content: comment,
-      post_id: postId,
-      user_id: user.id
-    });
-
-    setComment("");
-    refetch();
+  const toggleComment = (commentId: string) => {
+    setExpandedComment(expandedComment === commentId ? null : commentId);
   };
 
-  return (
-    <div className="space-y-4">
-      <div className="space-y-3">
-        {comments.length === 0 ? (
-          <div className="text-center py-3 text-muted-foreground">
-            Aucun commentaire pour le moment
-          </div>
-        ) : (
-          comments.map((comment) => (
-            <div key={comment.id} className="flex gap-3">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={comment.author?.avatar_url || ''} />
-                <AvatarFallback>{comment.author?.full_name?.charAt(0) || 'U'}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 space-y-1">
-                <div className="bg-muted/20 rounded-lg p-3">
-                  <div className="font-medium text-sm">{comment.author?.full_name || 'Utilisateur inconnu'}</div>
-                  <div className="text-sm">{comment.content}</div>
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true, locale: fr })}
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+  const handleDeleteComment = async (commentId: string) => {
+    if (onDeleteComment) {
+      await onDeleteComment(commentId);
+    }
+  };
 
-      <div className="flex gap-2">
-        <Avatar className="h-8 w-8">
-          <AvatarImage src={user?.user_metadata?.avatar_url || ''} />
-          <AvatarFallback>{user?.email?.charAt(0)?.toUpperCase() || 'U'}</AvatarFallback>
-        </Avatar>
-        <div className="flex-1 flex gap-2">
-          <Input
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Ajouter un commentaire..."
-            className="bg-muted/20"
-            onKeyDown={(e) => e.key === 'Enter' && handleSubmitComment()}
-          />
-          <Button size="icon" onClick={handleSubmitComment} disabled={!comment.trim()}>
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
+  if (comments.length === 0) {
+    return (
+      <div className="text-sm text-muted-foreground p-4 text-center">
+        Aucun commentaire pour l'instant
       </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4 p-4">
+      {comments.map((comment) => (
+        <div key={comment.id} className="flex space-x-3">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={comment.author?.avatar_url} />
+            <AvatarFallback>
+              {comment.author?.full_name?.[0] || "U"}
+            </AvatarFallback>
+          </Avatar>
+          
+          <div className="flex-1 space-y-1">
+            <div className="bg-muted p-3 rounded-md">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-medium">
+                  {comment.author?.full_name || "Utilisateur"}
+                </h4>
+                
+                {comment.user_id === currentUserId && onDeleteComment && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 text-muted-foreground"
+                    onClick={() => handleDeleteComment(comment.id)}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+              
+              <p className={`text-sm ${expandedComment === comment.id ? "" : "line-clamp-3"}`}>
+                {comment.content}
+              </p>
+              
+              {comment.content.length > 150 && (
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="h-auto p-0 text-xs"
+                  onClick={() => toggleComment(comment.id)}
+                >
+                  {expandedComment === comment.id ? "Voir moins" : "Voir plus"}
+                </Button>
+              )}
+            </div>
+            
+            <div className="text-xs text-muted-foreground">
+              {formatDistanceToNow(new Date(comment.created_at), {
+                addSuffix: true,
+                locale: fr
+              })}
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
