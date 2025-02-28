@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dial
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ProfilePreviewDialog } from "./profile/preview/ProfilePreviewDialog";
 import { useState, memo } from "react";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import { useAuth } from "@/hooks/useAuth";
 import { ProfilePreviewModal } from "./profile/preview/ProfilePreviewModal";
 import { ProfilePreviewButtons } from "./profile/preview/ProfilePreviewButtons";
@@ -26,11 +25,18 @@ export function ProfilePreview({
   onRequestChat,
 }: ProfilePreviewProps) {
   const navigate = useNavigate();
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const { user } = useAuth();
+  const [showFullscreenImage, setShowFullscreenImage] = useState(false);
   const isOwnProfile = user?.id === profile.id;
   const canViewFullProfile = isOwnProfile || !profile.privacy_enabled;
-  const [showFullscreenImage, setShowFullscreenImage] = useState(false);
+
+  // Utiliser une fonction utilitaire pour détecter les appareils mobiles
+  const detectMobileDevice = () => {
+    return window.innerWidth < 768 || 
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  };
+  
+  const isMobile = detectMobileDevice();
 
   const handleImageClick = () => {
     if (profile.avatar_url) {
