@@ -102,7 +102,7 @@ export function MrVictaureWelcome({
                 <TabsTrigger value="demo">Démonstration</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="welcome" className="mt-6">
+              <TabsContent value="welcome" className="mt-6 px-[20px]">
                 <div className="flex items-center gap-4 mb-6">
                   <motion.div className="p-3 rounded-full bg-[#64B5D9]/10" animate={{
                 scale: [1, 1.1, 1]
