@@ -1,63 +1,64 @@
 
 /**
- * Système de cache simple pour éviter de refaire les mêmes requêtes à la base de données
- * Ce cache est utilisé en mémoire temporairement
+ * Utilitaire simple de cache pour les requêtes de base de données
  */
-
-type CacheEntry<T> = {
-  data: T;
+interface CacheEntry {
+  data: any;
   timestamp: number;
-};
+  expiry: number;
+}
 
 class DatabaseCache {
-  private cache: Record<string, CacheEntry<any>> = {};
+  private cache: Map<string, CacheEntry> = new Map();
 
   /**
-   * Récupérer une valeur du cache ou l'ajouter si elle n'existe pas
-   * @param key Clé de cache unique
-   * @param fetcher Fonction qui récupère les données si elles ne sont pas dans le cache
-   * @param ttl Durée de vie du cache en millisecondes
+   * Obtient une valeur du cache ou l'ajoute si elle n'existe pas
    */
   async get<T>(key: string, fetcher: () => Promise<T>, ttl: number = 60000): Promise<T> {
-    // Vérifier si la donnée est dans le cache et n'est pas expirée
-    const entry = this.cache[key];
     const now = Date.now();
+    const cached = this.cache.get(key);
 
-    if (entry && now - entry.timestamp < ttl) {
-      return entry.data;
+    // Si la valeur est en cache et n'a pas expiré, la retourner
+    if (cached && now < cached.timestamp + cached.expiry) {
+      return cached.data as T;
     }
 
-    // Si pas dans le cache ou expirée, on exécute le fetcher
+    // Sinon, exécuter le fetcher et mettre en cache le résultat
     const data = await fetcher();
-    
-    // On met à jour le cache
-    this.cache[key] = {
+    this.cache.set(key, {
       data,
-      timestamp: now
-    };
+      timestamp: now,
+      expiry: ttl
+    });
 
     return data;
   }
 
   /**
-   * Invalider toutes les entrées de cache qui correspondent à un pattern
-   * @param pattern Pattern à rechercher dans les clés
+   * Invalide une entrée spécifique du cache
+   */
+  invalidate(key: string): void {
+    this.cache.delete(key);
+  }
+
+  /**
+   * Invalide toutes les entrées du cache dont la clé correspond au motif
    */
   invalidatePattern(pattern: string): void {
-    for (const key in this.cache) {
-      if (key.includes(pattern)) {
-        delete this.cache[key];
+    const regex = new RegExp(pattern.replace('*', '.*'));
+    for (const key of this.cache.keys()) {
+      if (regex.test(key)) {
+        this.cache.delete(key);
       }
     }
   }
 
   /**
-   * Vider complètement le cache
+   * Vide complètement le cache
    */
   clear(): void {
-    this.cache = {};
+    this.cache.clear();
   }
 }
 
-// Exporter une instance unique
 export const dbCache = new DatabaseCache();
