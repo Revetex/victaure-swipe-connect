@@ -1,8 +1,12 @@
 
 import { UserProfile } from "@/types/profile";
+import { Mail, Phone, Globe, MapPin, Building, Calendar, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { ProfilePreviewButtons } from "./ProfilePreviewButtons";
 
 export interface ProfilePreviewBackProps {
   profile: UserProfile;
@@ -11,17 +15,21 @@ export interface ProfilePreviewBackProps {
 }
 
 export function ProfilePreviewBack({ profile, onFlip, canViewFullProfile }: ProfilePreviewBackProps) {
+  // Formater la date de création
+  const formattedDate = profile.created_at
+    ? format(new Date(profile.created_at), 'MMMM yyyy', { locale: fr })
+    : '';
+
   return (
-    <div 
-      className={cn(
-        "absolute inset-0 backface-hidden flex flex-col p-6",
-        "bg-gradient-to-br from-card/90 to-card",
-        "overflow-auto"
-      )}
-      style={{ transform: "rotateY(180deg)" }}
-    >
-      <div className="flex justify-between items-start mb-4">
-        <h2 className="text-xl font-bold">Détails du profil</h2>
+    <div className={cn(
+      "absolute inset-0 backface-hidden",
+      "flex flex-col p-6 gap-4",
+      "bg-gradient-to-br from-card/90 via-card/95 to-card",
+      "rounded-lg overflow-hidden",
+      "transform rotate-y-180"
+    )} style={{ transform: "rotateY(180deg)" }}>
+      <div className="flex justify-between items-start mb-2">
+        <h3 className="text-lg font-semibold text-foreground/90">Informations</h3>
         <Button 
           size="icon" 
           variant="ghost" 
@@ -33,59 +41,120 @@ export function ProfilePreviewBack({ profile, onFlip, canViewFullProfile }: Prof
         </Button>
       </div>
 
-      <div className="space-y-4 flex-1">
-        {/* Informations supplémentaires */}
-        {profile.bio && (
-          <div>
-            <h3 className="text-sm font-medium mb-1">À propos</h3>
-            <p className="text-sm text-muted-foreground">{profile.bio}</p>
-          </div>
-        )}
-
-        {/* Compétences */}
-        {profile.skills && profile.skills.length > 0 && (
-          <div>
-            <h3 className="text-sm font-medium mb-1">Compétences</h3>
-            <div className="flex flex-wrap gap-1">
-              {profile.skills.map((skill, index) => (
-                <span 
-                  key={index}
-                  className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full"
+      <div className="flex-1 overflow-y-auto space-y-5 pr-1 custom-scrollbar">
+        {/* Contacts */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="space-y-3"
+        >
+          {canViewFullProfile && profile.email && (
+            <div className="flex items-center gap-3 group">
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <Mail className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground/80">Email</p>
+                <a 
+                  href={`mailto:${profile.email}`}
+                  className="text-sm text-foreground hover:text-primary transition-colors"
                 >
-                  {skill}
-                </span>
-              ))}
+                  {profile.email}
+                </a>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Coordonnées */}
-        <div>
-          <h3 className="text-sm font-medium mb-1">Coordonnées</h3>
-          <div className="space-y-1 text-sm">
-            {profile.email && (
-              <p className="text-muted-foreground">{profile.email}</p>
-            )}
-            {profile.phone && (
-              <p className="text-muted-foreground">{profile.phone}</p>
-            )}
-            {profile.city && (
-              <p className="text-muted-foreground">
-                {profile.city}
-                {profile.state && `, ${profile.state}`}
-                {profile.country && `, ${profile.country}`}
-              </p>
-            )}
-          </div>
-        </div>
+          {canViewFullProfile && profile.phone && (
+            <div className="flex items-center gap-3 group">
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <Phone className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground/80">Téléphone</p>
+                <a 
+                  href={`tel:${profile.phone}`}
+                  className="text-sm text-foreground hover:text-primary transition-colors"
+                >
+                  {profile.phone}
+                </a>
+              </div>
+            </div>
+          )}
 
-        {/* Message si profil privé */}
-        {!canViewFullProfile && (
-          <div className="bg-muted p-3 rounded-md text-sm text-muted-foreground mt-2">
-            Ce profil est privé. Certaines informations ne sont pas visibles.
-          </div>
-        )}
+          {profile.website && (
+            <div className="flex items-center gap-3 group">
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <Globe className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground/80">Site web</p>
+                <a 
+                  href={profile.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-foreground hover:text-primary transition-colors truncate block"
+                >
+                  {profile.website.replace(/(^\w+:|^)\/\//, '')}
+                </a>
+              </div>
+            </div>
+          )}
+
+          {profile.city && (
+            <div className="flex items-center gap-3 group">
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <MapPin className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground/80">Localisation</p>
+                <p className="text-sm text-foreground">
+                  {[profile.city, profile.state, profile.country].filter(Boolean).join(", ")}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {profile.company_name && (
+            <div className="flex items-center gap-3 group">
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <Building className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground/80">Entreprise</p>
+                <p className="text-sm text-foreground">{profile.company_name}</p>
+              </div>
+            </div>
+          )}
+
+          {formattedDate && (
+            <div className="flex items-center gap-3 group">
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <Calendar className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground/80">Membre depuis</p>
+                <p className="text-sm text-foreground">{formattedDate}</p>
+              </div>
+            </div>
+          )}
+        </motion.div>
       </div>
+
+      {/* Actions en bas */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="mt-2 pt-3 border-t border-border/30"
+      >
+        <ProfilePreviewButtons
+          profileId={profile.id}
+          onMessage={() => {}}
+          showMessageButton={false}
+        />
+      </motion.div>
     </div>
   );
 }

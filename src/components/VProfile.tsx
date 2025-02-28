@@ -38,68 +38,87 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`${isMobile ? 'max-w-[95vw] h-[95vh] p-0' : 'max-w-4xl p-0'} overflow-hidden bg-background/95 backdrop-blur-sm`}>
+      <DialogContent className={`${isMobile ? 'max-w-[95vw] h-[90vh] p-0' : 'max-w-4xl p-0'} overflow-hidden bg-background/95 backdrop-blur-sm shadow-xl rounded-xl border border-border/30`}>
         <ProfileHeader 
           profile={profile}
           onClose={onClose}
           canViewFullProfile={canViewFullProfile}
         />
 
-        <ScrollArea className={`h-[calc(100vh-${isMobile ? '14rem' : '10rem'})] px-4 sm:px-6 py-4 custom-scrollbar`}>
-          <Tabs 
-            defaultValue="overview" 
-            value={activeTab}
-            onValueChange={handleTabChange} 
-            className="w-full"
-          >
-            <TabsList className={`w-full justify-start mb-6 ${isMobile ? 'overflow-x-auto flex' : ''}`}>
-              <TabsTrigger value="overview" onClick={() => handleTabChange("overview")}>
-                Vue d'ensemble
-              </TabsTrigger>
-              <TabsTrigger value="experience" onClick={() => handleTabChange("experience")}>
-                Expérience
-              </TabsTrigger>
-              <TabsTrigger value="education" onClick={() => handleTabChange("education")}>
-                Formation
-              </TabsTrigger>
-              <TabsTrigger value="certifications" onClick={() => handleTabChange("certifications")}>
-                Certifications
-              </TabsTrigger>
-            </TabsList>
+        <ScrollArea className={`h-[calc(100vh-${isMobile ? '14rem' : '10rem'})] custom-scrollbar`}>
+          <div className="px-4 sm:px-6 py-4">
+            <Tabs 
+              defaultValue="overview" 
+              value={activeTab}
+              onValueChange={handleTabChange} 
+              className="w-full"
+            >
+              <TabsList className={`w-full sm:w-auto mx-auto flex justify-center mb-6 p-1 bg-background/50 border border-border/20 rounded-xl`}>
+                <TabsTrigger 
+                  value="overview" 
+                  onClick={() => handleTabChange("overview")}
+                  className="rounded-lg data-[state=active]:bg-primary/20 data-[state=active]:text-primary"
+                >
+                  Vue d'ensemble
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="experience" 
+                  onClick={() => handleTabChange("experience")}
+                  className="rounded-lg data-[state=active]:bg-primary/20 data-[state=active]:text-primary"
+                >
+                  Expérience
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="education" 
+                  onClick={() => handleTabChange("education")}
+                  className="rounded-lg data-[state=active]:bg-primary/20 data-[state=active]:text-primary"
+                >
+                  Formation
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="certifications" 
+                  onClick={() => handleTabChange("certifications")}
+                  className="rounded-lg data-[state=active]:bg-primary/20 data-[state=active]:text-primary"
+                >
+                  Certifications
+                </TabsTrigger>
+              </TabsList>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-              >
-                <TabsContent value="overview" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
-                  <ProfileOverview
-                    profile={profile}
-                    canViewFullProfile={canViewFullProfile}
-                    showFullBio={showFullBio}
-                    setShowFullBio={setShowFullBio}
-                    truncatedBio={truncatedBio}
-                    hasBioOverflow={hasBioOverflow}
-                  />
-                </TabsContent>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="py-2"
+                >
+                  <TabsContent value="overview" className="space-y-6 focus-visible:outline-none focus-visible:ring-0 mt-0">
+                    <ProfileOverview
+                      profile={profile}
+                      canViewFullProfile={canViewFullProfile}
+                      showFullBio={showFullBio}
+                      setShowFullBio={setShowFullBio}
+                      truncatedBio={truncatedBio}
+                      hasBioOverflow={hasBioOverflow}
+                    />
+                  </TabsContent>
 
-                <TabsContent value="experience" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
-                  <ProfileExperience experiences={profile.experiences} />
-                </TabsContent>
+                  <TabsContent value="experience" className="space-y-6 focus-visible:outline-none focus-visible:ring-0 mt-0">
+                    <ProfileExperience experiences={profile.experiences} />
+                  </TabsContent>
 
-                <TabsContent value="education" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
-                  <ProfileEducation education={profile.education} />
-                </TabsContent>
+                  <TabsContent value="education" className="space-y-6 focus-visible:outline-none focus-visible:ring-0 mt-0">
+                    <ProfileEducation education={profile.education} />
+                  </TabsContent>
 
-                <TabsContent value="certifications" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
-                  <ProfileCertifications profile={profile} />
-                </TabsContent>
-              </motion.div>
-            </AnimatePresence>
-          </Tabs>
+                  <TabsContent value="certifications" className="space-y-6 focus-visible:outline-none focus-visible:ring-0 mt-0">
+                    <ProfileCertifications profile={profile} />
+                  </TabsContent>
+                </motion.div>
+              </AnimatePresence>
+            </Tabs>
+          </div>
         </ScrollArea>
       </DialogContent>
     </Dialog>
