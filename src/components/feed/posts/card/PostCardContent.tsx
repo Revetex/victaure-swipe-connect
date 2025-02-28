@@ -14,8 +14,8 @@ export function PostCardContent({
   editContent,
   onEditContentChange
 }: PostCardContentProps) {
-  return <div className="space-y-3 mt-3 bg-gray-900">
-      {isEditing ? <Textarea value={editContent} onChange={e => onEditContentChange(e.target.value)} placeholder="Que voulez-vous partager ?" className="min-h-[80px] resize-none mobile-friendly-input text-[#F2EBE4] bg-transparent my-0 px-[25px]" /> : content && <div className="text-sm text-[#F2EBE4] whitespace-pre-wrap bg-gray-900">
+  return <div className="space-y-3 mt-3 bg-transparent">
+      {isEditing ? <Textarea value={editContent} onChange={e => onEditContentChange(e.target.value)} placeholder="Que voulez-vous partager ?" className="min-h-[80px] resize-none mobile-friendly-input text-[#F2EBE4] my-0 px-[25px] bg-transparent" /> : content && <div className="text-sm text-[#F2EBE4] whitespace-pre-wrap bg-gray-900">
             {content}
           </div>}
       

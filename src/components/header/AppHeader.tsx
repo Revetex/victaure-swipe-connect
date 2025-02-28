@@ -1,4 +1,3 @@
-
 import { Star, Menu, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -49,18 +48,18 @@ export function AppHeader({
     paddingTop: 'env(safe-area-inset-top)'
   }}>
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={handleMenuClick} className="text-white hover:bg-[#9b87f5]/10 border border-[#9b87f5]/10 active:scale-95 transition-transform">
+        <Button variant="ghost" size="sm" onClick={handleMenuClick} className="text-white border border-[#9b87f5]/10 active:scale-95 transition-transform bg-black">
           <Menu className="h-4 w-4" />
         </Button>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 bg-transparent">
           <div className="relative">
             <img src="/lovable-uploads/color-logo.png" alt="Victaure Logo" className="h-8 w-8 object-contain" />
             <Badge variant="secondary" className="absolute -top-2 -right-2 bg-[#9b87f5] text-white text-[10px] px-1.5 py-0.5 rounded-full border border-white/20">
               BETA
             </Badge>
           </div>
-          <span className="font-medium tracking-wider text-[#F1F0FB] text-xl">
+          <span className="font-medium tracking-wider text-[#F1F0FB] text-2xl">
             VICTAURE
           </span>
         </div>

@@ -55,7 +55,7 @@ export function PostCard({
   }} transition={{
     duration: 0.3
   }} className="overflow-hidden rounded-lg bg-[#1A1F2C] border border-[#9b87f5]/10 shadow-sm mb-4 hover:shadow-md transition-shadow">
-      <div className="space-y-4">
+      <div className="space-y-4 bg-black">
         <PostCardHeader profile={post.profiles} created_at={post.created_at} privacy_level={post.privacy_level} isOwnPost={isOwnPost} isEditing={isEditing} onEdit={() => setIsEditing(true)} onSave={handleSaveEdit} onCancel={handleCancelEdit} onDelete={onDelete} />
 
         <PostCardContent content={post.content} images={post.images} isEditing={isEditing} editContent={editContent} onEditContentChange={setEditContent} />

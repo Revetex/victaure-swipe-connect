@@ -17,7 +17,7 @@ export function PostGrid({
   onHide,
   onUpdate
 }: PostGridProps) {
-  return <div className="grid gap-6 bg-black">
+  return <div className="grid gap-6 rounded-none bg-transparent">
       <AnimatePresence mode="popLayout">
         {posts.map(post => <motion.article key={post.id} initial={{
         opacity: 0,

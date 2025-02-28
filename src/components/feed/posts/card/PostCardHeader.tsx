@@ -28,7 +28,7 @@ export function PostCardHeader({
   onCancel,
   onDelete
 }: PostCardHeaderProps) {
-  return <div className="flex justify-between items-start gap-3 bg-gray-900">
+  return <div className="flex justify-between items-start gap-3 bg-transparent">
       <PostHeader profile={profile} created_at={created_at} privacy_level={privacy_level} />
       
       {isOwnPost && <div className="flex gap-1 mx-[16px] my-[16px]">

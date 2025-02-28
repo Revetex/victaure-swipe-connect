@@ -58,7 +58,7 @@ export function Feed() {
   };
   return <motion.div variants={containerVariants} initial="hidden" animate="visible" className="container mx-auto px-4 py-8 space-y-6">
       <motion.div variants={itemVariants}>
-        {!isExpanded ? <Button onClick={() => setIsExpanded(true)} variant="ghost" className="w-full justify-start border border-white/10 py-0 rounded-sm px-[8px] text-sm text-gray-50 font-extralight bg-gray-900 hover:bg-gray-800">
+        {!isExpanded ? <Button onClick={() => setIsExpanded(true)} variant="ghost" className="w-full justify-start border border-white/10 py-0 rounded-sm px-[8px] text-sm text-gray-50 font-extralight bg-black">
             <PenLine className="h-5 w-5 mr-2" />
             Partagez quelque chose...
           </Button> : <CreatePostForm newPost={newPost} onPostChange={handlePostChange} privacy={privacy} onPrivacyChange={handlePrivacyChange} attachments={attachments} isUploading={isUploading} onCreatePost={handleCreatePost} onClose={() => setIsExpanded(false)} isExpanded={isExpanded} />}
