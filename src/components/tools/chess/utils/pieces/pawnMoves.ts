@@ -1,45 +1,44 @@
 
 import { ChessPiece } from "@/types/chess";
-import { canMoveToPosition } from "../moveValidation";
+import { isValidPosition, canMoveToPosition } from "../moveValidation";
 
 export function calculatePawnMoves(
   row: number,
   col: number,
   piece: ChessPiece,
   board: (ChessPiece | null)[][]
-): { row: number; col: number; }[] {
-  const moves: { row: number; col: number; }[] = [];
-  const direction = piece.isWhite ? -1 : 1;
-  const startRow = piece.isWhite ? 6 : 1;
+): { row: number; col: number }[] {
+  const moves: { row: number; col: number }[] = [];
+  const direction = piece.isWhite ? -1 : 1; // Les pions blancs se déplacent vers le haut (diminution de row), les noirs vers le bas
+  const startingRow = piece.isWhite ? 6 : 1; // Ligne de départ des pions
 
-  // Mouvement vers l'avant d'une case
-  const oneForward = row + direction;
-  if (isValidPosition(oneForward, col) && !board[oneForward][col]) {
-    moves.push({ row: oneForward, col });
+  // Déplacement d'une case vers l'avant
+  const newRow = row + direction;
+  if (isValidPosition(newRow, col) && board[newRow][col] === null) {
+    moves.push({ row: newRow, col });
 
-    // Mouvement initial de deux cases
-    if (row === startRow) {
-      const twoForward = row + (2 * direction);
-      if (!board[twoForward][col]) {
-        moves.push({ row: twoForward, col });
+    // Déplacement de deux cases depuis la position de départ
+    if (row === startingRow) {
+      const twoAhead = row + 2 * direction;
+      if (isValidPosition(twoAhead, col) && board[twoAhead][col] === null) {
+        moves.push({ row: twoAhead, col });
       }
     }
   }
 
   // Captures en diagonale
-  const captureCols = [col - 1, col + 1];
-  for (const captureCol of captureCols) {
-    if (isValidPosition(oneForward, captureCol)) {
-      const targetPiece = board[oneForward][captureCol];
+  const captureDirections = [{ row: direction, col: -1 }, { row: direction, col: 1 }];
+  captureDirections.forEach(dir => {
+    const captureRow = row + dir.row;
+    const captureCol = col + dir.col;
+    
+    if (isValidPosition(captureRow, captureCol)) {
+      const targetPiece = board[captureRow][captureCol];
       if (targetPiece && targetPiece.isWhite !== piece.isWhite) {
-        moves.push({ row: oneForward, col: captureCol });
+        moves.push({ row: captureRow, col: captureCol });
       }
     }
-  }
+  });
 
   return moves;
-}
-
-function isValidPosition(row: number, col: number): boolean {
-  return row >= 0 && row < 8 && col >= 0 && col < 8;
 }

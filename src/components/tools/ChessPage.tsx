@@ -40,7 +40,7 @@ export function ChessPage() {
               <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-yellow-200 to-yellow-500 bg-clip-text text-transparent">
                 Imperium Chess
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-white/70">
                 Affrontez l'IA et devenez un maître
               </p>
             </div>

@@ -1,7 +1,7 @@
 
+import { motion } from "framer-motion";
 import { ChessPiece } from "@/types/chess";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 interface ChessBoardProps {
   board: (ChessPiece | null)[][];
@@ -19,72 +19,109 @@ export function ChessBoard({
   possibleMoves,
   isThinking,
   gameOver,
-  onSquareClick,
+  isWhiteTurn,
+  onSquareClick
 }: ChessBoardProps) {
-  const pieceToSymbol = (piece: ChessPiece | null) => {
-    if (!piece) return "";
-    const symbols: Record<string, string> = {
-      king: piece.isWhite ? "♔" : "♚",
-      queen: piece.isWhite ? "♕" : "♛",
-      rook: piece.isWhite ? "♖" : "♜",
-      bishop: piece.isWhite ? "♗" : "♝",
-      knight: piece.isWhite ? "♘" : "♞",
-      pawn: piece.isWhite ? "♙" : "♟"
-    };
-    return symbols[piece.type];
+  const pieceIcons: Record<ChessPiece["type"], { white: string; black: string }> = {
+    pawn: {
+      white: "♙",
+      black: "♟"
+    },
+    rook: {
+      white: "♖",
+      black: "♜"
+    },
+    knight: {
+      white: "♘",
+      black: "♞"
+    },
+    bishop: {
+      white: "♗",
+      black: "♝"
+    },
+    queen: {
+      white: "♕",
+      black: "♛"
+    },
+    king: {
+      white: "♔",
+      black: "♚"
+    }
   };
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto">
-      <div className="aspect-square w-full">
-        <div className="grid grid-cols-8 h-full w-full rounded-lg overflow-hidden border shadow-xl bg-neutral-100 dark:bg-neutral-900">
-          {board.map((row, rowIndex) =>
-            row.map((piece, colIndex) => {
-              const isSelected = selectedPiece?.row === rowIndex && selectedPiece?.col === colIndex;
-              const isPossibleMove = possibleMoves.some(
-                move => move.row === rowIndex && move.col === colIndex
-              );
-              const isLight = (rowIndex + colIndex) % 2 === 0;
-
-              return (
-                <div
-                  key={`${rowIndex}-${colIndex}`}
-                  className={cn(
-                    "relative w-full aspect-square",
-                    "flex items-center justify-center",
-                    isLight 
-                      ? "bg-white dark:bg-neutral-800" 
-                      : "bg-neutral-300 dark:bg-neutral-700",
-                    isSelected && "ring-2 ring-yellow-400 ring-inset z-10",
-                    !gameOver && !isThinking && "cursor-pointer hover:brightness-90 active:brightness-95",
-                    gameOver && "cursor-not-allowed opacity-50"
-                  )}
-                  onClick={() => !gameOver && !isThinking && onSquareClick(rowIndex, colIndex)}
-                >
-                  {isPossibleMove && (
-                    <motion.div
-                      className="absolute inset-2 rounded-full bg-yellow-400/20 border-2 border-yellow-400"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                    />
-                  )}
-                  
-                  {piece && (
-                    <span
-                      className={cn(
-                        "text-2xl sm:text-3xl md:text-4xl lg:text-5xl select-none",
-                        piece.isWhite ? "text-black dark:text-white" : "text-neutral-800 dark:text-neutral-300"
-                      )}
-                    >
-                      {pieceToSymbol(piece)}
-                    </span>
-                  )}
-                </div>
-              );
-            })
-          )}
+    <div className="aspect-square w-full max-w-xl mx-auto relative rounded-lg overflow-hidden shadow-lg">
+      {isThinking && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-10">
+          <div className="flex flex-col items-center">
+            <div className="animate-bounce mb-2">
+              <div className="w-12 h-12 rounded-full border-4 border-violet-400 border-t-transparent animate-spin" />
+            </div>
+            <p className="text-violet-300 text-lg font-medium">IA réfléchit...</p>
+          </div>
         </div>
+      )}
+
+      <div className="grid grid-cols-8 grid-rows-8 h-full w-full select-none">
+        {board.map((row, rowIndex) =>
+          row.map((piece, colIndex) => {
+            const isSelected = selectedPiece?.row === rowIndex && selectedPiece?.col === colIndex;
+            const isPossibleMove = possibleMoves.some(
+              move => move.row === rowIndex && move.col === colIndex
+            );
+            const isWhiteSquare = (rowIndex + colIndex) % 2 === 0;
+
+            return (
+              <motion.div
+                key={`${rowIndex}-${colIndex}`}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className={cn(
+                  "aspect-square flex items-center justify-center relative",
+                  "text-3xl md:text-4xl cursor-pointer transition-colors",
+                  isWhiteSquare ? "bg-amber-100/90" : "bg-amber-800/90",
+                  isSelected && "ring-4 ring-yellow-400 z-10",
+                  gameOver && "cursor-not-allowed"
+                )}
+                onClick={() => !gameOver && onSquareClick(rowIndex, colIndex)}
+              >
+                {isPossibleMove && (
+                  <div className={cn(
+                    "absolute inset-2 rounded-full opacity-50",
+                    piece ? "bg-red-500/60" : "bg-green-500/60"
+                  )} />
+                )}
+
+                {piece && (
+                  <motion.span
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className={cn(
+                      "select-none pointer-events-none",
+                      "transition-transform",
+                      piece.isWhite ? "text-white" : "text-black",
+                      isSelected && "scale-110"
+                    )}
+                  >
+                    {piece.isWhite ? pieceIcons[piece.type].white : pieceIcons[piece.type].black}
+                  </motion.span>
+                )}
+
+                {/* Square coordinate indicators */}
+                {rowIndex === 7 && (
+                  <div className="absolute bottom-0.5 right-1 text-[8px] md:text-xs font-mono opacity-60">
+                    {String.fromCharCode(97 + colIndex)}
+                  </div>
+                )}
+                {colIndex === 0 && (
+                  <div className="absolute top-0.5 left-1 text-[8px] md:text-xs font-mono opacity-60">
+                    {8 - rowIndex}
+                  </div>
+                )}
+              </motion.div>
+            );
+          })
+        )}
       </div>
     </div>
   );
