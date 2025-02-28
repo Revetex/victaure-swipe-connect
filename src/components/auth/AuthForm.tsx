@@ -40,7 +40,7 @@ export function AuthForm({
       <div className="flex flex-col gap-6">
         <div className="p-6 bg-[#1A1F2C]/90 backdrop-blur-sm border border-[#64B5D9]/10 rounded-xl shadow-lg relative">
           <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-[#1B2A4A]/20 mb-6">
+            <TabsList className="grid w-full grid-cols-3 bg-[#1B2A4A]/20 mb-6 py-0 my-[8px]">
               <TabsTrigger value="login" className={`text-[#F2EBE4]/80 transition-all py-3 ${activeTab === 'login' ? 'bg-[#64B5D9]/20 text-[#64B5D9]' : ''}`}>
                 Connexion
               </TabsTrigger>
