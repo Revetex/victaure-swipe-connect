@@ -11,7 +11,8 @@ interface JobsResultsProps {
 
 export function JobsResults({
   jobs,
-  onJobSelect
+  onJobSelect,
+  onResetFilters
 }: JobsResultsProps) {
   if (jobs.length === 0) {
     return (
@@ -28,12 +29,14 @@ export function JobsResults({
         </div>
         <h3 className="text-xl font-semibold mb-2 text-white">Aucun résultat</h3>
         <p className="text-white/70 mb-4">Aucun emploi ne correspond à vos critères de recherche.</p>
-        <button 
-          onClick={onResetFilters}
-          className="py-2 px-4 bg-[#64B5D9]/20 hover:bg-[#64B5D9]/30 rounded-md transition-colors text-[#64B5D9] text-sm"
-        >
-          Réinitialiser les filtres
-        </button>
+        {onResetFilters && (
+          <button 
+            onClick={onResetFilters}
+            className="py-2 px-4 bg-[#64B5D9]/20 hover:bg-[#64B5D9]/30 rounded-md transition-colors text-[#64B5D9] text-sm"
+          >
+            Réinitialiser les filtres
+          </button>
+        )}
       </motion.div>
     );
   }
