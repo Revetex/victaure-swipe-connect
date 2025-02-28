@@ -6,11 +6,7 @@ import { QuickActions } from "../QuickActions";
 import { RecentActivity } from "../RecentActivity";
 import { DashboardChart } from "../DashboardChart";
 
-interface DashboardHomeProps {
-  onRequestChat: () => void;
-}
-
-export function DashboardHome({ onRequestChat }: DashboardHomeProps) {
+export function DashboardHome() {
   return (
     <div className="space-y-6 relative">
       <motion.div
@@ -18,7 +14,7 @@ export function DashboardHome({ onRequestChat }: DashboardHomeProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <MrVictaureWelcome onRequestChat={onRequestChat} />
+        <MrVictaureWelcome />
       </motion.div>
 
       <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">

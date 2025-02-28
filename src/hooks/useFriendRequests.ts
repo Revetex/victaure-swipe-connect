@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PendingRequest } from "@/types/profile";
+import { friendRequestsAdapter } from "@/utils/connectionAdapters";
 
 export const useFriendRequests = () => {
   const { data: pendingRequests = [], refetch: refetchPendingRequests } = useQuery({
@@ -11,109 +12,87 @@ export const useFriendRequests = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: incomingRequests } = await supabase
-        .from("friend_requests")
-        .select(`
-          id,
-          sender_id,
-          receiver_id,
-          status,
-          created_at,
-          sender:profiles!friend_requests_sender_id_fkey(
-            id,
-            full_name,
-            avatar_url
-          ),
-          receiver:profiles!friend_requests_receiver_id_fkey(
-            id,
-            full_name,
-            avatar_url
-          )
-        `)
-        .eq("receiver_id", user.id)
-        .eq("status", "pending");
+      const { data: connections } = await friendRequestsAdapter.findPendingRequests(user.id);
+      
+      if (!connections) return [];
 
-      const { data: outgoingRequests } = await supabase
-        .from("friend_requests")
-        .select(`
-          id,
-          sender_id,
-          receiver_id,
-          status,
-          created_at,
-          sender:profiles!friend_requests_sender_id_fkey(
-            id,
-            full_name,
-            avatar_url
-          ),
-          receiver:profiles!friend_requests_receiver_id_fkey(
-            id,
-            full_name,
-            avatar_url
-          )
-        `)
-        .eq("sender_id", user.id)
-        .eq("status", "pending");
+      const formattedRequests = connections.map(request => {
+        const isIncoming = request.receiver_id === user.id;
+        
+        return {
+          id: request.id,
+          sender_id: request.sender_id,
+          receiver_id: request.receiver_id,
+          status: request.status,
+          created_at: request.created_at,
+          updated_at: request.updated_at || request.created_at,
+          type: isIncoming ? 'incoming' : 'outgoing',
+          sender: {
+            id: request.sender.id,
+            full_name: request.sender.full_name,
+            avatar_url: request.sender.avatar_url
+          },
+          receiver: {
+            id: request.receiver.id,
+            full_name: request.receiver.full_name,
+            avatar_url: request.receiver.avatar_url
+          }
+        } as PendingRequest;
+      });
 
-      const formattedIncoming = (incomingRequests || []).map(request => ({
-        ...request,
-        type: 'incoming' as const,
-        status: request.status as "pending" | "accepted" | "rejected"
-      }));
-
-      const formattedOutgoing = (outgoingRequests || []).map(request => ({
-        ...request,
-        type: 'outgoing' as const,
-        status: request.status as "pending" | "accepted" | "rejected"
-      }));
-
-      return [...formattedIncoming, ...formattedOutgoing] as PendingRequest[];
+      return formattedRequests;
     }
   });
 
   const handleAcceptRequest = async (requestId: string, senderId: string, senderName: string) => {
-    const { error } = await supabase
-      .from("friend_requests")
-      .update({ status: "accepted" as const })
-      .eq("id", requestId);
+    try {
+      const { error } = await friendRequestsAdapter.acceptFriendRequest(requestId);
 
-    if (error) {
-      toast.error("Erreur lors de l'acceptation de la demande");
-      return;
+      if (error) {
+        toast.error("Erreur lors de l'acceptation de la demande");
+        return;
+      }
+
+      toast.success(`Vous êtes maintenant ami avec ${senderName}`);
+      refetchPendingRequests();
+    } catch (error) {
+      console.error("Erreur lors de l'acceptation de la demande:", error);
+      toast.error("Une erreur est survenue");
     }
-
-    toast.success(`Vous êtes maintenant ami avec ${senderName}`);
-    refetchPendingRequests();
   };
 
   const handleRejectRequest = async (requestId: string, senderName: string) => {
-    const { error } = await supabase
-      .from("friend_requests")
-      .delete()
-      .eq("id", requestId);
+    try {
+      const { error } = await friendRequestsAdapter.deleteFriendRequest(requestId);
 
-    if (error) {
-      toast.error("Erreur lors du rejet de la demande");
-      return;
+      if (error) {
+        toast.error("Erreur lors du rejet de la demande");
+        return;
+      }
+
+      toast.success(`Vous avez rejeté la demande de ${senderName}`);
+      refetchPendingRequests();
+    } catch (error) {
+      console.error("Erreur lors du rejet de la demande:", error);
+      toast.error("Une erreur est survenue");
     }
-
-    toast.success(`Vous avez rejeté la demande de ${senderName}`);
-    refetchPendingRequests();
   };
 
   const handleCancelRequest = async (requestId: string, receiverName: string) => {
-    const { error } = await supabase
-      .from("friend_requests")
-      .delete()
-      .eq("id", requestId);
+    try {
+      const { error } = await friendRequestsAdapter.deleteFriendRequest(requestId);
 
-    if (error) {
-      toast.error("Erreur lors de l'annulation de la demande");
-      return;
+      if (error) {
+        toast.error("Erreur lors de l'annulation de la demande");
+        return;
+      }
+
+      toast.success(`Demande d'ami à ${receiverName} annulée`);
+      refetchPendingRequests();
+    } catch (error) {
+      console.error("Erreur lors de l'annulation de la demande:", error);
+      toast.error("Une erreur est survenue");
     }
-
-    toast.success(`Demande d'ami à ${receiverName} annulée`);
-    refetchPendingRequests();
   };
 
   return {

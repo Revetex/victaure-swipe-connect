@@ -1,43 +1,73 @@
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, MessageSquare, ChevronRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { ButtonWithTooltip } from "@/components/ui/button-with-tooltip";
+import { UserCog, FileText, UserPlus, Briefcase, Shield, Newspaper } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-export interface QuickActionsProps {
-  onRequestChat: () => void;
-}
+export function QuickActions() {
+  const navigate = useNavigate();
 
-export function QuickActions({ onRequestChat }: QuickActionsProps) {
+  const actions = [
+    {
+      icon: UserCog,
+      label: "Modifier profil",
+      onClick: () => navigate("/settings"),
+      tooltip: "Mettre à jour vos informations personnelles"
+    },
+    {
+      icon: FileText,
+      label: "Créer CV",
+      onClick: () => navigate("/cv"),
+      tooltip: "Créer ou mettre à jour votre CV"
+    },
+    {
+      icon: UserPlus,
+      label: "Connexions",
+      onClick: () => navigate("/connections"),
+      tooltip: "Gérer vos connexions professionnelles"
+    },
+    {
+      icon: Briefcase,
+      label: "Emplois",
+      onClick: () => navigate("/jobs"),
+      tooltip: "Parcourir les offres d'emploi"
+    },
+    {
+      icon: Shield,
+      label: "Sécurité",
+      onClick: () => navigate("/settings/security"),
+      tooltip: "Gérer vos paramètres de sécurité"
+    },
+    {
+      icon: Newspaper,
+      label: "Articles",
+      onClick: () => navigate("/articles"),
+      tooltip: "Lire les derniers articles professionnels"
+    }
+  ];
+
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-200">
-      <CardHeader>
-        <CardTitle className="text-lg font-medium">Actions rapides</CardTitle>
+    <Card className="bg-background/30 backdrop-blur-md border-border/30 shadow-sm h-full">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base font-medium tracking-normal">
+          Actions rapides
+        </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-          <Button 
-            variant="outline" 
-            className="w-full justify-between" 
-            onClick={onRequestChat}
-          >
-            <div className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" />
-              <span>Parler à l'assistant</span>
-            </div>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-          <Button variant="outline" className="w-full justify-between">
-            <div className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              <span>Paramètres</span>
-            </div>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </motion.div>
+      <CardContent>
+        <div className="grid grid-cols-3 gap-3">
+          {actions.map((action, index) => (
+            <ButtonWithTooltip
+              key={index}
+              variant="ghost"
+              className="w-full text-xs h-auto flex flex-col items-center justify-center gap-2 p-3"
+              onClick={action.onClick}
+              tooltip={action.tooltip}
+            >
+              <action.icon className="h-5 w-5 text-foreground/80" />
+              <span className="text-foreground/70">{action.label}</span>
+            </ButtonWithTooltip>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );

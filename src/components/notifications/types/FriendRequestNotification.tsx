@@ -1,7 +1,9 @@
+
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { UserPlus, UserMinus } from "lucide-react";
+import { friendRequestsAdapter } from "@/utils/connectionAdapters";
 
 interface FriendRequestNotificationProps {
   id: string;
@@ -15,10 +17,24 @@ export function FriendRequestNotification({ id, message, onDelete }: FriendReque
       const senderId = message.match(/ID:(\S+)/)?.[1];
       if (!senderId) return;
 
-      const { error: requestError } = await supabase
-        .from('friend_requests')
-        .update({ status: 'accepted' })
-        .eq('sender_id', senderId);
+      // Obtenir l'ID de la demande
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: pendingRequests } = await friendRequestsAdapter.findPendingRequests(user.id);
+      
+      if (!pendingRequests || pendingRequests.length === 0) {
+        throw new Error("Demande d'ami introuvable");
+      }
+      
+      const request = pendingRequests.find(req => 
+        req.sender_id === senderId && req.receiver_id === user.id);
+      
+      if (!request) {
+        throw new Error("Demande d'ami introuvable");
+      }
+
+      const { error: requestError } = await friendRequestsAdapter.acceptFriendRequest(request.id);
 
       if (requestError) throw requestError;
 
@@ -45,10 +61,24 @@ export function FriendRequestNotification({ id, message, onDelete }: FriendReque
       const senderId = message.match(/ID:(\S+)/)?.[1];
       if (!senderId) return;
 
-      const { error: requestError } = await supabase
-        .from('friend_requests')
-        .delete()
-        .eq('sender_id', senderId);
+      // Obtenir l'ID de la demande
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: pendingRequests } = await friendRequestsAdapter.findPendingRequests(user.id);
+      
+      if (!pendingRequests || pendingRequests.length === 0) {
+        throw new Error("Demande d'ami introuvable");
+      }
+      
+      const request = pendingRequests.find(req => 
+        req.sender_id === senderId && req.receiver_id === user.id);
+      
+      if (!request) {
+        throw new Error("Demande d'ami introuvable");
+      }
+
+      const { error: requestError } = await friendRequestsAdapter.deleteFriendRequest(request.id);
 
       if (requestError) throw requestError;
 
