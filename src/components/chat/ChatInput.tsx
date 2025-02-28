@@ -41,7 +41,7 @@ export function ChatInput({
       }
     }
   };
-  return <div className="p-4 border-t backdrop-blur-sm px-[16px] py-[10px] bg-transparent">
+  return <div className="p-4 border-t backdrop-blur-sm bg-transparent my-0 py-0 px-[8px]">
       <div className="flex items-end gap-2">
         <Textarea value={userInput} onChange={handleInputChange} onKeyDown={handleKeyPress} placeholder="Écrivez votre message..." className="min-h-[44px] max-h-[200px]" disabled={isDisabled || isLoading} />
         

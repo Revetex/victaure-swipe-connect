@@ -1,17 +1,16 @@
-
 import { Bot } from "lucide-react";
 import { motion } from "framer-motion";
-
 export function ChatHeader() {
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex items-center gap-3 px-4 py-3"
-    >
+  return <motion.div initial={{
+    opacity: 0,
+    y: -20
+  }} animate={{
+    opacity: 1,
+    y: 0
+  }} className="flex items-center gap-3 px-4 py-3">
       <div className="flex items-center gap-3">
         <div className="relative">
-          <div className="relative p-2.5 rounded-xl bg-[#1B2A4A]/80 border border-[#64B5D9]/20">
+          <div className="relative p-2.5 rounded-xl border border-[#64B5D9]/20 bg-inherit">
             <Bot className="w-6 h-6 text-[#64B5D9]" />
             <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-[#1A1F2C] animate-pulse" />
           </div>
@@ -21,6 +20,5 @@ export function ChatHeader() {
           <p className="text-xs text-[#F1F0FB]/70">Assistant IA</p>
         </div>
       </div>
-    </motion.div>
-  );
+    </motion.div>;
 }
