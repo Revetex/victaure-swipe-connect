@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, ReactNode } from "react";
 
 export interface PostFiltersProps {
   searchTerm: string;
@@ -28,7 +28,7 @@ export function PostFilters({
   sortOrder,
   onSortOrderChange,
   onCreatePost
-}: PostFiltersProps) {
+}: PostFiltersProps): ReactNode {
   return (
     <Card className="p-4 bg-black/40 backdrop-blur-sm border-zinc-800/50">
       <div className="flex flex-col space-y-3">
@@ -60,7 +60,10 @@ export function PostFilters({
             </SelectContent>
           </Select>
           
-          <Select value={sortBy} onValueChange={onSortByChange}>
+          <Select 
+            value={sortBy} 
+            onValueChange={(value) => onSortByChange(value as "likes" | "comments" | "date")}
+          >
             <SelectTrigger className="w-[140px] bg-background/50">
               <SelectValue placeholder="Trier par" />
             </SelectTrigger>

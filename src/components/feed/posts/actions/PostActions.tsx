@@ -1,8 +1,8 @@
 
+import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Heart, ThumbsDown, Share } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MessageSquare, Share } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 export interface PostActionsProps {
   likes: number;
@@ -25,63 +25,61 @@ export function PostActions({
   userReaction,
   isExpanded,
   postId,
-  postAuthorId,
-  currentUserId,
-  userEmail,
   onToggleComments,
   onReaction
-}: PostActionsProps) {
+}: PostActionsProps): ReactNode {
   return (
-    <div className="flex items-center justify-between w-full">
-      <div className="flex items-center space-x-2">
+    <div className="flex justify-between items-center w-full py-1">
+      <div className="flex gap-2">
         <Button
           variant="ghost"
           size="sm"
           className={cn(
-            "flex items-center gap-1 px-3 hover:bg-background/10",
-            userReaction === 'like' && "text-blue-400"
+            "px-2 text-muted-foreground hover:text-primary",
+            userReaction === "like" && "text-primary bg-primary/10"
           )}
-          onClick={() => onReaction(postId, 'like')}
+          onClick={() => onReaction(postId, "like")}
         >
-          <Heart className="h-4 w-4" />
-          <span className="text-xs font-medium">{likes}</span>
+          <ThumbsUp className="h-4 w-4 mr-2" />
+          {likes > 0 && <span>{likes}</span>}
         </Button>
         
         <Button
           variant="ghost"
           size="sm"
           className={cn(
-            "flex items-center gap-1 px-3 hover:bg-background/10",
-            userReaction === 'dislike' && "text-red-400"
+            "px-2 text-muted-foreground hover:text-destructive",
+            userReaction === "dislike" && "text-destructive bg-destructive/10"
           )}
-          onClick={() => onReaction(postId, 'dislike')}
+          onClick={() => onReaction(postId, "dislike")}
         >
-          <ThumbsDown className="h-4 w-4" />
-          <span className="text-xs font-medium">{dislikes}</span>
-        </Button>
-        
-        <Button
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "flex items-center gap-1 px-3 hover:bg-background/10",
-            isExpanded && "text-primary"
-          )}
-          onClick={onToggleComments}
-        >
-          <MessageSquare className="h-4 w-4" />
-          <span className="text-xs font-medium">{commentCount}</span>
+          <ThumbsDown className="h-4 w-4 mr-2" />
+          {dislikes > 0 && <span>{dislikes}</span>}
         </Button>
       </div>
       
-      <Button
-        variant="ghost"
-        size="sm"
-        className="flex items-center gap-1 px-3 hover:bg-background/10"
-      >
-        <Share className="h-4 w-4" />
-        <span className="text-xs font-medium">Partager</span>
-      </Button>
+      <div className="flex gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn(
+            "px-2 text-muted-foreground",
+            isExpanded && "bg-muted/30 text-foreground"
+          )}
+          onClick={onToggleComments}
+        >
+          <MessageSquare className="h-4 w-4 mr-2" />
+          {commentCount > 0 && <span>{commentCount}</span>}
+        </Button>
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          className="px-2 text-muted-foreground"
+        >
+          <Share className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 }

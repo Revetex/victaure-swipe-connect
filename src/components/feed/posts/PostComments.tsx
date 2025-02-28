@@ -1,86 +1,103 @@
 
-import { UserCircle, Trash2 } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { ReactNode, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ProfileNameButton } from "@/components/profile/ProfileNameButton";
-import { Comment } from "@/types/posts";
-import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Send } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
 
-interface PostCommentsProps {
-  comments: Comment[];
-  currentUserId?: string;
-  onDeleteComment: (commentId: string) => void;
+export interface PostCommentsProps {
+  postId: string;
 }
 
-export function PostComments({ comments, currentUserId, onDeleteComment }: PostCommentsProps) {
-  const handleDelete = (commentId: string) => {
-    onDeleteComment(commentId);
-    toast.success("Commentaire supprimé");
+export function PostComments({ postId }: PostCommentsProps): ReactNode {
+  const [comment, setComment] = useState("");
+  const { data: user } = useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getUser();
+      return data.user;
+    }
+  });
+
+  const { data: comments = [], refetch } = useQuery({
+    queryKey: ["post-comments", postId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("post_comments")
+        .select(`
+          *,
+          author:profiles(id, full_name, avatar_url)
+        `)
+        .eq("post_id", postId)
+        .order("created_at", { ascending: true });
+      
+      return data || [];
+    }
+  });
+
+  const handleSubmitComment = async () => {
+    if (!comment.trim() || !user) return;
+
+    await supabase.from("post_comments").insert({
+      content: comment,
+      post_id: postId,
+      user_id: user.id
+    });
+
+    setComment("");
+    refetch();
   };
 
-  if (!comments || comments.length === 0) return null;
-
   return (
-    <div className="space-y-3 px-4">
-      <AnimatePresence mode="popLayout">
-        {comments.map((comment) => (
-          <motion.div
-            key={comment.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="group relative bg-white/5 hover:bg-white/10 rounded-lg p-3 transition-all duration-200"
-          >
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center overflow-hidden">
-                {comment.profiles.avatar_url ? (
-                  <img
-                    src={comment.profiles.avatar_url}
-                    alt={comment.profiles.full_name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <UserCircle className="w-5 h-5 text-white/40" />
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <ProfileNameButton 
-                    profile={{
-                      id: comment.user_id,
-                      ...comment.profiles
-                    }}
-                    className="p-0 h-auto text-sm font-medium text-white/90 hover:text-white"
-                  />
-                  <span className="text-xs text-white/40">
-                    {format(new Date(comment.created_at), "d MMM 'à' HH:mm", { locale: fr })}
-                  </span>
+    <div className="space-y-4">
+      <div className="space-y-3">
+        {comments.length === 0 ? (
+          <div className="text-center py-3 text-muted-foreground">
+            Aucun commentaire pour le moment
+          </div>
+        ) : (
+          comments.map((comment) => (
+            <div key={comment.id} className="flex gap-3">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={comment.author?.avatar_url || ''} />
+                <AvatarFallback>{comment.author?.full_name?.charAt(0) || 'U'}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 space-y-1">
+                <div className="bg-muted/20 rounded-lg p-3">
+                  <div className="font-medium text-sm">{comment.author?.full_name || 'Utilisateur inconnu'}</div>
+                  <div className="text-sm">{comment.content}</div>
                 </div>
-                <p className="text-sm text-white/80 mt-1">{comment.content}</p>
+                <div className="text-xs text-muted-foreground">
+                  {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true, locale: fr })}
+                </div>
               </div>
-              {comment.user_id === currentUserId && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 hover:text-red-500"
-                    onClick={() => handleDelete(comment.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </motion.div>
-              )}
             </div>
-          </motion.div>
-        ))}
-      </AnimatePresence>
+          ))
+        )}
+      </div>
+
+      <div className="flex gap-2">
+        <Avatar className="h-8 w-8">
+          <AvatarImage src={user?.user_metadata?.avatar_url || ''} />
+          <AvatarFallback>{user?.email?.charAt(0)?.toUpperCase() || 'U'}</AvatarFallback>
+        </Avatar>
+        <div className="flex-1 flex gap-2">
+          <Input
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Ajouter un commentaire..."
+            className="bg-muted/20"
+            onKeyDown={(e) => e.key === 'Enter' && handleSubmitComment()}
+          />
+          <Button size="icon" onClick={handleSubmitComment} disabled={!comment.trim()}>
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

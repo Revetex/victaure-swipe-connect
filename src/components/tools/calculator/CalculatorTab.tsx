@@ -63,7 +63,7 @@ export function CalculatorTab() {
             
             <TabsContent value="deposit">
               <PaymentPanel 
-                type="deposit" 
+                type="deposit"
                 amount={depositAmount}
                 onAmountChange={setDepositAmount}
                 onSubmit={handleDeposit}
@@ -72,7 +72,7 @@ export function CalculatorTab() {
             
             <TabsContent value="withdraw">
               <PaymentPanel 
-                type="withdraw" 
+                type="withdraw"
                 amount={withdrawAmount}
                 onAmountChange={setWithdrawAmount}
                 onSubmit={handleWithdraw}

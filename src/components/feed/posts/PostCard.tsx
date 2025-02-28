@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { MoreHorizontal, AlertCircle } from "lucide-react";
@@ -14,7 +14,7 @@ import { fr } from "date-fns/locale";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-interface PostCardProps {
+export interface PostCardProps {
   post: Post;
   currentUserId: string;
   userEmail: string;
@@ -24,6 +24,7 @@ interface PostCardProps {
   onReport?: (postId: string) => void;
   onDelete?: (postId: string) => void;
   onShare?: () => void;
+  onUpdate?: (postId: string, content: string) => void;
 }
 
 export function PostCard({
@@ -36,7 +37,7 @@ export function PostCard({
   onReport,
   onDelete,
   onShare
-}: PostCardProps) {
+}: PostCardProps): ReactNode {
   const [showComments, setShowComments] = useState(false);
   const isAuthor = post.user_id === currentUserId;
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: fr });
