@@ -98,7 +98,7 @@ export function VictaureChat({
       }} />
       </div>
 
-      <div className="relative z-10 flex flex-col h-full">
+      <div className="relative z-10 flex flex-col h-full bg-black">
         <div className="flex-none border-b border-[#64B5D9]/10 bg-[#1B2A4A]/50 backdrop-blur-sm">
           <ChatHeader />
           <Button variant="ghost" size="icon" onClick={refreshMessages} className="absolute right-14 top-2 text-[#64B5D9]/80 hover:text-[#64B5D9] transition-colors" title="Effacer l'historique">
