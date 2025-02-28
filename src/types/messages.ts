@@ -45,7 +45,7 @@ export interface Conversation {
   id: string;
   participant1_id: string;
   participant2_id: string;
-  participant: string | {
+  participant?: string | {
     full_name: string | null;
     [key: string]: any;
   };

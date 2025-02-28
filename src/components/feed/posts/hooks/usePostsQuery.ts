@@ -1,7 +1,7 @@
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Post } from "@/types/posts";
+import type { Post, Comment } from "@/types/posts";
 
 interface UsePostsQueryProps {
   filter: string;
@@ -52,6 +52,7 @@ export function usePostsQuery({
             content,
             created_at,
             user_id,
+            post_id,
             profiles(
               id,
               full_name,
@@ -136,14 +137,23 @@ export function usePostsQuery({
         throw error;
       }
 
-      const transformedData = data?.map(post => ({
-        ...post,
-        privacy_level: post.privacy_level as "public" | "connections",
-        reactions: post.reactions?.map(reaction => ({
-          ...reaction,
-          reaction_type: reaction.reaction_type as "like" | "dislike"
-        }))
-      })) as Post[];
+      // Transform database response to match the Post type
+      const transformedData = data?.map(post => {
+        const transformedComments = post.comments?.map(comment => ({
+          ...comment,
+          post_id: post.id // Ensure post_id is set
+        })) as Comment[] | undefined;
+
+        return {
+          ...post,
+          privacy_level: post.privacy_level as "public" | "connections",
+          reactions: post.reactions?.map(reaction => ({
+            ...reaction,
+            reaction_type: reaction.reaction_type as "like" | "dislike"
+          })),
+          comments: transformedComments
+        } as Post;
+      }) || [];
 
       // Tri manuel pour les commentaires si nécessaire
       const sortedData = sortBy === "comments" 

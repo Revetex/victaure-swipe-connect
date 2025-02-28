@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import type { MarketplaceFilters, MarketplaceListing } from '@/types/marketplace';
+import type { MarketplaceFilters, ExtendedMarketplaceListing } from '@/types/marketplace';
 import { toast } from 'sonner';
 
 export function useListingSearch(
@@ -11,7 +11,7 @@ export function useListingSearch(
   page: number = 1,
   itemsPerPage: number = 12
 ) {
-  const [listings, setListings] = useState<MarketplaceListing[]>([]);
+  const [listings, setListings] = useState<ExtendedMarketplaceListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [totalCount, setTotalCount] = useState(0);
@@ -78,7 +78,8 @@ export function useListingSearch(
         if (queryError) throw queryError;
 
         if (data) {
-          const formattedListings: MarketplaceListing[] = data.map(item => ({
+          // Transform the data to match the ExtendedMarketplaceListing type
+          const formattedListings: ExtendedMarketplaceListing[] = data.map(item => ({
             id: item.id,
             title: item.title,
             description: item.description || '',

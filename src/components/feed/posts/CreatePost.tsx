@@ -1,67 +1,77 @@
 
+import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { CreatePostProps } from "./types";
-import { useCreatePost } from "@/hooks/feed/useCreatePost";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { CreatePostForm } from "./create/CreatePostForm";
+import type { PostAttachment, CreatePostProps } from "./types";
 
 export function CreatePost({ onPostCreated }: CreatePostProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const {
-    content,
-    setContent,
-    privacyLevel,
-    setPrivacyLevel,
-    attachments,
-    isLoading,
-    addAttachment,
-    removeAttachment,
-    createPost
-  } = useCreatePost(onPostCreated);
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [attachments, setAttachments] = useState<PostAttachment[]>([]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      for (let i = 0; i < e.target.files.length; i++) {
-        addAttachment(e.target.files[i]);
+  const handleCreatePost = async (content: string, privacyLevel: "public" | "connections") => {
+    if (!user) {
+      toast.error("Vous devez être connecté pour publier un message");
+      return;
+    }
+
+    if (!content.trim() && attachments.length === 0) {
+      toast.error("Votre publication ne peut pas être vide");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Process image uploads if there are any
+      const imageUrls = [];
+      
+      for (const attachment of attachments) {
+        const fileName = `${user.id}/${Date.now()}-${attachment.file.name}`;
+        const { error: uploadError, data } = await supabase.storage
+          .from("post-images")
+          .upload(fileName, attachment.file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from("post-images")
+          .getPublicUrl(fileName);
+
+        imageUrls.push(publicUrl);
       }
+
+      // Create the post with images if applicable
+      const { error } = await supabase.from("posts").insert({
+        content,
+        user_id: user.id,
+        privacy_level: privacyLevel,
+        images: imageUrls.length > 0 ? imageUrls : undefined
+      });
+
+      if (error) throw error;
+
+      toast.success("Votre publication a été créée avec succès!");
+      setAttachments([]);
+      if (onPostCreated) {
+        onPostCreated();
+      }
+    } catch (error) {
+      console.error("Error creating post:", error);
+      toast.error("Une erreur est survenue lors de la création de votre publication");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleCreatePost = async () => {
-    await createPost();
-    setIsExpanded(false);
-  };
-
   return (
-    <Card className={cn(
-      "shadow-lg border-primary/10 transition-all duration-200",
-      isExpanded ? "p-4" : "p-2",
-      "mx-auto max-w-3xl w-full mt-[4.5rem]"
-    )}>
-      {!isExpanded ? (
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-muted-foreground h-auto py-3 px-4"
-          onClick={() => setIsExpanded(true)}
-        >
-          Partagez quelque chose...
-        </Button>
-      ) : (
-        <CreatePostForm
-          newPost={content}
-          onPostChange={setContent}
-          privacy={privacyLevel}
-          onPrivacyChange={setPrivacyLevel}
-          attachments={attachments}
-          isUploading={isLoading}
-          onFileChange={handleFileChange}
-          onRemoveFile={removeAttachment}
-          onCreatePost={handleCreatePost}
-          onClose={() => setIsExpanded(false)}
-        />
-      )}
-    </Card>
+    <CreatePostForm
+      onSubmit={handleCreatePost}
+      attachments={attachments}
+      setAttachments={setAttachments}
+      isLoading={isLoading}
+    />
   );
 }
