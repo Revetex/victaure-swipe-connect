@@ -1,50 +1,44 @@
 
-import { Route, Routes } from "react-router-dom";
-import { lazy, Suspense } from "react";
-import { PrivateRoute } from "@/components/PrivateRoute";
-import { AuthCallback } from "@/components/AuthCallback";
+import { Routes, Route } from "react-router-dom";
+import { Feed } from "./components/feed/Feed";
+import { Messages } from "./components/Messages";
+import { Marketplace } from "./components/marketplace/Marketplace";
+import Settings from "./components/Settings";
+import { Dashboard } from "./components/Dashboard";
+import { JobsPage } from "./components/jobs/JobsPage";
+import { NotesPage } from "./components/tools/NotesPage";
+import { ChessPage } from "./components/tools/ChessPage";
+import { CalculatorPage } from "./components/tools/CalculatorPage";
+import { TranslatorPage } from "./components/tools/TranslatorPage";
+import { FriendsPage } from "./components/friends/FriendsPage";
+import { ProfileSearchPage } from "./components/friends/ProfileSearchPage";
+import { FriendRequestsPage } from "./components/friends/FriendRequestsPage";
+import { PrivateRoute } from "./components/PrivateRoute";
+import { AuthCallback } from "./components/AuthCallback";
 
-// Page Loading Component
-import { Loader } from "@/components/ui/loader";
-
-// Lazy loaded pages
-const Auth = lazy(() => import("@/pages/Auth"));
-const Dashboard = lazy(() => import("@/pages/Dashboard"));
-const Index = lazy(() => import("@/pages/Index"));
-const TermsPage = lazy(() => import("@/pages/legal/TermsPage"));
-/* Autres importations de pages */
-
-// Loading Fallback
-const LoadingFallback = () => (
-  <div className="h-screen w-full flex items-center justify-center">
-    <Loader className="w-6 h-6 text-primary" />
-  </div>
-);
-
-export default function AppRoutes() {
+export function AppRoutes() {
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<Index />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
-        <Route path="/terms" element={<TermsPage />} />
-        
-        {/* Protected routes */}
-        <Route
-          path="/dashboard/*"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
-        {/* Ajoutez d'autres routes protégées ici */}
-        
-        {/* 404 route - leave at the bottom */}
-        <Route path="*" element={<div>Page introuvable</div>} />
-      </Routes>
-    </Suspense>
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
+      
+      {/* Routes protégées */}
+      <Route element={<PrivateRoute>
+        <Routes>
+          <Route path="/feed" element={<Feed />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/jobs" element={<JobsPage />} />
+          <Route path="/notes" element={<NotesPage />} />
+          <Route path="/chess" element={<ChessPage />} />
+          <Route path="/calculator" element={<CalculatorPage />} />
+          <Route path="/translator" element={<TranslatorPage />} />
+          <Route path="/friends" element={<FriendsPage />} />
+          <Route path="/search" element={<ProfileSearchPage />} />
+          <Route path="/requests" element={<FriendRequestsPage />} />
+        </Routes>
+      </PrivateRoute>} />
+    </Routes>
   );
 }

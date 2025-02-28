@@ -1,11 +1,10 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ChessPiece } from "@/types/chess";
 import { initializeBoard, getSquareName } from "@/components/tools/chess/utils/boardUtils";
 import { calculatePossibleMoves } from "@/components/tools/chess/utils/moveCalculator";
 import { handleAIMove } from "@/components/tools/chess/utils/aiHandler";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 export function useChessGame() {
   const [board, setBoard] = useState(initializeBoard());
@@ -16,17 +15,6 @@ export function useChessGame() {
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [possibleMoves, setPossibleMoves] = useState<{row: number, col: number}[]>([]);
   const [difficulty, setDifficulty] = useState<string>("medium");
-  const [lastMoveHighlight, setLastMoveHighlight] = useState<{from: {row: number, col: number}, to: {row: number, col: number}} | null>(null);
-  
-  // Récupérer les paramètres de difficulté si disponibles dans l'URL
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const diffParam = urlParams.get('difficulty');
-    if (diffParam && ['easy', 'medium', 'hard'].includes(diffParam)) {
-      setDifficulty(diffParam);
-      toast.info(`Difficulté définie sur ${diffParam}`);
-    }
-  }, []);
   
   const handleSquareClick = async (row: number, col: number) => {
     if (gameOver || (!isWhiteTurn && !selectedPiece)) return;
@@ -39,12 +27,6 @@ export function useChessGame() {
         newBoard[row][col] = board[selectedPiece.row][selectedPiece.col];
         newBoard[selectedPiece.row][selectedPiece.col] = null;
         
-        // Enregistrer le dernier mouvement pour le surlignage
-        setLastMoveHighlight({
-          from: { row: selectedPiece.row, col: selectedPiece.col },
-          to: { row, col }
-        });
-        
         const move = `${getSquareName(selectedPiece.row, selectedPiece.col)} → ${getSquareName(row, col)}`;
         const newMoveHistory = [...moveHistory, move];
         setMoveHistory(newMoveHistory);
@@ -53,14 +35,6 @@ export function useChessGame() {
         setSelectedPiece(null);
         setPossibleMoves([]);
         setIsWhiteTurn(!isWhiteTurn);
-
-        // Détection de l'échec et mat
-        const isCheckmate = checkForCheckmate(newBoard, !isWhiteTurn);
-        if (isCheckmate) {
-          setGameOver(true);
-          toast.success(`Échec et mat ! ${isWhiteTurn ? 'Blancs' : 'Noirs'} gagnent !`);
-          return;
-        }
 
         // AI's turn
         if (!gameOver && isWhiteTurn) {
@@ -74,16 +48,12 @@ export function useChessGame() {
                 setMoveHistory,
                 setGameOver,
                 setIsThinking,
-                setIsWhiteTurn,
-                (from, to) => {
-                  setLastMoveHighlight({ from, to });
-                }
+                setIsWhiteTurn
               );
             }
           } catch (error) {
             console.error("Error during AI move:", error);
             setIsWhiteTurn(true);
-            toast.error("Erreur lors du mouvement de l'IA");
           }
         }
       } else {
@@ -97,31 +67,6 @@ export function useChessGame() {
     }
   };
 
-  // Fonction simplifiée pour détecter l'échec et mat (à implémenter complètement)
-  const checkForCheckmate = (board: (ChessPiece | null)[][], isWhiteTurn: boolean) => {
-    // Cette fonction devrait parcourir toutes les pièces du joueur actuel
-    // et vérifier si au moins une pièce a un mouvement légal
-    // Si aucune pièce n'a de mouvement légal, c'est échec et mat
-    
-    // Pour maintenir la simplicité, nous utilisons une implémentation basique
-    let hasLegalMove = false;
-    
-    for (let row = 0; row < 8 && !hasLegalMove; row++) {
-      for (let col = 0; col < 8 && !hasLegalMove; col++) {
-        const piece = board[row][col];
-        if (piece && piece.isWhite === isWhiteTurn) {
-          const moves = calculatePossibleMoves(row, col, piece, board);
-          if (moves.length > 0) {
-            hasLegalMove = true;
-            break;
-          }
-        }
-      }
-    }
-    
-    return !hasLegalMove;
-  };
-
   const resetGame = () => {
     setBoard(initializeBoard());
     setSelectedPiece(null);
@@ -129,8 +74,6 @@ export function useChessGame() {
     setIsWhiteTurn(true);
     setGameOver(false);
     setMoveHistory([]);
-    setLastMoveHighlight(null);
-    toast.info("Nouvelle partie commencée !");
   };
 
   return {
@@ -142,7 +85,6 @@ export function useChessGame() {
     moveHistory,
     possibleMoves,
     difficulty,
-    lastMoveHighlight,
     handleSquareClick,
     resetGame,
     setDifficulty,

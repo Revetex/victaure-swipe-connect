@@ -45,7 +45,7 @@ export function AppHeader({
     <motion.header 
       initial={{ opacity: 0, y: -20 }} 
       animate={{ opacity: 1, y: 0 }}
-      className="fixed top-0 left-0 right-0 z-[100] flex h-16 items-center justify-between px-4 bg-transparent backdrop-blur-sm border-b border-white/5"
+      className="fixed top-0 left-0 right-0 z-[100] flex h-16 items-center justify-between px-4 bg-[#1A1F2C] border-b border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.2)]"
       style={{ paddingTop: 'env(safe-area-inset-top)' }}
     >
       <div className="flex items-center gap-4">

@@ -1,38 +1,18 @@
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { DashboardContent } from "./dashboard/DashboardContent";
 import { DashboardMobileNav } from "./dashboard/layout/DashboardMobileNav";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/header/AppHeader";
-import { motion, AnimatePresence } from "framer-motion";
-import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
+import { motion } from "framer-motion";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(4);
   const [isEditing, setIsEditing] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
-  const [showWelcomeGuide, setShowWelcomeGuide] = useState(false);
   const { profile } = useProfile();
-
-  // Check if it's the user's first visit
-  useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
-    if (!hasSeenWelcome && profile) {
-      setShowWelcomeGuide(true);
-      localStorage.setItem("hasSeenWelcome", "true");
-    }
-  }, [profile]);
-
-  const handleDismissWelcome = useCallback(() => {
-    setShowWelcomeGuide(false);
-  }, []);
-
-  const handleStartChat = useCallback(() => {
-    setShowWelcomeGuide(false);
-    setIsAssistantOpen(true);
-  }, []);
 
   const handleRequestChat = useCallback(() => {
     setIsAssistantOpen(true);
@@ -52,18 +32,11 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
     setShowMobileMenu(show);
   }, []);
 
-  const contentProps = {
-    currentPage,
-    isEditing,
-    onEditStateChange: handleEditStateChange,
-    onRequestChat: handleRequestChat
-  };
-
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex min-h-screen w-full overflow-hidden bg-background"
+      className="flex min-h-screen w-full overflow-hidden bg-gradient-to-br from-[#1A1F2C] via-[#1B2A4A] to-[#1A1F2C]"
     >
       <DashboardMobileNav
         currentPage={currentPage}
@@ -76,7 +49,12 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         "flex-1",
         "min-h-screen w-full",
         "relative",
-        "ios-safe-area ios-momentum-scroll"
+        "ios-safe-area ios-momentum-scroll",
+        "bg-gradient-to-br from-[#1A1F2C] via-[#1A1F2C]/95 to-[#1A1F2C]/90",
+        "backdrop-blur-sm",
+        "border-l border-white/5",
+        "shadow-[inset_0_-20px_60px_-20px_rgba(0,0,0,0.25)]",
+        "transition-all duration-300"
       )}>
         <AppHeader 
           onRequestAssistant={handleRequestChat}
@@ -84,27 +62,23 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
           setShowMobileMenu={handleMobileMenuToggle}
         />
         
-        <div className="h-16" />
-        <AnimatePresence mode="wait">
-          <motion.div 
-            key={currentPage}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="w-full pb-safe"
-          >
-            {children || <DashboardContent {...contentProps} />}
-          </motion.div>
-        </AnimatePresence>
+        <div className="h-16" /> {/* Spacer pour le header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="w-full pb-safe"
+        >
+          {children || (
+            <DashboardContent
+              currentPage={currentPage}
+              isEditing={isEditing}
+              onEditStateChange={handleEditStateChange}
+              onRequestChat={handleRequestChat}
+            />
+          )}
+        </motion.div>
       </main>
-
-      {showWelcomeGuide && (
-        <MrVictaureWelcome
-          onDismiss={handleDismissWelcome}
-          onStartChat={handleStartChat}
-        />
-      )}
     </motion.div>
   );
 }

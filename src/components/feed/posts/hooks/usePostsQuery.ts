@@ -1,5 +1,5 @@
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Post } from "@/types/posts";
 
@@ -8,31 +8,12 @@ interface UsePostsQueryProps {
   sortBy: 'date' | 'likes' | 'comments';
   sortOrder: 'asc' | 'desc';
   userId?: string;
-  page: number;
-  limit: number;
-  searchTerm?: string;
 }
 
-interface PostsResponse {
-  posts: Post[];
-  nextPage: number | undefined;
-}
-
-export function usePostsQuery({ 
-  filter, 
-  sortBy, 
-  sortOrder, 
-  userId, 
-  limit = 10, 
-  searchTerm = '' 
-}: UsePostsQueryProps) {
-  return useInfiniteQuery<PostsResponse, Error>({
-    queryKey: ["posts", filter, sortBy, sortOrder, userId, searchTerm],
-    initialPageParam: 0,
-    queryFn: async ({ pageParam }) => {
-      const from = (pageParam as number) * limit;
-      const to = from + limit - 1;
-
+export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQueryProps) {
+  return useQuery({
+    queryKey: ["posts", filter, sortBy, sortOrder, userId],
+    queryFn: async () => {
       let query = supabase
         .from("posts")
         .select(`
@@ -58,16 +39,7 @@ export function usePostsQuery({
               avatar_url
             )
           )
-        `)
-        .range(from, to);
-
-      // Si une recherche est spécifiée, utiliser la recherche full-text
-      if (searchTerm && searchTerm.trim() !== '') {
-        query = query.textSearch('searchable_content', searchTerm.trim(), {
-          type: 'websearch',
-          config: 'french'
-        });
-      }
+        `);
 
       // Appliquer les filtres
       switch (filter) {
@@ -84,42 +56,12 @@ export function usePostsQuery({
           if (likedPosts?.length) {
             const likedPostIds = likedPosts.map(reaction => reaction.post_id);
             query = query.in("id", likedPostIds);
-          } else {
-            // Si aucun post n'est liké, retourner un tableau vide
-            return { posts: [], nextPage: undefined };
-          }
-          break;
-        }
-        case "connections": {
-          if (!userId) break;
-          
-          const { data: friends } = await supabase
-            .from("friendships")
-            .select("friend_id")
-            .eq("user_id", userId)
-            .eq("status", "confirmed");
-            
-          const { data: friendsReverse } = await supabase
-            .from("friendships")
-            .select("user_id")
-            .eq("friend_id", userId)
-            .eq("status", "confirmed");
-            
-          const friendIds = [
-            ...(friends?.map(f => f.friend_id) || []),
-            ...(friendsReverse?.map(f => f.user_id) || [])
-          ];
-          
-          if (friendIds.length) {
-            query = query.in("user_id", friendIds);
-          } else {
-            return { posts: [], nextPage: undefined };
           }
           break;
         }
       }
 
-      // Appliquer les tris
+      // Appliquer le tri
       switch (sortBy) {
         case "date":
           query = query.order("created_at", { ascending: sortOrder === "asc" });
@@ -127,15 +69,19 @@ export function usePostsQuery({
         case "likes":
           query = query.order("likes", { ascending: sortOrder === "asc" });
           break;
+        case "comments":
+          // Pour le tri par commentaires, nous devons trier après avoir récupéré les données
+          break;
       }
 
       const { data, error } = await query;
 
       if (error) {
-        console.error("Erreur lors de la récupération des posts:", error);
+        console.error("Error fetching posts:", error);
         throw error;
       }
 
+      // Transformer les données pour correspondre au type Post
       const transformedData = data?.map(post => ({
         ...post,
         privacy_level: post.privacy_level as "public" | "connections",
@@ -145,20 +91,18 @@ export function usePostsQuery({
         }))
       })) as Post[];
 
-      // Tri manuel pour les commentaires si nécessaire
-      const sortedData = sortBy === "comments" 
-        ? transformedData.sort((a, b) => {
-            const aCount = a.comments?.length || 0;
-            const bCount = b.comments?.length || 0;
-            return sortOrder === "asc" ? aCount - bCount : bCount - aCount;
-          })
-        : transformedData;
+      // Si le tri est par commentaires, nous devons trier manuellement
+      if (sortBy === "comments") {
+        return transformedData.sort((a, b) => {
+          const aCount = a.comments?.length || 0;
+          const bCount = b.comments?.length || 0;
+          return sortOrder === "asc" ? aCount - bCount : bCount - aCount;
+        });
+      }
 
-      return {
-        posts: sortedData,
-        nextPage: data?.length === limit ? (pageParam as number) + 1 : undefined
-      };
+      return transformedData;
     },
-    getNextPageParam: (lastPage) => lastPage.nextPage,
+    staleTime: 1000 * 60, // 1 minute
+    gcTime: 1000 * 60 * 5, // 5 minutes
   });
 }

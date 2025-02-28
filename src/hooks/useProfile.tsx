@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { UserProfile, Friend, createEmptyProfile, transformConnection } from "@/types/profile";
+import { UserProfile, Friend, createEmptyProfile } from "@/types/profile";
+import { transformDatabaseProfile, transformEducation, transformCertification, transformExperience } from "@/types/profile";
 
 export function useProfile() {
   const { toast } = useToast();
@@ -28,26 +29,36 @@ export function useProfile() {
 
         if (profileError) throw profileError;
 
-        // Get friend connections where status is accepted
-        const { data: connections, error: connectionsError } = await supabase
-          .from('user_connections_view')
-          .select('*')
-          .eq('status', 'accepted')
-          .eq('connection_type', 'friend')
-          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
+        // Get friend requests from both perspectives where status is accepted
+        const [sentRequests, receivedRequests] = await Promise.all([
+          supabase
+            .from('friend_requests')
+            .select('receiver_id')
+            .eq('sender_id', user.id)
+            .eq('status', 'accepted'),
+          supabase
+            .from('friend_requests')
+            .select('sender_id')
+            .eq('receiver_id', user.id)
+            .eq('status', 'accepted')
+        ]);
 
-        if (connectionsError) {
-          console.error("Error loading connections:", connectionsError);
-        }
+        // Combine friend IDs from both queries
+        const friendIds = [
+          ...(sentRequests.data?.map(r => r.receiver_id) || []),
+          ...(receivedRequests.data?.map(r => r.sender_id) || [])
+        ];
 
-        // Convert connections to Friend objects
-        const friends: Friend[] = (connections || []).map(conn => 
-          transformConnection(conn, user.id)
-        );
-
-        // Parallel queries for other data
-        const [certificationsResponse, educationResponse, experiencesResponse] = 
+        // Remove duplicates
+        const uniqueFriendIds = [...new Set(friendIds)];
+        
+        // Parallel queries for better performance
+        const [friendsResponse, certificationsResponse, educationResponse, experiencesResponse] = 
           await Promise.all([
+            supabase
+              .from('profiles')
+              .select('id, full_name, avatar_url, online_status, last_seen')
+              .in('id', uniqueFriendIds),
             supabase
               .from('certifications')
               .select('*')
@@ -64,19 +75,23 @@ export function useProfile() {
 
         if (!isMounted) return;
 
+        const friends: Friend[] = (friendsResponse.data || []).map(friend => ({
+          id: friend.id,
+          full_name: friend.full_name,
+          avatar_url: friend.avatar_url,
+          online_status: friend.online_status,
+          last_seen: friend.last_seen
+        }));
+
         const baseProfile = createEmptyProfile(user.id, profileData.email);
         const fullProfile: UserProfile = {
           ...baseProfile,
           ...profileData,
           role: (profileData.role || 'professional') as "professional" | "business" | "admin",
           friends,
-          certifications: certificationsResponse.data || [],
-          education: educationResponse.data || [],
-          experiences: experiencesResponse.data || [],
-          // Assurer que online_status est un boolean
-          online_status: typeof profileData.online_status === 'string' 
-            ? (profileData.online_status === 'online' || profileData.online_status === 'true')
-            : !!profileData.online_status
+          certifications: (certificationsResponse.data || []).map(cert => transformCertification(cert)),
+          education: (educationResponse.data || []).map(edu => transformEducation(edu)),
+          experiences: (experiencesResponse.data || []).map(exp => transformExperience(exp))
         };
 
         setProfile(fullProfile);

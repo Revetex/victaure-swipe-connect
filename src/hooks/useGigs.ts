@@ -1,37 +1,61 @@
 
-import { useState, useEffect } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Gig } from '@/types/marketplace';
+import { toast } from 'sonner';
+import { Gig, GigBid } from '@/types/marketplace';
 
 export function useGigs() {
-  const [gigs, setGigs] = useState<Gig[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const { data: gigs = [], isLoading } = useQuery({
+    queryKey: ['gigs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('gigs')
+        .select(`
+          *,
+          creator:creator_id(
+            full_name,
+            avatar_url
+          )
+        `)
+        .order('created_at', { ascending: false });
 
-  useEffect(() => {
-    const fetchGigs = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('gigs')
-          .select(`
-            *,
-            creator:profiles(id, full_name, avatar_url)
-          `)
-          .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data as Gig[];
+    },
+  });
 
-        if (error) throw error;
+  const createGigMutation = useMutation({
+    mutationFn: async (gigData: Partial<Gig>) => {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('Not authenticated');
 
-        setGigs(data || []);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Unknown error occurred'));
-      } finally {
-        setLoading(false);
-      }
-    };
+      const { data, error } = await supabase
+        .from('gigs')
+        .insert({
+          ...gigData,
+          creator_id: user.user.id,
+          status: 'open',
+          required_skills: gigData.required_skills || [],
+          title: gigData.title || 'New Gig',
+        })
+        .select()
+        .single();
 
-    fetchGigs();
-  }, []);
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Gig created successfully');
+    },
+    onError: (error) => {
+      toast.error('Error creating gig');
+      console.error('Error:', error);
+    }
+  });
 
-  // Retourner les deux propriétés pour être compatible avec les deux styles d'appel
-  return { gigs, loading, isLoading: loading, error };
+  return {
+    gigs,
+    isLoading,
+    createGig: createGigMutation.mutate
+  };
 }

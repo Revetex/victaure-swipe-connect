@@ -1,100 +1,70 @@
 
-import { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Search, UserPlus, Users, UserCheck } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { FriendsList } from './FriendsList';
-import { FriendRequestsPage } from './FriendRequestsPage';
-import { ProfileSearchPage } from './ProfileSearchPage';
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Loader } from "@/components/ui/loader";
+import { FriendsList } from "@/components/feed/FriendsList";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import { useState } from "react";
 
-export default function FriendsPage() {
-  const [activeTab, setActiveTab] = useState('friends');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showOnlineOnly, setShowOnlineOnly] = useState(false);
-  const navigate = useNavigate();
+export function FriendsPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const { data: friends, isLoading } = useQuery({
+    queryKey: ["friends"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Implémenter la recherche
-  };
+      const { data: acceptedRequests } = await supabase
+        .from("friend_requests")
+        .select(`
+          sender:profiles!friend_requests_sender_id_fkey(
+            id, full_name, avatar_url, online_status, last_seen
+          ),
+          receiver:profiles!friend_requests_receiver_id_fkey(
+            id, full_name, avatar_url, online_status, last_seen
+          )
+        `)
+        .eq("status", "accepted")
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    setSearchQuery('');
-  };
+      if (!acceptedRequests) return [];
+
+      return acceptedRequests.map(request => {
+        const friend = request.sender.id === user.id ? request.receiver : request.sender;
+        return friend;
+      });
+    }
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[50vh]">
+        <Loader className="w-8 h-8" />
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto max-w-5xl p-4 py-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Connexions</h1>
-        <p className="text-muted-foreground mt-1">
-          Gérez vos connexions, trouvez de nouveaux contacts et restez en contact
-        </p>
-      </div>
+    <ScrollArea className="h-[calc(100vh-8rem)]">
+      <div className="w-full p-4">
+        <div className="max-w-2xl mx-auto space-y-6">
+          <h1 className="text-2xl font-bold">Mes connexions</h1>
+          
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Rechercher une connexion..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
 
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <TabsList className="bg-muted/50 flex-shrink-0">
-            <TabsTrigger value="friends" className="flex items-center">
-              <Users className="w-4 h-4 mr-2" />
-              <span>Mes amis</span>
-            </TabsTrigger>
-            <TabsTrigger value="requests" className="flex items-center">
-              <UserCheck className="w-4 h-4 mr-2" />
-              <span>Demandes</span>
-            </TabsTrigger>
-            <TabsTrigger value="discover" className="flex items-center">
-              <UserPlus className="w-4 h-4 mr-2" />
-              <span>Découvrir</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {activeTab === 'friends' && (
-            <div className="flex items-center gap-2 ml-auto">
-              <form onSubmit={handleSearch} className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Rechercher..."
-                  className="pl-9 w-full sm:w-[250px]"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </form>
-              <Button
-                variant={showOnlineOnly ? "default" : "outline"}
-                size="sm"
-                onClick={() => setShowOnlineOnly(!showOnlineOnly)}
-                className="whitespace-nowrap"
-              >
-                {showOnlineOnly ? "En ligne" : "Tous"}
-              </Button>
-            </div>
-          )}
+          <FriendsList />
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <TabsContent value="friends" className="mt-0">
-            <FriendsList />
-          </TabsContent>
-
-          <TabsContent value="requests" className="mt-0">
-            <FriendRequestsPage />
-          </TabsContent>
-
-          <TabsContent value="discover" className="mt-0">
-            <ProfileSearchPage />
-          </TabsContent>
-        </motion.div>
-      </Tabs>
-    </div>
+      </div>
+    </ScrollArea>
   );
 }

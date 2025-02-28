@@ -16,15 +16,11 @@ export function ImageUpload({ imageUrls, onImageUpload, onImageRemove }: ImageUp
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {imageUrls.map((url, index) => (
           <div key={url} className="relative aspect-square group">
-            <div className="image-container w-full h-full">
-              <img
-                src={url}
-                alt={`Preview ${index + 1}`}
-                className="retina-optimize"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
+            <img
+              src={url}
+              alt={`Preview ${index + 1}`}
+              className="w-full h-full object-cover rounded-lg"
+            />
             <Button
               type="button"
               variant="destructive"

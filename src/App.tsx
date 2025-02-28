@@ -1,36 +1,33 @@
 
-import { useEffect } from "react";
+import React from 'react';
+import { SessionContextProvider } from '@supabase/auth-helpers-react';
+import { supabase } from "@/integrations/supabase/client";
+import { AppRoutes } from './AppRoutes';
+import { ThemeProvider } from "next-themes";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
-import AppRoutes from "./AppRoutes";
-import { ThemeProvider } from "./components/ThemeProvider";
-import { VictaureChatWidget } from "./components/chat/VictaureChatWidget";
-import { useLocation } from "react-router-dom";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
-  const location = useLocation();
-  
-  // Set viewport height for mobile
-  useEffect(() => {
-    const setViewportHeight = () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    };
-
-    setViewportHeight();
-    window.addEventListener('resize', setViewportHeight);
-    return () => window.removeEventListener('resize', setViewportHeight);
-  }, []);
-
-  // Ne pas afficher le widget sur la page d'authentification
-  const isAuthPage = location.pathname === "/auth";
-
   return (
-    <ThemeProvider>
-      <AppRoutes />
-      <Toaster richColors position="top-center" />
-      {!isAuthPage && <VictaureChatWidget />}
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <QueryClientProvider client={queryClient}>
+        <SessionContextProvider supabaseClient={supabase}>
+          <AppRoutes />
+          <Toaster position="top-right" expand={false} richColors />
+        </SessionContextProvider>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }
 
 export default App;
+

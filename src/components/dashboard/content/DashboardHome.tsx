@@ -12,19 +12,16 @@ interface DashboardHomeProps {
 
 export function DashboardHome({ onRequestChat }: DashboardHomeProps) {
   return (
-    <div className="space-y-4 relative">
+    <div className="space-y-6 relative">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <MrVictaureWelcome 
-          onDismiss={() => {}} 
-          onStartChat={onRequestChat}
-        />
+        <MrVictaureWelcome onRequestChat={onRequestChat} />
       </motion.div>
 
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -40,11 +37,11 @@ export function DashboardHome({ onRequestChat }: DashboardHomeProps) {
           transition={{ delay: 0.2, duration: 0.3 }}
           className="glass-card h-full"
         >
-          <QuickActions onRequestChat={onRequestChat} />
+          <QuickActions />
         </motion.div>
       </div>
 
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

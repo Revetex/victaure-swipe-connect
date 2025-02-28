@@ -1,4 +1,3 @@
-
 import { ExtendedJsPDF } from '../../types';
 import { UserProfile } from '@/types/profile';
 import { pdfStyles } from '../styles';

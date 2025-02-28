@@ -1,71 +1,85 @@
 
 import { Button } from "@/components/ui/button";
-import { PenTool, Calculator, Globe, Check, StickyNote } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Calculator, Languages, ListTodo, Plus, Sword } from "lucide-react";
 import { motion } from "framer-motion";
 
-export interface ToolsListProps {
-  onToolClick: (toolId: string) => void;
+interface ToolsListProps {
+  onToolClick: (toolName: string) => void;
 }
 
-export const tools = [
+const tools = [
   {
-    id: "notes",
     name: "Notes",
-    icon: <StickyNote className="h-4 w-4" />,
-    color: "text-amber-500"
+    icon: Plus,
+    description: "Gérez vos notes",
+    gradient: "from-amber-500/20 via-orange-500/20 to-rose-500/20",
+    shortcut: "⌘N"
   },
   {
-    id: "translator",
-    name: "Traducteur",
-    icon: <Globe className="h-4 w-4" />,
-    color: "text-blue-500"
+    name: "Tâches",
+    icon: ListTodo,
+    description: "Gérez vos tâches",
+    gradient: "from-blue-500/20 via-indigo-500/20 to-violet-500/20",
+    shortcut: "⌘T"
   },
   {
-    id: "calculator",
     name: "Calculatrice",
-    icon: <Calculator className="h-4 w-4" />,
-    color: "text-purple-500"
+    icon: Calculator,
+    description: "Calculatrice et convertisseur",
+    gradient: "from-purple-500/20 via-fuchsia-500/20 to-pink-500/20",
+    shortcut: "⌘C"
   },
   {
-    id: "chess",
+    name: "Traducteur",
+    icon: Languages,
+    description: "Traduisez du texte",
+    gradient: "from-emerald-500/20 via-teal-500/20 to-cyan-500/20",
+    shortcut: "⌘L"
+  },
+  {
     name: "Échecs",
-    icon: <Check className="h-4 w-4" />, // Remplacement de ChessRook par Check
-    color: "text-green-500"
-  },
-  {
-    id: "draw",
-    name: "Dessiner",
-    icon: <PenTool className="h-4 w-4" />,
-    color: "text-red-500"
+    icon: Sword,
+    description: "Jouez aux échecs",
+    gradient: "from-red-500/20 via-rose-500/20 to-pink-500/20",
+    shortcut: "⌘E"
   }
 ];
 
 export function ToolsList({ onToolClick }: ToolsListProps) {
   return (
-    <div className="space-y-1">
-      <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2 pl-2">
-        Outils
-      </h2>
-      <div className="space-y-px">
-        {tools.map((tool, index) => (
+    <div className="flex flex-col gap-1.5">
+      {tools.map((tool) => {
+        const Icon = tool.icon;
+        return (
           <motion.div
-            key={tool.id}
-            initial={{ opacity: 0, x: -5 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.05, duration: 0.2 }}
+            key={tool.name}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             <Button
               variant="ghost"
-              size="sm"
-              className="w-full justify-start font-normal"
-              onClick={() => onToolClick(tool.id)}
+              onClick={() => onToolClick(tool.name)}
+              className={cn(
+                "w-full h-10 py-1 px-2 flex items-center justify-between gap-2",
+                "bg-gradient-to-br hover:shadow-md transition-all duration-200",
+                "group relative text-sm",
+                tool.gradient
+              )}
             >
-              <span className={`mr-2 ${tool.color}`}>{tool.icon}</span>
-              <span>{tool.name}</span>
+              <div className="flex items-center gap-2">
+                <Icon className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:scale-110" />
+                <span className="font-medium">{tool.name}</span>
+              </div>
+              <span className="text-xs text-muted-foreground font-mono">
+                {tool.shortcut}
+              </span>
             </Button>
           </motion.div>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }
+
+export { tools };

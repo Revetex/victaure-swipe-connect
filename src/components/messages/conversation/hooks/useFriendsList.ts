@@ -1,100 +1,117 @@
 
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
-import { Friend, UserRole } from "@/types/profile";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
+import { Receiver } from '@/types/messages';
 
 export function useFriendsList() {
+  const [loading, setLoading] = useState(true);
+  const [friends, setFriends] = useState<Receiver[]>([]);
   const { user } = useAuth();
 
-  const { data: friends = [], isLoading: isLoadingFriends } = useQuery({
-    queryKey: ["friends-for-messages", user?.id],
-    queryFn: async () => {
-      if (!user) return [];
+  useEffect(() => {
+    if (!user?.id) return;
 
+    const loadFriends = async () => {
       try {
-        // Au lieu d'utiliser user_connections_view qui cause des erreurs, utilisons deux requêtes séparées
-        // D'abord, récupérons les connexions de l'utilisateur
-        const { data: connections, error: connectionsError } = await supabase
-          .from('user_connections')
-          .select('id, sender_id, receiver_id, status, connection_type, created_at, updated_at')
-          .eq('status', 'accepted')
-          .eq('connection_type', 'friend')
-          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
+        setLoading(true);
+        // Obtenir les amis depuis la table friendships
+        const { data: friendshipsData, error: friendshipsError } = await supabase
+          .from('friendships')
+          .select(`
+            friend_id,
+            friend:profiles!friendships_friend_id_fkey(
+              id,
+              full_name,
+              avatar_url,
+              email,
+              role,
+              bio,
+              phone,
+              city,
+              state,
+              country,
+              skills,
+              latitude,
+              longitude,
+              online_status,
+              last_seen,
+              certifications (
+                *
+              ),
+              education (
+                *
+              ),
+              experiences (
+                *
+              )
+            )
+          `)
+          .eq('user_id', user.id)
+          .eq('status', 'accepted');
 
-        if (connectionsError) {
-          console.error("Error loading connections:", connectionsError);
-          return [];
+        if (friendshipsError) throw friendshipsError;
+
+        if (friendshipsData) {
+          const formattedFriends: Receiver[] = friendshipsData.map(friendship => {
+            const onlineStatus: "online" | "offline" = friendship.friend.online_status ? "online" : "offline";
+            
+            return {
+              id: friendship.friend.id,
+              full_name: friendship.friend.full_name || '',
+              avatar_url: friendship.friend.avatar_url,
+              email: friendship.friend.email,
+              role: friendship.friend.role as 'professional' | 'business' | 'admin',
+              bio: friendship.friend.bio,
+              phone: friendship.friend.phone,
+              city: friendship.friend.city,
+              state: friendship.friend.state,
+              country: friendship.friend.country,
+              skills: friendship.friend.skills || [],
+              latitude: friendship.friend.latitude,
+              longitude: friendship.friend.longitude,
+              online_status: onlineStatus,
+              last_seen: friendship.friend.last_seen,
+              certifications: friendship.friend.certifications || [],
+              education: friendship.friend.education || [],
+              experiences: friendship.friend.experiences || [],
+              friends: []
+            };
+          });
+
+          setFriends(formattedFriends);
         }
-
-        if (!connections || connections.length === 0) return [];
-
-        // Maintenant, récupérons les profils correspondants
-        const friendsList: Friend[] = [];
-        
-        for (const connection of connections) {
-          const friendId = connection.sender_id === user.id ? connection.receiver_id : connection.sender_id;
-          
-          const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', friendId)
-            .single();
-          
-          if (profileError) {
-            console.error(`Error fetching profile for ${friendId}:`, profileError);
-            continue;
-          }
-          
-          if (!profileData) continue;
-
-          // Déterminer le rôle valide à partir des données du profil
-          let role: UserRole = 'professional';
-          
-          if (profileData.role === 'professional' || 
-              profileData.role === 'business' || 
-              profileData.role === 'admin' || 
-              profileData.role === 'freelancer' || 
-              profileData.role === 'student') {
-            role = profileData.role as UserRole;
-          }
-
-          // Créer un objet Friend
-          const friend: Friend = {
-            id: profileData.id,
-            full_name: profileData.full_name || '',
-            avatar_url: profileData.avatar_url || null,
-            email: profileData.email || null,
-            role: role,
-            bio: profileData.bio || null,
-            phone: profileData.phone || null,
-            city: profileData.city || null,
-            state: profileData.state || null,
-            country: profileData.country || null,
-            skills: profileData.skills || [],
-            online_status: !!profileData.online_status,
-            last_seen: profileData.last_seen || null,
-            created_at: profileData.created_at || new Date().toISOString(),
-            friendship_id: connection.id,
-            status: connection.status,
-            friends: [] // Propriété obligatoire
-          };
-          
-          friendsList.push(friend);
-        }
-
-        // Trier les amis - d'abord ceux qui sont en ligne
-        return friendsList.sort((a, b) => {
-          if (a.online_status && !b.online_status) return -1;
-          if (!a.online_status && b.online_status) return 1;
-          return (a.full_name || "").localeCompare(b.full_name || "");
-        });
       } catch (error) {
-        console.error("Error fetching friends:", error);
-        return [];
+        console.error('Error loading friends:', error);
+        toast.error('Impossible de charger la liste d\'amis');
+      } finally {
+        setLoading(false);
       }
-    },
-  });
+    };
 
-  return { friends, isLoadingFriends };
+    loadFriends();
+
+    // Mettre en place l'écoute des changements en temps réel
+    const friendsChannel = supabase.channel('friends-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'friendships',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          loadFriends(); // Recharger la liste quand il y a des changements
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(friendsChannel);
+    };
+  }, [user?.id]);
+
+  return { friends, loading };
 }

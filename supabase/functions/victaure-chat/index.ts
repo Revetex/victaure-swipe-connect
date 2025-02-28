@@ -1,81 +1,141 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { HfInference } from "https://esm.sh/@huggingface/inference@2.3.2";
+import { createClient } from "@supabase/supabase-js";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { corsHeaders } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const GEMINI_API_KEY = Deno.env.get('GOOGLE_GEMINI_API_KEY');
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY!);
+
+console.log("Starting victaure-chat function with Google Gemini API");
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    const { messages, type } = await req.json();
-    const hf = new HfInference(Deno.env.get('HUGGING_FACE_ACCESS_TOKEN'));
+    const { messages, userId } = await req.json();
 
-    // Construire le prompt à partir des messages
-    const conversationHistory = messages
-      .map((msg: { role: string; content: string }) => 
-        `${msg.role === 'user' ? 'Utilisateur' : 'Assistant'}: ${msg.content}`
-      )
-      .join('\n');
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
 
-    const prompt = `Tu es un assistant professionnel qui aide les utilisateurs avec leur inscription sur Victaure. Réponds de manière concise et claire en français.
+    // Récupérer le contexte utilisateur depuis Supabase
+    const { data: userProfile } = await supabaseAdmin
+      .from('profiles')
+      .select(`
+        role,
+        full_name,
+        skills,
+        location,
+        experiences (
+          position,
+          company,
+          start_date,
+          end_date
+        )
+      `)
+      .eq('id', userId)
+      .single();
 
-Historique de la conversation:
-${conversationHistory}
+    // Formater le contexte
+    const userContext = {
+      role: userProfile?.role || 'visitor',
+      full_name: userProfile?.full_name,
+      skills: userProfile?.skills,
+      location: userProfile?.location,
+      experience: userProfile?.experiences?.map(exp => ({
+        position: exp.position,
+        company: exp.company,
+        duration: `${new Date(exp.start_date).getFullYear()} - ${
+          exp.end_date ? new Date(exp.end_date).getFullYear() : 'présent'
+        }`
+      })) || []
+    };
 
-Utilisateur: ${messages[messages.length - 1].content}
-Assistant:`;
-
-    console.log("Sending prompt to Hugging Face:", prompt);
-
-    // Utiliser le modèle de dialogue pour générer la réponse
-    const response = await hf.textGeneration({
-      model: "mistralai/Mistral-7B-Instruct-v0.2",
-      inputs: prompt,
-      parameters: {
-        max_new_tokens: 500,
+    // Initialiser le modèle
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-pro",
+      generationConfig: {
         temperature: 0.7,
-        top_p: 0.9,
-        repetition_penalty: 1.2
+        topP: 0.8,
+        topK: 40,
+        maxOutputTokens: 1000,
       }
     });
 
-    console.log("Received response from Hugging Face:", response);
+    const context = `Tu es Mr Victaure, un assistant professionnel et bienveillant spécialisé dans l'emploi et le développement de carrière.
+    Tu parles en français de manière naturelle et engageante.
 
-    const aiResponse = response.generated_text.trim();
+    Contexte de l'utilisateur :
+    - Rôle : ${userContext.role}
+    - Nom : ${userContext.full_name || 'Non spécifié'}
+    - Compétences : ${userContext.skills?.join(', ') || 'Non spécifiées'}
+    - Localisation : ${userContext.location || 'Non spécifiée'}
+    - Expérience : ${userContext.experience?.map(exp => 
+      `${exp.position} chez ${exp.company} (${exp.duration})`
+    ).join(', ') || 'Non spécifiée'}`;
+
+    // Créer le chat
+    const chat = model.startChat({
+      history: [
+        {
+          role: "user",
+          parts: [{ text: "Initialise le contexte" }]
+        },
+        {
+          role: "model",
+          parts: [{ text: context }]
+        },
+        ...messages.map((msg: any) => ({
+          role: msg.isUser ? "user" : "model",
+          parts: [{ text: msg.content }]
+        }))
+      ],
+    });
+
+    // Générer la réponse
+    const result = await chat.sendMessage(messages[messages.length - 1].content);
+    const response = result.response;
+
+    // Sauvegarder l'interaction pour l'apprentissage
+    await supabaseAdmin
+      .from('ai_learning_data')
+      .insert({
+        question: messages[messages.length - 1].content,
+        response: response.text(),
+        user_id: userId,
+        context: userContext
+      });
 
     return new Response(
-      JSON.stringify({ 
-        response: aiResponse,
-        model: "mistralai/Mistral-7B-Instruct-v0.2"
+      JSON.stringify({
+        choices: [{
+          message: {
+            content: response.text()
+          }
+        }]
       }),
       { 
         headers: { 
           ...corsHeaders,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json' 
         } 
       }
     );
 
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error in victaure-chat function:', error);
     return new Response(
-      JSON.stringify({ 
-        error: "Une erreur s'est produite", 
-        details: error.message 
-      }),
+      JSON.stringify({ error: error.message }),
       { 
+        status: 500,
         headers: { 
           ...corsHeaders,
           'Content-Type': 'application/json'
-        },
-        status: 500 
+        }
       }
     );
   }

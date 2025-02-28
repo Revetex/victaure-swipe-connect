@@ -1,24 +1,21 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "./form/ImageUpload";
-import { SaleTypeField } from "./form/SaleTypeField";
-import { ListingTypeField } from "./form/ListingTypeField";
-import { CategoryField } from "./form/CategoryField";
-import { ListingDetails } from "./form/ListingDetails";
-import { LocationField } from "./form/LocationField";
-import { PricingFields } from "./form/PricingFields";
 import { useListingImages } from "./hooks/useListingImages";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { ListingType } from "@/types/marketplace";
 
-export function MarketplaceForm({ open = true, onOpenChange }: { open?: boolean, onOpenChange?: (open: boolean) => void }) {
+export function MarketplaceForm() {
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState<{id: string, name: string, type: string}[]>([]);
-  const [internalOpen, setInternalOpen] = useState(open);
+  const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const { imageUrls, handleImagePreview, removeImage, uploadImages, resetImages } = useListingImages();
   
@@ -28,58 +25,13 @@ export function MarketplaceForm({ open = true, onOpenChange }: { open?: boolean,
     price: "",
     type: "vente" as ListingType,
     currency: "CAD",
-    condition: "good",
+    condition: "new",
+    location: "",
     category: "",
     saleType: "immediate",
     auctionEndDate: null as Date | null,
     minimumBid: "",
-    latitude: null as number | null,
-    longitude: null as number | null,
-    location: "",
-    featured: false
   });
-
-  useEffect(() => {
-    // Récupération des catégories depuis la base de données
-    const fetchCategories = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('marketplace_categories')
-          .select('id, name, type');
-
-        if (error) throw error;
-        if (data) setCategories(data);
-      } catch (error) {
-        console.error('Erreur lors de la récupération des catégories:', error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  // Synchroniser l'état interne avec la prop si elle change
-  useEffect(() => {
-    setInternalOpen(open);
-  }, [open]);
-
-  // Fonction de gestion du changement d'état d'ouverture
-  const handleOpenChange = (newOpen: boolean) => {
-    setInternalOpen(newOpen);
-    if (onOpenChange) onOpenChange(newOpen);
-  };
-
-  const handleFieldChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleLocationSelect = (location: { latitude: number; longitude: number; name: string }) => {
-    setFormData(prev => ({
-      ...prev,
-      latitude: location.latitude,
-      longitude: location.longitude,
-      location: location.name
-    }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,17 +64,8 @@ export function MarketplaceForm({ open = true, onOpenChange }: { open?: boolean,
             type: formData.type,
             currency: formData.currency,
             images: uploadedImageUrls,
-            condition: formData.condition,
-            category: formData.category,
-            latitude: formData.latitude,
-            longitude: formData.longitude,
-            location: formData.location,
-            sale_type: formData.saleType,
-            auction_end_date: formData.saleType === 'auction' ? formData.auctionEndDate : null,
-            minimum_bid: formData.saleType === 'auction' ? parseFloat(formData.minimumBid) : null,
             seller_id: user.id,
             status: 'active',
-            featured: formData.featured
           }
         ]);
 
@@ -136,17 +79,14 @@ export function MarketplaceForm({ open = true, onOpenChange }: { open?: boolean,
         price: "",
         type: "vente",
         currency: "CAD",
-        condition: "good",
+        condition: "new",
+        location: "",
         category: "",
         saleType: "immediate",
         auctionEndDate: null,
         minimumBid: "",
-        latitude: null,
-        longitude: null,
-        location: "",
-        featured: false
       });
-      handleOpenChange(false);
+      setOpen(false);
       
     } catch (error) {
       console.error('Erreur lors de la publication:', error);
@@ -157,47 +97,85 @@ export function MarketplaceForm({ open = true, onOpenChange }: { open?: boolean,
   };
 
   return (
-    <Dialog open={internalOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="w-full max-w-3xl mx-auto px-2 sm:px-4 bg-[#1A1F2C] text-white border-[#64B5D9]/10">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid gap-4">
-            <SaleTypeField 
-              value={formData.saleType} 
-              onChange={(value) => handleFieldChange('saleType', value)} 
-            />
+            <div className="grid gap-2">
+              <Label className="text-white">Type de vente</Label>
+              <Select 
+                value={formData.saleType} 
+                onValueChange={(value) => setFormData(prev => ({ ...prev, saleType: value }))}
+              >
+                <SelectTrigger className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white">
+                  <SelectValue placeholder="Choisissez le type de vente" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="immediate">Prix immédiat</SelectItem>
+                  <SelectItem value="auction">Enchères</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-            <ListingTypeField 
-              value={formData.type} 
-              onChange={(value) => handleFieldChange('type', value)} 
-            />
+            <div className="grid gap-2">
+              <Label className="text-white">Titre de l'annonce</Label>
+              <Input 
+                placeholder="Titre de votre annonce" 
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                required
+                className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white placeholder:text-white/50"
+              />
+            </div>
 
-            <CategoryField 
-              value={formData.category} 
-              onChange={(value) => handleFieldChange('category', value)}
-              categories={categories}
-              listingType={formData.type}
-            />
+            <div className="grid gap-2">
+              <Label className="text-white">Description</Label>
+              <Textarea 
+                placeholder="Décrivez votre article en détail..." 
+                className="min-h-[100px] bg-[#1B2A4A] border-[#64B5D9]/10 text-white placeholder:text-white/50"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                required
+              />
+            </div>
 
-            <ListingDetails
-              title={formData.title}
-              description={formData.description}
-              onChange={handleFieldChange}
-            />
-
-            <LocationField
-              location={formData.location}
-              latitude={formData.latitude}
-              longitude={formData.longitude}
-              onLocationSelect={handleLocationSelect}
-            />
-
-            <PricingFields
-              saleType={formData.saleType}
-              price={formData.price}
-              minimumBid={formData.minimumBid}
-              auctionEndDate={formData.auctionEndDate}
-              onChange={handleFieldChange}
-            />
+            {formData.saleType === 'immediate' ? (
+              <div className="grid gap-2">
+                <Label className="text-white">Prix fixe</Label>
+                <Input 
+                  type="number" 
+                  placeholder="Prix en CAD"
+                  value={formData.price}
+                  onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                  required
+                  className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white placeholder:text-white/50"
+                />
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="grid gap-2">
+                  <Label className="text-white">Prix de départ</Label>
+                  <Input 
+                    type="number" 
+                    placeholder="Prix minimal en CAD"
+                    value={formData.minimumBid}
+                    onChange={(e) => setFormData(prev => ({ ...prev, minimumBid: e.target.value }))}
+                    required
+                    className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white placeholder:text-white/50"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label className="text-white">Fin des enchères</Label>
+                  <Input 
+                    type="datetime-local"
+                    value={formData.auctionEndDate?.toISOString().slice(0, 16) || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, auctionEndDate: new Date(e.target.value) }))}
+                    required
+                    className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white"
+                  />
+                </div>
+              </div>
+            )}
 
             <ImageUpload
               imageUrls={imageUrls}
@@ -206,7 +184,7 @@ export function MarketplaceForm({ open = true, onOpenChange }: { open?: boolean,
             />
 
             <DialogFooter>
-              <Button variant="outline" type="button" onClick={() => handleOpenChange(false)}>
+              <Button variant="outline" type="button" onClick={() => setOpen(false)}>
                 Annuler
               </Button>
               <Button 

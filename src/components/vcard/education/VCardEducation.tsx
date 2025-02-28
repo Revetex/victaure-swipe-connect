@@ -1,337 +1,233 @@
 
-import { useState } from 'react';
-import { UserProfile, Education } from '@/types/profile';
-import { format, parseISO } from 'date-fns';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Trash, Pencil, Calendar, PlusCircle } from 'lucide-react';
-import { toast } from 'sonner';
+import { VCardSection } from "@/components/VCardSection";
+import { GraduationCap, Building2, Calendar, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { UserProfile, Education } from "@/types/profile";
+import { motion } from "framer-motion";
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
 
 interface VCardEducationProps {
   profile: UserProfile;
   isEditing: boolean;
-  onUpdate: (profile: UserProfile) => void;
+  setProfile: (profile: UserProfile) => void;
 }
 
-export function VCardEducation({ profile, isEditing, onUpdate }: VCardEducationProps) {
-  const [isAdding, setIsAdding] = useState(false);
-  const [editingEducation, setEditingEducation] = useState<Education | null>(null);
-  const [newEducation, setNewEducation] = useState<Education>({
-    id: crypto.randomUUID(),
-    school_name: '',
-    degree: '',
-    field_of_study: '',
-    start_date: '',
-    end_date: null,
-    description: ''
-  });
-
-  const formatDate = (date: string | null | undefined) => {
-    if (!date) return '';
-    try {
-      return format(parseISO(date), 'yyyy');
-    } catch (error) {
-      return date;
-    }
-  };
+export function VCardEducation({ profile, isEditing, setProfile }: VCardEducationProps) {
+  const [error, setError] = useState<string | null>(null);
 
   const handleAddEducation = () => {
-    if (!newEducation.school_name || !newEducation.degree) {
-      toast.error('Veuillez remplir les champs obligatoires');
-      return;
+    try {
+      const newEducation: Education = {
+        id: crypto.randomUUID(),
+        profile_id: profile.id,
+        school_name: "",
+        degree: "",
+        field_of_study: "",
+        start_date: null,
+        end_date: null,
+        description: null
+      };
+
+      setProfile({
+        ...profile,
+        education: [...(profile.education || []), newEducation],
+      });
+      toast.success("Formation ajoutée");
+    } catch (err) {
+      console.error("Erreur lors de l'ajout d'une formation:", err);
+      setError("Impossible d'ajouter une formation pour le moment");
+      toast.error("Erreur lors de l'ajout de la formation");
     }
+  };
 
-    const updatedEducation = [...(profile.education || []), newEducation];
-    
-    onUpdate({
-      ...profile,
-      education: updatedEducation
+  const handleRemoveEducation = (id: string) => {
+    try {
+      setProfile({
+        ...profile,
+        education: profile.education?.filter((edu) => edu.id !== id),
+      });
+      toast.success("Formation supprimée");
+    } catch (err) {
+      console.error("Erreur lors de la suppression d'une formation:", err);
+      setError("Impossible de supprimer la formation pour le moment");
+      toast.error("Erreur lors de la suppression de la formation");
+    }
+  };
+
+  const handleEducationChange = (id: string, field: string, value: string) => {
+    try {
+      setProfile({
+        ...profile,
+        education: profile.education?.map((edu) =>
+          edu.id === id ? { ...edu, [field]: value } : edu
+        ),
+      });
+    } catch (err) {
+      console.error("Erreur lors de la modification d'une formation:", err);
+      setError("Impossible de modifier la formation pour le moment");
+      toast.error("Erreur lors de la modification de la formation");
+    }
+  };
+
+  const formatDate = (date: string | undefined) => {
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("fr-FR", {
+      year: "numeric",
+      month: "long",
     });
-    
-    setIsAdding(false);
-    setNewEducation({
-      id: crypto.randomUUID(),
-      school_name: '',
-      degree: '',
-      field_of_study: '',
-      start_date: '',
-      end_date: null,
-      description: ''
-    });
-    
-    toast.success('Formation ajoutée');
   };
 
-  const handleUpdateEducation = () => {
-    if (!editingEducation) return;
-    
-    const updatedEducation = profile.education?.map(edu => 
-      edu.id === editingEducation.id ? editingEducation : edu
-    ) || [];
-    
-    onUpdate({
-      ...profile,
-      education: updatedEducation
-    });
-    
-    setEditingEducation(null);
-    toast.success('Formation mise à jour');
-  };
+  // Reset error when props change
+  useEffect(() => {
+    setError(null);
+  }, [profile, isEditing]);
 
-  const handleDeleteEducation = (id: string) => {
-    const updatedEducation = profile.education?.filter(edu => edu.id !== id) || [];
-    
-    onUpdate({
-      ...profile,
-      education: updatedEducation
-    });
-    
-    toast.success('Formation supprimée');
-  };
-
-  const handleChangeNewEducation = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setNewEducation(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleChangeEditingEducation = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (!editingEducation) return;
-    
-    const { name, value } = e.target;
-    setEditingEducation(prev => ({ ...prev!, [name]: value }));
-  };
+  if (error) {
+    return (
+      <VCardSection
+        title="Formation"
+        icon={<GraduationCap className="h-4 w-4" />}
+        variant="education"
+      >
+        <div className="p-4 text-center">
+          <p className="text-red-500">{error}</p>
+          <Button 
+            onClick={() => setError(null)} 
+            variant="ghost" 
+            className="mt-2"
+          >
+            Réessayer
+          </Button>
+        </div>
+      </VCardSection>
+    );
+  }
 
   return (
-    <div>
-      {profile.education && profile.education.length > 0 ? (
-        <div className="space-y-4">
-          {profile.education.map((education) => (
-            <div key={education.id}>
-              {editingEducation?.id === education.id ? (
-                <Card>
-                  <CardContent className="p-4 space-y-4">
-                    <div>
-                      <Label htmlFor="school_name">Établissement</Label>
+    <VCardSection
+      title="Formation"
+      icon={<GraduationCap className="h-4 w-4" />}
+      variant="education"
+    >
+      <div className="w-full space-y-6 px-0">
+        {(profile.education || []).map((edu) => (
+          <motion.div
+            key={edu.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="relative w-full bg-background/50 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-border/20"
+          >
+            {isEditing ? (
+              <>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    <Input
+                      value={edu.school_name}
+                      onChange={(e) =>
+                        handleEducationChange(edu.id, "school_name", e.target.value)
+                      }
+                      placeholder="Nom de l'école"
+                      className="flex-1 bg-background/50 border-border/20 min-h-[44px]"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <GraduationCap className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    <Input
+                      value={edu.degree}
+                      onChange={(e) =>
+                        handleEducationChange(edu.id, "degree", e.target.value)
+                      }
+                      placeholder="Diplôme"
+                      className="flex-1 bg-background/50 border-border/20 min-h-[44px]"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
                       <Input
-                        id="school_name"
-                        name="school_name"
-                        value={editingEducation.school_name}
-                        onChange={handleChangeEditingEducation}
+                        type="date"
+                        value={edu.start_date || ""}
+                        onChange={(e) =>
+                          handleEducationChange(edu.id, "start_date", e.target.value)
+                        }
+                        className="flex-1 bg-background/50 border-border/20 min-h-[44px]"
                       />
                     </div>
-                    <div>
-                      <Label htmlFor="degree">Diplôme</Label>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
                       <Input
-                        id="degree"
-                        name="degree"
-                        value={editingEducation.degree}
-                        onChange={handleChangeEditingEducation}
+                        type="date"
+                        value={edu.end_date || ""}
+                        onChange={(e) =>
+                          handleEducationChange(edu.id, "end_date", e.target.value)
+                        }
+                        className="flex-1 bg-background/50 border-border/20 min-h-[44px]"
                       />
                     </div>
-                    <div>
-                      <Label htmlFor="field_of_study">Domaine d'étude</Label>
-                      <Input
-                        id="field_of_study"
-                        name="field_of_study"
-                        value={editingEducation.field_of_study || ''}
-                        onChange={handleChangeEditingEducation}
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="start_date">Date de début</Label>
-                        <Input
-                          id="start_date"
-                          name="start_date"
-                          type="date"
-                          value={editingEducation.start_date?.toString().slice(0, 10) || ''}
-                          onChange={handleChangeEditingEducation}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="end_date">Date de fin</Label>
-                        <Input
-                          id="end_date"
-                          name="end_date"
-                          type="date"
-                          value={editingEducation.end_date?.toString().slice(0, 10) || ''}
-                          onChange={handleChangeEditingEducation}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="description">Description</Label>
-                      <Textarea
-                        id="description"
-                        name="description"
-                        value={editingEducation.description || ''}
-                        onChange={handleChangeEditingEducation}
-                        rows={3}
-                      />
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => setEditingEducation(null)}
-                      >
-                        Annuler
-                      </Button>
-                      <Button onClick={handleUpdateEducation}>
-                        Enregistrer
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between">
-                      <div>
-                        <h3 className="font-semibold">{education.degree}</h3>
-                        <p className="text-sm text-gray-600">{education.school_name}</p>
-                        {education.field_of_study && (
-                          <p className="text-sm text-gray-500">{education.field_of_study}</p>
-                        )}
-                        <div className="flex items-center text-xs text-gray-500 mt-1">
-                          <Calendar className="h-3 w-3 mr-1" />
-                          <span>
-                            {formatDate(education.start_date)} 
-                            {education.end_date ? ` - ${formatDate(education.end_date)}` : ' - Présent'}
-                          </span>
-                        </div>
-                        {education.description && (
-                          <p className="text-sm mt-2">{education.description}</p>
-                        )}
-                      </div>
-                      {isEditing && (
-                        <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setEditingEducation(education)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteEducation(education.id)}
-                          >
-                            <Trash className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          ))}
-        </div>
-      ) : !isAdding ? (
-        <div className="text-center py-8 text-gray-500">
-          {isEditing ? (
-            <p>Ajoutez vos formations pour compléter votre profil</p>
-          ) : (
-            <p>Aucune formation ajoutée</p>
-          )}
-        </div>
-      ) : null}
-
-      {isEditing && !isAdding && !editingEducation && (
-        <Button
-          variant="outline"
-          className="mt-4 w-full"
-          onClick={() => setIsAdding(true)}
-        >
-          <PlusCircle className="h-4 w-4 mr-2" />
-          Ajouter une formation
-        </Button>
-      )}
-
-      {isAdding && (
-        <Card className="mt-4">
-          <CardContent className="p-4 space-y-4">
-            <div>
-              <Label htmlFor="school_name">Établissement</Label>
-              <Input
-                id="school_name"
-                name="school_name"
-                value={newEducation.school_name}
-                onChange={handleChangeNewEducation}
-                placeholder="Ex: Université de Montréal"
-              />
-            </div>
-            <div>
-              <Label htmlFor="degree">Diplôme</Label>
-              <Input
-                id="degree"
-                name="degree"
-                value={newEducation.degree}
-                onChange={handleChangeNewEducation}
-                placeholder="Ex: Master en informatique"
-              />
-            </div>
-            <div>
-              <Label htmlFor="field_of_study">Domaine d'étude</Label>
-              <Input
-                id="field_of_study"
-                name="field_of_study"
-                value={newEducation.field_of_study || ''}
-                onChange={handleChangeNewEducation}
-                placeholder="Ex: Sciences informatiques"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="start_date">Date de début</Label>
-                <Input
-                  id="start_date"
-                  name="start_date"
-                  type="date"
-                  value={newEducation.start_date || ''}
-                  onChange={handleChangeNewEducation}
-                />
-              </div>
-              <div>
-                <Label htmlFor="end_date">Date de fin</Label>
-                <Input
-                  id="end_date"
-                  name="end_date"
-                  type="date"
-                  value={newEducation.end_date?.toString() || ''}
-                  onChange={handleChangeNewEducation}
-                />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={newEducation.description || ''}
-                onChange={handleChangeNewEducation}
-                rows={3}
-                placeholder="Décrivez votre formation..."
-              />
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsAdding(false)}
-              >
-                Annuler
-              </Button>
-              <Button onClick={handleAddEducation}>
-                Ajouter
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+                  </div>
+                  <Textarea
+                    value={edu.description || ""}
+                    onChange={(e) =>
+                      handleEducationChange(edu.id, "description", e.target.value)
+                    }
+                    placeholder="Description de la formation"
+                    className="w-full bg-background/50 border-border/20 min-h-[100px]"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleRemoveEducation(edu.id)}
+                    className="absolute top-2 right-2 text-muted-foreground"
+                    aria-label="Supprimer la formation"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-muted-foreground" />
+                  <h3 className="font-medium">{edu.school_name}</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                  <p>{edu.degree}</p>
+                </div>
+                {edu.description && (
+                  <p className="text-muted-foreground pl-6">{edu.description}</p>
+                )}
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
+                  <span>
+                    {formatDate(edu.start_date)} - {formatDate(edu.end_date) || "Présent"}
+                  </span>
+                </div>
+              </>
+            )}
+          </motion.div>
+        ))}
+        {isEditing && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="w-full px-4 sm:px-0"
+          >
+            <Button
+              onClick={handleAddEducation}
+              className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] text-white transition-colors duration-200 min-h-[44px]"
+            >
+              Ajouter une formation
+            </Button>
+          </motion.div>
+        )}
+      </div>
+    </VCardSection>
   );
 }

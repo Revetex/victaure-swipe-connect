@@ -423,24 +423,6 @@ export type Database = {
           },
         ]
       }
-      cleanup_logs: {
-        Row: {
-          executed_at: string | null
-          id: number
-          rows_affected: Json | null
-        }
-        Insert: {
-          executed_at?: string | null
-          id?: number
-          rows_affected?: Json | null
-        }
-        Update: {
-          executed_at?: string | null
-          id?: number
-          rows_affected?: Json | null
-        }
-        Relationships: []
-      }
       contract_bids: {
         Row: {
           amount: number
@@ -818,7 +800,7 @@ export type Database = {
           },
         ]
       }
-      friend_requests_old: {
+      friend_requests: {
         Row: {
           created_at: string
           id: string
@@ -1906,49 +1888,6 @@ export type Database = {
         }
         Relationships: []
       }
-      marketplace_favorites: {
-        Row: {
-          created_at: string | null
-          id: string
-          item_id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          item_id: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          item_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "marketplace_favorites_item_id_fkey"
-            columns: ["item_id"]
-            isOneToOne: false
-            referencedRelation: "marketplace_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "marketplace_favorites_item_id_fkey"
-            columns: ["item_id"]
-            isOneToOne: false
-            referencedRelation: "mv_active_marketplace_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "marketplace_favorites_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       marketplace_items: {
         Row: {
           availability: Json | null
@@ -1964,10 +1903,7 @@ export type Database = {
           favorites_count: number | null
           id: string
           images: string[] | null
-          latitude: number | null
           location: Json | null
-          location_name: string | null
-          longitude: number | null
           metadata: Json | null
           price: number
           searchable_text: unknown | null
@@ -1994,10 +1930,7 @@ export type Database = {
           favorites_count?: number | null
           id?: string
           images?: string[] | null
-          latitude?: number | null
           location?: Json | null
-          location_name?: string | null
-          longitude?: number | null
           metadata?: Json | null
           price: number
           searchable_text?: unknown | null
@@ -2024,10 +1957,7 @@ export type Database = {
           favorites_count?: number | null
           id?: string
           images?: string[] | null
-          latitude?: number | null
           location?: Json | null
-          location_name?: string | null
-          longitude?: number | null
           metadata?: Json | null
           price?: number
           searchable_text?: unknown | null
@@ -2318,49 +2248,6 @@ export type Database = {
           {
             foreignKeyName: "marketplace_services_provider_id_fkey"
             columns: ["provider_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      marketplace_views: {
-        Row: {
-          created_at: string | null
-          id: string
-          item_id: string
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          item_id: string
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          item_id?: string
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "marketplace_views_item_id_fkey"
-            columns: ["item_id"]
-            isOneToOne: false
-            referencedRelation: "marketplace_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "marketplace_views_item_id_fkey"
-            columns: ["item_id"]
-            isOneToOne: false
-            referencedRelation: "mv_active_marketplace_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "marketplace_views_user_id_fkey"
-            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -3270,7 +3157,6 @@ export type Database = {
           images: string[] | null
           likes: number | null
           privacy_level: string
-          searchable_content: unknown | null
           updated_at: string | null
           user_id: string
         }
@@ -3282,7 +3168,6 @@ export type Database = {
           images?: string[] | null
           likes?: number | null
           privacy_level?: string
-          searchable_content?: unknown | null
           updated_at?: string | null
           user_id: string
         }
@@ -3294,7 +3179,6 @@ export type Database = {
           images?: string[] | null
           likes?: number | null
           privacy_level?: string
-          searchable_content?: unknown | null
           updated_at?: string | null
           user_id?: string
         }
@@ -3372,7 +3256,6 @@ export type Database = {
           last_used_tool: string | null
           latitude: number | null
           location_enabled: boolean | null
-          location_name: string | null
           longitude: number | null
           max_file_size: number | null
           notifications_enabled: boolean | null
@@ -3429,7 +3312,6 @@ export type Database = {
           last_used_tool?: string | null
           latitude?: number | null
           location_enabled?: boolean | null
-          location_name?: string | null
           longitude?: number | null
           max_file_size?: number | null
           notifications_enabled?: boolean | null
@@ -3486,7 +3368,6 @@ export type Database = {
           last_used_tool?: string | null
           latitude?: number | null
           location_enabled?: boolean | null
-          location_name?: string | null
           longitude?: number | null
           max_file_size?: number | null
           notifications_enabled?: boolean | null
@@ -4086,44 +3967,6 @@ export type Database = {
         }
         Relationships: []
       }
-      transaction_audit_log: {
-        Row: {
-          action_type: string
-          amount: number
-          created_at: string | null
-          id: string
-          metadata: Json | null
-          transaction_id: string | null
-          user_id: string
-        }
-        Insert: {
-          action_type: string
-          amount: number
-          created_at?: string | null
-          id?: string
-          metadata?: Json | null
-          transaction_id?: string | null
-          user_id: string
-        }
-        Update: {
-          action_type?: string
-          amount?: number
-          created_at?: string | null
-          id?: string
-          metadata?: Json | null
-          transaction_id?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "transaction_audit_log_transaction_id_fkey"
-            columns: ["transaction_id"]
-            isOneToOne: false
-            referencedRelation: "wallet_transactions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       translations: {
         Row: {
           created_at: string
@@ -4154,66 +3997,6 @@ export type Database = {
           target_lang?: string
           translated_text?: string
           user_id?: string | null
-        }
-        Relationships: []
-      }
-      user_connections: {
-        Row: {
-          accepted_at: string | null
-          connection_strength: number | null
-          connection_type: string
-          created_at: string | null
-          id: string | null
-          initiator_id: string | null
-          last_interaction_at: string | null
-          metadata: Json | null
-          notes: string | null
-          receiver_id: string | null
-          rejected_at: string | null
-          sender_id: string | null
-          shared_connections: number | null
-          status: string | null
-          tags: string[] | null
-          updated_at: string | null
-          visibility: string
-        }
-        Insert: {
-          accepted_at?: string | null
-          connection_strength?: number | null
-          connection_type?: string
-          created_at?: string | null
-          id?: string | null
-          initiator_id?: string | null
-          last_interaction_at?: string | null
-          metadata?: Json | null
-          notes?: string | null
-          receiver_id?: string | null
-          rejected_at?: string | null
-          sender_id?: string | null
-          shared_connections?: number | null
-          status?: string | null
-          tags?: string[] | null
-          updated_at?: string | null
-          visibility?: string
-        }
-        Update: {
-          accepted_at?: string | null
-          connection_strength?: number | null
-          connection_type?: string
-          created_at?: string | null
-          id?: string | null
-          initiator_id?: string | null
-          last_interaction_at?: string | null
-          metadata?: Json | null
-          notes?: string | null
-          receiver_id?: string | null
-          rejected_at?: string | null
-          sender_id?: string | null
-          shared_connections?: number | null
-          status?: string | null
-          tags?: string[] | null
-          updated_at?: string | null
-          visibility?: string
         }
         Relationships: []
       }
@@ -4543,31 +4326,6 @@ export type Database = {
       }
     }
     Views: {
-      mv_active_connections: {
-        Row: {
-          connection_strength: number | null
-          connection_type: string | null
-          created_at: string | null
-          id: string | null
-          last_interaction_at: string | null
-          metadata: Json | null
-          receiver_avatar: string | null
-          receiver_id: string | null
-          receiver_last_seen: string | null
-          receiver_name: string | null
-          receiver_online_status: boolean | null
-          sender_avatar: string | null
-          sender_id: string | null
-          sender_last_seen: string | null
-          sender_name: string | null
-          sender_online_status: boolean | null
-          shared_connections: number | null
-          status: string | null
-          updated_at: string | null
-          visibility: string | null
-        }
-        Relationships: []
-      }
       mv_active_marketplace_items: {
         Row: {
           availability: Json | null
@@ -4667,61 +4425,16 @@ export type Database = {
           },
         ]
       }
-      user_connections_view: {
-        Row: {
-          connection_type: string | null
-          created_at: string | null
-          id: string | null
-          metadata: Json | null
-          receiver_avatar: string | null
-          receiver_id: string | null
-          receiver_name: string | null
-          sender_avatar: string | null
-          sender_id: string | null
-          sender_name: string | null
-          status: string | null
-          updated_at: string | null
-          visibility: string | null
-        }
-        Relationships: []
-      }
     }
     Functions: {
-      accept_friend_request: {
-        Args: {
-          p_request_id: string
-          p_user_id: string
-        }
-        Returns: boolean
-      }
-      are_friends: {
-        Args: {
-          user1_id: string
-          user2_id: string
-        }
-        Returns: boolean
-      }
       auto_cleanup_old_data: {
         Args: Record<PropertyKey, never>
         Returns: undefined
-      }
-      cancel_friend_request: {
-        Args: {
-          p_request_id: string
-          p_user_id: string
-        }
-        Returns: boolean
       }
       change_user_password: {
         Args: {
           current_password: string
           new_password: string
-        }
-        Returns: boolean
-      }
-      check_table_exists: {
-        Args: {
-          table_name: string
         }
         Returns: boolean
       }
@@ -4739,37 +4452,6 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
-      get_connection_stats: {
-        Args: {
-          p_user_id: string
-        }
-        Returns: {
-          total_connections: number
-          pending_received: number
-          pending_sent: number
-          online_connections: number
-          new_connections_last_week: number
-          most_active_connections: string[]
-        }[]
-      }
-      get_friend_requests: {
-        Args: {
-          user_id: string
-        }
-        Returns: {
-          id: string
-          sender_id: string
-          receiver_id: string
-          status: string
-          created_at: string
-          updated_at: string
-          sender_name: string
-          sender_avatar: string
-          receiver_name: string
-          receiver_avatar: string
-          type: string
-        }[]
-      }
       get_secret: {
         Args: {
           secret_name: string
@@ -4778,57 +4460,9 @@ export type Database = {
           secret: string
         }[]
       }
-      get_suggested_connections: {
-        Args: {
-          p_user_id: string
-          p_limit?: number
-        }
-        Returns: {
-          id: string
-          full_name: string
-          avatar_url: string
-          online_status: boolean
-          last_seen: string
-          shared_connections: number
-          skills: string[]
-          city: string
-          role: string
-        }[]
-      }
-      get_user_connections: {
-        Args: {
-          user_id: string
-        }
-        Returns: {
-          id: string
-          user_id: string
-          other_user_id: string
-          status: string
-          connection_type: string
-          visibility: string
-          created_at: string
-          updated_at: string
-          is_sender: boolean
-          other_user_name: string
-          other_user_avatar: string
-        }[]
-      }
-      get_view_count: {
-        Args: {
-          listing_id: string
-        }
-        Returns: number
-      }
       increment_app_download_count: {
         Args: {
           version_id: string
-        }
-        Returns: undefined
-      }
-      increment_listing_views: {
-        Args: {
-          listing_id: string
-          viewer_id: string
         }
         Returns: undefined
       }
@@ -4866,28 +4500,6 @@ export type Database = {
         }
         Returns: undefined
       }
-      process_loto_ticket_purchase: {
-        Args: {
-          p_user_id: string
-          p_amount: number
-          p_draw_id: string
-        }
-        Returns: undefined
-      }
-      reject_friend_request: {
-        Args: {
-          p_request_id: string
-          p_user_id: string
-        }
-        Returns: boolean
-      }
-      remove_friend: {
-        Args: {
-          p_connection_id: string
-          p_user_id: string
-        }
-        Returns: boolean
-      }
       schedule_next_draw: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -4895,9 +4507,6 @@ export type Database = {
     }
     Enums: {
       chess_game_status: "in_progress" | "completed" | "abandoned"
-      connection_status: "pending" | "accepted" | "rejected" | "blocked"
-      connection_type: "friend" | "professional" | "business"
-      connection_visibility: "public" | "private" | "connections"
       conversation_status: "active" | "archived" | "blocked"
       job_category:
         | "technology"

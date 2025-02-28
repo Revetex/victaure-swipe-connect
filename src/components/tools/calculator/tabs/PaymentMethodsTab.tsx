@@ -5,10 +5,8 @@ import { PaymentTypeSelector } from "@/components/settings/payment/PaymentTypeSe
 import { PaymentMethodsList } from "@/components/settings/payment/PaymentMethodsList";
 import { usePaymentMethods } from "@/hooks/usePaymentMethods";
 import { toast } from "sonner";
-import { useState } from "react";
 
 export function PaymentMethodsTab() {
-  const [isDeleting, setIsDeleting] = useState(false);
   const { 
     paymentMethods, 
     selectedType, 
@@ -16,15 +14,6 @@ export function PaymentMethodsTab() {
     handleDeleteMethod,
     handleSetDefaultMethod
   } = usePaymentMethods();
-
-  const handleDeleteWithState = async (id: string) => {
-    setIsDeleting(true);
-    try {
-      await handleDeleteMethod(id);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   const handleAddPaymentMethod = async (data: any) => {
     try {
@@ -53,8 +42,7 @@ export function PaymentMethodsTab() {
           <PaymentMethodsList
             methods={paymentMethods}
             onSetDefault={handleSetDefaultMethod}
-            onDelete={handleDeleteWithState}
-            isDeleting={isDeleting}
+            onDelete={handleDeleteMethod}
           />
         </Card>
       </div>

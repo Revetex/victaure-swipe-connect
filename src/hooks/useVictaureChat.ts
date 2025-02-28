@@ -2,9 +2,8 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Message } from '@/types/messages';
 
-interface ChatMessage {
+interface Message {
   role: 'system' | 'user' | 'assistant';
   content: string;
 }
@@ -12,78 +11,37 @@ interface ChatMessage {
 type RequestType = 'chat' | 'function' | 'vision';
 
 interface UseVictaureChatProps {
-  maxQuestions?: number;
-  context?: string;
+  onResponse?: (response: string) => void;
 }
 
-export function useVictaureChat({ maxQuestions = 3, context }: UseVictaureChatProps = {}) {
+export function useVictaureChat({ onResponse }: UseVictaureChatProps = {}) {
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [questionsLeft, setQuestionsLeft] = useState(maxQuestions);
 
-  const sendMessage = async (userMessage: string) => {
+  const sendMessage = async (userMessage: string, context?: string, type: RequestType = 'chat') => {
     setIsLoading(true);
     try {
-      const chatMessages: ChatMessage[] = [];
+      const messages: Message[] = [];
       
       if (context) {
-        chatMessages.push({
+        messages.push({
           role: 'system',
           content: context
         });
       }
 
-      chatMessages.push({
+      messages.push({
         role: 'user',
         content: userMessage
       });
 
       const { data, error } = await supabase.functions.invoke('victaure-chat', {
-        body: { messages: chatMessages, type: 'chat' }
+        body: { messages, type }
       });
 
       if (error) throw error;
 
-      setQuestionsLeft(prev => Math.max(0, prev - 1));
       const response = data.choices[0].message.content;
-      
-      const newMessages: Message[] = [
-        {
-          id: `user-${Date.now()}`,
-          content: userMessage,
-          sender_id: 'user',
-          receiver_id: 'assistant',
-          created_at: new Date().toISOString(),
-          read: true,
-          status: 'sent',
-          sender: {
-            id: 'user',
-            full_name: 'Vous',
-            avatar_url: null,
-            email: '',
-            role: 'professional'
-          }
-        },
-        {
-          id: `assistant-${Date.now() + 1}`,
-          content: response,
-          sender_id: 'assistant',
-          receiver_id: 'user',
-          created_at: new Date().toISOString(),
-          read: true,
-          status: 'sent',
-          sender: {
-            id: 'assistant',
-            full_name: 'Assistant',
-            avatar_url: null,
-            email: '',
-            role: 'professional'
-          }
-        }
-      ];
-      
-      setMessages(prev => [...prev, ...newMessages]);
-
+      onResponse?.(response);
       return response;
 
     } catch (error) {
@@ -97,8 +55,6 @@ export function useVictaureChat({ maxQuestions = 3, context }: UseVictaureChatPr
 
   return {
     sendMessage,
-    isLoading,
-    messages,
-    questionsLeft
+    isLoading
   };
 }

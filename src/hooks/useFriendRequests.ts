@@ -1,260 +1,125 @@
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
-import { UserProfile, PendingRequest } from '@/types/profile';
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { PendingRequest } from "@/types/profile";
 
-export function useFriendRequests() {
-  const { user } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [pendingRequests, setPendingRequests] = useState<PendingRequest[]>([]);
-  const [incomingRequests, setIncomingRequests] = useState<PendingRequest[]>([]);
-  const [outgoingRequests, setOutgoingRequests] = useState<PendingRequest[]>([]);
+export const useFriendRequests = () => {
+  const { data: pendingRequests = [], refetch: refetchPendingRequests } = useQuery({
+    queryKey: ["pending-requests"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
 
-  // Fonction pour récupérer les demandes d'amis
-  const fetchPendingRequests = async (): Promise<PendingRequest[]> => {
-    if (!user) return [];
-    
-    setIsLoading(true);
-    
-    try {
-      // Récupérer les demandes via la vue qui a été créée
-      const { data, error } = await supabase
-        .from('user_connections_view')
-        .select('*')
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .eq('status', 'pending')
-        .eq('connection_type', 'friend');
+      const { data: incomingRequests } = await supabase
+        .from("friend_requests")
+        .select(`
+          id,
+          sender_id,
+          receiver_id,
+          status,
+          created_at,
+          sender:profiles!friend_requests_sender_id_fkey(
+            id,
+            full_name,
+            avatar_url
+          ),
+          receiver:profiles!friend_requests_receiver_id_fkey(
+            id,
+            full_name,
+            avatar_url
+          )
+        `)
+        .eq("receiver_id", user.id)
+        .eq("status", "pending");
 
-      if (error) throw error;
+      const { data: outgoingRequests } = await supabase
+        .from("friend_requests")
+        .select(`
+          id,
+          sender_id,
+          receiver_id,
+          status,
+          created_at,
+          sender:profiles!friend_requests_sender_id_fkey(
+            id,
+            full_name,
+            avatar_url
+          ),
+          receiver:profiles!friend_requests_receiver_id_fkey(
+            id,
+            full_name,
+            avatar_url
+          )
+        `)
+        .eq("sender_id", user.id)
+        .eq("status", "pending");
 
-      // Transformer les données en format PendingRequest
-      const requests = (data || []).map(conn => {
-        const isIncoming = conn.receiver_id === user.id;
-        
-        const request: PendingRequest = {
-          id: conn.id,
-          sender_id: conn.sender_id,
-          receiver_id: conn.receiver_id,
-          status: conn.status,
-          created_at: conn.created_at,
-          updated_at: conn.updated_at,
-          type: isIncoming ? 'incoming' : 'outgoing',
-          sender: {
-            id: conn.sender_id,
-            full_name: conn.sender_name,
-            avatar_url: conn.sender_avatar
-          },
-          receiver: {
-            id: conn.receiver_id,
-            full_name: conn.receiver_name,
-            avatar_url: conn.receiver_avatar
-          }
-        };
-        
-        return request;
-      });
+      const formattedIncoming = (incomingRequests || []).map(request => ({
+        ...request,
+        type: 'incoming' as const,
+        status: request.status as "pending" | "accepted" | "rejected"
+      }));
 
-      // Séparer les demandes entrantes et sortantes
-      const incoming = requests.filter(req => req.type === 'incoming');
-      const outgoing = requests.filter(req => req.type === 'outgoing');
-      
-      // Mettre à jour les états
-      setIncomingRequests(incoming);
-      setOutgoingRequests(outgoing);
-      setPendingRequests(requests);
-      
-      return requests;
-    } catch (error) {
-      console.error('Erreur lors de la récupération des demandes:', error);
-      toast.error("Erreur lors du chargement des demandes d'amis");
-      return [];
-    } finally {
-      setIsLoading(false);
+      const formattedOutgoing = (outgoingRequests || []).map(request => ({
+        ...request,
+        type: 'outgoing' as const,
+        status: request.status as "pending" | "accepted" | "rejected"
+      }));
+
+      return [...formattedIncoming, ...formattedOutgoing] as PendingRequest[];
     }
-  };
+  });
 
-  // Charger les demandes au montage du composant
-  useEffect(() => {
-    if (user) {
-      fetchPendingRequests();
-    }
-  }, [user]);
+  const handleAcceptRequest = async (requestId: string, senderId: string, senderName: string) => {
+    const { error } = await supabase
+      .from("friend_requests")
+      .update({ status: "accepted" as const })
+      .eq("id", requestId);
 
-  const sendFriendRequest = async (receiverId: string): Promise<void> => {
-    if (!user) {
-      toast.error("Vous devez être connecté pour envoyer une demande d'ami");
+    if (error) {
+      toast.error("Erreur lors de l'acceptation de la demande");
       return;
     }
 
-    if (user.id === receiverId) {
-      toast.error("Vous ne pouvez pas vous envoyer une demande d'ami à vous-même");
+    toast.success(`Vous êtes maintenant ami avec ${senderName}`);
+    refetchPendingRequests();
+  };
+
+  const handleRejectRequest = async (requestId: string, senderName: string) => {
+    const { error } = await supabase
+      .from("friend_requests")
+      .delete()
+      .eq("id", requestId);
+
+    if (error) {
+      toast.error("Erreur lors du rejet de la demande");
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      // Vérifier si une connexion existe déjà entre ces utilisateurs
-      const { data: existingConnections, error: checkError } = await supabase
-        .from('user_connections')
-        .select('id, status')
-        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${user.id})`)
-        .limit(1);
-
-      if (checkError) throw checkError;
-
-      if (existingConnections && existingConnections.length > 0) {
-        const connection = existingConnections[0];
-        
-        if (connection.status === 'accepted') {
-          toast.info("Vous êtes déjà ami avec cette personne");
-          return;
-        } else if (connection.status === 'pending') {
-          toast.info("Une demande est déjà en attente avec cette personne");
-          return;
-        } else if (connection.status === 'rejected') {
-          // Mettre à jour la connexion existante
-          await supabase
-            .from('user_connections')
-            .update({ 
-              status: 'pending',
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', connection.id);
-            
-          toast.success("Demande d'ami envoyée");
-          fetchPendingRequests();
-          return;
-        }
-      }
-
-      // Créer une nouvelle demande d'ami
-      const { error: insertError } = await supabase
-        .from('user_connections')
-        .insert({
-          sender_id: user.id,
-          receiver_id: receiverId,
-          status: 'pending',
-          connection_type: 'friend',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        });
-
-      if (insertError) throw insertError;
-
-      toast.success("Demande d'ami envoyée");
-      fetchPendingRequests();
-    } catch (error) {
-      console.error('Erreur lors de l\'envoi de la demande d\'ami:', error);
-      toast.error("Une erreur est survenue lors de l'envoi de la demande");
-    } finally {
-      setIsLoading(false);
-    }
+    toast.success(`Vous avez rejeté la demande de ${senderName}`);
+    refetchPendingRequests();
   };
 
-  const acceptFriendRequest = async (requestId: string): Promise<void> => {
-    if (!user) return;
-    
-    setIsLoading(true);
-    
-    try {
-      // Mettre à jour le statut de la demande
-      const { error } = await supabase
-        .from('user_connections')
-        .update({ 
-          status: 'accepted',
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', requestId)
-        .eq('receiver_id', user.id);
+  const handleCancelRequest = async (requestId: string, receiverName: string) => {
+    const { error } = await supabase
+      .from("friend_requests")
+      .delete()
+      .eq("id", requestId);
 
-      if (error) throw error;
-      
-      // Actualiser la liste des demandes
-      await fetchPendingRequests();
-      
-      toast.success("Demande d'ami acceptée");
-    } catch (error) {
-      console.error('Erreur lors de l\'acceptation de la demande:', error);
-      toast.error("Une erreur est survenue");
-    } finally {
-      setIsLoading(false);
+    if (error) {
+      toast.error("Erreur lors de l'annulation de la demande");
+      return;
     }
+
+    toast.success(`Demande d'ami à ${receiverName} annulée`);
+    refetchPendingRequests();
   };
-
-  const rejectFriendRequest = async (requestId: string): Promise<void> => {
-    if (!user) return;
-    
-    setIsLoading(true);
-    
-    try {
-      // Mettre à jour le statut de la demande
-      const { error } = await supabase
-        .from('user_connections')
-        .update({ 
-          status: 'rejected',
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', requestId)
-        .eq('receiver_id', user.id);
-
-      if (error) throw error;
-      
-      // Actualiser la liste des demandes
-      await fetchPendingRequests();
-      
-      toast.success("Demande d'ami refusée");
-    } catch (error) {
-      console.error('Erreur lors du refus de la demande:', error);
-      toast.error("Une erreur est survenue");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const cancelFriendRequest = async (requestId: string): Promise<void> => {
-    if (!user) return;
-    
-    setIsLoading(true);
-    
-    try {
-      // Supprimer la demande
-      const { error } = await supabase
-        .from('user_connections')
-        .delete()
-        .eq('id', requestId)
-        .eq('sender_id', user.id)
-        .eq('status', 'pending');
-
-      if (error) throw error;
-      
-      // Actualiser la liste des demandes
-      await fetchPendingRequests();
-      
-      toast.success("Demande d'ami annulée");
-    } catch (error) {
-      console.error('Erreur lors de l\'annulation de la demande:', error);
-      toast.error("Une erreur est survenue");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Fonction utilitaire pour rafraîchir les demandes d'amis
-  const refetchPendingRequests = fetchPendingRequests;
 
   return {
-    sendFriendRequest,
-    fetchPendingRequests,
-    refetchPendingRequests,
-    acceptFriendRequest,
-    rejectFriendRequest,
-    cancelFriendRequest,
     pendingRequests,
-    incomingRequests,
-    outgoingRequests,
-    isLoading
+    handleAcceptRequest,
+    handleRejectRequest,
+    handleCancelRequest
   };
-}
+};

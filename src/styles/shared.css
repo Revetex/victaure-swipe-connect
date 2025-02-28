@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -142,18 +143,6 @@
   .grid-dots {
     background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
     background-size: 20px 20px;
-  }
-
-  .cad-borders {
-    @apply before:absolute before:inset-0 
-           before:border before:border-[#64B5D9]/20 
-           before:rounded-lg before:pointer-events-none;
-  }
-
-  .cad-corners {
-    @apply after:absolute after:w-3 after:h-3 
-           after:border-l after:border-t after:border-[#64B5D9]/30 
-           after:top-0 after:left-0;
   }
 }
 
