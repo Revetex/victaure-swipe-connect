@@ -12,7 +12,12 @@ export const useFriendRequests = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: connections } = await friendRequestsAdapter.findPendingRequests(user.id);
+      const { data: connections, error } = await friendRequestsAdapter.findPendingRequests(user.id);
+      
+      if (error) {
+        console.error("Error fetching pending requests:", error);
+        return [];
+      }
       
       if (!connections) return [];
 
@@ -28,9 +33,9 @@ export const useFriendRequests = () => {
           updated_at: request.updated_at || request.created_at,
           type: isIncoming ? 'incoming' : 'outgoing',
           sender: {
-            id: request.sender.id,
-            full_name: request.sender.full_name,
-            avatar_url: request.sender.avatar_url,
+            id: request.sender?.id,
+            full_name: request.sender?.full_name,
+            avatar_url: request.sender?.avatar_url,
             // Ajout des propriétés nécessaires pour satisfaire le type UserProfile
             email: "",
             certifications: [],
@@ -39,9 +44,9 @@ export const useFriendRequests = () => {
             friends: []
           },
           receiver: {
-            id: request.receiver.id,
-            full_name: request.receiver.full_name,
-            avatar_url: request.receiver.avatar_url,
+            id: request.receiver?.id,
+            full_name: request.receiver?.full_name,
+            avatar_url: request.receiver?.avatar_url,
             // Ajout des propriétés nécessaires pour satisfaire le type UserProfile
             email: "",
             certifications: [],

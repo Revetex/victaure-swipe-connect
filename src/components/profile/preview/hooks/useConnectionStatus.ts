@@ -16,8 +16,11 @@ export function useConnectionStatus(profileId: string) {
         if (!user) return;
 
         // Vérifier si les utilisateurs sont déjà amis ou en attente
-        const { data: pendingRequests } = await friendRequestsAdapter.findPendingRequests(user.id);
-        const { data: acceptedRequests } = await friendRequestsAdapter.findAcceptedConnections(user.id);
+        const { data: pendingRequests, error: pendingError } = await friendRequestsAdapter.findPendingRequests(user.id);
+        const { data: acceptedRequests, error: acceptedError } = await friendRequestsAdapter.findAcceptedConnections(user.id);
+
+        if (pendingError) console.error("Error fetching pending requests:", pendingError);
+        if (acceptedError) console.error("Error fetching accepted connections:", acceptedError);
 
         // Vérifier s'ils sont amis
         setIsFriend(acceptedRequests && acceptedRequests.some(req => 
@@ -35,6 +38,9 @@ export function useConnectionStatus(profileId: string) {
           
           setIsFriendRequestSent(!!sentRequest);
           setIsFriendRequestReceived(!!receivedRequest);
+        } else {
+          setIsFriendRequestSent(false);
+          setIsFriendRequestReceived(false);
         }
 
         // Vérifier si bloqué

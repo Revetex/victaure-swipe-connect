@@ -30,20 +30,32 @@ export function ConnectionsSection() {
       } = await supabase.auth.getUser();
       if (!user) return [];
       
-      const { data: acceptedConnections } = await friendRequestsAdapter.findAcceptedConnections(user.id);
+      const { data: acceptedConnections, error } = await friendRequestsAdapter.findAcceptedConnections(user.id);
+      
+      if (error) {
+        console.error("Error fetching connections:", error);
+        return [];
+      }
       
       if (!acceptedConnections) return [];
       
-      return acceptedConnections.map(request => {
-        const friend = request.sender_id === user.id ? request.receiver : request.sender;
+      return acceptedConnections.map(connection => {
+        // Déterminer quel profil représente l'ami (pas l'utilisateur courant)
+        const friendProfile = connection.sender_id === user.id 
+          ? connection.receiver 
+          : connection.sender;
+        
         return {
-          ...friend,
-          country: friend.country || "Canada",
-          role: friend.role || "professional",
-          email: friend.email || "",
-          skills: friend.skills || [],
-          online_status: friend.online_status || false,
-          last_seen: friend.last_seen || new Date().toISOString(),
+          id: friendProfile.id,
+          full_name: friendProfile.full_name || "",
+          avatar_url: friendProfile.avatar_url || "",
+          online_status: friendProfile.online_status || false,
+          last_seen: friendProfile.last_seen || new Date().toISOString(),
+          // Propriétés par défaut pour compléter l'objet UserProfile
+          email: "",
+          country: "Canada",
+          role: "professional",
+          skills: [],
           certifications: [],
           education: [],
           experiences: [],

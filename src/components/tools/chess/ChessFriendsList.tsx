@@ -1,166 +1,110 @@
+
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { UserCircle, Crown } from "lucide-react";
-import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { UserProfile } from "@/types/profile";
+import { friendRequestsAdapter } from "@/utils/connectionAdapters";
 
-interface Friend {
-  id: string;
-  full_name: string;
-  avatar_url: string | null;
+interface ChessFriendsListProps {
+  onSelectFriend: (friendId: string) => void;
 }
 
-export function ChessFriendsList() {
-  const { data: friends, isLoading } = useQuery({
-    queryKey: ["friends"],
+export function ChessFriendsList({ onSelectFriend }: ChessFriendsListProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { data: friends = [] } = useQuery({
+    queryKey: ["chess-friends"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
-      const { data: acceptedRequests } = await supabase
-        .from("friend_requests")
-        .select(`
-          sender:profiles!friend_requests_sender_id_fkey(id, full_name, avatar_url),
-          receiver:profiles!friend_requests_receiver_id_fkey(id, full_name, avatar_url)
-        `)
-        .eq("status", "accepted")
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
-
-      if (!acceptedRequests) return [];
-
-      return acceptedRequests.map(request => {
-        const friend = request.sender.id === user.id ? request.receiver : request.sender;
-        return friend;
-      });
-    }
-  });
-
-  const { data: activeGames } = useQuery({
-    queryKey: ["active-chess-games"],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-
-      const { data: games } = await supabase
-        .from("chess_games")
-        .select("*")
-        .or(`white_player_id.eq.${user.id},black_player_id.eq.${user.id}`)
-        .eq("status", "active");
-
-      return games || [];
-    }
-  });
-
-  const inviteFriend = async (friendId: string, friendName: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Check if there's already an active game with this friend
-      const { data: existingGames } = await supabase
-        .from("chess_games")
-        .select("*")
-        .or(`and(white_player_id.eq.${user.id},black_player_id.eq.${friendId}),and(white_player_id.eq.${friendId},black_player_id.eq.${user.id})`)
-        .eq("status", "active");
-
-      if (existingGames && existingGames.length > 0) {
-        toast.error("You already have an active game with this friend");
-        return;
+      const { data: connections, error } = await friendRequestsAdapter.findAcceptedConnections(user.id);
+      
+      if (error) {
+        console.error("Error fetching connections:", error);
+        return [];
       }
-
-      const { error } = await supabase.from("chess_games").insert({
-        white_player_id: user.id,
-        black_player_id: friendId,
-        game_state: {},
-        status: "active"
+      
+      if (!connections) return [];
+      
+      return connections.map(connection => {
+        // Déterminer quel profil représente l'ami (pas l'utilisateur courant)
+        const friendProfile = connection.sender_id === user.id 
+          ? connection.receiver 
+          : connection.sender;
+        
+        return {
+          id: friendProfile.id,
+          full_name: friendProfile.full_name || "",
+          avatar_url: friendProfile.avatar_url || "",
+          online_status: friendProfile.online_status || false
+        };
       });
+    }
+  });
 
-      if (error) throw error;
-
-      await supabase.from("notifications").insert({
-        user_id: friendId,
-        title: "Chess Game Invitation",
-        message: `${user.email} has invited you to play chess!`,
-      });
-
-      toast.success(`Invitation sent to ${friendName}`);
+  const handleInvite = async (friendId: string) => {
+    setIsLoading(true);
+    try {
+      // Ici, nous pourrions envoyer une invitation à jouer aux échecs
+      setTimeout(() => {
+        onSelectFriend(friendId);
+        setIsLoading(false);
+      }, 500);
     } catch (error) {
-      console.error("Error inviting friend:", error);
-      toast.error("Failed to send invitation");
+      console.error("Error inviting friend to play:", error);
+      setIsLoading(false);
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        >
-          <Crown className="h-8 w-8 text-primary/50" />
-        </motion.div>
-      </div>
-    );
-  }
-
-  if (!friends?.length) {
-    return (
-      <div className="text-center py-4">
-        <UserCircle className="h-12 w-12 mx-auto text-muted-foreground/50" />
-        <p className="text-sm text-muted-foreground mt-2">No friends available</p>
-      </div>
-    );
-  }
-
   return (
-    <ScrollArea className="h-[300px] px-1">
-      <div className="space-y-2">
-        {friends.map((friend) => {
-          const hasActiveGame = activeGames?.some(
-            game => 
-              (game.white_player_id === friend.id || game.black_player_id === friend.id) &&
-              game.status === "active"
-          );
-
-          return (
-            <motion.div
+    <div className="space-y-3 p-2">
+      <h3 className="text-lg font-semibold mb-3">Amis en ligne</h3>
+      
+      {friends.length === 0 ? (
+        <p className="text-center text-sm text-muted-foreground py-3">
+          Aucun ami connecté pour le moment
+        </p>
+      ) : (
+        <div className="space-y-2">
+          {friends.map(friend => (
+            <div 
               key={friend.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors"
+              className="flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition-colors"
             >
-              <div className="flex items-center gap-3">
-                {friend.avatar_url ? (
-                  <img
-                    src={friend.avatar_url}
-                    alt={friend.full_name}
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <UserCircle className="w-8 h-8" />
-                )}
-                <div>
-                  <span className="font-medium">{friend.full_name}</span>
-                  {hasActiveGame && (
-                    <p className="text-xs text-muted-foreground">Game in progress</p>
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Avatar>
+                    <AvatarImage src={friend.avatar_url || ""} />
+                    <AvatarFallback>{friend.full_name?.[0] || "?"}</AvatarFallback>
+                  </Avatar>
+                  {friend.online_status && (
+                    <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-background" />
                   )}
                 </div>
+                <div>
+                  <p className="text-sm font-medium">{friend.full_name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {friend.online_status ? "En ligne" : "Hors ligne"}
+                  </p>
+                </div>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => inviteFriend(friend.id, friend.full_name)}
-                disabled={hasActiveGame}
-                className="min-w-[80px]"
+              
+              <Button 
+                size="sm" 
+                variant="ghost"
+                className="text-xs"
+                disabled={!friend.online_status || isLoading}
+                onClick={() => handleInvite(friend.id)}
               >
-                {hasActiveGame ? "Playing" : "Invite"}
+                Inviter
               </Button>
-            </motion.div>
-          );
-        })}
-      </div>
-    </ScrollArea>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

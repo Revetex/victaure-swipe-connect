@@ -1,8 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { connectionAdapter } from "@/utils/connectionAdapters";
-import { UserProfile } from "@/types/profile";
+import { friendRequestsAdapter } from "@/utils/connectionAdapters";
 
 export function useConnections() {
   const { data: connections = [], isLoading, error, refetch } = useQuery({
@@ -11,7 +10,7 @@ export function useConnections() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
-      const { data, error } = await connectionAdapter.findAcceptedConnections(user.id);
+      const { data, error } = await friendRequestsAdapter.findAcceptedConnections(user.id);
       
       if (error) {
         console.error("Error fetching connections:", error);
