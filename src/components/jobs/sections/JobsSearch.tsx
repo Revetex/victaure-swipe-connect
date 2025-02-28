@@ -53,7 +53,7 @@ export function JobsSearch({
         <div className="flex items-center gap-4">
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="flex-1 justify-start h-14 text-primary-foreground bg-primary hover:bg-primary/90 dark:bg-[#9b87f5] dark:hover:bg-[#7E69AB] dark:text-white">
+              <Button className="flex-1 justify-start h-14 font-thin text-inherit bg-transparent text-base">
                 <Plus className="w-5 h-5 mr-2" />
                 Publier une annonce
               </Button>
