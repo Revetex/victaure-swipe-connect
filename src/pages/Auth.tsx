@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { AuthHeader } from "@/components/auth/sections/AuthHeader";
@@ -10,7 +9,6 @@ import { CountdownSection } from "@/components/auth/sections/CountdownSection";
 import { motion } from "framer-motion";
 import { AnimatedBackground } from "@/components/auth/background/AnimatedBackground";
 import { VideoContent } from "@/components/auth/sections/VideoContent";
-
 export default function Auth() {
   const [viewportHeight, setViewportHeight] = useState<number>(0);
 
@@ -21,28 +19,18 @@ export default function Auth() {
     minutes: 30,
     seconds: 0
   };
-
   useEffect(() => {
     if (typeof window === "undefined") return;
-    
     const handleResize = () => {
       setViewportHeight(window.innerHeight);
     };
-
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  return (
-    <div
-      className={cn(
-        "relative flex flex-col items-center justify-between min-h-screen w-full",
-        "bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#1A1F2C]",
-        "text-white overflow-x-hidden"
-      )}
-      style={{ minHeight: viewportHeight ? `${viewportHeight}px` : "100vh" }}
-    >
+  return <div className={cn("relative flex flex-col items-center justify-between min-h-screen w-full", "bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#1A1F2C]", "text-white overflow-x-hidden")} style={{
+    minHeight: viewportHeight ? `${viewportHeight}px` : "100vh"
+  }}>
       <AnimatedBackground />
 
       <div className="w-full z-10">
@@ -52,24 +40,32 @@ export default function Auth() {
           <div className="max-w-8xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-8 lg:gap-10 xl:gap-12">
               {/* Zone du formulaire */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-                className="xl:col-span-2 flex flex-col"
-              >
-                <div className="backdrop-blur-xl bg-white/[0.02] border border-white/10 rounded-2xl p-6 lg:p-8 shadow-2xl h-full">
+              <motion.div initial={{
+              opacity: 0,
+              x: -20
+            }} animate={{
+              opacity: 1,
+              x: 0
+            }} transition={{
+              delay: 0.2,
+              duration: 0.5
+            }} className="xl:col-span-2 flex flex-col">
+                <div className="backdrop-blur-xl bg-white/[0.02] border border-white/10 rounded-2xl p-6 lg:p-8 shadow-2xl h-full py-0 px-0">
                   <AuthForm />
                 </div>
               </motion.div>
 
               {/* Zone de vidéo et contenu */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-                className="xl:col-span-3 flex flex-col"
-              >
+              <motion.div initial={{
+              opacity: 0,
+              x: 20
+            }} animate={{
+              opacity: 1,
+              x: 0
+            }} transition={{
+              delay: 0.4,
+              duration: 0.5
+            }} className="xl:col-span-3 flex flex-col">
                 <VideoContent />
               </motion.div>
             </div>
@@ -84,6 +80,5 @@ export default function Auth() {
         </main>
       </div>
       <AuthFooter />
-    </div>
-  );
+    </div>;
 }
