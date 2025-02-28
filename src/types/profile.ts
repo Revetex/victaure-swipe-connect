@@ -27,18 +27,6 @@ export interface UserProfile {
   verified?: boolean;
 }
 
-interface BlockedUser {
-  id: string;
-  blocker_id: string;
-  blocked_id: string;
-  created_at: string;
-  blocked?: {
-    id: string;
-    full_name: string | null;
-    avatar_url: string | null;
-  };
-}
-
 export interface Friend {
   id: string;
   full_name: string | null;
@@ -95,6 +83,18 @@ export interface PendingRequest {
   receiver: UserProfile;
 }
 
+interface BlockedUser {
+  id: string;
+  blocker_id: string;
+  blocked_id: string;
+  created_at: string;
+  blocked?: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+  };
+}
+
 export function createEmptyProfile(id: string, email: string): UserProfile {
   return {
     id,
@@ -121,8 +121,8 @@ export function createEmptyProfile(id: string, email: string): UserProfile {
   };
 }
 
-// Déclaration des fonctions sans export (on les exportera groupées ensuite)
-function transformDatabaseProfile(data: any): UserProfile {
+// Définissons les fonctions de transformation sans les exporter directement
+const _transformDatabaseProfile = (data: any): UserProfile => {
   return {
     ...createEmptyProfile(data.id, data.email),
     ...data,
@@ -133,9 +133,9 @@ function transformDatabaseProfile(data: any): UserProfile {
     last_seen: data.last_seen || new Date().toISOString(),
     friends: Array.isArray(data.friends) ? data.friends : []
   };
-}
+};
 
-function transformEducation(data: any): Education {
+const _transformEducation = (data: any): Education => {
   return {
     id: data.id,
     profile_id: data.profile_id,
@@ -146,9 +146,9 @@ function transformEducation(data: any): Education {
     end_date: data.end_date,
     description: data.description
   };
-}
+};
 
-function transformCertification(data: any): Certification {
+const _transformCertification = (data: any): Certification => {
   return {
     id: data.id,
     profile_id: data.profile_id,
@@ -161,9 +161,9 @@ function transformCertification(data: any): Certification {
     credential_url: data.credential_url,
     description: data.description
   };
-}
+};
 
-function transformExperience(data: any): Experience {
+const _transformExperience = (data: any): Experience => {
   return {
     id: data.id,
     profile_id: data.profile_id,
@@ -175,13 +175,11 @@ function transformExperience(data: any): Experience {
     created_at: data.created_at,
     updated_at: data.updated_at
   };
-}
-
-// Exportation groupée de toutes les fonctions et types
-export {
-  transformDatabaseProfile,
-  transformEducation,
-  transformCertification,
-  transformExperience,
-  type BlockedUser
 };
+
+// Exportons-les sous leur nom original
+export const transformDatabaseProfile = _transformDatabaseProfile;
+export const transformEducation = _transformEducation;
+export const transformCertification = _transformCertification;
+export const transformExperience = _transformExperience;
+export type { BlockedUser };
