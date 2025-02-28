@@ -121,7 +121,8 @@ export function createEmptyProfile(id: string, email: string): UserProfile {
   };
 }
 
-export function transformDatabaseProfile(data: any): UserProfile {
+// Déclaration des fonctions sans export (on les exportera groupées ensuite)
+function transformDatabaseProfile(data: any): UserProfile {
   return {
     ...createEmptyProfile(data.id, data.email),
     ...data,
@@ -134,7 +135,7 @@ export function transformDatabaseProfile(data: any): UserProfile {
   };
 }
 
-export function transformEducation(data: any): Education {
+function transformEducation(data: any): Education {
   return {
     id: data.id,
     profile_id: data.profile_id,
@@ -147,7 +148,7 @@ export function transformEducation(data: any): Education {
   };
 }
 
-export function transformCertification(data: any): Certification {
+function transformCertification(data: any): Certification {
   return {
     id: data.id,
     profile_id: data.profile_id,
@@ -162,7 +163,7 @@ export function transformCertification(data: any): Certification {
   };
 }
 
-export function transformExperience(data: any): Experience {
+function transformExperience(data: any): Experience {
   return {
     id: data.id,
     profile_id: data.profile_id,
@@ -176,7 +177,7 @@ export function transformExperience(data: any): Experience {
   };
 }
 
-// Note: Regroupons toutes les exportations ensemble
+// Exportation groupée de toutes les fonctions et types
 export {
   transformDatabaseProfile,
   transformEducation,
