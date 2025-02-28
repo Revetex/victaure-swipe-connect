@@ -1,4 +1,5 @@
 
+
 import { LotoDraw } from "../types";
 
 interface PrizePoolProps {
@@ -26,3 +27,4 @@ export function PrizePool({ draw }: PrizePoolProps) {
     </div>
   );
 }
+

@@ -1,4 +1,5 @@
 
+
 import { motion } from "framer-motion";
 
 export function LotteryHeader() {
@@ -29,3 +30,4 @@ export function LotteryHeader() {
     </div>
   );
 }
+

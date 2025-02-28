@@ -1,4 +1,5 @@
 
+
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
@@ -61,3 +62,4 @@ export function LastDraw({ draw }: LastDrawProps) {
     </div>
   );
 }
+

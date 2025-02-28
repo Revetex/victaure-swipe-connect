@@ -1,4 +1,5 @@
 
+
 import { motion } from "framer-motion";
 import { usePaymentHandler } from "@/hooks/usePaymentHandler";
 import { toast } from "sonner";
@@ -37,3 +38,4 @@ export function LotteryPage() {
     </div>
   );
 }
+

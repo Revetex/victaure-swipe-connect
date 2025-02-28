@@ -1,4 +1,5 @@
 
+
 export interface Message {
   id: string;
   content: string;
@@ -78,3 +79,4 @@ export interface ConversationHeaderProps {
 }
 
 export type { UserRole } from '@/types/profile';
+

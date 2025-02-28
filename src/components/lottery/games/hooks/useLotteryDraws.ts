@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -74,3 +75,4 @@ export function useLotteryDraws() {
 
   return { nextDraw, lastDraw, loading };
 }
+

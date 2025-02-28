@@ -1,4 +1,5 @@
 
+
 import { motion } from "framer-motion";
 import { format, formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -141,3 +142,4 @@ export function NextDraw({ draw, onPaymentRequested }: NextDrawProps) {
     </div>
   );
 }
+
