@@ -48,7 +48,7 @@ export function DashboardContent({
         }} transition={{
           delay: 0.2
         }}>
-            <Card className="">
+            <Card className="bg-transparent">
               <div className="relative">
                 {/* Effet de gradient amélioré sur le bord supérieur */}
                 

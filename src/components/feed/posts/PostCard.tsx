@@ -55,7 +55,7 @@ export function PostCard({
         </div>
       </ScrollArea>
 
-      <div className="px-4 py-2 bg-black/20 border-t border-zinc-800/50">
+      <div className="bg-black/20 border-t border-zinc-800/50 px-0 py-0">
         <PostActions likes={post.likes} dislikes={post.dislikes} commentCount={post.comments?.length || 0} userReaction={post.reactions?.find(r => r.user_id === currentUserId)?.reaction_type} isExpanded={showComments} postId={post.id} postAuthorId={post.user_id} currentUserId={currentUserId} userEmail={userEmail} onToggleComments={handleToggleComments} onReaction={onReaction} />
       </div>
 
