@@ -1,23 +1,20 @@
-
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TransactionType } from "./types";
 import { toast } from "sonner";
-
 interface PaymentPanelProps {
   type: TransactionType;
   amount: number;
   onAmountChange: (amount: number) => void;
   onSubmit: () => void;
 }
-
-export function PaymentPanel({ 
-  type, 
-  amount, 
-  onAmountChange, 
-  onSubmit 
+export function PaymentPanel({
+  type,
+  amount,
+  onAmountChange,
+  onSubmit
 }: PaymentPanelProps) {
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
@@ -25,7 +22,6 @@ export function PaymentPanel({
       onAmountChange(value);
     }
   };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (amount <= 0) {
@@ -34,27 +30,5 @@ export function PaymentPanel({
     }
     onSubmit();
   };
-
-  return (
-    <Card className="p-4">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Montant (CAD)
-          </label>
-          <Input
-            type="number"
-            value={amount}
-            onChange={handleAmountChange}
-            min={0}
-            step="0.01"
-            className="w-full"
-          />
-        </div>
-        <Button type="submit" className="w-full">
-          Continuer
-        </Button>
-      </form>
-    </Card>
-  );
+  return;
 }
