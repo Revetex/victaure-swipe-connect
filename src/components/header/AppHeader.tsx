@@ -72,7 +72,7 @@ export function AppHeader({
             </span>
           </div>}
 
-        <Button onClick={() => setShowChat(true)} title="Assistant IA" className="group relative flex items-center gap-2 border border-[#9b87f5]/20 hover:border-[#9b87f5]/40 transition-all duration-300 shadow-sm bg-transparent text-sm px-[10px] py-1 rounded-md">
+        <Button onClick={() => setShowChat(true)} title="Assistant IA" className="group relative flex items-center gap-2 border border-[#9b87f5]/20 hover:border-[#9b87f5]/40 transition-all duration-300 shadow-sm text-sm px-[10px] py-1 rounded-md bg-black">
           <motion.div initial={{
           scale: 1
         }} whileHover={{
