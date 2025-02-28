@@ -61,9 +61,7 @@ export function PostCard({
         <PostCardContent content={post.content} images={post.images} isEditing={isEditing} editContent={editContent} onEditContentChange={setEditContent} />
       </div>
 
-      <div className="border-t border-[#9b87f5]/10 py-0 px-0">
-        <PostActions likes={post.likes} dislikes={post.dislikes} commentCount={post.comments?.length || 0} userReaction={post.reactions?.find(r => r.user_id === currentUserId)?.reaction_type} isExpanded={showComments} postId={post.id} postAuthorId={post.user_id} currentUserId={currentUserId} userEmail={userEmail} onToggleComments={handleToggleComments} onReaction={onReaction} />
-      </div>
+      
 
       {showComments && post.comments && <div className="border-t border-[#9b87f5]/10 bg-[#1A1F2C]/60">
           <CommentManager postId={post.id} postAuthorId={post.user_id} currentUserId={currentUserId} userEmail={userEmail} comments={post.comments} onCommentAdded={onCommentAdded} />

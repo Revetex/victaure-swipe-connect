@@ -132,14 +132,5 @@ export function PostActions({
       supabase.removeChannel(channel);
     };
   }, [postId, isProcessing]);
-  return <div className="flex gap-2 items-center py-0">
-      <div className="flex items-center gap-2">
-        <ReactionButton icon={ThumbsUp} count={localLikes} isActive={localUserReaction === 'like'} onClick={() => handleLocalReaction('like')} activeClassName="bg-primary/10 hover:bg-primary/20 text-primary" />
-        <ReactionButton icon={ThumbsDown} count={localDislikes} isActive={localUserReaction === 'dislike'} onClick={() => handleLocalReaction('dislike')} activeClassName="bg-destructive/10 hover:bg-destructive/20 text-destructive" />
-      </div>
-
-      <div className="flex items-center gap-2">
-        <ReactionButton icon={MessageSquare} count={commentCount} isActive={isExpanded} onClick={onToggleComments} activeClassName="bg-blue-500/10 hover:bg-blue-500/20 text-blue-500" />
-      </div>
-    </div>;
+  return;
 }
