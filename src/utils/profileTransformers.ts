@@ -1,50 +1,77 @@
 
-import { UserProfile, Experience } from "@/types/profile";
-
-export function transformToFullProfile(data: any): UserProfile {
+/**
+ * Transforme un profil brut depuis la base de données en un format exploitable
+ */
+export function transformToFullProfile(rawProfile: any) {
+  if (!rawProfile) return null;
+  
   return {
-    id: data.id || '',
-    email: data.email || '',
-    full_name: data.full_name || null,
-    avatar_url: data.avatar_url || null,
-    role: (data.role as 'professional' | 'business' | 'admin') || 'professional',
-    bio: data.bio || null,
-    phone: data.phone || null,
-    city: data.city || null,
-    state: data.state || null,
-    country: data.country || 'Canada',
-    skills: data.skills || [],
-    latitude: data.latitude || null,
-    longitude: data.longitude || null,
-    online_status: data.online_status || false,
-    last_seen: data.last_seen || new Date().toISOString(),
-    certifications: data.certifications || [],
-    education: data.education || [],
-    experiences: data.experiences || [],
-    friends: data.friends || [],
-    company_name: data.company_name || undefined,
-    created_at: data.created_at || new Date().toISOString(),
-    privacy_enabled: data.privacy_enabled || false,
-    sections_order: data.sections_order || [],
-    website: data.website || undefined,
-    verified: data.verified || false
+    id: rawProfile.id || '',
+    full_name: rawProfile.full_name || '',
+    avatar_url: rawProfile.avatar_url || null,
+    email: rawProfile.email || null,
+    role: rawProfile.role || 'professional',
+    bio: rawProfile.bio || null,
+    skills: Array.isArray(rawProfile.skills) ? rawProfile.skills : [],
+    certifications: Array.isArray(rawProfile.certifications) ? rawProfile.certifications : [],
+    education: Array.isArray(rawProfile.education) ? rawProfile.education : [],
+    experiences: Array.isArray(rawProfile.experiences) ? rawProfile.experiences : [],
+    online_status: typeof rawProfile.online_status === 'boolean' 
+      ? rawProfile.online_status 
+      : rawProfile.online_status === 'online',
+    website: rawProfile.website || null,
+    company_name: rawProfile.company_name || null,
+    privacy_enabled: !!rawProfile.privacy_enabled,
+    created_at: rawProfile.created_at || new Date().toISOString(),
+    sections_order: Array.isArray(rawProfile.sections_order) ? rawProfile.sections_order : [],
+    latitude: rawProfile.latitude || null,
+    longitude: rawProfile.longitude || null,
+    job_title: rawProfile.job_title || null
   };
 }
 
-export function transformToExperience(data: any): Experience {
+/**
+ * Convertit une date potentiellement au format Date en string
+ */
+export function formatDateToString(date: string | Date | null | undefined): string | null {
+  if (!date) return null;
+  
+  if (date instanceof Date) {
+    return date.toISOString();
+  }
+  
+  return date;
+}
+
+/**
+ * Transforme une expérience pour qu'elle soit compatible avec l'API
+ */
+export function transformToExperience(experience: any): any {
   return {
-    id: data.id || crypto.randomUUID(),
-    profile_id: data.profile_id || '',
-    position: data.position || '',
-    company: data.company || '',
-    start_date: data.start_date ? new Date(data.start_date).toISOString() : undefined,
-    end_date: data.end_date ? new Date(data.end_date).toISOString() : undefined,
-    description: data.description || '',
-    created_at: data.created_at ? new Date(data.created_at).toISOString() : new Date().toISOString(),
-    updated_at: data.updated_at ? new Date(data.updated_at).toISOString() : new Date().toISOString()
+    ...experience,
+    start_date: formatDateToString(experience.start_date),
+    end_date: formatDateToString(experience.end_date)
   };
 }
 
-export function transformSearchResults(results: any[]): UserProfile[] {
-  return results.map(result => transformToFullProfile(result));
+/**
+ * Transforme une liste d'éducations pour être compatible avec l'API
+ */
+export function transformEducations(educations: any[]): any[] {
+  return educations.map(edu => ({
+    ...edu,
+    start_date: formatDateToString(edu.start_date),
+    end_date: formatDateToString(edu.end_date)
+  }));
+}
+
+/**
+ * Transforme une liste de certifications pour être compatible avec l'API
+ */
+export function transformCertifications(certifications: any[]): any[] {
+  return certifications.map(cert => ({
+    ...cert,
+    issue_date: formatDateToString(cert.issue_date),
+    expiry_date: formatDateToString(cert.expiry_date)
+  }));
 }

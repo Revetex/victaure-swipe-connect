@@ -1,53 +1,88 @@
 
-import { z } from "zod";
-
-export const contractFormSchema = z.object({
-  title: z.string().min(3, "Le titre doit contenir au moins 3 caractères"),
-  description: z.string().optional(),
-  budget_min: z.number().nullable(),
-  budget_max: z.number().nullable(),
-  deadline: z.string().optional(),
-  category: z.string().optional(),
-  location: z.string().optional(),
-  requirements: z.array(z.string()).optional(),
-  currency: z.string().default("CAD"),
-});
-
-export type ContractFormValues = z.infer<typeof contractFormSchema>;
-
-export type ListingType = 'vente' | 'location' | 'service';
-
 export interface MarketplaceListing {
   id: string;
   title: string;
-  description: string | null;
+  description?: string;
   price: number;
   currency: string;
-  type: ListingType;
-  status: string;
+  images?: string[];
   seller_id: string;
-  created_at: string;
-  updated_at: string;
-  images: string[];
   seller?: {
+    id: string;
     full_name: string | null;
     avatar_url: string | null;
     rating?: number;
   };
-}
-
-export interface MarketplaceOffer {
-  id: string;
-  listing_id: string;
-  bidder_id: string;
-  amount: number;
   status: string;
+  type: 'vente' | 'location' | 'service';
   created_at: string;
   updated_at: string;
-  bidder?: {
+  location?: string;
+  category?: string;
+  views_count?: number;
+  favorites_count?: number;
+  featured?: boolean;
+  sale_type?: string;
+  listing_id?: string; // Pour la rétrocompatibilité
+}
+
+export interface MarketplaceFavorite {
+  id?: string;
+  item_id: string;
+  user_id: string;
+  created_at?: string;
+  listing_id?: string; // Pour compatibilité
+  viewer_id?: string; // Pour compatibilité
+}
+
+export interface MarketplaceFilters {
+  priceRange?: [number, number];
+  categories?: string[];
+  location?: string;
+  sortBy?: 'date' | 'price' | 'rating' | 'views';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface MarketplaceStats {
+  total_listings: number;
+  active_listings: number;
+  total_sales: number;
+  average_price: number;
+  popular_categories: string[];
+  recent_activity: {
+    id: string;
+    type: string;
+    timestamp: string;
+    details: any;
+  }[];
+  totalViews?: number;
+  listingsByType?: Record<string, number>;
+  totalListings: number;
+  activeListings: number;
+  averagePrice: number;
+  popularCategories: string[];
+}
+
+export interface MarketplaceContract {
+  id: string;
+  title: string;
+  description: string;
+  budget_min?: number;
+  budget_max?: number;
+  deadline?: string;
+  status: string;
+  creator_id: string;
+  creator?: {
     full_name: string | null;
     avatar_url: string | null;
   };
+  location?: string;
+  category?: string;
+  requirements?: string[];
+  documents?: string[];
+  created_at: string;
+  updated_at?: string;
+  currency?: string;
 }
 
 export interface MarketplaceService {
@@ -55,52 +90,36 @@ export interface MarketplaceService {
   title: string;
   description: string;
   price: number;
-  current_price: number;
-  images: string[];
-  status: string;
-  type: string;
-  provider_id: string;
-  category_id: string;
-  auction_end_date: string;
-  created_at: string;
-  updated_at: string;
   currency: string;
+  provider_id: string;
   provider?: {
     full_name: string | null;
     avatar_url: string | null;
+    rating?: number;
   };
-  bids?: ServiceBid[];
-}
-
-export interface ServiceBid {
-  id: string;
-  service_id: string;
-  bidder_id: string;
-  amount: number;
+  category?: string;
+  delivery_time?: string;
   status: string;
   created_at: string;
-  bidder?: {
-    full_name: string | null;
-    avatar_url: string | null;
-  };
+  updated_at: string;
 }
 
 export interface Gig {
   id: string;
   title: string;
-  description: string | null;
-  budget: number | null;
-  location: string | null;
-  duration: string | null;
-  required_skills: string[];
+  description: string;
+  price?: number;
+  delivery_time?: string;
+  provider_id?: string;
   status: string;
-  creator_id: string;
   created_at: string;
-  updated_at: string;
-  creator?: {
-    full_name: string | null;
-    avatar_url: string | null;
-  };
+  budget?: number;
+  creator?: any;
+  required_skills?: string[];
+  location?: string;
+  duration?: string;
+  creator_id?: string;
+  updated_at?: string;
 }
 
 export interface GigBid {
@@ -108,64 +127,54 @@ export interface GigBid {
   gig_id: string;
   bidder_id: string;
   amount: number;
-  proposal: string | null;
+  delivery_time: string;
   status: string;
   created_at: string;
-  bidder?: {
-    full_name: string | null;
-    avatar_url: string | null;
-  };
 }
 
-export interface MarketplaceFilters {
-  priceRange: [number, number];
-  categories: string[];
-  location?: string;
-  condition?: string;
-  rating?: number;
-  sortBy: 'price' | 'date' | 'rating' | 'views';
-  sortOrder: 'asc' | 'desc';
-}
+export type MarketplaceOffer = MarketplaceListing;
 
-export interface MarketplaceStats {
-  totalListings: number;
-  activeListings: number;
-  totalViews: number;
-  averagePrice: number;
-  popularCategories: Array<{
-    category: string;
-    count: number;
-  }>;
-  listingsByType: {
-    vente: number;
-    location: number;
-    service: number;
-  };
-  recentActivity: Array<{
-    type: 'view' | 'offer' | 'sale';
-    listingId: string;
-    timestamp: string;
-  }>;
-}
+export type ListingType = 'vente' | 'location' | 'service';
 
-export interface MarketplaceContract {
-  id: string;
+export interface ContractFormValues {
   title: string;
-  description: string | null;
-  budget_min: number | null;
-  budget_max: number | null;
-  deadline: string | null;
-  status: string;
-  location: string | null;
-  currency: string;
-  category: string | null;
-  requirements: string[] | null;
-  documents: string[] | null;
-  created_at: string;
-  updated_at: string | null;
-  creator_id: string;
-  creator?: {
-    full_name: string | null;
-    avatar_url: string | null;
-  } | null;
+  description: string;
+  budget_min?: number;
+  budget_max?: number;
+  deadline?: string;
+  category?: string;
+  location?: string;
+  requirements?: string[];
+  currency?: string;
+}
+
+// Schéma de validation pour le formulaire de contrat
+export const contractFormSchema = {
+  title: {
+    required: "Le titre est requis",
+    minLength: { value: 10, message: "Le titre doit faire au moins 10 caractères" }
+  },
+  description: {
+    required: "La description est requise",
+    minLength: { value: 50, message: "La description doit faire au moins 50 caractères" }
+  }
+};
+
+export interface ExtendedMarketplaceListing extends MarketplaceListing {
+  location?: string;
+  category?: string;
+  views_count?: number;
+  favorites_count?: number;
+  featured?: boolean;
+  sale_type?: string;
+}
+
+export interface MarketplaceFavoriteInput {
+  item_id: string;
+  user_id: string;
+}
+
+export interface MarketplaceFavoriteExtended extends MarketplaceFavorite {
+  listing_id?: string;
+  viewer_id?: string;
 }

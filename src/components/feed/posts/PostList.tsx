@@ -1,13 +1,15 @@
 import { useAuth } from "@/hooks/useAuth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePostOperations } from "./usePostOperations";
 import { usePostsQuery } from "./hooks/usePostsQuery";
 import { PostSkeleton } from "./PostSkeleton";
 import { EmptyPostState } from "./EmptyPostState";
 import { DeletePostDialog } from "./DeletePostDialog";
 import { PostGrid } from "./sections/PostGrid";
-import { motion } from "framer-motion";
-
+import { motion, useInView } from "framer-motion";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { useRef } from "react";
 interface PostListProps {
   searchTerm?: string;
   filter: string;
@@ -16,7 +18,6 @@ interface PostListProps {
   onPostDeleted: () => void;
   onPostUpdated: () => void;
 }
-
 export function PostList({
   searchTerm = '',
   filter,
@@ -25,51 +26,68 @@ export function PostList({
   onPostDeleted,
   onPostUpdated
 }: PostListProps) {
-  const { user } = useAuth();
+  const {
+    user
+  } = useAuth();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
-
-  const { handleDelete, handleHide, handleUpdate } = usePostOperations();
-
-  const { data: posts, isLoading } = usePostsQuery({
+  const [page, setPage] = useState(1);
+  const {
+    handleDelete,
+    handleHide,
+    handleUpdate
+  } = usePostOperations();
+  const loaderRef = useRef(null);
+  const inView = useInView(loaderRef);
+  const {
+    data,
+    isLoading,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage
+  } = usePostsQuery({
     filter,
     sortBy,
     sortOrder,
-    userId: user?.id
+    userId: user?.id,
+    page,
+    limit: 10,
+    searchTerm // Pass searchTerm to the hook directly
   });
-
-  const filteredPosts = posts?.filter(post => 
-    post.content.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  if (error) {
+    console.error("Erreur lors du chargement des posts:", error);
+    toast.error("Impossible de charger les posts");
+    return null;
+  }
+  const allPosts = data?.pages.flatMap(page => page.posts) ?? [];
   if (isLoading) return <PostSkeleton />;
-  if (!posts?.length) return <EmptyPostState />;
+  if (!allPosts.length) return <EmptyPostState />;
+  return <motion.div initial={{
+    opacity: 0
+  }} animate={{
+    opacity: 1
+  }} transition={{
+    duration: 0.3
+  }} className="space-y-6">
+      <PostGrid posts={allPosts} currentUserId={user?.id} userEmail={user?.email} onDelete={postId => setPostToDelete(postId)} onHide={handleHide} onUpdate={(postId, content) => {
+      handleUpdate(postId, content);
+      onPostUpdated();
+    }} />
 
-  return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <PostGrid 
-        posts={filteredPosts || []} 
-        currentUserId={user?.id}
-        userEmail={user?.email}
-        onDelete={postId => setPostToDelete(postId)}
-        onHide={handleHide}
-        onUpdate={handleUpdate}
-      />
+      {/* Loader pour l'infinite scroll */}
+      
 
-      <DeletePostDialog 
-        isOpen={!!postToDelete}
-        onClose={() => setPostToDelete(null)}
-        onConfirm={() => {
-          if (postToDelete && user?.id) {
-            handleDelete(postToDelete, user.id);
-            setPostToDelete(null);
-          }
-        }}
-      />
-    </motion.div>
-  );
+      <DeletePostDialog isOpen={!!postToDelete} onClose={() => setPostToDelete(null)} onConfirm={() => {
+      if (postToDelete && user?.id) {
+        handleDelete(postToDelete, user.id);
+        setPostToDelete(null);
+        onPostDeleted();
+      }
+    }} />
+    </motion.div>;
 }

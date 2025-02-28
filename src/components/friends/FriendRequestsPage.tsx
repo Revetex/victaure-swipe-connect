@@ -1,223 +1,142 @@
 
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useState, useEffect } from "react";
+import { DashboardShell } from "@/components/shell/DashboardShell";
+import { DashboardHeader } from "@/components/shell/DashboardHeader";
 import { Button } from "@/components/ui/button";
-import { Check, Clock, X } from "lucide-react";
+import { Check, X, UserPlus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { friendRequestsAdapter } from "@/utils/connectionAdapters";
+import { useFriendRequests } from "@/hooks/useFriendRequests";
+import { TabsContent, Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function FriendRequestsPage() {
-  const { data: currentUser } = useQuery({
-    queryKey: ["current-user"],
-    queryFn: async () => {
-      const { data } = await supabase.auth.getUser();
-      return data.user;
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("received");
+  const { incomingRequests, outgoingRequests, acceptFriendRequest, rejectFriendRequest, cancelFriendRequest, isLoading } = useFriendRequests();
+
+  useEffect(() => {
+    if (!user) {
+      toast.error("Vous devez être connecté pour accéder à cette page");
+      navigate("/auth");
     }
-  });
-  
-  const { data: requests = [], isLoading, refetch } = useQuery({
-    queryKey: ["friend-requests", currentUser?.id],
-    queryFn: async () => {
-      if (!currentUser) return [];
-      
-      const { data: connections, error } = await friendRequestsAdapter.findPendingRequests(currentUser.id);
-      
-      if (error) {
-        console.error('Error fetching requests:', error);
-        return [];
-      }
-      
-      if (!connections) return [];
-      
-      return connections.map(request => {
-        const isIncoming = request.receiver_id === currentUser.id;
-        const otherPerson = isIncoming ? request.sender : request.receiver;
-        
-        if (!otherPerson) {
-          return {
-            id: request.id,
-            type: isIncoming ? 'incoming' : 'outgoing',
-            userId: isIncoming ? request.sender_id : request.receiver_id,
-            userName: "Utilisateur inconnu",
-            userAvatar: "",
-            createdAt: request.created_at
-          };
-        }
-        
-        return {
-          id: request.id,
-          type: isIncoming ? 'incoming' : 'outgoing',
-          userId: otherPerson.id,
-          userName: otherPerson.full_name || "Utilisateur",
-          userAvatar: otherPerson.avatar_url || "",
-          createdAt: request.created_at
-        };
-      });
-    },
-    enabled: !!currentUser
-  });
-  
-  const handleAccept = async (requestId: string, userName: string) => {
-    try {
-      const { error } = await friendRequestsAdapter.acceptFriendRequest(requestId);
-      
-      if (error) throw error;
-      
-      toast.success(`Vous êtes maintenant ami avec ${userName}`);
-      refetch();
-    } catch (error) {
-      console.error('Error accepting request:', error);
-      toast.error("Erreur lors de l'acceptation de la demande");
-    }
-  };
-  
-  const handleReject = async (requestId: string) => {
-    try {
-      const { error } = await friendRequestsAdapter.deleteFriendRequest(requestId);
-      
-      if (error) throw error;
-      
-      toast.success("Demande rejetée");
-      refetch();
-    } catch (error) {
-      console.error('Error rejecting request:', error);
-      toast.error("Erreur lors du rejet de la demande");
-    }
-  };
-  
-  const handleCancel = async (requestId: string) => {
-    try {
-      const { error } = await friendRequestsAdapter.deleteFriendRequest(requestId);
-      
-      if (error) throw error;
-      
-      toast.success("Demande annulée");
-      refetch();
-    } catch (error) {
-      console.error('Error canceling request:', error);
-      toast.error("Erreur lors de l'annulation de la demande");
-    }
-  };
-  
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-8 max-w-4xl">
-        <h1 className="text-2xl font-bold mb-6">Demandes d'amis</h1>
-        <div className="flex justify-center py-12">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
-        </div>
-      </div>
-    );
-  }
-  
-  // Séparer les demandes entrantes et sortantes
-  const incomingRequests = requests.filter(r => r.type === 'incoming');
-  const outgoingRequests = requests.filter(r => r.type === 'outgoing');
+  }, [user, navigate]);
 
   return (
-    <div className="container mx-auto py-8 max-w-4xl">
-      <h1 className="text-2xl font-bold mb-6">Demandes d'amis</h1>
-      
-      {requests.length === 0 ? (
-        <div className="text-center py-12 bg-card rounded-lg">
-          <h2 className="text-xl font-semibold mb-2">Aucune demande en attente</h2>
-          <p className="text-muted-foreground">Vous n'avez pas de demandes d'amis en attente</p>
-        </div>
-      ) : (
-        <div className="space-y-8">
-          {incomingRequests.length > 0 && (
-            <div>
-              <h2 className="text-xl font-medium mb-4">Demandes reçues ({incomingRequests.length})</h2>
-              <div className="space-y-4">
-                {incomingRequests.map(request => (
-                  <div 
-                    key={request.id}
-                    className="bg-card p-4 rounded-lg flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={request.userAvatar} />
-                        <AvatarFallback>{request.userName[0]}</AvatarFallback>
-                      </Avatar>
-                      
-                      <div>
-                        <h3 className="font-medium">{request.userName}</h3>
-                        <p className="text-xs text-muted-foreground">
-                          Demande reçue le {format(new Date(request.createdAt), 'PPP', {locale: fr})}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <Button 
-                        variant="default"
-                        size="sm"
-                        className="gap-1"
-                        onClick={() => handleAccept(request.id, request.userName)}
-                      >
-                        <Check className="h-4 w-4" />
-                        Accepter
-                      </Button>
-                      
-                      <Button 
-                        variant="outline"
-                        size="sm"
-                        className="gap-1"
-                        onClick={() => handleReject(request.id)}
-                      >
-                        <X className="h-4 w-4" />
-                        Refuser
-                      </Button>
+    <DashboardShell>
+      <DashboardHeader
+        heading="Demandes d'ami"
+        text="Gérez les demandes d'ami reçues et envoyées"
+      >
+        <Button 
+          variant="default"
+          size="sm"
+          onClick={() => navigate("/friends/search")}
+        >
+          <UserPlus className="h-4 w-4 mr-2" />
+          Rechercher des personnes
+        </Button>
+      </DashboardHeader>
+
+      <Tabs 
+        value={activeTab} 
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="received">
+            Reçues ({incomingRequests.length})
+          </TabsTrigger>
+          <TabsTrigger value="sent">
+            Envoyées ({outgoingRequests.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="received" className="space-y-4">
+          {incomingRequests.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Aucune demande d'ami reçue.
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {incomingRequests.map((request) => (
+                <div key={request.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src={request.sender.avatar_url || "/placeholder-avatar.png"}
+                      alt={request.sender.full_name || ""}
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <div>
+                      <p className="font-medium">{request.sender.full_name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        A envoyé une demande d'ami
+                      </p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {outgoingRequests.length > 0 && (
-            <div>
-              <h2 className="text-xl font-medium mb-4">Demandes envoyées ({outgoingRequests.length})</h2>
-              <div className="space-y-4">
-                {outgoingRequests.map(request => (
-                  <div 
-                    key={request.id}
-                    className="bg-card p-4 rounded-lg flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={request.userAvatar} />
-                        <AvatarFallback>{request.userName[0]}</AvatarFallback>
-                      </Avatar>
-                      
-                      <div>
-                        <h3 className="font-medium">{request.userName}</h3>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Clock className="h-3 w-3" />
-                          <span>En attente depuis {format(new Date(request.createdAt), 'PPP', {locale: fr})}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
+                  <div className="flex gap-2">
                     <Button 
-                      variant="outline"
+                      variant="outline" 
                       size="sm"
-                      className="gap-1"
-                      onClick={() => handleCancel(request.id)}
+                      onClick={() => rejectFriendRequest(request.id)}
+                      disabled={isLoading}
                     >
-                      <X className="h-4 w-4" />
-                      Annuler
+                      <X className="h-4 w-4 mr-1" />
+                      Refuser
+                    </Button>
+                    <Button 
+                      size="sm"
+                      onClick={() => acceptFriendRequest(request.id)}
+                      disabled={isLoading}
+                    >
+                      <Check className="h-4 w-4 mr-1" />
+                      Accepter
                     </Button>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           )}
-        </div>
-      )}
-    </div>
+        </TabsContent>
+
+        <TabsContent value="sent" className="space-y-4">
+          {outgoingRequests.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Aucune demande d'ami envoyée.
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {outgoingRequests.map((request) => (
+                <div key={request.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src={request.receiver.avatar_url || "/placeholder-avatar.png"}
+                      alt={request.receiver.full_name || ""}
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <div>
+                      <p className="font-medium">{request.receiver.full_name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        En attente d'acceptation
+                      </p>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => cancelFriendRequest(request.id)}
+                    disabled={isLoading}
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Annuler
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+    </DashboardShell>
   );
 }

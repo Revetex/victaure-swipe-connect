@@ -68,7 +68,7 @@ export function ProfilePreview({
       <>
         <Dialog open={isOpen} onOpenChange={onClose}>
           <DialogContent 
-            className="max-w-md w-full p-0"
+            className="max-w-[95vw] w-full p-0 rounded-lg overflow-hidden"
             aria-describedby="mobile-profile-description"
           >
             <VisuallyHidden asChild>
@@ -88,11 +88,9 @@ export function ProfilePreview({
               />
               <div className="p-4 border-t bg-card/95 backdrop-blur-sm">
                 <ProfilePreviewButtons
-                  profile={profile}
-                  onRequestChat={handleMessageClick}
-                  onClose={onClose}
-                  canViewFullProfile={canViewFullProfile}
-                  onViewProfile={handleViewFullProfile}
+                  profileId={profile.id}
+                  onMessage={handleMessageClick}
+                  showMessageButton={true}
                 />
               </div>
             </div>

@@ -1,14 +1,25 @@
+
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
 
 interface LoaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  className?: string;
+  size?: "sm" | "default" | "lg";
 }
 
-export function Loader({ className, ...props }: LoaderProps) {
+export function Loader({ className, size = "default", ...props }: LoaderProps) {
+  const sizeStyles = {
+    sm: "h-4 w-4 border-2",
+    default: "h-8 w-8 border-3",
+    lg: "h-12 w-12 border-4",
+  };
+
   return (
-    <div {...props} className={cn("animate-spin text-muted-foreground", className)}>
-      <Loader2 className="w-full h-full" />
-    </div>
+    <div
+      className={cn(
+        "animate-spin rounded-full border-solid border-primary border-t-transparent",
+        sizeStyles[size],
+        className
+      )}
+      {...props}
+    />
   );
 }

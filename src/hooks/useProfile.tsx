@@ -2,9 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { UserProfile, Friend, createEmptyProfile } from "@/types/profile";
-import { transformDatabaseProfile, transformEducation, transformCertification, transformExperience } from "@/types/profile";
-import { friendRequestsAdapter } from "@/utils/connectionAdapters";
+import { UserProfile, Friend, createEmptyProfile, transformConnection } from "@/types/profile";
 
 export function useProfile() {
   const { toast } = useToast();
@@ -30,28 +28,26 @@ export function useProfile() {
 
         if (profileError) throw profileError;
 
-        // Get friend requests from both perspectives where status is accepted
-        const { data: acceptedConnections } = await friendRequestsAdapter.findAcceptedConnections(user.id);
+        // Get friend connections where status is accepted
+        const { data: connections, error: connectionsError } = await supabase
+          .from('user_connections_view')
+          .select('*')
+          .eq('status', 'accepted')
+          .eq('connection_type', 'friend')
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
-        // Extract friend IDs from the connections
-        const friendIds = [];
-        if (acceptedConnections) {
-          for (const connection of acceptedConnections) {
-            if (connection.sender_id === user.id) {
-              friendIds.push(connection.receiver_id);
-            } else {
-              friendIds.push(connection.sender_id);
-            }
-          }
+        if (connectionsError) {
+          console.error("Error loading connections:", connectionsError);
         }
-        
-        // Parallel queries for better performance
-        const [friendsResponse, certificationsResponse, educationResponse, experiencesResponse] = 
+
+        // Convert connections to Friend objects
+        const friends: Friend[] = (connections || []).map(conn => 
+          transformConnection(conn, user.id)
+        );
+
+        // Parallel queries for other data
+        const [certificationsResponse, educationResponse, experiencesResponse] = 
           await Promise.all([
-            supabase
-              .from('profiles')
-              .select('id, full_name, avatar_url, online_status, last_seen')
-              .in('id', friendIds.length > 0 ? friendIds : ['00000000-0000-0000-0000-000000000000']),
             supabase
               .from('certifications')
               .select('*')
@@ -68,23 +64,19 @@ export function useProfile() {
 
         if (!isMounted) return;
 
-        const friends: Friend[] = (friendsResponse.data || []).map(friend => ({
-          id: friend.id,
-          full_name: friend.full_name,
-          avatar_url: friend.avatar_url,
-          online_status: friend.online_status,
-          last_seen: friend.last_seen
-        }));
-
         const baseProfile = createEmptyProfile(user.id, profileData.email);
         const fullProfile: UserProfile = {
           ...baseProfile,
           ...profileData,
           role: (profileData.role || 'professional') as "professional" | "business" | "admin",
           friends,
-          certifications: (certificationsResponse.data || []).map(cert => transformCertification(cert)),
-          education: (educationResponse.data || []).map(edu => transformEducation(edu)),
-          experiences: (experiencesResponse.data || []).map(exp => transformExperience(exp))
+          certifications: certificationsResponse.data || [],
+          education: educationResponse.data || [],
+          experiences: experiencesResponse.data || [],
+          // Assurer que online_status est un boolean
+          online_status: typeof profileData.online_status === 'string' 
+            ? (profileData.online_status === 'online' || profileData.online_status === 'true')
+            : !!profileData.online_status
         };
 
         setProfile(fullProfile);

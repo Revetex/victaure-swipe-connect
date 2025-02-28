@@ -1,61 +1,37 @@
 
-export interface UserProfile {
-  id: string;
-  email: string;
-  full_name: string;
-  avatar_url?: string;
-  role?: string;
-  bio?: string;
-  phone?: string;
-  city?: string;
-  state?: string;
-  country?: string;
-  latitude?: number;
-  longitude?: number;
-  skills?: string[];
-  online_status?: boolean;
-  last_seen?: string;
-  certifications: Certification[];
-  education: Education[];
-  experiences: Experience[];
-  friends: Friend[];
-  website?: string;
-  company_name?: string;
-  privacy_enabled?: boolean;
-  created_at?: string;
-  sections_order?: string[];
-  verified?: boolean;
-}
+export type UserRole = 'professional' | 'business' | 'admin' | 'freelancer' | 'student';
 
-export interface Friend {
+export interface UserProfile {
   id: string;
   full_name: string | null;
   avatar_url: string | null;
-  online_status: boolean;
-  last_seen: string;
-}
-
-export interface Experience {
-  id: string;
-  profile_id: string;
-  position: string;
-  company: string;
-  start_date: string | null;
-  end_date: string | null;
-  description: string | null;
+  email?: string | null;
+  role?: UserRole;
+  bio?: string | null;
+  phone?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  skills?: string[];
+  certifications?: Certification[];
+  education?: Education[];
+  experiences?: Experience[];
+  preferences?: {
+    notifications?: boolean;
+    theme?: 'light' | 'dark' | 'system';
+    language?: string;
+  };
+  online_status?: boolean;
+  last_seen?: string | null;
+  privacy_enabled?: boolean;
+  website?: string | null;
+  company_name?: string | null;
   created_at?: string;
-  updated_at?: string;
-}
-
-export interface Education {
-  id: string;
-  profile_id: string;
-  school_name: string;
-  degree: string;
-  field_of_study: string;
-  start_date: string | null;
-  end_date: string | null;
-  description: string | null;
+  friends?: Friend[];
+  sections_order?: string[];
+  latitude?: number;
+  longitude?: number;
+  job_title?: string;
 }
 
 export interface Certification {
@@ -63,123 +39,160 @@ export interface Certification {
   profile_id: string;
   title: string;
   issuer: string;
-  year?: string;
-  issue_date: string | null;
-  expiry_date: string | null;
-  credential_id: string | null;
-  credential_url?: string;
-  description?: string;
+  issue_date?: string | null;  // Changé de string | Date à string
+  expiry_date?: string | null; // Changé de string | Date à string
+  credential_url?: string | null;
+  credential_id?: string | null; // Ajouté car utilisé dans le code
+  description?: string | null;
+  skills?: string[];
+  created_at?: string;
+  updated_at?: string;
+  year?: string; // Ajouté car utilisé dans le code
+}
+
+export interface Education {
+  id: string;
+  profile_id?: string;
+  school_name: string;
+  degree: string;
+  field_of_study?: string | null;
+  start_date?: string | null;  // Changé de string | Date à string
+  end_date?: string | null;    // Changé de string | Date à string
+  description?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Experience {
+  id: string;
+  profile_id: string;
+  company: string;
+  position: string;
+  start_date?: string | null;  // Changé de string | Date à string
+  end_date?: string | null;    // Changé de string | Date à string
+  description?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Friend extends UserProfile {
+  friendship_id?: string;
+  status?: string;
+  connection_strength?: number;
+  last_interaction_at?: string;
 }
 
 export interface PendingRequest {
   id: string;
   sender_id: string;
   receiver_id: string;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: string;
   created_at: string;
-  updated_at?: string;
-  type: 'incoming' | 'outgoing';
-  sender: UserProfile;
-  receiver: UserProfile;
-}
-
-interface BlockedUser {
-  id: string;
-  blocker_id: string;
-  blocked_id: string;
-  created_at: string;
-  blocked?: {
+  updated_at: string;
+  sender: {
     id: string;
     full_name: string | null;
     avatar_url: string | null;
   };
+  receiver: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+  };
+  type: 'incoming' | 'outgoing';
 }
 
-export function createEmptyProfile(id: string, email: string): UserProfile {
+export interface BlockedUser {
+  id: string;
+  blocker_id: string;
+  blocked_id: string;
+  created_at: string;
+  blocked_user?: UserProfile;
+}
+
+export interface User {
+  id: string;
+  email?: string;
+  full_name: string | null; // Changé de optionnel à nullable pour correspondre à UserProfile
+  avatar_url?: string | null;
+  role?: UserRole;
+}
+
+/**
+ * Converts a string or boolean online status to boolean
+ */
+export function convertOnlineStatusToBoolean(status: any): boolean {
+  if (typeof status === 'boolean') return status;
+  if (typeof status === 'string') {
+    return status === 'online' || status === 'true';
+  }
+  return !!status;
+}
+
+/**
+ * Creates an empty profile with default values
+ */
+export function createEmptyProfile(id: string, email?: string): UserProfile {
   return {
     id,
-    email,
-    full_name: "",
+    full_name: '',
     avatar_url: null,
+    email: email || null,
     role: 'professional',
     bio: null,
     phone: null,
     city: null,
     state: null,
-    country: 'Canada',
+    country: null,
     skills: [],
-    latitude: null,
-    longitude: null,
-    online_status: false,
-    last_seen: new Date().toISOString(),
     certifications: [],
     education: [],
     experiences: [],
-    friends: [],
+    online_status: false,
+    last_seen: null,
     privacy_enabled: false,
-    created_at: new Date().toISOString()
+    website: null,
+    company_name: null,
+    friends: []
   };
 }
 
-// Définissons les fonctions de transformation sans les exporter directement
-const _transformDatabaseProfile = (data: any): UserProfile => {
-  return {
-    ...createEmptyProfile(data.id, data.email),
-    ...data,
-    role: data.role || 'professional',
-    country: data.country || 'Canada',
-    skills: data.skills || [],
-    online_status: data.online_status || false,
-    last_seen: data.last_seen || new Date().toISOString(),
-    friends: Array.isArray(data.friends) ? data.friends : []
-  };
-};
+/**
+ * Transforms a connection record to a Friend object
+ */
+export function transformConnection(connection: any, userId: string): Friend {
+  const isUserSender = connection.sender_id === userId;
+  const friendId = isUserSender ? connection.receiver_id : connection.sender_id;
+  const friendName = isUserSender ? connection.receiver_name : connection.sender_name;
+  const friendAvatar = isUserSender ? connection.receiver_avatar : connection.sender_avatar;
 
-const _transformEducation = (data: any): Education => {
   return {
-    id: data.id,
-    profile_id: data.profile_id,
-    school_name: data.school_name || data.school || '',
-    degree: data.degree || '',
-    field_of_study: data.field_of_study || data.field || '',
-    start_date: data.start_date,
-    end_date: data.end_date,
-    description: data.description
-  };
-};
+    id: friendId,
+    full_name: friendName,
+    avatar_url: friendAvatar,
+    online_status: false,
+    friendship_id: connection.id,
+    status: connection.status
+  } as Friend;
+}
 
-const _transformCertification = (data: any): Certification => {
+/**
+ * Utility function to convert a Friend to UserProfile
+ */
+export function friendToUserProfile(friend: Friend): UserProfile {
   return {
-    id: data.id,
-    profile_id: data.profile_id,
-    title: data.title || data.name || '',
-    issuer: data.issuer || data.institution || '',
-    year: data.year,
-    issue_date: data.issue_date,
-    expiry_date: data.expiry_date,
-    credential_id: data.credential_id,
-    credential_url: data.credential_url,
-    description: data.description
+    id: friend.id,
+    full_name: friend.full_name,
+    avatar_url: friend.avatar_url,
+    email: friend.email,
+    role: friend.role,
+    bio: friend.bio,
+    phone: friend.phone,
+    city: friend.city,
+    state: friend.state,
+    country: friend.country,
+    skills: friend.skills,
+    online_status: friend.online_status,
+    last_seen: friend.last_seen
   };
-};
-
-const _transformExperience = (data: any): Experience => {
-  return {
-    id: data.id,
-    profile_id: data.profile_id,
-    position: data.position,
-    company: data.company,
-    start_date: data.start_date,
-    end_date: data.end_date,
-    description: data.description,
-    created_at: data.created_at,
-    updated_at: data.updated_at
-  };
-};
-
-// Exportons-les sous leur nom original
-export const transformDatabaseProfile = _transformDatabaseProfile;
-export const transformEducation = _transformEducation;
-export const transformCertification = _transformCertification;
-export const transformExperience = _transformExperience;
-export type { BlockedUser };
+}

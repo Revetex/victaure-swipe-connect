@@ -1,26 +1,14 @@
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Eye, FileText } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-
-interface Contract {
-  id: string;
-  title: string;
-  description: string;
-  budget_min: number;
-  budget_max: number;
-  deadline: string;
-  status: string;
-  documents: string[];
-  created_at: string;
-}
+import type { MarketplaceContract } from "@/types/marketplace";
+import { ContractCard } from "./ContractCard";
+import { ContractsLoading } from "./ContractsLoading";
+import { ContractsEmpty } from "./ContractsEmpty";
 
 export function ContractsList() {
-  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [contracts, setContracts] = useState<MarketplaceContract[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,64 +17,58 @@ export function ContractsList() {
 
   const fetchContracts = async () => {
     try {
-      const { data, error } = await supabase
-        .from("marketplace_contracts")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data: contractsData, error: contractsError } = await supabase
+        .from('mv_marketplace_contracts')
+        .select('*')
+        .eq('status', 'open')
+        .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setContracts(data || []);
+      if (contractsError) throw contractsError;
+
+      // Transformer les données pour correspondre au type MarketplaceContract
+      const formattedContracts: MarketplaceContract[] = (contractsData || []).map(contract => ({
+        id: contract.id,
+        title: contract.title,
+        description: contract.description,
+        budget_min: contract.budget_min || undefined,
+        budget_max: contract.budget_max || undefined,
+        deadline: contract.deadline || undefined,
+        status: contract.status,
+        location: contract.location || undefined,
+        category: contract.category || undefined,
+        requirements: contract.requirements || [],
+        documents: contract.documents || [],
+        created_at: contract.created_at,
+        updated_at: contract.updated_at || undefined,
+        creator_id: contract.creator_id,
+        currency: contract.currency,
+        creator: {
+          full_name: contract.creator_full_name || null,
+          avatar_url: contract.creator_avatar_url || null
+        }
+      }));
+
+      setContracts(formattedContracts);
     } catch (error) {
-      console.error("Error fetching contracts:", error);
+      console.error('Erreur lors du chargement des contrats:', error);
+      toast.error("Erreur lors du chargement des contrats");
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) {
-    return <div>Chargement des contrats...</div>;
+    return <ContractsLoading />;
+  }
+
+  if (contracts.length === 0) {
+    return <ContractsEmpty />;
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4">
       {contracts.map((contract) => (
-        <Card key={contract.id} className="flex flex-col">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between gap-2">
-              <span className="truncate">{contract.title}</span>
-              {contract.documents?.length > 0 && (
-                <FileText className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex-1">
-            <p className="line-clamp-3 text-sm text-muted-foreground">
-              {contract.description}
-            </p>
-            <div className="mt-4 space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span>Budget:</span>
-                <span>{contract.budget_min} - {contract.budget_max} CAD</span>
-              </div>
-              {contract.deadline && (
-                <div className="flex justify-between">
-                  <span>Date limite:</span>
-                  <span>{format(new Date(contract.deadline), "PP", { locale: fr })}</span>
-                </div>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => {/* TODO: Implement contract details view */}}
-            >
-              <Eye className="mr-2 h-4 w-4" />
-              Voir les détails
-            </Button>
-          </CardFooter>
-        </Card>
+        <ContractCard key={contract.id} contract={contract} />
       ))}
     </div>
   );

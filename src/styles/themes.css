@@ -1,14 +1,14 @@
 
 /* Theme Modern */
 .theme-modern {
-  --primary: #9b87f5;
-  --secondary: #7E69AB;
+  --primary: #64B5D9;
+  --secondary: #1B2A4A;
   --accent: #F2EBE4;
   --text: #FFFFFF;
   --background: #1A1F2C;
-  --card-bg: rgba(155, 135, 245, 0.05);
-  --border-color: rgba(155, 135, 245, 0.1);
-  --gradient: linear-gradient(135deg, #9b87f5, #7E69AB);
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --gradient: linear-gradient(135deg, #64B5D9, #1B2A4A);
   
   /* Fonts */
   --font-primary: 'Inter', sans-serif;
@@ -59,8 +59,8 @@
 
 /* Theme Dark */
 .theme-dark {
-  --primary: #9b87f5;
-  --secondary: #7E69AB;
+  --primary: #64B5D9;
+  --secondary: #1B2A4A;
   --accent: #F2EBE4;
   --text: #FFFFFF;
   --background: #1A1F2C;

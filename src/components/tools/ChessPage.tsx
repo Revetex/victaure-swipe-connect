@@ -40,7 +40,7 @@ export function ChessPage() {
               <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-yellow-200 to-yellow-500 bg-clip-text text-transparent">
                 Imperium Chess
               </h1>
-              <p className="text-sm text-white/70">
+              <p className="text-sm text-muted-foreground">
                 Affrontez l'IA et devenez un maître
               </p>
             </div>
@@ -63,7 +63,7 @@ export function ChessPage() {
             onReset={resetGame}
           />
           
-          <div className="relative bg-gradient-to-br from-background to-background/95 rounded-lg p-2 md:p-4">
+          <div className="relative bg-gradient-to-br from-[#1B2A4A]/80 to-[#2C3E50]/90 rounded-lg p-2 md:p-4 shadow-xl border border-primary/20">
             {gameOver && (
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}

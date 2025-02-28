@@ -1,64 +1,105 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { friendRequestsAdapter } from "@/utils/connectionAdapters";
 
 export function useConnectionStatus(profileId: string) {
   const [isFriend, setIsFriend] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
   const [isFriendRequestSent, setIsFriendRequestSent] = useState(false);
   const [isFriendRequestReceived, setIsFriendRequestReceived] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkFriendshipStatus = async () => {
+      if (!profileId) {
+        setIsLoading(false);
+        return;
+      }
+      
       try {
+        setIsLoading(true);
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user) {
+          setIsLoading(false);
+          return;
+        }
 
-        // Vérifier si les utilisateurs sont déjà amis ou en attente
-        const { data: pendingRequests, error: pendingError } = await friendRequestsAdapter.findPendingRequests(user.id);
-        const { data: acceptedRequests, error: acceptedError } = await friendRequestsAdapter.findAcceptedConnections(user.id);
+        // Check if they are already friends
+        const { data: areFriendsData, error: areFriendsError } = await supabase
+          .rpc('are_friends', { 
+            user1_id: user.id, 
+            user2_id: profileId 
+          });
 
-        if (pendingError) console.error("Error fetching pending requests:", pendingError);
-        if (acceptedError) console.error("Error fetching accepted connections:", acceptedError);
+        if (areFriendsError) {
+          console.error("Error checking friendship status:", areFriendsError);
+          return;
+        }
 
-        // Vérifier s'ils sont amis
-        setIsFriend(acceptedRequests && acceptedRequests.some(req => 
-          (req.sender_id === profileId || req.receiver_id === profileId)));
+        setIsFriend(areFriendsData);
 
-        // Vérifier s'il y a des demandes en attente
-        if (pendingRequests && pendingRequests.length > 0) {
-          // Vérifier si l'utilisateur a envoyé une demande
-          const sentRequest = pendingRequests.find(req => 
-            req.sender_id === user.id && req.receiver_id === profileId);
-          
-          // Vérifier si l'utilisateur a reçu une demande
-          const receivedRequest = pendingRequests.find(req => 
-            req.receiver_id === user.id && req.sender_id === profileId);
+        // Check pending requests
+        const { data: connections, error: connectionsError } = await supabase
+          .from('user_connections')
+          .select('*')
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+          .or(`sender_id.eq.${profileId},receiver_id.eq.${profileId}`)
+          .eq('status', 'pending');
+
+        if (connectionsError) {
+          console.error("Error checking pending requests:", connectionsError);
+          return;
+        }
+
+        if (connections) {
+          const sentRequest = connections.find(
+            conn => conn.sender_id === user.id && conn.receiver_id === profileId
+          );
+          const receivedRequest = connections.find(
+            conn => conn.sender_id === profileId && conn.receiver_id === user.id
+          );
           
           setIsFriendRequestSent(!!sentRequest);
           setIsFriendRequestReceived(!!receivedRequest);
-        } else {
-          setIsFriendRequestSent(false);
-          setIsFriendRequestReceived(false);
         }
 
-        // Vérifier si bloqué
-        const { data: blockStatus } = await supabase
+        // Check if blocked
+        const { data: blockStatus, error: blockError } = await supabase
           .from('blocked_users')
           .select('*')
           .eq('blocker_id', user.id)
           .eq('blocked_id', profileId);
 
+        if (blockError) {
+          console.error("Error checking block status:", blockError);
+          return;
+        }
+
         setIsBlocked(blockStatus && blockStatus.length > 0);
       } catch (error) {
-        console.error('Error checking friendship status:', error);
+        console.error('Error checking connection status:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    if (profileId) {
-      checkFriendshipStatus();
-    }
+    checkFriendshipStatus();
+
+    // Setup realtime subscription for connection changes
+    const channel = supabase
+      .channel('connections-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'user_connections'
+      }, () => {
+        checkFriendshipStatus();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [profileId]);
 
   return {
@@ -66,5 +107,6 @@ export function useConnectionStatus(profileId: string) {
     isBlocked,
     isFriendRequestSent,
     isFriendRequestReceived,
+    isLoading
   };
 }

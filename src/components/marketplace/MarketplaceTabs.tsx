@@ -1,6 +1,6 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { MarketplaceList } from "./MarketplaceList";
+import { CustomMarketplaceList } from "./CustomMarketplaceList";
 import { MarketplaceContracts } from "./MarketplaceContracts";
 import type { MarketplaceFilters } from "@/types/marketplace";
 
@@ -28,7 +28,7 @@ export function MarketplaceTabs({
       </TabsList>
 
       <TabsContent value="all">
-        <MarketplaceList 
+        <CustomMarketplaceList 
           type="all" 
           searchQuery={searchQuery} 
           filters={filters} 
@@ -37,7 +37,7 @@ export function MarketplaceTabs({
         />
       </TabsContent>
       <TabsContent value="sale">
-        <MarketplaceList 
+        <CustomMarketplaceList 
           type="vente" 
           searchQuery={searchQuery} 
           filters={filters} 
@@ -46,7 +46,7 @@ export function MarketplaceTabs({
         />
       </TabsContent>
       <TabsContent value="rent">
-        <MarketplaceList 
+        <CustomMarketplaceList 
           type="location" 
           searchQuery={searchQuery} 
           filters={filters} 
@@ -55,7 +55,7 @@ export function MarketplaceTabs({
         />
       </TabsContent>
       <TabsContent value="services">
-        <MarketplaceList 
+        <CustomMarketplaceList 
           type="service" 
           searchQuery={searchQuery} 
           filters={filters} 

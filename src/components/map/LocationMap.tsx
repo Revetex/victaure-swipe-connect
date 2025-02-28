@@ -1,126 +1,97 @@
-import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { useToast } from '@/components/ui/use-toast';
-import { Button } from '@/components/ui/button';
-import { MapPin } from 'lucide-react';
+
+import { useEffect, useRef, useState } from 'react';
+import { Loader } from '@googlemaps/js-api-loader';
+import { Card } from '@/components/ui/card';
 
 interface LocationMapProps {
-  latitude?: number | null;
-  longitude?: number | null;
-  onLocationSelect?: (lat: number, lng: number) => void;
-  isEditing?: boolean;
+  latitude?: number;
+  longitude?: number;
+  onLocationChange?: (lat: number, lng: number) => void;
+  height?: string;
+  className?: string;
+  readonly?: boolean;
 }
 
-export function LocationMap({ latitude, longitude, onLocationSelect, isEditing }: LocationMapProps) {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const marker = useRef<mapboxgl.Marker | null>(null);
-  const { toast } = useToast();
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+export function LocationMap({
+  latitude = 45.5017,
+  longitude = -73.5673,
+  onLocationChange,
+  height = '300px',
+  className = '',
+  readonly = false
+}: LocationMapProps) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [marker, setMarker] = useState<google.maps.Marker | null>(null);
 
   useEffect(() => {
-    if (!mapContainer.current) return;
-
-    // Initialize map
-    mapboxgl.accessToken = 'pk.eyJ1IjoidGJsYW5jaGV0IiwiYSI6ImNscmxvZGVlZjBjcmUya3BnZGxqbXJyMWsifQ.YkOYoJrZJBGXBEVGhGE-Ug';
-    
-    const initialCenter: [number, number] = [longitude || -72.5, latitude || 46.35];
-    
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: initialCenter,
-      zoom: 12,
-    });
-
-    // Add navigation controls
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-    // Add marker if coordinates exist
-    if (latitude && longitude) {
-      marker.current = new mapboxgl.Marker()
-        .setLngLat([longitude, latitude])
-        .addTo(map.current);
-    }
-
-    // Add click handler if editing
-    if (isEditing) {
-      map.current.on('click', (e) => {
-        const { lng, lat } = e.lngLat;
-        if (marker.current) {
-          marker.current.setLngLat([lng, lat]);
-        } else {
-          marker.current = new mapboxgl.Marker()
-            .setLngLat([lng, lat])
-            .addTo(map.current);
-        }
-        onLocationSelect?.(lat, lng);
+    const initMap = async () => {
+      const loader = new Loader({
+        apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
+        version: 'weekly',
       });
-    }
 
-    return () => {
-      map.current?.remove();
-    };
-  }, [latitude, longitude, isEditing, onLocationSelect]);
+      const google = await loader.load();
+      
+      if (mapRef.current) {
+        const map = new google.maps.Map(mapRef.current, {
+          center: { lat: latitude, lng: longitude },
+          zoom: 13,
+          styles: [
+            {
+              featureType: "all",
+              elementType: "labels.text.fill",
+              stylers: [{ color: "#F1F0FB" }],
+            },
+            {
+              featureType: "all",
+              elementType: "labels.text.stroke",
+              stylers: [{ visibility: "on" }, { color: "#1B2A4A" }],
+            },
+            {
+              featureType: "water",
+              elementType: "geometry.fill",
+              stylers: [{ color: "#1A1F2C" }],
+            },
+          ],
+        });
 
-  const getCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "La géolocalisation n'est pas supportée par votre navigateur",
-      });
-      return;
-    }
+        const marker = new google.maps.Marker({
+          position: { lat: latitude, lng: longitude },
+          map,
+          draggable: !readonly,
+        });
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setUserLocation([latitude, longitude]);
-        
-        if (map.current) {
-          map.current.flyTo({
-            center: [longitude, latitude],
-            zoom: 14
+        if (!readonly) {
+          marker.addListener('dragend', () => {
+            const position = marker.getPosition();
+            if (position && onLocationChange) {
+              onLocationChange(position.lat(), position.lng());
+            }
           });
 
-          if (marker.current) {
-            marker.current.setLngLat([longitude, latitude]);
-          } else {
-            marker.current = new mapboxgl.Marker()
-              .setLngLat([longitude, latitude])
-              .addTo(map.current);
-          }
+          map.addListener('click', (e: google.maps.MapMouseEvent) => {
+            const position = e.latLng;
+            if (position) {
+              marker.setPosition(position);
+              if (onLocationChange) {
+                onLocationChange(position.lat(), position.lng());
+              }
+            }
+          });
         }
 
-        onLocationSelect?.(latitude, longitude);
-      },
-      (error) => {
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: "Impossible d'obtenir votre position",
-        });
+        setMap(map);
+        setMarker(marker);
       }
-    );
-  };
+    };
+
+    initMap();
+  }, [latitude, longitude, readonly]);
 
   return (
-    <div className="space-y-4">
-      {isEditing && (
-        <Button 
-          onClick={getCurrentLocation}
-          className="w-full"
-          variant="outline"
-        >
-          <MapPin className="mr-2 h-4 w-4" />
-          Utiliser ma position actuelle
-        </Button>
-      )}
-      <div className="h-[300px] w-full rounded-lg overflow-hidden border">
-        <div ref={mapContainer} className="h-full w-full" />
-      </div>
-    </div>
+    <Card className={`overflow-hidden ${className}`}>
+      <div ref={mapRef} style={{ width: '100%', height }} />
+    </Card>
   );
 }

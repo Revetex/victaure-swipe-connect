@@ -1,13 +1,14 @@
 import { Experience } from "@/types/profile";
 import { Building2, Briefcase, Calendar } from "lucide-react";
 import { formatDate } from "@/utils/dateUtils";
+
 interface ExperienceCardProps {
   exp: Experience;
 }
-export function ExperienceCard({
-  exp
-}: ExperienceCardProps) {
-  return <div className="space-y-3 rounded-none">
+
+export function ExperienceCard({ exp }: ExperienceCardProps) {
+  return (
+    <div className="space-y-3">
       <div className="flex items-center gap-2">
         <Building2 className="h-4 w-4 shrink-0" />
         <p className="font-medium">
@@ -20,9 +21,11 @@ export function ExperienceCard({
         <p>{exp.position || "Poste non défini"}</p>
       </div>
       
-      {exp.description && <p className="pl-6 text-sm text-muted-foreground">
+      {exp.description && (
+        <p className="pl-6 text-sm text-muted-foreground">
           {exp.description}
-        </p>}
+        </p>
+      )}
       
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Calendar className="h-4 w-4 shrink-0" />
@@ -32,5 +35,6 @@ export function ExperienceCard({
           {exp.end_date ? formatDate(exp.end_date) : "Présent"}
         </span>
       </div>
-    </div>;
+    </div>
+  );
 }

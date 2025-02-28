@@ -27,6 +27,50 @@ const styles: StyleOption[] = [
       }
     },
   },
+  {
+    id: 'minimal',
+    name: 'Minimal',
+    color: '#1E293B',
+    secondaryColor: '#64748B',
+    font: 'system-ui, sans-serif',
+    bgGradient: 'bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200',
+    colors: {
+      primary: '#1E293B',
+      secondary: '#64748B',
+      text: {
+        primary: '#0F172A',
+        secondary: '#1E293B',
+        muted: '#475569',
+      },
+      background: {
+        card: '#FFFFFF',
+        section: '#F8FAFC',
+        button: '#1E293B'
+      }
+    },
+  },
+  {
+    id: 'violet',
+    name: 'Violet',
+    color: '#7E22CE',
+    secondaryColor: '#A855F7',
+    font: 'Poppins, sans-serif',
+    bgGradient: 'bg-gradient-to-br from-purple-50 via-purple-100 to-fuchsia-200',
+    colors: {
+      primary: '#7E22CE',
+      secondary: '#A855F7',
+      text: {
+        primary: '#581C87',
+        secondary: '#7E22CE',
+        muted: '#9333EA',
+      },
+      background: {
+        card: '#FFFFFF',
+        section: '#FAF5FF',
+        button: '#7E22CE'
+      }
+    },
+  },
 ];
 
 const defaultStyle: StyleOption = styles[0];

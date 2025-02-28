@@ -1,8 +1,10 @@
+
 import { ListTodo } from "lucide-react";
 import { TaskList } from "@/components/tasks/TaskList";
 import { TaskInput } from "@/components/tasks/TaskInput";
 import { useTasks } from "@/hooks/useTasks";
 import { motion } from "framer-motion";
+
 export function TasksPage() {
   const {
     tasks,
@@ -10,14 +12,14 @@ export function TasksPage() {
     toggleTask,
     deleteTask
   } = useTasks();
-  return <div className="min-h-screen text-[#F2EBE4] bg-black">
-      <motion.div initial={{
-      opacity: 0,
-      y: 10
-    }} animate={{
-      opacity: 1,
-      y: 0
-    }} className="container mx-auto p-4 max-w-4xl pt-20 relative">
+
+  return (
+    <div className="min-h-screen bg-[#1B2A4A] text-[#F2EBE4]">
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="container mx-auto p-4 max-w-4xl pt-20 relative"
+      >
         {/* Background gradient decoration */}
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/5 pointer-events-none" />
         
@@ -31,9 +33,14 @@ export function TasksPage() {
 
           <div className="space-y-6">
             <TaskInput onAddTask={addTask} />
-            <TaskList tasks={tasks} onToggleTask={toggleTask} onDeleteTask={deleteTask} />
+            <TaskList 
+              tasks={tasks} 
+              onToggleTask={toggleTask} 
+              onDeleteTask={deleteTask} 
+            />
           </div>
         </div>
       </motion.div>
-    </div>;
+    </div>
+  );
 }

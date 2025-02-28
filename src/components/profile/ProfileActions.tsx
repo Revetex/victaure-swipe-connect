@@ -1,293 +1,198 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
-import { UserPlus, UserCheck, UserX, Shield, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
-import { friendRequestsAdapter } from "@/utils/connectionAdapters";
+import { UserPlus, MessageSquare, UserX, Shield, Check, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useFriendRequests } from "@/hooks/useFriendRequests";
 
-export interface ProfileActionsProps {
-  profileId: string;
+interface ProfileActionsProps {
+  profile: UserProfile;
 }
 
-export function ProfileActions({ profileId }: ProfileActionsProps) {
-  const [isFriend, setIsFriend] = useState(false);
-  const [isPending, setIsPending] = useState(false);
-  const [isBlocked, setIsBlocked] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  const { data: currentUser } = useQuery({
-    queryKey: ["current-user"],
-    queryFn: async () => {
-      const { data } = await supabase.auth.getUser();
-      return data.user;
-    }
+export function ProfileActions({ profile }: ProfileActionsProps) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<{
+    isFriend: boolean;
+    isPending: boolean;
+    isReceived: boolean;
+    isBlocked: boolean;
+  }>({
+    isFriend: false,
+    isPending: false,
+    isReceived: false,
+    isBlocked: false
   });
-  
-  useEffect(() => {
-    const checkRelationship = async () => {
-      if (!currentUser) return;
-      
-      try {
-        // Vérifier si amis ou demande en attente
-        const { data: connections, error } = await supabase
-          .from('user_connections')
-          .select('*')
-          .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${profileId}),and(sender_id.eq.${profileId},receiver_id.eq.${currentUser.id})`);
-        
-        if (error) {
-          console.error('Error checking friendship:', error);
-          return;
-        }
-        
-        if (connections && connections.length > 0) {
-          const acceptedConnection = connections.find(c => c.status === 'accepted');
-          const pendingConnection = connections.find(c => c.status === 'pending');
-          
-          setIsFriend(!!acceptedConnection);
-          setIsPending(!!pendingConnection);
-        }
-        
-        // Vérifier si bloqué
-        const { data: blockData } = await supabase
-          .from('blocked_users')
-          .select('*')
-          .eq('blocker_id', currentUser.id)
-          .eq('blocked_id', profileId)
-          .maybeSingle();
-        
-        setIsBlocked(!!blockData);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error checking relationship:', error);
-        setIsLoading(false);
-      }
-    };
-    
-    if (currentUser && profileId) {
-      checkRelationship();
-    }
-  }, [currentUser, profileId]);
-  
+  const { sendFriendRequest, acceptFriendRequest, refetchPendingRequests } = useFriendRequests();
+
+  // Vérifier si c'est le profil de l'utilisateur connecté
+  const isOwnProfile = user?.id === profile.id;
+
+  // Fonction pour envoyer un message
+  const handleSendMessage = () => {
+    navigate(`/messages?receiver=${profile.id}`);
+  };
+
+  // Fonction pour ajouter l'utilisateur en ami
   const handleAddFriend = async () => {
-    if (!currentUser) return;
-    
+    if (!user) {
+      toast.error("Vous devez être connecté pour cette action");
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      const { error } = await friendRequestsAdapter.createFriendRequest(currentUser.id, profileId);
-      
-      if (error) throw error;
-      toast.success("Demande d'ami envoyée");
-      setIsPending(true);
+      await sendFriendRequest(profile.id);
+      setConnectionStatus({ ...connectionStatus, isPending: true });
+      toast.success(`Demande d'ami envoyée à ${profile.full_name}`);
     } catch (error) {
-      console.error('Error sending friend request:', error);
-      toast.error("Erreur lors de l'envoi de la demande");
+      console.error("Error sending friend request:", error);
+      toast.error("Impossible d'envoyer la demande d'ami");
+    } finally {
+      setIsLoading(false);
     }
   };
-  
-  const handleAcceptFriend = async () => {
-    if (!currentUser) return;
+
+  // Fonction pour accepter une demande d'ami
+  const handleAcceptFriend = async (requestId: string) => {
+    if (!user) return;
     
+    setIsLoading(true);
     try {
-      // Trouver l'ID de la demande
-      const { data: connections } = await supabase
+      await acceptFriendRequest(requestId);
+      setConnectionStatus({ ...connectionStatus, isReceived: false, isFriend: true });
+      toast.success(`Vous êtes maintenant ami avec ${profile.full_name}`);
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+      toast.error("Impossible d'accepter la demande d'ami");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fonction pour retirer l'ami
+  const handleRemoveFriend = async (connectionId: string) => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
         .from('user_connections')
-        .select('id')
-        .eq('sender_id', profileId)
-        .eq('receiver_id', currentUser.id)
-        .eq('status', 'pending')
-        .maybeSingle();
-      
-      if (!connections) {
-        toast.error("Demande non trouvée");
-        return;
-      }
-      
-      const { error } = await friendRequestsAdapter.acceptFriendRequest(connections.id);
-      
-      if (error) throw error;
-      toast.success("Demande acceptée");
-      setIsPending(false);
-      setIsFriend(true);
-    } catch (error) {
-      console.error('Error accepting friend request:', error);
-      toast.error("Erreur lors de l'acceptation de la demande");
-    }
-  };
-  
-  const handleRemoveFriend = async () => {
-    if (!currentUser) return;
-    
-    try {
-      const { data: connections } = await supabase
-        .from('user_connections')
-        .select('id')
-        .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${profileId}),and(sender_id.eq.${profileId},receiver_id.eq.${currentUser.id})`)
-        .eq('status', 'accepted');
-      
-      if (!connections || connections.length === 0) {
-        toast.error("Connexion non trouvée");
-        return;
-      }
-      
-      for (const connection of connections) {
-        const { error } = await friendRequestsAdapter.deleteFriendRequest(connection.id);
-        if (error) throw error;
-      }
-      
-      toast.success("Ami retiré");
-      setIsFriend(false);
-    } catch (error) {
-      console.error('Error removing friend:', error);
-      toast.error("Erreur lors de la suppression de l'ami");
-    }
-  };
-  
-  const handleCancelRequest = async () => {
-    if (!currentUser) return;
-    
-    try {
-      const { data: connections } = await supabase
-        .from('user_connections')
-        .select('id')
-        .eq('sender_id', currentUser.id)
-        .eq('receiver_id', profileId)
-        .eq('status', 'pending')
-        .maybeSingle();
-      
-      if (!connections) {
-        toast.error("Demande non trouvée");
-        return;
-      }
-      
-      const { error } = await friendRequestsAdapter.deleteFriendRequest(connections.id);
-      
-      if (error) throw error;
-      toast.success("Demande annulée");
-      setIsPending(false);
-    } catch (error) {
-      console.error('Error canceling request:', error);
-      toast.error("Erreur lors de l'annulation de la demande");
-    }
-  };
-  
-  const handleToggleBlock = async () => {
-    if (!currentUser) return;
-    
-    try {
-      if (isBlocked) {
-        const { error } = await supabase
-          .from('blocked_users')
-          .delete()
-          .eq('blocker_id', currentUser.id)
-          .eq('blocked_id', profileId);
+        .delete()
+        .eq('id', connectionId);
         
-        if (error) throw error;
-        toast.success("Utilisateur débloqué");
-        setIsBlocked(false);
-      } else {
-        const { error } = await supabase
-          .from('blocked_users')
-          .insert({
-            blocker_id: currentUser.id,
-            blocked_id: profileId
-          });
-        
-        if (error) throw error;
-        toast.success("Utilisateur bloqué");
-        setIsBlocked(true);
-      }
-    } catch (error) {
-      console.error('Error toggling block:', error);
-      toast.error("Erreur lors du blocage/déblocage");
-    }
-  };
-  
-  const handleRequestCV = async () => {
-    if (!currentUser) return;
-    
-    try {
-      await supabase.from('notifications').insert({
-        user_id: profileId,
-        title: "Demande de CV",
-        message: `${currentUser.email} aimerait consulter votre CV`,
-        type: "cv_request"
+      if (error) throw error;
+      
+      setConnectionStatus({ 
+        ...connectionStatus, 
+        isFriend: false, 
+        isPending: false, 
+        isReceived: false 
       });
       
-      toast.success("Demande de CV envoyée");
+      toast.success(`${profile.full_name} retiré de vos amis`);
     } catch (error) {
-      console.error('Error requesting CV:', error);
-      toast.error("Erreur lors de l'envoi de la demande");
+      console.error("Error removing friend:", error);
+      toast.error("Impossible de retirer cet ami");
+    } finally {
+      setIsLoading(false);
     }
   };
-  
-  if (isLoading || !currentUser) {
+
+  // Si c'est le profil de l'utilisateur connecté, ne pas afficher les actions
+  if (isOwnProfile) {
+    return null;
+  }
+
+  // Actions pour un ami
+  if (connectionStatus.isFriend) {
     return (
       <div className="flex flex-wrap gap-2 mt-4">
-        <Button disabled>
-          <div className="w-4 h-4 mr-2 border-2 border-t-transparent border-current rounded-full animate-spin"></div>
-          Chargement...
+        <Button
+          onClick={handleSendMessage}
+          className="flex-1 gap-1.5"
+        >
+          <MessageSquare className="h-4 w-4" />
+          Envoyer un message
+        </Button>
+        <Button 
+          variant="outline" 
+          onClick={() => handleRemoveFriend("connection-id")} // Remplacer par l'ID réel
+          disabled={isLoading}
+          className="flex-1 gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
+        >
+          <UserX className="h-4 w-4" />
+          Retirer des amis
         </Button>
       </div>
     );
   }
-  
-  // Ne pas afficher les boutons si c'est notre propre profil
-  if (currentUser.id === profileId) {
-    return null;
+
+  // Actions pour une demande d'ami reçue
+  if (connectionStatus.isReceived) {
+    return (
+      <div className="flex flex-wrap gap-2 mt-4">
+        <Button 
+          onClick={() => handleAcceptFriend("request-id")} // Remplacer par l'ID réel
+          disabled={isLoading}
+          className="flex-1 gap-1.5"
+        >
+          <Check className="h-4 w-4" />
+          Accepter
+        </Button>
+        <Button 
+          variant="outline" 
+          onClick={() => handleRemoveFriend("request-id")} // Remplacer par l'ID réel
+          disabled={isLoading}
+          className="flex-1 gap-1.5"
+        >
+          <X className="h-4 w-4" />
+          Refuser
+        </Button>
+      </div>
+    );
   }
 
-  return (
-    <div className="flex flex-wrap gap-2 mt-4">
-      {!isFriend && !isPending && (
-        <Button 
-          variant="default" 
-          className="flex items-center gap-2"
-          onClick={handleAddFriend}
-        >
-          <UserPlus className="h-4 w-4" />
-          Ajouter
-        </Button>
-      )}
-      
-      {isPending && (
+  // Actions pour une demande d'ami envoyée
+  if (connectionStatus.isPending) {
+    return (
+      <div className="flex flex-wrap gap-2 mt-4">
         <Button 
           variant="outline" 
-          className="flex items-center gap-2"
-          onClick={handleCancelRequest}
+          onClick={() => handleRemoveFriend("request-id")} // Remplacer par l'ID réel
+          disabled={isLoading}
+          className="flex-1 gap-1.5"
         >
-          <UserX className="h-4 w-4" />
+          <X className="h-4 w-4" />
           Annuler la demande
         </Button>
-      )}
-      
-      {isFriend && (
-        <Button 
-          variant="outline" 
-          className="flex items-center gap-2"
-          onClick={handleRemoveFriend}
-        >
-          <UserX className="h-4 w-4" />
-          Retirer
-        </Button>
-      )}
-      
+      </div>
+    );
+  }
+
+  // Actions par défaut
+  return (
+    <div className="flex flex-wrap gap-2 mt-4">
       <Button 
-        variant="outline" 
-        className="flex items-center gap-2"
-        onClick={handleRequestCV}
+        onClick={handleAddFriend}
+        disabled={isLoading}
+        className="flex-1 gap-1.5"
       >
-        <FileText className="h-4 w-4" />
-        Demander CV
+        <UserPlus className="h-4 w-4" />
+        Ajouter en ami
       </Button>
-      
-      <Button 
-        variant={isBlocked ? "destructive" : "outline"} 
-        className="flex items-center gap-2"
-        onClick={handleToggleBlock}
+      <Button
+        variant={connectionStatus.isBlocked ? "destructive" : "outline"}
+        disabled={isLoading}
+        className="flex-none gap-1.5"
       >
         <Shield className="h-4 w-4" />
-        {isBlocked ? "Débloquer" : "Bloquer"}
+        {connectionStatus.isBlocked ? "Débloquer" : "Bloquer"}
       </Button>
     </div>
   );

@@ -1,3 +1,24 @@
 
-[functions.search-jobs]
-verify_jwt = false
+project_id = "mfjllillnpleasclqabb"
+[api]
+enabled = true
+# Port for the API
+port = 54321
+
+[db]
+# Port for the Database
+port = 54322
+
+[realtime]
+enabled = true
+
+[studio]
+enabled = true
+# Port for the Studio application
+port = 54323
+
+[functions.transfer-funds]
+verify_jwt = true
+
+[storage]
+enabled = true

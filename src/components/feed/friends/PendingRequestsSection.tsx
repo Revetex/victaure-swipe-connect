@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { FriendRequestsSection } from "./FriendRequestsSection";
 import { useFriendRequests } from "@/hooks/useFriendRequests";
+import { Badge } from "@/components/ui/badge";
 
 interface PendingRequestsSectionProps {
   showPendingRequests: boolean;
@@ -16,17 +17,24 @@ export function PendingRequestsSection({
   onToggle 
 }: PendingRequestsSectionProps) {
   const {
-    pendingRequests,
-    handleAcceptRequest,
-    handleRejectRequest,
-    handleCancelRequest
+    incomingRequests,
+    outgoingRequests,
+    isLoading,
+    acceptFriendRequest,
+    rejectFriendRequest,
+    cancelFriendRequest,
+    pendingRequests
   } = useFriendRequests();
+
+  // Calculer le nombre total de demandes en attente
+  const pendingCount = incomingRequests.length + outgoingRequests.length;
 
   return (
     <motion.div 
       className="bg-muted/20 rounded-xl shadow-sm backdrop-blur-sm overflow-hidden border border-border/50"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
     >
       <Button
         variant="ghost"
@@ -37,9 +45,16 @@ export function PendingRequestsSection({
         )}
         onClick={onToggle}
       >
-        <span className="text-sm bg-gradient-to-br from-foreground/90 via-foreground/80 to-foreground/70 bg-clip-text text-transparent">
-          Demandes en attente
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm bg-gradient-to-br from-foreground/90 via-foreground/80 to-foreground/70 bg-clip-text text-transparent">
+            Demandes en attente
+          </span>
+          {pendingCount > 0 && (
+            <Badge variant="default" className="bg-primary text-white h-5 px-2">
+              {pendingCount}
+            </Badge>
+          )}
+        </div>
         {showPendingRequests ? (
           <ChevronUp className="h-4 w-4 text-muted-foreground" />
         ) : (
@@ -58,9 +73,10 @@ export function PendingRequestsSection({
             <div className="p-3 pt-0">
               <FriendRequestsSection
                 requests={pendingRequests}
-                onAccept={handleAcceptRequest}
-                onReject={handleRejectRequest}
-                onCancel={handleCancelRequest}
+                onAccept={acceptFriendRequest}
+                onReject={rejectFriendRequest}
+                onCancel={cancelFriendRequest}
+                isLoading={isLoading}
               />
             </div>
           </motion.div>

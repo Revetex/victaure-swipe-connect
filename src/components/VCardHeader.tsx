@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { motion } from "framer-motion";
@@ -6,6 +7,7 @@ import { VCardAvatar } from "./vcard/header/VCardAvatar";
 import { VCardInfo } from "./vcard/header/VCardInfo";
 import { VCardQR } from "./vcard/header/VCardQR";
 import { useIsMobile } from "@/hooks/use-mobile";
+
 interface VCardHeaderProps {
   profile: UserProfile;
   isEditing: boolean;
@@ -16,57 +18,84 @@ interface VCardHeaderProps {
   onSave?: () => void;
   onDownloadBusinessCard?: () => Promise<void>;
 }
-export function VCardHeader({
-  profile,
-  isEditing,
+
+export function VCardHeader({ 
+  profile, 
+  isEditing, 
   setProfile,
   isProcessing,
   onEditToggle,
   onSave,
-  onDownloadBusinessCard
+  onDownloadBusinessCard,
 }: VCardHeaderProps) {
   const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
   const [isAvatarDeleted, setIsAvatarDeleted] = useState(false);
   const isMobile = useIsMobile();
+
   const handleInputChange = (key: string, value: string) => {
-    setProfile({
-      ...profile,
-      [key]: value
-    });
+    setProfile({ ...profile, [key]: value });
   };
+
   const handleSave = async () => {
     if (onSave) {
       if (isAvatarDeleted) {
-        setProfile({
-          ...profile,
-          avatar_url: null
-        });
+        setProfile({ ...profile, avatar_url: null });
       }
       await onSave();
       setIsAvatarDeleted(false);
     }
   };
-  return <motion.div initial={{
-    opacity: 0,
-    y: 20
-  }} animate={{
-    opacity: 1,
-    y: 0
-  }} className="relative">
-      <div className="">
-        <VCardAvatar profile={profile} isEditing={isEditing} setProfile={setProfile} setIsAvatarDeleted={setIsAvatarDeleted} />
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative"
+    >
+      <div className={`
+        flex gap-6
+        ${isMobile 
+          ? 'flex-col items-center' 
+          : 'flex-row sm:items-start'}
+      `}>
+        <VCardAvatar 
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
+          setIsAvatarDeleted={setIsAvatarDeleted}
+        />
 
         <div className="flex-1 min-w-0">
-          <VCardInfo profile={profile} isEditing={isEditing} handleInputChange={handleInputChange} />
+          <VCardInfo 
+            profile={profile}
+            isEditing={isEditing}
+            handleInputChange={handleInputChange}
+          />
         </div>
 
-        <div className="">
-          {!isEditing && <VCardQR isQRDialogOpen={isQRDialogOpen} setIsQRDialogOpen={setIsQRDialogOpen} profileId={profile.id} />}
+        <div className={`
+          flex items-center gap-4
+          ${isMobile ? 'w-full justify-center mt-4' : ''}
+        `}>
+          {!isEditing && (
+            <VCardQR 
+              isQRDialogOpen={isQRDialogOpen} 
+              setIsQRDialogOpen={setIsQRDialogOpen} 
+              profileId={profile.id} 
+            />
+          )}
           
           <div className="shrink-0">
-            <VCardActions isEditing={isEditing} isProcessing={isProcessing} setIsEditing={onEditToggle} onSave={handleSave} onDownloadBusinessCard={onDownloadBusinessCard} />
+            <VCardActions
+              isEditing={isEditing}
+              isProcessing={isProcessing}
+              setIsEditing={onEditToggle}
+              onSave={handleSave}
+              onDownloadBusinessCard={onDownloadBusinessCard}
+            />
           </div>
         </div>
       </div>
-    </motion.div>;
+    </motion.div>
+  );
 }

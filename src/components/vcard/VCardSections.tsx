@@ -1,3 +1,4 @@
+
 import { UserProfile } from "@/types/profile";
 import { VCardBioSection } from "./sections/VCardBioSection";
 import { VCardSkillsSection } from "./sections/VCardSkillsSection";
@@ -39,60 +40,76 @@ export function VCardSections({
     }
   };
 
+  // Animation variants for consistent animation across sections
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (index: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: index * 0.1,
+        duration: 0.4,
+        ease: "easeOut"
+      }
+    })
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="space-y-6 w-full"
+      className="space-y-6 w-full backdrop-blur-sm"
     >
-      {sectionsOrder.map((section) => {
+      {sectionsOrder.map((section, index) => {
         // Always show sections in edit mode, or if they have content
         if (!isEditing && !hasSectionContent(section)) {
           return null;
         }
 
-        switch (section) {
-          case 'bio':
-            return (
+        return (
+          <motion.div
+            key={section}
+            custom={index}
+            initial="hidden"
+            animate="visible"
+            variants={sectionVariants}
+            className="overflow-hidden"
+          >
+            {section === 'bio' && (
               <VCardBioSection
-                key={section}
                 profile={profile}
                 isEditing={isEditing}
                 setProfile={setProfile}
               />
-            );
-          case 'skills':
-            return (
+            )}
+            
+            {section === 'skills' && (
               <VCardSkillsSection
-                key={section}
                 profile={profile}
                 isEditing={isEditing}
                 setProfile={setProfile}
                 handleRemoveSkill={handleRemoveSkill}
                 selectedStyle={selectedStyle}
               />
-            );
-          case 'education':
-            return (
+            )}
+            
+            {section === 'education' && (
               <VCardEducationSection
-                key={section}
                 profile={profile}
                 isEditing={isEditing}
                 setProfile={setProfile}
               />
-            );
-          case 'experience':
-            return (
+            )}
+            
+            {section === 'experience' && (
               <VCardExperienceSection
-                key={section}
                 profile={profile}
                 isEditing={isEditing}
                 setProfile={setProfile}
               />
-            );
-          default:
-            return null;
-        }
+            )}
+          </motion.div>
+        );
       })}
     </motion.div>
   );

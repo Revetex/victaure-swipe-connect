@@ -30,6 +30,7 @@ export function TranslatorPage() {
     const handleKeyboardShortcuts = (e: KeyboardEvent) => {
       const ctrlPressed = e.ctrlKey || e.metaKey;
       if (!ctrlPressed) return;
+
       switch (e.key.toLowerCase()) {
         case 'enter':
           e.preventDefault();
@@ -47,25 +48,25 @@ export function TranslatorPage() {
           break;
       }
     };
+
     window.addEventListener('keydown', handleKeyboardShortcuts);
     return () => window.removeEventListener('keydown', handleKeyboardShortcuts);
   }, [handleTranslate, copyToClipboard, swapLanguages, translatedText]);
 
   return (
-    <div className="min-h-screen pt-16 bg-gradient-to-br from-[#1A1F2C]/90 to-[#1B2A4A]/80">
+    <div className="min-h-screen pt-16">
       <div className="container max-w-4xl mx-auto p-4">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="glass-panel p-6 shadow-lg"
+          className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border p-6 shadow-lg"
         >
-          <div className="flex items-center gap-3 mb-6">
-            <Languages className="h-6 w-6 text-[#64B5D9]" />
-            <h1 className="text-2xl font-bold text-gradient-primary">Translator</h1>
+          <div className="flex items-center gap-2 mb-6">
+            <Languages className="h-6 w-6" />
+            <h1 className="text-2xl font-bold">Translator</h1>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-4">
               <TranslatorLanguageSelect
                 value={sourceLang}
@@ -94,7 +95,7 @@ export function TranslatorPage() {
                   variant="outline"
                   size="icon"
                   onClick={swapLanguages}
-                  className="flex-shrink-0 bg-white/5 hover:bg-white/10 border-white/10"
+                  className="flex-shrink-0"
                   title="Swap languages (Ctrl+S)"
                 >
                   <ArrowLeftRight className="h-4 w-4" />
@@ -103,7 +104,7 @@ export function TranslatorPage() {
 
               <TranslatorTextArea
                 value={translatedText}
-                placeholder="Translation will appear here..."
+                placeholder="Translation..."
                 readOnly
                 onSpeak={() => speakText(translatedText, targetLang)}
                 onCopy={() => copyToClipboard(translatedText)}
@@ -113,12 +114,7 @@ export function TranslatorPage() {
           </div>
 
           <div className="mt-6 flex justify-end">
-            <Button 
-              onClick={handleTranslate} 
-              disabled={isLoading} 
-              title="Translate (Ctrl+Enter)"
-              className="bg-[#64B5D9] hover:bg-[#64B5D9]/80 text-white"
-            >
+            <Button onClick={handleTranslate} disabled={isLoading} title="Translate (Ctrl+Enter)">
               {isLoading ? "Translating..." : "Translate"}
             </Button>
           </div>

@@ -1,114 +1,194 @@
 
-import { useState } from "react";
-import { Friend, UserProfile } from "@/types/profile";
+import { UserProfile, convertOnlineStatusToBoolean } from "@/types/profile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { UserCircle, MessageCircle } from "lucide-react";
-import { motion } from "framer-motion";
-import { ProfilePreviewDialog } from "@/components/profile/preview/ProfilePreviewDialog";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { MoreHorizontal, UserMinus, MessageSquare } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
-import { toast } from "sonner";
+import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useState } from "react";
+import { format, formatDistanceToNow, isToday } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface FriendItemProps {
-  friend: Friend;
+  friend: UserProfile;
+  onRemove?: () => void;
 }
 
-export function FriendItem({ friend }: FriendItemProps) {
-  const [showProfile, setShowProfile] = useState(false);
+export function FriendItem({ friend, onRemove }: FriendItemProps) {
   const navigate = useNavigate();
-  const { setReceiver, setShowConversation } = useReceiver();
+  const { setShowConversation, setReceiver } = useReceiver();
+  const { user } = useAuth();
+  const [isRemoving, setIsRemoving] = useState(false);
 
-  const handleStartChat = () => {
-    setReceiver({
-      id: friend.id,
-      full_name: friend.full_name || "",
-      avatar_url: friend.avatar_url,
-      email: null,
-      role: "professional",
-      bio: null,
-      phone: null,
-      city: null,
-      state: null,
-      country: null,
-      skills: [],
-      latitude: null,
-      longitude: null,
-      online_status: friend.online_status ? "online" : "offline",
-      last_seen: friend.last_seen,
-      certifications: [],
-      education: [],
-      experiences: [],
-      friends: []
-    });
-    setShowConversation(true);
+  // Format last seen date/time
+  const getLastSeenText = () => {
+    if (friend.online_status) return "En ligne";
+    if (!friend.last_seen) return "Hors ligne";
+
+    try {
+      const lastSeenDate = new Date(friend.last_seen);
+      if (isToday(lastSeenDate)) {
+        return `Dernière connexion ${formatDistanceToNow(lastSeenDate, { addSuffix: true, locale: fr })}`;
+      } else {
+        return `Dernière connexion le ${format(lastSeenDate, 'dd MMM yyyy à HH:mm', { locale: fr })}`;
+      }
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "Hors ligne";
+    }
+  };
+
+  const handleMessage = () => {
+    if (!friend || !user) return;
+
+    // Navigation vers la page de messages
     navigate("/messages");
-    toast.success(`Conversation démarrée avec ${friend.full_name}`);
+
+    // Assurez-vous que online_status est un boolean
+    const receiverWithBooleanStatus = {
+      ...friend,
+      online_status: convertOnlineStatusToBoolean(friend.online_status)
+    };
+
+    // Configuration des paramètres pour afficher la conversation
+    setReceiver(receiverWithBooleanStatus);
+    
+    // Afficher la conversation
+    setShowConversation(true);
+    
+    toast.success(`Discussion avec ${friend.full_name}`);
+  };
+
+  const handleRemoveFriend = async () => {
+    if (!user || !friend.id || isRemoving) return;
+    
+    try {
+      setIsRemoving(true);
+      
+      // Obtenir l'ID de la connexion
+      const { data: connections, error: fetchError } = await supabase
+        .from('user_connections')
+        .select('id')
+        .eq('status', 'accepted')
+        .eq('connection_type', 'friend')
+        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${friend.id}),and(sender_id.eq.${friend.id},receiver_id.eq.${user.id})`)
+        .single();
+      
+      if (fetchError) throw fetchError;
+      
+      // Supprimer la connexion
+      const { error: deleteError } = await supabase
+        .from('user_connections')
+        .delete()
+        .eq('id', connections.id);
+      
+      if (deleteError) throw deleteError;
+      
+      toast.success(`${friend.full_name} a été retiré(e) de vos connexions`);
+      
+      // Callback pour mettre à jour la liste
+      if (onRemove) onRemove();
+      
+    } catch (error) {
+      console.error("Error removing friend:", error);
+      toast.error("Erreur lors de la suppression de la connexion");
+    } finally {
+      setIsRemoving(false);
+    }
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-center gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors"
+      className={cn(
+        "group relative flex items-center justify-between",
+        "p-3 pr-2",
+        "border border-zinc-800/50",
+        "rounded-md",
+        "bg-zinc-900/30 hover:bg-zinc-900/60",
+        "backdrop-blur-sm",
+        "overflow-hidden",
+        "transition-all duration-300"
+      )}
     >
-      <button
-        onClick={() => setShowProfile(true)}
-        className="relative flex-shrink-0"
-      >
-        {friend.avatar_url ? (
-          <img
-            src={friend.avatar_url}
-            alt={friend.full_name || ""}
-            className="w-12 h-12 rounded-full object-cover"
+      <div className="flex items-center space-x-3 overflow-hidden">
+        <div className="relative">
+          <Avatar className="h-10 w-10 border border-zinc-700/50">
+            <AvatarImage src={friend.avatar_url || undefined} alt={friend.full_name || ""} />
+            <AvatarFallback>
+              {friend.full_name?.charAt(0) || "U"}
+            </AvatarFallback>
+          </Avatar>
+          <div 
+            className={cn(
+              "absolute bottom-0 right-0",
+              "h-3 w-3 rounded-full",
+              "border-2 border-zinc-900",
+              friend.online_status ? "bg-green-500" : "bg-zinc-500"
+            )}
           />
-        ) : (
-          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-            <UserCircle className="w-6 h-6 text-muted-foreground" />
+        </div>
+        
+        <div className="min-w-0 flex-1">
+          <div className="text-sm font-medium text-white">
+            {friend.full_name}
           </div>
-        )}
-        {friend.online_status && (
-          <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-background" />
-        )}
-      </button>
-
-      <div className="flex-1 min-w-0">
-        <h3 className="font-medium truncate">
-          {friend.full_name}
-        </h3>
+          <p className="truncate text-xs text-zinc-400">
+            {getLastSeenText()}
+          </p>
+        </div>
       </div>
-
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handleStartChat}
-        className="flex items-center gap-2"
-      >
-        <MessageCircle className="h-4 w-4" />
-        Message
-      </Button>
-
-      <ProfilePreviewDialog
-        profile={{
-          ...friend,
-          role: "professional",
-          email: "",
-          bio: null,
-          phone: null,
-          city: null,
-          state: null,
-          country: "Canada",
-          skills: [],
-          latitude: null,
-          longitude: null,
-          certifications: [],
-          education: [],
-          experiences: [],
-          friends: []
-        }}
-        isOpen={showProfile}
-        onClose={() => setShowProfile(false)}
-        onRequestChat={handleStartChat}
-      />
+      
+      <div className="flex gap-1">
+        <Button 
+          size="icon" 
+          variant="ghost" 
+          onClick={handleMessage}
+          className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
+        >
+          <MessageSquare className="h-4 w-4" />
+          <span className="sr-only">Message</span>
+        </Button>
+        
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
+            >
+              <MoreHorizontal className="h-4 w-4" />
+              <span className="sr-only">Options</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40 bg-zinc-900 border-zinc-800 text-white">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-zinc-800" />
+            <DropdownMenuItem
+              onClick={handleRemoveFriend}
+              disabled={isRemoving}
+              className="text-red-400 hover:text-red-300 focus:text-red-300 cursor-pointer"
+            >
+              <UserMinus className="h-4 w-4 mr-2" />
+              <span>Retirer</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </motion.div>
   );
 }

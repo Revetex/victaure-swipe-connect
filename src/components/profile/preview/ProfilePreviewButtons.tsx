@@ -1,139 +1,164 @@
 
 import { Button } from "@/components/ui/button";
-import { UserPlus, UserMinus, Ban, MessageCircle, Lock, ExternalLink } from "lucide-react";
-import { UserProfile } from "@/types/profile";
+import { 
+  UserPlus, 
+  Check, 
+  X, 
+  MessageSquare, 
+  UserX,
+  Shield,
+  Loader2
+} from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { useConnectionStatus } from "./hooks/useConnectionStatus";
 import { useConnectionActions } from "./hooks/useConnectionActions";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 
 interface ProfilePreviewButtonsProps {
-  profile: UserProfile;
-  onClose: () => void;
-  canViewFullProfile: boolean;
-  onRequestChat?: () => void;
-  onViewProfile?: () => void;  // Ajout de la prop manquante
+  profileId: string;
+  onMessage?: () => void;
+  showMessageButton?: boolean;
 }
 
 export function ProfilePreviewButtons({
-  profile,
-  onClose,
-  canViewFullProfile,
-  onRequestChat,
-  onViewProfile
+  profileId,
+  onMessage,
+  showMessageButton = true
 }: ProfilePreviewButtonsProps) {
-  const {
-    isFriend,
-    isBlocked,
-    isFriendRequestSent,
-    isFriendRequestReceived
-  } = useConnectionStatus(profile.id);
-
-  const navigate = useNavigate();
   const { user } = useAuth();
+  const isOwnProfile = user?.id === profileId;
+  
+  const { 
+    isFriend, 
+    isFriendRequestSent, 
+    isFriendRequestReceived,
+    isBlocked
+  } = useConnectionStatus(profileId);
 
-  const {
-    handleAddFriend,
-    handleAcceptFriend,
+  const { 
+    isLoading,
+    handleAddFriend, 
+    handleAcceptFriend, 
     handleRemoveFriend,
-    handleToggleBlock,
-  } = useConnectionActions(profile.id);
+    handleToggleBlock
+  } = useConnectionActions(profileId);
 
-  const handleMessageClick = () => {
-    if (onRequestChat) {
-      onRequestChat();
-    } else {
-      onClose();
-      navigate(`/messages?receiver=${profile.id}`);
-    }
-  };
-
-  const handleViewProfileClick = () => {
-    if (onViewProfile) {
-      onViewProfile();
-    } else {
-      onClose();
-      navigate(`/profile/${profile.id}`);
-    }
-  };
+  // Si c'est le profil de l'utilisateur connecté
+  if (isOwnProfile) {
+    return null;
+  }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full"
-    >
-      <Button
-        onClick={handleViewProfileClick}
-        className="w-full bg-[#1A1F2C] hover:bg-[#1A1F2C]/90 text-white"
-        disabled={!canViewFullProfile}
-      >
-        {canViewFullProfile ? (
-          <>
-            <ExternalLink className="mr-2 h-4 w-4" />
-            Voir le profil
-          </>
-        ) : (
-          <>
-            <Lock className="mr-2 h-4 w-4" />
-            Profil privé
-          </>
-        )}
-      </Button>
+    <div className="flex flex-col sm:flex-row gap-2 mt-4">
+      {/* Ami déjà ajouté */}
+      {isFriend && (
+        <>
+          {showMessageButton && (
+            <Button 
+              onClick={onMessage}
+              className="flex-1 gap-1.5"
+            >
+              <MessageSquare className="h-4 w-4" />
+              Message
+            </Button>
+          )}
+          
+          <Button 
+            variant="outline" 
+            onClick={() => handleRemoveFriend()}
+            disabled={isLoading}
+            className="flex-1 gap-1.5"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <UserX className="h-4 w-4" />
+            )}
+            Retirer
+          </Button>
+        </>
+      )}
 
-      {!isFriend && !isFriendRequestSent && !isFriendRequestReceived && !isBlocked && (
+      {/* Demande d'ami reçue mais pas encore acceptée */}
+      {isFriendRequestReceived && (
+        <>
+          <Button 
+            variant="default" 
+            onClick={() => handleAcceptFriend()}
+            disabled={isLoading}
+            className="flex-1 gap-1.5"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Check className="h-4 w-4" />
+            )}
+            Accepter
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            onClick={() => handleRemoveFriend()}
+            disabled={isLoading}
+            className="flex-1 gap-1.5"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <X className="h-4 w-4" />
+            )}
+            Refuser
+          </Button>
+        </>
+      )}
+
+      {/* Demande d'ami envoyée mais pas encore acceptée */}
+      {isFriendRequestSent && (
         <Button 
-          onClick={handleAddFriend}
-          variant="default"
-          className="w-full bg-[#1A1F2C] hover:bg-[#1A1F2C]/90 text-white"
+          variant="outline" 
+          onClick={() => handleRemoveFriend()}
+          disabled={isLoading}
+          className="flex-1 gap-1.5"
         >
-          <UserPlus className="mr-2 h-4 w-4" />
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <X className="h-4 w-4" />
+          )}
+          Annuler la demande
+        </Button>
+      )}
+
+      {/* Aucune relation d'amitié */}
+      {!isFriend && !isFriendRequestSent && !isFriendRequestReceived && (
+        <Button 
+          variant="default" 
+          onClick={() => handleAddFriend()}
+          disabled={isLoading}
+          className="flex-1 gap-1.5"
+        >
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <UserPlus className="h-4 w-4" />
+          )}
           Ajouter
         </Button>
       )}
 
-      {isFriendRequestReceived && (
-        <Button
-          onClick={handleAcceptFriend}
-          variant="default"
-          className="w-full bg-[#1A1F2C] hover:bg-[#1A1F2C]/90 text-white"
-        >
-          <UserPlus className="mr-2 h-4 w-4" />
-          Accepter
-        </Button>
-      )}
-
-      {(isFriend || isFriendRequestSent) && (
-        <Button
-          onClick={handleRemoveFriend}
-          variant="outline"
-          className="w-full border-red-500/20 hover:bg-red-500/10 text-red-500"
-        >
-          <UserMinus className="mr-2 h-4 w-4" />
-          {isFriend ? "Retirer" : "Annuler"}
-        </Button>
-      )}
-
-      <Button
-        onClick={handleToggleBlock}
-        variant="outline"
-        className="w-full border-muted hover:bg-muted/10 text-muted-foreground"
+      {/* Boutons supplémentaires (contact, blocage, etc.) */}
+      <Button 
+        variant={isBlocked ? "destructive" : "outline"} 
+        onClick={() => handleToggleBlock(profileId)}
+        disabled={isLoading}
+        className="flex-none gap-1.5"
       >
-        <Ban className="mr-2 h-4 w-4" />
+        {isLoading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Shield className="h-4 w-4" />
+        )}
         {isBlocked ? "Débloquer" : "Bloquer"}
       </Button>
-
-      {isFriend && (
-        <Button
-          onClick={handleMessageClick}
-          variant="outline"
-          className="w-full col-span-full border-primary/20 hover:bg-primary/10 text-primary"
-        >
-          <MessageCircle className="mr-2 h-4 w-4" />
-          Envoyer un message
-        </Button>
-      )}
-    </motion.div>
+    </div>
   );
 }

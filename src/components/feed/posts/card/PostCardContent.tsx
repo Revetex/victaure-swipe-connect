@@ -1,5 +1,7 @@
+
 import { Textarea } from "@/components/ui/textarea";
 import { PostImageGrid } from "../PostImageGrid";
+
 interface PostCardContentProps {
   content: string;
   images?: string[];
@@ -7,6 +9,7 @@ interface PostCardContentProps {
   editContent: string;
   onEditContentChange: (value: string) => void;
 }
+
 export function PostCardContent({
   content,
   images,
@@ -14,11 +17,26 @@ export function PostCardContent({
   editContent,
   onEditContentChange
 }: PostCardContentProps) {
-  return <div className="space-y-3 mt-3 bg-transparent">
-      {isEditing ? <Textarea value={editContent} onChange={e => onEditContentChange(e.target.value)} placeholder="Que voulez-vous partager ?" className="min-h-[80px] resize-none mobile-friendly-input text-[#F2EBE4] my-0 px-[25px] bg-transparent" /> : content && <div className="text-sm text-[#F2EBE4] whitespace-pre-wrap bg-gray-900">
+  return (
+    <div className="space-y-3 mt-3">
+      {isEditing ? (
+        <Textarea
+          value={editContent}
+          onChange={(e) => onEditContentChange(e.target.value)}
+          className="min-h-[80px] resize-none mobile-friendly-input text-[#F2EBE4]"
+          placeholder="Que voulez-vous partager ?"
+        />
+      ) : (
+        content && (
+          <div className="text-sm text-[#F2EBE4] whitespace-pre-wrap">
             {content}
-          </div>}
+          </div>
+        )
+      )}
       
-      {images && images.length > 0 && <PostImageGrid images={images} />}
-    </div>;
+      {images && images.length > 0 && (
+        <PostImageGrid images={images} />
+      )}
+    </div>
+  );
 }

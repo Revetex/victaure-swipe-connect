@@ -2,33 +2,29 @@
 import { ChessPiece } from "@/types/chess";
 import { canMoveToPosition } from "../moveValidation";
 
-const KNIGHT_PATTERNS = [
-  { row: -2, col: -1 },
-  { row: -2, col: 1 },
-  { row: -1, col: -2 },
-  { row: -1, col: 2 },
-  { row: 1, col: -2 },
-  { row: 1, col: 2 },
-  { row: 2, col: -1 },
-  { row: 2, col: 1 }
-];
+const KNIGHT_MOVES = [
+  [-2, -1], [-2, 1],
+  [-1, -2], [-1, 2],
+  [1, -2], [1, 2],
+  [2, -1], [2, 1]
+] as const;
 
 export function calculateKnightMoves(
   row: number,
   col: number,
   piece: ChessPiece,
   board: (ChessPiece | null)[][]
-): { row: number; col: number }[] {
-  const moves: { row: number; col: number }[] = [];
+): { row: number; col: number; }[] {
+  const moves: { row: number; col: number; }[] = [];
 
-  KNIGHT_PATTERNS.forEach(pattern => {
-    const newRow = row + pattern.row;
-    const newCol = col + pattern.col;
+  for (const [rowOffset, colOffset] of KNIGHT_MOVES) {
+    const newRow = row + rowOffset;
+    const newCol = col + colOffset;
     
     if (canMoveToPosition(newRow, newCol, piece, board)) {
       moves.push({ row: newRow, col: newCol });
     }
-  });
+  }
 
   return moves;
 }

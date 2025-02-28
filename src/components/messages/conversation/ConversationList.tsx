@@ -1,190 +1,352 @@
 
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useReceiver } from "@/hooks/useReceiver";
+import { UserAvatar } from "@/components/UserAvatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, Plus, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ConversationItem } from "./components/ConversationItem";
-import { ConversationSearch } from "./components/ConversationSearch";
-import { NewConversationPopover } from "./components/NewConversationPopover";
-import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import type { UserProfile } from "@/types/profile";
-import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import { formatDistance } from "date-fns";
+import { fr } from "date-fns/locale";
+import { useThemeContext } from "@/components/ThemeProvider";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { UserRole } from "@/types/messages";
 
-interface Conversation {
+interface ConversationParticipant {
   id: string;
-  participant1_id: string;
-  participant2_id: string;
-  participant1: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url' | 'online_status' | 'last_seen'>;
-  participant2: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url' | 'online_status' | 'last_seen'>;
-  last_message?: string;
-  last_message_time?: string;
+  full_name: string;
+  avatar_url: string | null;
+  online_status: boolean;
 }
 
-interface ConversationPayload {
+type Conversation = {
   id: string;
-  participant1_id: string;
-  participant2_id: string;
+  participant_id: string;
+  full_name: string;
+  avatar_url?: string | null;
   last_message?: string;
   last_message_time?: string;
-}
-
-const defaultParticipant: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url' | 'online_status' | 'last_seen'> = {
-  id: '',
-  full_name: '',
-  avatar_url: null,
-  online_status: false,
-  last_seen: new Date().toISOString()
+  online_status?: boolean;
+  unread_count: number;
 };
 
-export function ConversationList({ className }: { className?: string }) {
-  const { user } = useAuth();
-  const { setSelectedConversationId, setReceiver } = useReceiver();
-  const [searchTerm, setSearchTerm] = useState("");
+export function ConversationList() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [loading, setLoading] = useState(true);
-  const selectedConversationId = useReceiver().selectedConversationId;
-  
-  const fetchConversations = useCallback(async () => {
-    if (!user?.id) return;
-    
-    setLoading(true);
-    try {
-      console.log("Fetching conversations for user:", user.id);
-      
-      const { data: existingConversations, error } = await supabase
-        .from('conversations')
-        .select(`
-          id,
-          participant1_id,
-          participant2_id,
-          last_message,
-          last_message_time,
-          participant1:profiles!conversations_participant1_id_fkey (
-            id, full_name, avatar_url, online_status, last_seen
-          ),
-          participant2:profiles!conversations_participant2_id_fkey (
-            id, full_name, avatar_url, online_status, last_seen
-          )
-        `)
-        .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
-        .order('last_message_time', { ascending: false });
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { user } = useAuth();
+  const { setReceiver, setShowConversation } = useReceiver();
+  const { isDark } = useThemeContext();
+  const isMobile = useIsMobile();
 
-      if (error) {
-        console.error("Error fetching conversations:", error);
-        toast.error("Erreur lors du chargement des conversations");
-        throw error;
-      }
-
-      // Transformation des données avec déduplication
-      const seenParticipants = new Set<string>();
-      const formattedConversations: Conversation[] = [];
-
-      existingConversations?.forEach(conv => {
-        const otherParticipantId = conv.participant1_id === user.id ? conv.participant2_id : conv.participant1_id;
-        
-        if (!seenParticipants.has(otherParticipantId)) {
-          seenParticipants.add(otherParticipantId);
-          
-          const conversation: Conversation = {
-            id: conv.id,
-            participant1_id: user.id,
-            participant2_id: otherParticipantId,
-            participant1: Array.isArray(conv.participant1) ? 
-              conv.participant1[0] || { ...defaultParticipant, id: conv.participant1_id } :
-              conv.participant1 || { ...defaultParticipant, id: conv.participant1_id },
-            participant2: Array.isArray(conv.participant2) ? 
-              conv.participant2[0] || { ...defaultParticipant, id: conv.participant2_id } :
-              conv.participant2 || { ...defaultParticipant, id: conv.participant2_id },
-            last_message: conv.last_message,
-            last_message_time: conv.last_message_time
-          };
-          
-          formattedConversations.push(conversation);
-        }
-      });
-
-      setConversations(formattedConversations);
-      
-    } catch (error) {
-      console.error("Error in fetchConversations:", error);
-      toast.error("Erreur lors du chargement des conversations");
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.id]);
-
+  // Chargement des conversations
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user) return;
 
+    const loadConversations = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Récupération des conversations via les tables standards
+        const { data, error } = await supabase
+          .from('user_conversations')
+          .select(`
+            id,
+            participant1_id,
+            participant2_id,
+            participant1_last_read,
+            participant2_last_read,
+            last_message,
+            last_message_time,
+            profiles!user_conversations_participant1_id_fkey(id, full_name, avatar_url, online_status),
+            profiles!user_conversations_participant2_id_fkey(id, full_name, avatar_url, online_status)
+          `)
+          .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
+          .order('last_message_time', { ascending: false });
+
+        if (error) throw error;
+        
+        // Transforme les données pour notre format de conversation
+        const transformedData: Conversation[] = (data || []).map(conversation => {
+          // Détermine l'autre participant (pas l'utilisateur courant)
+          const isParticipant1 = conversation.participant1_id === user.id;
+          
+          // Accéder aux profils via l'array
+          const profiles1 = Array.isArray(conversation.profiles) 
+            ? conversation.profiles.filter(p => p.id === conversation.participant1_id)[0] 
+            : null;
+            
+          const profiles2 = Array.isArray(conversation.profiles) 
+            ? conversation.profiles.filter(p => p.id === conversation.participant2_id)[0] 
+            : null;
+            
+          const otherParticipantData = isParticipant1 ? profiles2 : profiles1;
+          
+          if (!otherParticipantData) return null;
+          
+          // Calcule le nombre de messages non lus
+          // Logique simplifiée - à compléter avec une requête plus précise pour les non-lus
+          const unreadCount = 0; // À remplacer par la logique réelle
+          
+          return {
+            id: conversation.id,
+            participant_id: otherParticipantData.id,
+            full_name: otherParticipantData.full_name || 'Utilisateur',
+            avatar_url: otherParticipantData.avatar_url,
+            last_message: conversation.last_message || '',
+            last_message_time: conversation.last_message_time,
+            online_status: otherParticipantData.online_status,
+            unread_count: unreadCount
+          };
+        }).filter(Boolean) as Conversation[];
+        
+        setConversations(transformedData);
+      } catch (error) {
+        console.error('Error loading conversations:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadConversations();
+
+    // On écoute les changements sur les conversations
     const channel = supabase
-      .channel('conversations')
+      .channel('messages-changes')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'conversations'
+          table: 'messages',
+          filter: `or(sender_id.eq.${user.id},receiver_id.eq.${user.id})`
         },
-        (payload: RealtimePostgresChangesPayload<ConversationPayload>) => {
-          const newConversation = payload.new as ConversationPayload;
-          if (newConversation?.participant1_id === user.id || newConversation?.participant2_id === user.id) {
-            fetchConversations();
-          }
+        () => {
+          // Quand un message est ajouté ou modifié, on recharge les conversations
+          loadConversations();
         }
       )
       .subscribe();
 
-    fetchConversations();
-
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, fetchConversations]);
+  }, [user]);
 
-  const handleConversationSelect = useCallback((conversation: Conversation) => {
-    setSelectedConversationId(conversation.id);
-    setReceiver(conversation.participant2 as any);
-  }, [setSelectedConversationId, setReceiver]);
-
-  const filteredConversations = conversations.filter(conv => 
-    conv.participant2?.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredConversations = conversations.filter(
+    (conversation) => 
+      conversation.full_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleSelectConversation = async (conversation: Conversation) => {
+    try {
+      // Récupérer le profil complet
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', conversation.participant_id)
+        .single();
+
+      if (error) throw error;
+
+      if (profile) {
+        const validRoles: UserRole[] = ['professional', 'business', 'admin'];
+        const userRole: UserRole = validRoles.includes(profile.role as UserRole) 
+          ? (profile.role as UserRole) 
+          : 'professional';
+            
+        setReceiver({
+          id: profile.id,
+          full_name: profile.full_name || '',
+          avatar_url: profile.avatar_url,
+          email: profile.email,
+          role: userRole,
+          bio: profile.bio,
+          phone: profile.phone,
+          city: profile.city,
+          state: profile.state,
+          country: profile.country || '',
+          skills: profile.skills || [],
+          online_status: profile.online_status ? 'online' : 'offline',
+          last_seen: profile.last_seen,
+          latitude: profile.latitude,
+          longitude: profile.longitude,
+          // Adapter les champs pour correspondre aux propriétés réelles de la DB
+          certifications: [], // Initialiser avec des tableaux vides
+          education: [],     // car ces propriétés ne sont pas directement 
+          experiences: [],   // disponibles dans la table profiles
+          friends: []
+        });
+        setShowConversation(true);
+      }
+    } catch (error) {
+      console.error('Error selecting conversation:', error);
+    }
+  };
+
+  const formatLastActive = (date?: string) => {
+    if (!date) return '';
+    return formatDistance(new Date(date), new Date(), {
+      addSuffix: true,
+      locale: fr
+    });
+  };
+
   return (
-    <div className={cn("flex flex-col h-full", className)}>
-      <div className="border-b border-[#64B5D9]/10">
-        <div className="flex items-center justify-between p-3 gap-2">
-          <ConversationSearch 
-            searchTerm={searchTerm} 
-            onSearchChange={setSearchTerm}
-          />
-          <NewConversationPopover 
-            onSelectFriend={() => setSearchTerm("")} 
+    <div className="h-full flex flex-col">
+      <div className={cn(
+        "px-4 py-3 flex justify-between items-center",
+        "border-b",
+        isDark ? "border-[#64B5D9]/10" : "border-slate-200"
+      )}>
+        <h2 className={cn(
+          "font-semibold",
+          isDark ? "text-white" : "text-slate-900"
+        )}>
+          Messages
+        </h2>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className={cn(
+              "rounded-full",
+              isDark 
+                ? "text-white/80 hover:text-white hover:bg-white/10" 
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+            )}
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className={cn(
+              "rounded-full",
+              isDark 
+                ? "text-white/80 hover:text-white hover:bg-white/10" 
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+            )}
+          >
+            <Plus className="h-5 w-5" />
+          </Button>
+        </div>
+      </div>
+      
+      <div className={cn(
+        "p-4",
+        "border-b",
+        isDark ? "border-[#64B5D9]/10" : "border-slate-200"
+      )}>
+        <div className={cn(
+          "relative",
+          "flex items-center",
+          isDark ? "text-white/80" : "text-slate-600"
+        )}>
+          <Search className="absolute left-3 h-4 w-4" />
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Rechercher..."
+            className={cn(
+              "pl-9",
+              isDark 
+                ? "bg-[#1A1F2C]/80 border-[#64B5D9]/10 placeholder-white/40" 
+                : "bg-slate-100 border-slate-200 placeholder-slate-400"
+            )}
           />
         </div>
       </div>
       
-      <div className="flex-1 overflow-auto">
-        {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <Loader2 className="w-6 h-6 text-[#64B5D9] animate-spin" />
+      <div className="flex-1 overflow-y-auto">
+        {isLoading ? (
+          <div className="flex justify-center py-8">
+            <div className={cn(
+              "animate-pulse h-5 w-24 rounded",
+              isDark ? "bg-white/10" : "bg-slate-200"
+            )} />
           </div>
         ) : filteredConversations.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full p-4 text-center text-[#F2EBE4]/60">
-            <p>Aucune conversation</p>
-            <p className="text-sm">Commencez une nouvelle conversation</p>
+          <div className={cn(
+            "p-8 text-center",
+            isDark ? "text-white/50" : "text-slate-500"
+          )}>
+            {searchQuery ? 'Aucun résultat' : 'Aucune conversation'}
           </div>
         ) : (
-          filteredConversations.map((conversation) => (
-            <ConversationItem
-              key={conversation.id}
-              conversation={conversation}
-              isSelected={selectedConversationId === conversation.id}
-              onClick={() => handleConversationSelect(conversation)}
-            />
-          ))
+          <div className="py-2">
+            {filteredConversations.map((conversation) => (
+              <button
+                key={conversation.id}
+                className={cn(
+                  "w-full px-4 py-3 flex items-center gap-3",
+                  "hover:transition-colors duration-200 ease-in-out",
+                  isDark 
+                    ? "hover:bg-white/5" 
+                    : "hover:bg-slate-100",
+                  conversation.unread_count > 0 && isDark && "bg-[#1A1F2C]/80",
+                  conversation.unread_count > 0 && !isDark && "bg-blue-50/80"
+                )}
+                onClick={() => handleSelectConversation(conversation)}
+              >
+                <div className="relative">
+                  <UserAvatar
+                    user={{
+                      id: conversation.participant_id,
+                      name: conversation.full_name,
+                      image: conversation.avatar_url
+                    }}
+                    className="h-12 w-12"
+                  />
+                  {conversation.online_status && (
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-[#1B2A4A]"></span>
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="flex justify-between items-center">
+                    <h3 className={cn(
+                      "truncate font-medium",
+                      isDark ? "text-white" : "text-slate-900",
+                      conversation.unread_count > 0 && "font-semibold"
+                    )}>
+                      {conversation.full_name}
+                    </h3>
+                    <span className={cn(
+                      "text-xs",
+                      isDark ? "text-white/50" : "text-slate-500",
+                      conversation.unread_count > 0 && isDark && "text-white/80",
+                      conversation.unread_count > 0 && !isDark && "text-slate-900"
+                    )}>
+                      {formatLastActive(conversation.last_message_time)}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center mt-1">
+                    <p className={cn(
+                      "truncate text-sm",
+                      isDark ? "text-white/60" : "text-slate-500",
+                      conversation.unread_count > 0 && isDark && "text-white/80",
+                      conversation.unread_count > 0 && !isDark && "text-slate-900"
+                    )}>
+                      {conversation.last_message || 'Aucun message'}
+                    </p>
+                    
+                    {conversation.unread_count > 0 && (
+                      <span className={cn(
+                        "flex items-center justify-center min-w-5 h-5 rounded-full text-xs font-medium",
+                        "bg-blue-500 text-white"
+                      )}>
+                        {conversation.unread_count}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
         )}
       </div>
     </div>

@@ -23,12 +23,12 @@ export function DashboardMobileNav({
         side="left" 
         className={cn(
           "w-[280px] p-0",
-          "bg-gradient-to-br from-[#1A1F2C] to-[#1B2A4A]",
-          "border border-[#9b87f5]/20",
+          "bg-[#1B2A4A]",
+          "border-2 border-black",
           "fixed inset-y-0 left-0",
           "lg:block",
           "z-[150]",
-          "overflow-y-auto pb-20",
+          "overflow-y-auto pb-20", // Ajout du padding-bottom et overflow
           "ios-momentum-scroll ios-safe-area"
         )}
       >
@@ -36,13 +36,15 @@ export function DashboardMobileNav({
         <div 
           className="absolute inset-0 opacity-[0.03] pointer-events-none"
           style={{
-            backgroundImage: 'radial-gradient(circle, rgba(155, 135, 245, 0.1) 1px, transparent 1px)',
-            backgroundSize: '20px 20px',
+            backgroundImage: `url('/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png')`,
+            backgroundSize: '150px',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'repeat'
           }}
         />
 
         {/* En-tête avec logo */}
-        <div className="p-4 border-b border-[#9b87f5]/20 bg-[#9b87f5]/5 relative z-10">
+        <div className="p-4 border-b-2 border-black bg-black/5 relative z-10">
           <Logo />
         </div>
 
@@ -61,10 +63,11 @@ export function DashboardMobileNav({
                   "w-full flex items-center gap-2 px-3 py-2.5",
                   "rounded-lg text-sm font-medium",
                   "transition-all duration-200",
+                  "border-2 shadow-sm",
                   "mobile-friendly-button",
                   currentPage === item.id 
-                    ? "bg-[#9b87f5]/20 text-white border border-[#9b87f5]/30" 
-                    : "text-white/90 hover:bg-[#9b87f5]/10 hover:text-white border border-transparent hover:border-[#9b87f5]/20"
+                    ? "bg-white/15 text-white border-black shadow-inner" 
+                    : "text-white/90 hover:bg-white/10 hover:text-white border-black/20 hover:border-black"
                 )} 
               >
                 {IconComponent && <IconComponent className="h-4 w-4" />}

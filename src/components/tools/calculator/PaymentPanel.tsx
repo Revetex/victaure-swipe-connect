@@ -1,45 +1,60 @@
 
-import { ReactNode } from "react";
-import { Input } from "@/components/ui/input";
+import React from 'react';
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { TransactionType } from "./types";
+import { toast } from "sonner";
 
-export interface PaymentPanelProps {
-  type: "deposit" | "withdraw";
-  amount: string;
-  onAmountChange: (value: string) => void;
+interface PaymentPanelProps {
+  type: TransactionType;
+  amount: number;
+  onAmountChange: (amount: number) => void;
   onSubmit: () => void;
 }
 
-export function PaymentPanel({
-  type,
-  amount,
-  onAmountChange,
-  onSubmit
-}: PaymentPanelProps): ReactNode {
+export function PaymentPanel({ 
+  type, 
+  amount, 
+  onAmountChange, 
+  onSubmit 
+}: PaymentPanelProps) {
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value);
+    if (!isNaN(value) && value >= 0) {
+      onAmountChange(value);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (amount <= 0) {
+      toast.error("Le montant doit être supérieur à 0");
+      return;
+    }
+    onSubmit();
+  };
+
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <div className="flex">
-          <div className="px-4 py-2 bg-muted rounded-l-md border-r border-border w-16 flex items-center justify-center text-muted-foreground">
-            CAD
-          </div>
+    <Card className="p-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            Montant (CAD)
+          </label>
           <Input
             type="number"
             value={amount}
-            onChange={(e) => onAmountChange(e.target.value)}
-            placeholder="Montant"
-            className="rounded-l-none"
+            onChange={handleAmountChange}
+            min={0}
+            step="0.01"
+            className="w-full"
           />
         </div>
-      </div>
-      <Button 
-        className="w-full" 
-        onClick={onSubmit}
-      >
-        {type === "deposit" ? "Déposer" : "Retirer"}
-        <ChevronRight className="ml-2 h-4 w-4" />
-      </Button>
-    </div>
+        <Button type="submit" className="w-full">
+          Continuer
+        </Button>
+      </form>
+    </Card>
   );
 }

@@ -1,185 +1,100 @@
 
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { MessageSquare, UserMinus, Zap } from "lucide-react";
-import { toast } from "sonner";
-import { UserProfile } from "@/types/profile";
-import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
-import { friendRequestsAdapter } from "@/utils/connectionAdapters";
+import { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Search, UserPlus, Users, UserCheck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { FriendsList } from './FriendsList';
+import { FriendRequestsPage } from './FriendRequestsPage';
+import { ProfileSearchPage } from './ProfileSearchPage';
 
-export function FriendsPage() {
-  const { data: currentUser } = useQuery({
-    queryKey: ["current-user"],
-    queryFn: async () => {
-      const { data } = await supabase.auth.getUser();
-      return data.user;
-    }
-  });
-  
-  const { data: friends = [], isLoading, refetch } = useQuery({
-    queryKey: ["friends-list", currentUser?.id],
-    queryFn: async () => {
-      if (!currentUser) return [];
-      
-      const { data: connections, error } = await friendRequestsAdapter.findAcceptedConnections(currentUser.id);
-      
-      if (error) {
-        console.error('Error fetching friends:', error);
-        return [];
-      }
-      
-      if (!connections) return [];
-      
-      return connections.map(connection => {
-        const friendProfile = connection.sender_id === currentUser.id 
-          ? connection.receiver 
-          : connection.sender;
-          
-        if (!friendProfile) return null;
-        
-        return {
-          id: friendProfile.id,
-          full_name: friendProfile.full_name || "Utilisateur",
-          avatar_url: friendProfile.avatar_url || "",
-          online_status: friendProfile.online_status || false,
-          last_seen: friendProfile.last_seen || new Date().toISOString(),
-          connectionId: connection.id
-        };
-      }).filter(Boolean);
-    },
-    enabled: !!currentUser
-  });
-  
-  const handleRemoveFriend = async (connectionId: string, friendName: string) => {
-    try {
-      const { error } = await friendRequestsAdapter.deleteFriendRequest(connectionId);
-      
-      if (error) throw error;
-      
-      toast.success(`${friendName} a été retiré de vos amis`);
-      refetch();
-    } catch (error) {
-      console.error('Error removing friend:', error);
-      toast.error("Erreur lors de la suppression de l'ami");
-    }
+export default function FriendsPage() {
+  const [activeTab, setActiveTab] = useState('friends');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showOnlineOnly, setShowOnlineOnly] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Implémenter la recherche
   };
-  
-  const handleInviteToGame = (friendId: string, friendName: string) => {
-    // Logique pour inviter à un jeu
-    toast.success(`Invitation envoyée à ${friendName}`);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    setSearchQuery('');
   };
-  
-  const handleSendMessage = (friendId: string) => {
-    // Pour l'instant, juste rediriger vers les messages
-    // La logique de création de conversation sera dans la page de messages
-  };
-  
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-8 max-w-4xl">
-        <h1 className="text-2xl font-bold mb-6">Mes amis</h1>
-        <div className="flex justify-center py-12">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="container mx-auto py-8 max-w-4xl">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Mes amis ({friends.length})</h1>
-        <Button asChild>
-          <Link to="/friends/search">Rechercher des profils</Link>
-        </Button>
+    <div className="container mx-auto max-w-5xl p-4 py-10">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">Connexions</h1>
+        <p className="text-muted-foreground mt-1">
+          Gérez vos connexions, trouvez de nouveaux contacts et restez en contact
+        </p>
       </div>
-      
-      {friends.length === 0 ? (
-        <div className="text-center py-12 bg-card rounded-lg">
-          <h2 className="text-xl font-semibold mb-2">Vous n'avez pas encore d'amis</h2>
-          <p className="text-muted-foreground mb-6">Commencez à vous connecter avec d'autres professionnels</p>
-          <Button asChild>
-            <Link to="/friends/search">Rechercher des profils</Link>
-          </Button>
-        </div>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {friends.map(friend => (
-            <div 
-              key={friend.id} 
-              className="bg-card p-4 rounded-lg flex justify-between items-center"
-            >
-              <div className="flex gap-4 items-center">
-                <div className="relative">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={friend.avatar_url} />
-                    <AvatarFallback>{friend.full_name?.[0] || 'U'}</AvatarFallback>
-                  </Avatar>
-                  <span 
-                    className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background
-                      ${friend.online_status ? 'bg-green-500' : 'bg-gray-400'}`}
-                  ></span>
-                </div>
-                
-                <div>
-                  <Link 
-                    to={`/profile/${friend.id}`} 
-                    className="font-medium hover:underline"
-                  >
-                    {friend.full_name}
-                  </Link>
-                  <p className="text-xs text-muted-foreground">
-                    {friend.online_status 
-                      ? "En ligne" 
-                      : `Vu ${formatDistanceToNow(new Date(friend.last_seen), { 
-                          addSuffix: true, 
-                          locale: fr 
-                        })}`
-                    }
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  asChild
-                >
-                  <Link to={`/messages?to=${friend.id}`}>
-                    <MessageSquare className="h-5 w-5" />
-                    <span className="sr-only">Envoyer un message</span>
-                  </Link>
-                </Button>
-                
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => handleInviteToGame(friend.id, friend.full_name)}
-                  title="Inviter à un jeu"
-                >
-                  <Zap className="h-5 w-5" />
-                  <span className="sr-only">Inviter à un jeu</span>
-                </Button>
-                
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => handleRemoveFriend(friend.connectionId, friend.full_name)}
-                  title="Retirer des amis"
-                >
-                  <UserMinus className="h-5 w-5" />
-                  <span className="sr-only">Retirer des amis</span>
-                </Button>
-              </div>
+
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <TabsList className="bg-muted/50 flex-shrink-0">
+            <TabsTrigger value="friends" className="flex items-center">
+              <Users className="w-4 h-4 mr-2" />
+              <span>Mes amis</span>
+            </TabsTrigger>
+            <TabsTrigger value="requests" className="flex items-center">
+              <UserCheck className="w-4 h-4 mr-2" />
+              <span>Demandes</span>
+            </TabsTrigger>
+            <TabsTrigger value="discover" className="flex items-center">
+              <UserPlus className="w-4 h-4 mr-2" />
+              <span>Découvrir</span>
+            </TabsTrigger>
+          </TabsList>
+
+          {activeTab === 'friends' && (
+            <div className="flex items-center gap-2 ml-auto">
+              <form onSubmit={handleSearch} className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Rechercher..."
+                  className="pl-9 w-full sm:w-[250px]"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </form>
+              <Button
+                variant={showOnlineOnly ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowOnlineOnly(!showOnlineOnly)}
+                className="whitespace-nowrap"
+              >
+                {showOnlineOnly ? "En ligne" : "Tous"}
+              </Button>
             </div>
-          ))}
+          )}
         </div>
-      )}
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <TabsContent value="friends" className="mt-0">
+            <FriendsList />
+          </TabsContent>
+
+          <TabsContent value="requests" className="mt-0">
+            <FriendRequestsPage />
+          </TabsContent>
+
+          <TabsContent value="discover" className="mt-0">
+            <ProfileSearchPage />
+          </TabsContent>
+        </motion.div>
+      </Tabs>
     </div>
   );
 }

@@ -1,28 +1,38 @@
 
-import { Users2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Users, UserPlus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function EmptyConnectionsState() {
+  const navigate = useNavigate();
+
   return (
-    <motion.div 
-      className="text-center py-8 space-y-4 bg-muted/20 rounded-xl shadow-sm backdrop-blur-sm border border-border/50"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        type: "spring",
-        stiffness: 260,
-        damping: 20 
-      }}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col items-center justify-center py-8 px-6 bg-zinc-900/30 rounded-lg border border-zinc-800/50 text-center"
     >
-      <Users2 className="h-12 w-12 mx-auto text-muted-foreground/40" />
-      <div className="space-y-2">
-        <p className="text-sm font-medium bg-gradient-to-br from-foreground/90 via-foreground/80 to-foreground/70 bg-clip-text text-transparent">
-          Aucune connection
-        </p>
-        <p className="text-xs text-muted-foreground leading-relaxed max-w-[250px] mx-auto">
-          Commencez à ajouter des contacts pour développer votre réseau
-        </p>
+      <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full flex items-center justify-center mb-4">
+        <Users className="h-8 w-8 text-primary/70" />
       </div>
+      
+      <h3 className="text-lg font-medium text-white mb-2">
+        Vous n'avez pas encore de connexions
+      </h3>
+      
+      <p className="text-sm text-white/60 mb-6 max-w-md">
+        Connectez-vous avec d'autres professionnels pour agrandir votre réseau et découvrir de nouvelles opportunités
+      </p>
+      
+      <Button 
+        onClick={() => navigate('/search')} 
+        className="bg-primary hover:bg-primary/90 text-white"
+      >
+        <UserPlus className="h-4 w-4 mr-2" />
+        Trouver des connexions
+      </Button>
     </motion.div>
   );
 }

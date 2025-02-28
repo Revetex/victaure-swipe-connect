@@ -9,22 +9,14 @@ export function JobBasicInfoFields() {
   const { control, setValue } = useFormContext();
   const { getAddressFromCoordinates } = useGeolocation();
 
-  const handlePlaceSelected = async (place: google.maps.places.PlaceResult) => {
-    if (place.geometry?.location) {
-      const lat = place.geometry.location.lat();
-      const lng = place.geometry.location.lng();
-      
-      setValue('latitude', lat);
-      setValue('longitude', lng);
-      
-      if (place.formatted_address) {
-        setValue('location', place.formatted_address);
-      }
-      
-      const addressInfo = await getAddressFromCoordinates(lat, lng);
-      if (addressInfo.city) {
-        setValue('city', addressInfo.city);
-      }
+  const handleLocationSelect = async (location: { latitude: number; longitude: number; name: string }) => {
+    setValue('latitude', location.latitude);
+    setValue('longitude', location.longitude);
+    setValue('location', location.name);
+    
+    const addressInfo = await getAddressFromCoordinates(location.latitude, location.longitude);
+    if (addressInfo.city) {
+      setValue('city', addressInfo.city);
     }
   };
 
@@ -52,9 +44,9 @@ export function JobBasicInfoFields() {
             <FormLabel>Localisation</FormLabel>
             <FormControl>
               <LocationAutocomplete
-                apiKey={process.env.GOOGLE_MAPS_API_KEY || ""}
                 placeholder="Entrez l'adresse du poste"
-                onPlaceSelected={handlePlaceSelected}
+                onLocationSelect={handleLocationSelect}
+                defaultValue={field.value}
               />
             </FormControl>
             <FormMessage />

@@ -1,9 +1,12 @@
+
 import { ChangeEvent } from "react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import { Mic, Send, Square, StopCircle } from "lucide-react";
+import { Mic, Send, Square } from "lucide-react";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "../ui/tooltip";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
+
 export interface ChatInputProps {
   userInput: string;
   setUserInput: (value: string) => void;
@@ -16,6 +19,7 @@ export interface ChatInputProps {
   onStopSpeaking: () => void;
   onSendMessage: () => Promise<void>;
 }
+
 export function ChatInput({
   userInput,
   setUserInput,
@@ -31,6 +35,7 @@ export function ChatInput({
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setUserInput(e.target.value);
   };
+
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -41,26 +46,55 @@ export function ChatInput({
       }
     }
   };
-  return <div className="p-3 border-t border-[#9b87f5]/10 backdrop-blur-sm bg-black py-[8px] px-[8px]">
-      <div className="flex items-end gap-2">
-        <Textarea value={userInput} onChange={handleInputChange} onKeyDown={handleKeyPress} placeholder="Écrivez votre message..." className="min-h-[44px] max-h-[200px] bg-[#9b87f5]/5 border-[#9b87f5]/20 focus:border-[#9b87f5]/30 resize-none" disabled={isDisabled || isLoading} />
+
+  return (
+    <div className="flex gap-3 items-end pb-4 pt-2">
+      <div className="relative flex-1">
+        <Textarea 
+          value={userInput} 
+          onChange={handleInputChange} 
+          onKeyDown={handleKeyPress}
+          placeholder="Message..."
+          disabled={isDisabled || isLoading}
+          className="min-h-[52px] max-h-[120px] pr-12 resize-none bg-[#1A1F2C] border-[#64B5D9]/20 placeholder:text-[#F2EBE4]/30 text-[#F2EBE4] focus-visible:ring-[#64B5D9]/20 rounded-xl"
+        />
         
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button size="icon" variant="outline" onClick={isRecording ? onStopSpeaking : onStartRecording} disabled={isDisabled || isLoading} className="shrink-0 border-[#9b87f5]/20 hover:border-[#9b87f5]/30 bg-gray-100 text-black font-normal text-base my-[8px]">
-                {isRecording ? <StopCircle className="h-4 w-4 text-red-400" /> : <Mic className="h-4 w-4 text-[#9b87f5]" />}
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                onClick={isRecording ? onStopSpeaking : onStartRecording}
+                disabled={isDisabled || isLoading}
+                className="absolute right-2 bottom-2 h-9 w-9 bg-[#1A1F2C]/80 hover:bg-[#1A1F2C] border border-[#64B5D9]/20 rounded-lg"
+              >
+                <motion.div 
+                  animate={isRecording ? { scale: [1, 1.2, 1] } : {}} 
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                >
+                  {isRecording ? 
+                    <Square className="h-4 w-4 text-red-500" /> : 
+                    <Mic className="h-4 w-4 text-[#F2EBE4]" />
+                  }
+                </motion.div>
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="bg-[#1A1F2C] border border-[#9b87f5]/20">
+            <TooltipContent>
               {isRecording ? "Arrêter l'enregistrement" : "Démarrer l'enregistrement"}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-
-        <Button size="icon" onClick={() => !isDisabled && onSendMessage()} disabled={isDisabled || isLoading || !userInput.trim()} className="shrink-0 text-black bg-slate-50 my-[8px] text-base">
-          <Send className="h-4 w-4" />
-        </Button>
       </div>
-    </div>;
+
+      <Button 
+        onClick={() => !isDisabled && onSendMessage()} 
+        disabled={isDisabled || isLoading || !userInput.trim()}
+        className="bg-gradient-to-r from-[#64B5D9] to-[#4A90E2] hover:opacity-90 text-white h-[52px] px-6 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+      >
+        <Send className="h-5 w-5" />
+        <span className="hidden sm:inline">Envoyer</span>
+      </Button>
+    </div>
+  );
 }

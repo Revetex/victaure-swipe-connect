@@ -10,50 +10,65 @@ interface VCardSectionProps {
   variant?: "default" | "education" | "experience";
 }
 
-export function VCardSection({
-  title,
-  icon,
-  children,
-  variant = "default"
-}: VCardSectionProps) {
+export function VCardSection({ title, icon, children, variant = "default" }: VCardSectionProps) {
   const variants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    }
   };
 
   return (
     <motion.div 
-      initial="hidden" 
-      animate="visible" 
+      initial="hidden"
+      animate="visible"
       variants={variants}
-      className="glass-panel overflow-hidden hover-lift"
+      className={cn(
+        "w-full rounded-xl overflow-hidden",
+        "bg-gradient-to-br from-white/5 to-white/10 dark:from-black/20 dark:to-black/30",
+        "border border-purple-500/10 dark:border-white/10",
+        "shadow-lg shadow-purple-500/5",
+        "backdrop-blur-md"
+      )}
     >
-      <div className="flex items-center gap-2 p-4 border-b border-white/5">
+      <div className={cn(
+        "flex items-center gap-2 px-6 py-4",
+        "border-b border-purple-500/10 dark:border-white/10",
+        "bg-gradient-to-r from-purple-500/5 to-transparent"
+      )}>
         {icon && (
-          <motion.span
+          <motion.span 
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-[#9b87f5]"
+            className="text-purple-500 dark:text-purple-400"
           >
             {icon}
           </motion.span>
         )}
-        <motion.h2
+        <motion.h2 
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-lg font-semibold text-gradient-purple"
+          className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent dark:from-purple-400 dark:to-purple-200"
         >
           {title}
         </motion.h2>
       </div>
 
-      <motion.div
+      <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="w-full p-6 bg-gradient-to-b from-transparent to-white/5"
+        className={cn(
+          "w-full p-6",
+          "bg-gradient-to-b from-transparent to-purple-50/5"
+        )}
       >
         {children}
       </motion.div>

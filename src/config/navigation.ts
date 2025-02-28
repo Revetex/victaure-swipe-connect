@@ -12,7 +12,8 @@ import {
   Settings, 
   StickyNote,
   ShoppingBag,
-  Gamepad2
+  Gamepad2,
+  Wallet
 } from "lucide-react";
 
 export const navigationItems = [
@@ -30,7 +31,7 @@ export const navigationItems = [
   
   // Outils
   { id: 7, icon: ListTodo, name: "Tâches", route: "/tasks" },
-  { id: 8, icon: Calculator, name: "Calculatrice", route: "/calculator" },
+  { id: 8, icon: Wallet, name: "Portefeuille", route: "/wallet" },
   { id: 14, icon: Languages, name: "Traducteur", route: "/translator" },
   { id: 16, icon: StickyNote, name: "Notes", route: "/notes" },
   { id: 10, icon: Settings, name: "Paramètres", route: "/settings" }
@@ -49,7 +50,7 @@ export const getPageTitle = (currentPage: number): string => {
     case 7:
       return "Tâches";
     case 8:
-      return "Calculatrice";
+      return "Portefeuille";
     case 9:
       return "Notifications";
     case 10:
