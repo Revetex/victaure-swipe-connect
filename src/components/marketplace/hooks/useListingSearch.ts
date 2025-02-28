@@ -80,31 +80,7 @@ export function useListingSearch(
 
         if (data) {
           // Transformer les données pour correspondre à MarketplaceListing
-          const formattedListings: MarketplaceListing[] = data.map(item => ({
-            id: item.id,
-            title: item.title,
-            description: item.description || '',
-            price: item.price,
-            currency: item.currency,
-            type: item.type,
-            status: item.status,
-            seller_id: item.seller_id,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-            images: item.images || [],
-            seller: item.seller ? {
-              id: item.seller.id,
-              full_name: item.seller.full_name || '',
-              avatar_url: item.seller.avatar_url || null,
-              rating: item.seller.rating
-            } : undefined,
-            location: item.location || '',
-            category: item.category || '',
-            views_count: item.views_count || 0,
-            favorites_count: item.favorites_count || 0,
-            featured: Boolean(item.featured),
-            sale_type: item.sale_type || ''
-          }));
+          const formattedListings: MarketplaceListing[] = data.map(item => adaptListingData(item));
           
           setListings(formattedListings);
           
