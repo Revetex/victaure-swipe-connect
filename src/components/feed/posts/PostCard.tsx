@@ -46,8 +46,8 @@ export function PostCard({
     setIsEditing(false);
   };
   const isOwnPost = currentUserId === post.user_id;
-  return <div className="overflow-hidden text-[#F2EBE4] bg-emerald-950">
-      <div className="p-4 space-y-4 rounded-none bg-emerald-950">
+  return <div className="overflow-hidden text-[#F2EBE4] bg-gray-900">
+      <div className="p-4 space-y-4 rounded-none bg-gray-900">
         <PostCardHeader profile={post.profiles} created_at={post.created_at} privacy_level={post.privacy_level} isOwnPost={isOwnPost} isEditing={isEditing} onEdit={() => setIsEditing(true)} onSave={handleSaveEdit} onCancel={handleCancelEdit} onDelete={onDelete} />
 
         <PostCardContent content={post.content} images={post.images} isEditing={isEditing} editContent={editContent} onEditContentChange={setEditContent} />
