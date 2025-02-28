@@ -71,10 +71,10 @@ export function Feed() {
     invalidatePosts();
     setIsExpanded(false);
   };
-  return <div className="relative flex flex-col min-h-screen bg-transparent">
+  return <div className="bg-transparent">
       {/* Header avec effet de transition d'opacité lors du défilement */}
       <div className={cn("fixed top-0 left-0 right-0 z-50", "transition-all duration-300", headerVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4")}>
-        <div className={cn(isDark ? "bg-background/95" : "bg-background/95", "backdrop-blur-md border-b shadow-sm", isDark ? "border-border/30" : "border-border/40")}>
+        <div className="">
           <div className="container mx-auto max-w-4xl px-2 sm:px-4 py-2 space-y-2">
             {!isExpanded ? <Button onClick={() => setIsExpanded(true)} variant="ghost" className={cn("w-full h-10 justify-start px-4 rounded-lg transition-all duration-200", isDark ? "bg-muted/20 hover:bg-muted/30" : "bg-muted/30 hover:bg-muted/40", isDark ? "text-foreground" : "text-foreground", "border", isDark ? "border-border/30" : "border-border/40")}>
                 Partagez quelque chose...
@@ -89,7 +89,7 @@ export function Feed() {
       <div className="mt-[100px] sm:mt-[112px]"></div>
 
       {/* Container principal avec le feed et scrolling amélioré */}
-      <main className="flex-1 w-full max-w-4xl mx-auto px-2 sm:px-4 scroll-smooth">
+      <main className="bg-transparent rounded-none">
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-3 pb-16">
           <PostList searchTerm={searchTerm} filter={filter} sortBy={sortBy} sortOrder={sortOrder} onPostDeleted={invalidatePosts} onPostUpdated={invalidatePosts} />
         </motion.div>
