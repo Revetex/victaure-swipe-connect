@@ -16,7 +16,7 @@ export function PostHeader({
   created_at,
   privacy_level
 }: PostHeaderProps) {
-  return <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-0">
+  return <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-0 bg-gray-950">
       <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden shrink-0">
         {profile.avatar_url ? <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" /> : <UserCircle className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />}
       </div>

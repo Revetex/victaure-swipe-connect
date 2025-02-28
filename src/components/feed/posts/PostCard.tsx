@@ -46,14 +46,14 @@ export function PostCard({
     setIsEditing(false);
   };
   const isOwnPost = currentUserId === post.user_id;
-  return <div className="overflow-hidden text-[#F2EBE4] bg-gray-900">
+  return <div className="overflow-hidden text-[#F2EBE4] bg-gray-950">
       <div className="p-4 space-y-4 rounded-none bg-gray-900">
         <PostCardHeader profile={post.profiles} created_at={post.created_at} privacy_level={post.privacy_level} isOwnPost={isOwnPost} isEditing={isEditing} onEdit={() => setIsEditing(true)} onSave={handleSaveEdit} onCancel={handleCancelEdit} onDelete={onDelete} />
 
         <PostCardContent content={post.content} images={post.images} isEditing={isEditing} editContent={editContent} onEditContentChange={setEditContent} />
       </div>
 
-      <div className="px-4 py-2 bg-gray-50/50 dark:bg-gray-800/50">
+      <div className="px-4 py-2 bg-gray-950">
         <PostActions likes={post.likes} dislikes={post.dislikes} commentCount={post.comments?.length || 0} userReaction={post.reactions?.find(r => r.user_id === currentUserId)?.reaction_type} isExpanded={showComments} postId={post.id} postAuthorId={post.user_id} currentUserId={currentUserId} userEmail={userEmail} onToggleComments={handleToggleComments} onReaction={onReaction} />
       </div>
 
