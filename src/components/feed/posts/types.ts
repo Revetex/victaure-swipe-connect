@@ -1,5 +1,4 @@
 
-
 import { Post as BasePost, Comment as BaseComment } from '@/types/posts';
 
 export interface CreatePostProps {
@@ -22,4 +21,3 @@ export type PostPrivacyLevel = "public" | "connections";
 
 export type Post = BasePost;
 export type Comment = BaseComment;
-

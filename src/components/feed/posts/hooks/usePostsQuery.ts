@@ -62,7 +62,7 @@ export function usePostsQuery({
         `)
         .range(from, to);
 
-      // Si une recherche est spécifiée, utiliser la recherche full-text
+      // If a search is specified, use full-text search
       if (searchTerm && searchTerm.trim() !== '') {
         query = query.textSearch('searchable_content', searchTerm.trim(), {
           type: 'websearch',
@@ -70,7 +70,7 @@ export function usePostsQuery({
         });
       }
 
-      // Appliquer les filtres
+      // Apply filters
       switch (filter) {
         case "my":
           query = query.eq("user_id", userId);
@@ -86,7 +86,7 @@ export function usePostsQuery({
             const likedPostIds = likedPosts.map(reaction => reaction.post_id);
             query = query.in("id", likedPostIds);
           } else {
-            // Si aucun post n'est liké, retourner un tableau vide
+            // If no posts are liked, return an empty array
             return { posts: [], nextPage: undefined };
           }
           break;
@@ -120,7 +120,7 @@ export function usePostsQuery({
         }
       }
 
-      // Appliquer les tris
+      // Apply sorting
       switch (sortBy) {
         case "date":
           query = query.order("created_at", { ascending: sortOrder === "asc" });
@@ -133,12 +133,13 @@ export function usePostsQuery({
       const { data, error } = await query;
 
       if (error) {
-        console.error("Erreur lors de la récupération des posts:", error);
+        console.error("Error fetching posts:", error);
         throw error;
       }
 
       // Transform database response to match the Post type
       const transformedData = data?.map(post => {
+        // Make sure comments have post_id
         const transformedComments = post.comments?.map(comment => ({
           ...comment,
           post_id: post.id // Ensure post_id is set
@@ -155,7 +156,7 @@ export function usePostsQuery({
         } as Post;
       }) || [];
 
-      // Tri manuel pour les commentaires si nécessaire
+      // Manual sorting for comments if needed
       const sortedData = sortBy === "comments" 
         ? transformedData.sort((a, b) => {
             const aCount = a.comments?.length || 0;

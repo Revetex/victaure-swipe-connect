@@ -1,16 +1,16 @@
 
 import { MarketplaceFavorite, MarketplaceListing } from "@/types/marketplace";
 
-// Fonction d'adaptation pour gérer les différentes structures de favoris
+// Adapting function to handle different favorite data structures
 export const adaptFavoriteData = (data: any): MarketplaceFavorite => {
   return {
     id: data.id,
-    item_id: data.item_id || data.listing_id, // Support des deux formats
-    user_id: data.user_id || data.viewer_id // Support des deux formats
+    item_id: data.item_id || data.listing_id, // Support both formats
+    user_id: data.user_id || data.viewer_id // Support both formats
   };
 };
 
-// Fonction d'adaptation pour gérer les différentes structures de listings
+// Listing data adapter function
 export const adaptListingData = (data: any): MarketplaceListing => {
   return {
     id: data.id || '',
@@ -30,16 +30,16 @@ export const adaptListingData = (data: any): MarketplaceListing => {
       avatar_url: data.seller.avatar_url || null,
       rating: data.seller.rating || 0
     } : undefined,
-    location: data.location,
-    category: data.category,
-    views_count: data.views_count,
-    favorites_count: data.favorites_count,
-    featured: data.featured,
-    sale_type: data.sale_type
+    location: data.location || '',
+    category: data.category || '',
+    views_count: data.views_count || 0,
+    favorites_count: data.favorites_count || 0,
+    featured: data.featured || false,
+    sale_type: data.sale_type || ''
   };
 };
 
-// Fonction d'adaptation pour les valeurs booléennes
+// Boolean adapter function
 export function ensureBoolean(value: any): boolean {
   if (typeof value === 'boolean') return value;
   if (typeof value === 'string') {

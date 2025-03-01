@@ -1,4 +1,3 @@
-
 export type UserRole = 'professional' | 'business' | 'admin' | 'freelancer' | 'student';
 
 export interface UserProfile {
@@ -36,7 +35,7 @@ export interface UserProfile {
 
 export interface Certification {
   id: string;
-  profile_id: string;
+  profile_id?: string;
   title: string;
   issuer: string;
   issue_date?: string | null;
@@ -65,7 +64,7 @@ export interface Education {
 
 export interface Experience {
   id: string;
-  profile_id: string;
+  profile_id?: string;
   company: string;
   position: string;
   start_date?: string | null;
