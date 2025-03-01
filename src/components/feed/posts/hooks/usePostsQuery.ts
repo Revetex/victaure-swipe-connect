@@ -59,7 +59,7 @@ export function usePostsQuery({
               avatar_url
             )
           )
-        `)
+        `, { count: 'exact' })
         .range(from, to);
 
       // If a search is specified, use full-text search

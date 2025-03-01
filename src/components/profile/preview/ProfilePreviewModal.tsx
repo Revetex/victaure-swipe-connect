@@ -39,7 +39,7 @@ export function ProfilePreviewModal({
   const safeProfile: UserProfile = {
     ...profile,
     avatar_url: profile.avatar_url || null,
-    full_name: profile.full_name || null,
+    full_name: profile.full_name || '',
   };
 
   return (

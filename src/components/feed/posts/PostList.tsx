@@ -71,7 +71,7 @@ export function PostList({
   const allPosts = data?.pages.flatMap(page => page.posts) ?? [];
 
   if (isLoading) return <PostSkeleton />;
-  if (!allPosts.length) return <EmptyPostState />;
+  if (allPosts.length === 0) return <EmptyPostState />;
 
   return (
     <motion.div 

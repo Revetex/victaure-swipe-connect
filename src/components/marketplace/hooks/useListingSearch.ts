@@ -79,7 +79,7 @@ export function useListingSearch(
 
       if (data) {
         // Transform the data to match the ExtendedMarketplaceListing type
-        const formattedListings = data.map(item => adaptListingData(item));
+        const formattedListings = data.map(item => adaptListingData(item) as ExtendedMarketplaceListing);
         
         // Apply client-side sorting for seller rating if needed
         const sortedListings = sortBy === 'rating' 

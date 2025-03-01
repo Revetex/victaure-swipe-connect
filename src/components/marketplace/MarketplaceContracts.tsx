@@ -42,8 +42,9 @@ export function MarketplaceContracts() {
         updated_at: contract.updated_at || undefined,
         creator_id: contract.creator_id,
         creator: {
-          full_name: contract.creator_full_name || null,
-          avatar_url: contract.creator_avatar_url || null
+          full_name: contract.creator_full_name || "",
+          avatar_url: contract.creator_avatar_url || null,
+          id: contract.creator_id || ""
         }
       }));
       
