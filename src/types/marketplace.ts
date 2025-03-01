@@ -101,6 +101,11 @@ export interface MarketplaceService {
     avatar_url: string | null;
     rating: number;
   };
+  // Database compatibility fields
+  owner_id?: string;
+  category_id?: string;
+  current_price?: number;
+  auction_end_date?: string;
 }
 
 // Type aliases for compatibility with existing code

@@ -8,7 +8,7 @@ export interface Conversation {
   participant1_id: string;
   participant2_id: string;
   participant?: ConversationParticipant;
-  unread?: boolean;
+  unread?: boolean | string | number;
   // Add compatibility fields to match the structure in messages.ts
   created_at: string;
   updated_at: string;
@@ -19,10 +19,11 @@ export interface ConversationParticipant {
   full_name: string | null;
   avatar_url: string | null;
   email?: string | null;
-  online_status?: boolean;
+  online_status?: boolean | string;
   last_seen?: string | null;
   role?: string;
   username?: string; // Added for compatibility
+  phone?: string | null; // Added for compatibility
 }
 
 export interface CreateConversationParams {

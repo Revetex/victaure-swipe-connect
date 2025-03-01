@@ -1,6 +1,7 @@
 
 import { Receiver } from "@/types/messages";
 import { ConversationHeader } from "../ConversationHeader";
+import { convertToBoolean } from "@/utils/marketplace";
 
 interface ConversationHeaderAdapterProps {
   receiver: Receiver;
@@ -11,9 +12,7 @@ export function ConversationHeaderAdapter({ receiver, onBack }: ConversationHead
   if (!receiver) return null;
   
   // Convert string boolean to actual boolean if needed
-  const isOnline = typeof receiver.online_status === 'string' 
-    ? receiver.online_status === 'true' || receiver.online_status === '1'
-    : !!receiver.online_status;
+  const isOnline = convertToBoolean(receiver.online_status);
   
   // Convert the Receiver type to the props expected by ConversationHeader
   const headerProps = {

@@ -60,7 +60,8 @@ export interface Receiver {
   company_name?: string | null;
   latitude?: number;
   longitude?: number;
-  username?: string;
+  username?: string; // Added for compatibility
+  phone?: string | null; // Added for compatibility with conversation code
 }
 
 // Export UserRole for use in message components
