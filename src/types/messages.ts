@@ -62,6 +62,9 @@ export interface Receiver {
   longitude?: number;
   username?: string; // Added for compatibility
   phone?: string | null; // Added for compatibility with conversation code
+  city?: string | null; // Added for compatibility with ConversationView
+  state?: string | null; // Added for compatibility with ConversationView
+  country?: string | null; // Added for compatibility
 }
 
 // Export UserRole for use in message components

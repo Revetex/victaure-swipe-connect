@@ -24,6 +24,9 @@ export interface ConversationParticipant {
   role?: string;
   username?: string; // Added for compatibility
   phone?: string | null; // Added for compatibility
+  city?: string | null; // Added for compatibility
+  state?: string | null; // Added for compatibility
+  country?: string | null; // Added for compatibility
 }
 
 export interface CreateConversationParams {
