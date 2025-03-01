@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Job } from '@/types/job';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,14 +14,45 @@ interface JobsAIAssistantProps {
   jobs: Job[];
 }
 
-export function JobsAIAssistant({
-  jobs
-}: JobsAIAssistantProps) {
+export function JobsAIAssistant({ jobs }: JobsAIAssistantProps) {
   const [analysis, setAnalysis] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const {
-    profile
-  } = useProfile();
+  const { profile } = useProfile();
+  
+  const formatAnalysisContent = useCallback((content: string) => {
+    return content.split('\n\n').map((paragraph, index) => (
+      <div key={index} className="text-sm">
+        {paragraph.split('\n').map((line, lineIndex) => (
+          <p 
+            key={`${index}-${lineIndex}`} 
+            className={cn("mb-1", line.startsWith("•") && "pl-4")}
+          >
+            {line}
+          </p>
+        ))}
+      </div>
+    ));
+  }, []);
+  
+  const prepareAnalysisData = useCallback(() => {
+    if (!profile) return null;
+    
+    const jobsContext = jobs.slice(0, 5).map(job => ({
+      title: job.title,
+      company: job.company,
+      description: job.description,
+      skills: job.required_skills,
+      salary: job.salary_max || job.salary_min
+    }));
+
+    const userContext = {
+      skills: profile.skills || [],
+      experience: profile.experiences || [],
+      education: profile.education || []
+    };
+    
+    return { jobsContext, userContext };
+  }, [jobs, profile]);
 
   const analyzeJobs = async () => {
     if (!profile) {
@@ -36,20 +67,13 @@ export function JobsAIAssistant({
 
     setIsAnalyzing(true);
     try {
-      const jobsContext = jobs.slice(0, 5).map(job => ({
-        title: job.title,
-        company: job.company,
-        description: job.description,
-        skills: job.required_skills,
-        salary: job.salary_max || job.salary_min
-      }));
-
-      const userContext = {
-        skills: profile.skills || [],
-        experience: profile.experiences || [],
-        education: profile.education || []
-      };
-
+      const data = prepareAnalysisData();
+      if (!data) {
+        throw new Error("Impossible de préparer les données d'analyse");
+      }
+      
+      const { jobsContext, userContext } = data;
+      
       const response = await fetch('https://mfjllillnpleasclqabb.supabase.co/functions/v1/analyze-jobs', {
         method: 'POST',
         headers: {
@@ -65,8 +89,8 @@ export function JobsAIAssistant({
         throw new Error("Erreur lors de l'analyse");
       }
 
-      const data = await response.json();
-      setAnalysis(data.analysis);
+      const result = await response.json();
+      setAnalysis(result.analysis);
       toast.success("Analyse complétée avec succès!");
     } catch (error) {
       console.error('Erreur:', error);
@@ -119,18 +143,7 @@ export function JobsAIAssistant({
         ) : (
           <ScrollArea className="h-[300px] pr-3">
             <div className="space-y-3">
-              {analysis.split('\n\n').map((paragraph, index) => (
-                <div key={index} className="text-sm">
-                  {paragraph.split('\n').map((line, lineIndex) => (
-                    <p key={`${index}-${lineIndex}`} className={cn(
-                      "mb-1",
-                      line.startsWith("•") && "pl-4"
-                    )}>
-                      {line}
-                    </p>
-                  ))}
-                </div>
-              ))}
+              {formatAnalysisContent(analysis)}
             </div>
           </ScrollArea>
         )}
