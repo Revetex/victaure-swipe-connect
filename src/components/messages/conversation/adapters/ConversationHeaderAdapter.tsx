@@ -10,10 +10,17 @@ interface ConversationHeaderAdapterProps {
 export function ConversationHeaderAdapter({ receiver, onBack }: ConversationHeaderAdapterProps) {
   if (!receiver) return null;
   
+  // Convert the Receiver type to the props expected by ConversationHeader
+  const headerProps = {
+    name: receiver.full_name || receiver.username || "Unknown",
+    avatar: receiver.avatar_url || "",
+    isOnline: receiver.is_online || false,
+    onBack
+  };
+  
   return (
     <ConversationHeader 
-      receiver={receiver}
-      onBack={onBack}
+      {...headerProps}
     />
   );
 }
