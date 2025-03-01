@@ -98,3 +98,21 @@ export function ensureDateString(date: Date | string | null | undefined): string
   }
   return date;
 }
+
+/**
+ * Safely converts various data types to a boolean value
+ * For database compatibility with string booleans
+ * @param value Value to convert to boolean
+ * @returns Boolean representation
+ */
+export function convertToBoolean(value: string | boolean | number | null | undefined): boolean {
+  if (value === null || value === undefined) return false;
+  
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') return value !== 0;
+  if (typeof value === 'string') {
+    return ['true', '1', 'yes', 'on'].includes(value.toLowerCase());
+  }
+  
+  return false;
+}

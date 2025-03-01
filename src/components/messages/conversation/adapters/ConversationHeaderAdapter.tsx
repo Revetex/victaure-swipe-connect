@@ -10,12 +10,18 @@ interface ConversationHeaderAdapterProps {
 export function ConversationHeaderAdapter({ receiver, onBack }: ConversationHeaderAdapterProps) {
   if (!receiver) return null;
   
+  // Convert string boolean to actual boolean if needed
+  const isOnline = typeof receiver.online_status === 'string' 
+    ? receiver.online_status === 'true' || receiver.online_status === '1'
+    : !!receiver.online_status;
+  
   // Convert the Receiver type to the props expected by ConversationHeader
   const headerProps = {
     name: receiver.full_name || receiver.username || "Unknown",
     avatar: receiver.avatar_url || "",
-    isOnline: receiver.online_status || false,
+    isOnline,
     partner: receiver,
+    receiver,
     onBack,
     onClose: onBack
   };

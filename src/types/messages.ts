@@ -7,16 +7,16 @@ export interface Conversation {
   timestamp?: string;
   created_at: string;
   updated_at: string;
-  unread?: boolean;
+  unread?: boolean | string | number; // Updated to handle all possible types
   avatar_url?: string;
   full_name?: string;
   participant?: Receiver;
   last_message_time?: string;
   participant1_id?: string;
   participant2_id?: string;
-  online?: boolean;
-  isPinned?: boolean;
-  isMuted?: boolean;
+  online?: boolean | string; // Updated to handle string representation of booleans
+  isPinned?: boolean | number; // Updated to handle number representation of booleans
+  isMuted?: boolean | number; // Updated to handle number representation of booleans
 }
 
 export interface ConversationHeaderProps {
@@ -36,7 +36,7 @@ export interface Message {
   receiver_id: string;
   conversation_id?: string;
   created_at: string;
-  read?: boolean;
+  read?: boolean | string; // Updated to handle string representation of booleans
   sender?: Receiver;
   timestamp?: string;
   metadata?: any;
@@ -48,7 +48,7 @@ export interface Receiver {
   full_name: string | null;
   avatar_url: string | null;
   email?: string | null;
-  online_status?: boolean;
+  online_status?: boolean | string; // Updated to handle string representation of booleans
   last_seen?: string | null;
   role?: string;
   bio?: string | null;
