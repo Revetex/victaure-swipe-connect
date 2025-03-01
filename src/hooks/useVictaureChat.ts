@@ -8,9 +8,12 @@ import { supabase } from '@/integrations/supabase/client';
 const INITIAL_CONTEXT = `Vous êtes Victaure AI, un assistant intelligent qui aide les utilisateurs à trouver des solutions à leurs problèmes.
 Vous êtes concis, utile et essayez toujours de fournir des réponses pertinentes basées sur des faits.`;
 
+const MAX_FREE_QUESTIONS = 3; // Maximum number of questions for non-logged in users
+
 export function useVictaureChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [userQuestions, setUserQuestions] = useState(0);
   const { user } = useAuth();
   const botId = 'victaure-ai';
 
@@ -28,7 +31,6 @@ export function useVictaureChat() {
             id: botId,
             full_name: 'Victaure AI',
             avatar_url: '/user-icon.svg',
-            // Don't include role since it's not part of Receiver
           }
         };
         setMessages([welcomeMessage]);
@@ -38,11 +40,20 @@ export function useVictaureChat() {
     loadInitialMessage();
   }, [messages.length, user?.id]);
 
+  // Calculate questions left for non-logged in users
+  const questionsLeft = user ? null : MAX_FREE_QUESTIONS - userQuestions;
+
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
     
     try {
       setIsLoading(true);
+      
+      // Check if user has reached their limit of free questions
+      if (!user && userQuestions >= MAX_FREE_QUESTIONS) {
+        toast.error("Vous avez atteint la limite de questions gratuites. Veuillez vous connecter pour continuer.");
+        return;
+      }
       
       // Add user message
       const userMessage: Message = {
@@ -56,11 +67,15 @@ export function useVictaureChat() {
           id: user?.id || 'guest',
           full_name: user?.email || 'Vous',
           avatar_url: null,
-          // Don't include role since it's not part of Receiver
         }
       };
       
       setMessages(prev => [...prev, userMessage]);
+      
+      // Increment question count for non-logged in users
+      if (!user) {
+        setUserQuestions(prev => prev + 1);
+      }
       
       // Save interaction to database if user is logged in
       if (user) {
@@ -91,7 +106,6 @@ export function useVictaureChat() {
           id: botId,
           full_name: 'Victaure AI',
           avatar_url: '/user-icon.svg',
-          // Don't include role since it's not part of Receiver
         }
       };
       
@@ -103,13 +117,15 @@ export function useVictaureChat() {
     } finally {
       setIsLoading(false);
     }
-  }, [messages, user]);
+  }, [messages, user, userQuestions]);
 
   const clearChat = useCallback(() => {
     setMessages([]);
+    setUserQuestions(0);
+    toast.success("Historique effacé");
   }, []);
 
-  return { messages, isLoading, sendMessage, clearChat };
+  return { messages, isLoading, sendMessage, clearChat, questionsLeft };
 }
 
 // Simple response generation based on patterns
