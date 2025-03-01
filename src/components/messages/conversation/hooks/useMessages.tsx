@@ -171,13 +171,20 @@ export function useMessages(receiver: Receiver | null) {
               .eq('id', payload.new.sender_id)
               .single();
 
-            const newMessage = {
-              ...payload.new,
-              sender: transformToFullProfile(senderProfile),
+            // Create properly typed message object
+            const newMessage: Message = {
+              id: payload.new.id,
+              content: payload.new.content,
+              sender_id: payload.new.sender_id,
+              receiver_id: payload.new.receiver_id,
+              created_at: payload.new.created_at,
+              conversation_id: payload.new.conversation_id,
+              sender: senderProfile ? transformToFullProfile(senderProfile) : undefined,
+              status: payload.new.status || 'sent',
               metadata: typeof payload.new.metadata === 'string' 
                 ? JSON.parse(payload.new.metadata) 
                 : payload.new.metadata || {}
-            } as Message;
+            };
 
             // Marquer automatiquement comme lu si c'est un message entrant
             if (payload.new.sender_id === receiver.id) {

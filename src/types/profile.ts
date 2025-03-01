@@ -1,3 +1,4 @@
+
 export type UserRole = 'professional' | 'business' | 'admin' | 'freelancer' | 'student';
 
 export interface UserProfile {
@@ -31,6 +32,7 @@ export interface UserProfile {
   latitude?: number;
   longitude?: number;
   job_title?: string;
+  friendship_id?: string; // Added for compatibility with ConnectionCard
 }
 
 export interface Certification {
@@ -192,6 +194,7 @@ export function friendToUserProfile(friend: Friend): UserProfile {
     country: friend.country,
     skills: friend.skills,
     online_status: friend.online_status,
-    last_seen: friend.last_seen
+    last_seen: friend.last_seen,
+    friendship_id: friend.friendship_id
   };
 }

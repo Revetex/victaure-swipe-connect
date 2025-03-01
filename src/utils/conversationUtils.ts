@@ -1,90 +1,94 @@
-
-import { Conversation, ConversationHeaderProps, Receiver } from "@/types/messages";
+import { Conversation, Message, Receiver } from "@/types/messages";
+import { format, formatDistance } from "date-fns";
+import { fr } from "date-fns/locale";
 
 /**
- * Convertit une valeur de statut en ligne au format booléen
+ * Format a timestamp for display in conversation lists
  */
-export function ensureBoolean(value: any): boolean {
-  if (typeof value === 'boolean') return value;
-  if (typeof value === 'string') {
-    return value.toLowerCase() === 'true' || 
-           value === '1' || 
-           value === 'yes' || 
-           value === 'online' || 
-           value === 'on';
+export function formatConversationTime(timestamp: string | null): string {
+  if (!timestamp) return "";
+  
+  const date = new Date(timestamp);
+  const now = new Date();
+  
+  // If today, just show time
+  if (date.toDateString() === now.toDateString()) {
+    return format(date, "HH:mm");
   }
-  if (typeof value === 'number') return value !== 0;
-  return !!value;
+  
+  // If this week, show day name
+  const diffDays = Math.round((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+  if (diffDays < 7) {
+    return format(date, "EEEE", { locale: fr });
+  }
+  
+  // Otherwise show date
+  return format(date, "dd/MM/yyyy");
 }
 
 /**
- * Assure que la conversation a tous les champs requis et au bon format
+ * Create a conversation object from a receiver
  */
-export function ensureConversationTypes(conversation: any): Conversation {
+export function createConversationFromReceiver(
+  receiver: Receiver,
+  lastMessage?: string,
+  timestamp?: string
+): Conversation {
   return {
-    id: conversation.id || '',
-    participant1_id: conversation.participant1_id || '',
-    participant2_id: conversation.participant2_id || '',
-    participant: conversation.participant || '',
-    last_message: conversation.last_message || '',
-    last_message_time: conversation.last_message_time || new Date().toISOString(),
-    created_at: conversation.created_at || new Date().toISOString(),
-    updated_at: conversation.updated_at || new Date().toISOString(),
-    unread: conversation.unread || 0,
-    isPinned: ensureBoolean(conversation.isPinned),
-    isMuted: ensureBoolean(conversation.isMuted),
-    online: ensureBoolean(conversation.online),
-    avatar_url: conversation.avatar_url || null
+    id: `conv-${receiver.id}`,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    sender_id: "user",
+    receiver_id: receiver.id,
+    last_message: lastMessage,
+    timestamp: timestamp,
+    full_name: receiver.full_name || "",
+    avatar_url: receiver.avatar_url || "",
+    participant: receiver,
+    unread: false,
+    // Don't add isPinned as it's not in Conversation type
   };
 }
 
 /**
- * Crée des props pour l'en-tête de conversation à partir du récepteur
+ * Format the relative time (like "5 minutes ago")
  */
-export function createConversationHeaderProps(receiver: Receiver): ConversationHeaderProps {
-  return {
-    name: receiver.full_name || 'Inconnu',
-    avatar: receiver.avatar_url,
-    isOnline: ensureBoolean(receiver.online_status),
-    receiver: receiver,
-    onBack: () => window.history.back()
-  };
+export function formatRelativeTime(timestamp: string | null): string {
+  if (!timestamp) return "";
+  
+  try {
+    return formatDistance(new Date(timestamp), new Date(), {
+      addSuffix: true,
+      locale: fr
+    });
+  } catch (e) {
+    console.error("Error formatting date:", e);
+    return "";
+  }
 }
 
 /**
- * Extrait le nom du participant d'une conversation
+ * Get last message preview text
  */
-export function extractParticipantName(participant: any): string {
-  if (typeof participant === 'string') {
-    return participant;
-  }
+export function getMessagePreview(message: string, maxLength: number = 30): string {
+  if (!message) return "";
   
-  if (participant && typeof participant === 'object') {
-    return participant.full_name || 'Contact';
-  }
+  if (message.length <= maxLength) return message;
   
-  return 'Contact';
+  return `${message.substring(0, maxLength)}...`;
 }
 
 /**
- * Extrait et normalise les données de participant
+ * Sort conversations by timestamp
  */
-export function normalizeParticipantData(data: any): any {
-  if (!data) return { full_name: 'Inconnu', avatar_url: null };
-  
-  // Si le participant est une chaîne, le convertir en objet
-  if (typeof data === 'string') {
-    return { full_name: data, avatar_url: null };
-  }
-  
-  // Si c'est un objet, assurer qu'il a les propriétés requises
-  if (typeof data === 'object') {
-    return {
-      ...data,
-      full_name: data.full_name || 'Contact',
-      avatar_url: data.avatar_url || null
-    };
-  }
-  
-  return { full_name: 'Inconnu', avatar_url: null };
+export function sortConversationsByTime(conversations: Conversation[]): Conversation[] {
+  return [...conversations].sort((a, b) => {
+    const timeA = a.timestamp || a.updated_at;
+    const timeB = b.timestamp || b.updated_at;
+    
+    if (!timeA) return 1;
+    if (!timeB) return -1;
+    
+    return new Date(timeB).getTime() - new Date(timeA).getTime();
+  });
 }

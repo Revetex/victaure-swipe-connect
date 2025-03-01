@@ -1,78 +1,86 @@
 
-import { Friend, UserProfile } from "@/types/profile";
 import { Receiver } from "@/types/messages";
+import { User, UserProfile } from "@/types/profile";
 
 /**
- * Converts a Friend to a Receiver object for use in messaging
+ * Creates a Receiver object from a User or UserProfile
  */
-export function friendToReceiver(friend: Friend): Receiver {
+export function createReceiverFromUser(user: User | UserProfile | null): Receiver | null {
+  if (!user) return null;
+  
   return {
-    id: friend.id,
-    full_name: friend.full_name,
-    avatar_url: friend.avatar_url,
-    online_status: friend.online_status,
-    last_seen: friend.last_seen,
-    email: friend.email,
-    role: friend.role
+    id: user.id,
+    full_name: user.full_name,
+    avatar_url: (user as UserProfile).avatar_url || (user as User).avatar_url || null,
+    email: user.email || null,
+    online_status: (user as UserProfile).online_status || false,
+    last_seen: (user as UserProfile).last_seen || null,
+    // Don't include role as it's not in Receiver
   };
 }
 
 /**
- * Converts a UserProfile to a Friend object
+ * Gets the name to display for a receiver
  */
-export function profileToFriend(profile: UserProfile): Friend {
+export function getReceiverDisplayName(receiver: Receiver | null): string {
+  if (!receiver) return "Unknown";
+  if (receiver.full_name) return receiver.full_name;
+  return receiver.email?.split('@')[0] || "User";
+}
+
+/**
+ * Creates an empty Receiver object with default values
+ */
+export function createEmptyReceiver(id: string): Receiver {
   return {
-    id: profile.id,
-    email: profile.email,
-    full_name: profile.full_name,
-    avatar_url: profile.avatar_url,
-    role: profile.role,
-    bio: profile.bio,
-    phone: profile.phone,
-    city: profile.city,
-    state: profile.state,
-    country: profile.country,
-    skills: profile.skills,
-    online_status: profile.online_status,
-    last_seen: profile.last_seen,
-    created_at: profile.created_at,
-    job_title: profile.job_title,
-    friends: [] // Ajouter cette propriété obligatoire
+    id,
+    full_name: null,
+    avatar_url: null,
+    email: null,
+    online_status: false,
+    last_seen: null,
+    // Don't include non-Receiver properties
   };
 }
 
 /**
- * Converts a UserProfile to a Receiver object for use in messaging
+ * Enhances a Receiver with extra properties for display
  */
-export function profileToReceiver(profile: UserProfile): Receiver {
+export function enhanceReceiver(receiver: Receiver, extras: Partial<Receiver> = {}): Receiver {
   return {
-    id: profile.id,
-    full_name: profile.full_name,
-    avatar_url: profile.avatar_url,
-    online_status: profile.online_status,
-    last_seen: profile.last_seen,
-    email: profile.email,
-    latitude: profile.latitude,
-    longitude: profile.longitude,
-    role: profile.role,
-    bio: profile.bio
+    ...receiver,
+    ...extras,
+    // Don't include non-Receiver properties
   };
 }
 
 /**
- * Converts a Receiver to a Friend object
+ * Creates a receiver from a profile object
  */
-export function receiverToFriend(receiver: Receiver): Friend {
+export function receiverFromProfile(profile: any): Receiver {
+  if (!profile) return createEmptyReceiver('unknown');
+  
   return {
-    id: receiver.id,
-    email: receiver.email || null,
-    full_name: receiver.full_name,
-    avatar_url: receiver.avatar_url,
-    role: (receiver.role as any) || 'professional',
-    online_status: receiver.online_status,
-    last_seen: receiver.last_seen,
-    bio: receiver.bio || null,
-    created_at: new Date().toISOString(),
-    friends: [] // Propriété obligatoire
+    id: profile.id || 'unknown',
+    full_name: profile.full_name || null,
+    avatar_url: profile.avatar_url || null,
+    email: profile.email || null,
+    online_status: profile.online_status || false,
+    last_seen: profile.last_seen || null,
+    // Don't access or use properties that don't exist on Receiver
   };
+}
+
+/**
+ * Gets the bio text from a profile or receiver, safely
+ */
+export function getSafeBioText(profile: UserProfile | Receiver | null): string | null {
+  if (!profile) return null;
+  
+  // Check if the property exists before accessing
+  if ('bio' in profile && typeof profile.bio === 'string') {
+    return profile.bio;
+  }
+  
+  return null;
 }

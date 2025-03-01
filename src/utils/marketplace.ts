@@ -6,7 +6,9 @@ export const adaptFavoriteData = (data: any): MarketplaceFavorite => {
   return {
     id: data.id,
     item_id: data.item_id || data.listing_id, // Support both formats
-    user_id: data.user_id || data.viewer_id // Support both formats
+    user_id: data.user_id || data.viewer_id, // Support both formats
+    listing_id: data.listing_id,
+    viewer_id: data.viewer_id
   };
 };
 

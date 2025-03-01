@@ -14,6 +14,9 @@ export interface Conversation {
   last_message_time?: string;
   participant1_id?: string;
   participant2_id?: string;
+  online?: boolean;
+  isPinned?: boolean;
+  isMuted?: boolean;
 }
 
 export interface ConversationHeaderProps {
@@ -37,6 +40,7 @@ export interface Message {
   sender?: Receiver;
   timestamp?: string;
   metadata?: any;
+  status?: 'sent' | 'delivered' | 'read' | 'failed';
 }
 
 export interface Receiver {
@@ -46,4 +50,17 @@ export interface Receiver {
   email?: string | null;
   online_status?: boolean;
   last_seen?: string | null;
+  role?: string;
+  bio?: string | null;
+  skills?: string[];
+  certifications?: any[];
+  education?: any[];
+  experiences?: any[];
+  website?: string | null;
+  company_name?: string | null;
+  latitude?: number;
+  longitude?: number;
 }
+
+// Export UserRole for use in message components
+export type UserRole = 'professional' | 'business' | 'admin' | 'freelancer' | 'student';

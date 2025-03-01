@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { HfInference } from "@huggingface/inference";
-import { Message } from "@/types/messages";
+import { Message, Receiver } from "@/types/messages";
 
 interface ChatMessage {
   content: string;
@@ -52,7 +52,7 @@ export function useChatMessages({
             full_name: m.isUser ? 'Vous' : 'Assistant',
             avatar_url: null,
             email: '',
-            role: 'professional'
+            // No role here, as it's not part of Receiver
           }
         }));
         setMessages(formattedMessages);
@@ -103,7 +103,7 @@ export function useChatMessages({
           full_name: 'Vous',
           avatar_url: null,
           email: '',
-          role: 'professional'
+          // No role here, as it's not part of Receiver
         }
       };
 
@@ -149,7 +149,7 @@ export function useChatMessages({
           full_name: 'Assistant',
           avatar_url: null,
           email: '',
-          role: 'professional'
+          // No role here, as it's not part of Receiver
         }
       };
       

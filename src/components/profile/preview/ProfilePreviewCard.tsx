@@ -1,74 +1,57 @@
 
 import React from 'react';
 import { UserProfile } from '@/types/profile';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { getInitials } from '@/utils/text-formatters';
+import { formatNameInitials } from '@/utils/text-formatters';
 
 interface ProfileCardProps {
   profile: UserProfile;
-  onSelect?: (profile: UserProfile) => void;
-  actionLabel?: string;
-  showAction?: boolean;
+  onConnect?: () => void;
+  onMessage?: () => void;
+  onViewProfile?: () => void;
 }
 
-export function ProfileCard({ profile, onSelect, actionLabel = 'View Profile', showAction = true }: ProfileCardProps) {
+export function ProfilePreviewCard({ profile, onConnect, onMessage, onViewProfile }: ProfileCardProps) {
   return (
-    <Card className="overflow-hidden bg-card shadow-sm">
-      <CardHeader className="flex flex-row items-center gap-3 p-4">
+    <Card className="w-full border border-zinc-800/50 bg-black/40 backdrop-blur-sm text-white">
+      <CardHeader className="flex flex-row items-center gap-4 pb-2">
         <Avatar className="h-12 w-12">
           <AvatarImage src={profile.avatar_url || ''} alt={profile.full_name || 'User'} />
-          <AvatarFallback>{getInitials(profile.full_name || 'User')}</AvatarFallback>
+          <AvatarFallback className="bg-primary/20 text-primary-foreground">
+            {formatNameInitials(profile.full_name)}
+          </AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
           <h3 className="text-lg font-semibold">{profile.full_name}</h3>
-          <p className="text-sm text-muted-foreground">{profile.job_title || profile.role}</p>
+          {profile.job_title && (
+            <p className="text-sm text-zinc-400">{profile.job_title}</p>
+          )}
         </div>
       </CardHeader>
-      
-      <CardContent className="p-4 pt-0">
+      <CardContent className="pt-0">
         {profile.bio && (
-          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{profile.bio}</p>
+          <p className="text-sm text-zinc-300 mb-4 line-clamp-2">{profile.bio}</p>
         )}
-        
-        {profile.skills && profile.skills.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {profile.skills.slice(0, 3).map((skill) => (
-              <Badge key={skill} variant="secondary" className="text-xs">
-                {skill}
-              </Badge>
-            ))}
-            {profile.skills.length > 3 && (
-              <Badge variant="outline" className="text-xs">
-                +{profile.skills.length - 3}
-              </Badge>
-            )}
-          </div>
-        )}
-        
-        {showAction && (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="w-full mt-2"
-            onClick={() => onSelect && onSelect(profile)}
-          >
-            {actionLabel}
-          </Button>
-        )}
+        <div className="flex flex-wrap gap-2">
+          {onViewProfile && (
+            <Button variant="outline" size="sm" onClick={onViewProfile} className="flex-1">
+              View Profile
+            </Button>
+          )}
+          {onConnect && (
+            <Button variant="outline" size="sm" onClick={onConnect} className="flex-1">
+              Connect
+            </Button>
+          )}
+          {onMessage && (
+            <Button variant="outline" size="sm" onClick={onMessage} className="flex-1">
+              Message
+            </Button>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
-}
-
-// Helper function (typically in utils, but added here for completeness)
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map(part => part.charAt(0))
-    .join('')
-    .toUpperCase()
-    .substring(0, 2);
 }

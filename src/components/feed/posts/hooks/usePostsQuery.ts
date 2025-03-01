@@ -142,7 +142,7 @@ export function usePostsQuery({
         // Make sure comments have post_id
         const transformedComments = post.comments?.map(comment => ({
           ...comment,
-          post_id: post.id // Ensure post_id is set
+          post_id: comment.post_id || post.id // Ensure post_id is set
         })) as Comment[] | undefined;
 
         return {
