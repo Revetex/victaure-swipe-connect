@@ -1,27 +1,23 @@
 
-import { Receiver } from "@/types/messages";
-import { ConversationHeader } from "./components/ConversationHeader";
+import React from 'react';
+import { Receiver, ConversationHeaderProps } from '@/types/messages';
+import { ConversationHeader } from './ConversationHeader';
 
-interface ConversationHeaderAdapterProps {
-  receiver: Receiver;
+interface ReceiverHeaderProps {
+  receiver: Receiver | null;
   onBack?: () => void;
 }
 
-/**
- * Adaptateur pour ConversationHeader qui transforme les propriétés
- * pour les rendre compatibles avec l'interface ConversationHeaderProps
- */
-export function ConversationHeaderAdapter({ 
-  receiver, 
-  onBack 
-}: ConversationHeaderAdapterProps) {
-  return (
-    <ConversationHeader
-      name={receiver.full_name || ""}
-      avatar={receiver.avatar_url}
-      isOnline={Boolean(receiver.online_status)}
-      receiver={receiver}
-      onBack={onBack}
-    />
-  );
+export function ConversationHeaderAdapter({ receiver, onBack }: ReceiverHeaderProps) {
+  if (!receiver) return null;
+  
+  const headerProps: ConversationHeaderProps = {
+    name: receiver.full_name || 'User',
+    avatar: receiver.avatar_url,
+    isOnline: !!receiver.online_status,
+    receiver: receiver,
+    onBack
+  };
+  
+  return <ConversationHeader {...headerProps} />;
 }
