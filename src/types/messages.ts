@@ -60,6 +60,7 @@ export interface Receiver {
   company_name?: string | null;
   latitude?: number;
   longitude?: number;
+  username?: string;
 }
 
 // Export UserRole for use in message components

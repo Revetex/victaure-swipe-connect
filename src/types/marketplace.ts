@@ -80,6 +80,7 @@ export interface MarketplaceContract {
   creator?: {
     full_name: string | null;
     avatar_url: string | null;
+    id?: string;
   };
 }
 

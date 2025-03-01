@@ -85,3 +85,16 @@ export function formatPrice(price: number, currency: string = 'CAD'): string {
     minimumFractionDigits: 2
   }).format(price);
 }
+
+/**
+ * Converts a Date object to an ISO string for database operations
+ * @param date Date object or string
+ * @returns ISO string representation of the date
+ */
+export function ensureDateString(date: Date | string | null | undefined): string | null {
+  if (!date) return null;
+  if (date instanceof Date) {
+    return date.toISOString();
+  }
+  return date;
+}
