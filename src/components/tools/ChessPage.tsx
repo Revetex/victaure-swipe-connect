@@ -1,10 +1,13 @@
 
-import { motion } from "framer-motion";
-import { Sword, Crown, Brain, Trophy } from "lucide-react";
-import { ChessBoard } from "./chess/ChessBoard";
-import { ChessControls } from "./chess/ChessControls";
+import { Button } from "@/components/ui/button";
 import { useChessGame } from "@/hooks/chess/useChessGame";
+import { ChessBoard } from "./chess/ChessBoard";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { HelpCircle, Trophy, Clock, RotateCcw } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function ChessPage() {
   const {
@@ -13,150 +16,182 @@ export function ChessPage() {
     isWhiteTurn,
     isThinking,
     gameOver,
+    moveHistory,
     possibleMoves,
     difficulty,
+    lastMoveHighlight,
     handleSquareClick,
     resetGame,
-    setDifficulty,
+    setDifficulty
   } = useChessGame();
 
   return (
-    <div className="container mx-auto p-4 md:pt-8">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-4xl mx-auto rounded-xl bg-gradient-to-b from-background/95 to-background/50 backdrop-blur-sm border border-white/10 p-4 md:p-6 space-y-6"
-      >
-        <div className="flex items-center justify-between mb-4">
-          <motion.div 
-            initial={{ x: -20 }}
-            animate={{ x: 0 }}
-            className="flex items-center gap-3"
-          >
-            <div className="p-2.5 rounded-lg bg-yellow-500/10">
-              <Sword className="h-6 w-6 text-yellow-500" />
-            </div>
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-yellow-200 to-yellow-500 bg-clip-text text-transparent">
-                Imperium Chess
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Affrontez l'IA et devenez un maître
-              </p>
-            </div>
-          </motion.div>
-          <div className="flex items-center gap-2">
-            <Brain className="h-5 w-5 text-violet-400" />
-            <span className="text-sm font-medium text-violet-400">
-              IA Niveau {difficulty}
-            </span>
-          </div>
+    <div className="relative p-4 sm:p-6 space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+        <div className="flex items-center gap-2">
+          <Trophy className="h-5 w-5 text-[#64B5D9]" />
+          <h2 className="text-xl font-bold text-[#F2EBE4]">Imperium Chess</h2>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <Select value={difficulty} onValueChange={setDifficulty}>
+            <SelectTrigger className="w-[140px] h-9 bg-[#1B2A4A]/80 border-[#64B5D9]/30">
+              <SelectValue placeholder="Difficulté" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="easy">Facile</SelectItem>
+              <SelectItem value="medium">Moyen</SelectItem>
+              <SelectItem value="hard">Difficile</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={resetGame}
+                  className="h-9 w-9 border-[#64B5D9]/30 bg-[#1B2A4A]/80 hover:bg-[#1B2A4A] hover:text-[#64B5D9]"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Nouvelle partie</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="lg:col-span-3">
+          <ChessBoard
+            board={board}
+            selectedPiece={selectedPiece}
+            possibleMoves={possibleMoves}
+            isThinking={isThinking}
+            gameOver={gameOver}
+            isWhiteTurn={isWhiteTurn}
+            lastMoveHighlight={lastMoveHighlight}
+            onSquareClick={handleSquareClick}
+          />
         </div>
 
-        <div className="space-y-6">
-          <ChessControls
-            isThinking={isThinking}
-            isWhiteTurn={isWhiteTurn}
-            gameOver={gameOver}
-            difficulty={difficulty}
-            onDifficultyChange={setDifficulty}
-            onReset={resetGame}
-          />
-          
-          <div className="relative bg-gradient-to-br from-[#1B2A4A]/80 to-[#2C3E50]/90 rounded-lg p-2 md:p-4 shadow-xl border border-primary/20">
-            {gameOver && (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm rounded-xl"
-              >
-                <motion.div 
-                  initial={{ y: -20 }}
-                  animate={{ 
-                    y: [0, -10, 0],
-                    transition: {
-                      duration: 1.5,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }
-                  }}
-                  className={cn(
-                    "text-center p-6 md:p-8 rounded-xl border-2 shadow-2xl",
-                    "bg-gradient-to-br from-[#1A1F2C]/90 to-[#2A2A2A]/90",
-                    isWhiteTurn 
-                      ? "border-yellow-400/50" 
-                      : "border-violet-400/50"
-                  )}
-                >
-                  <motion.div
-                    animate={{
-                      rotate: [0, 10, -10, 0],
-                      transition: {
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }
-                    }}
-                  >
-                    {isWhiteTurn ? (
-                      <Trophy className="h-16 w-16 mx-auto mb-4 text-yellow-400" />
-                    ) : (
-                      <Crown className="h-16 w-16 mx-auto mb-4 text-violet-400" />
-                    )}
-                  </motion.div>
-                  
-                  <motion.h2 
-                    className="text-2xl md:text-3xl font-bold mb-4"
-                    animate={{
-                      scale: [1, 1.05, 1],
-                      transition: {
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }
-                    }}
-                  >
-                    {isWhiteTurn ? (
-                      <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                        Victoire ! Les blancs gagnent ! 🎉
-                      </span>
-                    ) : (
-                      <span className="bg-gradient-to-r from-violet-400 to-purple-500 bg-clip-text text-transparent">
-                        Les noirs gagnent !
-                      </span>
-                    )}
-                  </motion.h2>
-                  
-                  <button
-                    onClick={resetGame}
-                    className={cn(
-                      "mt-4 px-8 py-3 rounded-lg transition-all duration-300",
-                      "text-white font-semibold shadow-lg",
-                      "bg-gradient-to-r",
-                      isWhiteTurn 
-                        ? "from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600" 
-                        : "from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700",
-                      "transform hover:scale-105 active:scale-95"
-                    )}
-                  >
-                    Nouvelle partie
-                  </button>
-                </motion.div>
-              </motion.div>
-            )}
+        <div className="lg:col-span-2 flex flex-col gap-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-lg border border-[#64B5D9]/20 bg-black/40 overflow-hidden"
+          >
+            <div className="border-b border-[#64B5D9]/10 bg-[#1B2A4A]/40 px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-[#64B5D9]" />
+                <h3 className="font-medium text-[#F2EBE4]">Historique des coups</h3>
+              </div>
+              <div className={cn(
+                "h-2 w-2 rounded-full transition-colors",
+                isWhiteTurn ? "bg-white" : "bg-black border border-white/20"
+              )} />
+            </div>
             
-            <ChessBoard
-              board={board}
-              selectedPiece={selectedPiece}
-              possibleMoves={possibleMoves}
-              isThinking={isThinking}
-              gameOver={gameOver}
-              isWhiteTurn={isWhiteTurn}
-              onSquareClick={handleSquareClick}
-            />
-          </div>
+            <ScrollArea className="h-[180px] sm:h-[300px]">
+              <div className="p-4">
+                {moveHistory.length === 0 ? (
+                  <div className="text-sm text-[#F2EBE4]/60 text-center py-4">
+                    La partie n'a pas encore commencé
+                  </div>
+                ) : (
+                  <ol className="space-y-2">
+                    {moveHistory.map((move, index) => (
+                      <motion.li
+                        key={index}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.05 * (index % 10) }}
+                        className={cn(
+                          "text-sm py-1 px-2 rounded flex items-center gap-2",
+                          index % 2 === 0 
+                            ? "bg-white/5 text-white" 
+                            : "bg-black/20 text-[#F2EBE4]/80"
+                        )}
+                      >
+                        <span className="w-6 text-[#64B5D9]/80 font-mono">
+                          {Math.floor(index / 2) + 1}.
+                        </span>
+                        <span className="font-medium">{move}</span>
+                      </motion.li>
+                    ))}
+                  </ol>
+                )}
+              </div>
+            </ScrollArea>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="rounded-lg border border-[#64B5D9]/20 bg-black/40 p-4"
+          >
+            <div className="flex items-start gap-3 text-sm text-[#F2EBE4]/80">
+              <HelpCircle className="h-5 w-5 text-[#64B5D9] shrink-0 mt-0.5" />
+              <div className="space-y-2">
+                <p>
+                  Vous jouez les pièces blanches. Sélectionnez une pièce pour voir les mouvements possibles, puis cliquez sur une case de destination.
+                </p>
+                <p>
+                  Les niveaux de difficulté déterminent la profondeur de réflexion de l'IA et sa stratégie.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className={cn(
+              "rounded-lg border p-3 flex items-center justify-between",
+              gameOver 
+                ? "border-emerald-500/30 bg-emerald-500/10" 
+                : "border-[#64B5D9]/20 bg-black/40"
+            )}
+          >
+            <div className="flex items-center gap-2">
+              <div 
+                className={cn(
+                  "h-3 w-3 rounded-full",
+                  gameOver 
+                    ? "bg-emerald-400" 
+                    : isWhiteTurn 
+                      ? "bg-white" 
+                      : "bg-black border border-white/20"
+                )} 
+              />
+              <span className="text-sm font-medium text-[#F2EBE4]">
+                {gameOver 
+                  ? "Partie terminée" 
+                  : isWhiteTurn 
+                    ? "Votre tour" 
+                    : "Tour de l'IA"}
+              </span>
+            </div>
+            
+            {gameOver && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={resetGame}
+                className="h-8 bg-transparent border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-400"
+              >
+                Nouvelle partie
+              </Button>
+            )}
+          </motion.div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

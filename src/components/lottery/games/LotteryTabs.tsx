@@ -1,5 +1,4 @@
 
-
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Crown, Star } from "lucide-react";
@@ -83,7 +82,7 @@ export function LotteryTabs({
             <div className="relative z-10">
               <LotteryHeader />
 
-              <div className="grid gap-4">
+              <div className="grid gap-6 mt-6">
                 {loading ? (
                   <div className="flex justify-center items-center h-[200px]">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#64B5D9]"></div>
@@ -108,7 +107,7 @@ export function LotteryTabs({
         </TabsContent>
         
         <TabsContent value="chess">
-          <Card className="border-[#64B5D9]/10 bg-[#1B2A4A]/50 backdrop-blur-md">
+          <Card className="border-[#64B5D9]/20 bg-[#1B2A4A]/70 backdrop-blur-md">
             <ChessPage />
           </Card>
         </TabsContent>
@@ -116,4 +115,3 @@ export function LotteryTabs({
     </Tabs>
   );
 }
-

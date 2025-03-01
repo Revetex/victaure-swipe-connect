@@ -12,9 +12,6 @@ export function ConversationHeaderAdapter({ receiver, onBack }: ConversationHead
   
   return (
     <ConversationHeader 
-      name={receiver.full_name || ''}
-      avatar={receiver.avatar_url}
-      isOnline={!!receiver.online_status}
       receiver={receiver}
       onBack={onBack}
     />

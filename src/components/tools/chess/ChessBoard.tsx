@@ -10,6 +10,7 @@ interface ChessBoardProps {
   isThinking: boolean;
   gameOver: boolean;
   isWhiteTurn: boolean;
+  lastMoveHighlight: {from: {row: number, col: number}, to: {row: number, col: number}} | null;
   onSquareClick: (row: number, col: number) => void;
 }
 
@@ -20,6 +21,7 @@ export function ChessBoard({
   isThinking,
   gameOver,
   isWhiteTurn,
+  lastMoveHighlight,
   onSquareClick,
 }: ChessBoardProps) {
   const pieceToSymbol = (piece: ChessPiece | null) => {
@@ -43,9 +45,9 @@ export function ChessBoard({
   };
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto">
+    <div className="relative w-full max-w-md mx-auto sm:max-w-2xl">
       <div className="aspect-square w-full">
-        <div className="grid grid-cols-8 h-full w-full rounded-lg overflow-hidden border border-[#64B5D9]/30 shadow-xl bg-[#1A1F2C]/90">
+        <div className="grid grid-cols-8 h-full w-full rounded-lg overflow-hidden border border-[#64B5D9]/30 shadow-2xl bg-gradient-to-br from-[#1A1F2C]/90 to-[#1A2A4A]/90">
           {board.map((row, rowIndex) =>
             row.map((piece, colIndex) => {
               const isSelected = selectedPiece?.row === rowIndex && selectedPiece?.col === colIndex;
@@ -54,6 +56,14 @@ export function ChessBoard({
               );
               const isLight = (rowIndex + colIndex) % 2 === 0;
               const squareName = getSquareName(rowIndex, colIndex);
+              
+              // Check if this square is part of the last move
+              const isLastMoveFrom = lastMoveHighlight && 
+                                    lastMoveHighlight.from.row === rowIndex && 
+                                    lastMoveHighlight.from.col === colIndex;
+              const isLastMoveTo = lastMoveHighlight && 
+                                  lastMoveHighlight.to.row === rowIndex && 
+                                  lastMoveHighlight.to.col === colIndex;
 
               return (
                 <div
@@ -65,6 +75,7 @@ export function ChessBoard({
                       ? "bg-[#D8E2DC]/5" 
                       : "bg-[#64B5D9]/10",
                     isSelected && "ring-2 ring-yellow-400 ring-inset z-10",
+                    (isLastMoveFrom || isLastMoveTo) && "bg-emerald-400/20",
                     !gameOver && !isThinking && "cursor-pointer hover:brightness-125 active:brightness-95 transition-all duration-150",
                     gameOver && "cursor-not-allowed opacity-75"
                   )}
@@ -86,7 +97,7 @@ export function ChessBoard({
                   {isPossibleMove && (
                     <motion.div
                       className={cn(
-                        "absolute inset-2 rounded-full",
+                        "absolute inset-2 md:inset-3 rounded-full",
                         piece ? "bg-yellow-500/40 border-2 border-yellow-400" : "bg-yellow-400/20 border-2 border-yellow-400/50"
                       )}
                       initial={{ scale: 0 }}
@@ -101,8 +112,8 @@ export function ChessBoard({
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ duration: 0.2 }}
                       className={cn(
-                        "text-2xl sm:text-3xl md:text-4xl lg:text-5xl select-none transition-transform",
-                        piece.isWhite ? "text-white drop-shadow-[0_0_3px_rgba(255,255,255,0.3)]" : "text-black drop-shadow-[0_0_3px_rgba(0,0,0,0.3)]",
+                        "text-xl sm:text-2xl md:text-3xl lg:text-4xl select-none transition-transform",
+                        piece.isWhite ? "text-white drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]" : "text-black drop-shadow-[0_0_4px_rgba(0,0,0,0.5)]",
                         "hover:scale-110",
                         isThinking && piece.isWhite !== isWhiteTurn && "animate-pulse"
                       )}
@@ -124,7 +135,7 @@ export function ChessBoard({
       
       {/* Status indicator */}
       {isThinking && !gameOver && (
-        <div className="absolute -bottom-12 left-0 right-0 text-center">
+        <div className="absolute -bottom-10 left-0 right-0 text-center">
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
