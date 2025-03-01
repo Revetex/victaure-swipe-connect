@@ -7,6 +7,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { useThemeContext } from "@/components/ThemeProvider";
 import { motion } from "framer-motion";
 import { CustomConversationList } from "./CustomConversationList";
+import { ConversationHeaderAdapter } from "./conversation/adapters/ConversationHeaderAdapter";
 
 export function MessagesContainer() {
   const { receiver, showConversation } = useReceiver();
@@ -45,7 +46,9 @@ export function MessagesContainer() {
               "transition-all duration-300"
             )}
           >
-            <ConversationView />
+            {receiver && (
+              <ConversationView />
+            )}
           </motion.div>
         )}
       </Card>

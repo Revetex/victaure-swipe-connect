@@ -1,33 +1,6 @@
 
 import { useState } from 'react';
-
-// Définition complète de l'interface Receiver pour éviter les dépendances externes
-export interface Receiver {
-  id: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  email?: string | null;
-  online_status: boolean;  // Strictement boolean
-  last_seen?: string | null;
-  latitude?: number;
-  longitude?: number;
-  bio?: string | null;
-  phone?: string | null;
-  city?: string | null;
-  state?: string | null;
-  country?: string | null;
-  role?: string;
-  skills?: string[];
-  certifications?: any[];
-  education?: any[];
-  experiences?: any[];
-  friends?: any[];
-  preferences?: {
-    notifications?: boolean;
-    theme?: 'light' | 'dark' | 'system';
-    language?: string;
-  };
-}
+import { Receiver } from '@/types/messages';
 
 /**
  * Hook personnalisé pour gérer l'état du destinataire dans les conversations
