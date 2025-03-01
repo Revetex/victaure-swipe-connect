@@ -11,12 +11,13 @@ export const adaptFavoriteData = (data: any): MarketplaceFavorite => {
     throw new Error('Cannot adapt null or undefined favorite data');
   }
   
+  // Ensure we have a consistent structure regardless of the source
   return {
     id: data.id || '',
-    item_id: data.item_id || data.listing_id || '', // Support both formats
-    user_id: data.user_id || data.viewer_id || '', // Support both formats
-    listing_id: data.listing_id || data.item_id || '',
-    viewer_id: data.viewer_id || data.user_id || ''
+    item_id: data.item_id || data.listing_id || '', 
+    user_id: data.user_id || data.viewer_id || '',
+    viewer_id: data.viewer_id || data.user_id || '',
+    listing_id: data.listing_id || data.item_id || ''
   };
 };
 

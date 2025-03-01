@@ -140,7 +140,7 @@ export function useVictaureChat() {
     } finally {
       setIsLoading(false);
     }
-  }, [messages, user, userQuestions, createMessage, hasReachedFreeLimit, generateResponse]);
+  }, [createMessage, hasReachedFreeLimit, generateResponse, user]);
 
   // Clear chat history
   const clearChat = useCallback(() => {
