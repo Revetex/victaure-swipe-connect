@@ -22,6 +22,7 @@ export interface ConversationParticipant {
   online_status?: boolean;
   last_seen?: string | null;
   role?: string;
+  username?: string; // Added for compatibility
 }
 
 export interface CreateConversationParams {

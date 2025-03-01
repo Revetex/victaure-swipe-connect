@@ -14,8 +14,10 @@ export function ConversationHeaderAdapter({ receiver, onBack }: ConversationHead
   const headerProps = {
     name: receiver.full_name || receiver.username || "Unknown",
     avatar: receiver.avatar_url || "",
-    isOnline: receiver.is_online || false,
-    onBack
+    isOnline: receiver.online_status || false,
+    partner: receiver,
+    onBack,
+    onClose: onBack
   };
   
   return (
