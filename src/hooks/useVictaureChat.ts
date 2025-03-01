@@ -5,79 +5,83 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
+// Constants
 const INITIAL_CONTEXT = `Vous êtes Victaure AI, un assistant intelligent qui aide les utilisateurs à trouver des solutions à leurs problèmes.
 Vous êtes concis, utile et essayez toujours de fournir des réponses pertinentes basées sur des faits.`;
 
 const MAX_FREE_QUESTIONS = 3; // Maximum number of questions for non-logged in users
+const BOT_ID = 'victaure-ai';
+const BOT_NAME = 'Victaure AI';
+const BOT_AVATAR = '/user-icon.svg';
 
 export function useVictaureChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [userQuestions, setUserQuestions] = useState(0);
   const { user } = useAuth();
-  const botId = 'victaure-ai';
-
-  useEffect(() => {
-    const loadInitialMessage = async () => {
-      if (messages.length === 0) {
-        const welcomeMessage: Message = {
-          id: `welcome-${Date.now()}`,
-          content: "Bonjour, je suis Victaure, votre assistant IA. Comment puis-je vous aider aujourd'hui?",
-          sender_id: botId,
-          receiver_id: user?.id || 'guest',
-          created_at: new Date().toISOString(),
-          read: true,
-          sender: {
-            id: botId,
-            full_name: 'Victaure AI',
-            avatar_url: '/user-icon.svg',
-          }
-        };
-        setMessages([welcomeMessage]);
-      }
-    };
-
-    loadInitialMessage();
-  }, [messages.length, user?.id]);
 
   // Calculate questions left for non-logged in users
   const questionsLeft = user ? null : MAX_FREE_QUESTIONS - userQuestions;
 
+  // Helper function to create message objects
+  const createMessage = (
+    content: string, 
+    isUserMessage: boolean
+  ): Message => {
+    const senderId = isUserMessage ? (user?.id || 'guest') : BOT_ID;
+    const receiverId = isUserMessage ? BOT_ID : (user?.id || 'guest');
+    
+    return {
+      id: `${isUserMessage ? 'user' : 'bot'}-${Date.now()}`,
+      content,
+      sender_id: senderId,
+      receiver_id: receiverId,
+      created_at: new Date().toISOString(),
+      read: true,
+      sender: {
+        id: senderId,
+        full_name: isUserMessage 
+          ? (user?.email || 'Vous') 
+          : BOT_NAME,
+        avatar_url: isUserMessage ? null : BOT_AVATAR,
+      }
+    };
+  };
+
+  // Load initial welcome message
+  useEffect(() => {
+    if (messages.length === 0) {
+      const welcomeMessage = createMessage(
+        "Bonjour, je suis Victaure, votre assistant IA. Comment puis-je vous aider aujourd'hui?",
+        false
+      );
+      setMessages([welcomeMessage]);
+    }
+  }, [messages.length]);
+
+  // Send message function
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
     
     try {
       setIsLoading(true);
       
-      // Check if user has reached their limit of free questions
+      // Check free usage limits
       if (!user && userQuestions >= MAX_FREE_QUESTIONS) {
         toast.error("Vous avez atteint la limite de questions gratuites. Veuillez vous connecter pour continuer.");
         return;
       }
       
-      // Add user message
-      const userMessage: Message = {
-        id: `user-${Date.now()}`,
-        content,
-        sender_id: user?.id || 'guest',
-        receiver_id: botId,
-        created_at: new Date().toISOString(),
-        read: true,
-        sender: {
-          id: user?.id || 'guest',
-          full_name: user?.email || 'Vous',
-          avatar_url: null,
-        }
-      };
-      
+      // Add user message to chat
+      const userMessage = createMessage(content, true);
       setMessages(prev => [...prev, userMessage]);
       
-      // Increment question count for non-logged in users
+      // Track usage for non-logged users
       if (!user) {
         setUserQuestions(prev => prev + 1);
       }
       
-      // Save interaction to database if user is logged in
+      // Log interaction in database for logged users
       if (user) {
         await supabase.from('ai_interactions').insert({
           user_id: user.id,
@@ -89,25 +93,12 @@ export function useVictaureChat() {
         });
       }
       
-      // Give AI time to "think"
+      // Simulate AI thinking time
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Simulate AI response
+      // Generate and add AI response
       const aiResponse = await generateResponse(content, messages);
-      
-      const botMessage: Message = {
-        id: `bot-${Date.now()}`,
-        content: aiResponse,
-        sender_id: botId,
-        receiver_id: user?.id || 'guest',
-        created_at: new Date().toISOString(),
-        read: true,
-        sender: {
-          id: botId,
-          full_name: 'Victaure AI',
-          avatar_url: '/user-icon.svg',
-        }
-      };
+      const botMessage = createMessage(aiResponse, false);
       
       setMessages(prev => [...prev, botMessage]);
       
@@ -119,16 +110,23 @@ export function useVictaureChat() {
     }
   }, [messages, user, userQuestions]);
 
+  // Clear chat history
   const clearChat = useCallback(() => {
     setMessages([]);
     setUserQuestions(0);
     toast.success("Historique effacé");
   }, []);
 
-  return { messages, isLoading, sendMessage, clearChat, questionsLeft };
+  return { 
+    messages, 
+    isLoading, 
+    sendMessage, 
+    clearChat, 
+    questionsLeft 
+  };
 }
 
-// Simple response generation based on patterns
+// Response generation based on keywords
 async function generateResponse(message: string, history: Message[]): Promise<string> {
   const lowerMessage = message.toLowerCase();
   
