@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { User } from "@/types/profile";
+import { UserProfile } from "@/types/profile";
 import { ProfilePreviewFront } from "./ProfilePreviewFront";
 import { ProfilePreviewBack } from "./ProfilePreviewBack";
 import { X } from "lucide-react";
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface ProfilePreviewModalProps {
-  profile: User;
+  profile: UserProfile;
   isOpen: boolean;
   onClose: () => void;
   onRequestChat?: () => void;
@@ -34,6 +34,13 @@ export function ProfilePreviewModal({
   };
 
   if (!isOpen) return null;
+
+  // Ensure we have a UserProfile with all required fields
+  const safeProfile: UserProfile = {
+    ...profile,
+    avatar_url: profile.avatar_url || null,
+    full_name: profile.full_name || null,
+  };
 
   return (
     <AnimatePresence>
@@ -77,7 +84,7 @@ export function ProfilePreviewModal({
           >
             {/* Front face */}
             <ProfilePreviewFront
-              profile={profile}
+              profile={safeProfile}
               onRequestChat={onRequestChat}
               onFlip={handleFlip}
               canViewFullProfile={canViewFullProfile}
@@ -86,7 +93,7 @@ export function ProfilePreviewModal({
 
             {/* Back face */}
             <ProfilePreviewBack
-              profile={profile}
+              profile={safeProfile}
               onFlip={handleFlip}
               canViewFullProfile={canViewFullProfile}
             />

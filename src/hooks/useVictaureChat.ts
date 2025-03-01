@@ -65,7 +65,7 @@ export function useVictaureChat() {
   }, [user, userQuestions]);
 
   // Generate AI response based on keywords and context
-  const generateResponse = useCallback(async (message: string, history: Message[]): Promise<string> => {
+  const generateResponse = useCallback(async (message: string): Promise<string> => {
     const lowerMessage = message.toLowerCase();
     
     if (lowerMessage.includes('bonjour') || lowerMessage.includes('salut')) {
@@ -129,7 +129,7 @@ export function useVictaureChat() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Generate and add AI response
-      const aiResponse = await generateResponse(content, messages);
+      const aiResponse = await generateResponse(content);
       const botMessage = createMessage(aiResponse, false);
       
       setMessages(prev => [...prev, botMessage]);

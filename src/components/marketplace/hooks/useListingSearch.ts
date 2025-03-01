@@ -59,22 +59,15 @@ export function useListingSearch(
 
       // Apply sorting
       const { sortBy, sortOrder } = filters;
-      switch (sortBy) {
-        case 'date':
-          query = query.order('created_at', { ascending: sortOrder === 'asc' });
-          break;
-        case 'price':
-          query = query.order('price', { ascending: sortOrder === 'asc' });
-          break;
-        case 'rating':
-          // Note: Rating sorting is handled client-side as it's on the joined seller profile
-          query = query.order('created_at', { ascending: false });
-          break;
-        case 'views':
-          query = query.order('views_count', { ascending: sortOrder === 'asc' });
-          break;
-        default:
-          query = query.order('created_at', { ascending: false });
+      if (sortBy === 'date') {
+        query = query.order('created_at', { ascending: sortOrder === 'asc' });
+      } else if (sortBy === 'price') {
+        query = query.order('price', { ascending: sortOrder === 'asc' });
+      } else if (sortBy === 'views') {
+        query = query.order('views_count', { ascending: sortOrder === 'asc' });
+      } else {
+        // Default ordering
+        query = query.order('created_at', { ascending: false });
       }
 
       // Apply pagination
