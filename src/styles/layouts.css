@@ -1,5 +1,5 @@
 
-/* Grid Layouts */
+/* Layouts en grille */
 .grid-main {
   @apply grid grid-cols-1 
          sm:grid-cols-2 
@@ -13,7 +13,7 @@
          gap-6;
 }
 
-/* Flex Layouts */
+/* Layouts flexibles */
 .flex-between {
   @apply flex items-center 
          justify-between;
@@ -24,7 +24,7 @@
          justify-center;
 }
 
-/* Container Layouts */
+/* Layouts de conteneurs */
 .container-main {
   @apply max-w-7xl 
          mx-auto 
@@ -39,7 +39,7 @@
          py-6;
 }
 
-/* Section Layouts */
+/* Layouts de sections */
 .section-main {
   @apply py-12;
 }
@@ -49,7 +49,7 @@
          overflow-hidden;
 }
 
-/* Card Layouts */
+/* Layouts de cartes */
 .card-grid {
   @apply grid grid-cols-1 
          sm:grid-cols-2 
@@ -61,7 +61,7 @@
   @apply space-y-6;
 }
 
-/* Form Layouts */
+/* Layouts de formulaires */
 .form-grid {
   @apply grid grid-cols-1 
          sm:grid-cols-2 
@@ -72,14 +72,14 @@
   @apply space-y-6;
 }
 
-/* Sidebar Layouts */
+/* Layouts de barre latérale */
 .sidebar-layout {
   @apply hidden lg:block 
          w-64 
          space-y-6;
 }
 
-/* Modal Layouts */
+/* Layouts de modaux */
 .modal-layout {
   @apply fixed inset-0 
          z-50 
@@ -93,20 +93,20 @@
          p-4 text-center sm:p-0;
 }
 
-/* Header Layouts */
+/* Layouts d'en-têtes */
 .header-layout {
   @apply sticky top-0 
          z-40 
          backdrop-blur-lg;
 }
 
-/* Footer Layouts */
+/* Layouts de pieds de page */
 .footer-layout {
   @apply mt-auto 
          border-t border-white/10;
 }
 
-/* Mobile Navigation */
+/* Navigation mobile */
 .mobile-nav {
   @apply fixed bottom-0 
          left-0 right-0 
@@ -116,7 +116,7 @@
          border-t border-white/10;
 }
 
-/* Responsive Helpers */
+/* Aides responsives */
 .hide-on-mobile {
   @apply hidden sm:block;
 }
@@ -125,7 +125,7 @@
   @apply block sm:hidden;
 }
 
-/* Animation Layouts */
+/* Layouts d'animations */
 .animate-fade {
   @apply transition-opacity 
          duration-200;
@@ -136,7 +136,7 @@
          duration-200;
 }
 
-/* Utility Layouts */
+/* Layouts utilitaires */
 .absolute-center {
   @apply absolute 
          top-1/2 left-1/2 

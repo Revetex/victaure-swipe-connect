@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/header/AppHeader";
 import { motion, AnimatePresence } from "framer-motion";
 import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
+import { useThemeContext } from "@/components/ThemeProvider";
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [currentPage, setCurrentPage] = useState(4);
@@ -15,8 +16,9 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const [showWelcomeGuide, setShowWelcomeGuide] = useState(false);
   const { profile } = useProfile();
+  const { themeStyle } = useThemeContext();
 
-  // Check if it's the user's first visit
+  // Vérification de la première visite de l'utilisateur
   useEffect(() => {
     const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
     if (!hasSeenWelcome && profile) {
@@ -63,7 +65,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex min-h-screen w-full overflow-hidden bg-background"
+      className={`flex min-h-screen w-full overflow-hidden bg-background theme-${themeStyle}`}
     >
       <DashboardMobileNav
         currentPage={currentPage}

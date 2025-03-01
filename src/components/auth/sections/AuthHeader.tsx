@@ -1,10 +1,13 @@
 
 import { Logo } from "@/components/Logo";
 import { motion } from "framer-motion";
+import { useThemeContext } from "@/components/ThemeProvider";
 
 export function AuthHeader() {
+  const { themeStyle } = useThemeContext();
+  
   return (
-    <div className="relative flex flex-col items-center justify-center py-8 space-y-6 overflow-hidden">
+    <div className={`relative flex flex-col items-center justify-center py-8 space-y-6 overflow-hidden theme-${themeStyle}`}>
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -22,7 +25,7 @@ export function AuthHeader() {
       >
         <span className="text-[#F2EBE4] font-tiempos">La Plateforme Intelligente pour</span>
         <br />
-        <span className="bg-gradient-to-r from-[#64B5D9] to-[#D3E4FD] bg-clip-text text-transparent font-tiempos">
+        <span className="bg-gradient-to-r from-[var(--primary)] to-[#D3E4FD] bg-clip-text text-transparent font-tiempos">
           l'Emploi du Futur
         </span>
       </motion.h1>

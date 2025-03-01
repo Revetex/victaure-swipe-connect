@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -70,7 +71,7 @@
            border border-white/20;
   }
 
-  /* Scrollbars */
+  /* Barres de défilement */
   .custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
@@ -90,7 +91,7 @@
            transition-colors duration-200;
   }
 
-  /* Cards spécifiques */
+  /* Cartes spécifiques */
   .sticky-note {
     @apply bg-white/5 dark:bg-white/5
            backdrop-blur-md

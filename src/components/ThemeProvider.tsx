@@ -10,6 +10,8 @@ type ThemeContextType = {
   toggleTheme: () => void;
   themeColor: string;
   setThemeColor: (color: string) => void;
+  themeStyle: string;
+  setThemeStyle: (style: string) => void;
 };
 
 const ThemeContext = createContext<ThemeContextType>({
@@ -17,6 +19,8 @@ const ThemeContext = createContext<ThemeContextType>({
   toggleTheme: () => {},
   themeColor: "#64B5D9",
   setThemeColor: () => {},
+  themeStyle: "modern",
+  setThemeStyle: () => {},
 });
 
 export const useThemeContext = () => useContext(ThemeContext);
@@ -24,14 +28,16 @@ export const useThemeContext = () => useContext(ThemeContext);
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   const [isDark, setIsDark] = useState(false);
   const [themeColor, setThemeColor] = useState("#64B5D9");
+  const [themeStyle, setThemeStyle] = useState("modern");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    // Check user preference
+    // Vérification des préférences utilisateur
     const darkModePreference = window.matchMedia("(prefers-color-scheme: dark)").matches;
     const savedTheme = localStorage.getItem("theme");
     const savedColor = localStorage.getItem("themeColor");
+    const savedStyle = localStorage.getItem("themeStyle");
     
     if (savedTheme) {
       setIsDark(savedTheme === "dark");
@@ -41,6 +47,10 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     
     if (savedColor) {
       setThemeColor(savedColor);
+    }
+    
+    if (savedStyle) {
+      setThemeStyle(savedStyle);
     }
   }, []);
 
@@ -58,20 +68,42 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     document.documentElement.style.setProperty('--primary-color', color);
   };
 
-  // Apply theme class to document
+  const handleSetThemeStyle = (style: string) => {
+    setThemeStyle(style);
+    localStorage.setItem("themeStyle", style);
+    
+    // Appliquer la classe de style au document
+    document.documentElement.classList.remove("theme-modern", "theme-elegant", "theme-dark", "theme-professional");
+    document.documentElement.classList.add(`theme-${style}`);
+  };
+
+  // Appliquer les classes de thème au document
   useEffect(() => {
     if (mounted) {
       document.documentElement.classList.toggle("dark", isDark);
       document.documentElement.style.setProperty('--primary-color', themeColor);
+      
+      // Appliquer le style de thème
+      document.documentElement.classList.remove("theme-modern", "theme-elegant", "theme-dark", "theme-professional");
+      document.documentElement.classList.add(`theme-${themeStyle}`);
     }
-  }, [isDark, themeColor, mounted]);
+  }, [isDark, themeColor, themeStyle, mounted]);
 
   if (!mounted) {
     return null;
   }
 
   return (
-    <ThemeContext.Provider value={{ isDark, toggleTheme, themeColor, setThemeColor: handleSetThemeColor }}>
+    <ThemeContext.Provider 
+      value={{ 
+        isDark, 
+        toggleTheme, 
+        themeColor, 
+        setThemeColor: handleSetThemeColor,
+        themeStyle,
+        setThemeStyle: handleSetThemeStyle
+      }}
+    >
       <NextThemeProvider
         attribute="class"
         defaultTheme={isDark ? "dark" : "light"}

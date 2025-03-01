@@ -1,5 +1,5 @@
 
-/* Theme Modern */
+/* Thèmes principaux */
 .theme-modern {
   --primary: #64B5D9;
   --secondary: #1B2A4A;
@@ -10,25 +10,25 @@
   --border-color: rgba(255, 255, 255, 0.1);
   --gradient: linear-gradient(135deg, #64B5D9, #1B2A4A);
   
-  /* Fonts */
+  /* Typographie */
   --font-primary: 'Inter', sans-serif;
   --font-secondary: 'Roboto', sans-serif;
   --font-accent: 'Poppins', sans-serif;
   
-  /* Spacing */
+  /* Espacements */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
   
-  /* Border Radius */
+  /* Rayons de bordure */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 1rem;
   --radius-full: 9999px;
   
-  /* Shadows */
+  /* Ombres */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
@@ -38,7 +38,7 @@
   --transition-normal: 300ms;
   --transition-slow: 500ms;
   
-  /* Z-index layers */
+  /* Couches Z-index */
   --z-dropdown: 1000;
   --z-sticky: 1020;
   --z-fixed: 1030;
@@ -47,22 +47,64 @@
   --z-tooltip: 1060;
 }
 
-/* Theme Elegant */
+/* Thème Élégant */
 .theme-elegant {
   --primary: #9b87f5;
   --secondary: #7E69AB;
   --accent: #F2EBE4;
   --text: #FFFFFF;
   --background: #1A1F2C;
-  /* ... keep existing code */
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --gradient: linear-gradient(135deg, #9b87f5, #7E69AB);
+  
+  /* Typographie */
+  --font-primary: 'Playfair Display', serif;
+  --font-secondary: 'Montserrat', sans-serif;
+  --font-accent: 'Cormorant Garamond', serif;
+  
+  /* Espacements et rayons */
+  --radius-sm: 0.125rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-full: 9999px;
+  
+  /* Ombres spécifiques */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12);
 }
 
-/* Theme Dark */
+/* Thème Sombre */
 .theme-dark {
   --primary: #64B5D9;
   --secondary: #1B2A4A;
   --accent: #F2EBE4;
   --text: #FFFFFF;
-  --background: #1A1F2C;
-  /* ... keep existing code */
+  --background: #121212;
+  --card-bg: rgba(30, 30, 30, 0.6);
+  --border-color: rgba(255, 255, 255, 0.05);
+  --gradient: linear-gradient(135deg, #333333, #121212);
+  
+  /* Surcharge d'ombres pour le thème sombre */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Thème Professionnel */
+.theme-professional {
+  --primary: #0EA5E9;
+  --secondary: #0F172A;
+  --accent: #F8FAFC;
+  --text: #F8FAFC;
+  --background: #0F172A;
+  --card-bg: rgba(30, 41, 59, 0.8);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --gradient: linear-gradient(135deg, #0EA5E9, #0F172A);
+  
+  /* Typographie professionnelle */
+  --font-primary: 'Inter', sans-serif;
+  --font-secondary: 'IBM Plex Sans', sans-serif;
+  --font-accent: 'IBM Plex Serif', serif;
 }

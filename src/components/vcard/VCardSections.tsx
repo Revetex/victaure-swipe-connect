@@ -6,6 +6,7 @@ import { VCardEducationSection } from "./sections/VCardEducationSection";
 import { VCardExperienceSection } from "./sections/VCardExperienceSection";
 import { StyleOption } from "./types";
 import { motion } from "framer-motion";
+import { useThemeContext } from "@/components/ThemeProvider";
 
 interface VCardSectionsProps {
   profile: UserProfile;
@@ -24,6 +25,8 @@ export function VCardSections({
   selectedStyle,
   sectionsOrder,
 }: VCardSectionsProps) {
+  const { themeStyle } = useThemeContext();
+  
   // Helper function to check if a section has content
   const hasSectionContent = (sectionName: string): boolean => {
     switch (sectionName) {
@@ -58,7 +61,7 @@ export function VCardSections({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="space-y-6 w-full backdrop-blur-sm"
+      className={`space-y-6 w-full backdrop-blur-sm theme-${themeStyle}`}
     >
       {sectionsOrder.map((section, index) => {
         // Always show sections in edit mode, or if they have content

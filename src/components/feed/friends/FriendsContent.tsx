@@ -15,6 +15,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { FriendsTabContent } from "./components/FriendsTabContent";
 import { cn } from "@/lib/utils";
+import { useThemeContext } from "@/components/ThemeProvider";
 
 export function FriendsContent() {
   const [activeTab, setActiveTab] = useState("friends");
@@ -23,6 +24,7 @@ export function FriendsContent() {
   const { sendFriendRequest, pendingRequests } = useFriendRequests();
   const pendingCount = pendingRequests.length;
   const { user } = useAuth();
+  const { themeStyle } = useThemeContext();
 
   const handleProfileSelect = async (profile: UserProfile) => {
     if (!profile.id || !user) return;
@@ -75,7 +77,7 @@ export function FriendsContent() {
   };
 
   return (
-    <div className="relative pt-4 pb-10 space-y-6">
+    <div className={`relative pt-4 pb-10 space-y-6 theme-${themeStyle}`}>
       <header>
         <h1 className="text-2xl font-semibold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
           {activeTab === "friends" ? "Mes connexions" :

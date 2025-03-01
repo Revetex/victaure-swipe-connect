@@ -1,7 +1,9 @@
+
 import { useState, useEffect } from "react";
 import { UserProfile } from "@/types/profile";
 import { StyleOption } from "../types";
 import { VCardSections } from "../VCardSections";
+import { useThemeContext } from "@/components/ThemeProvider";
 
 interface VCardSectionsManagerProps {
   profile: UserProfile;
@@ -17,6 +19,7 @@ export function VCardSectionsManager({
   selectedStyle,
 }: VCardSectionsManagerProps) {
   const [sectionsOrder, setSectionsOrder] = useState<string[]>([]);
+  const { themeStyle } = useThemeContext();
 
   useEffect(() => {
     if (profile?.sections_order) {
@@ -51,13 +54,15 @@ export function VCardSectionsManager({
   };
 
   return (
-    <VCardSections
-      profile={profileWithArrays}
-      isEditing={isEditing}
-      setProfile={setProfile}
-      handleRemoveSkill={handleRemoveSkill}
-      selectedStyle={selectedStyle}
-      sectionsOrder={sectionsOrder}
-    />
+    <div className={`theme-${themeStyle}`}>
+      <VCardSections
+        profile={profileWithArrays}
+        isEditing={isEditing}
+        setProfile={setProfile}
+        handleRemoveSkill={handleRemoveSkill}
+        selectedStyle={selectedStyle}
+        sectionsOrder={sectionsOrder}
+      />
+    </div>
   );
 }
