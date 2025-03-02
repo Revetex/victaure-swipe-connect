@@ -38,7 +38,7 @@ export function PostCard({
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
   const isMobile = useIsMobile();
-  const { themeStyle } = useThemeContext();
+  const { themeStyle, isDark } = useThemeContext();
 
   const handleToggleComments = () => setShowComments(!showComments);
 
@@ -57,9 +57,21 @@ export function PostCard({
   const isOwnPost = currentUserId === post.user_id;
 
   return (
-    <div className={`overflow-hidden text-[#F2EBE4] bg-black/40 rounded-lg border border-zinc-800/50 backdrop-blur-sm theme-${themeStyle}`}>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={cn(
+        "overflow-hidden text-[#F2EBE4] rounded-xl",
+        "border border-white/10",
+        "backdrop-blur-sm shadow-md",
+        "transition-all duration-300 hover:shadow-lg hover:border-white/20",
+        isDark ? "bg-black/30" : "bg-white/5",
+        `theme-${themeStyle}`
+      )}
+    >
       <ScrollArea className="h-full max-h-[600px]">
-        <div className="p-4 space-y-4 rounded-none py-0 px-0">
+        <div className="p-4 space-y-4">
           <PostCardHeader 
             profile={post.profiles} 
             created_at={post.created_at} 
@@ -82,7 +94,10 @@ export function PostCard({
         </div>
       </ScrollArea>
 
-      <div className="bg-black/20 border-t border-zinc-800/50 px-0 py-0">
+      <div className={cn(
+        "border-t",
+        isDark ? "border-zinc-800/50 bg-black/10" : "border-white/10 bg-white/5"
+      )}>
         <PostActions 
           likes={post.likes} 
           dislikes={post.dislikes}
@@ -99,7 +114,16 @@ export function PostCard({
       </div>
 
       {showComments && post.comments && (
-        <div className="border-t border-zinc-800/50">
+        <motion.div 
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.2 }}
+          className={cn(
+            "border-t overflow-hidden",
+            isDark ? "border-zinc-800/50" : "border-white/10"
+          )}
+        >
           <ScrollArea className="max-h-[300px]">
             <CommentManager 
               postId={post.id} 
@@ -110,8 +134,8 @@ export function PostCard({
               onCommentAdded={onCommentAdded}
             />
           </ScrollArea>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
