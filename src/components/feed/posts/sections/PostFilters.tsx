@@ -47,7 +47,7 @@ export function PostFilters({
   return <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between w-full">
       <div className="relative flex-1">
         <div className={cn("relative flex items-center max-w-md")}>
-          <Search className={cn("absolute left-3 h-4 w-4", colors.icon)} />
+          
           
         </div>
       </div>
