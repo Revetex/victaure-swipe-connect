@@ -4,6 +4,8 @@ import { UserProfile } from "@/types/profile";
 import { StyleOption } from "../types";
 import { VCardSections } from "../VCardSections";
 import { useThemeContext } from "@/components/ThemeProvider";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface VCardSectionsManagerProps {
   profile: UserProfile;
@@ -19,7 +21,7 @@ export function VCardSectionsManager({
   selectedStyle,
 }: VCardSectionsManagerProps) {
   const [sectionsOrder, setSectionsOrder] = useState<string[]>([]);
-  const { themeStyle } = useThemeContext();
+  const { themeStyle, isDark } = useThemeContext();
 
   useEffect(() => {
     if (profile?.sections_order) {
@@ -54,7 +56,16 @@ export function VCardSectionsManager({
   };
 
   return (
-    <div className={`theme-${themeStyle}`}>
+    <motion.div 
+      className={cn(
+        `theme-${themeStyle}`,
+        "transition-colors duration-300",
+        isDark ? "text-white/90" : "text-slate-900"
+      )}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       <VCardSections
         profile={profileWithArrays}
         isEditing={isEditing}
@@ -63,6 +74,6 @@ export function VCardSectionsManager({
         selectedStyle={selectedStyle}
         sectionsOrder={sectionsOrder}
       />
-    </div>
+    </motion.div>
   );
 }

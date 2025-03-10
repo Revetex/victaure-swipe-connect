@@ -10,7 +10,7 @@ import { AuthCallback } from "@/components/AuthCallback";
 import { WalletPage } from "@/components/wallet/WalletPage";
 import { useEffect } from "react";
 
-// Créer une instance du client de requête avec une configuration optimisée
+// Create query client with optimized configuration
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -22,14 +22,25 @@ const queryClient = new QueryClient({
 });
 
 export default function AppWrapper() {
-  // Appliquer des styles globaux pour améliorer l'esthétique générale
+  // Apply global styles to enhance aesthetics
   useEffect(() => {
-    // Appliquer des styles de scrollbar améliorés
+    // Apply improved scrollbar styles
     document.documentElement.style.scrollBehavior = 'smooth';
     
-    // Supprimer les styles globaux lors du nettoyage
+    // Add subtle transition to all elements
+    const style = document.createElement('style');
+    style.textContent = `
+      * {
+        transition-property: background-color, border-color, color, fill, stroke;
+        transition-duration: 200ms;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Clean up styles on unmount
     return () => {
       document.documentElement.style.scrollBehavior = '';
+      document.head.removeChild(style);
     };
   }, []);
 
@@ -71,7 +82,7 @@ export default function AppWrapper() {
             closeButton 
             toastOptions={{
               duration: 5000,
-              className: "backdrop-blur-sm border border-slate-200 dark:border-slate-700",
+              className: "backdrop-blur-sm border border-white/10 dark:border-white/5 rounded-lg shadow-lg",
             }}
           />
         </BrowserRouter>

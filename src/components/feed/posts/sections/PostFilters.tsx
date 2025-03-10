@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Filter, RotateCcw, Search, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/components/ThemeProvider";
+import { motion } from "framer-motion";
 
 interface PostFiltersProps {
   searchTerm: string;
@@ -29,39 +30,34 @@ export function PostFilters({
   onSortOrderChange,
   onCreatePost
 }: PostFiltersProps) {
-  const { isDark } = useThemeContext();
-
-  // Couleurs adaptatives basées sur le thème
-  const colors = {
-    bg: isDark ? 'bg-[#1E293B]/70' : 'bg-white/90',
-    border: isDark ? 'border-[#64B5D9]/20' : 'border-slate-200',
-    text: isDark ? 'text-white/90' : 'text-slate-900',
-    mutedText: isDark ? 'text-white/60' : 'text-slate-500',
-    hover: isDark ? 'hover:bg-white/10' : 'hover:bg-slate-100',
-    placeholder: isDark ? 'placeholder:text-white/40' : 'placeholder:text-slate-400',
-    primaryBg: isDark ? 'bg-[#64B5D9]/20' : 'bg-blue-50',
-    primaryText: isDark ? 'text-[#64B5D9]' : 'text-blue-600',
-    primaryBorder: isDark ? 'border-[#64B5D9]/30' : 'border-blue-200',
-    icon: isDark ? 'text-white/70' : 'text-slate-500',
-    buttonHover: isDark ? 'hover:bg-[#64B5D9]/30' : 'hover:bg-blue-100'
-  };
+  const { isDark, themeStyle } = useThemeContext();
 
   return (
-    <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between w-full">
+    <motion.div 
+      className={cn(
+        "flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between w-full",
+        "mb-5 pb-4 border-b border-white/5",
+        `theme-${themeStyle}`
+      )}
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       {/* Search bar with icon */}
       <div className="relative flex-1">
         <div className={cn("relative flex items-center max-w-md")}>
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 z-10" />
           <Input
             type="text"
             placeholder="Rechercher..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             className={cn(
-              "pl-10 pr-4 py-2 h-10 rounded-lg w-full bg-background/50 border-border/30",
+              "pl-10 pr-4 py-2 h-10 rounded-lg w-full",
+              "backdrop-blur-sm border border-white/10",
               "focus:ring-1 focus:ring-primary/30 focus:border-primary/50",
               "transition-all duration-200",
-              colors.placeholder
+              isDark ? "bg-black/20 placeholder:text-white/40" : "bg-white/10 placeholder:text-slate-400"
             )}
           />
         </div>
@@ -72,8 +68,9 @@ export function PostFilters({
         <Select value={filter} onValueChange={onFilterChange}>
           <SelectTrigger 
             className={cn(
-              "h-10 w-[110px] bg-background/50 border-border/30",
-              "focus:ring-1 focus:ring-primary/30 hover:bg-background/70"
+              "h-10 w-[110px] backdrop-blur-sm border border-white/10",
+              "focus:ring-1 focus:ring-primary/30 hover:bg-white/5",
+              isDark ? "bg-black/20" : "bg-white/5"
             )}
           >
             <SelectValue placeholder="Filtrer" />
@@ -89,8 +86,9 @@ export function PostFilters({
         <Select value={sortBy} onValueChange={onSortByChange as any}>
           <SelectTrigger 
             className={cn(
-              "h-10 w-[110px] bg-background/50 border-border/30",
-              "focus:ring-1 focus:ring-primary/30 hover:bg-background/70"
+              "h-10 w-[110px] backdrop-blur-sm border border-white/10",
+              "focus:ring-1 focus:ring-primary/30 hover:bg-white/5",
+              isDark ? "bg-black/20" : "bg-white/5"
             )}
           >
             <SelectValue placeholder="Trier par" />
@@ -105,8 +103,9 @@ export function PostFilters({
         <Select value={sortOrder} onValueChange={onSortOrderChange}>
           <SelectTrigger 
             className={cn(
-              "h-10 w-[110px] bg-background/50 border-border/30",
-              "focus:ring-1 focus:ring-primary/30 hover:bg-background/70"
+              "h-10 w-[110px] backdrop-blur-sm border border-white/10",
+              "focus:ring-1 focus:ring-primary/30 hover:bg-white/5",
+              isDark ? "bg-black/20" : "bg-white/5"
             )}
           >
             <SelectValue placeholder="Ordre" />
@@ -118,9 +117,13 @@ export function PostFilters({
         </Select>
         
         <Button
-          variant="default"
+          variant="outline"
           size="icon"
-          className="h-10 w-10 bg-primary/80 hover:bg-primary text-white"
+          className={cn(
+            "h-10 w-10 backdrop-blur-sm border border-white/10",
+            "hover:bg-white/10",
+            isDark ? "bg-black/20" : "bg-white/5"
+          )}
           onClick={() => {
             onFilterChange("all");
             onSortByChange("date");
@@ -131,6 +134,6 @@ export function PostFilters({
           <RotateCcw className="h-4 w-4" />
         </Button>
       </div>
-    </div>
+    </motion.div>
   );
 }

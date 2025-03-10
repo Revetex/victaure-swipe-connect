@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import "@/styles/shared.css";
+import { useThemeContext } from "@/components/ThemeProvider";
 
 interface VCardContainerProps {
   children: ReactNode;
@@ -15,6 +16,8 @@ export function VCardContainer({
   className,
   isEditing
 }: VCardContainerProps) {
+  const { isDark, themeStyle } = useThemeContext();
+  
   return (
     <motion.div 
       initial={{
@@ -33,20 +36,25 @@ export function VCardContainer({
         "w-full",
         "pt-0 pb-6",
         "px-4 sm:px-6",
-        "bg-background"
+        "bg-background",
+        `theme-${themeStyle}`
       )}
     >
       <div className={cn(
         "relative z-10 w-full mx-auto",
         "max-w-5xl",
         "rounded-lg shadow-sm",
-        "border border-border/30",
+        isDark ? "border border-white/10" : "border border-slate-200/30",
         "overflow-hidden",
+        "backdrop-blur-sm",
         className
       )}>
         <div className="relative z-10">
           {children}
         </div>
+        
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-primary/5 to-transparent pointer-events-none z-0" />
       </div>
     </motion.div>
   );
