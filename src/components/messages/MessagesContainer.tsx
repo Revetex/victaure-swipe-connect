@@ -8,7 +8,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { useThemeContext } from "@/components/ThemeProvider";
 import { motion } from "framer-motion";
 import { CustomConversationList } from "./CustomConversationList";
-import { Conversation } from "@/types/messages";
+import { Conversation, Receiver } from "@/types/messages";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -30,38 +30,69 @@ export function MessagesContainer() {
     const fetchConversations = async () => {
       setIsLoading(true);
       try {
-        const { data, error } = await supabase
+        // First get all conversations for the current user
+        const { data: conversationsData, error: conversationsError } = await supabase
           .from('conversations')
-          .select(`
-            *,
-            participant:participant2_id(id, full_name, avatar_url, online_status)
-          `)
+          .select('*')
           .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
           .order('updated_at', { ascending: false });
         
-        if (error) throw error;
+        if (conversationsError) throw conversationsError;
         
-        // Process conversations for the current user
-        const processedConversations = data.map(conversation => {
-          // Determine if the participant is the current user or the other participant
-          const isParticipant1 = conversation.participant1_id === user.id;
-          const participantId = isParticipant1 ? conversation.participant2_id : conversation.participant1_id;
-          
-          // If participant data is available, use it; otherwise, use the built-in participant data
-          let participant = conversation.participant;
-          
-          // If the participant is the user or the participant data doesn't match what we expect
-          if (isParticipant1 && participant?.id !== participantId) {
-            participant = null; // We'll need to fetch this separately
-          }
-          
-          return {
-            ...conversation,
-            participant
-          };
-        });
+        if (!conversationsData) {
+          setConversations([]);
+          setIsLoading(false);
+          return;
+        }
         
-        setConversations(processedConversations);
+        // Process each conversation to fetch the participant's details
+        const processedConversations = await Promise.all(
+          conversationsData.map(async (conversation) => {
+            // Determine if the participant is the current user or the other participant
+            const isParticipant1 = conversation.participant1_id === user.id;
+            const participantId = isParticipant1 ? conversation.participant2_id : conversation.participant1_id;
+            
+            // Fetch the participant's profile
+            const { data: participantData, error: participantError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', participantId)
+              .single();
+            
+            if (participantError) {
+              console.error('Error fetching participant:', participantError);
+              // Return conversation with default participant
+              return {
+                ...conversation,
+                participant: {
+                  id: participantId,
+                  full_name: 'Unknown',
+                  avatar_url: null,
+                  online_status: false
+                } as Receiver
+              };
+            }
+            
+            // Return the conversation with the participant data
+            return {
+              ...conversation,
+              participant: {
+                id: participantData.id,
+                full_name: participantData.full_name || 'Unknown',
+                avatar_url: participantData.avatar_url,
+                online_status: participantData.online_status || false,
+                last_seen: participantData.last_seen,
+                username: participantData.username || '',
+                phone: participantData.phone || null,
+                city: participantData.city || null,
+                state: participantData.state || null,
+                country: participantData.country || null
+              } as Receiver
+            };
+          })
+        );
+        
+        setConversations(processedConversations as Conversation[]);
       } catch (error) {
         console.error('Error fetching conversations:', error);
       } finally {

@@ -1,15 +1,16 @@
 
 import { z } from "zod";
 
-// Schéma de validation pour le formulaire de contrat
-export const contractValidationSchema = z.object({
-  title: z.string().min(10, { message: "Le titre doit contenir au moins 10 caractères" }),
-  description: z.string().min(50, { message: "La description doit contenir au moins 50 caractères" }),
-  budget_min: z.coerce.number().optional(),
-  budget_max: z.coerce.number().optional(),
-  location: z.string().optional(),
+export const contractFormSchema = z.object({
+  title: z.string().min(3, { message: "Title is required and must be at least 3 characters" }),
+  description: z.string().min(10, { message: "Description is required and must be at least 10 characters" }),
+  budget_min: z.number().min(0, { message: "Minimum budget cannot be negative" }),
+  budget_max: z.number().min(0, { message: "Maximum budget cannot be negative" }),
+  deadline: z.date().optional(),
   category: z.string().optional(),
-  deadline: z.date().optional()
+  location: z.string().optional(),
+  currency: z.string().default("CAD"),
+  requirements: z.array(z.string()).default([])
 });
 
-export type ContractFormData = z.infer<typeof contractValidationSchema>;
+export type ContractFormValues = z.infer<typeof contractFormSchema>;

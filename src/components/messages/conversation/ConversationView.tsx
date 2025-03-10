@@ -68,7 +68,8 @@ export function ConversationView({
           throw error;
         }
 
-        setMessages(data || []);
+        // Safely cast data to Message[]
+        setMessages((data || []) as Message[]);
         scrollToBottom();
       } catch (error: any) {
         console.error('Error fetching messages:', error);
@@ -139,7 +140,7 @@ export function ConversationView({
           avatar_url: receiverData?.avatar_url || null,
           online_status: receiverData?.online_status || false,
           last_seen: receiverData?.last_seen || null,
-          username: receiverData?.username || null,
+          username: receiverData?.username || '',
           phone: receiverData?.phone || null,
           city: receiverData?.city || null,
           state: receiverData?.state || null,
