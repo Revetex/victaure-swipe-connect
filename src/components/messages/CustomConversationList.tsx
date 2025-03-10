@@ -15,6 +15,7 @@ import { motion } from "framer-motion";
 import { CustomConversationItem } from "./CustomConversationItem";
 import { CustomNewConversationDialog } from "./CustomNewConversationDialog";
 import { Conversation, Receiver } from "@/types/messages";
+import { convertToBoolean } from "@/utils/marketplace";
 
 export function CustomConversationList() {
   const { setReceiver, setShowConversation, receiver } = useReceiver();
@@ -26,9 +27,9 @@ export function CustomConversationList() {
   const [activeTab, setActiveTab] = useState("all");
   const { isDark } = useThemeContext();
   
-  // Ajouter fonction refetch
+  // Add refetch function
   const refetchConversations = () => {
-    // Cette fonction est un espace réservé - elle sera correctement implémentée dans useConversations
+    // This function is a placeholder - it will be properly implemented in useConversations
     console.log("Refreshing conversations");
   };
 
@@ -92,15 +93,9 @@ export function CustomConversationList() {
         : typeof conversation.unread === 'string'
           ? parseInt(conversation.unread, 10) || 0 
           : Number(conversation.unread || 0),
-      online: typeof conversation.online === 'string'
-        ? conversation.online === 'true' || conversation.online === 'online'
-        : Boolean(conversation.online),
-      isPinned: typeof conversation.isPinned === 'number'
-        ? Boolean(conversation.isPinned)
-        : Boolean(conversation.isPinned),
-      isMuted: typeof conversation.isMuted === 'number'
-        ? Boolean(conversation.isMuted)
-        : Boolean(conversation.isMuted)
+      online: convertToBoolean(conversation.online),
+      isPinned: convertToBoolean(conversation.isPinned),
+      isMuted: convertToBoolean(conversation.isMuted)
     };
   };
 

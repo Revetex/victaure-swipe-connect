@@ -55,5 +55,5 @@ export function useReceiver() {
   };
 }
 
-// Re-export the Receiver type for components that import from this file
+// We need to re-export the Receiver type so components importing from this file can use it
 export type { Receiver } from '@/types/messages';

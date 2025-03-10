@@ -1,7 +1,7 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect, useRef } from "react";
-import { usePostOperations } from "./usePostOperations";
+import { usePostOperations } from "./posts/usePostOperations";
 import { usePostsQuery } from "./posts/hooks/usePostsQuery";
 import { PostSkeleton } from "./posts/PostSkeleton";
 import { EmptyPostState } from "./posts/EmptyPostState";
