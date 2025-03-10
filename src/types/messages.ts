@@ -37,7 +37,7 @@ export interface Message {
   conversation_id?: string;
   created_at: string;
   read?: boolean | string; // Updated to handle string representation of booleans
-  sender?: Receiver;
+  sender?: Receiver | string | any; // Updated to handle error cases
   timestamp?: string;
   metadata?: any;
   status?: 'sent' | 'delivered' | 'read' | 'failed';

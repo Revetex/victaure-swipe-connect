@@ -1,180 +1,83 @@
 
-import { UserAvatar } from "@/components/UserAvatar";
+import React from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft, MoreVertical, Phone, Video } from "lucide-react";
 import { ConversationHeaderProps } from "@/types/messages";
-import { 
-  ChevronLeft, 
-  MoreVertical, 
-  PhoneCall, 
-  Search, 
-  Video,
-  Bell,
-  BellOff,
-  Archive,
-  Trash2,
-  UserX
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { toast } from "sonner";
-import { useState } from "react";
+import { ProfilePreviewCard } from "@/components/profile/preview/ProfilePreviewCard";
+import { Receiver } from "@/types/messages";
 
 export function ConversationHeader({ 
   name, 
   avatar, 
   isOnline, 
   receiver,
-  onBack 
+  onBack,
+  onClose
 }: ConversationHeaderProps) {
-  const isMobile = useIsMobile();
-  const [notificationsMuted, setNotificationsMuted] = useState(false);
-
-  // Fonction pour déterminer le texte de statut
-  const getStatusText = () => {
-    if (isOnline) return "En ligne";
-    if (receiver?.last_seen) {
-      const lastSeen = new Date(receiver.last_seen);
-      const now = new Date();
-      const diffHours = (now.getTime() - lastSeen.getTime()) / (1000 * 60 * 60);
-      
-      if (diffHours < 24) {
-        return `Vu aujourd'hui à ${format(lastSeen, 'HH:mm', { locale: fr })}`;
-      } else if (diffHours < 48) {
-        return `Vu hier à ${format(lastSeen, 'HH:mm', { locale: fr })}`;
-      } else {
-        return `Vu le ${format(lastSeen, 'PP', { locale: fr })}`;
-      }
-    }
-    return "Hors ligne";
-  };
+  const [showProfile, setShowProfile] = React.useState(false);
 
   return (
-    <div className="flex items-center p-4 border-b border-[#64B5D9]/10 bg-background/80 backdrop-blur-sm">
-      {isMobile && (
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="mr-2" 
-          onClick={onBack}
+    <div className="flex items-center justify-between p-3 border-b border-[#64B5D9]/10">
+      <div className="flex items-center">
+        {onBack && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="mr-2 md:hidden" 
+            onClick={onBack}
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span className="sr-only">Retour</span>
+          </Button>
+        )}
+
+        <div 
+          className="flex items-center cursor-pointer"
+          onClick={() => setShowProfile(true)}
         >
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
-      )}
-      
-      <UserAvatar 
-        user={{ id: receiver?.id || "", name, image: avatar || "" }}
-        className="h-10 w-10"
-      />
-      
-      <div className="ml-3 flex-1">
-        <h3 className="font-medium text-foreground">{name}</h3>
-        <p className={cn(
-          "text-xs",
-          isOnline ? "text-green-500" : "text-muted-foreground"
-        )}>
-          {getStatusText()}
-        </p>
-      </div>
-      
-      <div className="flex items-center gap-1">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-muted-foreground hover:text-foreground"
-          onClick={() => toast.info("Appel audio à venir")}
-        >
-          <PhoneCall className="h-5 w-5" />
-        </Button>
-        
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-muted-foreground hover:text-foreground"
-          onClick={() => toast.info("Appel vidéo à venir")}
-        >
-          <Video className="h-5 w-5" />
-        </Button>
-        
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-muted-foreground hover:text-foreground"
-          onClick={() => toast.info("Recherche dans la conversation à venir")}
-        >
-          <Search className="h-5 w-5" />
-        </Button>
-        
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <MoreVertical className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuItem
-              onClick={() => {
-                setNotificationsMuted(!notificationsMuted);
-                toast.success(notificationsMuted 
-                  ? "Notifications activées" 
-                  : "Notifications désactivées"
-                );
-              }}
-              className="cursor-pointer"
-            >
-              {notificationsMuted ? (
-                <>
-                  <Bell className="mr-2 h-4 w-4" />
-                  <span>Activer les notifications</span>
-                </>
+          <Avatar className="h-9 w-9 mr-3">
+            <AvatarImage src={avatar || ""} alt={name} />
+            <AvatarFallback>
+              {name?.substring(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          
+          <div>
+            <h3 className="font-medium text-base leading-none">{name}</h3>
+            <p className="text-xs text-muted-foreground mt-1">
+              {isOnline ? (
+                <span className="text-green-500">En ligne</span>
               ) : (
-                <>
-                  <BellOff className="mr-2 h-4 w-4" />
-                  <span>Désactiver les notifications</span>
-                </>
+                "Hors ligne"
               )}
-            </DropdownMenuItem>
-            
-            <DropdownMenuItem
-              onClick={() => toast.info("Archivage de conversation à venir")}
-              className="cursor-pointer"
-            >
-              <Archive className="mr-2 h-4 w-4" />
-              <span>Archiver la conversation</span>
-            </DropdownMenuItem>
-            
-            <DropdownMenuSeparator />
-            
-            <DropdownMenuItem
-              onClick={() => toast.info("Blocage d'utilisateur à venir")}
-              className="cursor-pointer text-orange-500 hover:text-orange-600 hover:bg-orange-50"
-            >
-              <UserX className="mr-2 h-4 w-4" />
-              <span>Bloquer l'utilisateur</span>
-            </DropdownMenuItem>
-            
-            <DropdownMenuItem
-              onClick={() => toast.info("Suppression de conversation à venir")}
-              className="cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              <span>Supprimer la conversation</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </p>
+          </div>
+        </div>
       </div>
+      
+      <div className="flex items-center space-x-1">
+        <Button variant="ghost" size="icon">
+          <Phone className="h-5 w-5" />
+          <span className="sr-only">Appel audio</span>
+        </Button>
+        <Button variant="ghost" size="icon">
+          <Video className="h-5 w-5" />
+          <span className="sr-only">Appel vidéo</span>
+        </Button>
+        <Button variant="ghost" size="icon">
+          <MoreVertical className="h-5 w-5" />
+          <span className="sr-only">Plus d'options</span>
+        </Button>
+      </div>
+
+      {showProfile && receiver && (
+        <ProfilePreviewCard
+          profile={receiver as any}
+          isOpen={showProfile}
+          onClose={() => setShowProfile(false)}
+        />
+      )}
     </div>
   );
 }

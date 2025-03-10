@@ -9,7 +9,7 @@ import { Send } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
-import { MessageItem } from '@/components/messages/conversation/components/MessageItem';
+import { MessageItem } from './components/MessageItem';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -68,8 +68,20 @@ export function ConversationView({
           throw error;
         }
 
-        // Safely cast data to Message[]
-        setMessages((data || []) as Message[]);
+        // Cast the data to Message[] after ensuring it's valid
+        const processedMessages = (data || []).map(msg => {
+          // Handle potential errors in the sender join
+          const senderData = msg.sender && typeof msg.sender === 'object' 
+            ? msg.sender 
+            : { id: msg.sender_id, full_name: 'Unknown', avatar_url: null };
+            
+          return {
+            ...msg,
+            sender: senderData as any
+          } as Message;
+        });
+
+        setMessages(processedMessages);
         scrollToBottom();
       } catch (error: any) {
         console.error('Error fetching messages:', error);
@@ -134,17 +146,23 @@ export function ConversationView({
           throw receiverError;
         }
 
+        // Ensure the receiver data conforms to the Receiver type
         setReceiver({
           id: receiverId,
           full_name: receiverData?.full_name || 'Unknown',
           avatar_url: receiverData?.avatar_url || null,
-          online_status: receiverData?.online_status || false,
+          online_status: !!receiverData?.online_status,
           last_seen: receiverData?.last_seen || null,
+          // Add optional fields with fallbacks
           username: receiverData?.username || '',
           phone: receiverData?.phone || null,
           city: receiverData?.city || null,
           state: receiverData?.state || null,
-          country: receiverData?.country || null
+          country: receiverData?.country || null,
+          // Add any other required fields from Receiver type
+          email: receiverData?.email || null,
+          role: (receiverData?.role as any) || 'professional',
+          bio: receiverData?.bio || null
         });
       } catch (error: any) {
         console.error('Error fetching receiver:', error);
