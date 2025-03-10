@@ -2,27 +2,13 @@
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Image, Send, Loader2, ImagePlus, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Image, Send, Loader2, ImagePlus, X, ChevronDown } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { FilePreview } from "../FilePreview";
 import { PrivacySelector } from "../PrivacySelector";
 import { AnimatePresence, motion } from "framer-motion";
-import { PostAttachment, PostPrivacyLevel } from "../types";
-
-interface CreatePostFormProps {
-  newPost: string;
-  onPostChange: (value: string) => void;
-  privacy: PostPrivacyLevel;
-  onPrivacyChange: (value: PostPrivacyLevel) => void;
-  attachments: PostAttachment[];
-  isUploading: boolean;
-  onCreatePost: () => void;
-  onClose: () => void;
-  onFileChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onRemoveFile?: (index: number) => void;
-  isExpanded?: boolean;
-}
+import { CreatePostFormProps } from "../types";
 
 export function CreatePostForm({
   newPost,
@@ -35,7 +21,10 @@ export function CreatePostForm({
   onRemoveFile,
   onCreatePost,
   onClose,
-  isExpanded = false
+  isExpanded = false,
+  onSubmit, // Added to match the prop signature
+  setAttachments, // Added to match the prop signature
+  isLoading // Added to match the prop signature
 }: CreatePostFormProps) {
   const isMobile = useIsMobile();
   const [isExpandedInternal, setIsExpandedInternal] = useState(isExpanded);
@@ -43,6 +32,14 @@ export function CreatePostForm({
   const handleClose = () => {
     setIsExpandedInternal(false);
     onClose();
+  };
+
+  // Combine both submission methods to ensure compatibility
+  const handleSubmit = async () => {
+    if (onSubmit) {
+      await onSubmit(newPost, privacy);
+    }
+    onCreatePost();
   };
 
   return (
@@ -130,13 +127,13 @@ export function CreatePostForm({
 
             <Button 
               className="w-full sm:w-auto gap-2" 
-              disabled={isUploading || !newPost.trim()} 
+              disabled={isUploading || !newPost.trim() || isLoading} 
               onClick={() => {
-                onCreatePost();
+                handleSubmit();
                 handleClose();
               }}
             >
-              {isUploading ? (
+              {(isUploading || isLoading) ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Send className="h-4 w-4" />

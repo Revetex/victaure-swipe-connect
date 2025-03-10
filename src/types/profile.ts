@@ -1,4 +1,5 @@
-export type UserRole = 'professional' | 'business' | 'admin' | 'freelancer' | 'student';
+
+export type UserRole = 'professional' | 'business' | 'admin' | 'freelancer' | 'student' | string;
 
 export interface UserProfile {
   id: string;
@@ -215,6 +216,8 @@ export function friendToUserProfile(friend: Friend): UserProfile {
 export function ensureValidUserRole(role: string | undefined): UserRole {
   if (!role) return 'professional';
   
+  // We now accept any string as a valid role, 
+  // but we can still prioritize our known roles if they match
   const validRoles: UserRole[] = ['professional', 'business', 'admin', 'freelancer', 'student'];
-  return validRoles.includes(role as UserRole) ? (role as UserRole) : 'professional';
+  return validRoles.includes(role as UserRole) ? (role as UserRole) : role;
 }

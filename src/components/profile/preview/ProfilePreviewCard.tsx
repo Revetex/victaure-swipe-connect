@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,7 +11,7 @@ import { useConnectionActions } from "./hooks/useConnectionActions";
 import { useNavigate } from "react-router-dom";
 import { UserProfile } from "@/types/profile";
 
-interface ProfilePreviewCardProps {
+export interface ProfilePreviewCardProps {
   profile: UserProfile;
   onClose: () => void;
   searchQuery?: string;
@@ -24,11 +24,21 @@ export function ProfilePreviewCard({
   profile, 
   onClose,
   isOpen: controlledIsOpen,
+  searchQuery,
+  showPendingRequests,
+  selectedProfile,
 }: ProfilePreviewCardProps) {
   const [isOpen, setIsOpen] = useState(controlledIsOpen !== undefined ? controlledIsOpen : true);
   const { isFriend, isBlocked, isFriendRequestSent, isFriendRequestReceived, isLoading: statusLoading } = useConnectionStatus(profile.id);
   const { handleAddFriend, handleAcceptFriend, handleRemoveFriend, handleToggleBlock, isLoading: actionLoading } = useConnectionActions(profile.id);
   const navigate = useNavigate();
+
+  // Update internal state when controlled prop changes
+  useEffect(() => {
+    if (controlledIsOpen !== undefined) {
+      setIsOpen(controlledIsOpen);
+    }
+  }, [controlledIsOpen]);
 
   const handleCloseDialog = () => {
     setIsOpen(false);
@@ -167,3 +177,6 @@ export function ProfilePreviewCard({
     </Dialog>
   );
 }
+
+// For backwards compatibility
+export const ProfileCard = ProfilePreviewCard;

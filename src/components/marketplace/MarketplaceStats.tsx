@@ -1,88 +1,148 @@
 
-import { Card } from "@/components/ui/card";
+import React, { useEffect, useState } from "react";
 import {
-  Eye,
-  ShoppingBag,
-  TrendingUp,
-  Activity,
-  DollarSign,
-  BarChart
-} from "lucide-react";
-import { MarketplaceStats as Stats } from "@/types/marketplace";
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { MarketplaceStats } from "@/types/marketplace";
+import { TrendingUp, Eye, Heart, Tag, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-interface StatsProps {
-  stats: Stats;
+export function MarketplaceStatsComponent() {
+  const { user } = useAuth();
+  const [stats, setStats] = useState<MarketplaceStats>({
+    totalListings: 0,
+    activeListings: 0,
+    totalViews: 0, 
+    totalFavorites: 0,
+    popularCategories: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        // Fetch total listings
+        const { count: totalListings, error: listingsError } = await supabase
+          .from('marketplace_listings')
+          .select('*', { count: 'exact', head: true });
+
+        if (listingsError) throw listingsError;
+
+        // Fetch active listings
+        const { count: activeListings, error: activeError } = await supabase
+          .from('marketplace_listings')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'active');
+
+        if (activeError) throw activeError;
+
+        // Fetch total views
+        const { count: totalViews, error: viewsError } = await supabase
+          .from('marketplace_views')
+          .select('*', { count: 'exact', head: true });
+
+        if (viewsError) throw viewsError;
+
+        // Fetch total favorites
+        const { count: totalFavorites, error: favoritesError } = await supabase
+          .from('marketplace_favorites')
+          .select('*', { count: 'exact', head: true });
+
+        if (favoritesError) throw favoritesError;
+
+        // Set the stats
+        setStats({
+          totalListings: totalListings || 0,
+          activeListings: activeListings || 0,
+          totalViews: totalViews || 0,
+          totalFavorites: totalFavorites || 0,
+          popularCategories: []
+        });
+      } catch (error) {
+        console.error("Error fetching marketplace stats:", error);
+        setError("Failed to load marketplace statistics");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchStats();
+    }
+  }, [user]);
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <StatsCard 
+        title="Annonces actives" 
+        value={stats.activeListings} 
+        icon={<TrendingUp className="h-4 w-4" />} 
+        loading={loading}
+      />
+      <StatsCard 
+        title="Total des annonces" 
+        value={stats.totalListings} 
+        icon={<Tag className="h-4 w-4" />} 
+        loading={loading}
+      />
+      <StatsCard 
+        title="Vues totales" 
+        value={stats.totalViews} 
+        icon={<Eye className="h-4 w-4" />} 
+        loading={loading}
+      />
+      <StatsCard 
+        title="Favoris" 
+        value={stats.totalFavorites} 
+        icon={<Heart className="h-4 w-4" />} 
+        loading={loading}
+      />
+    </div>
+  );
 }
 
-export function MarketplaceStats({ stats }: StatsProps) {
+interface StatsCardProps {
+  title: string;
+  value: number;
+  icon: React.ReactNode;
+  loading: boolean;
+}
+
+function StatsCard({ title, value, icon, loading }: StatsCardProps) {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <Card className="p-4">
-        <div className="flex items-center gap-2">
-          <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-          <h3 className="text-sm font-medium">Annonces actives</h3>
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium flex items-center">
+          <span className="mr-2 text-muted-foreground">{icon}</span>
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">
+          {loading ? "..." : value.toLocaleString()}
         </div>
-        <p className="mt-2 text-2xl font-bold">{stats.activeListings}</p>
-        <p className="text-xs text-muted-foreground">
-          Sur {stats.totalListings} annonces au total
-        </p>
-      </Card>
-
-      <Card className="p-4">
-        <div className="flex items-center gap-2">
-          <Eye className="h-4 w-4 text-muted-foreground" />
-          <h3 className="text-sm font-medium">Vues totales</h3>
+        <div className="flex justify-end">
+          <Button variant="ghost" size="sm" className="mt-2 text-xs">
+            Détails <ChevronRight className="h-3 w-3 ml-1" />
+          </Button>
         </div>
-        <p className="mt-2 text-2xl font-bold">{stats.totalViews || 0}</p>
-        <p className="text-xs text-muted-foreground">
-          {stats.activeListings > 0 
-            ? ((stats.totalViews || 0) / stats.activeListings).toFixed(1) 
-            : "0"} vues par annonce
-        </p>
-      </Card>
-
-      <Card className="p-4">
-        <div className="flex items-center gap-2">
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
-          <h3 className="text-sm font-medium">Prix moyen</h3>
-        </div>
-        <p className="mt-2 text-2xl font-bold">
-          {stats.averagePrice.toLocaleString('fr-CA', {
-            style: 'currency',
-            currency: 'CAD'
-          })}
-        </p>
-      </Card>
-
-      <Card className="p-4 md:col-span-2 lg:col-span-3">
-        <div className="flex items-center gap-2 mb-4">
-          <Activity className="h-4 w-4 text-muted-foreground" />
-          <h3 className="text-sm font-medium">Répartition par type</h3>
-        </div>
-        <div className="grid grid-cols-3 gap-4 mt-2">
-          {stats.listingsByType && Object.entries(stats.listingsByType).map(([type, count]) => (
-            <div key={type} className="text-center">
-              <div className="text-lg font-bold">{count}</div>
-              <div className="text-xs text-muted-foreground capitalize">{type}</div>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      <Card className="p-4 md:col-span-2 lg:col-span-3">
-        <div className="flex items-center gap-2 mb-4">
-          <BarChart className="h-4 w-4 text-muted-foreground" />
-          <h3 className="text-sm font-medium">Catégories populaires</h3>
-        </div>
-        <div className="grid gap-2">
-          {Array.isArray(stats.popularCategories) && stats.popularCategories.map((category, index) => (
-            <div key={index} className="flex items-center justify-between">
-              <span className="text-sm">{category}</span>
-              <span className="text-sm text-muted-foreground">0 annonces</span>
-            </div>
-          ))}
-        </div>
-      </Card>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

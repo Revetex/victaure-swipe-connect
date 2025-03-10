@@ -1,161 +1,102 @@
 
 import { useState, useEffect } from "react";
-import { DashboardShell } from "@/components/shell/DashboardShell";
-import { DashboardHeader } from "@/components/shell/DashboardHeader";
-import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { UserPlus, Search } from "lucide-react";
-import { useFriendRequests } from "@/hooks/useFriendRequests";
+import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { UserProfile } from "@/types/profile";
-import { ProfileCard } from "@/components/profile/preview/ProfilePreviewCard";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ProfilePreviewCard as ProfileCard } from "@/components/profile/preview/ProfilePreviewCard";
+import { ensureValidUserRole } from "@/types/profile";
 
 export function ProfileSearchPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
   const { user } = useAuth();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
-  const [results, setResults] = useState<UserProfile[]>([]);
-  const { pendingRequests, sendFriendRequest } = useFriendRequests();
 
-  const handleSearch = async () => {
-    if (!searchTerm.trim() || !user) return;
-    
-    setIsSearching(true);
-    
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
     try {
-      // Get user profiles matching the search term
+      setIsLoading(true);
+      
+      // Search by name or email
       const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .neq('id', user.id)
-        .ilike('full_name', `%${searchTerm}%`)
-        .limit(10);
-      
+        .from("profiles")
+        .select("*")
+        .or(`full_name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`)
+        .limit(20);
+
       if (error) throw error;
-      
-      // Get existing connections for this user
-      const { data: connections, error: connError } = await supabase
-        .from('user_connections')
-        .select('*')
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
-      
-      if (connError) throw connError;
-      
-      // Filter out users who are already connected
-      const filteredResults = data.filter(profile => {
-        return !connections.some(conn => 
-          (conn.sender_id === user.id && conn.receiver_id === profile.id) ||
-          (conn.receiver_id === user.id && conn.sender_id === profile.id)
-        );
-      });
-      
-      setResults(filteredResults);
+
+      if (data) {
+        // Filter out the current user from results
+        const filteredResults = data.filter(profile => profile.id !== user?.id);
+        
+        // Transform the data to ensure it matches the UserProfile interface
+        const transformedResults: UserProfile[] = filteredResults.map(profile => ({
+          ...profile,
+          role: ensureValidUserRole(profile.role) // Ensure role is valid
+        }));
+        
+        setSearchResults(transformedResults);
+      }
     } catch (error) {
-      console.error("Search error:", error);
+      console.error("Error searching profiles:", error);
     } finally {
-      setIsSearching(false);
+      setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    if (searchTerm.trim()) {
-      const timer = setTimeout(() => {
-        handleSearch();
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    } else {
-      setResults([]);
-    }
-  }, [searchTerm]);
-
-  const handleConnect = async (profileId: string) => {
-    await sendFriendRequest(profileId);
   };
 
   return (
-    <DashboardShell>
-      <DashboardHeader
-        heading="Rechercher des personnes"
-        text="Trouvez des professionnels et développez votre réseau"
-      />
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-6">Rechercher des profils</h1>
       
-      <div className="flex w-full max-w-sm items-center space-x-2 mb-6">
-        <Input
-          type="text"
-          placeholder="Rechercher par nom..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <Button onClick={handleSearch} disabled={isSearching}>
-          <Search className="h-4 w-4 mr-2" />
-          Rechercher
-        </Button>
+      <form onSubmit={handleSearch} className="mb-8">
+        <div className="flex gap-2">
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Rechercher par nom ou email"
+            className="flex-1"
+          />
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Recherche..." : <Search className="h-4 w-4" />}
+          </Button>
+        </div>
+      </form>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {searchResults.map((profile) => (
+          <div 
+            key={profile.id} 
+            className="border rounded-lg p-4 cursor-pointer hover:border-primary transition-all"
+            onClick={() => setSelectedProfile(profile)}
+          >
+            <h3 className="font-medium">{profile.full_name}</h3>
+            <p className="text-sm text-muted-foreground">{profile.email}</p>
+            {profile.bio && (
+              <p className="mt-2 text-sm">{profile.bio}</p>
+            )}
+          </div>
+        ))}
+        
+        {searchResults.length === 0 && !isLoading && searchQuery && (
+          <div className="col-span-full p-4 text-center">
+            <p>Aucun résultat trouvé pour "{searchQuery}"</p>
+          </div>
+        )}
       </div>
       
-      {isSearching ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-lg border p-4">
-              <div className="flex items-center space-x-4">
-                <Skeleton className="h-12 w-12 rounded-full" />
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-[200px]" />
-                  <Skeleton className="h-4 w-[150px]" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : results.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {results.map((profile) => (
-            <div key={profile.id} className="rounded-lg border p-4 flex flex-col">
-              <div className="flex items-center space-x-4">
-                <div className="h-12 w-12 rounded-full bg-zinc-200 overflow-hidden">
-                  {profile.avatar_url ? (
-                    <img
-                      src={profile.avatar_url}
-                      alt={profile.full_name || "Profile"}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full w-full bg-zinc-300">
-                      {profile.full_name?.[0] || "U"}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <h3 className="font-medium">{profile.full_name}</h3>
-                  <p className="text-sm text-zinc-500">{profile.role}</p>
-                </div>
-              </div>
-              <div className="mt-auto pt-4">
-                <Button 
-                  className="w-full" 
-                  onClick={() => handleConnect(profile.id)}
-                  disabled={pendingRequests.some(
-                    req => req.receiver_id === profile.id || req.sender_id === profile.id
-                  )}
-                >
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  {pendingRequests.some(
-                    req => req.receiver_id === profile.id || req.sender_id === profile.id
-                  )
-                    ? "Demande en cours"
-                    : "Connecter"}
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : searchTerm && !isSearching ? (
-        <div className="text-center py-8 text-muted-foreground">
-          Aucun résultat trouvé pour "{searchTerm}".
-        </div>
-      ) : null}
-    </DashboardShell>
+      {selectedProfile && (
+        <ProfileCard 
+          profile={selectedProfile} 
+          onClose={() => setSelectedProfile(null)}
+        />
+      )}
+    </div>
   );
 }

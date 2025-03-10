@@ -1,3 +1,4 @@
+
 export interface MarketplaceFavorite {
   id: string;
   item_id: string;
@@ -102,7 +103,6 @@ export interface MarketplaceService {
   };
   // Database compatibility fields
   owner_id?: string;
-  provider_id?: string;
   category_id?: string;
   current_price?: number;
   auction_end_date?: string;
@@ -130,3 +130,15 @@ export const contractFormSchema = {
   budget_min: { required: 'Minimum budget is required' },
   budget_max: { required: 'Maximum budget is required' }
 };
+
+// Adding interface for MarketplaceStats
+export interface MarketplaceStats {
+  totalListings: number;
+  activeListings: number;
+  totalViews: number;
+  totalFavorites: number;
+  popularCategories: {
+    name: string;
+    count: number;
+  }[];
+}
