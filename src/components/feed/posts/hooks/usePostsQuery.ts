@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Post } from '../types';
+import { ensureStringLiteral } from '@/utils/marketplace';
 
 interface UsePostsQueryProps {
   filter: string;
@@ -94,14 +95,18 @@ export function usePostsQuery({
         reactions: (post.reactions || []).map(reaction => ({
           ...reaction,
           // Ensure reaction_type is one of the allowed values
-          reaction_type: (reaction.reaction_type === "like" || reaction.reaction_type === "dislike") 
-            ? reaction.reaction_type as 'like' | 'dislike'
-            : "like" // Default to like if not valid
+          reaction_type: ensureStringLiteral(
+            reaction.reaction_type, 
+            ["like", "dislike"] as const, 
+            "like"
+          )
         })),
         // Ensure privacy_level is one of the allowed values
-        privacy_level: (post.privacy_level === "public" || post.privacy_level === "connections") 
-          ? post.privacy_level as 'public' | 'connections'
-          : "public" // Default to public if not valid
+        privacy_level: ensureStringLiteral(
+          post.privacy_level, 
+          ["public", "connections"] as const, 
+          "public"
+        )
       }));
 
       return {

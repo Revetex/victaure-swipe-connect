@@ -65,6 +65,7 @@ export interface Receiver {
   city?: string | null; // Added for compatibility with ConversationView
   state?: string | null; // Added for compatibility with ConversationView
   country?: string | null; // Added for compatibility
+  friends?: any[]; // Added to support friends in receiver object
 }
 
 // Export UserRole for use in message components

@@ -82,3 +82,26 @@ export function ensureStringLiteral<T extends string>(
   }
   return defaultValue;
 }
+
+/**
+ * Safely formats a date to ISO string or converts it to string
+ */
+export function formatDateToSafeString(value: Date | string | null | undefined): string | null {
+  if (!value) return null;
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'string') return value;
+  return String(value);
+}
+
+/**
+ * Type-safe way to add friends/connections to a Receiver object
+ */
+export function addFriendsToReceiver(receiver: any, friends: any[]): any {
+  if (!receiver) return receiver;
+  
+  // Create a new object with the friends property
+  return {
+    ...receiver,
+    friends: Array.isArray(friends) ? friends : []
+  };
+}
