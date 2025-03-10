@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 export function useConnectionActions(profileId: string) {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
-  const { sendFriendRequest, acceptFriendRequest, refetchPendingRequests } = useFriendRequests();
+  const { sendFriendRequest: sendRequest, acceptFriendRequest: acceptRequest, refetchPendingRequests } = useFriendRequests();
 
   // Fetch the connection request ID when needed
   const getConnectionRequest = useCallback(async () => {
@@ -31,12 +31,12 @@ export function useConnectionActions(profileId: string) {
   }, [user?.id, profileId]);
 
   // Handle adding a friend
-  const handleAddFriend = useCallback(async () => {
+  const sendFriendRequest = useCallback(async () => {
     if (!user?.id || isLoading) return;
     setIsLoading(true);
 
     try {
-      await sendFriendRequest(profileId);
+      await sendRequest(profileId);
       toast.success('Demande d\'ami envoyée');
     } catch (error) {
       console.error('Error sending friend request:', error);
@@ -44,17 +44,17 @@ export function useConnectionActions(profileId: string) {
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id, profileId, sendFriendRequest, isLoading]);
+  }, [user?.id, profileId, sendRequest, isLoading]);
 
   // Handle accepting a friend request
-  const handleAcceptFriend = useCallback(async () => {
+  const acceptFriendRequest = useCallback(async () => {
     if (!user?.id || isLoading) return;
     setIsLoading(true);
 
     try {
       const request = await getConnectionRequest();
       if (request?.id) {
-        await acceptFriendRequest(request.id);
+        await acceptRequest(request.id);
         toast.success('Demande d\'ami acceptée');
       } else {
         toast.error('Demande d\'ami introuvable');
@@ -65,10 +65,10 @@ export function useConnectionActions(profileId: string) {
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id, getConnectionRequest, acceptFriendRequest, isLoading]);
+  }, [user?.id, getConnectionRequest, acceptRequest, isLoading]);
 
-  // Handle removing a friend
-  const handleRemoveFriend = useCallback(async () => {
+  // Handle removing a friend request or friendship
+  const removeFriend = useCallback(async () => {
     if (!user?.id || isLoading) return;
     setIsLoading(true);
 
@@ -87,26 +87,17 @@ export function useConnectionActions(profileId: string) {
         return;
       }
 
-      // If it's a pending request
+      // Whether it's a pending request or accepted friendship, delete it
+      const { error: deleteError } = await supabase
+        .from('user_connections')
+        .delete()
+        .eq('id', data.id);
+          
+      if (deleteError) throw deleteError;
+      
       if (data.status === 'pending') {
-        // Delete it directly
-        const { error: deleteError } = await supabase
-          .from('user_connections')
-          .delete()
-          .eq('id', data.id);
-          
-        if (deleteError) throw deleteError;
         toast.success('Demande annulée');
-      } 
-      // If it's an accepted friendship
-      else if (data.status === 'accepted') {
-        // Delete the connection
-        const { error: deleteError } = await supabase
-          .from('user_connections')
-          .delete()
-          .eq('id', data.id);
-          
-        if (deleteError) throw deleteError;
+      } else {
         toast.success('Ami supprimé');
       }
 
@@ -123,7 +114,7 @@ export function useConnectionActions(profileId: string) {
   }, [user?.id, profileId, isLoading, refetchPendingRequests]);
 
   // Handle blocking a user
-  const handleToggleBlock = useCallback(async (userId: string) => {
+  const toggleBlockUser = useCallback(async (userId: string) => {
     if (!user?.id || isLoading) return;
     setIsLoading(true);
 
@@ -170,9 +161,14 @@ export function useConnectionActions(profileId: string) {
 
   return {
     isLoading,
-    handleAddFriend,
-    handleAcceptFriend,
-    handleRemoveFriend,
-    handleToggleBlock
+    handleAddFriend: sendFriendRequest,
+    handleAcceptFriend: acceptFriendRequest,
+    handleRemoveFriend: removeFriend,
+    handleToggleBlock: toggleBlockUser,
+    // Also export the original function names for backward compatibility
+    sendFriendRequest,
+    acceptFriendRequest,
+    removeFriend,
+    toggleBlockUser
   };
 }

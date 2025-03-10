@@ -1,4 +1,3 @@
-
 export interface MarketplaceFavorite {
   id: string;
   item_id: string;
@@ -106,6 +105,9 @@ export interface MarketplaceService {
   category_id?: string;
   current_price?: number;
   auction_end_date?: string;
+  images?: string[];
+  status?: string;
+  type?: string;
 }
 
 // Type aliases for compatibility with existing code

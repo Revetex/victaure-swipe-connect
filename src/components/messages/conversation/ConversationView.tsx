@@ -1,57 +1,70 @@
-
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { Message, Receiver } from '@/types/messages';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Send } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/components/ui/use-toast';
-import { cn } from '@/lib/utils';
-import { MessageItem } from './components/MessageItem';
-import { useIsMobile } from '@/hooks/use-mobile';
+import React, { useState, useEffect, useRef } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Send } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Message, Receiver, Conversation } from "@/types/messages";
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { ConversationHeaderAdapter } from './adapters/ConversationHeaderAdapter';
+import { useThemeContext } from "@/components/ThemeProvider";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ConversationHeaderAdapter } from "./adapters/ConversationHeaderAdapter";
+import { useReceiver } from "@/hooks/useReceiver";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ConversationViewProps {
-  conversation?: any;
   onBack?: () => void;
 }
 
-export function ConversationView({ 
-  conversation, 
-  onBack, 
-}: ConversationViewProps) {
-  const { id: conversationId } = useParams<{ id: string }>();
+export function ConversationView({ onBack }: ConversationViewProps) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [receiver, setReceiver] = useState<Receiver>({
-    id: '',
-    full_name: '',
-    avatar_url: null,
-    online_status: false,
-    last_seen: null,
-    username: '',
-    phone: '',
-    city: '',
-    state: '',
-    country: ''
-  });
+  const [newMessage, setNewMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { receiver } = useReceiver();
+  const { isDark } = useThemeContext();
   const { user } = useAuth();
-  const { toast } = useToast();
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const isMobile = useIsMobile();
+  const [conversation, setConversation] = useState<Conversation | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = useCallback(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, []);
-
+  // Scroll to bottom on new messages
   useEffect(() => {
-    if (!conversationId) return;
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
 
+  // Fetch conversation
+  useEffect(() => {
+    if (!receiver?.id || !user?.id) return;
+
+    const fetchConversation = async () => {
+      try {
+        const { data: conversationData, error: conversationError } = await supabase
+          .from('conversations')
+          .select('*')
+          .or(`and(participant1_id.eq.${user.id},participant2_id.eq.${receiver.id}),and(participant1_id.eq.${receiver.id},participant2_id.eq.${user.id})`)
+          .single();
+
+        if (conversationError) {
+          console.error('Error fetching conversation:', conversationError);
+          return;
+        }
+
+        setConversation(conversationData);
+      } catch (error) {
+        console.error('Error fetching conversation:', error);
+      }
+    };
+
+    fetchConversation();
+  }, [receiver?.id, user?.id]);
+
+  // Fetch messages and subscribe to changes
+  useEffect(() => {
+    if (!receiver?.id || !conversation?.id) return;
+  
     const fetchMessages = async () => {
       setLoading(true);
       try {
@@ -59,201 +72,148 @@ export function ConversationView({
           .from('messages')
           .select(`
             *,
-            sender:sender_id(id, full_name, avatar_url)
+            sender:profiles(id, full_name, avatar_url)
           `)
-          .eq('conversation_id', conversationId)
+          .eq('conversation_id', conversation.id)
           .order('created_at', { ascending: true });
-
+      
         if (error) {
-          throw error;
+          console.error('Error fetching messages:', error);
+          setLoading(false);
+          return;
         }
-
-        // Cast the data to Message[] after ensuring it's valid
-        const processedMessages = (data || []).map(msg => {
-          // Handle potential errors in the sender join
-          const senderData = msg.sender && typeof msg.sender === 'object' 
+      
+        // Type cast the data correctly
+        const typedMessages = data.map(msg => {
+          // Handle cases where sender might be an error object
+          const senderData = typeof msg.sender === 'object' && !msg.sender.error 
             ? msg.sender 
-            : { id: msg.sender_id, full_name: 'Unknown', avatar_url: null };
-            
+            : { id: msg.sender_id, full_name: "Unknown", avatar_url: null };
+          
           return {
             ...msg,
-            sender: senderData as any
-          } as Message;
-        });
-
-        setMessages(processedMessages);
-        scrollToBottom();
-      } catch (error: any) {
-        console.error('Error fetching messages:', error);
-        toast({
-          variant: 'destructive',
-          title: 'Erreur',
-          description: "Impossible de charger les messages."
-        });
-      } finally {
+            sender: senderData as Receiver
+          };
+        }) as Message[];
+      
+        setMessages(typedMessages);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error in messages fetch:', error);
         setLoading(false);
       }
     };
-
+  
     fetchMessages();
-
-    // Subscribe to new messages
-    const messageSubscription = supabase
+  
+    const messagesSubscription = supabase
       .channel('public:messages')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` },
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversation.id}` },
         payload => {
+          // Fetch the new message and update the state
           const newMessage = payload.new as Message;
           setMessages(prevMessages => [...prevMessages, newMessage]);
-          scrollToBottom();
         }
       )
       .subscribe();
-
+  
     return () => {
-      supabase.removeChannel(messageSubscription);
+      supabase.removeChannel(messagesSubscription);
     };
-  }, [conversationId, scrollToBottom, toast]);
-
-  useEffect(() => {
-    if (!conversationId) return;
-
-    const fetchReceiver = async () => {
-      try {
-        const { data: conversationData, error: conversationError } = await supabase
-          .from('conversations')
-          .select('participant1_id, participant2_id')
-          .eq('id', conversationId)
-          .single();
-
-        if (conversationError) {
-          throw conversationError;
-        }
-
-        const receiverId = (conversationData?.participant1_id === user?.id) ? conversationData?.participant2_id : conversationData?.participant1_id;
-
-        if (!receiverId) {
-          console.error('Receiver ID not found');
-          return;
-        }
-
-        const { data: receiverData, error: receiverError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', receiverId)
-          .single();
-
-        if (receiverError) {
-          throw receiverError;
-        }
-
-        // Ensure the receiver data conforms to the Receiver type
-        setReceiver({
-          id: receiverId,
-          full_name: receiverData?.full_name || 'Unknown',
-          avatar_url: receiverData?.avatar_url || null,
-          online_status: !!receiverData?.online_status,
-          last_seen: receiverData?.last_seen || null,
-          // Add optional fields with fallbacks
-          username: receiverData?.username || '',
-          phone: receiverData?.phone || null,
-          city: receiverData?.city || null,
-          state: receiverData?.state || null,
-          country: receiverData?.country || null,
-          // Add any other required fields from Receiver type
-          email: receiverData?.email || null,
-          role: (receiverData?.role as any) || 'professional',
-          bio: receiverData?.bio || null
-        });
-      } catch (error: any) {
-        console.error('Error fetching receiver:', error);
-        toast({
-          variant: 'destructive',
-          title: 'Erreur',
-          description: "Impossible de charger les informations du destinataire."
-        });
-      }
-    };
-
-    fetchReceiver();
-  }, [conversationId, user?.id, toast]);
+  }, [receiver?.id, conversation?.id]);
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !user || !receiver.id) return;
+    if (!newMessage.trim() || !receiver?.id || !conversation?.id) return;
 
     try {
-      const { error } = await supabase
+      const { data: message, error } = await supabase
         .from('messages')
-        .insert({
-          content: newMessage,
-          sender_id: user.id,
-          receiver_id: receiver.id,
-          conversation_id: conversationId,
-        });
+        .insert([
+          {
+            content: newMessage,
+            sender_id: user?.id,
+            receiver_id: receiver.id,
+            conversation_id: conversation.id
+          }
+        ])
+        .select('*')
+        .single();
 
       if (error) {
-        throw error;
+        console.error("Error sending message:", error);
+        return;
       }
 
-      setNewMessage('');
-      scrollToBottom();
-    } catch (error: any) {
-      console.error('Error sending message:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Erreur',
-        description: "Impossible d'envoyer le message."
-      });
-    }
-  };
-
-  const formatTimestamp = (timestamp: string) => {
-    try {
-      return formatDistanceToNow(new Date(timestamp), { addSuffix: true, locale: fr });
+      setNewMessage("");
     } catch (error) {
-      console.error("Error formatting timestamp:", error);
-      return "Date inconnue";
+      console.error("Error sending message:", error);
     }
   };
 
   return (
     <div className="flex flex-col h-full">
-      <ConversationHeaderAdapter 
-        receiver={receiver} 
-        onBack={onBack} 
+      <ConversationHeaderAdapter
+        receiver={receiver}
+        onBack={onBack}
       />
-      
-      <div className="flex-1 overflow-y-auto p-4">
-        {loading ? (
-          <div className="text-center text-muted-foreground">Chargement des messages...</div>
-        ) : (
-          messages.map(message => (
-            <MessageItem
-              key={message.id}
-              message={message}
-              isOwnMessage={message.sender_id === user?.id}
-              timestamp={formatTimestamp(message.created_at)}
-            />
-          ))
+
+      <div className="flex-1 overflow-hidden relative">
+        <ScrollArea ref={scrollRef} className="h-full w-full p-4">
+          <div className="flex flex-col gap-2">
+            {messages.map((message) => {
+              const isCurrentUser = message.sender_id === user?.id;
+              const messageTime = message.created_at
+                ? formatDistanceToNow(new Date(message.created_at), { addSuffix: true, locale: fr })
+                : 'Date inconnue';
+
+              return (
+                <div
+                  key={message.id}
+                  className={cn(
+                    "flex flex-col",
+                    isCurrentUser ? "items-end" : "items-start"
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "flex items-end gap-2 rounded-xl px-3 py-2 w-fit max-w-[400px]",
+                      isCurrentUser
+                        ? "bg-blue-600 text-white"
+                        : (isDark ? "bg-muted/40 text-white" : "bg-gray-100 text-gray-800")
+                    )}
+                  >
+                    <div className="break-words">{message.content}</div>
+                  </div>
+                  <span className="text-xs text-gray-500 mt-1">{messageTime}</span>
+                </div>
+              );
+            })}
+          </div>
+        </ScrollArea>
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-background/80">
+            Chargement des messages...
+          </div>
         )}
-        <div ref={bottomRef} />
       </div>
 
-      <div className="p-4 border-t border-[#64B5D9]/10 bg-background/80 backdrop-blur-sm">
-        <div className="flex items-center space-x-2">
+      <div className="p-4 border-t">
+        <div className="flex items-center gap-2">
           <Input
+            type="text"
             placeholder="Écrire un message..."
             value={newMessage}
-            onChange={e => setNewMessage(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === 'Enter') {
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
                 handleSendMessage();
               }
             }}
-            className="bg-background border-[#64B5D9]/20 text-foreground placeholder:text-muted-foreground"
           />
           <Button onClick={handleSendMessage} disabled={!newMessage.trim()}>
-            <Send className="h-4 w-4 mr-2" />
             Envoyer
+            <Send className="ml-2 h-4 w-4" />
           </Button>
         </div>
       </div>

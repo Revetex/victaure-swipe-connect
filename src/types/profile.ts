@@ -1,4 +1,3 @@
-
 export type UserRole = 'professional' | 'business' | 'admin' | 'freelancer' | 'student';
 
 export interface UserProfile {
@@ -33,6 +32,7 @@ export interface UserProfile {
   longitude?: number;
   job_title?: string;
   friendship_id?: string; // Added for compatibility with ConnectionCard
+  username?: string; // Added for compatibility with messaging system
 }
 
 export interface Certification {

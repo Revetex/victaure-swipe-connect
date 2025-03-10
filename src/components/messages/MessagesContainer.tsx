@@ -68,9 +68,10 @@ export function MessagesContainer() {
                   avatar_url: null,
                   online_status: false,
                   email: null,
-                  role: 'professional' as const
+                  role: 'professional' as const,
+                  username: 'unknown'
                 } as Receiver
-              };
+              } as Conversation;
             }
             
             // Fetch the participant's profile
@@ -90,11 +91,11 @@ export function MessagesContainer() {
                   full_name: 'Unknown',
                   avatar_url: null,
                   online_status: false,
-                  // Add the required fields for Receiver type
                   email: null,
-                  role: 'professional' as const
+                  role: 'professional' as const,
+                  username: 'unknown'
                 } as Receiver
-              };
+              } as Conversation;
             }
             
             // Return the conversation with the participant data
@@ -106,22 +107,21 @@ export function MessagesContainer() {
                 avatar_url: participantData.avatar_url,
                 online_status: !!participantData.online_status,
                 last_seen: participantData.last_seen,
-                // Add optional properties with fallbacks - use optional chaining for safety
-                username: participantData.username || '',
+                // Add optional properties with fallbacks
+                username: participantData.display_name || participantData.full_name || '',
                 phone: participantData.phone || null,
                 city: participantData.city || null,
                 state: participantData.state || null,
                 country: participantData.country || null,
-                // Add any other Receiver properties
                 email: participantData.email || null,
                 role: (participantData.role as any) || 'professional',
                 bio: participantData.bio || null,
               } as Receiver
-            };
+            } as Conversation;
           })
         );
         
-        setConversations(processedConversations);
+        setConversations(processedConversations as Conversation[]);
       } catch (error) {
         console.error('Error in conversation processing:', error);
         toast.error("Erreur lors du traitement des conversations");

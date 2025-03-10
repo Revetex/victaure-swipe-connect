@@ -17,8 +17,8 @@ interface ProfilePreviewCardProps {
 
 export function ProfilePreviewCard({ profile, onClose }: ProfilePreviewCardProps) {
   const [isOpen, setIsOpen] = useState(true);
-  const { status, isLoading: statusLoading } = useConnectionStatus(profile.id);
-  const { sendFriendRequest, cancelFriendRequest, acceptFriendRequest, removeFriend, isLoading: actionLoading } = useConnectionActions();
+  const { isFriend, isBlocked, isFriendRequestSent, isFriendRequestReceived, isLoading: statusLoading } = useConnectionStatus(profile.id);
+  const { handleAddFriend, handleAcceptFriend, handleRemoveFriend, handleToggleBlock, isLoading: actionLoading } = useConnectionActions(profile.id);
   const navigate = useNavigate();
 
   const handleCloseDialog = () => {
@@ -36,23 +36,23 @@ export function ProfilePreviewCard({ profile, onClose }: ProfilePreviewCardProps
   const handleConnectionAction = async () => {
     if (actionLoading) return;
 
-    if (status === 'none') {
-      await sendFriendRequest(profile.id);
-    } else if (status === 'pending_sent') {
-      await cancelFriendRequest(profile.id);
-    } else if (status === 'pending_received') {
-      await acceptFriendRequest(profile.id);
-    } else if (status === 'accepted') {
-      await removeFriend(profile.id);
+    if (isFriend) {
+      await handleRemoveFriend();
+    } else if (isFriendRequestReceived) {
+      await handleAcceptFriend();
+    } else if (isFriendRequestSent) {
+      await handleRemoveFriend();
+    } else {
+      await handleAddFriend();
     }
   };
 
   const connectionButtonText = {
-    none: 'Ajouter',
+    true: 'Retirer', // for isFriend
     pending_sent: 'Annuler la demande',
     pending_received: 'Accepter',
-    accepted: 'Retirer'
-  }[status] || 'Ajouter';
+    false: 'Ajouter' // for none/default
+  }[isFriend ? 'true' : (isFriendRequestSent ? 'pending_sent' : (isFriendRequestReceived ? 'pending_received' : 'false'))] || 'Ajouter';
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -144,12 +144,12 @@ export function ProfilePreviewCard({ profile, onClose }: ProfilePreviewCardProps
               Message
             </Button>
             <Button 
-              variant={status === 'accepted' ? "destructive" : (status === 'pending_sent' ? "outline" : "secondary")} 
+              variant={isFriend ? "destructive" : (isFriendRequestSent ? "outline" : "secondary")} 
               className="flex-1" 
               onClick={handleConnectionAction}
               disabled={actionLoading || statusLoading}
             >
-              <UserPlus className={cn("h-4 w-4 mr-2", status === 'accepted' && "hidden")} />
+              <UserPlus className={cn("h-4 w-4 mr-2", isFriend && "hidden")} />
               {connectionButtonText}
             </Button>
           </div>
