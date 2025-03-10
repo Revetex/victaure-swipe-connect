@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, MoreVertical, Phone, Video } from "lucide-react";
 import { ConversationHeaderProps } from "@/types/messages";
 import { ProfilePreviewCard } from "@/components/profile/preview/ProfilePreviewCard";
-import { Receiver } from "@/types/messages";
 
 export function ConversationHeader({ 
   name, 
@@ -73,8 +72,7 @@ export function ConversationHeader({
 
       {showProfile && receiver && (
         <ProfilePreviewCard
-          profile={receiver as any}
-          isOpen={showProfile}
+          profile={receiver}
           onClose={() => setShowProfile(false)}
         />
       )}

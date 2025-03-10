@@ -11,6 +11,7 @@ import { CustomConversationList } from "./CustomConversationList";
 import { Conversation, Receiver } from "@/types/messages";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 export function MessagesContainer() {
   const { receiver, showConversation, setReceiver } = useReceiver();
@@ -37,9 +38,14 @@ export function MessagesContainer() {
           .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
           .order('updated_at', { ascending: false });
         
-        if (conversationsError) throw conversationsError;
+        if (conversationsError) {
+          console.error('Error fetching conversations:', conversationsError);
+          toast.error("Erreur lors du chargement des conversations");
+          setIsLoading(false);
+          return;
+        }
         
-        if (!conversationsData) {
+        if (!conversationsData || conversationsData.length === 0) {
           setConversations([]);
           setIsLoading(false);
           return;
@@ -51,6 +57,21 @@ export function MessagesContainer() {
             // Determine if the participant is the current user or the other participant
             const isParticipant1 = conversation.participant1_id === user.id;
             const participantId = isParticipant1 ? conversation.participant2_id : conversation.participant1_id;
+            
+            if (!participantId) {
+              console.error('Participant ID not found for conversation:', conversation.id);
+              return {
+                ...conversation,
+                participant: {
+                  id: 'unknown',
+                  full_name: 'Unknown User',
+                  avatar_url: null,
+                  online_status: false,
+                  email: null,
+                  role: 'professional' as const
+                } as Receiver
+              };
+            }
             
             // Fetch the participant's profile
             const { data: participantData, error: participantError } = await supabase
@@ -85,7 +106,7 @@ export function MessagesContainer() {
                 avatar_url: participantData.avatar_url,
                 online_status: !!participantData.online_status,
                 last_seen: participantData.last_seen,
-                // Add optional properties with fallbacks
+                // Add optional properties with fallbacks - use optional chaining for safety
                 username: participantData.username || '',
                 phone: participantData.phone || null,
                 city: participantData.city || null,
@@ -100,9 +121,10 @@ export function MessagesContainer() {
           })
         );
         
-        setConversations(processedConversations as Conversation[]);
+        setConversations(processedConversations);
       } catch (error) {
-        console.error('Error fetching conversations:', error);
+        console.error('Error in conversation processing:', error);
+        toast.error("Erreur lors du traitement des conversations");
       } finally {
         setIsLoading(false);
       }
@@ -116,13 +138,17 @@ export function MessagesContainer() {
       .on('postgres_changes', 
         { event: 'INSERT', schema: 'public', table: 'conversations', filter: `participant1_id=eq.${user.id}` },
         payload => {
-          setConversations(prev => [payload.new as Conversation, ...prev]);
+          // Cast to Conversation and add to state
+          const newConversation = payload.new as Conversation;
+          setConversations(prev => [newConversation, ...prev]);
         }
       )
       .on('postgres_changes', 
         { event: 'INSERT', schema: 'public', table: 'conversations', filter: `participant2_id=eq.${user.id}` },
         payload => {
-          setConversations(prev => [payload.new as Conversation, ...prev]);
+          // Cast to Conversation and add to state
+          const newConversation = payload.new as Conversation;
+          setConversations(prev => [newConversation, ...prev]);
         }
       )
       .subscribe();

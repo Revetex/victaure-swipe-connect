@@ -110,7 +110,13 @@ export interface MarketplaceService {
 
 // Type aliases for compatibility with existing code
 export type MarketplaceStats = any;
-export type MarketplaceFavoriteInput = MarketplaceFavorite;
+export type MarketplaceFavoriteInput = {
+  user_id: string;
+  item_id: string;
+  listing_id?: string;
+  viewer_id?: string;
+}
+
 export type MarketplaceFavoriteExtended = MarketplaceFavorite;
 export type MarketplaceOffer = any;
 export type Gig = any;
