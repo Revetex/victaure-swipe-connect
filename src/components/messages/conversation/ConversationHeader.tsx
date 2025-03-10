@@ -20,27 +20,43 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
-import { Receiver } from "@/hooks/useReceiver";
+import { Receiver } from "@/types/messages";
 
 interface ConversationHeaderProps {
-  partner: Receiver;
-  onClose: () => void;
+  name: string;
+  avatar: string | null;
+  isOnline: boolean;
+  partner?: Receiver;
+  receiver?: Receiver;
+  onBack?: () => void;
+  onClose?: () => void;
 }
 
-export function ConversationHeader({ partner, onClose }: ConversationHeaderProps) {
+export function ConversationHeader({ 
+  name,
+  avatar,
+  isOnline,
+  partner,
+  receiver,
+  onBack,
+  onClose 
+}: ConversationHeaderProps) {
   const navigate = useNavigate();
   
+  // Use receiver or partner (for backward compatibility)
+  const contact = receiver || partner;
+  
   const getLastSeen = () => {
-    if (partner.online_status === true) {
+    if (isOnline) {
       return "En ligne";
     }
     
-    if (!partner.last_seen) {
+    if (!contact?.last_seen) {
       return "Hors ligne";
     }
     
     try {
-      const lastSeenDate = new Date(partner.last_seen);
+      const lastSeenDate = new Date(contact.last_seen);
       if (isToday(lastSeenDate)) {
         return `Vu ${formatDistanceToNow(lastSeenDate, {
           addSuffix: true,
@@ -57,19 +73,24 @@ export function ConversationHeader({ partner, onClose }: ConversationHeaderProps
     }
   };
 
+  // Ensure we have a contact to work with
+  if (!contact) {
+    return null;
+  }
+
   return (
     <div className="border-b p-3 flex items-center justify-between">
-      <div className="flex items-center gap-2" onClick={() => navigate(`/profile/${partner.id}`)}>
+      <div className="flex items-center gap-2" onClick={() => navigate(`/profile/${contact.id}`)}>
         <Avatar className="h-9 w-9">
-          <AvatarImage src={partner.avatar_url || undefined} alt={partner.full_name} />
+          <AvatarImage src={avatar || undefined} alt={name} />
           <AvatarFallback>
-            {partner.full_name?.charAt(0) || "U"}
+            {name?.charAt(0) || "U"}
           </AvatarFallback>
         </Avatar>
         <div>
-          <div className="font-medium">{partner.full_name}</div>
+          <div className="font-medium">{name}</div>
           <div className="text-xs text-muted-foreground flex items-center">
-            {partner.online_status && (
+            {isOnline && (
               <CheckCircle2 className="h-3 w-3 text-green-500 mr-1" />
             )}
             {getLastSeen()}
@@ -107,7 +128,7 @@ export function ConversationHeader({ partner, onClose }: ConversationHeaderProps
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Options</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate(`/profile/${partner.id}`)}>
+            <DropdownMenuItem onClick={() => navigate(`/profile/${contact.id}`)}>
               Voir le profil
             </DropdownMenuItem>
             <DropdownMenuItem>Bloquer</DropdownMenuItem>
@@ -115,15 +136,17 @@ export function ConversationHeader({ partner, onClose }: ConversationHeaderProps
           </DropdownMenuContent>
         </DropdownMenu>
         
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-muted-foreground hover:text-foreground rounded-full h-8 w-8 md:hidden"
-          onClick={onClose}
-        >
-          <X className="h-4 w-4" />
-          <span className="sr-only">Fermer</span>
-        </Button>
+        {onClose && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-foreground rounded-full h-8 w-8 md:hidden"
+            onClick={onClose}
+          >
+            <X className="h-4 w-4" />
+            <span className="sr-only">Fermer</span>
+          </Button>
+        )}
       </div>
     </div>
   );

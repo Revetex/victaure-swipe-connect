@@ -14,7 +14,7 @@ import { useThemeContext } from "@/components/ThemeProvider";
 import { motion } from "framer-motion";
 import { CustomConversationItem } from "./CustomConversationItem";
 import { CustomNewConversationDialog } from "./CustomNewConversationDialog";
-import { Conversation } from "@/types/messages";
+import { Conversation, Receiver } from "@/types/messages";
 
 export function CustomConversationList() {
   const { setReceiver, setShowConversation, receiver } = useReceiver();
@@ -45,11 +45,16 @@ export function CustomConversationList() {
     };
   }, []);
   
-  // Vérifiez que les conversations ont la propriété participant comme chaîne
+  // Type-safe filtering for conversations
   const filteredConversations = conversations.filter(conv => {
-    if (conv && typeof conv.participant === 'string') {
+    if (!conv) return false;
+    
+    // Handle participant as string
+    if (typeof conv.participant === 'string') {
       return conv.participant.toLowerCase().includes(searchQuery.toLowerCase());
-    } else if (conv && conv.participant && typeof conv.participant === 'object' && conv.participant.full_name) {
+    } 
+    // Handle participant as object with full_name
+    else if (conv.participant && typeof conv.participant === 'object' && conv.participant.full_name) {
       return conv.participant.full_name.toLowerCase().includes(searchQuery.toLowerCase());
     }
     return false;
@@ -60,23 +65,42 @@ export function CustomConversationList() {
     return searchIn.includes(searchQuery.toLowerCase());
   });
 
-  // Filtrer les conversations en fonction de l'onglet actif
+  // Safely filter conversations based on the unread status
   const displayedConversations = activeTab === "all" 
     ? filteredConversations 
-    : filteredConversations.filter(conv => (conv.unread || 0) > 0);
+    : filteredConversations.filter(conv => {
+        // Convert to number to ensure proper comparison
+        const unreadCount = typeof conv.unread === 'boolean' 
+          ? (conv.unread ? 1 : 0)
+          : typeof conv.unread === 'string' 
+            ? parseInt(conv.unread, 10) || 0
+            : Number(conv.unread || 0);
+        
+        return unreadCount > 0;
+      });
 
   // Vérifier si la liste de conversations est vide
   const isConversationsEmpty = displayedConversations.length === 0;
 
-  // Helper pour s'assurer que les propriétés existent
+  // Type-safe conversion helper
   const ensureConversationProps = (conversation: Conversation) => {
     return {
       ...conversation,
       avatar_url: conversation.avatar_url || null,
-      unread: conversation.unread || 0,
-      online: conversation.online || false,
-      isPinned: conversation.isPinned || false,
-      isMuted: conversation.isMuted || false
+      unread: typeof conversation.unread === 'boolean' 
+        ? (conversation.unread ? 1 : 0)
+        : typeof conversation.unread === 'string'
+          ? parseInt(conversation.unread, 10) || 0 
+          : Number(conversation.unread || 0),
+      online: typeof conversation.online === 'string'
+        ? conversation.online === 'true' || conversation.online === 'online'
+        : Boolean(conversation.online),
+      isPinned: typeof conversation.isPinned === 'number'
+        ? Boolean(conversation.isPinned)
+        : Boolean(conversation.isPinned),
+      isMuted: typeof conversation.isMuted === 'number'
+        ? Boolean(conversation.isMuted)
+        : Boolean(conversation.isMuted)
     };
   };
 
@@ -171,13 +195,19 @@ export function CustomConversationList() {
                   online={safeConv.online}
                   isActive={receiver?.id === safeConv.participant1_id || receiver?.id === safeConv.participant2_id}
                   onClick={() => {
-                    setReceiver({
-                      id: safeConv.participant1_id === user?.id ? safeConv.participant2_id : safeConv.participant1_id,
-                      full_name: participantName,
-                      avatar_url: safeConv.avatar_url,
-                      online_status: safeConv.online
-                    });
-                    setShowConversation(true);
+                    if (safeConv.participant1_id && safeConv.participant2_id) {
+                      const partnerId = safeConv.participant1_id === user?.id 
+                        ? safeConv.participant2_id 
+                        : safeConv.participant1_id;
+                      
+                      setReceiver({
+                        id: partnerId,
+                        full_name: participantName,
+                        avatar_url: safeConv.avatar_url,
+                        online_status: safeConv.online
+                      });
+                      setShowConversation(true);
+                    }
                   }}
                   isPinned={safeConv.isPinned}
                   isMuted={safeConv.isMuted}

@@ -54,3 +54,6 @@ export function useReceiver() {
     startNewConversation
   };
 }
+
+// Re-export the Receiver type for components that import from this file
+export type { Receiver } from '@/types/messages';
