@@ -13,12 +13,12 @@ import { cn } from "@/lib/utils";
 interface PrivacySelectorProps {
   value: PostPrivacyLevel;
   onChange: (value: PostPrivacyLevel) => void;
-  className?: string;  // Added className as an optional prop
+  className?: string;
 }
 
 export function PrivacySelector({ value, onChange, className }: PrivacySelectorProps) {
   return (
-    <Select value={value} onValueChange={onChange}>
+    <Select value={value} onValueChange={onChange as (value: string) => void}>
       <SelectTrigger className={cn("w-[180px] h-9", className)}>
         <SelectValue />
       </SelectTrigger>
@@ -39,4 +39,3 @@ export function PrivacySelector({ value, onChange, className }: PrivacySelectorP
     </Select>
   );
 }
-

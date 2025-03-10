@@ -102,6 +102,7 @@ export interface MarketplaceService {
   };
   // Database compatibility fields
   owner_id?: string;
+  provider_id?: string;
   category_id?: string;
   current_price?: number;
   auction_end_date?: string;
@@ -111,7 +112,6 @@ export interface MarketplaceService {
 }
 
 // Type aliases for compatibility with existing code
-export type MarketplaceStats = any;
 export type MarketplaceFavoriteInput = {
   user_id: string;
   item_id: string;

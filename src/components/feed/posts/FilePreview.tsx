@@ -5,10 +5,12 @@ import { PostAttachment } from "./types";
 
 interface FilePreviewProps {
   files: PostAttachment[];
-  onRemove: (index: number) => void;
+  onRemove?: (index: number) => void;
 }
 
 export function FilePreview({ files, onRemove }: FilePreviewProps) {
+  if (!files || files.length === 0) return null;
+  
   return (
     <motion.div 
       initial={{ opacity: 0, y: -10 }}
@@ -40,12 +42,14 @@ export function FilePreview({ files, onRemove }: FilePreviewProps) {
               </span>
             </div>
           )}
-          <button
-            onClick={() => onRemove(index)}
-            className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-          >
-            <X className="h-3 w-3" />
-          </button>
+          {onRemove && (
+            <button
+              onClick={() => onRemove(index)}
+              className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          )}
         </motion.div>
       ))}
     </motion.div>

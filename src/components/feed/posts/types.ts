@@ -19,6 +19,7 @@ export interface CreatePostFormProps {
   onFileChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRemoveFile?: (index: number) => void;
   isExpanded?: boolean;
+  isUploading?: boolean;
 }
 
 export interface PostAttachment {

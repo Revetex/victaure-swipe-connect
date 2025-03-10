@@ -9,14 +9,23 @@ import { Badge } from "@/components/ui/badge";
 import { useConnectionStatus } from "./hooks/useConnectionStatus";
 import { useConnectionActions } from "./hooks/useConnectionActions";
 import { useNavigate } from "react-router-dom";
+import { UserProfile } from "@/types/profile";
 
 interface ProfilePreviewCardProps {
-  profile: any;
+  profile: UserProfile;
   onClose: () => void;
+  searchQuery?: string;
+  showPendingRequests?: boolean;
+  selectedProfile?: UserProfile;
+  isOpen?: boolean;
 }
 
-export function ProfilePreviewCard({ profile, onClose }: ProfilePreviewCardProps) {
-  const [isOpen, setIsOpen] = useState(true);
+export function ProfilePreviewCard({ 
+  profile, 
+  onClose,
+  isOpen: controlledIsOpen,
+}: ProfilePreviewCardProps) {
+  const [isOpen, setIsOpen] = useState(controlledIsOpen !== undefined ? controlledIsOpen : true);
   const { isFriend, isBlocked, isFriendRequestSent, isFriendRequestReceived, isLoading: statusLoading } = useConnectionStatus(profile.id);
   const { handleAddFriend, handleAcceptFriend, handleRemoveFriend, handleToggleBlock, isLoading: actionLoading } = useConnectionActions(profile.id);
   const navigate = useNavigate();

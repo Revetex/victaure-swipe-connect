@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useThemeContext } from "@/components/ThemeProvider";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ConversationHeaderAdapter } from "./adapters/ConversationHeaderAdapter";
+import { ConversationHeaderAdapter } from "./ConversationHeaderAdapter";
 import { useReceiver } from "@/hooks/useReceiver";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -85,8 +86,8 @@ export function ConversationView({ onBack }: ConversationViewProps) {
       
         // Type cast the data correctly
         const typedMessages = data.map(msg => {
-          // Handle cases where sender might be an error object
-          const senderData = typeof msg.sender === 'object' && !msg.sender.error 
+          // Handle cases where sender might be an error object or null
+          const senderData = typeof msg.sender === 'object' && msg.sender && !('error' in msg.sender)
             ? msg.sender 
             : { id: msg.sender_id, full_name: "Unknown", avatar_url: null };
           

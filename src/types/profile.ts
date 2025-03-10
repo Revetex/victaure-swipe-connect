@@ -33,6 +33,14 @@ export interface UserProfile {
   job_title?: string;
   friendship_id?: string; // Added for compatibility with ConnectionCard
   username?: string; // Added for compatibility with messaging system
+  
+  // Adding optional fields to handle dynamic profile data
+  account_locked?: boolean;
+  allowed_file_types?: string[];
+  auto_update_enabled?: boolean;
+  availability_date?: string;
+  career_objectives?: string;
+  certificates?: string[];
 }
 
 export interface Certification {
@@ -154,7 +162,8 @@ export function createEmptyProfile(id: string, email?: string): UserProfile {
     privacy_enabled: false,
     website: null,
     company_name: null,
-    friends: []
+    friends: [],
+    username: ''
   };
 }
 
@@ -195,6 +204,17 @@ export function friendToUserProfile(friend: Friend): UserProfile {
     skills: friend.skills,
     online_status: friend.online_status,
     last_seen: friend.last_seen,
-    friendship_id: friend.friendship_id
+    friendship_id: friend.friendship_id,
+    username: friend.username
   };
+}
+
+/**
+ * Safely converts any string to a valid UserRole or returns the default 'professional'
+ */
+export function ensureValidUserRole(role: string | undefined): UserRole {
+  if (!role) return 'professional';
+  
+  const validRoles: UserRole[] = ['professional', 'business', 'admin', 'freelancer', 'student'];
+  return validRoles.includes(role as UserRole) ? (role as UserRole) : 'professional';
 }
