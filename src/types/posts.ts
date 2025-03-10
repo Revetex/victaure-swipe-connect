@@ -33,4 +33,10 @@ export interface Post {
     reaction_type: 'like' | 'dislike';
   }[];
   comments?: Comment[];
+  user?: {
+    id: string;
+    full_name: string;
+    avatar_url?: string;
+    role?: string;
+  };
 }

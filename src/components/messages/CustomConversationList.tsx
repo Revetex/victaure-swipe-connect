@@ -56,7 +56,9 @@ export function CustomConversationList() {
     } 
     // Handle participant as object with full_name
     else if (conv.participant && typeof conv.participant === 'object' && conv.participant.full_name) {
-      return conv.participant.full_name.toLowerCase().includes(searchQuery.toLowerCase());
+      return typeof conv.participant.full_name === 'string' ? 
+        conv.participant.full_name.toLowerCase().includes(searchQuery.toLowerCase()) : 
+        false;
     }
     return false;
   });

@@ -38,8 +38,33 @@ export function adaptListingData(listing: any): MarketplaceListing {
 export function convertToBoolean(value: any): boolean {
   if (typeof value === 'boolean') return value;
   if (typeof value === 'string') {
-    return value.toLowerCase() === 'true' || value.toLowerCase() === 'online';
+    return value.toLowerCase() === 'true' || 
+           value.toLowerCase() === 'online' || 
+           value.toLowerCase() === 'yes' || 
+           value.toLowerCase() === '1';
   }
   if (typeof value === 'number') return value > 0;
   return !!value;
+}
+
+/**
+ * Safe string lowercase conversion with type checking
+ */
+export function safeToLowerCase(value: any): string {
+  if (typeof value === 'string') return value.toLowerCase();
+  if (value === null || value === undefined) return '';
+  return String(value).toLowerCase();
+}
+
+/**
+ * Safely converts a value to a number with fallback
+ */
+export function safeToNumber(value: any, fallback: number = 0): number {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? fallback : parsed;
+  }
+  if (typeof value === 'boolean') return value ? 1 : 0;
+  return fallback;
 }

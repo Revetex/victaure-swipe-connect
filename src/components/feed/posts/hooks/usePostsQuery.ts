@@ -35,6 +35,7 @@ export function usePostsQuery({
             content,
             created_at,
             user_id,
+            post_id,
             profiles:user_id(id, full_name, avatar_url)
           ),
           reactions:post_reactions(
@@ -85,9 +86,16 @@ export function usePostsQuery({
       // Process the data to ensure it conforms to Post type
       const processedPosts: Post[] = (data || []).map(post => ({
         ...post,
-        comments: post.comments || [],
+        comments: (post.comments || []).map(comment => ({
+          ...comment,
+          post_id: comment.post_id || post.id // Ensure post_id is present
+        })),
         user: post.profiles,
-        reactions: post.reactions || []
+        reactions: post.reactions || [],
+        // Ensure privacy_level is one of the allowed values
+        privacy_level: (post.privacy_level === "public" || post.privacy_level === "connections") 
+          ? post.privacy_level 
+          : "public" // Default to public if not valid
       }));
 
       return {

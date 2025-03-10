@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, useRef } from "react";
@@ -22,7 +21,7 @@ export function AuthChat({ maxQuestions = 3, context }: AuthChatProps) {
   const [showFaq, setShowFaq] = useState(false);
   const { sendMessage, isLoading, messages, questionsLeft } = useVictaureChat({ 
     maxQuestions, 
-    context: context || "Je suis l'assistant d'inscription. Je peux vous aider à comprendre les différentes options d'inscription, expliquer les avantages des comptes professionnels et entreprises, et vous guider à travers le processus. Comment puis-je vous aider aujourd'hui ?"
+    context
   });
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
