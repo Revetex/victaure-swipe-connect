@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,7 +14,7 @@ import { motion } from "framer-motion";
 import { CustomConversationItem } from "./CustomConversationItem";
 import { CustomNewConversationDialog } from "./CustomNewConversationDialog";
 import { Conversation, Receiver } from "@/types/messages";
-import { convertToBoolean } from "@/utils/marketplace";
+import { convertToBoolean, safeToLowerCase, safeToNumber } from "@/utils/marketplace";
 
 export function CustomConversationList() {
   const { setReceiver, setShowConversation, receiver } = useReceiver();
@@ -52,12 +51,12 @@ export function CustomConversationList() {
     
     // Handle participant as string
     if (typeof conv.participant === 'string') {
-      return conv.participant.toLowerCase().includes(searchQuery.toLowerCase());
+      return safeToLowerCase(conv.participant).includes(safeToLowerCase(searchQuery));
     } 
     // Handle participant as object with full_name
     else if (conv.participant && typeof conv.participant === 'object' && conv.participant.full_name) {
       return typeof conv.participant.full_name === 'string' ? 
-        conv.participant.full_name.toLowerCase().includes(searchQuery.toLowerCase()) : 
+        safeToLowerCase(conv.participant.full_name).includes(safeToLowerCase(searchQuery)) : 
         false;
     }
     return false;
@@ -73,12 +72,7 @@ export function CustomConversationList() {
     ? filteredConversations 
     : filteredConversations.filter(conv => {
         // Convert to number to ensure proper comparison
-        const unreadCount = typeof conv.unread === 'boolean' 
-          ? (conv.unread ? 1 : 0)
-          : typeof conv.unread === 'string' 
-            ? parseInt(conv.unread, 10) || 0
-            : Number(conv.unread || 0);
-        
+        const unreadCount = safeToNumber(conv.unread, 0);
         return unreadCount > 0;
       });
 
@@ -90,11 +84,7 @@ export function CustomConversationList() {
     return {
       ...conversation,
       avatar_url: conversation.avatar_url || null,
-      unread: typeof conversation.unread === 'boolean' 
-        ? (conversation.unread ? 1 : 0)
-        : typeof conversation.unread === 'string'
-          ? parseInt(conversation.unread, 10) || 0 
-          : Number(conversation.unread || 0),
+      unread: safeToNumber(conversation.unread, 0),
       online: convertToBoolean(conversation.online),
       isPinned: convertToBoolean(conversation.isPinned),
       isMuted: convertToBoolean(conversation.isMuted)

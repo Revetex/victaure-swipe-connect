@@ -68,3 +68,17 @@ export function safeToNumber(value: any, fallback: number = 0): number {
   if (typeof value === 'boolean') return value ? 1 : 0;
   return fallback;
 }
+
+/**
+ * Safely ensure a value is one of the allowed string literals
+ */
+export function ensureStringLiteral<T extends string>(
+  value: any, 
+  allowedValues: readonly T[], 
+  defaultValue: T
+): T {
+  if (typeof value === 'string' && allowedValues.includes(value as T)) {
+    return value as T;
+  }
+  return defaultValue;
+}

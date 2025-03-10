@@ -91,10 +91,16 @@ export function usePostsQuery({
           post_id: comment.post_id || post.id // Ensure post_id is present
         })),
         user: post.profiles,
-        reactions: post.reactions || [],
+        reactions: (post.reactions || []).map(reaction => ({
+          ...reaction,
+          // Ensure reaction_type is one of the allowed values
+          reaction_type: (reaction.reaction_type === "like" || reaction.reaction_type === "dislike") 
+            ? reaction.reaction_type as 'like' | 'dislike'
+            : "like" // Default to like if not valid
+        })),
         // Ensure privacy_level is one of the allowed values
         privacy_level: (post.privacy_level === "public" || post.privacy_level === "connections") 
-          ? post.privacy_level 
+          ? post.privacy_level as 'public' | 'connections'
           : "public" // Default to public if not valid
       }));
 

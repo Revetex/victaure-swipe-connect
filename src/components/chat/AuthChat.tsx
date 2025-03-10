@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useState, useEffect, useRef } from "react";
 import { Send, MessageCircle, Brain, Info, Lightbulb, Check, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { MessageList } from "./MessageList";
@@ -19,10 +20,7 @@ export function AuthChat({ maxQuestions = 3, context }: AuthChatProps) {
   const [inputValue, setInputValue] = useState("");
   const [showGuide, setShowGuide] = useState(false);
   const [showFaq, setShowFaq] = useState(false);
-  const { sendMessage, isLoading, messages, questionsLeft } = useVictaureChat({ 
-    maxQuestions, 
-    context
-  });
+  const { sendMessage, isLoading, messages, questionsLeft } = useVictaureChat(); 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -38,13 +36,11 @@ export function AuthChat({ maxQuestions = 3, context }: AuthChatProps) {
   };
 
   useEffect(() => {
-    // Scroll to bottom when messages change
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages, showGuide, showFaq]);
 
-  // Common questions that users might have during registration
   const commonQuestions = [
     "Quelle est la différence entre un compte professionnel et entreprise ?",
     "Quels sont les avantages de créer un compte ?",
@@ -53,7 +49,6 @@ export function AuthChat({ maxQuestions = 3, context }: AuthChatProps) {
     "Quelles informations sont visibles sur mon profil public ?"
   ];
 
-  // Guide steps for registration
   const guideSteps = [
     {
       title: "Choisir votre type de compte",
@@ -97,7 +92,6 @@ export function AuthChat({ maxQuestions = 3, context }: AuthChatProps) {
       />
       
       <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#64B5D9]/10 scrollbar-track-transparent hover:scrollbar-thumb-[#64B5D9]/20 p-4 pt-2 space-y-4">
-        {/* Guide Section */}
         <AnimatePresence>
           {showGuide && (
             <motion.div
@@ -130,7 +124,6 @@ export function AuthChat({ maxQuestions = 3, context }: AuthChatProps) {
           )}
         </AnimatePresence>
 
-        {/* FAQ Section */}
         <AnimatePresence>
           {showFaq && (
             <motion.div
@@ -166,7 +159,6 @@ export function AuthChat({ maxQuestions = 3, context }: AuthChatProps) {
           )}
         </AnimatePresence>
 
-        {/* Messages List */}
         <MessageList messages={messages} />
             
         {messages.length === 0 && (
@@ -204,7 +196,6 @@ export function AuthChat({ maxQuestions = 3, context }: AuthChatProps) {
       </div>
           
       <div className="p-4 border-t border-[#F1F0FB]/10 space-y-4 bg-[#1B2A4A]/50">
-        {/* Helper buttons */}
         <div className="flex items-center justify-between">
           <div className="flex gap-2">
             <Button
