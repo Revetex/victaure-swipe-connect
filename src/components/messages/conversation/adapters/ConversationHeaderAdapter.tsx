@@ -1,6 +1,6 @@
 
 import { Receiver } from "@/types/messages";
-import { ConversationHeader } from "@/components/messages/conversation/components/ConversationHeader";
+import { ConversationHeader } from "../components/ConversationHeader";
 import { convertToBoolean } from "@/utils/marketplace";
 
 interface ConversationHeaderAdapterProps {

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Conversation } from '@/types/messages';
 import { safeToLowerCase } from '@/utils/marketplace';
@@ -31,7 +32,9 @@ export function CustomConversationList({
     
     // Use a safe method to get participant name to avoid type errors
     const participantName = conversation.participant?.full_name || conversation.full_name || '';
-    return safeToLowerCase(participantName).includes(safeToLowerCase(searchQuery));
+    const query = safeToLowerCase(searchQuery);
+    const name = safeToLowerCase(participantName);
+    return name.includes(query);
   });
   
   // Sort conversations: pinned first, then by most recent
