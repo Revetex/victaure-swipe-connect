@@ -1,15 +1,18 @@
 
 import { Route, Routes } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import { Loader } from "@/components/ui/loader";
 import { PrivateRoute } from "@/components/PrivateRoute";
 import { AuthCallback } from "@/components/AuthCallback";
+
+// Page Loading Component
+import { Loader } from "@/components/ui/loader";
 
 // Lazy loaded pages
 const Auth = lazy(() => import("@/pages/Auth"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Index = lazy(() => import("@/pages/Index"));
 const TermsPage = lazy(() => import("@/pages/legal/TermsPage"));
+/* Autres importations de pages */
 
 // Loading Fallback
 const LoadingFallback = () => (
@@ -37,6 +40,7 @@ export default function AppRoutes() {
             </PrivateRoute>
           }
         />
+        {/* Ajoutez d'autres routes protégées ici */}
         
         {/* 404 route - leave at the bottom */}
         <Route path="*" element={<div>Page introuvable</div>} />
