@@ -54,9 +54,21 @@ export function CustomMarketplaceList({
     prepareData();
   }, []);
 
-  // Utiliser notre hook personnalisé pour récupérer les annonces
+  // Update to pass searchQuery separately instead of in filters
   const { listings, isLoading, error, totalPages } = useListingSearch({ 
-    initialFilters: { ...filters, search: searchQuery } 
+    initialFilters: filters 
+  });
+
+  // Filter listings by type and search query after fetching
+  const filteredListings = listings.filter(listing => {
+    // Filter by type if not "all"
+    const typeMatch = type === "all" || listing.type === type;
+    // Filter by search query if provided
+    const searchMatch = !searchQuery || 
+      listing.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      listing.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return typeMatch && searchMatch;
   });
 
   // Afficher les erreurs si nécessaire
@@ -75,7 +87,7 @@ export function CustomMarketplaceList({
   return (
     <div className="space-y-6">
       <CustomListings 
-        items={listings}
+        items={filteredListings}
         isLoading={isLoading}
       />
       

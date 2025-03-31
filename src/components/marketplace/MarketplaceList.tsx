@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -46,8 +47,22 @@ export function MarketplaceList({
   onPageChange 
 }: MarketplaceListProps) {
   const [favorites, setFavorites] = useState<string[]>([]);
-  const { listings, isLoading, totalPages } = useListingSearch({
-    initialFilters: { ...filters, search: searchQuery }
+  
+  // Update to pass filters correctly
+  const { listings: allListings, isLoading, totalPages } = useListingSearch({
+    initialFilters: filters
+  });
+  
+  // Filter listings by type and search query
+  const listings = allListings.filter(listing => {
+    // Filter by type if not "all"
+    const typeMatch = type === "all" || listing.type === type;
+    // Filter by search query if provided
+    const searchMatch = !searchQuery || 
+      listing.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      listing.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return typeMatch && searchMatch;
   });
 
   useEffect(() => {

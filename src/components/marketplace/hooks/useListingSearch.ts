@@ -15,29 +15,55 @@ interface UseListingSearchResult {
   filters: MarketplaceFilters;
   setFilters: (filters: MarketplaceFilters) => void;
   refresh: () => Promise<void>;
-  totalPages?: number; // Add totalPages
-  loading?: boolean;  // Add loading for backward compatibility
+  totalPages: number;
+  loading: boolean; // Add loading for backward compatibility
 }
 
-export function useListingSearch({ initialFilters = {} }: UseListingSearchProps = {}): UseListingSearchResult {
+interface ExtendedFilters extends MarketplaceFilters {
+  search?: string;
+  location?: string;
+  category?: string;
+  min_price?: number | null;
+  max_price?: number | null;
+  sort_by?: string;
+  sort_order?: 'asc' | 'desc';
+}
+
+export function useListingSearch({ initialFilters = {} as MarketplaceFilters }: UseListingSearchProps = {}): UseListingSearchResult {
   const [listings, setListings] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<PostgrestError | null>(null);
-  const [totalPages, setTotalPages] = useState<number>(1); // Add totalPages state
-  const [filters, setFilters] = useState<MarketplaceFilters>({
-    search: '',
-    category: '',
-    location: '',
-    min_price: null,
-    max_price: null,
-    sort_by: 'created_at',
-    sort_order: 'desc',
+  const [totalPages, setTotalPages] = useState<number>(1);
+  
+  // Initialize with default values for the required properties
+  const defaultFilters: MarketplaceFilters = {
+    priceRange: [0, 10000],
+    sortBy: 'date',
+    sortOrder: 'desc',
     ...initialFilters
-  });
+  };
+  
+  const [filters, setFilters] = useState<MarketplaceFilters>(defaultFilters);
+  
+  // Create extended filters for internal use
+  const getExtendedFilters = (): ExtendedFilters => {
+    const extendedFilters: ExtendedFilters = {
+      ...filters,
+      // Map the MarketplaceFilters properties to the properties used in the query
+      search: filters.categories?.join(' ') || '',
+      min_price: filters.priceRange?.[0] || null,
+      max_price: filters.priceRange?.[1] || null,
+      sort_by: filters.sortBy === 'date' ? 'created_at' : filters.sortBy,
+      sort_order: filters.sortOrder
+    };
+    return extendedFilters;
+  };
 
   const fetchListings = useCallback(async () => {
     setIsLoading(true);
     setError(null);
+    
+    const extendedFilters = getExtendedFilters();
 
     let query = supabase
       .from('marketplace_listings')
@@ -46,37 +72,41 @@ export function useListingSearch({ initialFilters = {} }: UseListingSearchProps 
         profiles:user_id (id, full_name, avatar_url)
       `);
 
-    if (filters.search) {
-      query = query.ilike('title', `%${filters.search}%`);
+    if (extendedFilters.search) {
+      query = query.ilike('title', `%${extendedFilters.search}%`);
     }
 
-    if (filters.category) {
-      query = query.eq('category', filters.category);
+    // If we have categories from the filters, use them
+    if (extendedFilters.categories && extendedFilters.categories.length > 0 && extendedFilters.categories[0] !== '') {
+      query = query.in('category', extendedFilters.categories);
+    } else if (extendedFilters.category) {
+      // Legacy support for old category filter
+      query = query.eq('category', extendedFilters.category);
     }
 
-    if (filters.location) {
-      query = query.ilike('location', `%${filters.location}%`);
+    if (extendedFilters.location) {
+      query = query.ilike('location', `%${extendedFilters.location}%`);
     }
 
-    if (filters.min_price) {
-      query = query.gte('price', filters.min_price);
+    if (extendedFilters.min_price !== null && extendedFilters.min_price !== undefined) {
+      query = query.gte('price', extendedFilters.min_price);
     }
 
-    if (filters.max_price) {
-      query = query.lte('price', filters.max_price);
+    if (extendedFilters.max_price !== null && extendedFilters.max_price !== undefined) {
+      query = query.lte('price', extendedFilters.max_price);
     }
 
-    // Use type assertion to avoid deep type instantiation issue
-    const sortBy = filters.sort_by || 'created_at';
-    const sortOrder = { ascending: filters.sort_order === 'asc' };
+    // Use the mapped sorting properties
+    const sortBy = extendedFilters.sort_by || 'created_at';
+    const sortOrder = { ascending: extendedFilters.sort_order === 'asc' };
     
-    // Using type assertion to avoid TS2589 error
-    query = query.order(sortBy as string, sortOrder);
+    // Using as any to avoid TS2589 error
+    query = (query as any).order(sortBy, sortOrder);
 
-    const { data, error, count } = await query;
+    const { data, error: queryError, count } = await query;
 
-    if (error) {
-      setError(error);
+    if (queryError) {
+      setError(queryError);
     } else {
       setListings(data || []);
       
