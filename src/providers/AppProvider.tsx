@@ -1,7 +1,7 @@
 
 import { ReactNode } from 'react';
 import { VCardStyleProvider } from '@/components/vcard/VCardStyleContext';
-import { ReceiverProvider } from '@/hooks/useReceiver';
+import { ReceiverProvider } from '@/hooks/useReceiver.tsx'; // Spécifier l'extension .tsx
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from '@/components/ThemeProvider';
 

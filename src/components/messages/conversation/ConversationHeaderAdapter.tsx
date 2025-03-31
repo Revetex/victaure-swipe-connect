@@ -19,7 +19,10 @@ export function ConversationHeaderAdapter({ receiver, onBack }: ConversationHead
     name: receiver.full_name || receiver.username || "Unknown",
     avatar: receiver.avatar_url || "",
     isOnline,
-    receiver,
+    receiver: {
+      ...receiver,
+      online_status: isOnline // Ensure online_status is boolean
+    },
     onBack,
     onClose: onBack
   };

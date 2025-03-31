@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Message } from '@/types/messages';
+import { Message, Sender } from '@/types/messages';
 import { toast } from 'sonner';
 import { generateRandomId } from '@/utils/conversationUtils';
 
@@ -28,7 +28,29 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
           .order('created_at', { ascending: true });
 
         if (error) throw error;
-        setMessages(data || []);
+        
+        // Transformer les données pour s'assurer qu'elles correspondent à notre type Message
+        const formattedMessages = data ? data.map(msg => {
+          const senderData = msg.sender || {};
+          const sender: Sender = {
+            id: senderData.id || '',
+            full_name: senderData.full_name || null,
+            avatar_url: senderData.avatar_url || null,
+            username: senderData.username || ''
+          };
+          
+          return {
+            id: msg.id,
+            content: msg.content,
+            sender_id: msg.sender_id,
+            receiver_id: msg.receiver_id,
+            created_at: msg.created_at,
+            read: msg.read || false,
+            sender
+          } as Message;
+        }) : [];
+        
+        setMessages(formattedMessages);
       } catch (err) {
         console.error('Erreur lors du chargement des messages:', err);
         toast.error('Impossible de charger les messages');
@@ -46,7 +68,17 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
         { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` },
         (payload) => {
           if (payload.new) {
-            setMessages((current) => [...current, payload.new as Message]);
+            const newMsg = payload.new as any;
+            const messageWithSender: Message = {
+              ...newMsg,
+              sender: {
+                id: user.id,
+                full_name: user.user_metadata?.full_name || null,
+                avatar_url: user.user_metadata?.avatar_url || null,
+                username: user.user_metadata?.username || ''
+              }
+            };
+            setMessages((current) => [...current, messageWithSender]);
           }
         }
       )
@@ -131,7 +163,15 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
 
         // Remplacer le message optimiste par le vrai message
         setMessages((current) =>
-          current.map((msg) => (msg.id === optimisticId ? data : msg))
+          current.map((msg) => (msg.id === optimisticId ? {
+            ...data,
+            sender: {
+              id: user.id,
+              full_name: user.user_metadata?.full_name || null, 
+              avatar_url: user.user_metadata?.avatar_url || null,
+              username: user.user_metadata?.username || ''
+            }
+          } : msg))
         );
 
         return true;

@@ -25,6 +25,7 @@ export interface Sender {
   avatar_url: string | null;
   online_status?: boolean;
   username?: string;
+  email?: string;  // Ajout pour compatibilité
 }
 
 export interface Receiver {
@@ -41,6 +42,13 @@ export interface Receiver {
   city?: string | null;
   state?: string | null;
   country?: string | null;
+  latitude?: number;    // Ajout pour compatibilité
+  longitude?: number;   // Ajout pour compatibilité
+  skills?: string[];    // Ajout pour compatibilité
+  certifications?: any[]; // Ajout pour compatibilité
+  education?: any[];    // Ajout pour compatibilité
+  experiences?: any[];  // Ajout pour compatibilité
+  friends?: any[];      // Ajout pour compatibilité
 }
 
 export interface Conversation {

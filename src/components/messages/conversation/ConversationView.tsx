@@ -1,20 +1,20 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useReceiver } from "@/hooks/useReceiver";
+import { useReceiver } from "@/hooks/useReceiver.tsx";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, Smile, Image, Paperclip } from "lucide-react";
-import { Message } from "@/types/messages";
+import { Message, Sender } from "@/types/messages";
 import { supabase } from "@/integrations/supabase/client";
 import { ConversationHeaderAdapter } from "./ConversationHeaderAdapter";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import { getInitials } from "@/utils/userUtils";
+import { useChatMessages } from "@/hooks/useChatMessages";
 
 interface ConversationViewProps {
   onBack?: () => void;
@@ -23,18 +23,17 @@ interface ConversationViewProps {
 export function ConversationView({ onBack }: ConversationViewProps) {
   const { user } = useAuth();
   const { receiver } = useReceiver();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Utiliser notre hook personnalisé
+  const { messages, isLoading, sendMessage } = useChatMessages(conversationId, receiver?.id);
 
   // Récupérer ou créer une conversation
   useEffect(() => {
     if (!user || !receiver) return;
 
     const fetchOrCreateConversation = async () => {
-      setIsLoading(true);
       try {
         // Vérifier si une conversation existe déjà entre les deux utilisateurs
         let { data: conversation, error } = await supabase
@@ -61,81 +60,24 @@ export function ConversationView({ onBack }: ConversationViewProps) {
         }
 
         setConversationId(conversation.id);
-        
-        // Charger les messages de cette conversation
-        const { data: messagesData, error: messagesError } = await supabase
-          .from("messages")
-          .select("*, sender:sender_id(*)")
-          .eq("conversation_id", conversation.id)
-          .order("created_at", { ascending: true });
-
-        if (messagesError) throw messagesError;
-        setMessages(messagesData || []);
       } catch (err) {
         console.error("Erreur lors de la récupération/création de la conversation:", err);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchOrCreateConversation();
-
-    // Souscrire aux nouveaux messages
-    const channel = supabase
-      .channel(`conversation_${user.id}_${receiver.id}`)
-      .on("postgres_changes", 
-        { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` },
-        (payload) => {
-          // Ajouter le nouveau message à la liste des messages
-          if (payload.new) {
-            setMessages((prevMessages) => [...prevMessages, payload.new as Message]);
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user, receiver, conversationId]);
+  }, [user, receiver]);
 
   // Faites défiler jusqu'au dernier message après le chargement ou l'ajout de nouveaux messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const [newMessage, setNewMessage] = useState("");
+
   const handleSendMessage = async () => {
-    if (!user || !receiver || !newMessage.trim() || !conversationId) return;
-
-    try {
-      const { data, error } = await supabase
-        .from("messages")
-        .insert([
-          {
-            conversation_id: conversationId,
-            content: newMessage.trim(),
-            sender_id: user.id,
-            receiver_id: receiver.id,
-          },
-        ])
-        .select("*, sender:sender_id(*)")
-        .single();
-
-      if (error) throw error;
-
-      // Mettre à jour le dernier message dans la conversation
-      await supabase
-        .from("conversations")
-        .update({
-          last_message: newMessage.trim(),
-          last_message_time: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", conversationId);
-
+    if (await sendMessage(newMessage)) {
       setNewMessage("");
-    } catch (err) {
-      console.error("Erreur lors de l'envoi du message:", err);
     }
   };
 

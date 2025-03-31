@@ -1,107 +1,25 @@
 
 import React, { useState, useEffect } from "react";
-import { useReceiver } from "@/hooks/useReceiver";
+import { useReceiver } from "@/hooks/useReceiver.tsx";
 import { Card } from "@/components/ui/card";
 import { ConversationView } from "./conversation/ConversationView";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { motion } from "framer-motion";
 import { CustomConversationList } from "./CustomConversationList";
-import { Conversation, Receiver } from "@/types/messages";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { toast } from "sonner";
+import { useConversations } from "@/hooks/useConversations";
 
 export function MessagesContainer() {
   const { receiver, showConversation, setReceiver } = useReceiver();
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const { user } = useAuth();
-  
-  const [conversations, setConversations] = useState<Conversation[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Chargement des conversations
-  useEffect(() => {
-    if (!user) return;
-    
-    const fetchConversations = async () => {
-      setIsLoading(true);
-      try {
-        // Récupérer toutes les conversations de l'utilisateur
-        const { data, error } = await supabase
-          .from('conversations')
-          .select('*')
-          .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
-          .order('updated_at', { ascending: false });
-        
-        if (error) {
-          toast.error("Erreur lors du chargement des conversations");
-          return;
-        }
-        
-        if (!data || data.length === 0) {
-          setConversations([]);
-          return;
-        }
-        
-        // Traiter chaque conversation pour obtenir les détails du participant
-        const processedConversations = await Promise.all(
-          data.map(async (conv) => {
-            const isParticipant1 = conv.participant1_id === user.id;
-            const participantId = isParticipant1 ? conv.participant2_id : conv.participant1_id;
-            
-            // Récupérer les informations du profil de l'autre participant
-            const { data: profileData } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', participantId)
-              .single();
-            
-            return {
-              ...conv,
-              participant: profileData ? {
-                id: profileData.id,
-                full_name: profileData.full_name || 'Unknown',
-                avatar_url: profileData.avatar_url,
-                online_status: !!profileData.online_status,
-                role: profileData.role || 'professional',
-                username: profileData.username || profileData.full_name || '',
-              } as Receiver : undefined
-            } as Conversation;
-          })
-        );
-        
-        setConversations(processedConversations);
-      } catch (err) {
-        console.error('Error processing conversations:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchConversations();
-    
-    // Souscription aux nouvelles conversations
-    const channel = supabase
-      .channel('conversations_changes')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'conversations' },
-        payload => {
-          // Actualiser les conversations lors d'un changement
-          fetchConversations();
-        }
-      )
-      .subscribe();
-      
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user?.id]);
+  
+  // Utiliser notre hook personnalisé
+  const { conversations, isLoading } = useConversations();
 
   // Sélection d'une conversation
-  const handleSelectConversation = (conversation: Conversation) => {
+  const handleSelectConversation = (conversation: any) => {
     setSelectedConversationId(conversation.id);
     if (conversation.participant) {
       setReceiver(conversation.participant);
