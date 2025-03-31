@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { useListingSearch } from "./hooks/useListingSearch";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { CustomListings } from "./CustomListings"; 
-import { adaptListingData } from "@/utils/marketplace";
 
 interface CustomMarketplaceListProps {
   type: "all" | "vente" | "location" | "service";
@@ -56,13 +55,9 @@ export function CustomMarketplaceList({
   }, []);
 
   // Utiliser notre hook personnalisé pour récupérer les annonces
-  const { listings, loading, error, totalPages } = useListingSearch(
-    searchQuery,
-    filters,
-    type,
-    page,
-    12
-  );
+  const { listings, isLoading, error, totalPages } = useListingSearch({ 
+    initialFilters: { ...filters, search: searchQuery } 
+  });
 
   // Afficher les erreurs si nécessaire
   useEffect(() => {
@@ -81,10 +76,10 @@ export function CustomMarketplaceList({
     <div className="space-y-6">
       <CustomListings 
         items={listings}
-        isLoading={loading}
+        isLoading={isLoading}
       />
       
-      {totalPages > 1 && (
+      {totalPages && totalPages > 1 && (
         <Pagination>
           <PaginationContent>
             <PaginationItem>

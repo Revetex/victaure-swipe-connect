@@ -1,27 +1,30 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { SearchFilters } from '@/types/marketplace';
+import { MarketplaceFilters } from '@/types/marketplace';
 import { PostgrestError } from '@supabase/supabase-js';
 
 interface UseListingSearchProps {
-  initialFilters?: SearchFilters;
+  initialFilters?: MarketplaceFilters;
 }
 
 interface UseListingSearchResult {
   listings: any[];
   isLoading: boolean;
   error: PostgrestError | null;
-  filters: SearchFilters;
-  setFilters: (filters: SearchFilters) => void;
+  filters: MarketplaceFilters;
+  setFilters: (filters: MarketplaceFilters) => void;
   refresh: () => Promise<void>;
+  totalPages?: number; // Add totalPages
+  loading?: boolean;  // Add loading for backward compatibility
 }
 
 export function useListingSearch({ initialFilters = {} }: UseListingSearchProps = {}): UseListingSearchResult {
   const [listings, setListings] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<PostgrestError | null>(null);
-  const [filters, setFilters] = useState<SearchFilters>({
+  const [totalPages, setTotalPages] = useState<number>(1); // Add totalPages state
+  const [filters, setFilters] = useState<MarketplaceFilters>({
     search: '',
     category: '',
     location: '',
@@ -63,16 +66,24 @@ export function useListingSearch({ initialFilters = {} }: UseListingSearchProps 
       query = query.lte('price', filters.max_price);
     }
 
-    // Simple fix to avoid deep type instantiation
+    // Use type assertion to avoid deep type instantiation issue
     const sortBy = filters.sort_by || 'created_at';
-    query = query.order(sortBy, { ascending: filters.sort_order === 'asc' });
+    const sortOrder = { ascending: filters.sort_order === 'asc' };
+    
+    // Using type assertion to avoid TS2589 error
+    query = query.order(sortBy as string, sortOrder);
 
-    const { data, error } = await query;
+    const { data, error, count } = await query;
 
     if (error) {
       setError(error);
     } else {
       setListings(data || []);
+      
+      // Calculate totalPages based on count (if paginated query)
+      if (count) {
+        setTotalPages(Math.ceil(count / 10)); // Assuming 10 items per page
+      }
     }
 
     setIsLoading(false);
@@ -92,6 +103,9 @@ export function useListingSearch({ initialFilters = {} }: UseListingSearchProps 
     error,
     filters,
     setFilters,
-    refresh
+    refresh,
+    // Add these properties for backward compatibility
+    loading: isLoading,
+    totalPages
   };
 }

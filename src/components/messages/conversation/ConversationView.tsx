@@ -8,9 +8,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 interface ConversationViewProps {
   conversationId: string;
   viewerId: string;
+  onBack?: () => void; // Add onBack prop
 }
 
-export function ConversationView({ conversationId, viewerId }: ConversationViewProps) {
+export function ConversationView({ conversationId, viewerId, onBack }: ConversationViewProps) {
   const { messages, isLoading, error, refresh } = useChatMessages(conversationId);
 
   // Auto-scroll to bottom on new messages

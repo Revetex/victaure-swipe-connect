@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -47,11 +46,10 @@ export function MarketplaceList({
   onPageChange 
 }: MarketplaceListProps) {
   const [favorites, setFavorites] = useState<string[]>([]);
-  const { listings, loading, totalPages } = useListingSearch(
-    searchQuery, filters, type, page
-  );
+  const { listings, isLoading, totalPages } = useListingSearch({
+    initialFilters: { ...filters, search: searchQuery }
+  });
 
-  // Charger les favoris de l'utilisateur connecté
   useEffect(() => {
     const fetchFavorites = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -201,7 +199,7 @@ export function MarketplaceList({
     toast.info(`Visualisation de "${listing.title}"`);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Section>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
