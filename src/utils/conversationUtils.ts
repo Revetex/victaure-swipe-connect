@@ -1,94 +1,135 @@
-import { Conversation, Message, Receiver } from "@/types/messages";
-import { format, formatDistance } from "date-fns";
-import { fr } from "date-fns/locale";
+
+import { Message, Conversation, Sender, Receiver } from "@/types/messages";
+import { UserProfile } from "@/types/profile";
+import { convertToBoolean } from "./marketplace";
+import { format } from "date-fns";
 
 /**
- * Format a timestamp for display in conversation lists
+ * Transforme un message brut en format utilisable par l'interface
  */
-export function formatConversationTime(timestamp: string | null): string {
-  if (!timestamp) return "";
+export function formatMessage(message: any): Message {
+  if (!message) return {} as Message;
   
-  const date = new Date(timestamp);
-  const now = new Date();
-  
-  // If today, just show time
-  if (date.toDateString() === now.toDateString()) {
-    return format(date, "HH:mm");
-  }
-  
-  // If this week, show day name
-  const diffDays = Math.round((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-  if (diffDays < 7) {
-    return format(date, "EEEE", { locale: fr });
-  }
-  
-  // Otherwise show date
-  return format(date, "dd/MM/yyyy");
-}
-
-/**
- * Create a conversation object from a receiver
- */
-export function createConversationFromReceiver(
-  receiver: Receiver,
-  lastMessage?: string,
-  timestamp?: string
-): Conversation {
   return {
-    id: `conv-${receiver.id}`,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    sender_id: "user",
-    receiver_id: receiver.id,
-    last_message: lastMessage,
-    timestamp: timestamp,
-    full_name: receiver.full_name || "",
-    avatar_url: receiver.avatar_url || "",
-    participant: receiver,
-    unread: false,
-    // Don't add isPinned as it's not in Conversation type
+    id: message.id || generateRandomId(),
+    content: message.content || "",
+    sender_id: message.sender_id || null,
+    receiver_id: message.receiver_id || "",
+    created_at: message.created_at || new Date().toISOString(),
+    read: message.read || false,
+    sender: message.sender || null,
+    message_type: message.message_type || "text",
   };
 }
 
 /**
- * Format the relative time (like "5 minutes ago")
+ * Transforme un profil utilisateur en expéditeur de message
  */
-export function formatRelativeTime(timestamp: string | null): string {
-  if (!timestamp) return "";
+export function userProfileToSender(profile: UserProfile | null): Sender | null {
+  if (!profile) return null;
+  
+  return {
+    id: profile.id || "",
+    full_name: profile.full_name || "",
+    avatar_url: profile.avatar_url || null,
+    online_status: convertToBoolean(profile.online_status),
+    username: profile.username || profile.full_name || ""
+  };
+}
+
+/**
+ * Normalise les données de conversation
+ */
+export function normalizeConversation(conversation: any): Conversation {
+  return {
+    id: conversation.id || "",
+    participant1_id: conversation.participant1_id || "",
+    participant2_id: conversation.participant2_id || "",
+    last_message: conversation.last_message || "",
+    last_message_time: conversation.last_message_time || conversation.updated_at || "",
+    created_at: conversation.created_at || new Date().toISOString(),
+    updated_at: conversation.updated_at || new Date().toISOString(),
+    participant: conversation.participant || null,
+    unread_count: conversation.unread_count || 0,
+  };
+}
+
+/**
+ * Génère un ID aléatoire pour les nouveaux messages
+ */
+export function generateRandomId(): string {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+
+/**
+ * Transforme un profil utilisateur en récepteur de message
+ */
+export function userProfileToReceiver(profile: UserProfile | null): Receiver | null {
+  if (!profile) return null;
+  
+  return {
+    id: profile.id || "",
+    full_name: profile.full_name || "",
+    avatar_url: profile.avatar_url || null,
+    online_status: convertToBoolean(profile.online_status),
+    role: profile.role || "professional",
+    username: profile.username || profile.full_name || "",
+    email: profile.email || "",
+    last_seen: profile.last_seen || null,
+  };
+}
+
+/**
+ * Trie les conversations par date de dernier message
+ */
+export function sortConversationsByDate(a: Conversation, b: Conversation): number {
+  const dateA = a.last_message_time || a.updated_at;
+  const dateB = b.last_message_time || b.updated_at;
+  
+  if (!dateA) return 1;
+  if (!dateB) return -1;
+  
+  return new Date(dateB).getTime() - new Date(dateA).getTime();
+}
+
+/**
+ * Formate une date au format relatif (aujourd'hui, hier, etc.)
+ */
+export function getRelativeTime(dateString: string): string {
+  if (!dateString) return "";
   
   try {
-    return formatDistance(new Date(timestamp), new Date(), {
-      addSuffix: true,
-      locale: fr
-    });
-  } catch (e) {
-    console.error("Error formatting date:", e);
+    const date = new Date(dateString);
+    const now = new Date();
+    
+    // Aujourd'hui
+    if (date.toDateString() === now.toDateString()) {
+      return format(date, "HH:mm");
+    }
+    
+    // Hier
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (date.toDateString() === yesterday.toDateString()) {
+      return "Hier";
+    }
+    
+    // Cette semaine
+    const sixDaysAgo = new Date(now);
+    sixDaysAgo.setDate(sixDaysAgo.getDate() - 6);
+    if (date >= sixDaysAgo) {
+      return format(date, "EEE"); // Jour de la semaine abrégé
+    }
+    
+    // Cette année
+    if (date.getFullYear() === now.getFullYear()) {
+      return format(date, "d MMM");
+    }
+    
+    // Années précédentes
+    return format(date, "dd/MM/yyyy");
+  } catch (error) {
+    console.error("Erreur de formatage de date:", error);
     return "";
   }
-}
-
-/**
- * Get last message preview text
- */
-export function getMessagePreview(message: string, maxLength: number = 30): string {
-  if (!message) return "";
-  
-  if (message.length <= maxLength) return message;
-  
-  return `${message.substring(0, maxLength)}...`;
-}
-
-/**
- * Sort conversations by timestamp
- */
-export function sortConversationsByTime(conversations: Conversation[]): Conversation[] {
-  return [...conversations].sort((a, b) => {
-    const timeA = a.timestamp || a.updated_at;
-    const timeB = b.timestamp || b.updated_at;
-    
-    if (!timeA) return 1;
-    if (!timeB) return -1;
-    
-    return new Date(timeB).getTime() - new Date(timeA).getTime();
-  });
 }

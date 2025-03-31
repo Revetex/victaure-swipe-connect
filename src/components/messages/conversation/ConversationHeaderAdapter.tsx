@@ -19,11 +19,7 @@ export function ConversationHeaderAdapter({ receiver, onBack }: ConversationHead
     name: receiver.full_name || receiver.username || "Unknown",
     avatar: receiver.avatar_url || "",
     isOnline,
-    receiver: {
-      ...receiver,
-      // Ensure role is compatible with UserProfile's role type
-      role: (receiver.role || 'professional') as any
-    },
+    receiver,
     onBack,
     onClose: onBack
   };
