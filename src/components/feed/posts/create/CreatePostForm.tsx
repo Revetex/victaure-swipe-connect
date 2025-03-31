@@ -16,15 +16,15 @@ export function CreatePostForm({
   privacy,
   onPrivacyChange,
   attachments,
-  isUploading,
+  isLoading = false,
+  isUploading = false,
   onFileChange,
   onRemoveFile,
   onCreatePost,
   onClose,
   isExpanded = false,
-  onSubmit, // Added to match the prop signature
-  setAttachments, // Added to match the prop signature
-  isLoading // Added to match the prop signature
+  onSubmit,
+  setAttachments
 }: CreatePostFormProps) {
   const isMobile = useIsMobile();
   const [isExpandedInternal, setIsExpandedInternal] = useState(isExpanded);
@@ -76,7 +76,7 @@ export function CreatePostForm({
 
           <AnimatePresence>
             {attachments.length > 0 && (
-              <FilePreview files={attachments} onRemove={onRemoveFile} />
+              <FilePreview files={attachments} onRemove={onRemoveFile || (() => {})} />
             )}
           </AnimatePresence>
 

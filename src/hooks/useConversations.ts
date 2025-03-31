@@ -57,7 +57,8 @@ export function useConversations() {
               avatar_url: profileData.avatar_url,
               online_status: !!profileData.online_status,
               role: profileData.role || 'professional',
-              username: profileData.username || profileData.full_name || '',
+              // We'll set username based on available data
+              username: profileData.full_name || profileData.id.substring(0, 8)
             } : undefined;
             
             return {
@@ -140,7 +141,8 @@ export function useConversations() {
           avatar_url: profileData.avatar_url,
           online_status: !!profileData.online_status,
           role: profileData.role || 'professional',
-          username: profileData.username || profileData.full_name || '',
+          // We'll set username based on available data
+          username: profileData.full_name || profileData.id.substring(0, 8)
         };
         
         const newConversation: Conversation = {

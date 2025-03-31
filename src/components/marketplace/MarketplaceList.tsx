@@ -57,18 +57,22 @@ export function MarketplaceList({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from('marketplace_favorites')
-        .select('listing_id')
-        .eq('user_id', user.id);
+      try {
+        const { data, error } = await supabase
+          .from('marketplace_favorites')
+          .select('item_id')  // Changed from listing_id to item_id based on error
+          .eq('user_id', user.id);
 
-      if (error) {
-        console.error('Error fetching favorites:', error);
-        return;
-      }
+        if (error) {
+          console.error('Error fetching favorites:', error);
+          return;
+        }
 
-      if (data) {
-        setFavorites(data.map(fav => fav.listing_id));
+        if (data) {
+          setFavorites(data.map(fav => fav.item_id));  // Use item_id instead of listing_id
+        }
+      } catch (err) {
+        console.error('Error in fetchFavorites:', err);
       }
     };
 
@@ -91,7 +95,7 @@ export function MarketplaceList({
           .from('marketplace_favorites')
           .delete()
           .eq('user_id', user.id)
-          .eq('listing_id', listingId);
+          .eq('item_id', listingId);  // Use item_id instead of listing_id
 
         if (error) throw error;
 
@@ -101,7 +105,10 @@ export function MarketplaceList({
         // Ajouter aux favoris
         const { error } = await supabase
           .from('marketplace_favorites')
-          .insert({ user_id: user.id, listing_id: listingId });
+          .insert({ 
+            user_id: user.id, 
+            item_id: listingId  // Use item_id instead of listing_id
+          });
 
         if (error) throw error;
 
@@ -116,8 +123,14 @@ export function MarketplaceList({
 
   const incrementViews = async (listingId: string) => {
     try {
-      // Appeler la fonction RPC pour incrémenter les vues
-      await supabase.rpc('increment_listing_views', { listing_id: listingId });
+      // Check if the function exists and adjust parameters as needed
+      const userId = (await supabase.auth.getUser()).data.user?.id || "anonymous";
+      
+      // Adjust call based on actual function signature
+      await supabase.rpc('increment_listing_views', { 
+        listing_id: listingId,
+        viewer_id: userId
+      });
     } catch (error) {
       console.error('Error incrementing views:', error);
     }

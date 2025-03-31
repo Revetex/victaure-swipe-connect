@@ -6,20 +6,20 @@ export interface CreatePostProps {
 }
 
 export interface CreatePostFormProps {
-  attachments: PostAttachment[];
-  setAttachments: React.Dispatch<React.SetStateAction<PostAttachment[]>>;
-  isLoading: boolean;
-  onSubmit: (content: string, privacyLevel: "public" | "connections") => Promise<void>;
   newPost: string;
   onPostChange: (value: string) => void;
   privacy: PostPrivacyLevel;
   onPrivacyChange: (value: PostPrivacyLevel) => void;
-  onCreatePost: () => void;
-  onClose: () => void;
+  attachments: PostAttachment[];
+  setAttachments?: React.Dispatch<React.SetStateAction<PostAttachment[]>>;
+  isLoading?: boolean;
+  isUploading?: boolean;
   onFileChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRemoveFile?: (index: number) => void;
+  onCreatePost: () => void;
+  onClose: () => void;
   isExpanded?: boolean;
-  isUploading?: boolean;
+  onSubmit?: (content: string, privacyLevel: PostPrivacyLevel) => Promise<void>;
 }
 
 export interface PostAttachment {

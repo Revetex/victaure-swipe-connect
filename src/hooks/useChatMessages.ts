@@ -23,7 +23,7 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
       try {
         const { data, error } = await supabase
           .from('messages')
-          .select('*, sender:sender_id(*)')
+          .select('*, sender:profiles(id, full_name, avatar_url, username)')
           .eq('conversation_id', conversationId)
           .order('created_at', { ascending: true });
 
@@ -71,12 +71,12 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
             const newMsg = payload.new as any;
             const messageWithSender: Message = {
               ...newMsg,
-              sender: {
+              sender: user ? {
                 id: user.id,
                 full_name: user.user_metadata?.full_name || null,
                 avatar_url: user.user_metadata?.avatar_url || null,
                 username: user.user_metadata?.username || ''
-              }
+              } : null
             };
             setMessages((current) => [...current, messageWithSender]);
           }
@@ -118,6 +118,8 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
 
       // Message optimiste pour UI
       const optimisticId = generateRandomId();
+      const userMeta = user.user_metadata || {};
+      
       const optimisticMessage: Message = {
         id: optimisticId,
         content,
@@ -127,9 +129,9 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
         read: false,
         sender: {
           id: user.id,
-          full_name: user.user_metadata?.full_name || null,
-          avatar_url: user.user_metadata?.avatar_url || null,
-          username: user.user_metadata?.username || user.user_metadata?.full_name || ''
+          full_name: userMeta.full_name || null,
+          avatar_url: userMeta.avatar_url || null,
+          username: userMeta.username || userMeta.full_name || ''
         }
       };
 
@@ -146,7 +148,7 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
               content: content.trim()
             }
           ])
-          .select('*, sender:sender_id(*)')
+          .select('*, sender:profiles(id, full_name, avatar_url, username)')
           .single();
 
         if (error) throw error;
@@ -167,9 +169,9 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
             ...data,
             sender: {
               id: user.id,
-              full_name: user.user_metadata?.full_name || null, 
-              avatar_url: user.user_metadata?.avatar_url || null,
-              username: user.user_metadata?.username || ''
+              full_name: userMeta.full_name || null, 
+              avatar_url: userMeta.avatar_url || null,
+              username: userMeta.username || ''
             }
           } : msg))
         );

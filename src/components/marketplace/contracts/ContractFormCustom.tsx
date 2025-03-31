@@ -116,7 +116,6 @@ export function ContractFormCustom({
               <Input
                 id="title"
                 {...field}
-                error={errors.title?.message}
               />
             )}
           />
@@ -135,7 +134,6 @@ export function ContractFormCustom({
               <Textarea
                 id="description"
                 {...field}
-                error={errors.description?.message}
               />
             )}
           />
@@ -155,10 +153,8 @@ export function ContractFormCustom({
                 <Input
                   id="budget_min"
                   type="number"
-                  {...field}
                   value={field.value || ""}
                   onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                  error={errors.budget_min?.message}
                 />
               )}
             />
@@ -176,10 +172,8 @@ export function ContractFormCustom({
                 <Input
                   id="budget_max"
                   type="number"
-                  {...field}
                   value={field.value || ""}
                   onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                  error={errors.budget_max?.message}
                 />
               )}
             />

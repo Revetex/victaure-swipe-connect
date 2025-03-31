@@ -1,9 +1,7 @@
 
-import { useState, useEffect, useCallback } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Post } from '../types';
-import { ensureStringLiteral } from '@/utils/marketplace';
 
 interface UsePostsQueryProps {
   filter: string;
@@ -85,32 +83,22 @@ export function usePostsQuery({
       if (error) throw error;
 
       // Process the data to ensure it conforms to Post type
-      const processedPosts: Post[] = (data || []).map(post => ({
+      const processedPosts = data?.map((post: any) => ({
         ...post,
-        comments: (post.comments || []).map(comment => ({
+        comments: (post.comments || []).map((comment: any) => ({
           ...comment,
           post_id: comment.post_id || post.id // Ensure post_id is present
         })),
         user: post.profiles,
-        reactions: (post.reactions || []).map(reaction => ({
-          ...reaction,
-          // Ensure reaction_type is one of the allowed values
-          reaction_type: ensureStringLiteral(
-            reaction.reaction_type, 
-            ["like", "dislike"] as const, 
-            "like"
-          )
-        })),
+        reactions: (post.reactions || []),
         // Ensure privacy_level is one of the allowed values
-        privacy_level: ensureStringLiteral(
-          post.privacy_level, 
-          ["public", "connections"] as const, 
-          "public"
-        )
-      }));
+        privacy_level: (post.privacy_level === 'public' || post.privacy_level === 'connections') 
+          ? post.privacy_level 
+          : 'public'
+      })) as Post[];
 
       return {
-        posts: processedPosts,
+        posts: processedPosts || [],
         nextPage: data?.length === limit ? pageParam + 1 : null,
         totalCount: count || 0
       };

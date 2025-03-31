@@ -2,7 +2,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { CreatePostForm } from "./posts/create/CreatePostForm";
-import { PostList } from "./posts/PostList";
+import { PostList } from "./PostList";
 import { PostFilters } from "./posts/sections/PostFilters";
 import { useState, useEffect, useRef } from "react";
 import { PostAttachment, PostPrivacyLevel } from "./posts/types";
@@ -35,6 +35,7 @@ export function Feed() {
   const [newPost, setNewPost] = useState("");
   const [privacy, setPrivacy] = useState<PostPrivacyLevel>("public");
   const [attachments, setAttachments] = useState<PostAttachment[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
@@ -81,6 +82,43 @@ export function Feed() {
     setIsExpanded(false);
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const newAttachments: PostAttachment[] = Array.from(files).map(file => ({
+        file,
+        preview: URL.createObjectURL(file)
+      }));
+      setAttachments(prev => [...prev, ...newAttachments]);
+    }
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setAttachments(prev => {
+      const newAttachments = [...prev];
+      URL.revokeObjectURL(newAttachments[index].preview);
+      newAttachments.splice(index, 1);
+      return newAttachments;
+    });
+  };
+
+  const handleSubmit = async (content: string, privacyLevel: PostPrivacyLevel) => {
+    // This function would normally submit the post to the backend
+    // For now it's just a placeholder that works with the props
+    setIsLoading(true);
+    try {
+      console.log("Submitting post:", { content, privacyLevel, attachments });
+      // Wait for a short time to simulate network request
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setNewPost("");
+      setAttachments([]);
+    } catch (err) {
+      console.error("Error submitting post:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className={`bg-transparent theme-${themeStyle}`}>
       {/* Header avec effet de transition d'opacité lors du défilement */}
@@ -118,10 +156,15 @@ export function Feed() {
                     privacy={privacy} 
                     onPrivacyChange={handlePrivacyChange} 
                     attachments={attachments} 
-                    isUploading={isUploading} 
-                    onCreatePost={handleCreatePost} 
+                    isUploading={isUploading}
+                    isLoading={isLoading}
+                    onCreatePost={handleCreatePost}
                     onClose={() => setIsExpanded(false)} 
-                    isExpanded={isExpanded} 
+                    isExpanded={isExpanded}
+                    onSubmit={handleSubmit}
+                    setAttachments={setAttachments}
+                    onFileChange={handleFileChange}
+                    onRemoveFile={handleRemoveFile}
                   />
                 )}
                 

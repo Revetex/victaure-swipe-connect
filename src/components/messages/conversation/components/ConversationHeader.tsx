@@ -20,13 +20,13 @@ export function ConversationHeader({
   // Convert receiver to UserProfile type to pass to ProfilePreviewCard
   const receiverAsProfile: UserProfile = {
     id: receiver.id,
-    full_name: receiver.full_name,
+    full_name: receiver.full_name || null,
     avatar_url: receiver.avatar_url,
-    email: receiver.email,
-    bio: receiver.bio,
+    email: receiver.email || '',
+    bio: receiver.bio || '',
     role: ensureValidUserRole(receiver.role), // Ensure role is a valid UserRole
-    online_status: isOnline,
-    username: receiver.username
+    online_status: typeof receiver.online_status === 'boolean' ? receiver.online_status : false,
+    username: receiver.username || ''
   };
 
   return (
