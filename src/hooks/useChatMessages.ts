@@ -31,12 +31,14 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
         
         // Transformer les données pour s'assurer qu'elles correspondent à notre type Message
         const formattedMessages = data ? data.map(msg => {
+          // Ensure sender is properly typed
           const senderData = msg.sender || {};
           const sender: Sender = {
             id: senderData.id || '',
             full_name: senderData.full_name || null,
             avatar_url: senderData.avatar_url || null,
-            username: senderData.username || ''
+            username: senderData.username || '',
+            email: senderData.email || ''
           };
           
           return {
@@ -69,15 +71,20 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
         (payload) => {
           if (payload.new) {
             const newMsg = payload.new as any;
+            
+            // Create a properly typed sender
+            const sender: Sender = {
+              id: user.id,
+              full_name: user.user_metadata?.full_name || null,
+              avatar_url: user.user_metadata?.avatar_url || null,
+              username: user.user_metadata?.username || ''
+            };
+            
             const messageWithSender: Message = {
               ...newMsg,
-              sender: user ? {
-                id: user.id,
-                full_name: user.user_metadata?.full_name || null,
-                avatar_url: user.user_metadata?.avatar_url || null,
-                username: user.user_metadata?.username || ''
-              } : null
+              sender
             };
+            
             setMessages((current) => [...current, messageWithSender]);
           }
         }
@@ -120,6 +127,14 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
       const optimisticId = generateRandomId();
       const userMeta = user.user_metadata || {};
       
+      // Create a properly typed sender
+      const sender: Sender = {
+        id: user.id,
+        full_name: userMeta.full_name || null,
+        avatar_url: userMeta.avatar_url || null,
+        username: userMeta.username || userMeta.full_name || ''
+      };
+      
       const optimisticMessage: Message = {
         id: optimisticId,
         content,
@@ -127,12 +142,7 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
         receiver_id: receiverId,
         created_at: new Date().toISOString(),
         read: false,
-        sender: {
-          id: user.id,
-          full_name: userMeta.full_name || null,
-          avatar_url: userMeta.avatar_url || null,
-          username: userMeta.username || userMeta.full_name || ''
-        }
+        sender
       };
 
       setMessages((current) => [...current, optimisticMessage]);
@@ -167,12 +177,7 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
         setMessages((current) =>
           current.map((msg) => (msg.id === optimisticId ? {
             ...data,
-            sender: {
-              id: user.id,
-              full_name: userMeta.full_name || null, 
-              avatar_url: userMeta.avatar_url || null,
-              username: userMeta.username || ''
-            }
+            sender
           } : msg))
         );
 

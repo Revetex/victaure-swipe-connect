@@ -26,7 +26,11 @@ export function ConversationHeader({
     bio: receiver.bio || '',
     role: ensureValidUserRole(receiver.role), // Ensure role is a valid UserRole
     online_status: typeof receiver.online_status === 'boolean' ? receiver.online_status : false,
-    username: receiver.username || ''
+    username: receiver.username || '',
+    phone: receiver.phone || null,
+    city: receiver.city || null,
+    state: receiver.state || null,
+    country: receiver.country || null
   };
 
   return (

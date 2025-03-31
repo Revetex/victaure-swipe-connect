@@ -79,16 +79,17 @@ export function useListingSearch(
 
       if (data) {
         // Transform the data to match the ExtendedMarketplaceListing type
-        const formattedListings = data.map(item => adaptListingData(item) as ExtendedMarketplaceListing);
+        const formattedListings = data.map(item => adaptListingData(item));
         
         // Apply client-side sorting for seller rating if needed
-        const sortedListings = sortBy === 'rating' 
-          ? formattedListings.sort((a, b) => {
-              const aRating = a.seller?.rating || 0;
-              const bRating = b.seller?.rating || 0;
-              return sortOrder === 'asc' ? aRating - bRating : bRating - aRating;
-            })
-          : formattedListings;
+        let sortedListings = formattedListings;
+        if (sortBy === 'rating') {
+          sortedListings = formattedListings.sort((a, b) => {
+            const aRating = a.seller?.rating || 0;
+            const bRating = b.seller?.rating || 0;
+            return sortOrder === 'asc' ? aRating - bRating : bRating - aRating;
+          });
+        }
           
         setListings(sortedListings);
         

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,7 +11,7 @@ import { formatDistance } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useThemeContext } from "@/components/ThemeProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { UserRole } from "@/types/messages";
+import { UserRole } from "@/types/profile";
 
 interface ConversationParticipant {
   id: string;
@@ -41,7 +40,6 @@ export function ConversationList() {
   const { isDark } = useThemeContext();
   const isMobile = useIsMobile();
 
-  // Chargement des conversations
   useEffect(() => {
     if (!user) return;
 
@@ -49,7 +47,6 @@ export function ConversationList() {
       try {
         setIsLoading(true);
         
-        // Récupération des conversations via les tables standards
         const { data, error } = await supabase
           .from('user_conversations')
           .select(`
@@ -68,12 +65,9 @@ export function ConversationList() {
 
         if (error) throw error;
         
-        // Transforme les données pour notre format de conversation
         const transformedData: Conversation[] = (data || []).map(conversation => {
-          // Détermine l'autre participant (pas l'utilisateur courant)
           const isParticipant1 = conversation.participant1_id === user.id;
           
-          // Accéder aux profils via l'array
           const profiles1 = Array.isArray(conversation.profiles) 
             ? conversation.profiles.filter(p => p.id === conversation.participant1_id)[0] 
             : null;
@@ -86,9 +80,7 @@ export function ConversationList() {
           
           if (!otherParticipantData) return null;
           
-          // Calcule le nombre de messages non lus
-          // Logique simplifiée - à compléter avec une requête plus précise pour les non-lus
-          const unreadCount = 0; // À remplacer par la logique réelle
+          const unreadCount = 0;
           
           return {
             id: conversation.id,
@@ -112,7 +104,6 @@ export function ConversationList() {
 
     loadConversations();
 
-    // On écoute les changements sur les conversations
     const channel = supabase
       .channel('messages-changes')
       .on(
@@ -124,7 +115,6 @@ export function ConversationList() {
           filter: `or(sender_id.eq.${user.id},receiver_id.eq.${user.id})`
         },
         () => {
-          // Quand un message est ajouté ou modifié, on recharge les conversations
           loadConversations();
         }
       )
@@ -142,7 +132,6 @@ export function ConversationList() {
 
   const handleSelectConversation = async (conversation: Conversation) => {
     try {
-      // Récupérer le profil complet
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
@@ -173,10 +162,9 @@ export function ConversationList() {
           last_seen: profile.last_seen,
           latitude: profile.latitude,
           longitude: profile.longitude,
-          // Adapter les champs pour correspondre aux propriétés réelles de la DB
-          certifications: [], // Initialiser avec des tableaux vides
-          education: [],     // car ces propriétés ne sont pas directement 
-          experiences: [],   // disponibles dans la table profiles
+          certifications: [],
+          education: [],
+          experiences: [],
           friends: []
         });
         setShowConversation(true);
