@@ -47,24 +47,11 @@ export function MarketplaceList({
   onPageChange 
 }: MarketplaceListProps) {
   const [favorites, setFavorites] = useState<string[]>([]);
-  
-  // Update to pass filters correctly
-  const { listings: allListings, isLoading, totalPages } = useListingSearch({
-    initialFilters: filters
-  });
-  
-  // Filter listings by type and search query
-  const listings = allListings.filter(listing => {
-    // Filter by type if not "all"
-    const typeMatch = type === "all" || listing.type === type;
-    // Filter by search query if provided
-    const searchMatch = !searchQuery || 
-      listing.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      listing.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    return typeMatch && searchMatch;
-  });
+  const { listings, loading, totalPages } = useListingSearch(
+    searchQuery, filters, type, page
+  );
 
+  // Charger les favoris de l'utilisateur connecté
   useEffect(() => {
     const fetchFavorites = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -214,7 +201,7 @@ export function MarketplaceList({
     toast.info(`Visualisation de "${listing.title}"`);
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <Section>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">

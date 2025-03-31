@@ -8,11 +8,9 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { motion } from "framer-motion";
 import { CustomConversationList } from "./CustomConversationList";
 import { useConversations } from "@/hooks/useConversations";
-import { useAuth } from "@/hooks/useAuth";
 
 export function MessagesContainer() {
   const { receiver, showConversation, setReceiver } = useReceiver();
-  const { user } = useAuth(); // Add user to get the current user ID
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
@@ -26,11 +24,6 @@ export function MessagesContainer() {
     if (conversation.participant) {
       setReceiver(conversation.participant);
     }
-  };
-
-  const handleBack = () => {
-    setSelectedConversationId(null);
-    setReceiver(null);
   };
 
   return (
@@ -63,11 +56,9 @@ export function MessagesContainer() {
             animate={{ opacity: 1 }}
             className="flex-1 flex flex-col h-full overflow-hidden"
           >
-            {receiver && selectedConversationId && user && (
+            {receiver && (
               <ConversationView 
-                conversationId={selectedConversationId}
-                viewerId={user.id}
-                onBack={handleBack}
+                onBack={() => setSelectedConversationId(null)}
               />
             )}
           </motion.div>

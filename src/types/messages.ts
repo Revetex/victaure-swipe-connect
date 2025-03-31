@@ -83,5 +83,5 @@ export function convertToBoolean(status: any): boolean {
   return !!status;
 }
 
-// Exporter explicitement le type UserRole depuis profile avec 'export type'
-export type { UserRole } from "./profile";
+// Exporter explicitement le type UserRole depuis profile
+export { UserRole } from "./profile";

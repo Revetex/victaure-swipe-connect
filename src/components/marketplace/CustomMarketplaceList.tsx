@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useListingSearch } from "./hooks/useListingSearch";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { CustomListings } from "./CustomListings"; 
+import { adaptListingData } from "@/utils/marketplace";
 
 interface CustomMarketplaceListProps {
   type: "all" | "vente" | "location" | "service";
@@ -54,22 +55,14 @@ export function CustomMarketplaceList({
     prepareData();
   }, []);
 
-  // Update to pass searchQuery separately instead of in filters
-  const { listings, isLoading, error, totalPages } = useListingSearch({ 
-    initialFilters: filters 
-  });
-
-  // Filter listings by type and search query after fetching
-  const filteredListings = listings.filter(listing => {
-    // Filter by type if not "all"
-    const typeMatch = type === "all" || listing.type === type;
-    // Filter by search query if provided
-    const searchMatch = !searchQuery || 
-      listing.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      listing.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    return typeMatch && searchMatch;
-  });
+  // Utiliser notre hook personnalisé pour récupérer les annonces
+  const { listings, loading, error, totalPages } = useListingSearch(
+    searchQuery,
+    filters,
+    type,
+    page,
+    12
+  );
 
   // Afficher les erreurs si nécessaire
   useEffect(() => {
@@ -87,11 +80,11 @@ export function CustomMarketplaceList({
   return (
     <div className="space-y-6">
       <CustomListings 
-        items={filteredListings}
-        isLoading={isLoading}
+        items={listings}
+        isLoading={loading}
       />
       
-      {totalPages && totalPages > 1 && (
+      {totalPages > 1 && (
         <Pagination>
           <PaginationContent>
             <PaginationItem>
