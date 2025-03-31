@@ -50,12 +50,17 @@ export function useListingSearch({ initialFilters = {} as MarketplaceFilters }: 
     const extendedFilters: ExtendedFilters = {
       ...filters,
       // Map the MarketplaceFilters properties to the properties used in the query
-      search: filters.categories?.join(' ') || '',
       min_price: filters.priceRange?.[0] || null,
       max_price: filters.priceRange?.[1] || null,
       sort_by: filters.sortBy === 'date' ? 'created_at' : filters.sortBy,
       sort_order: filters.sortOrder
     };
+    
+    // Add search from categories if available
+    if (filters.categories && filters.categories.length > 0) {
+      extendedFilters.search = filters.categories.join(' ');
+    }
+    
     return extendedFilters;
   };
 
@@ -65,6 +70,7 @@ export function useListingSearch({ initialFilters = {} as MarketplaceFilters }: 
     
     const extendedFilters = getExtendedFilters();
 
+    // Create a base query that we'll modify with filters
     let query = supabase
       .from('marketplace_listings')
       .select(`
@@ -72,22 +78,22 @@ export function useListingSearch({ initialFilters = {} as MarketplaceFilters }: 
         profiles:user_id (id, full_name, avatar_url)
       `);
 
+    // Apply filters
     if (extendedFilters.search) {
       query = query.ilike('title', `%${extendedFilters.search}%`);
     }
 
-    // If we have categories from the filters, use them
+    // Categories filtering
     if (extendedFilters.categories && extendedFilters.categories.length > 0 && extendedFilters.categories[0] !== '') {
       query = query.in('category', extendedFilters.categories);
-    } else if (extendedFilters.category) {
-      // Legacy support for old category filter
-      query = query.eq('category', extendedFilters.category);
     }
 
+    // Location filtering
     if (extendedFilters.location) {
       query = query.ilike('location', `%${extendedFilters.location}%`);
     }
 
+    // Price range filtering
     if (extendedFilters.min_price !== null && extendedFilters.min_price !== undefined) {
       query = query.gte('price', extendedFilters.min_price);
     }
@@ -96,27 +102,34 @@ export function useListingSearch({ initialFilters = {} as MarketplaceFilters }: 
       query = query.lte('price', extendedFilters.max_price);
     }
 
-    // Use the mapped sorting properties
+    // Sorting
     const sortBy = extendedFilters.sort_by || 'created_at';
     const sortOrder = { ascending: extendedFilters.sort_order === 'asc' };
     
-    // Using as any to avoid TS2589 error
-    query = (query as any).order(sortBy, sortOrder);
+    // Fix: Type the query properly to avoid excessive type instantiation
+    const finalQuery = query.order(sortBy, sortOrder);
 
-    const { data, error: queryError, count } = await query;
+    try {
+      const { data, error: queryError, count } = await finalQuery;
 
-    if (queryError) {
-      setError(queryError);
-    } else {
-      setListings(data || []);
-      
-      // Calculate totalPages based on count (if paginated query)
-      if (count) {
-        setTotalPages(Math.ceil(count / 10)); // Assuming 10 items per page
+      if (queryError) {
+        setError(queryError);
+      } else {
+        setListings(data || []);
+        
+        // Calculate totalPages based on count (if paginated query)
+        if (count) {
+          setTotalPages(Math.ceil(count / 10)); // Assuming 10 items per page
+        }
       }
+    } catch (err) {
+      console.error('Error in fetch listings:', err);
+      if (err instanceof Error) {
+        setError({ message: err.message } as PostgrestError);
+      }
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   }, [filters]);
 
   const refresh = useCallback(() => {
