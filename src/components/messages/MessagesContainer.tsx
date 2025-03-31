@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import { ConversationView } from "./conversation/ConversationView";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useThemeContext } from "@/components/ThemeProvider";
 import { motion } from "framer-motion";
 import { CustomConversationList } from "./CustomConversationList";
 import { Conversation, Receiver } from "@/types/messages";
@@ -16,7 +15,6 @@ import { toast } from "sonner";
 export function MessagesContainer() {
   const { receiver, showConversation, setReceiver } = useReceiver();
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const { isDark } = useThemeContext();
   const { user } = useAuth();
   
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -24,107 +22,60 @@ export function MessagesContainer() {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch conversations
+  // Chargement des conversations
   useEffect(() => {
     if (!user) return;
     
     const fetchConversations = async () => {
       setIsLoading(true);
       try {
-        // First get all conversations for the current user
-        const { data: conversationsData, error: conversationsError } = await supabase
+        // Récupérer toutes les conversations de l'utilisateur
+        const { data, error } = await supabase
           .from('conversations')
           .select('*')
           .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
           .order('updated_at', { ascending: false });
         
-        if (conversationsError) {
-          console.error('Error fetching conversations:', conversationsError);
+        if (error) {
           toast.error("Erreur lors du chargement des conversations");
-          setIsLoading(false);
           return;
         }
         
-        if (!conversationsData || conversationsData.length === 0) {
+        if (!data || data.length === 0) {
           setConversations([]);
-          setIsLoading(false);
           return;
         }
         
-        // Process each conversation to fetch the participant's details
+        // Traiter chaque conversation pour obtenir les détails du participant
         const processedConversations = await Promise.all(
-          conversationsData.map(async (conversation) => {
-            // Determine if the participant is the current user or the other participant
-            const isParticipant1 = conversation.participant1_id === user.id;
-            const participantId = isParticipant1 ? conversation.participant2_id : conversation.participant1_id;
+          data.map(async (conv) => {
+            const isParticipant1 = conv.participant1_id === user.id;
+            const participantId = isParticipant1 ? conv.participant2_id : conv.participant1_id;
             
-            if (!participantId) {
-              console.error('Participant ID not found for conversation:', conversation.id);
-              return {
-                ...conversation,
-                participant: {
-                  id: 'unknown',
-                  full_name: 'Unknown User',
-                  avatar_url: null,
-                  online_status: false,
-                  email: null,
-                  role: 'professional' as const,
-                  username: 'unknown'
-                } as Receiver
-              } as Conversation;
-            }
-            
-            // Fetch the participant's profile
-            const { data: participantData, error: participantError } = await supabase
+            // Récupérer les informations du profil de l'autre participant
+            const { data: profileData } = await supabase
               .from('profiles')
               .select('*')
               .eq('id', participantId)
               .single();
             
-            if (participantError) {
-              console.error('Error fetching participant:', participantError);
-              // Return conversation with default participant
-              return {
-                ...conversation,
-                participant: {
-                  id: participantId,
-                  full_name: 'Unknown',
-                  avatar_url: null,
-                  online_status: false,
-                  email: null,
-                  role: 'professional' as const,
-                  username: 'unknown'
-                } as Receiver
-              } as Conversation;
-            }
-            
-            // Return the conversation with the participant data
             return {
-              ...conversation,
-              participant: {
-                id: participantData.id,
-                full_name: participantData.full_name || 'Unknown',
-                avatar_url: participantData.avatar_url,
-                online_status: !!participantData.online_status,
-                last_seen: participantData.last_seen,
-                // Add optional properties with fallbacks
-                username: participantData.display_name || participantData.full_name || '',
-                phone: participantData.phone || null,
-                city: participantData.city || null,
-                state: participantData.state || null,
-                country: participantData.country || null,
-                email: participantData.email || null,
-                role: (participantData.role as any) || 'professional',
-                bio: participantData.bio || null,
-              } as Receiver
+              ...conv,
+              participant: profileData ? {
+                id: profileData.id,
+                full_name: profileData.full_name || 'Unknown',
+                avatar_url: profileData.avatar_url,
+                online_status: !!profileData.online_status,
+                role: profileData.role || 'professional',
+                username: profileData.username || profileData.full_name || '',
+              } as Receiver : undefined
             } as Conversation;
           })
         );
         
-        setConversations(processedConversations as Conversation[]);
-      } catch (error) {
-        console.error('Error in conversation processing:', error);
-        toast.error("Erreur lors du traitement des conversations");
+        setConversations(processedConversations);
+      } catch (err) {
+        console.error('Error processing conversations:', err);
       } finally {
         setIsLoading(false);
       }
@@ -132,35 +83,26 @@ export function MessagesContainer() {
     
     fetchConversations();
     
-    // Subscribe to new conversations
-    const conversationsSubscription = supabase
-      .channel('public:conversations')
+    // Souscription aux nouvelles conversations
+    const channel = supabase
+      .channel('conversations_changes')
       .on('postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'conversations', filter: `participant1_id=eq.${user.id}` },
+        { event: '*', schema: 'public', table: 'conversations' },
         payload => {
-          // Cast to Conversation and add to state
-          const newConversation = payload.new as Conversation;
-          setConversations(prev => [newConversation, ...prev]);
-        }
-      )
-      .on('postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'conversations', filter: `participant2_id=eq.${user.id}` },
-        payload => {
-          // Cast to Conversation and add to state
-          const newConversation = payload.new as Conversation;
-          setConversations(prev => [newConversation, ...prev]);
+          // Actualiser les conversations lors d'un changement
+          fetchConversations();
         }
       )
       .subscribe();
       
     return () => {
-      supabase.removeChannel(conversationsSubscription);
+      supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user?.id]);
 
+  // Sélection d'une conversation
   const handleSelectConversation = (conversation: Conversation) => {
     setSelectedConversationId(conversation.id);
-    // Also set the receiver for the conversation view
     if (conversation.participant) {
       setReceiver(conversation.participant);
     }
@@ -174,16 +116,11 @@ export function MessagesContainer() {
     >
       <Card className={cn(
         "fixed inset-0 top-16 flex h-[calc(100vh-4rem)] w-full",
-        "border-0 rounded-none overflow-hidden",
-        isDark 
-          ? "bg-background border-border" 
-          : "bg-background border-slate-200"
+        "border-0 rounded-none overflow-hidden"
       )}>
         <div className={cn(
           "transition-all duration-300 ease-in-out",
-          isDark 
-            ? "border-r border-border/10 bg-muted/10" 
-            : "border-r border-slate-200/70 bg-muted/5",
+          "border-r border-slate-200/70 bg-muted/5",
           showConversation ? "hidden md:block md:w-80 lg:w-96" : "w-full md:w-80 lg:w-96"
         )}>
           <CustomConversationList 
@@ -199,10 +136,7 @@ export function MessagesContainer() {
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={cn(
-              "flex-1 flex flex-col h-full overflow-hidden",
-              "transition-all duration-300"
-            )}
+            className="flex-1 flex flex-col h-full overflow-hidden"
           >
             {receiver && (
               <ConversationView 

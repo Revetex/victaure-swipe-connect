@@ -1,13 +1,13 @@
 
 import { motion } from "framer-motion";
-import { ArrowRight, Star, Shield, Users } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 export default function Index() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#9b87f5]/5 via-[#D6BCFA]/5 to-[#403E43]/5">
-      <div className="fixed inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
+      <div className="fixed inset-0 bg-grid-white/10 bg-grid-16 pointer-events-none" />
       
       <motion.div
         initial={{ opacity: 0 }}
@@ -65,38 +65,6 @@ export default function Index() {
                 </Button>
               </Link>
             </motion.div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            {[
-              {
-                icon: Star,
-                title: "IA Avancée",
-                description: "Une intelligence artificielle qui comprend vos besoins et vous guide vers le succès"
-              },
-              {
-                icon: Shield,
-                title: "Sécurisé",
-                description: "Vos données sont protégées avec les plus hauts standards de sécurité"
-              },
-              {
-                icon: Users,
-                title: "Communauté",
-                description: "Rejoignez une communauté dynamique de professionnels"
-              }
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 + index * 0.2 }}
-                className="glass-card hover:shadow-lg transition-all duration-300"
-              >
-                <feature.icon className="h-12 w-12 text-primary mb-4" />
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
-              </motion.div>
-            ))}
           </div>
 
           <motion.div
