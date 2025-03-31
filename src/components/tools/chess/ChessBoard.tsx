@@ -114,8 +114,8 @@ export function ChessBoard({
                       className={cn(
                         "text-xl sm:text-2xl md:text-3xl lg:text-4xl select-none transition-transform",
                         piece.isWhite 
-                          ? "text-[#FFEBC8] drop-shadow-[0_0_4px_rgba(255,235,200,0.7)]" 
-                          : "text-[#FFAD69] drop-shadow-[0_0_4px_rgba(255,173,105,0.7)]",
+                          ? "text-[#FFEBD6] drop-shadow-[0_0_4px_rgba(255,235,214,0.7)]" // Couleur ivoire plus chaude
+                          : "text-[#FFBB68] drop-shadow-[0_0_4px_rgba(255,187,104,0.7)]", // Couleur ambrée plus chaude
                         "hover:scale-110",
                         isThinking && piece.isWhite !== isWhiteTurn && "animate-pulse"
                       )}

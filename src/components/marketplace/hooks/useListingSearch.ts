@@ -1,123 +1,97 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import type { MarketplaceFilters, ExtendedMarketplaceListing } from '@/types/marketplace';
-import { toast } from 'sonner';
-import { adaptListingData } from '@/utils/marketplace';
+import { SearchFilters } from '@/types/marketplace';
+import { PostgrestError } from '@supabase/supabase-js';
 
-export function useListingSearch(
-  searchQuery: string,
-  filters: MarketplaceFilters,
-  type: 'all' | 'vente' | 'location' | 'service',
-  page: number = 1,
-  itemsPerPage: number = 12
-) {
-  const [listings, setListings] = useState<ExtendedMarketplaceListing[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [totalCount, setTotalCount] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
+interface UseListingSearchProps {
+  initialFilters?: SearchFilters;
+}
+
+interface UseListingSearchResult {
+  listings: any[];
+  isLoading: boolean;
+  error: PostgrestError | null;
+  filters: SearchFilters;
+  setFilters: (filters: SearchFilters) => void;
+  refresh: () => Promise<void>;
+}
+
+export function useListingSearch({ initialFilters = {} }: UseListingSearchProps = {}): UseListingSearchResult {
+  const [listings, setListings] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<PostgrestError | null>(null);
+  const [filters, setFilters] = useState<SearchFilters>({
+    search: '',
+    category: '',
+    location: '',
+    min_price: null,
+    max_price: null,
+    sort_by: 'created_at',
+    sort_order: 'desc',
+    ...initialFilters
+  });
 
   const fetchListings = useCallback(async () => {
-    try {
-      setLoading(true);
-      
-      const from = (page - 1) * itemsPerPage;
-      const to = from + itemsPerPage - 1;
+    setIsLoading(true);
+    setError(null);
 
-      let query = supabase
-        .from('marketplace_listings')
-        .select(`
-          *,
-          seller:profiles(id, full_name, avatar_url, rating)
-        `, { count: 'exact' })
-        .eq('status', 'active');
+    let query = supabase
+      .from('marketplace_listings')
+      .select(`
+        *,
+        profiles:user_id (id, full_name, avatar_url)
+      `);
 
-      // Apply type filter
-      if (type !== 'all') {
-        query = query.eq('type', type);
-      }
-
-      // Apply search and other filters
-      if (searchQuery) {
-        query = query.ilike('title', `%${searchQuery}%`);
-      }
-
-      if (filters.priceRange && filters.priceRange.length === 2) {
-        query = query
-          .gte('price', filters.priceRange[0])
-          .lte('price', filters.priceRange[1]);
-      }
-
-      if (filters.categories?.length) {
-        query = query.in('category', filters.categories);
-      }
-
-      if (filters.location) {
-        query = query.ilike('location', `%${filters.location}%`);
-      }
-
-      // Apply sorting
-      const { sortBy, sortOrder } = filters;
-      if (sortBy === 'date') {
-        query = query.order('created_at', { ascending: sortOrder === 'asc' });
-      } else if (sortBy === 'price') {
-        query = query.order('price', { ascending: sortOrder === 'asc' });
-      } else if (sortBy === 'views') {
-        query = query.order('views_count', { ascending: sortOrder === 'asc' });
-      } else {
-        // Default ordering
-        query = query.order('created_at', { ascending: false });
-      }
-
-      // Apply pagination
-      query = query.range(from, to);
-
-      const { data, error: queryError, count } = await query;
-
-      if (queryError) throw queryError;
-
-      if (data) {
-        // Transform the data to match the ExtendedMarketplaceListing type
-        const formattedListings = data.map(item => adaptListingData(item));
-        
-        // Apply client-side sorting for seller rating if needed
-        let sortedListings = formattedListings;
-        if (sortBy === 'rating') {
-          sortedListings = formattedListings.sort((a, b) => {
-            const aRating = a.seller?.rating || 0;
-            const bRating = b.seller?.rating || 0;
-            return sortOrder === 'asc' ? aRating - bRating : bRating - aRating;
-          });
-        }
-          
-        setListings(sortedListings);
-        
-        if (count !== null) {
-          setTotalCount(count);
-          setTotalPages(Math.ceil(count / itemsPerPage));
-        }
-      }
-
-    } catch (err) {
-      console.error('Error fetching listings:', err);
-      setError(err instanceof Error ? err : new Error('Unknown error occurred'));
-      toast.error("Erreur lors du chargement des annonces");
-    } finally {
-      setLoading(false);
+    if (filters.search) {
+      query = query.ilike('title', `%${filters.search}%`);
     }
-  }, [searchQuery, filters, type, page, itemsPerPage]);
+
+    if (filters.category) {
+      query = query.eq('category', filters.category);
+    }
+
+    if (filters.location) {
+      query = query.ilike('location', `%${filters.location}%`);
+    }
+
+    if (filters.min_price) {
+      query = query.gte('price', filters.min_price);
+    }
+
+    if (filters.max_price) {
+      query = query.lte('price', filters.max_price);
+    }
+
+    // Simple fix to avoid deep type instantiation
+    const sortBy = filters.sort_by || 'created_at';
+    query = query.order(sortBy, { ascending: filters.sort_order === 'asc' });
+
+    const { data, error } = await query;
+
+    if (error) {
+      setError(error);
+    } else {
+      setListings(data || []);
+    }
+
+    setIsLoading(false);
+  }, [filters]);
+
+  const refresh = useCallback(() => {
+    return fetchListings();
+  }, [fetchListings]);
 
   useEffect(() => {
     fetchListings();
   }, [fetchListings]);
 
-  return { 
-    listings, 
-    loading, 
-    error, 
-    totalCount, 
-    totalPages,
-    refetch: fetchListings 
+  return {
+    listings,
+    isLoading,
+    error,
+    filters,
+    setFilters,
+    refresh
   };
 }
