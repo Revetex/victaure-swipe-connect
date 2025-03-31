@@ -22,7 +22,6 @@ interface UseListingSearchResult {
 interface ExtendedFilters extends MarketplaceFilters {
   search?: string;
   location?: string;
-  category?: string;
   min_price?: number | null;
   max_price?: number | null;
   sort_by?: string;
@@ -68,57 +67,55 @@ export function useListingSearch({ initialFilters = {} as MarketplaceFilters }: 
     setIsLoading(true);
     setError(null);
     
-    const extendedFilters = getExtendedFilters();
-
-    // Create a base query that we'll modify with filters
-    let query = supabase
-      .from('marketplace_listings')
-      .select(`
-        *,
-        profiles:user_id (id, full_name, avatar_url)
-      `);
-
-    // Apply filters
-    if (extendedFilters.search) {
-      query = query.ilike('title', `%${extendedFilters.search}%`);
-    }
-
-    // Categories filtering
-    if (extendedFilters.categories && extendedFilters.categories.length > 0 && extendedFilters.categories[0] !== '') {
-      query = query.in('category', extendedFilters.categories);
-    }
-
-    // Location filtering
-    if (extendedFilters.location) {
-      query = query.ilike('location', `%${extendedFilters.location}%`);
-    }
-
-    // Price range filtering
-    if (extendedFilters.min_price !== null && extendedFilters.min_price !== undefined) {
-      query = query.gte('price', extendedFilters.min_price);
-    }
-
-    if (extendedFilters.max_price !== null && extendedFilters.max_price !== undefined) {
-      query = query.lte('price', extendedFilters.max_price);
-    }
-
-    // Sorting
-    const sortBy = extendedFilters.sort_by || 'created_at';
-    const sortOrder = { ascending: extendedFilters.sort_order === 'asc' };
-    
-    // Fix: Type the query properly to avoid excessive type instantiation
-    const finalQuery = query.order(sortBy, sortOrder);
-
     try {
-      const { data, error: queryError, count } = await finalQuery;
+      const extendedFilters = getExtendedFilters();
 
+      // First build the basic query without any chaining to avoid excessive type instantiation
+      const baseQuery = supabase
+        .from('marketplace_listings')
+        .select('*, profiles:user_id (id, full_name, avatar_url)', { count: 'exact' });
+      
+      // Then apply filters one by one using type assertions to avoid circular type references
+      let filteredQuery: any = baseQuery;
+      
+      // Apply text search
+      if (extendedFilters.search) {
+        filteredQuery = filteredQuery.ilike('title', `%${extendedFilters.search}%`);
+      }
+      
+      // Apply category filters
+      if (extendedFilters.categories && extendedFilters.categories.length > 0 && extendedFilters.categories[0] !== '') {
+        filteredQuery = filteredQuery.in('category', extendedFilters.categories);
+      }
+      
+      // Apply location filter
+      if (extendedFilters.location) {
+        filteredQuery = filteredQuery.ilike('location', `%${extendedFilters.location}%`);
+      }
+      
+      // Apply price range filters
+      if (extendedFilters.min_price !== null && extendedFilters.min_price !== undefined) {
+        filteredQuery = filteredQuery.gte('price', extendedFilters.min_price);
+      }
+      
+      if (extendedFilters.max_price !== null && extendedFilters.max_price !== undefined) {
+        filteredQuery = filteredQuery.lte('price', extendedFilters.max_price);
+      }
+      
+      // Apply sorting
+      const sortBy = extendedFilters.sort_by || 'created_at';
+      const sortOrder = { ascending: extendedFilters.sort_order === 'asc' };
+      
+      // Execute the query with ordering as the final step
+      const { data, error: queryError, count } = await filteredQuery.order(sortBy, sortOrder);
+      
       if (queryError) {
         setError(queryError);
       } else {
         setListings(data || []);
         
-        // Calculate totalPages based on count (if paginated query)
-        if (count) {
+        // Calculate totalPages based on count
+        if (count !== null) {
           setTotalPages(Math.ceil(count / 10)); // Assuming 10 items per page
         }
       }
