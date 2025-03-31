@@ -17,7 +17,8 @@ interface LotteryTabsProps extends PaymentProps {
 }
 
 export function LotteryTabs({
-  onPaymentRequested
+  onPaymentRequested,
+  isMobile
 }: LotteryTabsProps) {
   const { nextDraw, lastDraw, loading } = useLotteryDraws();
 
@@ -72,10 +73,10 @@ export function LotteryTabs({
               <div className="absolute bottom-0 right-0 w-8 h-8 border-r-2 border-b-2 border-[#64B5D9]/30" />
               
               {/* Lignes techniques */}
-              <div className="absolute top-0 left-12 right-12 h-px bg-gradient-to-r from-transparent via-[#64B5D9]/20 to-transparent" />
-              <div className="absolute bottom-0 left-12 right-12 h-px bg-gradient-to-r from-transparent via-[#64B5D9]/20 to-transparent" />
-              <div className="absolute left-0 top-12 bottom-12 w-px bg-gradient-to-b from-transparent via-[#64B5D9]/20 to-transparent" />
-              <div className="absolute right-0 top-12 bottom-12 w-px bg-gradient-to-b from-transparent via-[#64B5D9]/20 to-transparent" />
+              <div className="absolute top-0 left-12 right-12 h-px bg-gradient-to-r from-transparent via-[#64B5D9]/30 to-transparent" />
+              <div className="absolute bottom-0 left-12 right-12 h-px bg-gradient-to-r from-transparent via-[#64B5D9]/30 to-transparent" />
+              <div className="absolute left-0 top-12 bottom-12 w-px bg-gradient-to-b from-transparent via-[#64B5D9]/30 to-transparent" />
+              <div className="absolute right-0 top-12 bottom-12 w-px bg-gradient-to-b from-transparent via-[#64B5D9]/30 to-transparent" />
             </div>
 
             {/* Contenu avec z-index pour le placer au-dessus des décorations */}

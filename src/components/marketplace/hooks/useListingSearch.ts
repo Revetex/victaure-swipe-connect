@@ -43,7 +43,7 @@ export function useListingSearch(
         query = query.ilike('title', `%${searchQuery}%`);
       }
 
-      if (filters.priceRange) {
+      if (filters.priceRange && filters.priceRange.length === 2) {
         query = query
           .gte('price', filters.priceRange[0])
           .lte('price', filters.priceRange[1]);

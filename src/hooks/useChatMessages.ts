@@ -1,92 +1,97 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
 import { Message, Sender } from '@/types/messages';
 import { toast } from 'sonner';
-import { generateRandomId } from '@/utils/conversationUtils';
 
-export function useChatMessages(conversationId: string | null, receiverId: string | null) {
+type UserProfile = {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  username?: string;
+  email?: string;
+};
+
+export function useChatMessages(conversationId: string | null) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [newMessage, setNewMessage] = useState('');
 
-  // Charger les messages
-  useEffect(() => {
-    if (!conversationId || !user) {
+  // Fetch initial messages
+  const fetchMessages = useCallback(async () => {
+    if (!conversationId) return;
+    
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .select(`
+          *,
+          sender:profiles!messages_sender_id_fkey(id, full_name, avatar_url, username, email)
+        `)
+        .eq('conversation_id', conversationId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      // Format messages and add sender info
+      const formattedMessages = data.map(msg => {
+        // Ensure we have proper typing for the sender profile
+        const senderProfile = msg.sender as UserProfile;
+        
+        const message: Message = {
+          ...msg,
+          sender: senderProfile ? {
+            id: senderProfile.id,
+            full_name: senderProfile.full_name,
+            avatar_url: senderProfile.avatar_url,
+            username: senderProfile.username,
+            email: senderProfile.email
+          } : null
+        };
+        return message;
+      });
+
+      setMessages(formattedMessages.reverse());
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      toast.error('Erreur lors du chargement des messages');
+    } finally {
       setIsLoading(false);
-      return;
     }
+  }, [conversationId]);
 
-    const fetchMessages = async () => {
-      setIsLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('messages')
-          .select('*, sender:profiles(id, full_name, avatar_url, username)')
-          .eq('conversation_id', conversationId)
-          .order('created_at', { ascending: true });
-
-        if (error) throw error;
-        
-        // Transformer les données pour s'assurer qu'elles correspondent à notre type Message
-        const formattedMessages = data ? data.map(msg => {
-          // Ensure sender is properly typed
-          const senderData = msg.sender || {};
-          const sender: Sender = {
-            id: senderData.id || '',
-            full_name: senderData.full_name || null,
-            avatar_url: senderData.avatar_url || null,
-            username: senderData.username || '',
-            email: senderData.email || ''
-          };
-          
-          return {
-            id: msg.id,
-            content: msg.content,
-            sender_id: msg.sender_id,
-            receiver_id: msg.receiver_id,
-            created_at: msg.created_at,
-            read: msg.read || false,
-            sender
-          } as Message;
-        }) : [];
-        
-        setMessages(formattedMessages);
-      } catch (err) {
-        console.error('Erreur lors du chargement des messages:', err);
-        toast.error('Impossible de charger les messages');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Subscribe to new messages
+  useEffect(() => {
+    if (!conversationId) return;
 
     fetchMessages();
 
-    // Souscrire aux nouveaux messages
     const channel = supabase
-      .channel(`conversation_${conversationId}`)
-      .on('postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` },
-        (payload) => {
-          if (payload.new) {
-            const newMsg = payload.new as any;
-            
-            // Create a properly typed sender
-            const sender: Sender = {
-              id: user.id,
-              full_name: user.user_metadata?.full_name || null,
-              avatar_url: user.user_metadata?.avatar_url || null,
-              username: user.user_metadata?.username || ''
-            };
-            
-            const messageWithSender: Message = {
-              ...newMsg,
-              sender
-            };
-            
-            setMessages((current) => [...current, messageWithSender]);
-          }
+      .channel(`messages:${conversationId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `conversation_id=eq.${conversationId}`
+        },
+        async (payload) => {
+          // Fetch the sender info for the new message
+          const { data: senderData } = await supabase
+            .from('profiles')
+            .select('id, full_name, avatar_url, username, email')
+            .eq('id', payload.new.sender_id)
+            .single();
+          
+          const newMsg: Message = {
+            ...payload.new,
+            sender: senderData as Sender
+          };
+
+          setMessages(prev => [...prev, newMsg]);
         }
       )
       .subscribe();
@@ -94,108 +99,75 @@ export function useChatMessages(conversationId: string | null, receiverId: strin
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [conversationId, user]);
+  }, [conversationId, fetchMessages]);
 
-  // Marquer les messages comme lus
-  useEffect(() => {
-    if (!conversationId || !user || !receiverId) return;
-
-    const markAsRead = async () => {
-      try {
-        await supabase
-          .from('messages')
-          .update({ read: true })
-          .eq('conversation_id', conversationId)
-          .eq('sender_id', receiverId)
-          .eq('read', false);
-      } catch (err) {
-        console.error('Erreur lors du marquage des messages comme lus:', err);
-      }
-    };
-
-    markAsRead();
-  }, [conversationId, user, receiverId, messages]);
-
-  // Envoyer un message
-  const sendMessage = useCallback(
-    async (content: string) => {
-      if (!user || !receiverId || !conversationId || !content.trim()) {
-        return false;
-      }
-
-      // Message optimiste pour UI
-      const optimisticId = generateRandomId();
-      const userMeta = user.user_metadata || {};
+  // Send message function
+  const sendMessage = useCallback(async (content: string) => {
+    if (!conversationId || !content.trim()) return null;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
       
-      // Create a properly typed sender
-      const sender: Sender = {
-        id: user.id,
-        full_name: userMeta.full_name || null,
-        avatar_url: userMeta.avatar_url || null,
-        username: userMeta.username || userMeta.full_name || ''
-      };
-      
-      const optimisticMessage: Message = {
-        id: optimisticId,
+      const newMsg = {
+        conversation_id: conversationId,
         content,
         sender_id: user.id,
-        receiver_id: receiverId,
+        receiver_id: '', // This will be filled based on the conversation
         created_at: new Date().toISOString(),
-        read: false,
-        sender
+        read: false
       };
-
-      setMessages((current) => [...current, optimisticMessage]);
-
-      try {
-        const { data, error } = await supabase
-          .from('messages')
-          .insert([
-            {
-              conversation_id: conversationId,
-              sender_id: user.id,
-              receiver_id: receiverId,
-              content: content.trim()
-            }
-          ])
-          .select('*, sender:profiles(id, full_name, avatar_url, username)')
-          .single();
-
-        if (error) throw error;
-
-        // Mettre à jour le dernier message dans la conversation
-        await supabase
-          .from('conversations')
-          .update({
-            last_message: content.trim(),
-            last_message_time: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', conversationId);
-
-        // Remplacer le message optimiste par le vrai message
-        setMessages((current) =>
-          current.map((msg) => (msg.id === optimisticId ? {
-            ...data,
-            sender
-          } : msg))
-        );
-
-        return true;
-      } catch (err) {
-        // En cas d'erreur, supprimer le message optimiste
-        setMessages((current) => current.filter((msg) => msg.id !== optimisticId));
-        console.error('Erreur lors de l\'envoi du message:', err);
-        toast.error('Impossible d\'envoyer le message');
-        return false;
-      }
-    },
-    [user, receiverId, conversationId]
-  );
+      
+      // First get the conversation to determine the receiver
+      const { data: convoData, error: convoError } = await supabase
+        .from('conversations')
+        .select('participant1_id, participant2_id')
+        .eq('id', conversationId)
+        .single();
+        
+      if (convoError) throw convoError;
+      
+      // Determine the receiver based on the conversation participants
+      const receiverId = convoData.participant1_id === user.id 
+        ? convoData.participant2_id 
+        : convoData.participant1_id;
+      
+      // Update the receiver_id
+      newMsg.receiver_id = receiverId;
+      
+      // Insert the message
+      const { data, error } = await supabase
+        .from('messages')
+        .insert(newMsg)
+        .select()
+        .single();
+        
+      if (error) throw error;
+      
+      // Update the last_message and last_message_time in the conversation
+      await supabase
+        .from('conversations')
+        .update({
+          last_message: content,
+          last_message_time: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', conversationId);
+      
+      return data;
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error('Erreur lors de l\'envoi du message');
+      return null;
+    }
+  }, [conversationId]);
 
   return {
     messages,
     isLoading,
-    sendMessage
+    newMessage,
+    setNewMessage,
+    sendMessage,
+    fetchMessages
   };
 }

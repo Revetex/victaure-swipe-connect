@@ -113,7 +113,9 @@ export function ChessBoard({
                       transition={{ duration: 0.2 }}
                       className={cn(
                         "text-xl sm:text-2xl md:text-3xl lg:text-4xl select-none transition-transform",
-                        piece.isWhite ? "text-white drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]" : "text-black drop-shadow-[0_0_4px_rgba(0,0,0,0.5)]",
+                        piece.isWhite 
+                          ? "text-[#FFEBC8] drop-shadow-[0_0_4px_rgba(255,235,200,0.7)]" 
+                          : "text-[#FFAD69] drop-shadow-[0_0_4px_rgba(255,173,105,0.7)]",
                         "hover:scale-110",
                         isThinking && piece.isWhite !== isWhiteTurn && "animate-pulse"
                       )}
@@ -121,49 +123,12 @@ export function ChessBoard({
                       {pieceToSymbol(piece)}
                     </motion.span>
                   )}
-
-                  {/* Overlay effect when AI is thinking */}
-                  {isThinking && !isWhiteTurn && (
-                    <div className="absolute inset-0 bg-purple-500/5 pointer-events-none" />
-                  )}
                 </div>
               );
             })
           )}
         </div>
       </div>
-      
-      {/* Status indicator */}
-      {isThinking && !gameOver && (
-        <div className="absolute -bottom-10 left-0 right-0 text-center">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20"
-          >
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            >
-              <svg 
-                className="h-4 w-4 text-violet-400"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
-                <path d="M17.5 8a4.5 4.5 0 0 0 -4.5 4.5"></path>
-                <path d="M19 11v-3h-3"></path>
-              </svg>
-            </motion.div>
-            <span className="text-sm text-violet-300">L'IA réfléchit...</span>
-          </motion.div>
-        </div>
-      )}
     </div>
   );
 }
