@@ -1,18 +1,26 @@
 
-import { ReactNode } from "react";
+import { Bot } from "lucide-react";
+import { motion } from "framer-motion";
 
-interface ChatHeaderProps {
-  title: ReactNode;
-  subtitle?: ReactNode;
-}
-
-export function ChatHeader({ title, subtitle }: ChatHeaderProps) {
+export function ChatHeader() {
   return (
-    <div className="flex flex-col gap-1 p-4 border-b border-[#F1F0FB]/10 bg-[#1B2A4A]/50">
-      <div className="text-lg font-semibold text-[#F1F0FB]">{title}</div>
-      {subtitle && (
-        <div className="text-sm text-[#F1F0FB]/70">{subtitle}</div>
-      )}
-    </div>
+    <motion.div 
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex items-center gap-3 px-4 py-3"
+    >
+      <div className="flex items-center gap-3">
+        <div className="relative">
+          <div className="relative p-2.5 rounded-xl bg-[#1B2A4A]/80 border border-[#64B5D9]/20">
+            <Bot className="w-6 h-6 text-[#64B5D9]" />
+            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-[#1A1F2C] animate-pulse" />
+          </div>
+        </div>
+        <div>
+          <h3 className="font-medium text-base text-[#F1F0FB]">Mr. Victaure</h3>
+          <p className="text-xs text-[#F1F0FB]/70">Assistant IA</p>
+        </div>
+      </div>
+    </motion.div>
   );
 }

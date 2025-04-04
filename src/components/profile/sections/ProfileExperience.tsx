@@ -57,7 +57,7 @@ export function ProfileExperience({ experiences }: ProfileExperienceProps) {
               <p className="text-muted-foreground/90">{exp.company}</p>
               
               <p className="text-sm text-muted-foreground/80">
-                {formatExperience(exp.start_date as string, exp.end_date as string)}
+                {formatExperience(exp.start_date, exp.end_date)}
               </p>
               
               {exp.description && (

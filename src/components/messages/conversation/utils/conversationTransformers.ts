@@ -1,42 +1,65 @@
 
-import { UserProfile } from "@/types/profile";
-import { Conversation, ConversationParticipant } from "../types/conversation.types";
+import { UserRole, ConversationParticipant, Conversation } from '../types/conversation.types';
 
-export function transformConversation(conversation: any): Conversation | null {
-  if (!conversation) return null;
+interface RawParticipant {
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
+  email: string | null;
+  role: string;
+  bio: string | null;
+  phone: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  skills: string[];
+  online_status: boolean;
+  last_seen: string | null;
+}
 
-  const participant = conversation.participant;
-  if (!participant) return null;
+interface RawConversation {
+  id: string;
+  participant1_id: string;
+  participant2_id: string;
+  last_message: string;
+  last_message_time: string;
+  participant: RawParticipant;
+}
+
+export const transformParticipant = (rawParticipant: RawParticipant): ConversationParticipant => {
+  let role: UserRole = 'professional';
+  if (rawParticipant.role === 'business' || rawParticipant.role === 'admin') {
+    role = rawParticipant.role as UserRole;
+  }
 
   return {
-    id: conversation.id,
-    last_message: conversation.last_message || '',
-    last_message_time: conversation.last_message_time || new Date().toISOString(),
-    participant1_id: conversation.participant1_id,
-    participant2_id: conversation.participant2_id,
-    created_at: conversation.created_at || new Date().toISOString(),
-    updated_at: conversation.updated_at || new Date().toISOString(),
-    participant: {
-      id: participant.id,
-      full_name: participant.full_name || '',
-      avatar_url: participant.avatar_url,
-      email: participant.email,
-      online_status: participant.online_status === true || participant.online_status === 'online',
-      last_seen: participant.last_seen,
-      role: participant.role
-    },
-    unread: false // Default value
+    id: rawParticipant.id,
+    full_name: rawParticipant.full_name || '',
+    avatar_url: rawParticipant.avatar_url,
+    email: rawParticipant.email,
+    role: role,
+    bio: rawParticipant.bio,
+    phone: rawParticipant.phone,
+    city: rawParticipant.city,
+    state: rawParticipant.state,
+    country: rawParticipant.country,
+    skills: rawParticipant.skills || [],
+    online_status: rawParticipant.online_status,
+    last_seen: rawParticipant.last_seen
   };
-}
+};
 
-export function conversationToMessageReceiver(conversation: Conversation): ConversationParticipant {
-  if (!conversation.participant) {
-    return {
-      id: conversation.participant2_id,
-      full_name: '',
-      avatar_url: null
-    };
-  }
-  
-  return conversation.participant;
-}
+export const transformConversation = (conv: RawConversation): Conversation | null => {
+  if (!conv.participant) return null;
+
+  const transformedParticipant = transformParticipant(conv.participant);
+
+  return {
+    id: conv.id,
+    participant1_id: conv.participant1_id,
+    participant2_id: conv.participant2_id,
+    last_message: conv.last_message || '',
+    last_message_time: conv.last_message_time || new Date().toISOString(),
+    participant: transformedParticipant
+  };
+};

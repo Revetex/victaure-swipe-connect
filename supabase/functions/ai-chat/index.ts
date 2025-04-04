@@ -1,7 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY') || "AIzaSyCqMr40vAdnb7oPTXwAiXxntumGrLdzLZA";
+const OPENROUTER_API_KEY = Deno.env.get('OPENROUTER_API_KEY')
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -23,45 +23,42 @@ serve(async (req) => {
       content: query
     }]
 
-    // Utilisation de l'API Gemini
-    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + GEMINI_API_KEY, {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'HTTP-Referer': 'https://victaure.com',
+        'X-Title': 'Victaure Assistant',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        contents: [
+        model: 'google/gemini-pro',
+        messages: [
           {
-            role: 'user',
-            parts: [{
-              text: `Tu es Mr. Victaure, un assistant professionnel sur une plateforme de recrutement. 
+            role: 'system',
+            content: `Tu es Mr. Victaure, un assistant professionnel sur une plateforme de recrutement. 
                      Tu es amical, professionnel et serviable. Tu communiques en français.
                      Tu aides les utilisateurs à trouver des emplois, améliorer leur CV et leurs compétences professionnelles.
-                     Tu donnes des conseils concrets et personnalisés.
-                     
-                     Réponds à cette question: ${query}`
-            }]
-          }
+                     Tu donnes des conseils concrets et personnalisés.`
+          },
+          ...messages
         ],
-        generationConfig: {
-          temperature: 0.7,
-          topK: 40,
-          topP: 0.9,
-          maxOutputTokens: 1000,
-        }
+        temperature: 0.7,
+        max_tokens: 1000,
+        top_p: 0.9
       })
     })
 
     if (!response.ok) {
-      console.error('Gemini API error:', response.status)
-      throw new Error(`Gemini API error: ${response.status}`)
+      console.error('OpenRouter API error:', response.status)
+      throw new Error(`OpenRouter API error: ${response.status}`)
     }
 
     const data = await response.json()
-    console.log('Gemini response:', data)
+    console.log('OpenRouter response:', data)
 
     // Extract the assistant's message from the response
-    const assistantMessage = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+    const assistantMessage = data.choices?.[0]?.message?.content || 
                            "Désolé, je n'ai pas pu générer une réponse appropriée."
 
     return new Response(

@@ -3,9 +3,8 @@ import { useState, useCallback, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { HfInference } from "@huggingface/inference";
-import { Message, Receiver } from "@/types/messages";
 
-interface ChatMessage {
+interface Message {
   content: string;
   isUser: boolean;
   timestamp: number;
@@ -38,25 +37,8 @@ export function useChatMessages({
     const savedMessages = localStorage.getItem(STORAGE_KEY);
     if (savedMessages) {
       try {
-        const parsedMessages = JSON.parse(savedMessages);
-        const formattedMessages: Message[] = parsedMessages.map((m: ChatMessage) => ({
-          id: `msg-${Date.now()}-${Math.random()}`,
-          content: m.content,
-          sender_id: m.isUser ? 'user' : 'assistant',
-          receiver_id: m.isUser ? 'assistant' : 'user',
-          created_at: new Date(m.timestamp).toISOString(),
-          read: true,
-          status: 'sent',
-          sender: {
-            id: m.isUser ? 'user' : 'assistant',
-            full_name: m.isUser ? 'Vous' : 'Assistant',
-            avatar_url: null,
-            email: '',
-            // No role here, as it's not part of Receiver
-          }
-        }));
-        setMessages(formattedMessages);
-        setUserQuestions(formattedMessages.filter((m: Message) => m.sender_id === 'user').length);
+        setMessages(JSON.parse(savedMessages));
+        setUserQuestions(JSON.parse(savedMessages).filter((m: Message) => m.isUser).length);
       } catch (e) {
         console.error("Error loading saved messages:", e);
       }
@@ -66,12 +48,7 @@ export function useChatMessages({
   // Sauvegarder les messages quand ils changent
   useEffect(() => {
     if (messages.length > 0) {
-      const simplifiedMessages = messages.map(m => ({
-        content: m.content,
-        isUser: m.sender_id === 'user',
-        timestamp: new Date(m.created_at).getTime()
-      }));
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(simplifiedMessages));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
     }
   }, [messages]);
 
@@ -83,44 +60,31 @@ export function useChatMessages({
     toast.success("Historique effacé");
   }, []);
 
-  const sendMessage = useCallback(async (message: ChatMessage) => {
+  const sendMessage = useCallback(async (message: Message) => {
     if (!message.content.trim()) return;
 
     try {
       setIsLoading(true);
       setError(null);
 
-      const newMessage: Message = {
-        id: `user-${Date.now()}`,
-        content: message.content,
-        sender_id: 'user',
-        receiver_id: 'assistant',
-        created_at: new Date().toISOString(),
-        read: true,
-        status: 'sent',
-        sender: {
-          id: 'user',
-          full_name: 'Vous',
-          avatar_url: null,
-          email: '',
-          // No role here, as it's not part of Receiver
-        }
-      };
-
-      setMessages(prev => [...prev, newMessage]);
+      // Ajouter le message de l'utilisateur
+      setMessages(prev => [...prev, message]);
       setUserQuestions(prev => prev + 1);
 
+      // Vérifier si l'utilisateur a atteint la limite
       if (!user && userQuestions >= maxQuestions - 1) {
         onMaxQuestionsReached?.();
         return;
       }
 
+      // Construire le contexte complet pour l'IA
       const historyPrompt = messages
-        .map(m => `${m.sender_id === 'user' ? "Utilisateur" : "Assistant"}: ${m.content}`)
+        .map(m => `${m.isUser ? "Utilisateur" : "Assistant"}: ${m.content}`)
         .join("\n");
 
       const fullPrompt = `${context}\n\nHistorique de la conversation:\n${historyPrompt}\n\nUtilisateur: ${message.content}\n\nAssistant:`;
 
+      // Utiliser l'API HuggingFace
       const result = await hf.textGeneration({
         model: "OpenAssistant/oasst-sft-6-llama-30b",
         inputs: fullPrompt,
@@ -137,20 +101,9 @@ export function useChatMessages({
       }
 
       const assistantMessage: Message = {
-        id: `assistant-${Date.now()}`,
         content: result.generated_text.trim(),
-        sender_id: 'assistant',
-        receiver_id: 'user',
-        created_at: new Date().toISOString(),
-        read: true,
-        status: 'sent',
-        sender: {
-          id: 'assistant',
-          full_name: 'Assistant',
-          avatar_url: null,
-          email: '',
-          // No role here, as it's not part of Receiver
-        }
+        isUser: false,
+        timestamp: Date.now()
       };
       
       setMessages(prev => [...prev, assistantMessage]);

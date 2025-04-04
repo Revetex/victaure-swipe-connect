@@ -1,141 +1,219 @@
 
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
-import { Friend } from '@/types/profile';
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { UserProfile, Friend, Certification } from "@/types/profile";
+import { toast } from "sonner";
 
-export const useConnections = () => {
-  const { user } = useAuth();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showOnlineOnly, setShowOnlineOnly] = useState(false);
+export function useConnections() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-  const fetchConnections = async () => {
-    if (!user) return [];
-
-    try {
-      const { data, error } = await supabase
-        .from('user_connections_view')
-        .select('*')
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .eq('status', 'accepted')
-        .eq('connection_type', 'friend');
-
-      if (error) throw error;
-
-      return (data || []).map(conn => {
-        const isUser = conn.sender_id === user.id;
-        const friend: Friend = {
-          id: isUser ? conn.receiver_id : conn.sender_id,
-          full_name: isUser ? conn.receiver_name : conn.sender_name,
-          avatar_url: isUser ? conn.receiver_avatar : conn.sender_avatar,
-          online_status: false, // Will be updated with separate query
-          friendship_id: conn.id,
-          status: conn.status,
-          friends: []
-        };
-        
-        return friend;
-      });
-    } catch (error) {
-      console.error('Error fetching connections:', error);
-      return [];
-    }
-  };
-
-  // Get online status for friends
-  const updateOnlineStatus = async (friends: Friend[]) => {
-    if (!friends.length) return friends;
-
-    const friendIds = friends.map(friend => friend.id);
-    
-    const { data: onlineData } = await supabase
-      .from('profiles')
-      .select('id, online_status, last_seen')
-      .in('id', friendIds);
-
-    return friends.map(friend => {
-      const onlineInfo = onlineData?.find(profile => profile.id === friend.id);
-      return {
-        ...friend,
-        online_status: onlineInfo?.online_status || false,
-        last_seen: onlineInfo?.last_seen || null
-      };
-    });
-  };
-
-  const { data: connections = [], isLoading, refetch } = useQuery({
-    queryKey: ['connections', user?.id],
+  const { data: connections, isLoading, error } = useQuery({
+    queryKey: ["connections"],
     queryFn: async () => {
-      const friends = await fetchConnections();
-      return updateOnlineStatus(friends);
-    },
-    enabled: !!user,
-  });
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
 
-  // Apply filters
-  const filteredConnections = connections.filter(friend => {
-    // Filter by search query
-    const matchesSearch = searchQuery 
-      ? (friend.full_name || '').toLowerCase().includes(searchQuery.toLowerCase())
-      : true;
-    
-    // Filter by online status
-    const matchesOnlineStatus = showOnlineOnly ? friend.online_status : true;
-    
-    return matchesSearch && matchesOnlineStatus;
-  });
-
-  const fetchPendingRequests = async () => {
-    if (!user) return { incoming: [], outgoing: [] };
-
-    try {
-      const { data, error } = await supabase
-        .from('user_connections')
+      const { data: friendRequests, error: friendRequestsError } = await supabase
+        .from("friend_requests")
         .select(`
-          id,
-          sender_id,
-          receiver_id,
-          status,
-          created_at,
-          updated_at,
-          sender:profiles!sender_id(id, full_name, avatar_url),
-          receiver:profiles!receiver_id(id, full_name, avatar_url)
+          sender:profiles!friend_requests_sender_id_fkey(
+            id,
+            email,
+            full_name,
+            avatar_url,
+            role,
+            bio,
+            phone,
+            city,
+            state,
+            country,
+            online_status,
+            last_seen,
+            website,
+            company_name,
+            privacy_enabled,
+            created_at,
+            sections_order,
+            certifications(
+              id,
+              profile_id,
+              title,
+              issuer,
+              issue_date,
+              expiry_date,
+              credential_url,
+              description
+            ),
+            education(
+              id,
+              profile_id,
+              school_name,
+              degree,
+              field_of_study,
+              start_date,
+              end_date,
+              description
+            ),
+            experiences(
+              id,
+              profile_id,
+              position,
+              company,
+              start_date,
+              end_date,
+              description
+            ),
+            friend_connections:friend_requests!friend_requests_sender_id_fkey(
+              receiver:profiles!friend_requests_receiver_id_fkey(
+                id,
+                full_name,
+                avatar_url,
+                online_status,
+                last_seen
+              )
+            )
+          ),
+          receiver:profiles!friend_requests_receiver_id_fkey(
+            id,
+            email,
+            full_name,
+            avatar_url,
+            role,
+            bio,
+            phone,
+            city,
+            state,
+            country,
+            online_status,
+            last_seen,
+            website,
+            company_name,
+            privacy_enabled,
+            created_at,
+            sections_order,
+            certifications(
+              id,
+              profile_id,
+              title,
+              issuer,
+              issue_date,
+              expiry_date,
+              credential_url,
+              description
+            ),
+            education(
+              id,
+              profile_id,
+              school_name,
+              degree,
+              field_of_study,
+              start_date,
+              end_date,
+              description
+            ),
+            experiences(
+              id,
+              profile_id,
+              position,
+              company,
+              start_date,
+              end_date,
+              description
+            ),
+            friend_connections:friend_requests!friend_requests_receiver_id_fkey(
+              sender:profiles!friend_requests_sender_id_fkey(
+                id,
+                full_name,
+                avatar_url,
+                online_status,
+                last_seen
+              )
+            )
+          )
         `)
-        .eq('status', 'pending')
+        .eq("status", "accepted")
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
-      if (error) throw error;
+      if (friendRequestsError) {
+        toast.error("Erreur lors du chargement des connexions");
+        throw friendRequestsError;
+      }
 
-      const incoming = data
-        .filter(req => req.receiver_id === user.id)
-        .map(req => ({
-          ...req,
-          type: 'incoming'
-        }));
+      // Transform the data to get a flat list of connections
+      const connections = friendRequests?.map(request => {
+        const rawConnection = request.sender.id === user.id ? request.receiver : request.sender;
+        
+        // Transform friends data
+        const friends: Friend[] = rawConnection.friend_connections?.map(fc => {
+          const friend = fc.sender || fc.receiver;
+          return {
+            id: friend.id,
+            full_name: friend.full_name,
+            avatar_url: friend.avatar_url,
+            online_status: friend.online_status || false,
+            last_seen: friend.last_seen
+          };
+        }) || [];
 
-      const outgoing = data
-        .filter(req => req.sender_id === user.id)
-        .map(req => ({
-          ...req,
-          type: 'outgoing'
-        }));
+        // Transform certifications data with required credential_id
+        const certifications: Certification[] = (rawConnection.certifications || []).map(cert => {
+          if (!cert || typeof cert !== 'object') return null;
+          
+          return {
+            id: cert.id || '',
+            profile_id: cert.profile_id || '',
+            title: cert.title || '',
+            issuer: cert.issuer || '',
+            year: undefined,
+            issue_date: cert.issue_date || null,
+            expiry_date: cert.expiry_date || null,
+            credential_id: null, // Since this column doesn't exist yet, set to null
+            credential_url: cert.credential_url || '',
+            description: cert.description || ''
+          };
+        }).filter(Boolean) as Certification[];
 
-      return { incoming, outgoing };
-    } catch (error) {
-      console.error('Error fetching pending requests:', error);
-      return { incoming: [], outgoing: [] };
+        const connection: UserProfile = {
+          id: rawConnection.id,
+          email: rawConnection.email,
+          full_name: rawConnection.full_name || "",
+          avatar_url: rawConnection.avatar_url,
+          role: rawConnection.role,
+          bio: rawConnection.bio,
+          phone: rawConnection.phone,
+          city: rawConnection.city,
+          state: rawConnection.state,
+          country: rawConnection.country,
+          online_status: rawConnection.online_status,
+          last_seen: rawConnection.last_seen,
+          website: rawConnection.website,
+          company_name: rawConnection.company_name,
+          privacy_enabled: rawConnection.privacy_enabled,
+          created_at: rawConnection.created_at,
+          sections_order: rawConnection.sections_order,
+          certifications: certifications,
+          education: rawConnection.education || [],
+          experiences: rawConnection.experiences || [],
+          friends: friends
+        };
+
+        return connection;
+      });
+
+      return connections || [];
     }
-  };
+  });
+
+  const totalPages = Math.ceil((connections?.length || 0) / itemsPerPage);
 
   return {
-    connections: filteredConnections,
+    connections,
     isLoading,
-    refetch,
-    searchQuery,
-    setSearchQuery,
-    showOnlineOnly,
-    setShowOnlineOnly,
-    fetchPendingRequests,
+    error,
+    currentPage,
+    totalPages,
+    setCurrentPage
   };
-};
+}

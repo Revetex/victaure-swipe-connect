@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "../ui/dialog"
 import { MarketplaceForm } from "./MarketplaceForm";
 import { MarketplaceFilters } from "./MarketplaceFilters";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useState } from "react";
 import type { MarketplaceFilters as MarketplaceFiltersType } from "@/types/marketplace";
 
 interface MarketplaceActionsProps {
@@ -15,7 +14,6 @@ interface MarketplaceActionsProps {
 
 export function MarketplaceActions({ filters, onFiltersChange }: MarketplaceActionsProps) {
   const isMobile = useIsMobile();
-  const [isFormOpen, setIsFormOpen] = useState(false);
 
   return (
     <>
@@ -32,19 +30,18 @@ export function MarketplaceActions({ filters, onFiltersChange }: MarketplaceActi
         </DialogContent>
       </Dialog>
 
-      <Button 
-        className="gap-2" 
-        size={isMobile ? "sm" : "default"}
-        onClick={() => setIsFormOpen(true)}
-      >
-        <PlusCircle className="h-4 w-4" />
-        Publier une annonce
-      </Button>
-
-      <MarketplaceForm 
-        open={isFormOpen} 
-        onOpenChange={setIsFormOpen} 
-      />
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className="gap-2" size={isMobile ? "sm" : "default"}>
+            <PlusCircle className="h-4 w-4" />
+            Publier une annonce
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-3xl">
+          <DialogTitle>Nouvelle annonce</DialogTitle>
+          <MarketplaceForm />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -47,7 +47,7 @@ export function Logo({ size = "md", className }: LogoProps) {
         full_name: "Mr Victaure AI",
         avatar_url: "/ai-assistant-avatar.png",
         email: "ai@victaure.com",
-        role: "professional",
+        role: "professional" as const,
         bio: "Assistant IA spécialisé dans l'emploi",
         phone: null,
         city: null,
@@ -56,7 +56,7 @@ export function Logo({ size = "md", className }: LogoProps) {
         skills: [],
         latitude: null,
         longitude: null,
-        online_status: true, // Changé de "online" à true
+        online_status: "online" as const,
         last_seen: new Date().toISOString(),
         certifications: [],
         education: [],

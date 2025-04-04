@@ -3,14 +3,7 @@ import { PaymentTransaction } from "@/types/payment";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { 
-  CheckCircle2, 
-  Clock, 
-  XCircle, 
-  AlertCircle, 
-  CreditCard, 
-  Wallet 
-} from "lucide-react";
+import { CheckCircle2, Clock, XCircle, AlertCircle, CreditCard, Wallet } from "lucide-react";
 
 interface TransactionsListProps {
   transactions: PaymentTransaction[];

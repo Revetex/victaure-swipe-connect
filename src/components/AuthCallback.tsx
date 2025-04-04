@@ -6,25 +6,12 @@ import { motion } from "framer-motion";
 import { Loader } from "./ui/loader";
 import { supabase } from "@/integrations/supabase/client";
 
-// Fonction utilitaire pour détecter les appareils mobiles
-const detectMobileDevice = () => {
-  return window.innerWidth < 768 || 
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-};
-
 export function AuthCallback() {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const isMobile = detectMobileDevice();
 
   useEffect(() => {
-    let mounted = true;
-    let retryCount = 0;
-    // Timeout et nombre de tentatives réduits pour les appareils mobiles
-    const MAX_RETRIES = isMobile ? 2 : 3;
-    const RETRY_DELAY = isMobile ? 800 : 1000;
-
     const handleCallback = async () => {
       try {
         setIsLoading(true);
@@ -38,16 +25,8 @@ export function AuthCallback() {
           throw new Error(errorDescription || "Erreur lors de l'authentification");
         }
 
-        // Récupération de la session avec un timeout réduit sur mobile
-        const sessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error("Session request timed out")), isMobile ? 8000 : 15000)
-        );
-        
-        const { data: { session }, error: sessionError } = await Promise.race([
-          sessionPromise,
-          timeoutPromise
-        ]) as any;
+        // Récupération de la session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Erreur de session:", sessionError);
@@ -56,12 +35,6 @@ export function AuthCallback() {
 
         if (!session) {
           console.error("Aucune session trouvée");
-          if (retryCount < MAX_RETRIES) {
-            retryCount++;
-            console.log(`Nouvelle tentative (${retryCount}/${MAX_RETRIES})...`);
-            setTimeout(handleCallback, RETRY_DELAY);
-            return;
-          }
           throw new Error("Session non trouvée");
         }
 
@@ -78,38 +51,27 @@ export function AuthCallback() {
         sessionStorage.removeItem('redirectTo'); // Nettoyage
 
         // Notification et redirection
-        toast.success(isMobile ? "Connexion réussie" : "Connexion réussie !");
+        toast.success("Connexion réussie !");
         navigate(redirectTo, { replace: true });
       } catch (error) {
         console.error("Erreur de callback:", error);
         setError(error instanceof Error ? error.message : "Une erreur est survenue");
         toast.error("Échec de l'authentification");
-        
-        // Redirection plus rapide sur mobile en cas d'erreur
-        const redirectionTimeout = isMobile ? 1000 : 2000;
-        setTimeout(() => navigate('/auth', { replace: true }), redirectionTimeout);
+        setTimeout(() => navigate('/auth', { replace: true }), 2000);
       } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
 
     handleCallback();
+  }, [navigate]);
 
-    return () => {
-      mounted = false;
-    };
-  }, [navigate, isMobile]);
-
-  // UI adaptée pour mobile avec moins d'animations
   if (error) {
     return (
       <motion.div 
-        initial={{ opacity: 0, y: isMobile ? 10 : 20 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: isMobile ? 0.2 : 0.3 }}
         className="fixed inset-0 flex flex-col items-center justify-center p-4 bg-background/95 backdrop-blur-sm"
       >
         <div className="max-w-md w-full space-y-4 text-center">
@@ -130,12 +92,11 @@ export function AuthCallback() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: isMobile ? 0.2 : 0.3 }}
       className="fixed inset-0 flex flex-col items-center justify-center p-4 bg-background/95 backdrop-blur-sm"
     >
       <div className="space-y-4 text-center">
         <Loader className="w-8 h-8 text-primary mx-auto" />
-        <p className={`text-muted-foreground ${isMobile ? '' : 'animate-pulse'}`}>
+        <p className="text-muted-foreground animate-pulse">
           {isLoading ? "Vérification de votre identité..." : "Redirection en cours..."}
         </p>
       </div>

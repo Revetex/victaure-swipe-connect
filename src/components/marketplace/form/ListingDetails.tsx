@@ -1,35 +1,60 @@
 
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 interface ListingDetailsProps {
   title: string;
   description: string;
-  onChange: (field: string, value: string) => void;
+  price: string;
+  onTitleChange: (value: string) => void;
+  onDescriptionChange: (value: string) => void;
+  onPriceChange: (value: string) => void;
 }
 
-export function ListingDetails({ title, description, onChange }: ListingDetailsProps) {
+export function ListingDetails({ 
+  title, 
+  description, 
+  price, 
+  onTitleChange, 
+  onDescriptionChange, 
+  onPriceChange 
+}: ListingDetailsProps) {
   return (
     <>
-      <div className="grid gap-2">
-        <Label className="text-white">Titre de l'annonce</Label>
-        <Input 
-          placeholder="Titre de votre annonce" 
+      <div className="space-y-2">
+        <Label htmlFor="title">Titre de l'annonce</Label>
+        <Input
+          id="title"
           value={title}
-          onChange={(e) => onChange('title', e.target.value)}
+          onChange={(e) => onTitleChange(e.target.value)}
           required
-          className="bg-[#1B2A4A] border-[#64B5D9]/10 text-white placeholder:text-white/50"
+          maxLength={100}
+          placeholder="ex: iPhone 13 Pro Max - 256GB"
         />
       </div>
 
-      <div className="grid gap-2">
-        <Label className="text-white">Description</Label>
-        <Textarea 
-          placeholder="Décrivez votre article en détail..." 
-          className="min-h-[100px] bg-[#1B2A4A] border-[#64B5D9]/10 text-white placeholder:text-white/50"
+      <div className="space-y-2">
+        <Label htmlFor="description">Description détaillée</Label>
+        <Textarea
+          id="description"
           value={description}
-          onChange={(e) => onChange('description', e.target.value)}
+          onChange={(e) => onDescriptionChange(e.target.value)}
+          required
+          className="min-h-[100px]"
+          placeholder="Décrivez votre article, son état, ses caractéristiques..."
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="price">Prix</Label>
+        <Input
+          id="price"
+          type="number"
+          min="0"
+          step="0.01"
+          value={price}
+          onChange={(e) => onPriceChange(e.target.value)}
           required
         />
       </div>

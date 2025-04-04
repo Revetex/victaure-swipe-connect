@@ -10,16 +10,6 @@ import { SettingsSection } from "./SettingsSection";
 import { useState } from "react";
 import type { BlockedUser } from "@/types/profile";
 
-// Interface à utiliser pour les blocked users venant directement de Supabase
-interface BlockedUserResponse {
-  id: string;
-  blocked_user: {
-    id: string;
-    full_name: string | null;
-    avatar_url: string | null;
-  };
-}
-
 export function BlockedUsersSection() {
   const [isExpanded, setIsExpanded] = useState(false);
   
@@ -33,7 +23,7 @@ export function BlockedUsersSection() {
         .from('blocked_users')
         .select(`
           id,
-          blocked_user:profiles!blocked_users_blocked_id_fkey(
+          blocked:profiles!blocked_users_blocked_id_fkey(
             id,
             full_name,
             avatar_url
@@ -42,9 +32,7 @@ export function BlockedUsersSection() {
         .eq("blocker_id", user.id);
 
       if (error) throw error;
-      
-      // Pour être sûr de renvoyer le bon format
-      return (blocked || []) as BlockedUserResponse[];
+      return blocked as BlockedUser[];
     }
   });
 
@@ -89,20 +77,20 @@ export function BlockedUsersSection() {
             <div className="p-2 space-y-1">
               {blockedUsers?.map((item) => (
                 <div 
-                  key={item.blocked_user.id} 
+                  key={item.blocked.id} 
                   className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50"
                 >
                   <div className="flex items-center gap-2">
                     <Avatar className="h-6 w-6">
-                      <AvatarImage src={item.blocked_user.avatar_url || ''} />
-                      <AvatarFallback>{item.blocked_user.full_name?.[0]}</AvatarFallback>
+                      <AvatarImage src={item.blocked.avatar_url || ''} />
+                      <AvatarFallback>{item.blocked.full_name?.[0]}</AvatarFallback>
                     </Avatar>
-                    <span className="text-sm text-muted-foreground">{item.blocked_user.full_name}</span>
+                    <span className="text-sm text-muted-foreground">{item.blocked.full_name}</span>
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleUnblock(item.blocked_user.id, item.blocked_user.full_name || '')}
+                    onClick={() => handleUnblock(item.blocked.id, item.blocked.full_name)}
                     className="h-7 px-2 text-xs"
                   >
                     Débloquer

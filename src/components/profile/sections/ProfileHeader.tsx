@@ -1,74 +1,83 @@
 
 import { UserProfile } from "@/types/profile";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
-import { UserAvatar } from "@/components/UserAvatar";
+import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { ProfilePreviewButtons } from "../preview/ProfilePreviewButtons";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ProfileHeaderProps {
   profile: UserProfile;
   onClose: () => void;
-  canViewFullProfile?: boolean;
+  canViewFullProfile: boolean;
 }
 
-export function ProfileHeader({ 
-  profile, 
-  onClose,
-  canViewFullProfile = true
-}: ProfileHeaderProps) {
-  // Get the formatted role label
-  const getRoleLabel = (role: string) => {
-    switch (role) {
-      case 'professional':
-        return 'Professionnel';
-      case 'business':
-        return 'Entreprise';
-      case 'admin':
-        return 'Administrateur';
-      default:
-        return role;
-    }
+export function ProfileHeader({ profile, onClose, canViewFullProfile }: ProfileHeaderProps) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const isOwnProfile = user?.id === profile.id;
+
+  const handleEditProfile = () => {
+    navigate("/dashboard/profile/edit");
+    onClose();
   };
 
   return (
-    <div className={cn(
-      "flex flex-col p-5",
-      "bg-card/70",
-      "border-b border-border/30"
-    )}>
-      <div className="flex justify-between items-start mb-3">
-        <UserAvatar 
-          user={profile} 
-          className="h-16 w-16 border-2 border-background/70 shadow-sm" 
-          fallbackClassName="bg-background/50 text-foreground font-semibold"
-        />
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={onClose}
-          className="rounded-full h-8 w-8 bg-background/20 hover:bg-background/30"
-        >
-          <X className="h-4 w-4" />
-          <span className="sr-only">Fermer</span>
-        </Button>
-      </div>
-      
-      <div className="space-y-1">
-        <h2 className="text-lg font-semibold">{profile.full_name}</h2>
-        
-        <div className="flex flex-wrap gap-2 items-center text-sm text-muted-foreground">
-          {profile.role && (
-            <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs">
-              {getRoleLabel(profile.role)}
-            </span>
-          )}
-          
-          {profile.city && (
-            <span className="text-foreground/70">
-              {profile.city}{profile.country ? `, ${profile.country}` : ''}
-            </span>
-          )}
+    <div className="sticky top-0 z-10 p-4 bg-background/95 backdrop-blur border-b">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <motion.img
+            src={profile.avatar_url || "/user-icon.svg"}
+            alt={profile.full_name || "Avatar"}
+            className="w-16 h-16 rounded-full object-cover border-2 border-primary/20"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          />
+          <div>
+            <motion.h2
+              initial={{ y: -10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              className="text-xl font-bold"
+            >
+              {profile.full_name}
+            </motion.h2>
+            <motion.div
+              initial={{ y: -5, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="flex items-center gap-2 text-sm text-muted-foreground"
+            >
+              {profile.role && (
+                <Badge variant="secondary" className="capitalize">
+                  {profile.role}
+                </Badge>
+              )}
+              {profile.online_status ? (
+                <Badge variant="secondary" className="bg-green-500 text-white hover:bg-green-600">En ligne</Badge>
+              ) : (
+                <Badge variant="secondary">
+                  Vu {format(new Date(profile.last_seen || new Date()), 'PPP', { locale: fr })}
+                </Badge>
+              )}
+            </motion.div>
+          </div>
         </div>
+        <ProfilePreviewButtons 
+          profile={profile}
+          onClose={onClose}
+          canViewFullProfile={canViewFullProfile}
+          onRequestChat={() => navigate(`/messages?receiver=${profile.id}`)}
+          onViewProfile={() => {
+            if (isOwnProfile) {
+              handleEditProfile();
+            } else {
+              navigate(`/profile/${profile.id}`);
+            }
+          }}
+        />
       </div>
     </div>
   );

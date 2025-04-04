@@ -15,7 +15,16 @@ export const useReceiver = create<ReceiverState>((set) => ({
   receiver: null,
   showConversation: false,
   selectedConversationId: null,
-  setReceiver: (receiver) => set({ receiver }),
-  setShowConversation: (show) => set({ showConversation: show }),
-  setSelectedConversationId: (id) => set({ selectedConversationId: id }),
+  setReceiver: (receiver) => {
+    console.log('Setting receiver:', receiver);
+    set({ receiver });
+  },
+  setShowConversation: (show) => {
+    console.log('Setting showConversation:', show);
+    set({ showConversation: show });
+  },
+  setSelectedConversationId: (id) => {
+    console.log('Setting selectedConversationId:', id);
+    set({ selectedConversationId: id });
+  },
 }));

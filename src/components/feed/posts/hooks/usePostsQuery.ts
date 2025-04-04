@@ -1,133 +1,108 @@
 
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Post } from '../types';
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import type { Post } from "@/types/posts";
 
 interface UsePostsQueryProps {
   filter: string;
   sortBy: 'date' | 'likes' | 'comments';
   sortOrder: 'asc' | 'desc';
   userId?: string;
-  page?: number;
-  limit?: number;
-  searchTerm?: string;
 }
 
-export function usePostsQuery({
-  filter,
-  sortBy,
-  sortOrder,
-  userId,
-  limit = 10,
-  searchTerm = ''
-}: UsePostsQueryProps) {
-
-  const fetchPosts = async ({ pageParam = 1 }) => {
-    try {
+export function usePostsQuery({ filter, sortBy, sortOrder, userId }: UsePostsQueryProps) {
+  return useQuery({
+    queryKey: ["posts", filter, sortBy, sortOrder, userId],
+    queryFn: async () => {
       let query = supabase
-        .from('posts')
+        .from("posts")
         .select(`
           *,
-          user_id,
-          comments:post_comments(
+          profiles (
+            id,
+            full_name,
+            avatar_url
+          ),
+          reactions:post_reactions (
+            id,
+            user_id,
+            reaction_type
+          ),
+          comments:post_comments (
             id,
             content,
             created_at,
             user_id,
-            post_id,
-            profiles:user_id(id, full_name, avatar_url)
-          ),
-          reactions:post_reactions(
-            id,
-            reaction_type,
-            user_id
-          ),
-          profiles:user_id(
-            id,
-            full_name,
-            avatar_url,
-            role
+            profiles(
+              id,
+              full_name,
+              avatar_url
+            )
           )
-        `, { count: 'exact' });
+        `);
 
-      // Apply filter
-      if (filter === 'mine' && userId) {
-        query = query.eq('user_id', userId);
-      } else if (filter === 'connections' && userId) {
-        // Logic for connections filter - would need a jointure with friendships
-        // For now, just show all posts to avoid blank page
+      // Appliquer les filtres
+      switch (filter) {
+        case "my":
+          query = query.eq("user_id", userId);
+          break;
+        case "liked": {
+          const { data: likedPosts } = await supabase
+            .from("post_reactions")
+            .select("post_id")
+            .eq("user_id", userId)
+            .eq("reaction_type", "like");
+          
+          if (likedPosts?.length) {
+            const likedPostIds = likedPosts.map(reaction => reaction.post_id);
+            query = query.in("id", likedPostIds);
+          }
+          break;
+        }
       }
 
-      // Apply search term
-      if (searchTerm) {
-        query = query.textSearch('searchable_content', searchTerm);
+      // Appliquer le tri
+      switch (sortBy) {
+        case "date":
+          query = query.order("created_at", { ascending: sortOrder === "asc" });
+          break;
+        case "likes":
+          query = query.order("likes", { ascending: sortOrder === "asc" });
+          break;
+        case "comments":
+          // Pour le tri par commentaires, nous devons trier après avoir récupéré les données
+          break;
       }
 
-      // Apply sorting
-      if (sortBy === 'date') {
-        query = query.order('created_at', { ascending: sortOrder === 'asc' });
-      } else if (sortBy === 'likes') {
-        query = query.order('likes', { ascending: sortOrder === 'asc' });
-      } else if (sortBy === 'comments') {
-        // Not ideal but we'll order by created_at for now
-        query = query.order('created_at', { ascending: sortOrder === 'asc' });
+      const { data, error } = await query;
+
+      if (error) {
+        console.error("Error fetching posts:", error);
+        throw error;
       }
 
-      // Apply pagination
-      const from = (pageParam - 1) * limit;
-      const to = from + limit - 1;
-      query = query.range(from, to);
-
-      const { data, error, count } = await query;
-
-      if (error) throw error;
-
-      // Process the data to ensure it conforms to Post type
-      const processedPosts = data?.map((post: any) => ({
+      // Transformer les données pour correspondre au type Post
+      const transformedData = data?.map(post => ({
         ...post,
-        comments: (post.comments || []).map((comment: any) => ({
-          ...comment,
-          post_id: comment.post_id || post.id // Ensure post_id is present
-        })),
-        user: post.profiles,
-        reactions: (post.reactions || []),
-        // Ensure privacy_level is one of the allowed values
-        privacy_level: (post.privacy_level === 'public' || post.privacy_level === 'connections') 
-          ? post.privacy_level 
-          : 'public'
+        privacy_level: post.privacy_level as "public" | "connections",
+        reactions: post.reactions?.map(reaction => ({
+          ...reaction,
+          reaction_type: reaction.reaction_type as "like" | "dislike"
+        }))
       })) as Post[];
 
-      return {
-        posts: processedPosts || [],
-        nextPage: data?.length === limit ? pageParam + 1 : null,
-        totalCount: count || 0
-      };
-    } catch (err) {
-      console.error('Error fetching posts:', err);
-      throw err;
-    }
-  };
+      // Si le tri est par commentaires, nous devons trier manuellement
+      if (sortBy === "comments") {
+        return transformedData.sort((a, b) => {
+          const aCount = a.comments?.length || 0;
+          const bCount = b.comments?.length || 0;
+          return sortOrder === "asc" ? aCount - bCount : bCount - aCount;
+        });
+      }
 
-  const {
-    data,
-    isLoading,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage
-  } = useInfiniteQuery({
-    queryKey: ['posts', filter, sortBy, sortOrder, userId, searchTerm],
-    queryFn: fetchPosts,
-    getNextPageParam: (lastPage) => lastPage.nextPage,
-    initialPageParam: 1
+      return transformedData;
+    },
+    staleTime: 1000 * 60, // 1 minute
+    gcTime: 1000 * 60 * 5, // 5 minutes
   });
-
-  return {
-    data,
-    isLoading,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage
-  };
 }

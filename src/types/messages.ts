@@ -1,87 +1,54 @@
 
-import { UserProfile, UserRole } from "./profile";
+import type { UserProfile } from './profile';
 
 export interface Message {
   id: string;
   content: string;
-  sender_id: string | null;
+  sender_id: string;
   receiver_id: string;
   created_at: string;
-  updated_at?: string;
-  read?: boolean;
-  sender?: Sender | null;
-  message_type?: string;
-  reaction?: string;
-  is_deleted?: boolean;
-  timestamp?: string;
+  metadata?: Record<string, any>;
+  sender: UserProfile;
   conversation_id?: string;
+  deleted_at?: string;
+  deleted_by?: Record<string, any>;
+  edited_at?: string;
+  encrypted?: boolean;
+  encryption_key?: string;
+  has_attachment?: boolean;
+  is_assistant?: boolean;
+  is_deleted?: boolean;
+  is_system_sender?: boolean;
+  message_hash?: string;
+  message_state?: string;
+  message_type?: string;
+  page_cursor?: string;
+  reaction?: string;
   status?: string;
-  metadata?: any;
+  system_message?: boolean;
+  timestamp?: string;
 }
 
-export interface Sender {
-  id: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  online_status?: boolean;
-  username?: string;
-  email?: string;  // Ajout pour compatibilité
-}
+export type UserRole = 'professional' | 'business' | 'admin';
 
 export interface Receiver {
   id: string;
-  full_name: string | null;
+  full_name: string;
   avatar_url: string | null;
-  online_status?: boolean | string;
-  role?: UserRole | string;
-  email?: string;
-  bio?: string;
-  username?: string;
-  last_seen?: string | null;
-  phone?: string | null;
-  city?: string | null;
-  state?: string | null;
-  country?: string | null;
-  latitude?: number;    // Ajout pour compatibilité
-  longitude?: number;   // Ajout pour compatibilité
-  skills?: string[];    // Ajout pour compatibilité
-  certifications?: any[]; // Ajout pour compatibilité
-  education?: any[];    // Ajout pour compatibilité
-  experiences?: any[];  // Ajout pour compatibilité
-  friends?: any[];      // Ajout pour compatibilité
+  email: string | null;
+  role: UserRole;
+  bio: string | null;
+  phone: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  skills: string[];
+  latitude: number | null;
+  longitude: number | null;
+  online_status: 'online' | 'offline';
+  last_seen: string | null;
+  certifications: any[];
+  education: any[];
+  experiences: any[];
+  friends: string[];
 }
-
-export interface Conversation {
-  id: string;
-  participant1_id: string;
-  participant2_id: string;
-  last_message?: string;
-  last_message_time?: string;
-  created_at: string;
-  updated_at: string;
-  participant1?: UserProfile;
-  participant2?: UserProfile;
-  participant?: Receiver;
-  unread_count?: number;
-}
-
-export interface ConversationHeaderProps {
-  name: string;
-  avatar: string;
-  isOnline: boolean;
-  receiver: Receiver;
-  onBack?: () => void;
-  onClose?: () => void;
-}
-
-// Fonction utilitaire pour convertir tout type de statut en ligne en booléen
-export function convertToBoolean(status: any): boolean {
-  if (typeof status === 'boolean') return status;
-  if (typeof status === 'string') {
-    return status === 'online' || status === 'true';
-  }
-  return !!status;
-}
-
-// Ré-exporter le type UserRole depuis profile
-export type { UserRole } from "./profile";

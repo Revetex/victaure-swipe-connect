@@ -3,7 +3,6 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4'
 import { corsHeaders } from '../_shared/cors.ts'
 
 const rapidApiHost = 'jsearch.p.rapidapi.com';
-const GOOGLE_SEARCH_KEY = Deno.env.get('GOOGLE_SEARCH_KEY') || 'AIzaSyA2YLFJAE5sEMuUdEj3qs0ZWpokEu0ug28';
 
 Deno.serve(async (req) => {
   // Handle CORS
@@ -14,17 +13,29 @@ Deno.serve(async (req) => {
   try {
     const { query, page = 1, num_pages = 1 } = await req.json()
     
-    // Get RapidAPI key from Supabase secrets or use GOOGLE_SEARCH_KEY for direct API access
-    const apiKey = GOOGLE_SEARCH_KEY;
+    // Get RapidAPI key from Supabase secrets
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    )
 
-    // Call Search API (modified to use Google Jobs API directly if needed)
+    const { data: secretData } = await supabaseClient
+      .rpc('get_secret', { secret_name: 'RAPIDAPI_KEY' })
+    
+    if (!secretData?.secret) {
+      throw new Error('API key not found')
+    }
+
+    const rapidApiKey = secretData.secret
+
+    // Call RapidAPI
     const response = await fetch(
       `https://jsearch.p.rapidapi.com/search?query=${encodeURIComponent(query)}&page=${page}&num_pages=${num_pages}`,
       {
         method: 'GET',
         headers: {
           'X-RapidAPI-Host': rapidApiHost,
-          'X-RapidAPI-Key': apiKey,
+          'X-RapidAPI-Key': rapidApiKey,
         },
       }
     )

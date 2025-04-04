@@ -6,7 +6,6 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { toast } from "sonner";
-import { useThemeContext } from "@/components/ThemeProvider";
 
 interface PostActionsProps {
   likes: number;
@@ -48,7 +47,6 @@ export function PostActions({
   const [localDislikes, setLocalDislikes] = useState(dislikes);
   const [localUserReaction, setLocalUserReaction] = useState(userReaction);
   const [isProcessing, setIsProcessing] = useState(false);
-  const { themeStyle } = useThemeContext();
 
   useEffect(() => {
     setLocalLikes(likes);
@@ -71,6 +69,7 @@ export function PostActions({
     }
 
     setIsProcessing(true);
+
     try {
       // Mise à jour optimiste de l'UI
       if (localUserReaction === type) {
@@ -105,11 +104,12 @@ export function PostActions({
 
       // Appel à l'API pour mettre à jour en base
       await handleReaction(type);
-
+      
       // Notifier le parent du changement
       if (onReaction) {
         onReaction(postId, type);
       }
+
     } catch (error) {
       console.error('Error handling reaction:', error);
       // Rollback en cas d'erreur
@@ -123,22 +123,30 @@ export function PostActions({
   }, [isProcessing, currentUserId, localUserReaction, handleReaction, likes, dislikes, userReaction, postId, onReaction]);
 
   useEffect(() => {
-    const channel = supabase.channel('post-reactions')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'posts',
-        filter: `id=eq.${postId}`
-      }, (payload: RealtimePostgresChangesPayload<PostPayload>) => {
-        if (!isProcessing && payload.new) {
-          const newPost = payload.new as PostPayload;
-          if (newPost && 'likes' in newPost && 'dislikes' in newPost && 
-              typeof newPost.likes === 'number' && typeof newPost.dislikes === 'number') {
-            setLocalLikes(newPost.likes);
-            setLocalDislikes(newPost.dislikes);
+    const channel = supabase
+      .channel('post-reactions')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'posts',
+          filter: `id=eq.${postId}`
+        },
+        (payload: RealtimePostgresChangesPayload<PostPayload>) => {
+          if (!isProcessing && payload.new) {
+            const newPost = payload.new as PostPayload;
+            if (newPost && 
+                'likes' in newPost && 
+                'dislikes' in newPost && 
+                typeof newPost.likes === 'number' && 
+                typeof newPost.dislikes === 'number') {
+              setLocalLikes(newPost.likes);
+              setLocalDislikes(newPost.dislikes);
+            }
           }
         }
-      })
+      )
       .subscribe();
 
     return () => {
@@ -147,31 +155,31 @@ export function PostActions({
   }, [postId, isProcessing]);
 
   return (
-    <div className={`flex gap-2 items-center py-2 bg-transparent theme-${themeStyle}`}>
+    <div className="flex gap-2 items-center py-2">
       <div className="flex items-center gap-2">
-        <ReactionButton 
-          icon={ThumbsUp} 
-          count={localLikes} 
-          isActive={localUserReaction === 'like'} 
-          onClick={() => handleLocalReaction('like')} 
-          activeClassName="bg-primary/10 hover:bg-primary/20 text-primary" 
+        <ReactionButton
+          icon={ThumbsUp}
+          count={localLikes}
+          isActive={localUserReaction === 'like'}
+          onClick={() => handleLocalReaction('like')}
+          activeClassName="bg-primary/10 hover:bg-primary/20 text-primary"
         />
-        <ReactionButton 
-          icon={ThumbsDown} 
-          count={localDislikes} 
-          isActive={localUserReaction === 'dislike'} 
-          onClick={() => handleLocalReaction('dislike')} 
-          activeClassName="bg-destructive/10 hover:bg-destructive/20 text-destructive" 
+        <ReactionButton
+          icon={ThumbsDown}
+          count={localDislikes}
+          isActive={localUserReaction === 'dislike'}
+          onClick={() => handleLocalReaction('dislike')}
+          activeClassName="bg-destructive/10 hover:bg-destructive/20 text-destructive"
         />
       </div>
 
       <div className="flex items-center gap-2">
-        <ReactionButton 
-          icon={MessageSquare} 
-          count={commentCount} 
-          isActive={isExpanded} 
-          onClick={onToggleComments} 
-          activeClassName="bg-blue-500/10 hover:bg-blue-500/20 text-blue-500" 
+        <ReactionButton
+          icon={MessageSquare}
+          count={commentCount}
+          isActive={isExpanded}
+          onClick={onToggleComments}
+          activeClassName="bg-blue-500/10 hover:bg-blue-500/20 text-blue-500"
         />
       </div>
     </div>

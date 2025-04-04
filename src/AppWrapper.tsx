@@ -7,43 +7,10 @@ import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
 import { PrivateRoute } from "@/components/PrivateRoute";
 import { AuthCallback } from "@/components/AuthCallback";
-import { WalletPage } from "@/components/wallet/WalletPage";
-import { useEffect } from "react";
 
-// Create query client with optimized configuration
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 export default function AppWrapper() {
-  // Apply global styles to enhance aesthetics
-  useEffect(() => {
-    // Apply improved scrollbar styles
-    document.documentElement.style.scrollBehavior = 'smooth';
-    
-    // Add subtle transition to all elements
-    const style = document.createElement('style');
-    style.textContent = `
-      * {
-        transition-property: background-color, border-color, color, fill, stroke;
-        transition-duration: 200ms;
-      }
-    `;
-    document.head.appendChild(style);
-    
-    // Clean up styles on unmount
-    return () => {
-      document.documentElement.style.scrollBehavior = '';
-      document.head.removeChild(style);
-    };
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -60,14 +27,6 @@ export default function AppWrapper() {
               }
             />
             <Route
-              path="/wallet"
-              element={
-                <PrivateRoute>
-                  <WalletPage />
-                </PrivateRoute>
-              }
-            />
-            <Route
               path="*"
               element={
                 <PrivateRoute>
@@ -76,15 +35,7 @@ export default function AppWrapper() {
               }
             />
           </Routes>
-          <Toaster 
-            position="top-center" 
-            richColors 
-            closeButton 
-            toastOptions={{
-              duration: 5000,
-              className: "backdrop-blur-sm border border-white/10 dark:border-white/5 rounded-lg shadow-lg",
-            }}
-          />
+          <Toaster position="top-center" richColors />
         </BrowserRouter>
       </ThemeProvider>
     </QueryClientProvider>

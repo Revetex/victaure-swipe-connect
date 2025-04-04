@@ -1,27 +1,27 @@
 
-import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
-import { PostAttachment, PostPrivacyLevel } from '@/components/feed/posts/types';
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useProfile } from "@/hooks/useProfile";
+import { PostAttachment, PostPrivacyLevel } from "@/components/feed/posts/types";
 
-export function useCreatePost() {
-  const { user } = useAuth();
-  const [content, setContent] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+export function useCreatePost(onPostCreated: () => void) {
+  const [newPost, setNewPost] = useState("");
+  const [privacy, setPrivacy] = useState<PostPrivacyLevel>("public");
   const [attachments, setAttachments] = useState<PostAttachment[]>([]);
-  const [privacyLevel, setPrivacyLevel] = useState<PostPrivacyLevel>('public');
+  const [isUploading, setIsUploading] = useState(false);
+  const { profile } = useProfile();
 
-  const addAttachment = (file: File) => {
-    const preview = URL.createObjectURL(file);
-    
-    setAttachments(prev => [
-      ...prev,
-      { file, preview }
-    ]);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    const newAttachments = selectedFiles.map(file => ({
+      file,
+      preview: URL.createObjectURL(file)
+    }));
+    setAttachments(prev => [...prev, ...newAttachments]);
   };
 
-  const removeAttachment = (index: number) => {
+  const removeFile = (index: number) => {
     setAttachments(prev => {
       const newAttachments = [...prev];
       URL.revokeObjectURL(newAttachments[index].preview);
@@ -30,89 +30,70 @@ export function useCreatePost() {
     });
   };
 
-  const resetForm = () => {
-    setContent('');
-    setAttachments([]);
-    setPrivacyLevel('public');
-  };
-
-  const uploadImages = async (): Promise<string[]> => {
-    if (!attachments.length) return [];
-    
-    const uploadPromises = attachments.map(async (attachment) => {
-      const fileName = `${user?.id}/${Date.now()}-${attachment.file.name}`;
-      
-      const { data, error } = await supabase.storage
-        .from('posts')
-        .upload(fileName, attachment.file);
-      
-      if (error) {
-        throw new Error(`Failed to upload image: ${error.message}`);
-      }
-      
-      const { data: urlData } = supabase.storage
-        .from('posts')
-        .getPublicUrl(fileName);
-      
-      return urlData.publicUrl;
-    });
-    
-    return Promise.all(uploadPromises);
-  };
-
-  const createPost = async (): Promise<boolean> => {
-    if (!user) {
-      toast.error('Vous devez être connecté pour publier');
-      return false;
+  const handleCreatePost = async () => {
+    if (!profile) {
+      toast.error("Vous devez être connecté pour publier");
+      return;
     }
-    
-    if (!content.trim() && !attachments.length) {
-      toast.error('Votre publication ne peut pas être vide');
-      return false;
+
+    if (!newPost.trim() && attachments.length === 0) {
+      toast.error("Veuillez ajouter du contenu ou une image");
+      return;
     }
-    
-    setIsLoading(true);
-    
+
     try {
-      // Upload images if any
-      const imageUrls = await uploadImages();
-      
-      // Create post
-      const { error } = await supabase.from('posts').insert({
-        content: content.trim(),
-        user_id: user.id,
-        images: imageUrls.length ? imageUrls : null,
-        privacy_level: privacyLevel,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        searchable_content: content.trim()
-      });
-      
-      if (error) {
-        throw error;
+      setIsUploading(true);
+      const uploadedFiles: string[] = [];
+
+      for (const { file } of attachments) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${crypto.randomUUID()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('post_attachments')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('post_attachments')
+          .getPublicUrl(fileName);
+
+        uploadedFiles.push(publicUrl);
       }
-      
-      toast.success('Publication créée avec succès');
-      resetForm();
-      return true;
+
+      const { error } = await supabase
+        .from("posts")
+        .insert([{
+          content: newPost,
+          user_id: profile.id,
+          privacy_level: privacy,
+          images: uploadedFiles
+        }]);
+
+      if (error) throw error;
+
+      setNewPost("");
+      setAttachments([]);
+      onPostCreated();
+      toast.success("Publication créée avec succès");
     } catch (error) {
-      console.error('Error creating post:', error);
-      toast.error('Erreur lors de la création de la publication');
-      return false;
+      console.error("Error creating post:", error);
+      toast.error("Erreur lors de la création de la publication");
     } finally {
-      setIsLoading(false);
+      setIsUploading(false);
     }
   };
 
   return {
-    content,
-    setContent,
-    isLoading,
+    newPost,
+    setNewPost,
+    privacy,
+    setPrivacy,
     attachments,
-    privacyLevel,
-    setPrivacyLevel,
-    addAttachment,
-    removeAttachment,
-    createPost
+    isUploading,
+    handleFileChange,
+    removeFile,
+    handleCreatePost
   };
 }

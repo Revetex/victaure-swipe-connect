@@ -1,145 +1,166 @@
-
-import { useState } from "react";
-import { Friend } from "@/types/profile";
-import { useAuth } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button";
-import { UserAvatar } from "@/components/UserAvatar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { UserCircle, Crown } from "lucide-react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
-interface ChessFriendsListProps {
-  onSelectFriend: (friendId: string) => void;
+interface Friend {
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
 }
 
-export function ChessFriendsList({ onSelectFriend }: ChessFriendsListProps) {
-  const { user } = useAuth();
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const { data: friends = [], isLoading } = useQuery({
-    queryKey: ["chessFriends", user?.id],
+export function ChessFriendsList() {
+  const { data: friends, isLoading } = useQuery({
+    queryKey: ["friends"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
-      // Get connections from the view
-      const { data, error } = await supabase
-        .from("user_connections_view")
-        .select("*")
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+      const { data: acceptedRequests } = await supabase
+        .from("friend_requests")
+        .select(`
+          sender:profiles!friend_requests_sender_id_fkey(id, full_name, avatar_url),
+          receiver:profiles!friend_requests_receiver_id_fkey(id, full_name, avatar_url)
+        `)
         .eq("status", "accepted")
-        .eq("connection_type", "friend");
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
-      if (error) {
-        console.error("Error fetching friends:", error);
-        toast.error("Erreur lors du chargement des amis");
-        return [];
-      }
+      if (!acceptedRequests) return [];
 
-      // Map connections to Friend objects
-      const friends: Friend[] = data.map(conn => {
-        const isUserSender = conn.sender_id === user.id;
-        
-        return {
-          id: isUserSender ? conn.receiver_id : conn.sender_id,
-          full_name: isUserSender ? conn.receiver_name : conn.sender_name,
-          avatar_url: isUserSender ? conn.receiver_avatar : conn.sender_avatar,
-          online_status: false, // Default value
-          last_seen: null,
-          friendship_id: conn.id,
-          status: conn.status,
-          friends: []
-        };
+      return acceptedRequests.map(request => {
+        const friend = request.sender.id === user.id ? request.receiver : request.sender;
+        return friend;
       });
-
-      // Get online status for friends
-      if (friends.length > 0) {
-        const friendIds = friends.map(f => f.id);
-        
-        const { data: onlineData } = await supabase
-          .from("profiles")
-          .select("id, online_status, last_seen")
-          .in("id", friendIds);
-          
-        if (onlineData) {
-          // Update online status
-          friends.forEach(friend => {
-            const profile = onlineData.find(p => p.id === friend.id);
-            if (profile) {
-              friend.online_status = profile.online_status;
-              friend.last_seen = profile.last_seen;
-            }
-          });
-        }
-      }
-
-      return friends;
-    },
-    enabled: !!user,
+    }
   });
 
-  // Filter friends by search term
-  const filteredFriends = searchTerm
-    ? friends.filter(friend =>
-        friend.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : friends;
+  const { data: activeGames } = useQuery({
+    queryKey: ["active-chess-games"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
+      const { data: games } = await supabase
+        .from("chess_games")
+        .select("*")
+        .or(`white_player_id.eq.${user.id},black_player_id.eq.${user.id}`)
+        .eq("status", "active");
+
+      return games || [];
+    }
+  });
+
+  const inviteFriend = async (friendId: string, friendName: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Check if there's already an active game with this friend
+      const { data: existingGames } = await supabase
+        .from("chess_games")
+        .select("*")
+        .or(`and(white_player_id.eq.${user.id},black_player_id.eq.${friendId}),and(white_player_id.eq.${friendId},black_player_id.eq.${user.id})`)
+        .eq("status", "active");
+
+      if (existingGames && existingGames.length > 0) {
+        toast.error("You already have an active game with this friend");
+        return;
+      }
+
+      const { error } = await supabase.from("chess_games").insert({
+        white_player_id: user.id,
+        black_player_id: friendId,
+        game_state: {},
+        status: "active"
+      });
+
+      if (error) throw error;
+
+      await supabase.from("notifications").insert({
+        user_id: friendId,
+        title: "Chess Game Invitation",
+        message: `${user.email} has invited you to play chess!`,
+      });
+
+      toast.success(`Invitation sent to ${friendName}`);
+    } catch (error) {
+      console.error("Error inviting friend:", error);
+      toast.error("Failed to send invitation");
+    }
+  };
 
   if (isLoading) {
     return (
-      <div className="p-4 space-y-3">
-        <div className="animate-pulse h-6 bg-zinc-800 rounded w-3/4 mb-4"></div>
-        {[1, 2, 3].map(i => (
-          <div key={i} className="flex items-center space-x-4">
-            <div className="animate-pulse h-10 w-10 bg-zinc-800 rounded-full"></div>
-            <div className="animate-pulse h-4 bg-zinc-800 rounded w-1/2"></div>
-          </div>
-        ))}
+      <div className="flex items-center justify-center py-8">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          <Crown className="h-8 w-8 text-primary/50" />
+        </motion.div>
       </div>
     );
   }
 
-  if (!filteredFriends.length) {
+  if (!friends?.length) {
     return (
-      <div className="p-4 text-center text-zinc-400">
-        {searchTerm ? "Aucun ami trouvé" : "Aucun ami disponible"}
+      <div className="text-center py-4">
+        <UserCircle className="h-12 w-12 mx-auto text-muted-foreground/50" />
+        <p className="text-sm text-muted-foreground mt-2">No friends available</p>
       </div>
     );
   }
 
   return (
-    <div className="p-4 space-y-3">
-      <input
-        type="text"
-        placeholder="Rechercher un ami..."
-        className="w-full p-2 bg-zinc-900 border border-zinc-700 rounded focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-      />
-      <div className="mt-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent space-y-2">
-        {filteredFriends.map(friend => (
-          <Button
-            key={friend.id}
-            variant="outline"
-            className="w-full flex items-center justify-start gap-3 p-2 hover:bg-zinc-800"
-            onClick={() => onSelectFriend(friend.id)}
-          >
-            <div className="relative">
-              <UserAvatar
-                user={{
-                  id: friend.id,
-                  name: friend.full_name || '',
-                  image: friend.avatar_url
-                }}
-                className="h-8 w-8"
-              />
-              {friend.online_status && (
-                <span className="absolute -bottom-1 -right-1 h-3 w-3 bg-green-500 rounded-full border-2 border-zinc-900"></span>
-              )}
-            </div>
-            <span>{friend.full_name}</span>
-          </Button>
-        ))}
+    <ScrollArea className="h-[300px] px-1">
+      <div className="space-y-2">
+        {friends.map((friend) => {
+          const hasActiveGame = activeGames?.some(
+            game => 
+              (game.white_player_id === friend.id || game.black_player_id === friend.id) &&
+              game.status === "active"
+          );
+
+          return (
+            <motion.div
+              key={friend.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                {friend.avatar_url ? (
+                  <img
+                    src={friend.avatar_url}
+                    alt={friend.full_name}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <UserCircle className="w-8 h-8" />
+                )}
+                <div>
+                  <span className="font-medium">{friend.full_name}</span>
+                  {hasActiveGame && (
+                    <p className="text-xs text-muted-foreground">Game in progress</p>
+                  )}
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => inviteFriend(friend.id, friend.full_name)}
+                disabled={hasActiveGame}
+                className="min-w-[80px]"
+              >
+                {hasActiveGame ? "Playing" : "Invite"}
+              </Button>
+            </motion.div>
+          );
+        })}
       </div>
-    </div>
+    </ScrollArea>
   );
 }

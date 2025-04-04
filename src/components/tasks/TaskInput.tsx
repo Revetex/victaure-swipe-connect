@@ -37,9 +37,9 @@ export function TaskInput({ onAddTask, className }: TaskInputProps) {
       animate={{ opacity: 1, y: 0 }}
       className={cn(
         "w-full max-w-2xl mx-auto",
-        "bg-[#1B2A4A]/80 backdrop-blur-lg",
+        "bg-[#2A3441]/80 backdrop-blur-lg",
         "rounded-xl",
-        "border border-[#64B5D9]/10",
+        "border border-white/10",
         "shadow-lg shadow-black/10",
         "p-4",
         "space-y-4",
@@ -53,14 +53,14 @@ export function TaskInput({ onAddTask, className }: TaskInputProps) {
             value={taskText}
             onChange={(e) => setTaskText(e.target.value)}
             placeholder="Ajouter une nouvelle tâche..."
-            className="flex-1 bg-[#1A1F2C]/50 text-[#F2EBE4] border-[#64B5D9]/10 placeholder:text-[#F2EBE4]/50"
+            className="flex-1 bg-[#1A1F2C]/50 text-[#F2EBE4] border-white/10 placeholder:text-[#F2EBE4]/50"
           />
           <Button
             type="button"
             variant="outline"
             size="icon"
             onClick={() => setShowDateInput(!showDateInput)}
-            className="bg-[#1A1F2C]/50 border-[#64B5D9]/10 hover:bg-purple-500/20 hover:border-purple-500/30"
+            className="bg-[#1A1F2C]/50 border-white/10 hover:bg-purple-500/20 hover:border-purple-500/30"
           >
             <Calendar className="h-4 w-4 text-[#F2EBE4]" />
           </Button>
@@ -85,7 +85,7 @@ export function TaskInput({ onAddTask, className }: TaskInputProps) {
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="w-full bg-[#1A1F2C]/50 text-[#F2EBE4] border-[#64B5D9]/10"
+                className="w-full bg-[#1A1F2C]/50 text-[#F2EBE4] border-white/10"
               />
             </motion.div>
           )}

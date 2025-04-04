@@ -1,16 +1,13 @@
 
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { MessagesContainer } from "./messages/MessagesContainer";
-import { motion } from "framer-motion";
+
+const queryClient = new QueryClient();
 
 export function Messages() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="min-h-screen bg-background"
-    >
+    <QueryClientProvider client={queryClient}>
       <MessagesContainer />
-    </motion.div>
+    </QueryClientProvider>
   );
 }

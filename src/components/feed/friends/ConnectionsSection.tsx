@@ -1,140 +1,110 @@
-
-import { useState } from "react";
-import { ConnectionsPagination } from "./ConnectionsPagination";
-import { useFriendRequests } from "@/hooks/useFriendRequests";
-import { cn } from "@/lib/utils";
-import { PendingRequestsSection } from "./PendingRequestsSection";
-import { FriendList } from "./FriendList";
-import { FriendListHeader } from "./FriendListHeader";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { Friend } from "@/types/profile";
-
-interface ConnectionsSectionProps {
-  searchQuery: string;
-  onTogglePending: () => void;
-  showPendingRequests: boolean;
-}
-
-export function ConnectionsSection({ searchQuery, onTogglePending, showPendingRequests }: ConnectionsSectionProps) {
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ConnectionsHeader } from "./components/ConnectionsHeader";
+import { ConnectionsSearch } from "./components/ConnectionsSearch";
+import { FriendsTabContent } from "./components/FriendsTabContent";
+import { ConnectionsPagination } from "./ConnectionsPagination";
+import { PendingRequestsSection } from "./PendingRequestsSection";
+export function ConnectionsSection() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [showOnlineOnly, setShowOnlineOnly] = useState(false);
-  const { pendingRequests, refetchPendingRequests } = useFriendRequests();
-  const { user } = useAuth();
-
-  // Fetch connections from user_connections_view
-  const { data: connections = [], isLoading } = useQuery({
-    queryKey: ['connections', user?.id],
+  const [showPendingRequests, setShowPendingRequests] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const itemsPerPage = 5;
+  const {
+    data: friends = [],
+    isLoading
+  } = useQuery({
+    queryKey: ["friends"],
     queryFn: async () => {
+      const {
+        data: {
+          user
+        }
+      } = await supabase.auth.getUser();
       if (!user) return [];
-
-      const { data, error } = await supabase
-        .from('user_connections_view')
-        .select('*')
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .eq('status', 'accepted')
-        .eq('connection_type', 'friend');
-
-      if (error) {
-        console.error("Error fetching connections:", error);
-        return [];
-      }
-
-      // Map the connections to Friend objects
-      const friends: Friend[] = data.map(conn => {
-        const isUserSender = conn.sender_id === user.id;
-        
+      const {
+        data: acceptedRequests
+      } = await supabase.from("friend_requests").select(`
+          sender:profiles!friend_requests_sender_id_fkey(*),
+          receiver:profiles!friend_requests_receiver_id_fkey(*)
+        `).eq("status", "accepted").or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
+      if (!acceptedRequests) return [];
+      return acceptedRequests.map(request => {
+        const friend = request.sender.id === user.id ? request.receiver : request.sender;
         return {
-          id: isUserSender ? conn.receiver_id : conn.sender_id,
-          full_name: isUserSender ? conn.receiver_name : conn.sender_name,
-          avatar_url: isUserSender ? conn.receiver_avatar : conn.sender_avatar,
-          online_status: false, // Default value, will be updated
-          last_seen: null,
-          friendship_id: conn.id,
-          status: conn.status,
+          ...friend,
+          country: friend.country || "Canada",
+          role: friend.role || "professional",
+          email: friend.email || "",
+          skills: friend.skills || [],
+          online_status: friend.online_status || false,
+          last_seen: friend.last_seen || new Date().toISOString(),
+          certifications: [],
+          education: [],
+          experiences: [],
           friends: []
         };
       });
-
-      // Get online status for these friends
-      if (friends.length > 0) {
-        const friendIds = friends.map(f => f.id);
-        
-        const { data: onlineData } = await supabase
-          .from('profiles')
-          .select('id, online_status, last_seen')
-          .in('id', friendIds);
-          
-        if (onlineData) {
-          // Update the online status of each friend
-          friends.forEach(friend => {
-            const profile = onlineData.find(p => p.id === friend.id);
-            if (profile) {
-              friend.online_status = profile.online_status;
-              friend.last_seen = profile.last_seen;
-            }
-          });
-        }
-      }
-
-      return friends;
-    },
-    enabled: !!user
+    }
   });
+  const filteredFriends = friends.filter(friend => friend.full_name?.toLowerCase().includes(searchQuery.toLowerCase()));
+  if (isLoading) {
+    return <Card className="p-8 bg-black/40">
+        <div className="flex items-center justify-center">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+        </div>
+      </Card>;
+  }
+  return <motion.div initial={{
+    opacity: 0,
+    y: 20
+  }} animate={{
+    opacity: 1,
+    y: 0
+  }} className="space-y-4 w-full px-4 sm:px-0">
+      <Card className="bg-black/40 border-zinc-800 shadow-2xl backdrop-blur-sm w-full">
+        <ConnectionsHeader showPendingRequests={showPendingRequests} onTogglePendingRequests={() => setShowPendingRequests(!showPendingRequests)} />
 
-  // Apply filters
-  const filteredConnections = connections.filter(friend => {
-    // Search filter
-    const matchesSearch = searchQuery 
-      ? (friend.full_name || '').toLowerCase().includes(searchQuery.toLowerCase())
-      : true;
-    
-    // Online filter
-    const matchesOnline = showOnlineOnly ? friend.online_status : true;
-    
-    return matchesSearch && matchesOnline;
-  });
-  
-  // Calculate total pages
-  const itemsPerPage = 8;
-  const totalPages = Math.max(1, Math.ceil(filteredConnections.length / itemsPerPage));
-  
-  // Get current page's connections
-  const currentConnections = filteredConnections.slice(
-    (currentPage - 1) * itemsPerPage, 
-    currentPage * itemsPerPage
-  );
+        <div className="p-6 px-[8px] py-[8px]">
+          <ConnectionsSearch searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
-  return (
-    <div
-      className={cn(
-        "flex flex-col w-full grow space-y-4",
-        "p-0 lg:p-0"
-      )}
-    >
-      <PendingRequestsSection showPendingRequests={showPendingRequests} onToggle={onTogglePending} />
+          <Tabs defaultValue="all" className="w-full">
+            <TabsList className="w-full grid grid-cols-2 mb-4 bg-zinc-900/50">
+              <TabsTrigger value="all" className="data-[state=active]:bg-zinc-800">
+                Toutes ({filteredFriends.length})
+              </TabsTrigger>
+              <TabsTrigger value="online" className="data-[state=active]:bg-zinc-800">
+                En ligne ({filteredFriends.filter(f => f.online_status).length})
+              </TabsTrigger>
+            </TabsList>
 
-      <div className="flex flex-col grow space-y-3">
-        <FriendListHeader 
-          showOnlineOnly={showOnlineOnly} 
-          setShowOnlineOnly={setShowOnlineOnly} 
-          pendingCount={pendingRequests.length} 
-          onTogglePending={onTogglePending}
-        />
-        <FriendList 
-          connections={currentConnections}
-          showOnlineOnly={showOnlineOnly} 
-          searchQuery={searchQuery} 
-          currentPage={currentPage}
-          itemsPerPage={8}
-        />
-        <ConnectionsPagination 
-          currentPage={currentPage} 
-          totalPages={totalPages} 
-          onPageChange={setCurrentPage}
-        />
-      </div>
-    </div>
-  );
+            <TabsContent value="all" className="mt-0">
+              <FriendsTabContent friends={filteredFriends} currentPage={currentPage} itemsPerPage={itemsPerPage} />
+            </TabsContent>
+
+            <TabsContent value="online" className="mt-0">
+              <FriendsTabContent friends={filteredFriends} currentPage={currentPage} itemsPerPage={itemsPerPage} showOnlineOnly />
+            </TabsContent>
+          </Tabs>
+
+          {filteredFriends.length > itemsPerPage && <div className="mt-6">
+              <ConnectionsPagination currentPage={currentPage} totalPages={Math.ceil(filteredFriends.length / itemsPerPage)} onPageChange={setCurrentPage} />
+            </div>}
+        </div>
+      </Card>
+
+      {showPendingRequests && <motion.div initial={{
+      opacity: 0,
+      y: 10
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }}>
+          <PendingRequestsSection showPendingRequests={showPendingRequests} onToggle={() => setShowPendingRequests(!showPendingRequests)} />
+        </motion.div>}
+    </motion.div>;
 }

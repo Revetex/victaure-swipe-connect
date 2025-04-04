@@ -1,4 +1,5 @@
 
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,12 +10,13 @@ import {
   Clock, 
   MapPin, 
   DollarSign,
+  Loader2,
   Eye,
   Star,
   Image
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import type { MarketplaceFilters } from "@/types/marketplace";
+import type { MarketplaceListing, MarketplaceFilters } from "@/types/marketplace";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,8 +30,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useListingSearch } from "./hooks/useListingSearch";
-import { useState, useEffect } from "react";
 
 interface MarketplaceListProps {
   type: "all" | "vente" | "location" | "service";
@@ -46,94 +46,141 @@ export function MarketplaceList({
   page,
   onPageChange 
 }: MarketplaceListProps) {
+  const [listings, setListings] = useState<MarketplaceListing[]>([]);
+  const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState<string[]>([]);
-  const { listings, loading, totalPages } = useListingSearch(
-    searchQuery, filters, type, page
-  );
+  const [views, setViews] = useState<Record<string, number>>({});
+  const [totalPages, setTotalPages] = useState(1);
+  const ITEMS_PER_PAGE = 12;
 
-  // Charger les favoris de l'utilisateur connecté
   useEffect(() => {
-    const fetchFavorites = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+    fetchListings();
+  }, [type, searchQuery, filters, page]);
 
-      try {
-        const { data, error } = await supabase
-          .from('marketplace_favorites')
-          .select('item_id')  // Changed from listing_id to item_id based on error
-          .eq('user_id', user.id);
-
-        if (error) {
-          console.error('Error fetching favorites:', error);
-          return;
-        }
-
-        if (data) {
-          setFavorites(data.map(fav => fav.item_id));  // Use item_id instead of listing_id
-        }
-      } catch (err) {
-        console.error('Error in fetchFavorites:', err);
-      }
-    };
-
-    fetchFavorites();
-  }, []);
-
-  const toggleFavorite = async (listingId: string) => {
+  const fetchListings = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("Vous devez être connecté pour ajouter des favoris");
-        return;
+      setLoading(true);
+      
+      const from = (page - 1) * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
+      let query = supabase
+        .from('marketplace_listings')
+        .select(`
+          id,
+          title,
+          description,
+          price,
+          currency,
+          type,
+          status,
+          seller_id,
+          created_at,
+          updated_at,
+          images,
+          seller:profiles (
+            full_name,
+            avatar_url,
+            rating
+          )
+        `, { count: 'exact' })
+        .eq('status', 'active')
+        .range(from, to);
+
+      if (type !== "all") {
+        query = query.eq('type', type);
       }
 
-      const isFavorite = favorites.includes(listingId);
-
-      if (isFavorite) {
-        // Retirer des favoris
-        const { error } = await supabase
-          .from('marketplace_favorites')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('item_id', listingId);  // Use item_id instead of listing_id
-
-        if (error) throw error;
-
-        setFavorites(prev => prev.filter(id => id !== listingId));
-        toast.success("Retiré des favoris");
-      } else {
-        // Ajouter aux favoris
-        const { error } = await supabase
-          .from('marketplace_favorites')
-          .insert({ 
-            user_id: user.id, 
-            item_id: listingId  // Use item_id instead of listing_id
-          });
-
-        if (error) throw error;
-
-        setFavorites(prev => [...prev, listingId]);
-        toast.success("Ajouté aux favoris");
+      if (searchQuery) {
+        query = query.ilike('title', `%${searchQuery}%`);
       }
+
+      if (filters.location) {
+        query = query.ilike('location', `%${filters.location}%`);
+      }
+
+      if (filters.rating) {
+        query = query.gte('seller.rating', filters.rating);
+      }
+
+      if (filters.priceRange) {
+        query = query
+          .gte('price', filters.priceRange[0])
+          .lte('price', filters.priceRange[1]);
+      }
+
+      const { sortBy, sortOrder } = filters;
+      switch (sortBy) {
+        case 'date':
+          query = query.order('created_at', { ascending: sortOrder === 'asc' });
+          break;
+        case 'price':
+          query = query.order('price', { ascending: sortOrder === 'asc' });
+          break;
+        case 'rating':
+          query = query.order('seller(rating)', { ascending: sortOrder === 'asc' });
+          break;
+        case 'views':
+          query = query.order('views', { ascending: sortOrder === 'asc' });
+          break;
+      }
+
+      const { data, error, count } = await query;
+
+      if (error) throw error;
+      
+      if (data) {
+        const formattedData: MarketplaceListing[] = data.map(item => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          price: item.price,
+          currency: item.currency,
+          type: item.type,
+          status: item.status,
+          seller_id: item.seller_id,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+          images: item.images,
+          seller: {
+            full_name: item.seller?.full_name || null,
+            avatar_url: item.seller?.avatar_url || null,
+            rating: item.seller?.rating || 0
+          }
+        }));
+
+        setListings(formattedData);
+        setTotalPages(Math.ceil((count || 0) / ITEMS_PER_PAGE));
+
+        const randomViews: Record<string, number> = {};
+        formattedData.forEach(listing => {
+          randomViews[listing.id] = Math.floor(Math.random() * 100) + 20;
+        });
+        setViews(randomViews);
+      }
+
     } catch (error) {
-      console.error('Error toggling favorite:', error);
-      toast.error("Une erreur est survenue");
+      console.error('Error fetching listings:', error);
+      toast.error("Erreur lors du chargement des annonces");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const incrementViews = async (listingId: string) => {
-    try {
-      // Check if the function exists and adjust parameters as needed
-      const userId = (await supabase.auth.getUser()).data.user?.id || "anonymous";
+  const toggleFavorite = (listingId: string) => {
+    setFavorites(prev => {
+      const newFavorites = prev.includes(listingId)
+        ? prev.filter(id => id !== listingId)
+        : [...prev, listingId];
       
-      // Adjust call based on actual function signature
-      await supabase.rpc('increment_listing_views', { 
-        listing_id: listingId,
-        viewer_id: userId
-      });
-    } catch (error) {
-      console.error('Error incrementing views:', error);
-    }
+      toast.success(
+        prev.includes(listingId) 
+          ? "Retiré des favoris" 
+          : "Ajouté aux favoris"
+      );
+      
+      return newFavorites;
+    });
   };
 
   const formatPrice = (price: number, currency: string) => {
@@ -178,29 +225,6 @@ export function MarketplaceList({
     }
   };
 
-  const handleShare = async (listing: any) => {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: listing.title,
-          text: listing.description || '',
-          url: window.location.href
-        });
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success("Lien copié dans le presse-papier");
-      }
-    } catch (error) {
-      console.error('Error sharing:', error);
-    }
-  };
-
-  const handleViewDetails = (listing: any) => {
-    incrementViews(listing.id);
-    // Naviguer vers la page de détails (à implémenter)
-    toast.info(`Visualisation de "${listing.title}"`);
-  };
-
   if (loading) {
     return (
       <Section>
@@ -230,6 +254,23 @@ export function MarketplaceList({
     );
   }
 
+  const handleShare = async (listing: MarketplaceListing) => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: listing.title,
+          text: listing.description || '',
+          url: window.location.href
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Lien copié dans le presse-papier");
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
+
   return (
     <Section>
       <div className="space-y-6">
@@ -238,7 +279,6 @@ export function MarketplaceList({
             <Card 
               key={listing.id} 
               className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:translate-y-[-2px]"
-              onClick={() => handleViewDetails(listing)}
             >
               <div className="relative aspect-video group">
                 {listing.images?.[0] ? (
@@ -256,11 +296,8 @@ export function MarketplaceList({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="bg-background/50 backdrop-blur-sm hover:bg-background/80 z-10"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFavorite(listing.id);
-                    }}
+                    className="bg-background/50 backdrop-blur-sm hover:bg-background/80"
+                    onClick={() => toggleFavorite(listing.id)}
                   >
                     <Heart 
                       className={`h-5 w-5 transition-colors duration-300 
@@ -268,11 +305,6 @@ export function MarketplaceList({
                     />
                   </Button>
                 </div>
-                {listing.featured && (
-                  <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-md">
-                    Mis en avant
-                  </div>
-                )}
               </div>
 
               <div className="p-4 space-y-3">
@@ -286,32 +318,19 @@ export function MarketplaceList({
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />
                   <span>{formatDate(listing.created_at)}</span>
-                  {listing.location && (
+                  {listing.seller?.full_name && (
                     <>
                       <span>•</span>
-                      <MapPin className="h-4 w-4" />
-                      <span className="truncate">{listing.location}</span>
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={listing.seller.avatar_url || ''} />
+                        <AvatarFallback>
+                          {listing.seller.full_name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="truncate">{listing.seller.full_name}</span>
                     </>
                   )}
                 </div>
-
-                {listing.seller?.full_name && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src={listing.seller.avatar_url || ''} />
-                      <AvatarFallback>
-                        {listing.seller.full_name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="truncate">{listing.seller.full_name}</span>
-                    {listing.seller?.rating != null && (
-                      <div className="flex items-center gap-1 ml-auto">
-                        <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                        <span className="text-xs">{listing.seller.rating.toFixed(1)}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
 
                 {listing.description && (
                   <p className="text-sm text-muted-foreground line-clamp-2">
@@ -322,12 +341,13 @@ export function MarketplaceList({
                 <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Eye className="h-4 w-4" />
-                    <span>{listing.views_count || 0} vues</span>
+                    <span>{views[listing.id] || 0} vues</span>
                   </div>
-                  {listing.sale_type === 'auction' && (
-                    <Badge variant="outline" className="text-xs bg-amber-100/20 text-amber-500 border-amber-200/30">
-                      Enchère
-                    </Badge>
+                  {listing.seller?.rating != null && (
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span>{listing.seller.rating.toFixed(1)}</span>
+                    </div>
                   )}
                 </div>
 
@@ -336,24 +356,13 @@ export function MarketplaceList({
                     {formatPrice(listing.price, listing.currency)}
                   </p>
                   <div className="flex gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      title="Contacter le vendeur"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toast.info(`Contact avec ${listing.seller?.full_name || 'le vendeur'}`);
-                      }}
-                    >
+                    <Button variant="ghost" size="icon" title="Contacter le vendeur">
                       <MessageCircle className="h-4 w-4" />
                     </Button>
                     <Button 
                       variant="ghost" 
                       size="icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleShare(listing);
-                      }}
+                      onClick={() => handleShare(listing)}
                       title="Partager l'annonce"
                     >
                       <Share2 className="h-4 w-4" />

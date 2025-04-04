@@ -1,217 +1,231 @@
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
-import { ContractFormValues } from "@/types/marketplace";
-import { useToast } from "@/components/ui/use-toast";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/hooks/useUser";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { DialogFooter } from "@/components/ui/dialog";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { contractFormSchema, type ContractFormValues } from "@/types/marketplace";
 
-export function ContractForm() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formValues, setFormValues] = useState<ContractFormValues>({
-    title: "",
-    description: "",
-    budget_min: undefined,
-    budget_max: undefined,
-    deadline: undefined,
-    location: "",
-    category: "",
-    currency: "CAD",
-    requirements: []
+const categories = [
+  "Développement Web",
+  "Design",
+  "Marketing",
+  "Rédaction",
+  "Traduction",
+  "Autre"
+];
+
+export function ContractForm({ onSuccess }: { onSuccess?: () => void }) {
+  const { user } = useUser();
+
+  const form = useForm<ContractFormValues>({
+    resolver: zodResolver(contractFormSchema),
+    defaultValues: {
+      currency: "CAD",
+      requirements: [],
+    },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormValues((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-    
+  const onSubmit = async (values: ContractFormValues) => {
     try {
-      setIsSubmitting(true);
-      
-      // Format the date for database storage
-      const formattedDeadline = formValues.deadline 
-        ? format(formValues.deadline, 'yyyy-MM-dd') 
-        : undefined;
-      
-      const { error } = await supabase.from("marketplace_contracts").insert({
-        creator_id: user.id,
-        title: formValues.title,
-        description: formValues.description,
-        budget_min: formValues.budget_min,
-        budget_max: formValues.budget_max,
-        deadline: formattedDeadline,
-        location: formValues.location,
-        category: formValues.category,
-        currency: formValues.currency,
-        requirements: formValues.requirements || [],
-        status: "open",
-      });
+      if (!user) {
+        toast.error("Vous devez être connecté pour créer un contrat");
+        return;
+      }
+
+      const { error } = await supabase
+        .from('marketplace_contracts')
+        .insert({
+          title: values.title,
+          description: values.description || null,
+          budget_min: values.budget_min || null,
+          budget_max: values.budget_max || null,
+          deadline: values.deadline || null,
+          category: values.category || null,
+          location: values.location || null,
+          requirements: values.requirements || null,
+          currency: values.currency,
+          creator_id: user.id,
+          status: 'open',
+          documents: [],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
 
       if (error) throw error;
 
-      toast({
-        title: "Contrat créé",
-        description: "Votre contrat a été publié avec succès",
-      });
-
-      navigate("/marketplace/contracts");
+      toast.success("Contrat créé avec succès");
+      form.reset();
+      onSuccess?.();
     } catch (error) {
-      console.error("Error creating contract:", error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de créer le contrat",
-      });
-    } finally {
-      setIsSubmitting(false);
+      console.error('Erreur lors de la création du contrat:', error);
+      toast.error("Erreur lors de la création du contrat");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="title">Titre</Label>
-          <Input
-            id="title"
-            name="title"
-            value={formValues.title}
-            onChange={handleChange}
-            required
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Titre du contrat</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Ex: Développement d'une application web" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea 
+                  {...field} 
+                  placeholder="Décrivez votre projet en détail..."
+                  className="min-h-[100px]"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="budget_min"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Budget minimum</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number"
+                    {...field}
+                    onChange={e => field.onChange(Number(e.target.value))}
+                    placeholder="0"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="budget_max"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Budget maximum</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number"
+                    {...field}
+                    onChange={e => field.onChange(Number(e.target.value))}
+                    placeholder="1000"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </div>
 
-        <div>
-          <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
-            name="description"
-            value={formValues.description}
-            onChange={handleChange}
-            required
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Catégorie</FormLabel>
+                <Select 
+                  onValueChange={field.onChange} 
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner une catégorie" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="budget_min">Budget minimum</Label>
-            <Input
-              id="budget_min"
-              name="budget_min"
-              type="number"
-              value={formValues.budget_min || ""}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="budget_max">Budget maximum</Label>
-            <Input
-              id="budget_max"
-              name="budget_max"
-              type="number"
-              value={formValues.budget_max || ""}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        </div>
-
-        <div>
-          <Label htmlFor="deadline">Date limite</Label>
-          <Input
-            id="deadline"
+          <FormField
+            control={form.control}
             name="deadline"
-            type="date"
-            value={formValues.deadline ? format(formValues.deadline, 'yyyy-MM-dd') : ""}
-            onChange={(e) => {
-              if (e.target.value) {
-                setFormValues({
-                  ...formValues,
-                  deadline: new Date(e.target.value)
-                });
-              } else {
-                setFormValues({
-                  ...formValues,
-                  deadline: undefined
-                });
-              }
-            }}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date limite</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="date"
+                    {...field}
+                    min={format(new Date(), 'yyyy-MM-dd')}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </div>
 
-        <div>
-          <Label htmlFor="category">Catégorie</Label>
-          <Select 
-            value={formValues.category} 
-            onValueChange={(value) => setFormValues({...formValues, category: value})}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Sélectionner une catégorie" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="IT">Informatique & Tech</SelectItem>
-              <SelectItem value="design">Design & Création</SelectItem>
-              <SelectItem value="writing">Rédaction & Traduction</SelectItem>
-              <SelectItem value="marketing">Marketing & Ventes</SelectItem>
-              <SelectItem value="legal">Juridique</SelectItem>
-              <SelectItem value="finance">Finance & Comptabilité</SelectItem>
-              <SelectItem value="other">Autre</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <FormField
+          control={form.control}
+          name="location"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Localisation</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Ex: Montréal, QC" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-        <div>
-          <Label htmlFor="location">Localisation</Label>
-          <Input
-            id="location"
-            name="location"
-            value={formValues.location}
-            onChange={handleChange}
-            placeholder="Exemple: Montréal, QC"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="currency">Devise</Label>
-          <Select 
-            value={formValues.currency} 
-            onValueChange={(value) => setFormValues({...formValues, currency: value})}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Sélectionner une devise" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="CAD">Dollar canadien (CAD)</SelectItem>
-              <SelectItem value="USD">Dollar américain (USD)</SelectItem>
-              <SelectItem value="EUR">Euro (EUR)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Création en cours..." : "Créer le contrat"}
-      </Button>
-    </form>
+        <DialogFooter>
+          <Button type="submit" className="w-full sm:w-auto">
+            Créer le contrat
+          </Button>
+        </DialogFooter>
+      </form>
+    </Form>
   );
 }

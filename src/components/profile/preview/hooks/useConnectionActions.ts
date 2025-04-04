@@ -1,174 +1,128 @@
 
-import { useState, useCallback } from "react";
-import { toast } from "sonner";
-import { useFriendRequests } from "@/hooks/useFriendRequests";
-import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export function useConnectionActions(profileId: string) {
-  const [isLoading, setIsLoading] = useState(false);
-  const { user } = useAuth();
-  const { sendFriendRequest: sendRequest, acceptFriendRequest: acceptRequest, refetchPendingRequests } = useFriendRequests();
-
-  // Fetch the connection request ID when needed
-  const getConnectionRequest = useCallback(async () => {
-    if (!user?.id) return null;
-
+  const handleAddFriend = async () => {
     try {
-      const { data, error } = await supabase
-        .from('user_connections')
-        .select('id')
-        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${profileId}),and(sender_id.eq.${profileId},receiver_id.eq.${user.id})`)
-        .eq('status', 'pending')
-        .maybeSingle();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('friend_requests')
+        .insert({
+          sender_id: user.id,
+          receiver_id: profileId,
+          status: 'pending'
+        });
 
       if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error fetching connection request:', error);
-      return null;
-    }
-  }, [user?.id, profileId]);
-
-  // Handle adding a friend
-  const sendFriendRequest = useCallback(async () => {
-    if (!user?.id || isLoading) return;
-    setIsLoading(true);
-
-    try {
-      await sendRequest(profileId);
-      toast.success('Demande d\'ami envoyée');
+      toast.success("Demande de connexion envoyée");
     } catch (error) {
       console.error('Error sending friend request:', error);
-      toast.error('Erreur lors de l\'envoi de la demande d\'ami');
-    } finally {
-      setIsLoading(false);
+      toast.error("Erreur lors de l'envoi de la demande");
     }
-  }, [user?.id, profileId, sendRequest, isLoading]);
+  };
 
-  // Handle accepting a friend request
-  const acceptFriendRequest = useCallback(async () => {
-    if (!user?.id || isLoading) return;
-    setIsLoading(true);
-
+  const handleAcceptFriend = async () => {
     try {
-      const request = await getConnectionRequest();
-      if (request?.id) {
-        await acceptRequest(request.id);
-        toast.success('Demande d\'ami acceptée');
-      } else {
-        toast.error('Demande d\'ami introuvable');
-      }
-    } catch (error) {
-      console.error('Error accepting friend request:', error);
-      toast.error('Erreur lors de l\'acceptation de la demande d\'ami');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user?.id, getConnectionRequest, acceptRequest, isLoading]);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-  // Handle removing a friend request or friendship
-  const removeFriend = useCallback(async () => {
-    if (!user?.id || isLoading) return;
-    setIsLoading(true);
-
-    try {
-      // Get the connection
-      const { data, error } = await supabase
-        .from('user_connections')
-        .select('id, status')
-        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${profileId}),and(sender_id.eq.${profileId},receiver_id.eq.${user.id})`)
-        .maybeSingle();
+      const { error } = await supabase
+        .from('friend_requests')
+        .update({ status: 'accepted' })
+        .eq('sender_id', profileId)
+        .eq('receiver_id', user.id);
 
       if (error) throw error;
-      
-      if (!data) {
-        toast.error('Connexion introuvable');
-        return;
-      }
+      toast.success("Demande de connexion acceptée");
+    } catch (error) {
+      console.error('Error accepting friend request:', error);
+      toast.error("Erreur lors de l'acceptation de la demande");
+    }
+  };
 
-      // Whether it's a pending request or accepted friendship, delete it
-      const { error: deleteError } = await supabase
-        .from('user_connections')
+  const handleRemoveFriend = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('friend_requests')
         .delete()
-        .eq('id', data.id);
-          
-      if (deleteError) throw deleteError;
-      
-      if (data.status === 'pending') {
-        toast.success('Demande annulée');
-      } else {
-        toast.success('Ami supprimé');
-      }
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+        .or(`sender_id.eq.${profileId},receiver_id.eq.${profileId}`);
 
-      // Refresh the friend requests
-      if (refetchPendingRequests) {
-        refetchPendingRequests();
-      }
+      if (error) throw error;
+      toast.success("Connection supprimée");
     } catch (error) {
       console.error('Error removing friend:', error);
-      toast.error('Erreur lors de la suppression de l\'ami');
-    } finally {
-      setIsLoading(false);
+      toast.error("Erreur lors de la suppression de la connection");
     }
-  }, [user?.id, profileId, isLoading, refetchPendingRequests]);
+  };
 
-  // Handle blocking a user
-  const toggleBlockUser = useCallback(async (userId: string) => {
-    if (!user?.id || isLoading) return;
-    setIsLoading(true);
-
+  const handleToggleBlock = async () => {
     try {
-      // Check if already blocked
-      const { data: existingBlock, error: checkError } = await supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: blockStatus } = await supabase
         .from('blocked_users')
         .select('*')
         .eq('blocker_id', user.id)
-        .eq('blocked_id', userId)
+        .eq('blocked_id', profileId)
         .maybeSingle();
 
-      if (checkError) throw checkError;
-
-      if (existingBlock) {
-        // If blocked, unblock
+      if (blockStatus) {
         const { error } = await supabase
           .from('blocked_users')
           .delete()
           .eq('blocker_id', user.id)
-          .eq('blocked_id', userId);
+          .eq('blocked_id', profileId);
 
         if (error) throw error;
-        toast.success('Utilisateur débloqué');
+        toast.success("Utilisateur débloqué");
       } else {
-        // If not blocked, block
         const { error } = await supabase
           .from('blocked_users')
           .insert({
             blocker_id: user.id,
-            blocked_id: userId
+            blocked_id: profileId
           });
 
         if (error) throw error;
-        toast.success('Utilisateur bloqué');
+        toast.success("Utilisateur bloqué");
       }
     } catch (error) {
-      console.error('Error toggling block status:', error);
-      toast.error('Erreur lors du changement du statut de blocage');
-    } finally {
-      setIsLoading(false);
+      console.error('Error toggling block:', error);
+      toast.error("Erreur lors du blocage/déblocage");
     }
-  }, [user?.id, isLoading]);
+  };
+
+  const handleRequestCV = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      await supabase.from("notifications").insert({
+        user_id: profileId,
+        title: "Demande de CV",
+        message: `${user.email} aimerait consulter votre CV`,
+      });
+
+      toast.success("Demande de CV envoyée");
+    } catch (error) {
+      console.error('Error requesting CV:', error);
+      toast.error("Erreur lors de l'envoi de la demande");
+    }
+  };
 
   return {
-    isLoading,
-    handleAddFriend: sendFriendRequest,
-    handleAcceptFriend: acceptFriendRequest,
-    handleRemoveFriend: removeFriend,
-    handleToggleBlock: toggleBlockUser,
-    // Also export the original function names for backward compatibility
-    sendFriendRequest,
-    acceptFriendRequest,
-    removeFriend,
-    toggleBlockUser
+    handleAddFriend,
+    handleAcceptFriend,
+    handleRemoveFriend,
+    handleToggleBlock,
+    handleRequestCV,
   };
 }

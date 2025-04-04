@@ -7,7 +7,7 @@ export function useSuggestions() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
 
-  const generateSuggestions = useCallback(async (context: string, messageHistory: any[] = []) => {
+  const generateSuggestions = useCallback(async (context: string, messageHistory: any[]) => {
     setIsLoadingSuggestions(true);
     try {
       const { data, error } = await supabase.functions.invoke('chat-suggestions', {

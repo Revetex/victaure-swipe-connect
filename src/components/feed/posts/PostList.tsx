@@ -1,15 +1,12 @@
-
 import { useAuth } from "@/hooks/useAuth";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { usePostOperations } from "./usePostOperations";
 import { usePostsQuery } from "./hooks/usePostsQuery";
 import { PostSkeleton } from "./PostSkeleton";
 import { EmptyPostState } from "./EmptyPostState";
 import { DeletePostDialog } from "./DeletePostDialog";
 import { PostGrid } from "./sections/PostGrid";
-import { motion, useInView } from "framer-motion";
-import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface PostListProps {
   searchTerm?: string;
@@ -30,89 +27,48 @@ export function PostList({
 }: PostListProps) {
   const { user } = useAuth();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const {
-    handleDelete,
-    handleHide,
-    handleUpdate
-  } = usePostOperations();
-  const loaderRef = useRef(null);
-  const inView = useInView(loaderRef);
-  
-  const {
-    data,
-    isLoading,
-    error,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage
-  } = usePostsQuery({
+
+  const { handleDelete, handleHide, handleUpdate } = usePostOperations();
+
+  const { data: posts, isLoading } = usePostsQuery({
     filter,
     sortBy,
     sortOrder,
-    userId: user?.id,
-    page,
-    limit: 10,
-    searchTerm
+    userId: user?.id
   });
-  
-  useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  if (error) {
-    console.error("Error loading posts:", error);
-    toast.error("Unable to load posts");
-    return null;
-  }
-
-  const allPosts = data?.pages.flatMap(page => page.posts) ?? [];
+  const filteredPosts = posts?.filter(post => 
+    post.content.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (isLoading) return <PostSkeleton />;
-  if (allPosts.length === 0) return <EmptyPostState />;
+  if (!posts?.length) return <EmptyPostState />;
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
       <PostGrid 
-        posts={allPosts} 
-        currentUserId={user?.id} 
-        userEmail={user?.email} 
-        onDelete={postId => setPostToDelete(postId)} 
-        onHide={handleHide} 
-        onUpdate={(postId, content) => {
-          handleUpdate(postId, content);
-          onPostUpdated();
-        }} 
+        posts={filteredPosts || []} 
+        currentUserId={user?.id}
+        userEmail={user?.email}
+        onDelete={postId => setPostToDelete(postId)}
+        onHide={handleHide}
+        onUpdate={handleUpdate}
       />
 
-      {/* Loader for infinite scroll */}
-      {hasNextPage && (
-        <div ref={loaderRef} className="flex justify-center p-4">
-          {isFetchingNextPage ? (
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          ) : (
-            <div className="h-6 w-6" />
-          )}
-        </div>
-      )}
-
       <DeletePostDialog 
-        isOpen={!!postToDelete} 
-        onClose={() => setPostToDelete(null)} 
+        isOpen={!!postToDelete}
+        onClose={() => setPostToDelete(null)}
         onConfirm={() => {
           if (postToDelete && user?.id) {
             handleDelete(postToDelete, user.id);
             setPostToDelete(null);
-            onPostDeleted();
           }
-        }} 
+        }}
       />
     </motion.div>
   );
